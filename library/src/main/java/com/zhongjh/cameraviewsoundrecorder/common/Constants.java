@@ -1,0 +1,33 @@
+package com.zhongjh.cameraviewsoundrecorder.common;
+
+/**
+ * 公共类
+ * Created by zhongjh on 2018/8/7.
+ */
+public class Constants {
+
+    public static final String ScreenWidth = "ScreenWidth";                 //屏幕宽度
+    public static final String ScreenHeight = "ScreenHeight";               //屏幕高度
+
+    public static final int STATE_PREVIEW = 0x01;      // 休闲状态
+    public static final int STATE_PICTURE = 0x02;      // 图片状态
+    public static final int STATE_VIDEO = 0x03;        // 视频状态
+
+    public static final int TYPE_FLASH_AUTO = 0x101;                // 闪关灯自动
+    public static final int TYPE_FLASH_ON = 0x102;                  // 闪关灯开启
+    public static final int TYPE_FLASH_OFF = 0x103;                 // 闪关灯关闭
+
+    public static final int BUTTON_STATE_ONLY_CAPTURE = 0x201;      //只能拍照
+    public static final int BUTTON_STATE_ONLY_RECORDER = 0x202;     //只能录像
+    public static final int BUTTON_STATE_BOTH = 0x203;              //两者都可以
+
+    //录制视频比特率
+    public static final int MEDIA_QUALITY_HIGH = 20 * 100000;
+    public static final int MEDIA_QUALITY_MIDDLE = 16 * 100000;
+    public static final int MEDIA_QUALITY_LOW = 12 * 100000;
+    public static final int MEDIA_QUALITY_POOR = 8 * 100000;
+    public static final int MEDIA_QUALITY_FUNNY = 4 * 100000;
+    public static final int MEDIA_QUALITY_DESPAIR = 2 * 100000;
+    public static final int MEDIA_QUALITY_SORRY = 1 * 80000;
+
+}
