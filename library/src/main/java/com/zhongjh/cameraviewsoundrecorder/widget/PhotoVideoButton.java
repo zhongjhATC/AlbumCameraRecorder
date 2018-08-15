@@ -15,8 +15,9 @@ import android.view.View;
 import com.zhongjh.cameraviewsoundrecorder.listener.PhotoVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
 
-import static com.zhongjh.cameraviewsoundrecorder.camera.CameraLayout.BUTTON_STATE_BOTH;
-import static com.zhongjh.cameraviewsoundrecorder.camera.CameraLayout.BUTTON_STATE_ONLY_RECORDER;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_BOTH;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_ONLY_RECORDER;
+
 
 /**
  * 动作按钮：拍照，录像，录音

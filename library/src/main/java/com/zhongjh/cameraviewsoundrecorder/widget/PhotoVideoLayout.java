@@ -36,7 +36,7 @@ public class PhotoVideoLayout extends FrameLayout {
         this.mPhotoVideoListener = photoVideoListener;
     }
 
-    public void setmOperaeListener(OperaeListener mOperaeListener) {
+    public void setOperaeListener(OperaeListener mOperaeListener) {
         this.mOperaeListener = mOperaeListener;
     }
 

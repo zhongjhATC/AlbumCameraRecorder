@@ -19,7 +19,9 @@ import com.zhongjh.cameraviewsoundrecorder.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.util.CameraParamUtil;
 import com.zhongjh.cameraviewsoundrecorder.util.DeviceUtil;
+import com.zhongjh.cameraviewsoundrecorder.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.util.LogUtil;
+import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,6 +29,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static android.graphics.Bitmap.createBitmap;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_CAPTURE;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_RECORDER;
 
 
 /**
@@ -56,6 +60,10 @@ public class CameraOperation implements Camera.PreviewCallback {
     private String mSaveVideoPath;          // 保存文件的路径
     private String mVideoFileAbsPath;       // 统一上面两个String的路径
     private Bitmap mVideoFirstFrame = null; // 录像的第一祯bitmap
+
+    private int mNowScaleRate = 0;
+    private int mRecordScleRate = 0;
+
     private int mMediaQuality = Constants.MEDIA_QUALITY_MIDDLE;  //视频质量
 
     private ErrorListener mErrorLisenter; // 异常事件
@@ -75,13 +83,78 @@ public class CameraOperation implements Camera.PreviewCallback {
         mPreviewFrameData = data;
     }
 
+
+
+    /**
+     * 启动摄像头
+     *
+     * @param id 前置或者后置的
+     */
+    private synchronized void openCamera(int id) {
+        try {
+            // 打开摄像头
+            this.mCamera = Camera.open(id);
+        } catch (Exception var3) {
+            var3.printStackTrace();
+            if (this.mErrorLisenter != null) {
+                this.mErrorLisenter.onError();
+            }
+        }
+
+        // 添加一个开关来控制拍照声音
+        if (Build.VERSION.SDK_INT > 17 && this.mCamera != null) {
+            try {
+                // 关闭声音
+                this.mCamera.enableShutterSound(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("CJT", "enable shutter sound faild");
+            }
+        }
+    }
+
+    /**
+     * 停止预览
+     */
+    private void doStopPreview(){
+        if (null != mCamera){
+            mCamera.setPreviewCallback(null);
+            mCamera.stopPreview();
+            try {
+                // 这句要在stopPreview后执行，不然会卡顿或者花屏
+                mCamera.setPreviewDisplay(null);
+                mIsPreviewing = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 销毁Camera
+     */
+    public void doDestroyCamera() {
+        mErrorLisenter = null;
+        if (null != mCamera) {
+            mCamera.setPreviewCallback(null);
+            mImgSwitch = null;
+            mImgFlash = null;
+            mCamera.stopPreview();
+            //这句要在stopPreview后执行，不然会卡顿或者花屏
+            mCamera.setPreviewDisplay(null);
+        }
+    }
+
+
+    // region 对外开放的API
+
     /**
      * 摄像头启动浏览
      *
      * @param surfaceHolder 显示一个surface的抽象接口，使你能够控制surface的大小和格式， 以及在surface上编辑像素，和监视surace的改变。
      * @param screenProp    当前手机屏幕高宽比例
      */
-    private void doStartPreview(SurfaceHolder surfaceHolder, float screenProp) {
+    public void doStartPreview(SurfaceHolder surfaceHolder, float screenProp) {
         if (mIsPreviewing)
             LogUtil.i("doStartPreview mIsPreviewing");
 
@@ -141,47 +214,6 @@ public class CameraOperation implements Camera.PreviewCallback {
         }
 
     }
-
-    /**
-     * 启动摄像头
-     *
-     * @param id 前置或者后置的
-     */
-    private synchronized void openCamera(int id) {
-        try {
-            // 打开摄像头
-            this.mCamera = Camera.open(id);
-        } catch (Exception var3) {
-            var3.printStackTrace();
-            if (this.mErrorLisenter != null) {
-                this.mErrorLisenter.onError();
-            }
-        }
-
-        // 添加一个开关来控制拍照声音
-        if (Build.VERSION.SDK_INT > 17 && this.mCamera != null) {
-            try {
-                // 关闭声音
-                this.mCamera.enableShutterSound(false);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e("CJT", "enable shutter sound faild");
-            }
-        }
-    }
-
-    /**
-     * 销毁Camera
-     */
-    private void doDestroyCamera() {
-        mErrorLisenter = null;
-        if (null != mCamera) {
-            mCamera.setPreviewCallback(null);
-
-        }
-    }
-
-    // region 对外开放的API
 
     /**
      * 切换摄像头
@@ -382,6 +414,11 @@ public class CameraOperation implements Camera.PreviewCallback {
         }
     }
 
+    /**
+     * 停止录像
+     * @param isShort 是否因为视频过短而停止
+     * @param callback 回调事件
+     */
     public void stopRecord(boolean isShort, CameraCallback.StopRecordCallback callback){
         // 不是正在录像就返回
         if (!mIsRecorder)
@@ -399,6 +436,7 @@ public class CameraOperation implements Camera.PreviewCallback {
                 mMediaRecorder = null;
                 mMediaRecorder = new MediaRecorder();
             } finally {
+                // 清空
                 if (mMediaRecorder != null) {
                     mMediaRecorder.release();
                 }
@@ -406,8 +444,80 @@ public class CameraOperation implements Camera.PreviewCallback {
                 mIsRecorder = false;
             }
 
+            if (isShort) {
+                // 如果是短视频则删除文件，并且直接回调返回
+                if (FileUtil.deleteFile(mVideoFileAbsPath)) {
+                    // 回调
+                    callback.recordResult(null, null);
+                }
+            }else{
+                // 停止预览并且回调
+                doStopPreview();
+                String fileName = mSaveVideoPath + File.separator + mVideoFileName;
+                callback.recordResult(fileName, mVideoFirstFrame);
+            }
+
 
         }
+    }
+
+    /**
+     * 缩放
+     * @param zoom 缩放数值
+     * @param type 拍照或者录制模式
+     */
+    public void zoom(float zoom, int type) {
+        if (mCamera == null) {
+            return;
+        }
+        if (mParams == null) {
+            mParams = mCamera.getParameters();
+        }
+        //isZoomSupported()是判断设备是否支持缩放，isSmoothZoomSupported()是判断是否支持平滑缩放，
+        // android的部分机型这两个返回一个是：isZoomSupported()放回true，isSmoothZoomSupported()返回false，
+        // 也就是说支持缩放，但是不支持平滑缩放，于是我把setZoom() 方法改成了：
+//        if (!mParams.isZoomSupported() || !mParams.isSmoothZoomSupported()) {
+//            return;
+//        }
+        if (!mParams.isZoomSupported()) {
+            return;
+        }
+        switch (type) {
+            case TYPE_RECORDER:
+                // 如果不是录制视频中，上滑不会缩放
+                if (!mIsRecorder) {
+                    return;
+                }
+                if (zoom >= 0) {
+                    // 每移动50个像素缩放一个级别
+                    int scaleRate = (int) (zoom / 40);
+                    if (scaleRate <= mParams.getMaxZoom() && scaleRate >= mNowScaleRate && mRecordScleRate != scaleRate) {
+                        mParams.setZoom(scaleRate);
+                        mCamera.setParameters(mParams);
+                        mRecordScleRate = scaleRate;
+                    }
+                }
+                break;
+            case TYPE_CAPTURE:
+                if (mIsRecorder) {
+                    return;
+                }
+                // 每移动50个像素缩放一个级别
+                int scaleRate = (int) (zoom / 50);
+                if (scaleRate < mParams.getMaxZoom()) {
+                    mNowScaleRate += scaleRate;
+                    if (mNowScaleRate < 0) {
+                        mNowScaleRate = 0;
+                    } else if (mNowScaleRate > mParams.getMaxZoom()) {
+                        mNowScaleRate = mParams.getMaxZoom();
+                    }
+                    mParams.setZoom(mNowScaleRate);
+                    mCamera.setParameters(mParams);
+                }
+                LogUtil.i("setZoom = " + mNowScaleRate);
+                break;
+        }
+
     }
 
     /**
@@ -428,9 +538,28 @@ public class CameraOperation implements Camera.PreviewCallback {
     /**
      * 赋值异常事件
      */
-    void setErrorLinsenter(ErrorListener errorLisenter) {
+    public void setErrorLinsenter(ErrorListener errorLisenter) {
         this.mErrorLisenter = errorLisenter;
     }
+
+    /**
+     * 打开camera
+     * @param cameraOpenOverCallback 回调事件
+     */
+    public void doOpenCamera(CameraCallback.CameraOpenOverCallback cameraOpenOverCallback) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (!PermissionUtil.isCameraUseable(mSelectedCamera) && this.mErrorLisenter != null) {
+                this.mErrorLisenter.onError();
+                return;
+            }
+        }
+        if (mCamera == null) {
+            openCamera(mSelectedCamera);
+        }
+        cameraOpenOverCallback.cameraHasOpened();
+
+    }
+
 
     // endregion
 

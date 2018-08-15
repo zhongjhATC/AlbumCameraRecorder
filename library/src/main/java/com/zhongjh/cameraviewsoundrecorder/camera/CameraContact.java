@@ -5,6 +5,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
+import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
 
 /**
  * 摄像器的关联者
@@ -16,10 +17,10 @@ public interface CameraContact {
 
         /**
          * 开始
-         * @param holder
-         * @param screenProp
+         * @param surfaceHolder surfaceHolder是一个持有surface的抽象接口，可以控制surface的大小、格式、编辑、监听surface改变，一般通过SurfaceView实现
+         * @param screenProp 高 / 宽 比例
          */
-        void start(SurfaceHolder holder, float screenProp);
+        void start(SurfaceHolder surfaceHolder, float screenProp);
 
         /**
          * 停止
@@ -30,8 +31,8 @@ public interface CameraContact {
 
         /**
          * 切换摄像模式 前摄像，后摄像头
-         * @param surfaceHolder SurfaceHolder是一个持有surface的抽象接口，可以控制surface的大小、格式、编辑、监听surface改变，一般通过SurfaceView实现
-         * @param screenProp
+         * @param surfaceHolder surfaceHolder是一个持有surface的抽象接口，可以控制surface的大小、格式、编辑、监听surface改变，一般通过SurfaceView实现
+         * @param screenProp 高 / 宽 比例
          */
         void swtich(SurfaceHolder surfaceHolder, float screenProp);
 
@@ -63,6 +64,21 @@ public interface CameraContact {
          */
         void flash(String mode);
 
+        /**
+         * 赋值Camera错误回调
+         * @param errorLisenter 异常回调
+         */
+        void setErrorLinsenter(ErrorListener errorLisenter);
+
+        /**
+         * 打开camera
+         */
+        void doOpenCamera();
+
+        /**
+         * 销毁camera
+         */
+        void doDestroyCamera();
     }
 
     /**
@@ -93,10 +109,10 @@ public interface CameraContact {
         void showPicture(Bitmap bitmap, boolean isVertical);
 
         /**
-         * 播放视频
+         * 播放视频,用于录制后，在是否确认的界面中，播放视频
          *
-         * @param firstFrame
-         * @param url
+         * @param firstFrame @@
+         * @param url 路径
          */
         void playVideo(Bitmap firstFrame, String url);
 
@@ -137,6 +153,19 @@ public interface CameraContact {
          * @param state 状态
          */
         void setState(int state);
+
+        /**
+         * 返回比例
+         * @return screenProp
+         */
+        float getScreenProp();
+
+        /**
+         * 返回 SurfaceHolder
+         * @return SurfaceHolder
+         */
+        SurfaceHolder getSurfaceHolder();
+
     }
 
 }

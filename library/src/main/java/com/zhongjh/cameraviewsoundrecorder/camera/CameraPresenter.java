@@ -2,12 +2,17 @@ package com.zhongjh.cameraviewsoundrecorder.camera;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraOperation;
 import com.zhongjh.cameraviewsoundrecorder.common.Constants;
+import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
+
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_SHORT;
 
 /**
  * Created by zhongjh on 2018/8/7.
@@ -21,6 +26,7 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     public CameraPresenter(Context context, CameraContact.CameraView cameraView) {
         this.mContext = context;
         this.mCameraView = cameraView;
+        this.mCameraOperation = new CameraOperation();
     }
 
     @Override
@@ -67,15 +73,18 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     }
 
     @Override
-    public void stopRecord(boolean isShort, long time) {
-        mCameraOperation.stopRecord(isShort, new CameraInterface.StopRecordCallback() {
+    public void stopRecord(final boolean isShort, long time) {
+        mCameraOperation.stopRecord(isShort, new CameraCallback.StopRecordCallback() {
             @Override
             public void recordResult(String url, Bitmap firstFrame) {
                 if (isShort) {
-                    machine.getView().resetState(JCameraView.TYPE_SHORT);
+                    // 如果视频过短就是录制不成功
+                    mCameraView.resetState(TYPE_SHORT);
                 } else {
-                    machine.getView().playVideo(firstFrame, url);
-                    machine.setState(machine.getBorrowVideoState());
+                    // 设置成视频播放状态
+                    mCameraView.setState(Constants.STATE_VIDEO);
+                    // 如果录制结束，播放该视频
+                    mCameraView.playVideo(firstFrame, url);
                 }
             }
         });
@@ -93,12 +102,32 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void zoom(float zoom, int type) {
-
+        mCameraOperation.zoom(zoom,type);
     }
 
     @Override
     public void flash(String mode) {
 
+    }
+
+    @Override
+    public void setErrorLinsenter(ErrorListener errorLisenter) {
+        mCameraOperation.setErrorLinsenter(errorLisenter);
+    }
+
+    @Override
+    public void doOpenCamera() {
+        mCameraOperation.doOpenCamera(new CameraCallback.CameraOpenOverCallback() {
+            @Override
+            public void cameraHasOpened() {
+                mCameraOperation.doStartPreview(mCameraView.getSurfaceHolder(), mCameraView.getScreenProp());
+            }
+        });
+    }
+
+    @Override
+    public void doDestroyCamera() {
+        mCameraOperation.doDestroyCamera();
     }
 
 }

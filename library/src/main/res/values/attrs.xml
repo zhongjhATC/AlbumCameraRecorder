@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="CameraCallback">
+    <declare-styleable name="CameraView">
         <!-- 图标大小 -->
         <attr name="iconSize"/>
         <attr name="iconMargin"/>

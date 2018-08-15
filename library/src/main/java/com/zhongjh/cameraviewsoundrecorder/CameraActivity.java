@@ -73,7 +73,7 @@ public class CameraActivity extends AppCompatActivity {
 //                CameraActivity.this.finish();
 //            }
 //        });
-//        jCameraView.setRightClickListener(new ClickListener() {
+//        jCameraView.setmRightClickListener(new ClickListener() {
 //            @Override
 //            public void onClick() {
 //                Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show();

@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -15,19 +19,25 @@ import android.widget.ImageView;
 import android.widget.VideoView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.entity.CameraButton;
+import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.listener.PhotoVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.util.DisplayMetricsSPUtils;
+import com.zhongjh.cameraviewsoundrecorder.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.widget.FoucsView;
 import com.zhongjh.cameraviewsoundrecorder.widget.PhotoVideoLayout;
+
+import java.io.IOException;
+
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_SHORT;
 
 /**
  * 一个全局界面，包含了 右上角的闪光灯、前/后置摄像头的切换、底部按钮功能、对焦框等、显示当前拍照和摄像的界面
  * Created by zhongjh on 2018/7/23.
  */
-public class CameraLayout extends FrameLayout implements CameraCallback.CameraOpenOverCallback, SurfaceHolder
+public class CameraLayout extends FrameLayout implements  SurfaceHolder
         .Callback, CameraContact.CameraView {
 
     private Context mContext;
@@ -43,11 +53,35 @@ public class CameraLayout extends FrameLayout implements CameraCallback.CameraOp
 
     private ViewHolder mViewHolder; // 当前界面的所有控件
 
+    private MediaPlayer mMediaPlayer; // 播放器
+
     private Bitmap mCaptureBitmap;   // 捕获的图片
-    private Bitmap firstFrame;       // 第一帧图片
-    private String videoUrl;         // 视频URL
+    private Bitmap mFirstFrame;       // 第一帧图片
+    private String mVideoUrl;         // 视频URL
 
     private CameraButton mCameraButton; // 摄像头按钮
+
+    // region 回调事件
+
+    // 回调监听
+    private ErrorListener mErrorLisenter;
+    private View.OnClickListener mLeftClickListener;
+    private View.OnClickListener mRightClickListener;
+
+    // 赋值Camera错误回调
+    public void setErrorLisenter(ErrorListener errorLisenter) {
+        this.mErrorLisenter = errorLisenter;
+        mCameraPresenter.setErrorLinsenter(errorLisenter);
+    }
+
+    public void setLeftClickListener(View.OnClickListener clickListener) {
+        this.mLeftClickListener = clickListener;
+    }
+
+    public void setRightClickListener(View.OnClickListener clickListener) {
+        this.mRightClickListener = clickListener;
+    }
+    // endregion
 
     public CameraLayout(@NonNull Context context) {
         super(context);
@@ -82,7 +116,7 @@ public class CameraLayout extends FrameLayout implements CameraCallback.CameraOp
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         float widthSize = mViewHolder.vvPreview.getMeasuredWidth();
-        float heightSize =  mViewHolder.vvPreview.getMeasuredHeight();
+        float heightSize = mViewHolder.vvPreview.getMeasuredHeight();
         if (mScreenProp == 0) {
             mScreenProp = heightSize / widthSize;
         }
@@ -171,44 +205,105 @@ public class CameraLayout extends FrameLayout implements CameraCallback.CameraOp
 
             @Override
             public void recordEnd(long time) {
-
+                // 录像结束
+                mCameraPresenter.stopRecord(false, time);
             }
 
             @Override
             public void recordZoom(float zoom) {
-
+                mCameraPresenter.zoom(zoom, Constants.TYPE_RECORDER);
             }
 
             @Override
             public void recordError() {
-
+                if (mErrorLisenter != null) {
+                    mErrorLisenter.AudioPermissionError();
+                }
             }
         });
+
+        // 确认和取消
+        mViewHolder.pvLayout.setOperaeListener(new OperaeListener() {
+            @Override
+            public void cancel() {
+                mCameraPresenter.cancle(mViewHolder.vvPreview.getHolder(),mScreenProp);
+            }
+
+            @Override
+            public void confirm() {
+                mCameraPresenter.confirm();
+            }
+        });
+
+        // 左边按钮
+        mViewHolder.pvLayout.setLeftClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mLeftClickListener != null)
+                    mLeftClickListener.onClick(v);
+            }
+        });
+
+        // 右边按钮
+        mViewHolder.pvLayout.setRightClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRightClickListener != null)
+                    mRightClickListener.onClick(v);
+            }
+        });
+
     }
 
+    /**
+     * SurfaceView生命周期
+     * 当Surface第一次创建后会立即调用该函数
+     * @param holder holder
+     */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        LogUtil.i("JCameraView SurfaceCreated");
+        new Thread() {
+            @Override
+            public void run() {
+                mCameraPresenter.doOpenCamera();
+            }
+        }.start();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        // 无任何事件
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
-    }
-
-    @Override
-    public void cameraHasOpened() {
-
+        mCameraPresenter.doDestroyCamera();
     }
 
     @Override
     public void resetState(int type) {
-
+        switch (type) {
+//            case TYPE_VIDEO:
+//                stopVideo();    //停止播放
+//                //初始化VideoView
+//                FileUtil.deleteFile(mVideoUrl);
+//                mVideoView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+//                mMachine.start(mVideoView.getHolder(), screenProp);
+//                break;
+//            case TYPE_PICTURE:
+//                mPhoto.setVisibility(INVISIBLE);
+//                break;
+            case TYPE_SHORT:
+                // 短视屏不处理任何事情
+                break;
+//            case TYPE_DEFAULT:
+//                mVideoView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+//                break;
+        }
+//        mSwitchCamera.setVisibility(VISIBLE);
+//        mFlashLamp.setVisibility(VISIBLE);
+//        mCaptureLayout.resetCaptureLayout();
     }
 
     @Override
@@ -232,7 +327,43 @@ public class CameraLayout extends FrameLayout implements CameraCallback.CameraOp
 
     @Override
     public void playVideo(Bitmap firstFrame, String url) {
-
+        mVideoUrl = url;
+        mFirstFrame = firstFrame;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (mMediaPlayer == null) {
+                    mMediaPlayer = new MediaPlayer();
+                } else {
+                    // 重置
+                    mMediaPlayer.reset();
+                }
+                try {
+                    mMediaPlayer.setDataSource(mVideoUrl);
+                    // 进行关联播放控件
+                    mMediaPlayer.setSurface(mViewHolder.vvPreview.getHolder().getSurface());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        // 填充模式
+                        mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+                    }
+                    mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); // 指定流媒体的类型
+                    // 视频尺寸监听
+                    mMediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer
+                            .OnVideoSizeChangedListener() {
+                        @Override
+                        public void
+                        onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                            updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
+                                    .getVideoHeight());
+                        }
+                    });
+                    mMediaPlayer.setLooping(true); // 循环播放
+                    mMediaPlayer.prepare(); // 准备(同步)
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -263,6 +394,32 @@ public class CameraLayout extends FrameLayout implements CameraCallback.CameraOp
     @Override
     public void setState(int state) {
         this.mState = state;
+    }
+
+    @Override
+    public float getScreenProp() {
+        return mScreenProp;
+    }
+
+    @Override
+    public SurfaceHolder getSurfaceHolder() {
+        return mViewHolder.vvPreview.getHolder();
+    }
+
+    /**
+     * 更新当前视频播放控件的宽高
+     *
+     * @param videoWidth  宽度
+     * @param videoHeight 高度
+     */
+    private void updateVideoViewSize(float videoWidth, float videoHeight) {
+        if (videoWidth > videoHeight) {
+            LayoutParams videoViewParam;
+            int height = (int) ((videoHeight / videoWidth) * getWidth());
+            videoViewParam = new LayoutParams(LayoutParams.MATCH_PARENT, height);
+            videoViewParam.gravity = Gravity.CENTER;
+            mViewHolder.vvPreview.setLayoutParams(videoViewParam);
+        }
     }
 
     /**
