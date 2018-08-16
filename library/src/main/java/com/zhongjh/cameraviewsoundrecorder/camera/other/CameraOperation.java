@@ -1,12 +1,20 @@
 package com.zhongjh.cameraviewsoundrecorder.camera.other;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Environment;
@@ -17,8 +25,10 @@ import android.widget.ImageView;
 
 import com.zhongjh.cameraviewsoundrecorder.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.util.AngleUtil;
 import com.zhongjh.cameraviewsoundrecorder.util.CameraParamUtil;
 import com.zhongjh.cameraviewsoundrecorder.util.DeviceUtil;
+import com.zhongjh.cameraviewsoundrecorder.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
@@ -26,6 +36,7 @@ import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.graphics.Bitmap.createBitmap;
@@ -34,7 +45,7 @@ import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_RECORDER
 
 
 /**
- * 关于照相机的操作类
+ * 关于照相机Camera的操作类
  * Created by zhongjh on 2018/8/10.
  */
 public class CameraOperation implements Camera.PreviewCallback {
@@ -43,9 +54,9 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     private Camera mCamera;
     private Camera.Parameters mParams; // 相机的属性
-    private boolean mIsPreviewing = false; // 目前是否处于预览状态
-    private int mPreviewWidth; // 预览的宽度
-    private int mPreviewHeight; // 预览的高度
+    private boolean mIsPreviewing = false; // 目前是否处于录像状态
+    private int mPreviewWidth; // 录像的宽度
+    private int mPreviewHeight; // 录像的高度
 
     private int mSelectedCamera;            // 当前摄像头是前置还是后置
     private int CAMERA_POST_POSITION;       // 摄像头后置
@@ -65,25 +76,26 @@ public class CameraOperation implements Camera.PreviewCallback {
     private int mRecordScleRate = 0;
 
     private int mMediaQuality = Constants.MEDIA_QUALITY_MIDDLE;  //视频质量
+    private SensorManager mSensorManager = null;
 
     private ErrorListener mErrorLisenter; // 异常事件
 
     private ImageView mImgSwitch;
     private ImageView mImgFlash;
 
-
-    private int mPhoneAngle = 0;    // 手机的角度，通过方向传感器获的
-    private int mCameraAngle = 90;  //摄像头角度   默认为后置摄像头90度 前置摄像头180度 270度是
-    private int mPictureAngle;      // 拍照后给予照片的角度，通过当前手机角度、摄像头角度计算
+    private int mPhoneAngle = 0;        // 手机的角度，通过方向传感器获的
+    private int mCameraAngle = 90;      //摄像头角度   默认为后置摄像头90度 前置摄像头180度 270度是
+    private int mPictureAngle;          // 拍照后给予照片的角度，通过当前手机角度、摄像头角度计算
+    private int mImageViewRotation = 0; // 用于判断当前图片的旋转角度跟mPhoneAngle是否一样，如果不一样就做相应操作
 
     private byte[] mPreviewFrameData; // 照相机返回的数据源
+
+    private int mHandlerFocusTime;// 处理焦点
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         mPreviewFrameData = data;
     }
-
-
 
     /**
      * 启动摄像头
@@ -114,7 +126,7 @@ public class CameraOperation implements Camera.PreviewCallback {
     }
 
     /**
-     * 停止预览
+     * 停止录像
      */
     private void doStopPreview(){
         if (null != mCamera){
@@ -131,25 +143,117 @@ public class CameraOperation implements Camera.PreviewCallback {
     }
 
     /**
-     * 销毁Camera
+     * 方向传感器的事件
      */
-    public void doDestroyCamera() {
-        mErrorLisenter = null;
-        if (null != mCamera) {
-            mCamera.setPreviewCallback(null);
-            mImgSwitch = null;
-            mImgFlash = null;
-            mCamera.stopPreview();
-            //这句要在stopPreview后执行，不然会卡顿或者花屏
-            mCamera.setPreviewDisplay(null);
+    private SensorEventListener sensorEventListener = new SensorEventListener() {
+        public void onSensorChanged(SensorEvent event) {
+            if (Sensor.TYPE_ACCELEROMETER != event.sensor.getType()) {
+                return;
+            }
+            float[] values = event.values;
+            mPhoneAngle = AngleUtil.getSensorAngle(values[0], values[1]);
+            rotationAnimation();
+        }
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
+    /**
+     * 切换摄像头icon跟随手机角度进行旋转
+     */
+    private void rotationAnimation() {
+        if (mImgSwitch == null) {
+            return;
+        }
+        // 如果
+        if (mImageViewRotation != mPhoneAngle){
+            // 确认从哪个角度旋转到哪个角度
+            int startRotaion = 0;
+            int endRotaion = 0;
+            switch (mImageViewRotation){
+                case 0:
+                    startRotaion = 0;
+                    switch (mPhoneAngle){
+                        case 90:
+                            endRotaion = -90;
+                            break;
+                        case 270:
+                            endRotaion = 90;
+                            break;
+                    }
+                    break;
+                case 90:
+                    startRotaion = -90;
+                    switch (mPhoneAngle){
+                        case 0 :
+                            endRotaion = 0;
+                            break;
+                        case 180:
+                            endRotaion = -180;
+                            break;
+                    }
+                    break;
+                case 180:
+                    startRotaion = 180;
+                    switch (mPhoneAngle){
+                        case 90:
+                            endRotaion = 270;
+                            break;
+                        case 270:
+                            endRotaion = 90;
+                            break;
+                    }
+                    break;
+                case 270:
+                    startRotaion = 90;
+                    switch (mPhoneAngle){
+                        case 0:
+                            endRotaion = 0;
+                            break;
+                        case 180:
+                            endRotaion = 180;
+                            break;
+                    }
+                    break;
+            }
+            // 一起旋转
+            ObjectAnimator animSwitch = ObjectAnimator.ofFloat(mImgSwitch, "rotation", startRotaion, endRotaion);
+            ObjectAnimator animFlash = ObjectAnimator.ofFloat(mImgFlash, "rotation", startRotaion, endRotaion);
+            AnimatorSet set = new AnimatorSet();
+            set.playTogether(animSwitch, animFlash);
+            set.setDuration(500);
+            set.start();
+            mImageViewRotation = mPhoneAngle;
         }
     }
 
+    private static Rect calculateTapArea(float x, float y, float coefficient, Context context) {
+        float focusAreaSize = 300;
+        int areaSize = Float.valueOf(focusAreaSize * coefficient).intValue();
+        int centerX = (int) (x / DisplayMetricsSPUtils.getScreenWidth(context) * 2000 - 1000);
+        int centerY = (int) (y / DisplayMetricsSPUtils.getScreenHeight(context) * 2000 - 1000);
+        int left = clamp(centerX - areaSize / 2, -1000, 1000);
+        int top = clamp(centerY - areaSize / 2, -1000, 1000);
+        RectF rectF = new RectF(left, top, left + areaSize, top + areaSize);
+        return new Rect(Math.round(rectF.left), Math.round(rectF.top), Math.round(rectF.right), Math.round(rectF
+                .bottom));
+    }
+
+    private static int clamp(int x, int min, int max) {
+        if (x > max) {
+            return max;
+        }
+        if (x < min) {
+            return min;
+        }
+        return x;
+    }
 
     // region 对外开放的API
 
     /**
-     * 摄像头启动浏览
+     * 摄像头启动录像
      *
      * @param surfaceHolder 显示一个surface的抽象接口，使你能够控制surface的大小和格式， 以及在surface上编辑像素，和监视surace的改变。
      * @param screenProp    当前手机屏幕高宽比例
@@ -208,8 +312,8 @@ public class CameraOperation implements Camera.PreviewCallback {
             }
             mCamera.setDisplayOrientation(mCameraAngle);//浏览角度
             mCamera.setPreviewCallback(this); //每一帧回调
-            mCamera.startPreview();//启动浏览
-            mIsPreviewing = true; // 目前浏览状态中
+            mCamera.startPreview();//启动录像
+            mIsPreviewing = true; // 目前录像状态中
             Log.i(TAG, "=== Start Preview ===");
         }
 
@@ -276,8 +380,6 @@ public class CameraOperation implements Camera.PreviewCallback {
                 }
             }
         });
-
-
     }
 
     /**
@@ -462,6 +564,31 @@ public class CameraOperation implements Camera.PreviewCallback {
     }
 
     /**
+     * 销毁Camera
+     */
+    public void doDestroyCamera() {
+        mErrorLisenter = null;
+        if (null != mCamera) {
+            mCamera.setPreviewCallback(null);
+            mImgSwitch = null;
+            mImgFlash = null;
+            mCamera.stopPreview();
+            //这句要在stopPreview后执行，不然会卡顿或者花屏
+            try {
+                mCamera.setPreviewDisplay(null);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i(TAG, "=== Camera  Null===");
+            }
+            mSurfaceHolder = null;
+            mIsPreviewing = false;
+            mCamera.release();
+            mCamera = null;
+            Log.i(TAG, "=== Destroy Camera ===");
+        }
+    }
+
+    /**
      * 缩放
      * @param zoom 缩放数值
      * @param type 拍照或者录制模式
@@ -526,7 +653,7 @@ public class CameraOperation implements Camera.PreviewCallback {
      * @param imgSwitch 摄像切换控件
      * @param imgFlash  闪光灯控件
      */
-    public void setSwitchAndFlash(ImageView imgSwitch, ImageView imgFlash) {
+    public void setImageViewSwitchAndFlash(ImageView imgSwitch, ImageView imgFlash) {
         this.mImgSwitch = imgSwitch;
         this.mImgFlash = imgFlash;
         if (mImgSwitch != null) {
@@ -560,6 +687,102 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     }
 
+    /**
+     * 注册方向传感器
+     * @param context 上下文
+     */
+    public void registerSensorManager(Context context) {
+        if (mSensorManager == null) {
+            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        }
+        assert mSensorManager != null;
+        mSensorManager.registerListener(sensorEventListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager
+                .SENSOR_DELAY_NORMAL);
+    }
+
+    /**
+     * 注销方向传感器
+     * @param context 上下文
+     */
+    public void unregisterSensorManager(Context context) {
+        if (mSensorManager == null) {
+            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        }
+        assert mSensorManager != null;
+        mSensorManager.unregisterListener(sensorEventListener);
+    }
+
+    /**
+     * 设置录像状态
+     * @param b 是否录像
+     */
+    public void isPreview(boolean b) {
+        this.mIsPreviewing = b;
+    }
+
+    /**
+     * 处理焦点，焦点所处变得清晰
+     * @param context 上下文
+     * @param x x坐标
+     * @param y y坐标
+     * @param callback 焦点回调
+     */
+    public void handleFocus(final Context context,final float x,final float y,final CameraCallback.FocusCallback callback) {
+        if (mCamera == null) {
+            return;
+        }
+        final Camera.Parameters params = mCamera.getParameters();
+        Rect focusRect = calculateTapArea(x, y, 1f, context);
+        mCamera.cancelAutoFocus();
+        if (params.getMaxNumFocusAreas() > 0){
+            List<Camera.Area> focusAreas = new ArrayList<>();
+            focusAreas.add(new Camera.Area(focusRect, 800));
+            params.setFocusAreas(focusAreas);
+        } else {
+            Log.i(TAG, "focus areas not supported");
+            callback.focusSuccess();
+            return;
+        }
+        final String currentFocusMode = params.getFocusMode();
+        try {
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            mCamera.setParameters(params);
+            mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean success, Camera camera) {
+                    if (success || mHandlerFocusTime > 10) {
+                        Camera.Parameters params = camera.getParameters();
+                        params.setFocusMode(currentFocusMode);
+                        camera.setParameters(params);
+                        mHandlerFocusTime = 0;
+                        callback.focusSuccess();
+                    } else {
+                        mHandlerFocusTime++;
+                        handleFocus(context, x, y, callback);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "autoFocus failer");
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void setSaveVideoPath(String saveVideoPath) {
+        this.mSaveVideoPath = saveVideoPath;
+        File file = new File(saveVideoPath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+    }
+
+    /**
+     * 设置视频比特率
+     * @param mediaQualityMiddle 比特率
+     */
+    public void setMediaQuality(int mediaQualityMiddle) {
+        this.mMediaQuality = mediaQualityMiddle;
+    }
 
     // endregion
 

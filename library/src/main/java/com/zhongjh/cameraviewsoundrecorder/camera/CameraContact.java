@@ -1,8 +1,10 @@
 package com.zhongjh.cameraviewsoundrecorder.camera;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.widget.ImageView;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
@@ -27,7 +29,7 @@ public interface CameraContact {
          */
         void stop();
 
-        void foucs(float x, float y, CameraCallback.FocusCallback callback);
+        void handleFocus(float x, float y, CameraCallback.FocusCallback callback);
 
         /**
          * 切换摄像模式 前摄像，后摄像头
@@ -79,12 +81,59 @@ public interface CameraContact {
          * 销毁camera
          */
         void doDestroyCamera();
+
+        /**
+         * 注册方向传感器
+         * @param mContext 上下文
+         */
+        void registerSensorManager(Context mContext);
+
+        /**
+         * 注销方向传感器
+         * @param mContext 上下文
+         */
+        void unregisterSensorManager(Context mContext);
+
+        /**
+         * 设置摄像切换 和 闪关灯 控件
+         * @param imgSwitch 摄像切换控件
+         * @param imgFlash 闪关灯控件
+         */
+        void setImageViewSwitchAndFlash(ImageView imgSwitch, ImageView imgFlash);
+
+        /**
+         * 设置是否录制中
+         * @param b 是否
+         */
+        void isPreview(boolean b);
+
+        /**
+         * 设置视频保存路径
+         * @param saveVideoPath 路径文本
+         */
+        void setSaveVideoPath(String saveVideoPath);
+
+        /**
+         * 设置视频比特率
+         * @param mediaQualityMiddle 比特率
+         */
+        void setMediaQuality(int mediaQualityMiddle);
     }
 
     /**
      * View的接口
      */
     interface CameraView {
+
+        /**
+         * 生命周期onResume
+         */
+        void onResume();
+
+        /**
+         * 生命周期onPause
+         */
+        void onPause();
 
         /**
          * 重新设置状态
@@ -124,21 +173,16 @@ public interface CameraContact {
         /**
          * 设置提示
          *
-         * @param tip
+         * @param tip 提示文本
          */
         void setTip(String tip);
 
         /**
-         * 启动预览回调
-         */
-        void startPreviewCallback();
-
-        /**
-         * 看看干嘛的@
+         * 处理焦点，View界面显示绿色焦点框
          *
-         * @param x
-         * @param y
-         * @return
+         * @param x 坐标x
+         * @param y 坐标y
+         * @return 是否在点击范围内
          */
         boolean handlerFoucs(float x, float y);
 
@@ -166,6 +210,35 @@ public interface CameraContact {
          */
         SurfaceHolder getSurfaceHolder();
 
+        /**
+         * 设置视频保存路径
+         * @param saveVideoPath 路径文本
+         */
+        void setSaveVideoPath(String saveVideoPath);
+
+        /**
+         * 设置按钮支持的功能：
+         * @param buttonStateBoth
+         * {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
+         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
+         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_BOTH 两者皆可
+         * }
+         */
+        void setFeatures(int buttonStateBoth);
+
+        /**
+         * 录制视频比特率
+         * @param mediaQualityMiddle 比特率
+         * {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_HIGH
+         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_MIDDLE
+         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_LOW
+         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_POOR
+         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_FUNNY
+         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_DESPAIR
+         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_SORRY
+         * }
+         */
+        void setMediaQuality(int mediaQualityMiddle);
     }
 
 }

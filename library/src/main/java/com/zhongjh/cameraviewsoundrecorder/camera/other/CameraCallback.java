@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 /**
  * 有关 Camera 的回调
- *  @@ CameraInterface
  */
 public interface CameraCallback {
 

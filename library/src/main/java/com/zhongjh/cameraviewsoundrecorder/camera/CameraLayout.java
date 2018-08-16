@@ -1,5 +1,7 @@
 package com.zhongjh.cameraviewsoundrecorder.camera;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -12,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -19,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.VideoView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
+import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.entity.CameraButton;
 import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
@@ -31,13 +35,16 @@ import com.zhongjh.cameraviewsoundrecorder.widget.PhotoVideoLayout;
 
 import java.io.IOException;
 
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_DEFAULT;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_SHORT;
 
 /**
  * 一个全局界面，包含了 右上角的闪光灯、前/后置摄像头的切换、底部按钮功能、对焦框等、显示当前拍照和摄像的界面
+ * 该类类似MVP的View，主要包含有关 除了Camera的其他所有ui操作
  * Created by zhongjh on 2018/7/23.
  */
-public class CameraLayout extends FrameLayout implements  SurfaceHolder
+public class CameraLayout extends FrameLayout implements SurfaceHolder
         .Callback, CameraContact.CameraView {
 
     private Context mContext;
@@ -226,7 +233,7 @@ public class CameraLayout extends FrameLayout implements  SurfaceHolder
         mViewHolder.pvLayout.setOperaeListener(new OperaeListener() {
             @Override
             public void cancel() {
-                mCameraPresenter.cancle(mViewHolder.vvPreview.getHolder(),mScreenProp);
+                mCameraPresenter.cancle(mViewHolder.vvPreview.getHolder(), mScreenProp);
             }
 
             @Override
@@ -255,13 +262,32 @@ public class CameraLayout extends FrameLayout implements  SurfaceHolder
 
     }
 
+    @Override
+    public void onResume() {
+        LogUtil.i("CameraLayout onResume");
+        resetState(TYPE_DEFAULT); //重置状态
+        mCameraPresenter.registerSensorManager(mContext);
+        mCameraPresenter.setImageViewSwitchAndFlash(mViewHolder.imgSwitch, mViewHolder.imgFlash);
+        mCameraPresenter.start(mViewHolder.vvPreview.getHolder(), mScreenProp);
+    }
+
+    @Override
+    public void onPause() {
+        LogUtil.i("CameraLayout onPause");
+        stopVideo(); // 停止播放
+        resetState(TYPE_PICTURE); // @@ 为什么重置为图片模式
+        mCameraPresenter.isPreview(false); // 设置为不是录像状态
+        mCameraPresenter.unregisterSensorManager(mContext);
+    }
+
     /**
      * SurfaceView生命周期
      * 当Surface第一次创建后会立即调用该函数
-     * @param holder holder
+     *
+     * @param surfaceHolder holder
      */
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
         LogUtil.i("JCameraView SurfaceCreated");
         new Thread() {
             @Override
@@ -276,9 +302,27 @@ public class CameraLayout extends FrameLayout implements  SurfaceHolder
         // 无任何事件
     }
 
+    /**
+     * SurfaceView生命周期
+     * 当Surface销毁后调用该函数
+     *
+     * @param surfaceHolder surfaceHolder
+     */
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         mCameraPresenter.doDestroyCamera();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (event.getPointerCount() == 1) {
+                    setFocusViewWidthAnimation(event.getX(), event.getY());
+                }
+                break;
+        }
+        return true;
     }
 
     @Override
@@ -291,19 +335,20 @@ public class CameraLayout extends FrameLayout implements  SurfaceHolder
 //                mVideoView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 //                mMachine.start(mVideoView.getHolder(), screenProp);
 //                break;
-//            case TYPE_PICTURE:
-//                mPhoto.setVisibility(INVISIBLE);
-//                break;
+            case TYPE_PICTURE:
+                // 隐藏图片
+                mViewHolder.imgPhoto.setVisibility(INVISIBLE);
+                break;
             case TYPE_SHORT:
                 // 短视屏不处理任何事情
                 break;
-//            case TYPE_DEFAULT:
-//                mVideoView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-//                break;
+            case TYPE_DEFAULT:
+                mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                break;
         }
-//        mSwitchCamera.setVisibility(VISIBLE);
-//        mFlashLamp.setVisibility(VISIBLE);
-//        mCaptureLayout.resetCaptureLayout();
+        mViewHolder.imgSwitch.setVisibility(VISIBLE);
+        mViewHolder.imgFlash.setVisibility(VISIBLE);
+        mViewHolder.pvLayout.reset();
     }
 
     @Override
@@ -368,22 +413,43 @@ public class CameraLayout extends FrameLayout implements  SurfaceHolder
 
     @Override
     public void stopVideo() {
-
+        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
     }
 
     @Override
     public void setTip(String tip) {
-
-    }
-
-    @Override
-    public void startPreviewCallback() {
-
+        mViewHolder.pvLayout.setTip(tip);
     }
 
     @Override
     public boolean handlerFoucs(float x, float y) {
-        return false;
+        if (y > mViewHolder.pvLayout.getTop()) {
+            return false;
+        }
+        // 显示焦点框
+        mViewHolder.fouce_view.setVisibility(VISIBLE);
+        if (x < mViewHolder.fouce_view.getWidth() / 2)
+            x = mViewHolder.fouce_view.getWidth() / 2;
+        if (x > mLayoutWidth - mViewHolder.fouce_view.getWidth() / 2)
+            x = mLayoutWidth - mViewHolder.fouce_view.getWidth() / 2;
+        if (y < mViewHolder.fouce_view.getWidth() / 2)
+            y = mViewHolder.fouce_view.getWidth() / 2;
+        if (y > mViewHolder.pvLayout.getTop() - mViewHolder.fouce_view.getWidth() / 2)
+            y = mViewHolder.pvLayout.getTop() - mViewHolder.fouce_view.getWidth() / 2;
+        mViewHolder.fouce_view.setX(x - mViewHolder.fouce_view.getWidth() / 2);
+        mViewHolder.fouce_view.setY(y - mViewHolder.fouce_view.getHeight() / 2);
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(mViewHolder.fouce_view, "scaleX", 1, 0.6f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(mViewHolder.fouce_view, "scaleY", 1, 0.6f);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(mViewHolder.fouce_view, "alpha", 1f, 0.4f, 1f, 0.4f, 1f, 0.4f, 1f);
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.play(scaleX).with(scaleY).before(alpha);
+        animSet.setDuration(400);
+        animSet.start();
+        return true;
     }
 
     @Override
@@ -404,6 +470,38 @@ public class CameraLayout extends FrameLayout implements  SurfaceHolder
     @Override
     public SurfaceHolder getSurfaceHolder() {
         return mViewHolder.vvPreview.getHolder();
+    }
+
+    @Override
+    public void setSaveVideoPath(String saveVideoPath) {
+        mCameraPresenter.setSaveVideoPath(saveVideoPath);
+    }
+
+    @Override
+    public void setFeatures(int buttonStateBoth) {
+        mViewHolder.pvLayout.setButtonFeatures(buttonStateBoth);
+    }
+
+    @Override
+    public void setMediaQuality(int mediaQualityMiddle) {
+        mCameraPresenter.setMediaQuality(mediaQualityMiddle);
+    }
+
+    /**
+     * 对焦框指示器动画
+     *
+     * @param x 坐标x
+     * @param y 坐标y
+     */
+    private void setFocusViewWidthAnimation(float x, float y) {
+        if (handlerFoucs(x, y)) {
+            mCameraPresenter.handleFocus(x, y, new CameraCallback.FocusCallback() {
+                @Override
+                public void focusSuccess() {
+                    mViewHolder.fouce_view.setVisibility(INVISIBLE);
+                }
+            });
+        }
     }
 
     /**

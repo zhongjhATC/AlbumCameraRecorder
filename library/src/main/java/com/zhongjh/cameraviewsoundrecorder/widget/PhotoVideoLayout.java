@@ -299,6 +299,14 @@ public class PhotoVideoLayout extends FrameLayout {
     // region 对外提供的api
 
     /**
+     * 设置提示文本
+     * @param tip 提示文本
+     */
+    public void setTip(String tip) {
+        mTvTip.setText(tip);
+    }
+
+    /**
      * 提示文本框 - 浮现渐现动画
      */
     public void startTipAlphaAnimation() {
@@ -355,6 +363,36 @@ public class PhotoVideoLayout extends FrameLayout {
         } else {
             this.mImgCustomRight.setVisibility(GONE);
         }
+    }
+
+    /**
+     * 重置本身
+     */
+    public void reset() {
+        mBtnPhotoVideo.resetState();
+        // 隐藏第二层的view
+        mBtnCancel.setVisibility(View.GONE);
+        mBtnConfirm.setVisibility(View.GONE);
+        // 显示第一层的view
+        mBtnPhotoVideo.setVisibility(View.VISIBLE);
+        if (this.mIconLeft != 0)
+            mImgCustomLeft.setVisibility(View.VISIBLE);
+        else
+            mBtnReturn.setVisibility(View.VISIBLE);
+        if (this.mIconRight != 0)
+            mImgCustomRight.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 设置按钮支持的功能：
+     * @param buttonStateBoth
+     * {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
+     * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
+     * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_BOTH 两者皆可
+     * }
+     */
+    public void setButtonFeatures(int buttonStateBoth) {
+        mBtnPhotoVideo.setButtonFeatures(buttonStateBoth);
     }
 
     // endregion

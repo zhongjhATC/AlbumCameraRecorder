@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.widget.ImageView;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraOperation;
@@ -31,7 +32,7 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void start(SurfaceHolder holder, float screenProp) {
-
+        mCameraOperation.doStartPreview(holder, screenProp);
     }
 
     @Override
@@ -40,8 +41,8 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     }
 
     @Override
-    public void foucs(float x, float y, CameraCallback.FocusCallback callback) {
-
+    public void handleFocus(float x, float y, CameraCallback.FocusCallback callback) {
+        mCameraOperation.handleFocus(mContext, x, y, callback);
     }
 
     @Override
@@ -102,7 +103,7 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void zoom(float zoom, int type) {
-        mCameraOperation.zoom(zoom,type);
+        mCameraOperation.zoom(zoom, type);
     }
 
     @Override
@@ -128,6 +129,36 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     @Override
     public void doDestroyCamera() {
         mCameraOperation.doDestroyCamera();
+    }
+
+    @Override
+    public void registerSensorManager(Context mContext) {
+        mCameraOperation.registerSensorManager(mContext);
+    }
+
+    @Override
+    public void unregisterSensorManager(Context mContext) {
+        mCameraOperation.unregisterSensorManager(mContext);
+    }
+
+    @Override
+    public void setImageViewSwitchAndFlash(ImageView imgSwitch, ImageView imgFlash) {
+        mCameraOperation.setImageViewSwitchAndFlash(imgSwitch, imgFlash);
+    }
+
+    @Override
+    public void isPreview(boolean b) {
+        mCameraOperation.isPreview(b);
+    }
+
+    @Override
+    public void setSaveVideoPath(String saveVideoPath) {
+        mCameraOperation.setSaveVideoPath(saveVideoPath);
+    }
+
+    @Override
+    public void setMediaQuality(int mediaQualityMiddle) {
+        mCameraOperation.setMediaQuality(mediaQualityMiddle);
     }
 
 }

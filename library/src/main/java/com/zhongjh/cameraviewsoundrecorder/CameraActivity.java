@@ -1,19 +1,30 @@
 package com.zhongjh.cameraviewsoundrecorder;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraLayout;
+import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.util.DeviceUtil;
+
+import java.io.File;
+
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_BOTH;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.MEDIA_QUALITY_MIDDLE;
 
 /**
  * 显示捕获镜头的界面
  */
 public class CameraActivity extends AppCompatActivity {
-    private CameraLayout jCameraLayout;
+    private CameraLayout cameraLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,29 +32,30 @@ public class CameraActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_camera);
-        jCameraLayout = findViewById(R.id.jcameraview);
-//        //设置视频保存路径
-//        jCameraView.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "JCamera");
-//        jCameraView.setFeatures(JCameraView.BUTTON_STATE_BOTH);
-//        jCameraView.setTip("JCameraView Tip");
-//        jCameraView.setMediaQuality(JCameraView.MEDIA_QUALITY_MIDDLE);
-//        jCameraView.setErrorLisenter(new ErrorListener() {
-//            @Override
-//            public void onError() {
-//                //错误监听
-//                Log.i("CJT", "camera error");
-//                Intent intent = new Intent();
-//                setResult(103, intent);
-//                finish();
-//            }
-//
-//            @Override
-//            public void AudioPermissionError() {
-//                Toast.makeText(CameraActivity.this, "给点录音权限可以?", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        //JCameraView监听
-//        jCameraView.setJCameraLisenter(new JCameraListener() {
+        cameraLayout = findViewById(R.id.cameraLayout);
+
+        // 定制参数
+        cameraLayout.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "ZhongjhCamera"); // 设置视频保存路径
+        cameraLayout.setFeatures(BUTTON_STATE_BOTH);
+        cameraLayout.setTip("JCameraView Tip");
+        cameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率
+        cameraLayout.setErrorLisenter(new ErrorListener() {
+            @Override
+            public void onError() {
+                //错误监听
+                Log.i("CameraActivity", "camera error");
+                Intent intent = new Intent();
+                setResult(103, intent);
+                finish();
+            }
+
+            @Override
+            public void AudioPermissionError() {
+                Toast.makeText(CameraActivity.this, "没有权限", Toast.LENGTH_SHORT).show();
+            }
+        });
+//        // 监听
+//        cameraLayout.setJCameraLisenter(new JCameraListener() {
 //            @Override
 //            public void captureSuccess(Bitmap bitmap) {
 //                //获取图片bitmap
@@ -66,7 +78,7 @@ public class CameraActivity extends AppCompatActivity {
 //                finish();
 //            }
 //        });
-//
+
 //        jCameraView.setLeftClickListener(new ClickListener() {
 //            @Override
 //            public void onClick() {
@@ -79,8 +91,8 @@ public class CameraActivity extends AppCompatActivity {
 //                Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show();
 //            }
 //        });
-//
-//        Log.i("CJT", DeviceUtil.getDeviceModel());
+
+        Log.i("CJT", DeviceUtil.getDeviceModel());
     }
 
     @Override
@@ -106,12 +118,12 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        jCameraView.onResume();
+        cameraLayout.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        jCameraView.onPause();
+        cameraLayout.onPause();
     }
 }

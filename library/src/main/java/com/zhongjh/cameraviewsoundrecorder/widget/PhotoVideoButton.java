@@ -16,6 +16,7 @@ import com.zhongjh.cameraviewsoundrecorder.listener.PhotoVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
 
 import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_BOTH;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_ONLY_CAPTURE;
 import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_ONLY_RECORDER;
 
 
@@ -147,11 +148,22 @@ public class PhotoVideoButton extends View {
                     postDelayed(mLongPressRunnable, 500);    //同时延长500启动长按后处理的逻辑Runnable
                 break;
             case MotionEvent.ACTION_MOVE:
-
+                if (mPhotoVideoListener != null
+                        && mState == STATE_RECORDERING
+                        && (mButtonState == BUTTON_STATE_ONLY_RECORDER || mButtonState == BUTTON_STATE_BOTH)) {
+                    // 记录当前Y值与按下时候Y值的差值，调用缩放回调接口
+                    mPhotoVideoListener.recordZoom(event_Y - event.getY());
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                // 根据当前按钮的状态进行相应的处理
+                handlerUnpressByState();
                 break;
         }
         return true;
     }
+
+
 
     /**
      * 长按线程
@@ -221,6 +233,31 @@ public class PhotoVideoButton extends View {
     }
 
     /**
+     * 当手指松开按钮时候处理的逻辑
+     */
+    private void handlerUnpressByState() {
+        removeCallbacks(mLongPressRunnable); //移除长按逻辑的Runnable
+        //根据当前状态处理
+        switch (mState) {
+            //当前是点击按下
+            case STATE_PRESS:
+                if (mPhotoVideoListener != null && (mButtonState == BUTTON_STATE_ONLY_CAPTURE || mButtonState ==
+                        BUTTON_STATE_BOTH)) {
+                    // 拍照
+                    startCaptureAnimation(mButtonInsideRadius);
+                } else {
+                    mState = STATE_IDLE;
+                }
+                break;
+            //当前是长按状态
+            case STATE_RECORDERING:
+                mTimer.cancel(); //停止计时器
+                recordEnd();    //录制结束
+                break;
+        }
+    }
+
+    /**
      * 录制结束
      */
     private void recordEnd() {
@@ -247,6 +284,32 @@ public class PhotoVideoButton extends View {
                 mButtonInsideRadius,
                 mButtonRadius * 0.75f
         );
+    }
+
+    /**
+     * 内圆动画
+     * @param inside_start 内圆半径
+     */
+    private void startCaptureAnimation(float inside_start) {
+        ValueAnimator inside_anim = ValueAnimator.ofFloat(inside_start, inside_start * 0.75f, inside_start);
+        inside_anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mButtonInsideRadius = (float) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+        inside_anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                // 回调拍照接口
+                mPhotoVideoListener.takePictures();
+                mState = STATE_BAN;
+            }
+        });
+        inside_anim.setDuration(100);
+        inside_anim.start();
     }
 
     /**
@@ -292,6 +355,9 @@ public class PhotoVideoButton extends View {
                 }
             }
         });
+        set.playTogether(outsideAnim, insideAnim);
+        set.setDuration(100);
+        set.start();
     }
 
 
@@ -313,6 +379,26 @@ public class PhotoVideoButton extends View {
     public void setRecordingListener(PhotoVideoListener photoVideoListener) {
         this.mPhotoVideoListener = photoVideoListener;
     }
+
+    /**
+     * 设置按钮功能（拍照和录像）
+     * @param buttonStateBoth
+     * {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
+     * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
+     * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_BOTH 两者皆可
+     * }
+     */
+    public void setButtonFeatures(int buttonStateBoth) {
+        this.mButtonState = buttonStateBoth;
+    }
+
+    /**
+     * 重置状态
+     */
+    public void resetState() {
+        mState = STATE_IDLE;
+    }
+
 
     // endregion
 
