@@ -13,7 +13,9 @@ import com.zhongjh.cameraviewsoundrecorder.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
 
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_SHORT;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_VIDEO;
 
 /**
  * Created by zhongjh on 2018/8/7.
@@ -93,12 +95,29 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void cancle(SurfaceHolder holder, float screenProp) {
-
+        // 根据不同状态处理相应的事件
+        if (mCameraView.getState() == Constants.STATE_PICTURE){
+            // 图片模式的取消
+            mCameraOperation.doStartPreview(holder, screenProp); // 重新启动录像
+            mCameraView.resetState(TYPE_PICTURE);   // 针对图片模式进行的重置
+            mCameraView.setState(Constants.STATE_PREVIEW); // 设置空闲状态
+        }else if(mCameraView.getState() == Constants.STATE_VIDEO){
+            mCameraView.resetState(TYPE_VIDEO);     // 针对视频模式进行的重置
+            mCameraView.setState(Constants.STATE_PREVIEW); // 设置空闲状态
+        }
     }
 
     @Override
     public void confirm() {
-
+        // 根据不同状态处理相应的事件
+        if (mCameraView.getState() == Constants.STATE_PICTURE){
+            // 图片模式的提交
+            mCameraView.confirmState(TYPE_PICTURE);
+            mCameraView.setState(Constants.STATE_PREVIEW); // 设置空闲状态
+        }else if(mCameraView.getState() == Constants.STATE_VIDEO){
+            mCameraView.confirmState(TYPE_VIDEO);
+            mCameraView.setState(Constants.STATE_PREVIEW); // 设置空闲状态
+        }
     }
 
     @Override
@@ -159,6 +178,16 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     @Override
     public void setMediaQuality(int mediaQualityMiddle) {
         mCameraOperation.setMediaQuality(mediaQualityMiddle);
+    }
+
+    @Override
+    public void isMultiPicture(boolean b) {
+        mCameraOperation.isMultiPicture(b);
+    }
+
+    @Override
+    public void setPictureMaxNumber(int i) {
+        mCameraOperation.setPictureMaxNumber(i);
     }
 
 }

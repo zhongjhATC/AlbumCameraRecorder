@@ -54,8 +54,16 @@ public interface CameraContact {
 
         void stopRecord(boolean isShort, long time);
 
+        /**
+         * 取消
+         * @param holder 用来画图的地方
+         * @param screenProp 高/宽 比例
+         */
         void cancle(SurfaceHolder holder, float screenProp);
 
+        /**
+         * 提交
+         */
         void confirm();
 
         void zoom(float zoom, int type);
@@ -118,6 +126,18 @@ public interface CameraContact {
          * @param mediaQualityMiddle 比特率
          */
         void setMediaQuality(int mediaQualityMiddle);
+
+        /**
+         * 设置是否一次性拍摄多张图片
+         * @param b 是否
+         */
+        void isMultiPicture(boolean b);
+
+        /**
+         * 如果 {@link com.zhongjh.cameraviewsoundrecorder.camera.CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
+         * @param i 允许最多多少张图片
+         */
+        void setPictureMaxNumber(int i);
     }
 
     /**
@@ -136,7 +156,7 @@ public interface CameraContact {
         void onPause();
 
         /**
-         * 重新设置状态
+         * 针对当前状态重新设置状态
          *
          * @param type
          */
@@ -239,6 +259,18 @@ public interface CameraContact {
          * }
          */
         void setMediaQuality(int mediaQualityMiddle);
+
+        /**
+         * 设置是否一次性拍摄多张图片
+         * @param b 是否
+         */
+        void isMultiPicture(boolean b);
+
+        /**
+         * 如果 {@link com.zhongjh.cameraviewsoundrecorder.camera.CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
+         * @param i 允许最多多少张图片
+         */
+        void setPictureMaxNumber(int i);
     }
 
 }

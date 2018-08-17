@@ -25,10 +25,12 @@ import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.entity.CameraButton;
+import com.zhongjh.cameraviewsoundrecorder.listener.CameraSuccessListener;
 import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.listener.PhotoVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.util.DisplayMetricsSPUtils;
+import com.zhongjh.cameraviewsoundrecorder.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.widget.FoucsView;
 import com.zhongjh.cameraviewsoundrecorder.widget.PhotoVideoLayout;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_DEFAULT;
 import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_SHORT;
+import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_VIDEO;
 
 /**
  * 一个全局界面，包含了 右上角的闪光灯、前/后置摄像头的切换、底部按钮功能、对焦框等、显示当前拍照和摄像的界面
@@ -74,6 +77,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private ErrorListener mErrorLisenter;
     private View.OnClickListener mLeftClickListener;
     private View.OnClickListener mRightClickListener;
+    private CameraSuccessListener mCameraSuccessListener;
 
     // 赋值Camera错误回调
     public void setErrorLisenter(ErrorListener errorLisenter) {
@@ -88,6 +92,11 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public void setRightClickListener(View.OnClickListener clickListener) {
         this.mRightClickListener = clickListener;
     }
+
+    public void setCameraSuccessListener(CameraSuccessListener cameraSuccessListener) {
+        this.mCameraSuccessListener = cameraSuccessListener;
+    }
+
     // endregion
 
     public CameraLayout(@NonNull Context context) {
@@ -328,13 +337,12 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     @Override
     public void resetState(int type) {
         switch (type) {
-//            case TYPE_VIDEO:
-//                stopVideo();    //停止播放
-//                //初始化VideoView
-//                FileUtil.deleteFile(mVideoUrl);
-//                mVideoView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-//                mMachine.start(mVideoView.getHolder(), screenProp);
-//                break;
+            case TYPE_VIDEO:
+                stopVideo();    //停止播放
+                FileUtil.deleteFile(mVideoUrl); // 删除文件
+                mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));     //初始化VideoView
+                mCameraPresenter.start(mViewHolder.vvPreview.getHolder(), mScreenProp);
+                break;
             case TYPE_PICTURE:
                 // 隐藏图片
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
@@ -353,7 +361,27 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     @Override
     public void confirmState(int type) {
-
+        switch (type) {
+            case TYPE_VIDEO:
+                stopVideo();    //停止播放
+                mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                mCameraPresenter.start(mViewHolder.vvPreview.getHolder(), mScreenProp);
+                if (mCameraSuccessListener != null) {
+                    mCameraSuccessListener.recordSuccess(mVideoUrl, mFirstFrame);
+                }
+                break;
+            case TYPE_PICTURE:
+                mViewHolder.imgPhoto.setVisibility(INVISIBLE);
+                if (mCameraSuccessListener != null) {
+                    mCameraSuccessListener.captureSuccess(mCaptureBitmap);
+                }
+                break;
+            case TYPE_SHORT:
+                break;
+            case TYPE_DEFAULT:
+                break;
+        }
+        mViewHolder.pvLayout.reset();
     }
 
     @Override
@@ -400,6 +428,13 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                         onVideoSizeChanged(MediaPlayer mp, int width, int height) {
                             updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
                                     .getVideoHeight());
+                        }
+                    });
+                    mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            // 播放视频
+                            mMediaPlayer.start();
                         }
                     });
                     mMediaPlayer.setLooping(true); // 循环播放
@@ -485,6 +520,16 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     @Override
     public void setMediaQuality(int mediaQualityMiddle) {
         mCameraPresenter.setMediaQuality(mediaQualityMiddle);
+    }
+
+    @Override
+    public void isMultiPicture(boolean b){
+        mCameraPresenter.isMultiPicture(b);
+    }
+
+    @Override
+    public void setPictureMaxNumber(int i) {
+        mCameraPresenter.setPictureMaxNumber(i);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.zhongjh.cameraviewsoundrecorder;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,8 +13,10 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraLayout;
+import com.zhongjh.cameraviewsoundrecorder.listener.CameraSuccessListener;
 import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.util.DeviceUtil;
+import com.zhongjh.cameraviewsoundrecorder.util.FileUtil;
 
 import java.io.File;
 
@@ -35,9 +38,11 @@ public class CameraActivity extends AppCompatActivity {
         cameraLayout = findViewById(R.id.cameraLayout);
 
         // 定制参数
+        cameraLayout.isMultiPicture(true);// 拍照是否允许拍多几张，只拍一张
+        cameraLayout.setPictureMaxNumber(6);// 拍照是否允许拍多几张，只拍一张
         cameraLayout.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "ZhongjhCamera"); // 设置视频保存路径
         cameraLayout.setFeatures(BUTTON_STATE_BOTH);
-        cameraLayout.setTip("JCameraView Tip");
+        cameraLayout.setTip("轻触拍照，长按摄像");
         cameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率
         cameraLayout.setErrorLisenter(new ErrorListener() {
             @Override
@@ -54,43 +59,43 @@ public class CameraActivity extends AppCompatActivity {
                 Toast.makeText(CameraActivity.this, "没有权限", Toast.LENGTH_SHORT).show();
             }
         });
-//        // 监听
-//        cameraLayout.setJCameraLisenter(new JCameraListener() {
-//            @Override
-//            public void captureSuccess(Bitmap bitmap) {
-//                //获取图片bitmap
-////                Log.i("JCameraView", "bitmap = " + bitmap.getWidth());
-//                String path = FileUtil.saveBitmap("JCamera", bitmap);
-//                Intent intent = new Intent();
-//                intent.putExtra("path", path);
-//                setResult(101, intent);
-//                finish();
-//            }
-//
-//            @Override
-//            public void recordSuccess(String url, Bitmap firstFrame) {
-//                //获取视频路径
-//                String path = FileUtil.saveBitmap("JCamera", firstFrame);
-//                Log.i("CJT", "url = " + url + ", Bitmap = " + path);
-//                Intent intent = new Intent();
-//                intent.putExtra("path", path);
-//                setResult(101, intent);
-//                finish();
-//            }
-//        });
+        // 监听
+        cameraLayout.setCameraSuccessListener(new CameraSuccessListener() {
+            @Override
+            public void captureSuccess(Bitmap bitmap) {
+                //获取图片bitmap
+//                Log.i("JCameraView", "bitmap = " + bitmap.getWidth());
+                String path = FileUtil.saveBitmap("JCamera", bitmap);
+                Intent intent = new Intent();
+                intent.putExtra("path", path);
+                setResult(101, intent);
+                finish();
+            }
 
-//        jCameraView.setLeftClickListener(new ClickListener() {
-//            @Override
-//            public void onClick() {
-//                CameraActivity.this.finish();
-//            }
-//        });
-//        jCameraView.setmRightClickListener(new ClickListener() {
-//            @Override
-//            public void onClick() {
-//                Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show();
-//            }
-//        });
+            @Override
+            public void recordSuccess(String url, Bitmap firstFrame) {
+                //获取视频路径
+                String path = FileUtil.saveBitmap("JCamera", firstFrame);
+                Log.i("CJT", "url = " + url + ", Bitmap = " + path);
+                Intent intent = new Intent();
+                intent.putExtra("path", path);
+                setResult(101, intent);
+                finish();
+            }
+        });
+
+        cameraLayout.setLeftClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CameraActivity.this.finish();
+            }
+        });
+        cameraLayout.setRightClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Log.i("CJT", DeviceUtil.getDeviceModel());
     }

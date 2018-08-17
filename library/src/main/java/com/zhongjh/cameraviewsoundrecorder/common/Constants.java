@@ -9,9 +9,9 @@ public class Constants {
     public static final String ScreenWidth = "ScreenWidth";                 //屏幕宽度
     public static final String ScreenHeight = "ScreenHeight";               //屏幕高度
 
-    public static final int STATE_PREVIEW = 0x01;      // 休闲状态
-    public static final int STATE_PICTURE = 0x02;      // 图片状态
-    public static final int STATE_VIDEO = 0x03;        // 视频状态
+    public static final int STATE_PREVIEW = 0x01;      // 休闲状态 - 除了下面两个状态
+    public static final int STATE_PICTURE = 0x02;      // 图片状态 - 拍照后，就修改成这个状态
+    public static final int STATE_VIDEO = 0x03;        // 视频状态 - 录制视频后，播放当前视频，就修改成这个状态
 
     public static final int TYPE_RECORDER = 0x090; // 录像模式
     public static final int TYPE_CAPTURE = 0x091;  // 拍照模式

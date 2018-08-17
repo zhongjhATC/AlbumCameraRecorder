@@ -58,9 +58,9 @@ public class CameraOperation implements Camera.PreviewCallback {
     private int mPreviewWidth; // 录像的宽度
     private int mPreviewHeight; // 录像的高度
 
-    private int mSelectedCamera;            // 当前摄像头是前置还是后置
-    private int CAMERA_POST_POSITION;       // 摄像头后置
-    private int CAMERA_FRONT_POSITION;      // 摄像头前置
+    private int mSelectedCamera = -1;           // 当前摄像头是前置还是后置
+    private int CAMERA_POST_POSITION;       // 摄像头后置,findAvailableCameras方法会赋值
+    private int CAMERA_FRONT_POSITION;     // 摄像头前置,findAvailableCameras方法会赋值
 
     private SurfaceHolder mSurfaceHolder = null; // 显示一个surface的抽象接口，使你能够控制surface的大小和格式， 以及在surface上编辑像素，和监视surace的改变。
     private float mScreenProp = -1.0f; // 当前手机屏幕高宽比例，后面让摄像预览界面等也跟这个一样
@@ -75,6 +75,8 @@ public class CameraOperation implements Camera.PreviewCallback {
     private int mNowScaleRate = 0;
     private int mRecordScleRate = 0;
 
+    private boolean mIsMultiPicture = false;// 是否一次性可以拍摄多张图片
+    private int PictureMaxNumber = 6; // 默认6张图片
     private int mMediaQuality = Constants.MEDIA_QUALITY_MIDDLE;  //视频质量
     private SensorManager mSensorManager = null;
 
@@ -92,9 +94,34 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     private int mHandlerFocusTime;// 处理焦点
 
+    public CameraOperation() {
+        findAvailableCameras();
+        mSelectedCamera = CAMERA_POST_POSITION; // 默认前摄像头
+        mSaveVideoPath = "";
+    }
+
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         mPreviewFrameData = data;
+    }
+
+    /**
+     * 获取前置和后置摄像头的值
+     */
+    private void findAvailableCameras() {
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        int cameraNum = Camera.getNumberOfCameras();
+        for (int i = 0; i < cameraNum; i++) {
+            Camera.getCameraInfo(i, info);
+            switch (info.facing) {
+                case Camera.CameraInfo.CAMERA_FACING_FRONT:
+                    CAMERA_FRONT_POSITION = info.facing;
+                    break;
+                case Camera.CameraInfo.CAMERA_FACING_BACK:
+                    CAMERA_POST_POSITION = info.facing;
+                    break;
+            }
+        }
     }
 
     /**
@@ -128,8 +155,8 @@ public class CameraOperation implements Camera.PreviewCallback {
     /**
      * 停止录像
      */
-    private void doStopPreview(){
-        if (null != mCamera){
+    private void doStopPreview() {
+        if (null != mCamera) {
             mCamera.setPreviewCallback(null);
             mCamera.stopPreview();
             try {
@@ -167,14 +194,14 @@ public class CameraOperation implements Camera.PreviewCallback {
             return;
         }
         // 如果
-        if (mImageViewRotation != mPhoneAngle){
+        if (mImageViewRotation != mPhoneAngle) {
             // 确认从哪个角度旋转到哪个角度
             int startRotaion = 0;
             int endRotaion = 0;
-            switch (mImageViewRotation){
+            switch (mImageViewRotation) {
                 case 0:
                     startRotaion = 0;
-                    switch (mPhoneAngle){
+                    switch (mPhoneAngle) {
                         case 90:
                             endRotaion = -90;
                             break;
@@ -185,8 +212,8 @@ public class CameraOperation implements Camera.PreviewCallback {
                     break;
                 case 90:
                     startRotaion = -90;
-                    switch (mPhoneAngle){
-                        case 0 :
+                    switch (mPhoneAngle) {
+                        case 0:
                             endRotaion = 0;
                             break;
                         case 180:
@@ -196,7 +223,7 @@ public class CameraOperation implements Camera.PreviewCallback {
                     break;
                 case 180:
                     startRotaion = 180;
-                    switch (mPhoneAngle){
+                    switch (mPhoneAngle) {
                         case 90:
                             endRotaion = 270;
                             break;
@@ -207,7 +234,7 @@ public class CameraOperation implements Camera.PreviewCallback {
                     break;
                 case 270:
                     startRotaion = 90;
-                    switch (mPhoneAngle){
+                    switch (mPhoneAngle) {
                         case 0:
                             endRotaion = 0;
                             break;
@@ -478,6 +505,8 @@ public class CameraOperation implements Camera.PreviewCallback {
                     mMediaRecorder.setOrientationHint(nowAngle);
                 }
             }
+        } else {
+            mMediaRecorder.setOrientationHint(nowAngle);
         }
 
         if (DeviceUtil.isHuaWeiRongyao()) {
@@ -518,15 +547,16 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     /**
      * 停止录像
-     * @param isShort 是否因为视频过短而停止
+     *
+     * @param isShort  是否因为视频过短而停止
      * @param callback 回调事件
      */
-    public void stopRecord(boolean isShort, CameraCallback.StopRecordCallback callback){
+    public void stopRecord(boolean isShort, CameraCallback.StopRecordCallback callback) {
         // 不是正在录像就返回
         if (!mIsRecorder)
             return;
 
-        if (mMediaRecorder != null){
+        if (mMediaRecorder != null) {
             // 开始进行重置
             mMediaRecorder.setOnErrorListener(null);
             mMediaRecorder.setOnInfoListener(null);
@@ -552,7 +582,7 @@ public class CameraOperation implements Camera.PreviewCallback {
                     // 回调
                     callback.recordResult(null, null);
                 }
-            }else{
+            } else {
                 // 停止预览并且回调
                 doStopPreview();
                 String fileName = mSaveVideoPath + File.separator + mVideoFileName;
@@ -590,6 +620,7 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     /**
      * 缩放
+     *
      * @param zoom 缩放数值
      * @param type 拍照或者录制模式
      */
@@ -671,6 +702,7 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     /**
      * 打开camera
+     *
      * @param cameraOpenOverCallback 回调事件
      */
     public void doOpenCamera(CameraCallback.CameraOpenOverCallback cameraOpenOverCallback) {
@@ -689,6 +721,7 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     /**
      * 注册方向传感器
+     *
      * @param context 上下文
      */
     public void registerSensorManager(Context context) {
@@ -702,6 +735,7 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     /**
      * 注销方向传感器
+     *
      * @param context 上下文
      */
     public void unregisterSensorManager(Context context) {
@@ -714,6 +748,7 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     /**
      * 设置录像状态
+     *
      * @param b 是否录像
      */
     public void isPreview(boolean b) {
@@ -722,19 +757,20 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     /**
      * 处理焦点，焦点所处变得清晰
-     * @param context 上下文
-     * @param x x坐标
-     * @param y y坐标
+     *
+     * @param context  上下文
+     * @param x        x坐标
+     * @param y        y坐标
      * @param callback 焦点回调
      */
-    public void handleFocus(final Context context,final float x,final float y,final CameraCallback.FocusCallback callback) {
+    public void handleFocus(final Context context, final float x, final float y, final CameraCallback.FocusCallback callback) {
         if (mCamera == null) {
             return;
         }
         final Camera.Parameters params = mCamera.getParameters();
         Rect focusRect = calculateTapArea(x, y, 1f, context);
         mCamera.cancelAutoFocus();
-        if (params.getMaxNumFocusAreas() > 0){
+        if (params.getMaxNumFocusAreas() > 0) {
             List<Camera.Area> focusAreas = new ArrayList<>();
             focusAreas.add(new Camera.Area(focusRect, 800));
             params.setFocusAreas(focusAreas);
@@ -778,10 +814,23 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     /**
      * 设置视频比特率
+     *
      * @param mediaQualityMiddle 比特率
      */
     public void setMediaQuality(int mediaQualityMiddle) {
         this.mMediaQuality = mediaQualityMiddle;
+    }
+
+    /**
+     * 设置是否一次性拍摄多张图片
+     * @param b 是否
+     */
+    public void isMultiPicture(boolean b) {
+        this.mIsMultiPicture = b;
+    }
+
+    public void setPictureMaxNumber(int i) {
+        this.PictureMaxNumber = i;
     }
 
     // endregion

@@ -65,6 +65,7 @@ public class OperaeButton extends View {
                 mPaint.setAntiAlias(true);
                 mPaint.setColor(0xFFFFFFFF);
                 mPaint.setStyle(Paint.Style.FILL);
+                // 画圆
                 canvas.drawCircle(mCenterX, mCenterY, mButtonRadius, mPaint);
                 mPaint.setAntiAlias(true);
                 mPaint.setStyle(Paint.Style.STROKE);
@@ -82,7 +83,8 @@ public class OperaeButton extends View {
                 mPaint.setAntiAlias(true);
                 mPaint.setColor(0xEEDCDCDC);
                 mPaint.setStyle(Paint.Style.FILL);
-                canvas.drawCircle(mCenterX, mCenterY, mButtonSize, mPaint);
+                // 画圆
+                canvas.drawCircle(mCenterX, mCenterY, mButtonRadius, mPaint);
 
                 mPaint.setColor(Color.BLACK);
                 mPaint.setStyle(Paint.Style.STROKE);
