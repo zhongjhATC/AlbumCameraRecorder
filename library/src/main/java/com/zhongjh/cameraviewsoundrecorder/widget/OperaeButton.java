@@ -1,12 +1,17 @@
 package com.zhongjh.cameraviewsoundrecorder.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 import android.view.View;
+
+import com.zhongjh.cameraviewsoundrecorder.R;
 
 /**
  * 操作按钮：目前仅仅是拍照或录制完成后弹出的确认和返回按钮
@@ -14,8 +19,7 @@ import android.view.View;
  */
 public class OperaeButton extends View {
 
-    public static final int TYPE_CONFIRM = 0x001;
-    public static final int TYPE_CANCEL = 0x002;
+    private int mType;
 
     private Paint mPaint;
     private Path mPath;
@@ -31,12 +35,27 @@ public class OperaeButton extends View {
     private float mIndex;
     private RectF mRectF;
 
-    public OperaeButton(Context context) {
-        super(context);
+
+    public OperaeButton(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs,0);
     }
 
-    public OperaeButton(Context context, int type, int size) {
-        super(context);
+    public OperaeButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        // 获取属性
+        TypedArray operaeButtonArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.OperaeButton, defStyleAttr, 0);
+        // 获取类型
+        mType = operaeButtonArray.getInt(R.styleable.OperaeButton_type,0);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        init(mType,getMeasuredWidth());
+        setMeasuredDimension(mButtonSize, mButtonSize);
+    }
+
+    public void init( int type, int size) {
         this.mButtonType = type;
         this.mButtonSize = size;
         this.mButtonRadius = size / 2.0f;
@@ -52,16 +71,10 @@ public class OperaeButton extends View {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(mButtonSize, mButtonSize);
-    }
-
-    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         switch (mButtonType){
-            case TYPE_CONFIRM:
+            case 1:
                 mPaint.setAntiAlias(true);
                 mPaint.setColor(0xFFFFFFFF);
                 mPaint.setStyle(Paint.Style.FILL);
@@ -79,7 +92,7 @@ public class OperaeButton extends View {
                 mPath.close();
                 canvas.drawPath(mPath, mPaint);
                 break;
-            case TYPE_CANCEL:
+            case 0:
                 mPaint.setAntiAlias(true);
                 mPaint.setColor(0xEEDCDCDC);
                 mPaint.setStyle(Paint.Style.FILL);

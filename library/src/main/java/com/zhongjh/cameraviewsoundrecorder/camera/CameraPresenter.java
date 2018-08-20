@@ -181,11 +181,6 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     }
 
     @Override
-    public void isMultiPicture(boolean b) {
-        mCameraOperation.isMultiPicture(b);
-    }
-
-    @Override
     public void setPictureMaxNumber(int i) {
         mCameraOperation.setPictureMaxNumber(i);
     }

@@ -128,12 +128,6 @@ public interface CameraContact {
         void setMediaQuality(int mediaQualityMiddle);
 
         /**
-         * 设置是否一次性拍摄多张图片
-         * @param b 是否
-         */
-        void isMultiPicture(boolean b);
-
-        /**
          * 如果 {@link com.zhongjh.cameraviewsoundrecorder.camera.CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
          * @param i 允许最多多少张图片
          */

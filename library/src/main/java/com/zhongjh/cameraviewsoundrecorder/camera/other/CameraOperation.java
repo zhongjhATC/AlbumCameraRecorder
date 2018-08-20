@@ -820,15 +820,7 @@ public class CameraOperation implements Camera.PreviewCallback {
     public void setMediaQuality(int mediaQualityMiddle) {
         this.mMediaQuality = mediaQualityMiddle;
     }
-
-    /**
-     * 设置是否一次性拍摄多张图片
-     * @param b 是否
-     */
-    public void isMultiPicture(boolean b) {
-        this.mIsMultiPicture = b;
-    }
-
+    
     public void setPictureMaxNumber(int i) {
         this.PictureMaxNumber = i;
     }

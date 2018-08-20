@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,12 +28,12 @@
 
     </FrameLayout>
 
-
     <LinearLayout
+        android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_alignParentEnd="true">
 
         <ImageView
             android:id="@+id/imgFlash"
@@ -53,12 +53,28 @@
 
     </LinearLayout>
 
+    <HorizontalScrollView
+        android:id="@+id/hsvPhoto"
+        android:contentDescription="显示多个图片的"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/pvLayout"
+        tools:ignore="HardcodedText">
+
+        <LinearLayout
+            android:id="@+id/llPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
+
+
+    </HorizontalScrollView>
 
     <com.zhongjh.cameraviewsoundrecorder.widget.PhotoVideoLayout
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:contentDescription="底部功能按钮"
         tools:ignore="HardcodedText" />
 
@@ -66,10 +82,9 @@
         android:id="@+id/fouce_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:contentDescription="摄像对焦框"
         android:visibility="invisible"
         tools:ignore="HardcodedText" />
 
-
-</FrameLayout>
+</RelativeLayout>

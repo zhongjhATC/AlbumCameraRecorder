@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.CountDownTimer;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -53,8 +55,8 @@ public class PhotoVideoButton extends View {
 
     private float event_Y;  // Touch_Event_Down时候记录的Y值
     //中心坐标
-    private float mCenterX;
-    private float mCenterY;
+    private float mCenterX;     // 圆心的X坐标
+    private float mCenterY;     // 圆心的Y坐标
 
     // 画笔
     private Paint mPaint;
@@ -69,15 +71,34 @@ public class PhotoVideoButton extends View {
         super(context);
     }
 
-    public PhotoVideoButton(Context context, int size) {
-        super(context);
+    public PhotoVideoButton(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public PhotoVideoButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        init((int) (getMeasuredWidth() * 0.7)); // 考虑到长按的外圆变大，所以默认圆形的宽度是该控件的70%
+        // 计算大小
+//        setMeasuredDimension(mButtonSize + mOutsideAddSize * 2, mButtonSize + mOutsideAddSize * 2);
+        setMeasuredDimension(getMeasuredWidth(),getMeasuredWidth());
+    }
+
+
+    public void init(int size) {
+        if (this.mButtonSize != 0 && this.mButtonSize != -1)
+            return;
         this.mButtonSize = size;
         this.mButtonRadius = size / 2.0f; // 计算半径
         mButtonOutsideRadius = mButtonRadius; // 外圆半径
         mButtonInsideRadius = mButtonRadius * 0.75f; // 内圆半径
         mStrokeWidth = size / 15;       // 线条占据直径的1/15
-        mOutsideAddSize = size / 5;     // 长按外圆半径变大的Size
-        mInsideReduceSize = size / 8;   // 长按内圆缩小的Size
+        mOutsideAddSize = size / 5;     // 长按-外圆半径变大的Size
+        mInsideReduceSize = size / 8;   // 长按-内圆缩小的Size
 
         // 实例化画笔
         mPaint = new Paint();
@@ -102,13 +123,6 @@ public class PhotoVideoButton extends View {
 
         //录制定时器
         mTimer = new RecordCountDownTimer(mDuration, mDuration / 360);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        // 计算大小
-        setMeasuredDimension(mButtonSize + mOutsideAddSize * 2, mButtonSize + mOutsideAddSize * 2);
     }
 
     @Override
@@ -162,7 +176,6 @@ public class PhotoVideoButton extends View {
         }
         return true;
     }
-
 
 
     /**
@@ -288,6 +301,7 @@ public class PhotoVideoButton extends View {
 
     /**
      * 内圆动画
+     *
      * @param inside_start 内圆半径
      */
     private void startCaptureAnimation(float inside_start) {
@@ -365,15 +379,17 @@ public class PhotoVideoButton extends View {
 
     /**
      * 设置最长录制时间
+     *
      * @param duration 时间
      */
-    public void setDuration(int duration){
+    public void setDuration(int duration) {
         mDuration = duration;
         mTimer = new RecordCountDownTimer(duration, duration / 360);    //录制定时器
     }
 
     /**
      * 设置回调接口
+     *
      * @param photoVideoListener 回调接口
      */
     public void setRecordingListener(PhotoVideoListener photoVideoListener) {
@@ -382,8 +398,8 @@ public class PhotoVideoButton extends View {
 
     /**
      * 设置按钮功能（拍照和录像）
-     * @param buttonStateBoth
-     * {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
+     *
+     * @param buttonStateBoth {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
      * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
      * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_BOTH 两者皆可
      * }

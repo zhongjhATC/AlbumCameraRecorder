@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <declare-styleable name="OperaeButton">
+        <!-- 操作类型的按钮 -->
+        <attr name="type">
+            <enum name="cancel" value="0" />
+            <enum name="confirm" value="1" />
+        </attr>
+    </declare-styleable>
+
     <declare-styleable name="CameraView">
         <!-- 图标大小 -->
         <attr name="iconSize"/>
