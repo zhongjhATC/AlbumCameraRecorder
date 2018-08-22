@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.camera.other;
+package com.zhongjh.cameraviewsoundrecorder.camera;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -23,15 +23,15 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
-import com.zhongjh.cameraviewsoundrecorder.common.Constants;
-import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
-import com.zhongjh.cameraviewsoundrecorder.util.AngleUtil;
-import com.zhongjh.cameraviewsoundrecorder.util.CameraParamUtil;
-import com.zhongjh.cameraviewsoundrecorder.util.DeviceUtil;
-import com.zhongjh.cameraviewsoundrecorder.util.DisplayMetricsSPUtils;
-import com.zhongjh.cameraviewsoundrecorder.util.FileUtil;
-import com.zhongjh.cameraviewsoundrecorder.util.LogUtil;
-import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.AngleUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.CameraParamUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.PermissionUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,8 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.graphics.Bitmap.createBitmap;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_CAPTURE;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_RECORDER;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_CAPTURE;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_RECORDER;
 
 
 /**

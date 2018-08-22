@@ -2,20 +2,16 @@ package com.zhongjh.cameraviewsoundrecorder.camera;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
-import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
-import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraOperation;
-import com.zhongjh.cameraviewsoundrecorder.common.Constants;
-import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
-import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_PICTURE;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_SHORT;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_VIDEO;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_PICTURE;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_SHORT;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_VIDEO;
 
 /**
  * Created by zhongjh on 2018/8/7.
@@ -64,8 +60,6 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
             public void captureResult(Bitmap bitmap, boolean isVertical) {
                 // 显示图片
                 mCameraView.showPicture(bitmap, isVertical);
-                // 设置当前模式是图片模式
-                mCameraView.setState(Constants.STATE_PICTURE);
             }
         });
     }

@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.listener;
+package com.zhongjh.cameraviewsoundrecorder.camera.listener;
 
 /**
  * 处理异常的Listener

@@ -6,8 +6,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
-import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
-import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 
 /**
  * 摄像器的关联者
@@ -233,9 +232,9 @@ public interface CameraContact {
         /**
          * 设置按钮支持的功能：
          * @param buttonStateBoth
-         * {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
-         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
-         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_BOTH 两者皆可
+         * {@link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
+         * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
+         * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_BOTH 两者皆可
          * }
          */
         void setFeatures(int buttonStateBoth);
@@ -243,13 +242,13 @@ public interface CameraContact {
         /**
          * 录制视频比特率
          * @param mediaQualityMiddle 比特率
-         * {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_HIGH
-         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_MIDDLE
-         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_LOW
-         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_POOR
-         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_FUNNY
-         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_DESPAIR
-         * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#MEDIA_QUALITY_SORRY
+         * {@link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#MEDIA_QUALITY_HIGH
+         * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#MEDIA_QUALITY_MIDDLE
+         * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#MEDIA_QUALITY_LOW
+         * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#MEDIA_QUALITY_POOR
+         * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#MEDIA_QUALITY_FUNNY
+         * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#MEDIA_QUALITY_DESPAIR
+         * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#MEDIA_QUALITY_SORRY
          * }
          */
         void setMediaQuality(int mediaQualityMiddle);

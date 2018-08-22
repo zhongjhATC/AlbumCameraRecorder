@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.zhongjh.cameraviewsoundrecorder.CameraActivity">
+    tools:context="com.zhongjh.cameraviewsoundrecorder.camera.CameraActivity">
 
     <com.zhongjh.cameraviewsoundrecorder.camera.CameraLayout
         android:id="@+id/cameraLayout"

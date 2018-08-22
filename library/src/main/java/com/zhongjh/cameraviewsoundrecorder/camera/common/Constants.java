@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.common;
+package com.zhongjh.cameraviewsoundrecorder.camera.common;
 
 /**
  * 公共类

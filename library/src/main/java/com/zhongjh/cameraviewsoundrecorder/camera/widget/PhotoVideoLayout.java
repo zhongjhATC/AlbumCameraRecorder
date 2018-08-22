@@ -1,28 +1,22 @@
-package com.zhongjh.cameraviewsoundrecorder.widget;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.common.Constants;
-import com.zhongjh.cameraviewsoundrecorder.listener.OperaeListener;
-import com.zhongjh.cameraviewsoundrecorder.listener.PhotoVideoListener;
-import com.zhongjh.cameraviewsoundrecorder.util.DisplayMetricsSPUtils;
-
-import java.util.ArrayList;
+import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 
 /**
  * 关于底部集成各个控件的布局
@@ -45,7 +39,11 @@ public class PhotoVideoLayout extends FrameLayout {
 
     // endregion
 
-    private ViewHolder mViewHolder; // 控件集合
+    public ViewHolder getViewHolder() {
+        return mViewHolder;
+    }
+
+    public ViewHolder mViewHolder; // 控件集合
 
     private int mLayoutWidth; // 该布局宽度
     private int mLayoutHeight; // 该布局高度
@@ -186,26 +184,28 @@ public class PhotoVideoLayout extends FrameLayout {
      * 拍照录制结果后的动画 - 多图片
      */
     public void startOperaeBtnAnimatorMulti() {
+        // 如果本身隐藏的，就显示出来
+        if (mViewHolder.btnConfirm.getVisibility() == View.GONE){
+            // 显示提交按钮
+            mViewHolder.btnConfirm.setVisibility(VISIBLE);
+            // 动画未结束前不能让它们点击
+            mViewHolder.btnConfirm.setClickable(false);
 
-        // 显示提交按钮
-        mViewHolder.btnConfirm.setVisibility(VISIBLE);
-        // 动画未结束前不能让它们点击
-        mViewHolder.btnConfirm.setClickable(false);
-
-        // 显示动画
-        ObjectAnimator animatorConfirm = ObjectAnimator.ofFloat(mViewHolder.btnConfirm, "translationX", -mLayoutWidth / 4, 0);
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(animatorConfirm);
-        set.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                // 动画结束使得按钮可点击
-                mViewHolder.btnConfirm.setClickable(true);
-            }
-        });
-        set.setDuration(200);
-        set.start();
+            // 显示动画
+            ObjectAnimator animatorConfirm = ObjectAnimator.ofFloat(mViewHolder.btnConfirm, "translationX", -mLayoutWidth / 4, 0);
+            AnimatorSet set = new AnimatorSet();
+            set.playTogether(animatorConfirm);
+            set.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    // 动画结束使得按钮可点击
+                    mViewHolder.btnConfirm.setClickable(true);
+                }
+            });
+            set.setDuration(200);
+            set.start();
+        }
     }
 
     // region 对外提供的api
@@ -279,10 +279,9 @@ public class PhotoVideoLayout extends FrameLayout {
     public static class ViewHolder {
         View rootView;
         OperaeButton btnCancel;
-        OperaeButton btnConfirm;
-        PhotoVideoButton btnPhotoVideo;
+        public OperaeButton btnConfirm;
+        public PhotoVideoButton btnPhotoVideo;
         TextView tvTip;
-
 
         ViewHolder(View rootView) {
             this.rootView = rootView;

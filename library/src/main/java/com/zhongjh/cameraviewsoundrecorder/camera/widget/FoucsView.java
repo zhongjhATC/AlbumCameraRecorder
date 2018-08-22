@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.widget;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.zhongjh.cameraviewsoundrecorder.util.DisplayMetricsSPUtils;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 
 /**
  * 摄像对焦框

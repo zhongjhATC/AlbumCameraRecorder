@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder;
+package com.zhongjh.cameraviewsoundrecorder.camera;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -12,16 +12,16 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.zhongjh.cameraviewsoundrecorder.camera.CameraLayout;
-import com.zhongjh.cameraviewsoundrecorder.listener.CameraSuccessListener;
-import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
-import com.zhongjh.cameraviewsoundrecorder.util.DeviceUtil;
-import com.zhongjh.cameraviewsoundrecorder.util.FileUtil;
+import com.zhongjh.cameraviewsoundrecorder.R;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
 
 import java.io.File;
 
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_BOTH;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.MEDIA_QUALITY_MIDDLE;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
 
 /**
  * 显示捕获镜头的界面
@@ -34,7 +34,7 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.activity_camera);
+        setContentView(R.layout.fragment_camera);
         cameraLayout = findViewById(R.id.cameraLayout);
 
         // 定制参数

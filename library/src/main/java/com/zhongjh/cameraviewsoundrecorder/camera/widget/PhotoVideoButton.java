@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.widget;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -14,12 +14,12 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.zhongjh.cameraviewsoundrecorder.listener.PhotoVideoListener;
-import com.zhongjh.cameraviewsoundrecorder.util.PermissionUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.PermissionUtil;
 
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_BOTH;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_ONLY_CAPTURE;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.BUTTON_STATE_ONLY_RECORDER;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_CAPTURE;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_RECORDER;
 
 
 /**
@@ -399,9 +399,9 @@ public class PhotoVideoButton extends View {
     /**
      * 设置按钮功能（拍照和录像）
      *
-     * @param buttonStateBoth {@link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
-     * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
-     * @link com.zhongjh.cameraviewsoundrecorder.common.Constants#BUTTON_STATE_BOTH 两者皆可
+     * @param buttonStateBoth {@link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
+     * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
+     * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_BOTH 两者皆可
      * }
      */
     public void setButtonFeatures(int buttonStateBoth) {

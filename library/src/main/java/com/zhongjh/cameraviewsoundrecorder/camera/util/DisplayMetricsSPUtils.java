@@ -1,11 +1,11 @@
-package com.zhongjh.cameraviewsoundrecorder.util;
+package com.zhongjh.cameraviewsoundrecorder.camera.util;
 
 import android.content.Context;
 import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
-import com.zhongjh.cameraviewsoundrecorder.common.Constants;
+import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 
 /**
  * 获取手机分辨率的宽高，先从缓存获取，如果缓存都没有，则重新计算，并且保存

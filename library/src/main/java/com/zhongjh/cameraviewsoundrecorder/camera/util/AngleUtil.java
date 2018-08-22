@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.util;
+package com.zhongjh.cameraviewsoundrecorder.camera.util;
 
 /**
  * 有关角度的工具类

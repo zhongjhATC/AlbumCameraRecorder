@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.entity;
+package com.zhongjh.cameraviewsoundrecorder.camera.entity;
 
 /**
  * 切换摄像头按钮

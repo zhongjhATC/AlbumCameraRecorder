@@ -16,8 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zhongjh.cameraviewsoundrecorder.CameraActivity;
-import com.zhongjh.cameraviewsoundrecorder.util.DeviceUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraActivity;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 
 public class MainActivity extends AppCompatActivity {
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                             .PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
                             .PERMISSION_GRANTED) {
-                startActivityForResult(new Intent(MainActivity.this, CameraActivity.class), 100);
+                startActivityForResult(new Intent(MainActivity.this, com.zhongjh.cameraviewsoundrecorder.MainActivity.class), 100);
             } else {
                 //不具有获取权限，需要进行权限申请
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
             }
         } else {
-            startActivityForResult(new Intent(MainActivity.this, CameraActivity.class), 100);
+            startActivityForResult(new Intent(MainActivity.this, com.zhongjh.cameraviewsoundrecorder.MainActivity.class), 100);
         }
     }
 
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     size++;
                 }
                 if (size == 0) {
-                    startActivityForResult(new Intent(MainActivity.this, CameraActivity.class), 100);
+                    startActivityForResult(new Intent(MainActivity.this, com.zhongjh.cameraviewsoundrecorder.MainActivity.class), 100);
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                 }

@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.util;
+package com.zhongjh.cameraviewsoundrecorder.camera.util;
 
 import android.hardware.Camera;
 import android.media.AudioFormat;

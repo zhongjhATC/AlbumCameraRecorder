@@ -28,12 +28,21 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        android:layout_alignParentRight="true"
+    <com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView
+        android:id="@+id/fouceView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentEnd="true">
+        android:layout_centerInParent="true"
+        android:contentDescription="摄像对焦框"
+        android:visibility="invisible"
+        tools:ignore="HardcodedText" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/imgFlash"
@@ -54,37 +63,56 @@
     </LinearLayout>
 
     <HorizontalScrollView
+        android:visibility="gone"
         android:id="@+id/hsvPhoto"
-        android:contentDescription="显示多个图片的"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/pvLayout"
+        android:layout_above="@+id/vLine1"
+        android:background="#20000000"
+        android:contentDescription="显示多个图片的"
+        android:scrollbars="none"
         tools:ignore="HardcodedText">
 
         <LinearLayout
             android:id="@+id/llPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"/>
+            android:orientation="horizontal" />
 
 
     </HorizontalScrollView>
 
-    <com.zhongjh.cameraviewsoundrecorder.widget.PhotoVideoLayout
+    <View
+        android:visibility="gone"
+        android:id="@+id/vLine1"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_above="@+id/vLine2"
+        android:background="#20000000" />
+
+    <View
+        android:visibility="gone"
+        android:id="@+id/vLine2"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_above="@+id/vLine3"
+        android:background="#40000000" />
+
+    <View
+        android:id="@+id/vLine3"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_above="@+id/pvLayout"
+        android:background="#20000000" />
+
+    <com.zhongjh.cameraviewsoundrecorder.camera.widget.PhotoVideoLayout
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="#20000000"
         android:contentDescription="底部功能按钮"
         tools:ignore="HardcodedText" />
 
-    <com.zhongjh.cameraviewsoundrecorder.widget.FoucsView
-        android:id="@+id/fouce_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:contentDescription="摄像对焦框"
-        android:visibility="invisible"
-        tools:ignore="HardcodedText" />
 
 </RelativeLayout>

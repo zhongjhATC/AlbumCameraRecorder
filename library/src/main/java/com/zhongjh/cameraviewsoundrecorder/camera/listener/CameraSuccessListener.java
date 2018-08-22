@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.listener;
+package com.zhongjh.cameraviewsoundrecorder.camera.listener;
 
 import android.graphics.Bitmap;
 

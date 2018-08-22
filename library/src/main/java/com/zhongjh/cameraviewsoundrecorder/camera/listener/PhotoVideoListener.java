@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.listener;
+package com.zhongjh.cameraviewsoundrecorder.camera.listener;
 
 /**
  * 拍照录制事件回调

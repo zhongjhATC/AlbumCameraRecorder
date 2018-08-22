@@ -23,26 +23,25 @@ import android.widget.LinearLayout;
 import android.widget.VideoView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.camera.other.CameraCallback;
-import com.zhongjh.cameraviewsoundrecorder.common.Constants;
-import com.zhongjh.cameraviewsoundrecorder.entity.CameraButton;
-import com.zhongjh.cameraviewsoundrecorder.listener.CameraSuccessListener;
-import com.zhongjh.cameraviewsoundrecorder.listener.ErrorListener;
-import com.zhongjh.cameraviewsoundrecorder.listener.OperaeListener;
-import com.zhongjh.cameraviewsoundrecorder.listener.PhotoVideoListener;
-import com.zhongjh.cameraviewsoundrecorder.util.DisplayMetricsSPUtils;
-import com.zhongjh.cameraviewsoundrecorder.util.FileUtil;
-import com.zhongjh.cameraviewsoundrecorder.util.LogUtil;
-import com.zhongjh.cameraviewsoundrecorder.widget.FoucsView;
-import com.zhongjh.cameraviewsoundrecorder.widget.PhotoVideoLayout;
+import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
+import com.zhongjh.cameraviewsoundrecorder.camera.entity.CameraButton;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView;
+import com.zhongjh.cameraviewsoundrecorder.camera.widget.PhotoVideoLayout;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_DEFAULT;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_PICTURE;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_SHORT;
-import static com.zhongjh.cameraviewsoundrecorder.common.Constants.TYPE_VIDEO;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_DEFAULT;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_PICTURE;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_SHORT;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_VIDEO;
 
 /**
  * 一个全局界面，包含了 右上角的闪光灯、前/后置摄像头的切换、底部按钮功能、对焦框等、显示当前拍照和摄像的界面
@@ -384,11 +383,49 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             mCaptureBitmaps.add(bitmap);
             // 显示横版列表
             mViewHolder.hsvPhoto.setVisibility(View.VISIBLE);
+
+            // 显示横版列表的线条空间
+            mViewHolder.vLine1.setVisibility(View.VISIBLE);
+            mViewHolder.vLine2.setVisibility(View.VISIBLE);
+
             // 添加view
-            flImageView = View.inflate(getContext(), R.layout.item_horizontal_image, this);
-            mViewHolder.llPhoto.addView();
+            ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_horizontal_image, null));
+            viewHolderImageView.imgPhoto.setImageBitmap(bitmap);
+            viewHolderImageView.imgPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+            viewHolderImageView.imgCancel.setTag(mCaptureBitmaps.size() - 1);
+            viewHolderImageView.imgCancel.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // 删除
+                    mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
+                    mViewHolder.llPhoto.removeViewAt(Integer.parseInt(v.getTag().toString()));
+                    // 当列表全部删掉的话，就隐藏
+                    if (mCaptureBitmaps.size() <= 0){
+                        // 显示横版列表
+                        mViewHolder.hsvPhoto.setVisibility(View.GONE);
+
+                        // 显示横版列表的线条空间
+                        mViewHolder.vLine1.setVisibility(View.GONE);
+                        mViewHolder.vLine2.setVisibility(View.GONE);
+
+                        // 隐藏右侧按钮
+                        mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
+                    }
+                }
+            });
+            mViewHolder.llPhoto.addView(viewHolderImageView.rootView);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startOperaeBtnAnimatorMulti();
+
+            // 因为拍照后会自动停止预览，所以要重新启动预览
+            mCameraPresenter.start(mViewHolder.vvPreview.getHolder(), mScreenProp);
+            // 重置按钮，因为每次点击，都会自动关闭
+            mViewHolder.pvLayout.getViewHolder().btnPhotoVideo.resetState();
+            // 依然保持当前模式
+            setState(Constants.STATE_PREVIEW);
+            // 显示右上角
+            mViewHolder.imgSwitch.setVisibility(View.VISIBLE);
+            mViewHolder.imgFlash.setVisibility(View.VISIBLE);
         } else {
             // 如果只有单个图片，就显示相应的提示结果等等
             if (isVertical) {
@@ -401,6 +438,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startOperaeBtnAnimator();
+
+            // 设置当前模式是图片模式
+            setState(Constants.STATE_PICTURE);
         }
     }
 
@@ -596,6 +636,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         FoucsView fouce_view;
         public HorizontalScrollView hsvPhoto;
         LinearLayout llPhoto;
+        View vLine1;
+        View vLine2;
+        View vLine3;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -604,22 +647,25 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             this.imgFlash = rootView.findViewById(R.id.imgFlash);
             this.imgSwitch = rootView.findViewById(R.id.imgSwitch);
             this.pvLayout = rootView.findViewById(R.id.pvLayout);
-            this.fouce_view = rootView.findViewById(R.id.fouce_view);
+            this.fouce_view = rootView.findViewById(R.id.fouceView);
             this.hsvPhoto = rootView.findViewById(R.id.hsvPhoto);
             this.llPhoto = rootView.findViewById(R.id.llPhoto);
+            this.vLine1 = rootView.findViewById(R.id.vLine1);
+            this.vLine2 = rootView.findViewById(R.id.vLine2);
+            this.vLine3 = rootView.findViewById(R.id.vLine3);
         }
 
     }
 
-    public static class ViewHolder {
+    public static class ViewHolderImageView {
         public View rootView;
         public ImageView imgPhoto;
         public ImageView imgCancel;
 
-        public ViewHolder(View rootView) {
+        public ViewHolderImageView(View rootView) {
             this.rootView = rootView;
-            this.imgPhoto = (ImageView) rootView.findViewById(R.id.imgPhoto);
-            this.imgCancel = (ImageView) rootView.findViewById(R.id.imgCancel);
+            this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
+            this.imgCancel = rootView.findViewById(R.id.imgCancel);
         }
 
     }

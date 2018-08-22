@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.widget;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
