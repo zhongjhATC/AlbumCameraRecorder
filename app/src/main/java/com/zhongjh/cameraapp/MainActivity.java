@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zhongjh.cameraviewsoundrecorder.camera.CameraActivity;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 
 public class MainActivity extends AppCompatActivity {

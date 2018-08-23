@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.camera;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -23,6 +23,9 @@ import android.widget.LinearLayout;
 import android.widget.VideoView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraCallback;
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraContact;
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraPresenter;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.CameraButton;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
@@ -164,7 +167,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private void initView() {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
-        View view = LayoutInflater.from(mContext).inflate(R.layout.main_view, this);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
         setFlashLamp(); // 设置闪光灯模式
         mViewHolder.pvLayout.setDuration(mCameraButton.getDuration());
@@ -389,7 +392,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             mViewHolder.vLine2.setVisibility(View.VISIBLE);
 
             // 添加view
-            ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_horizontal_image, null));
+            ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_horizontal_image_zjh, null));
             viewHolderImageView.imgPhoto.setImageBitmap(bitmap);
             viewHolderImageView.imgPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
             viewHolderImageView.imgCancel.setTag(mCaptureBitmaps.size() - 1);

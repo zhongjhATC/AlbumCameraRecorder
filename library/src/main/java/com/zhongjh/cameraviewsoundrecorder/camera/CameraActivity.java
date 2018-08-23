@@ -17,6 +17,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.widget.CameraLayout;
 
 import java.io.File;
 
@@ -34,7 +35,7 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.fragment_camera);
+        setContentView(R.layout.fragment_camera_zjh);
         cameraLayout = findViewById(R.id.cameraLayout);
 
         // 定制参数

@@ -10,11 +10,11 @@ import java.util.List;
  * 分别显示相册、录像、录音
  * Created by zhongjh on 2018/8/22.
  */
-public class AdapterFragment extends FragmentPagerAdapter {
+public class FragmentAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> mFragments;
 
-    public AdapterFragment(FragmentManager fm, List<Fragment> fragments) {
+    public FragmentAdapter(FragmentManager fm, List<Fragment> fragments) {
         super(fm);
         this.mFragments = fragments;
     }

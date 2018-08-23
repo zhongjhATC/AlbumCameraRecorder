@@ -7,21 +7,38 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.zhongjh.cameraviewsoundrecorder.album.AlbumFragment;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraFragment;
 
 /**
  * Created by zhongjh on 2018/8/22.
  */
 public class MainActivity extends AppCompatActivity {
+
+    private SelectionSpec mSpec;
     FragmentPagerAdapter adapterViewPager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mSpec = SelectionSpec.getInstance();
+        setTheme(mSpec.themeId);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        // @@确认是否进行了配置
+        if (!mSpec.hasInited) {
+            setResult(RESULT_CANCELED);
+            finish();
+            return;
+        }
+        setContentView(R.layout.activity_main_zjh);
+        if (mSpec.needOrientationRestriction()) {
+            setRequestedOrientation(mSpec.orientation);
+        }
         ViewPager vpPager = findViewById(R.id.viewPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
+        vpPager.setOffscreenPageLimit(3);
     }
 
 
@@ -43,11 +60,11 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return CameraFragment.newInstance(0, "Page # 1");
+                    return AlbumFragment.newInstance(0, "Page # 1");
                 case 1: // Fragment # 0 - This will show FirstFragment different title
                     return CameraFragment.newInstance(1, "Page # 2");
                 case 2: // Fragment # 1 - This will show SecondFragment
-                    return CameraFragment.newInstance(2, "Page # 3");
+                    return AlbumFragment.newInstance(2, "Page # 3");
                 default:
                     return null;
             }
