@@ -6,6 +6,7 @@ package com.zhongjh.cameraviewsoundrecorder.album;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -54,7 +55,7 @@ public class AlbumFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_album_zjh, container, false);
-        mViewHolder = new ViewHolder(view)
+        mViewHolder = new ViewHolder(view);
         initView();
         return view;
     }
@@ -93,7 +94,14 @@ public class AlbumFragment extends Fragment {
     }
 
     private void initListener(){
-
+//        // 预览
+//        mViewHolder.button_preview.setOnClickListener(view -> {
+//            Intent intent = new Intent(this, SelectedPreviewActivity.class);
+//            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+//            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//            startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+//        });
+//        mButtonApply.setOnClickListener(this);
     }
 
 
