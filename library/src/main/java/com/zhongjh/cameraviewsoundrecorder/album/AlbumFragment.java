@@ -6,13 +6,11 @@ package com.zhongjh.cameraviewsoundrecorder.album;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +21,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
+import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
+import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView;
 
 /**
  * Created by zhongjh on 2018/8/22.
@@ -102,7 +103,7 @@ public class AlbumFragment extends Fragment {
 
     }
 
-    private void initListener(){
+    private void initListener() {
 //        // 预览
 //        mViewHolder.button_preview.setOnClickListener(view -> {
 //            Intent intent = new Intent(this, SelectedPreviewActivity.class);
@@ -124,12 +125,12 @@ public class AlbumFragment extends Fragment {
             mViewHolder.button_preview.setEnabled(false);
             mViewHolder.button_apply.setEnabled(false);
             mViewHolder.button_apply.setText(getString(R.string.button_sure_default));
-        }else if(selectedCount == 1 && mSpec.singleSelectionModeEnabled()){
+        } else if (selectedCount == 1 && mSpec.singleSelectionModeEnabled()) {
             // 不显示选择的数字
             mViewHolder.button_preview.setEnabled(true);
             mViewHolder.button_apply.setText(R.string.button_sure_default);
             mViewHolder.button_apply.setEnabled(true);
-        }else {
+        } else {
             // 显示选择的数字
             mViewHolder.button_preview.setEnabled(true);
             mViewHolder.button_apply.setEnabled(true);
@@ -146,11 +147,40 @@ public class AlbumFragment extends Fragment {
 
     }
 
+    /**
+     * 更新原图控件状态
+     */
+    private void updateOriginalState() {
+        // 设置选择状态
+        mViewHolder.original.setChecked(mOriginalEnable);
+        if (countOverMaxSize() > 0) {
+
+        }
+    }
+
+
+    private int countOverMaxSize() {
+        int count = 0;
+        int selectedCount = mSelectedCollection.count();
+        for (int i = 0; i < selectedCount; i++) {
+            Item item = mSelectedCollection.asList().get(i);
+
+            if (item.isImage()) {
+                float size = PhotoMetadataUtils.getSizeInMB(item.size);
+                if (size > mSpec.originalMaxSize) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     public static class ViewHolder {
         public View rootView;
         public TextView selected_album;
         public Toolbar toolbar;
         public TextView button_preview;
+        public CheckRadioView original;
         public LinearLayout originalLayout;
         public TextView button_apply;
         public FrameLayout bottom_toolbar;
@@ -161,16 +191,17 @@ public class AlbumFragment extends Fragment {
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
-            this.selected_album = rootView.findViewById(R.id.selected_album);
-            this.toolbar = rootView.findViewById(R.id.toolbar);
-            this.button_preview = rootView.findViewById(R.id.button_preview);
-            this.originalLayout = rootView.findViewById(R.id.originalLayout);
-            this.button_apply = rootView.findViewById(R.id.button_apply);
-            this.bottom_toolbar = rootView.findViewById(R.id.bottom_toolbar);
-            this.container = rootView.findViewById(R.id.container);
-            this.empty_view_content = rootView.findViewById(R.id.empty_view_content);
-            this.empty_view = rootView.findViewById(R.id.empty_view);
-            this.root = rootView.findViewById(R.id.root);
+            this.selected_album = (TextView) rootView.findViewById(R.id.selected_album);
+            this.toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+            this.button_preview = (TextView) rootView.findViewById(R.id.button_preview);
+            this.original = (CheckRadioView) rootView.findViewById(R.id.original);
+            this.originalLayout = (LinearLayout) rootView.findViewById(R.id.originalLayout);
+            this.button_apply = (TextView) rootView.findViewById(R.id.button_apply);
+            this.bottom_toolbar = (FrameLayout) rootView.findViewById(R.id.bottom_toolbar);
+            this.container = (FrameLayout) rootView.findViewById(R.id.container);
+            this.empty_view_content = (TextView) rootView.findViewById(R.id.empty_view_content);
+            this.empty_view = (FrameLayout) rootView.findViewById(R.id.empty_view);
+            this.root = (RelativeLayout) rootView.findViewById(R.id.root);
         }
 
     }

@@ -34,27 +34,27 @@ public final class PhotoMetadataUtils {
         return size.x * size.y;
     }
 
-    public static Point getBitmapSize(Uri uri, Activity activity) {
-        ContentResolver resolver = activity.getContentResolver();
-        Point imageSize = getBitmapBound(resolver, uri);
-        int w = imageSize.x;
-        int h = imageSize.y;
-        if (PhotoMetadataUtils.shouldRotate(resolver, uri)) {
-            w = imageSize.y;
-            h = imageSize.x;
-        }
-        if (h == 0) return new Point(MAX_WIDTH, MAX_WIDTH);
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        float screenWidth = (float) metrics.widthPixels;
-        float screenHeight = (float) metrics.heightPixels;
-        float widthScale = screenWidth / w;
-        float heightScale = screenHeight / h;
-        if (widthScale > heightScale) {
-            return new Point((int) (w * widthScale), (int) (h * heightScale));
-        }
-        return new Point((int) (w * widthScale), (int) (h * heightScale));
-    }
+//    public static Point getBitmapSize(Uri uri, Activity activity) {
+//        ContentResolver resolver = activity.getContentResolver();
+//        Point imageSize = getBitmapBound(resolver, uri);
+//        int w = imageSize.x;
+//        int h = imageSize.y;
+//        if (PhotoMetadataUtils.shouldRotate(resolver, uri)) {
+//            w = imageSize.y;
+//            h = imageSize.x;
+//        }
+//        if (h == 0) return new Point(MAX_WIDTH, MAX_WIDTH);
+//        DisplayMetrics metrics = new DisplayMetrics();
+//        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//        float screenWidth = (float) metrics.widthPixels;
+//        float screenHeight = (float) metrics.heightPixels;
+//        float widthScale = screenWidth / w;
+//        float heightScale = screenHeight / h;
+//        if (widthScale > heightScale) {
+//            return new Point((int) (w * widthScale), (int) (h * heightScale));
+//        }
+//        return new Point((int) (w * widthScale), (int) (h * heightScale));
+//    }
 
     public static Point getBitmapBound(ContentResolver resolver, Uri uri) {
         InputStream is = null;
@@ -108,49 +108,54 @@ public final class PhotoMetadataUtils {
         return uri.getPath();
     }
 
-    public static IncapableCause isAcceptable(Context context, Item item) {
-        if (!isSelectableType(context, item)) {
-            return new IncapableCause(context.getString(R.string.error_file_type));
-        }
+//    public static IncapableCause isAcceptable(Context context, Item item) {
+//        if (!isSelectableType(context, item)) {
+//            return new IncapableCause(context.getString(R.string.error_file_type));
+//        }
+//
+//        if (SelectionSpec.getInstance().filters != null) {
+//            for (Filter filter : SelectionSpec.getInstance().filters) {
+//                IncapableCause incapableCause = filter.filter(context, item);
+//                if (incapableCause != null) {
+//                    return incapableCause;
+//                }
+//            }
+//        }
+//        return null;
+//    }
+//
+//    private static boolean isSelectableType(Context context, Item item) {
+//        if (context == null) {
+//            return false;
+//        }
+//
+//        ContentResolver resolver = context.getContentResolver();
+//        for (MimeType type : SelectionSpec.getInstance().mimeTypeSet) {
+//            if (type.checkType(resolver, item.getContentUri())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    private static boolean shouldRotate(ContentResolver resolver, Uri uri) {
+//        ExifInterface exif;
+//        try {
+//            exif = ExifInterfaceCompat.newInstance(getPath(resolver, uri));
+//        } catch (IOException e) {
+//            Log.e(TAG, "could not read exif info of the image: " + uri);
+//            return false;
+//        }
+//        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
+//        return orientation == ExifInterface.ORIENTATION_ROTATE_90
+//                || orientation == ExifInterface.ORIENTATION_ROTATE_270;
+//    }
 
-        if (SelectionSpec.getInstance().filters != null) {
-            for (Filter filter : SelectionSpec.getInstance().filters) {
-                IncapableCause incapableCause = filter.filter(context, item);
-                if (incapableCause != null) {
-                    return incapableCause;
-                }
-            }
-        }
-        return null;
-    }
-
-    private static boolean isSelectableType(Context context, Item item) {
-        if (context == null) {
-            return false;
-        }
-
-        ContentResolver resolver = context.getContentResolver();
-        for (MimeType type : SelectionSpec.getInstance().mimeTypeSet) {
-            if (type.checkType(resolver, item.getContentUri())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean shouldRotate(ContentResolver resolver, Uri uri) {
-        ExifInterface exif;
-        try {
-            exif = ExifInterfaceCompat.newInstance(getPath(resolver, uri));
-        } catch (IOException e) {
-            Log.e(TAG, "could not read exif info of the image: " + uri);
-            return false;
-        }
-        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
-        return orientation == ExifInterface.ORIENTATION_ROTATE_90
-                || orientation == ExifInterface.ORIENTATION_ROTATE_270;
-    }
-
+    /**
+     * bytes转换mb
+     * @param sizeInBytes 容量大小
+     * @return mb
+     */
     public static float getSizeInMB(long sizeInBytes) {
         DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
         df.applyPattern("0.0");

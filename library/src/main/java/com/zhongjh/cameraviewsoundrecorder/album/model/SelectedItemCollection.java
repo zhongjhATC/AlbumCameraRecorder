@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,10 +44,21 @@ public class SelectedItemCollection {
     }
 
     /**
+     * 转换成list
+     * @return list
+     */
+    public List<Item> asList() {
+        return new ArrayList<>(mItems);
+    }
+
+    /**
      * 获取数据源长度
      * @return 数据源长度
      */
     public int count() {
         return mItems.size();
     }
+
+
+
 }
