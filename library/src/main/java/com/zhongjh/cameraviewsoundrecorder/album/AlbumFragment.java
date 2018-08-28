@@ -24,16 +24,22 @@ import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 
 /**
  * Created by zhongjh on 2018/8/22.
  */
 public class AlbumFragment extends Fragment {
 
+    public static final String CHECK_STATE = "checkState";
 
     protected Activity mActivity;
     private Context mContext;
+    private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(getContext());
     private SelectionSpec mSpec;
+
+    private boolean mOriginalEnable;        // 是否原图
+
     private ViewHolder mViewHolder;
 
     public static AlbumFragment newInstance(int page, String title) {
@@ -56,7 +62,7 @@ public class AlbumFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_album_zjh, container, false);
         mViewHolder = new ViewHolder(view);
-        initView();
+        initView(savedInstanceState);
         return view;
     }
 
@@ -76,7 +82,7 @@ public class AlbumFragment extends Fragment {
     /**
      * 初始化view
      */
-    private void initView() {
+    private void initView(Bundle savedInstanceState) {
 //        setSupportActionBar(toolbar);
 //        ActionBar actionBar = getSupportActionBar();
 //        actionBar.setDisplayShowTitleEnabled(false);
@@ -89,7 +95,10 @@ public class AlbumFragment extends Fragment {
         if (navigationIcon != null) {
             navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         }
-//        mSelectedCollection.onCreate(savedInstanceState);
+        mSelectedCollection.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
+        }
 
     }
 
@@ -104,6 +113,38 @@ public class AlbumFragment extends Fragment {
 //        mButtonApply.setOnClickListener(this);
     }
 
+    /**
+     * 更新底部数据
+     */
+    private void updateBottomToolbar() {
+        int selectedCount = mSelectedCollection.count();
+
+        if (selectedCount == 0) {
+            // 如果没有数据，则设置不可点击
+            mViewHolder.button_preview.setEnabled(false);
+            mViewHolder.button_apply.setEnabled(false);
+            mViewHolder.button_apply.setText(getString(R.string.button_sure_default));
+        }else if(selectedCount == 1 && mSpec.singleSelectionModeEnabled()){
+            // 不显示选择的数字
+            mViewHolder.button_preview.setEnabled(true);
+            mViewHolder.button_apply.setText(R.string.button_sure_default);
+            mViewHolder.button_apply.setEnabled(true);
+        }else {
+            // 显示选择的数字
+            mViewHolder.button_preview.setEnabled(true);
+            mViewHolder.button_apply.setEnabled(true);
+            mViewHolder.button_apply.setText(getString(R.string.button_sure, selectedCount));
+        }
+
+        // 是否显示原图控件
+        if (mSpec.originalable) {
+            mViewHolder.originalLayout.setVisibility(View.VISIBLE);
+            updateOriginalState();
+        } else {
+            mViewHolder.originalLayout.setVisibility(View.INVISIBLE);
+        }
+
+    }
 
     public static class ViewHolder {
         public View rootView;
