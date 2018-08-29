@@ -25,12 +25,14 @@ import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
+import com.zhongjh.cameraviewsoundrecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView;
+import com.zhongjh.cameraviewsoundrecorder.widget.IncapableDialog;
 
 /**
  * Created by zhongjh on 2018/8/22.
  */
-public class AlbumFragment extends Fragment {
+public class MatissFragment extends Fragment {
 
     public static final String CHECK_STATE = "checkState";
 
@@ -39,17 +41,20 @@ public class AlbumFragment extends Fragment {
     private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(getContext());
     private SelectionSpec mSpec;
 
+    private AlbumsSpinner mAlbumsSpinner;
+    private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;   // 左上角的下拉框适配器
+
     private boolean mOriginalEnable;        // 是否原图
 
     private ViewHolder mViewHolder;
 
-    public static AlbumFragment newInstance(int page, String title) {
-        AlbumFragment albumFragment = new AlbumFragment();
+    public static MatissFragment newInstance(int page, String title) {
+        MatissFragment matissFragment = new MatissFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
-        albumFragment.setArguments(args);
-        return albumFragment;
+        matissFragment.setArguments(args);
+        return matissFragment;
     }
 
     @Override
@@ -61,17 +66,11 @@ public class AlbumFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_album_zjh, container, false);
+        View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
         mViewHolder = new ViewHolder(view);
         initView(savedInstanceState);
         return view;
     }
-
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        this.mActivity = activity;
-//    }
 
     @Override
     public void onAttach(Context context) {
@@ -100,7 +99,17 @@ public class AlbumFragment extends Fragment {
         if (savedInstanceState != null) {
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
+        updateBottomToolbar();
 
+        mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(mContext, null, false);
+        mAlbumsSpinner = new AlbumsSpinner(this);
+        mAlbumsSpinner.setOnItemSelectedListener(this);
+        mAlbumsSpinner.setSelectedTextView((TextView) findViewById(R.id.selected_album));
+        mAlbumsSpinner.setPopupAnchorView(findViewById(R.id.toolbar));
+        mAlbumsSpinner.setAdapter(mAlbumsAdapter);
+        mAlbumCollection.onCreate(this, this);
+        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
+        mAlbumCollection.loadAlbums();
     }
 
     private void initListener() {
@@ -154,11 +163,28 @@ public class AlbumFragment extends Fragment {
         // 设置选择状态
         mViewHolder.original.setChecked(mOriginalEnable);
         if (countOverMaxSize() > 0) {
+            // 是否启用原图
+            if (mOriginalEnable) {
+                // 弹出窗口提示大于xxmb
+                IncapableDialog incapableDialog = IncapableDialog.newInstance("",
+                        getString(R.string.error_over_original_size, mSpec.originalMaxSize));
+                if (this.getFragmentManager() == null)
+                    return;
+                incapableDialog.show(this.getFragmentManager(),
+                        IncapableDialog.class.getName());
 
+                // 底部的原图钩去掉
+                mViewHolder.original.setChecked(false);
+                mOriginalEnable = false;
+            }
         }
     }
 
-
+    /**
+     * 返回大于限定mb的图片数量
+     *
+     * @return 数量
+     */
     private int countOverMaxSize() {
         int count = 0;
         int selectedCount = mSelectedCollection.count();
@@ -167,6 +193,7 @@ public class AlbumFragment extends Fragment {
 
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMB(item.size);
+
                 if (size > mSpec.originalMaxSize) {
                     count++;
                 }

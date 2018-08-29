@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:foreground="?selectableItemBackground"
                 android:layout_height="wrap_content"
-                tools:showIn="@layout/fragment_album_zjh">
+                tools:showIn="@layout/fragment_matiss_zjh">
 
 
                 <com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView

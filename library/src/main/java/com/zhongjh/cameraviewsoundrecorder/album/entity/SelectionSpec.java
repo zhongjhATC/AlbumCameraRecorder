@@ -20,7 +20,7 @@ public class SelectionSpec {
     public int maxImageSelectable;  // 最大图片选择数量
     public int maxVideoSelectable;  // 最大视频选择数量
     public boolean originalable;    // 是否原图
-    public int originalMaxSize;     // 原图最大size
+    public int originalMaxSize;     // 最大原图size,仅当originalEnable为true的时候才有效
 
     private SelectionSpec() {
     }

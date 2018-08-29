@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.zhongjh.cameraviewsoundrecorder.album.AlbumFragment;
+import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraFragment;
 
@@ -60,11 +60,11 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return AlbumFragment.newInstance(0, "Page # 1");
+                    return MatissFragment.newInstance(0, "Page # 1");
                 case 1: // Fragment # 0 - This will show FirstFragment different title
                     return CameraFragment.newInstance(1, "Page # 2");
                 case 2: // Fragment # 1 - This will show SecondFragment
-                    return AlbumFragment.newInstance(2, "Page # 3");
+                    return MatissFragment.newInstance(2, "Page # 3");
                 default:
                     return null;
             }
