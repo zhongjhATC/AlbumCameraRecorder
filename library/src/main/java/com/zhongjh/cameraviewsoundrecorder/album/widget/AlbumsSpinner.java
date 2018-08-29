@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
+import com.zhongjh.cameraviewsoundrecorder.utils.VersionUtils;
 
 /**
  * 专辑下拉框控件
@@ -63,9 +64,9 @@ public class AlbumsSpinner {
         });
     }
 
-//    public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {
-//        mOnItemSelectedListener = listener;
-//    }
+    public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {
+        mOnItemSelectedListener = listener;
+    }
 
 //    public void setSelection(Context context, int position) {
 //        mListPopupWindow.setSelection(position);
@@ -86,9 +87,11 @@ public class AlbumsSpinner {
         Album album = Album.valueOf(cursor);
         String displayName = album.getDisplayName(context);
         if (mSelected.getVisibility() == View.VISIBLE) {
+            // 如果显示就赋值
             mSelected.setText(displayName);
         } else {
-            if (Platform.hasICS()) {
+            // 否则先显示出来再赋值
+            if (VersionUtils.hasICS()) {
                 mSelected.setAlpha(0.0f);
                 mSelected.setVisibility(View.VISIBLE);
                 mSelected.setText(displayName);

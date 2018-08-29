@@ -23,6 +23,7 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
+import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.loader.AlbumLoader;
 
 /**
@@ -65,7 +66,7 @@ public class Album implements Parcelable {
 
     /**
      * {@link Cursor} 构建一个新的实体 {@link Album}
-     * 此方法不负责管理光标资源，如关闭、迭代等。 This method is not responsible for managing cursor resource, such as close, iterate, and so on.
+     * 此方法不负责管理光标资源，如关闭、迭代等。
      */
     public static Album valueOf(Cursor cursor) {
         return new Album(
@@ -104,6 +105,10 @@ public class Album implements Parcelable {
         mCount++;
     }
 
+    /**
+     * 显示名称，可能返回“全部”
+     * @return 返回名称
+     */
     public String getDisplayName(Context context) {
         if (isAll()) {
             return context.getString(R.string.album_name_all);
@@ -111,6 +116,10 @@ public class Album implements Parcelable {
         return mDisplayName;
     }
 
+    /**
+     * 判断如果id = -1的话，就是查询全部的意思
+     * @return 是否全部
+     */
     public boolean isAll() {
         return ALBUM_ID_ALL.equals(mId);
     }

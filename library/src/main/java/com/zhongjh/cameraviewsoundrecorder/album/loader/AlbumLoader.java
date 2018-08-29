@@ -24,8 +24,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
-import com.zhihu.matisse.internal.entity.Album;
-import com.zhihu.matisse.internal.entity.SelectionSpec;
 
 /**
  * Load all albums (grouped by bucket_id) into a single cursor.

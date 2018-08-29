@@ -11,10 +11,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -38,6 +40,8 @@ public class MatissFragment extends Fragment {
 
     protected Activity mActivity;
     private Context mContext;
+
+    private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(getContext());
     private SelectionSpec mSpec;
 
@@ -102,8 +106,7 @@ public class MatissFragment extends Fragment {
         updateBottomToolbar();
 
         mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(mContext, null, false);
-        mAlbumsSpinner = new AlbumsSpinner(this);
-        mAlbumsSpinner.setOnItemSelectedListener(this);
+        mAlbumsSpinner = new AlbumsSpinner(mContext);
         mAlbumsSpinner.setSelectedTextView((TextView) findViewById(R.id.selected_album));
         mAlbumsSpinner.setPopupAnchorView(findViewById(R.id.toolbar));
         mAlbumsSpinner.setAdapter(mAlbumsAdapter);
@@ -113,6 +116,24 @@ public class MatissFragment extends Fragment {
     }
 
     private void initListener() {
+        mAlbumsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mSelectedCollection.setStateCurrentSelection(position);
+                mAlbumsAdapter.getCursor().moveToPosition(position);
+                Album album = Album.valueOf(mAlbumsAdapter.getCursor());
+                if (album.isAll() && SelectionSpec.getInstance().capture) {
+                    album.addCaptureCount();
+                }
+                onAlbumSelected(album);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
 //        // 预览
 //        mViewHolder.button_preview.setOnClickListener(view -> {
 //            Intent intent = new Intent(this, SelectedPreviewActivity.class);
