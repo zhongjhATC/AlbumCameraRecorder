@@ -7,9 +7,12 @@ package com.zhongjh.cameraviewsoundrecorder.album;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
@@ -23,9 +26,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
+import com.zhongjh.cameraviewsoundrecorder.album.ui.mediaselection.MediaSelectionFragment;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView;
@@ -34,7 +40,7 @@ import com.zhongjh.cameraviewsoundrecorder.widget.IncapableDialog;
 /**
  * Created by zhongjh on 2018/8/22.
  */
-public class MatissFragment extends Fragment {
+public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks {
 
     public static final String CHECK_STATE = "checkState";
 
@@ -82,7 +88,6 @@ public class MatissFragment extends Fragment {
         this.mContext = context;
     }
 
-
     /**
      * 初始化view
      */
@@ -107,9 +112,9 @@ public class MatissFragment extends Fragment {
 
         mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(mContext, null, false);
         mAlbumsSpinner = new AlbumsSpinner(mContext);
-        mAlbumsSpinner.setSelectedTextView((TextView) findViewById(R.id.selected_album));
-        mAlbumsSpinner.setPopupAnchorView(findViewById(R.id.toolbar));
-        mAlbumsSpinner.setAdapter(mAlbumsAdapter);
+        mAlbumsSpinner.setSelectedTextView(mViewHolder.selected_album);
+        mAlbumsSpinner.setPopupAnchorView(mViewHolder.toolbar);
+        mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
         mAlbumCollection.onCreate(this, this);
         mAlbumCollection.onRestoreInstanceState(savedInstanceState);
         mAlbumCollection.loadAlbums();
@@ -221,6 +226,57 @@ public class MatissFragment extends Fragment {
             }
         }
         return count;
+    }
+
+    @Override
+    public void onAlbumLoad(final Cursor cursor) {
+        // 更新相册列表
+        mAlbumsSpinnerAdapter.swapCursor(cursor);
+        // 选择默认相册
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+
+            @Override
+            public void run() {
+                cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
+                mAlbumsSpinner.setSelection(getContext(),
+                        mAlbumCollection.getCurrentSelection());
+                Album album = Album.valueOf(cursor);
+                if (album.isAll() && SelectionSpec.getInstance().capture) {
+                    // 判断如果是 查询全部 并且可以拍照的话，就相片数量+1，放拍照功能
+                    album.addCaptureCount();
+                }
+                onAlbumSelected(album);
+            }
+        });
+    }
+
+    @Override
+    public void onAlbumReset() {
+        // 重置相册列表
+        mAlbumsSpinnerAdapter.swapCursor(null);
+    }
+
+    /**
+     * 选择某个专辑的时候
+     * @param album 专辑
+     */
+    private void onAlbumSelected(Album album) {
+        if (album.isAll() && album.isEmpty()) {
+            // 如果是选择全部并且没有数据的话，显示空的view
+            mViewHolder.container.setVisibility(View.GONE);
+            mViewHolder.empty_view.setVisibility(View.VISIBLE);
+        } else {
+            // 如果有数据，则内嵌新的fragment，并且相应相关照片
+            mViewHolder.container.setVisibility(View.VISIBLE);
+            mViewHolder.empty_view.setVisibility(View.GONE);
+            Fragment fragment = MediaSelectionFragment.newInstance(album);
+            if (getFragmentManager() != null)
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
+                        .commitAllowingStateLoss();
+        }
     }
 
     public static class ViewHolder {

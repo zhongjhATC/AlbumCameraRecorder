@@ -64,18 +64,30 @@ public class AlbumsSpinner {
         });
     }
 
+    /**
+     * 赋值事件
+     *
+     * @param listener 事件
+     */
     public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {
         mOnItemSelectedListener = listener;
     }
 
-//    public void setSelection(Context context, int position) {
-//        mListPopupWindow.setSelection(position);
-//        onItemSelected(context, position);
-//    }
+    /**
+     * 设置选择某一项
+     *
+     * @param context  上下文
+     * @param position 索引
+     */
+    public void setSelection(Context context, int position) {
+        mListPopupWindow.setSelection(position);
+        onItemSelected(context, position);
+    }
 
     /**
      * 点击事件
-     * @param context 上下文
+     *
+     * @param context  上下文
      * @param position 索引
      */
     private void onItemSelected(Context context, int position) {
@@ -105,39 +117,58 @@ public class AlbumsSpinner {
         }
     }
 
-//    public void setAdapter(CursorAdapter adapter) {
-//        mListPopupWindow.setAdapter(adapter);
-//        mAdapter = adapter;
-//    }
-//
-//    public void setSelectedTextView(TextView textView) {
-//        mSelected = textView;
-//        // tint dropdown arrow icon
-//        Drawable[] drawables = mSelected.getCompoundDrawables();
-//        Drawable right = drawables[2];
-//        TypedArray ta = mSelected.getContext().getTheme().obtainStyledAttributes(
-//                new int[]{R.attr.album_element_color});
-//        int color = ta.getColor(0, 0);
-//        ta.recycle();
-//        right.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-//
-//        mSelected.setVisibility(View.GONE);
-//        mSelected.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                int itemHeight = v.getResources().getDimensionPixelSize(R.dimen.album_item_height);
-//                mListPopupWindow.setHeight(
-//                        mAdapter.getCount() > MAX_SHOWN_COUNT ? itemHeight * MAX_SHOWN_COUNT
-//                                : itemHeight * mAdapter.getCount());
-//                mListPopupWindow.show();
-//            }
-//        });
-//        mSelected.setOnTouchListener(mListPopupWindow.createDragToOpenListener(mSelected));
-//    }
-//
-//    public void setPopupAnchorView(View view) {
-//        mListPopupWindow.setAnchorView(view);
-//    }
+    /**
+     * 设置适配器
+     *
+     * @param adapter 适配器
+     */
+    public void setAdapter(CursorAdapter adapter) {
+        mListPopupWindow.setAdapter(adapter);
+        mAdapter = adapter;
+    }
+
+    /**
+     * 设置文本框,并且给该文本框设置点击等事件
+     *
+     * @param textView 文本框
+     */
+    public void setSelectedTextView(TextView textView) {
+        mSelected = textView;
+
+        // 设置下拉箭头的颜色跟album_element_color文本颜色一样
+        Drawable[] drawables = mSelected.getCompoundDrawables();
+        Drawable right = drawables[2];
+        TypedArray ta = mSelected.getContext().getTheme().obtainStyledAttributes(
+                new int[]{R.attr.album_element_color});
+        int color = ta.getColor(0, 0);
+        ta.recycle();
+        // 使用设置的主题颜色对目标Drawable(这里是一个小箭头)进行SRC_IN模式合成 达到改变Drawable颜色的效果
+        right.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+
+        mSelected.setVisibility(View.GONE);
+        mSelected.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // 显示选择框
+                int itemHeight = v.getResources().getDimensionPixelSize(R.dimen.album_item_height);
+                mListPopupWindow.setHeight(
+                        mAdapter.getCount() > MAX_SHOWN_COUNT ? itemHeight * MAX_SHOWN_COUNT
+                                : itemHeight * mAdapter.getCount());
+                mListPopupWindow.show();
+            }
+        });
+        // 设置textView向下拖拽可下拉ListPopupWindow
+        mSelected.setOnTouchListener(mListPopupWindow.createDragToOpenListener(mSelected));
+    }
+
+    /**
+     * 设置锚点view
+     *
+     * @param view view
+     */
+    public void setPopupAnchorView(View view) {
+        mListPopupWindow.setAnchorView(view);
+    }
 
 }

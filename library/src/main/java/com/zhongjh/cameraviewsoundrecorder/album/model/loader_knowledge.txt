@@ -1,0 +1,20 @@
+https://www.jianshu.com/p/cbb8f73b7bd2 Loader 知识梳理(2)
+
+initLoader
+
+通过调用这个方法来初始化一个特定ID的Loader，如果当前已经有一个和这个ID关联的Loader，那么并不会去回调onCreateLoader来通知使用者传入一个新的 Loader实例替代那个旧的实例，仅仅是替代Callback，也就是说，上面的Bundle参数被丢弃了；
+而假如不存在一个关联的实例，那么会进行初始化，并启动它。
+
+这个方法通常是在Activity/Fragment的初始化阶段调用，因为它会判断之前是否存在相同的Loader，这样我们就可以复用之前已经加载过的数据，当屏幕装转导致Activity重建的时候，我们就不需要再去重新创建一个新的Loader，也免去了重新读取数据的过程。
+
+restartLoader
+
+调用这个方法，将会重新创建一个指定ID的Loader，如果当前已经有一个和这个ID关联的Loader，那么会对它进行canceled/stopped/destroyed等操作，之后，使用新传入的Bundle参数来创建一个新的Loader，并在数据加载完毕后递交给调用者。
+
+并且，在调用完这个函数之后，所有之前和这个ID关联的Loader都会失效，我们将不会收到它们传递过来的任何数据。
+
+总结下来就是：
+
+当调用上面这两个方法时，如果不存在一个和ID关联的Loader，那么这两个方法是完全相同的。
+如果已经存在相关联的Loader，那么init方法除了替代Callback，不会做任何其它的事情，包括取消/停止等。而restart方法将会创建一个新的Loader，并且重新开始查询。
+
