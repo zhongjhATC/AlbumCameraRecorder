@@ -4,6 +4,9 @@ import android.content.pm.ActivityInfo;
 import android.support.annotation.StyleRes;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
+import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
+import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
+import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
 
 /**
  * 选择规格
@@ -20,8 +23,11 @@ public class SelectionSpec {
     public int maxImageSelectable;  // 最大图片选择数量
     public int maxVideoSelectable;  // 最大视频选择数量
     public boolean capture;         // 是否可以拍照
+    public ImageEngine imageEngine;
+    public OnSelectedListener onSelectedListener;
     public boolean originalable;    // 是否原图
     public int originalMaxSize;     // 最大原图size,仅当originalEnable为true的时候才有效
+    public OnCheckedListener onCheckedListener;
 
     private SelectionSpec() {
     }

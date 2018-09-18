@@ -6,22 +6,28 @@ package com.zhongjh.cameraviewsoundrecorder.album;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.QuickContactBadge;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,15 +38,28 @@ import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.mediaselection.MediaSelectionFragment;
+import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.BasePreviewActivity;
+import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.SelectedPreviewActivity;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView;
+import com.zhongjh.cameraviewsoundrecorder.utils.PathUtils;
 import com.zhongjh.cameraviewsoundrecorder.widget.IncapableDialog;
+
+import java.util.ArrayList;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by zhongjh on 2018/8/22.
  */
 public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks {
+
+    public static final String EXTRA_RESULT_SELECTION = "extra_result_selection";               // Uri的数据
+    public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";     // path的数据
+    public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
+    private static final int REQUEST_CODE_PREVIEW = 23;     // 预览
+    private static final int REQUEST_CODE_CAPTURE = 24;     // 拍照
 
     public static final String CHECK_STATE = "checkState";
 
@@ -79,7 +98,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
         mViewHolder = new ViewHolder(view);
         initView(savedInstanceState);
+        initListener();
         return view;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.mActivity = activity;
     }
 
     @Override
@@ -121,12 +147,17 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     private void initListener() {
+        // 下拉框选择的时候
         mAlbumsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mSelectedCollection.setStateCurrentSelection(position);
-                mAlbumsAdapter.getCursor().moveToPosition(position);
-                Album album = Album.valueOf(mAlbumsAdapter.getCursor());
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                // 设置缓存值
+                mAlbumCollection.setStateCurrentSelection(position);
+                // 移动数据光标到绝对位置
+                mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
+                // 获取该位置的专辑
+                Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
+                // 如果有拍照就+1
                 if (album.isAll() && SelectionSpec.getInstance().capture) {
                     album.addCaptureCount();
                 }
@@ -139,14 +170,146 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             }
         });
 
-//        // 预览
-//        mViewHolder.button_preview.setOnClickListener(view -> {
-//            Intent intent = new Intent(this, SelectedPreviewActivity.class);
-//            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-//            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-//            startActivityForResult(intent, REQUEST_CODE_PREVIEW);
-//        });
-//        mButtonApply.setOnClickListener(this);
+        // 预览
+        mViewHolder.button_preview.setOnClickListener(view -> {
+            Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
+            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+            startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+        });
+
+        // 确认当前选择的图片
+        mViewHolder.button_apply.setOnClickListener(view -> {
+            Intent result = new Intent();
+            // 获取选择的图片的url集合
+            ArrayList<Uri> selectedUris = (ArrayList<Uri>) mSelectedCollection.asListOfUri();
+            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
+            ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
+            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
+            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);// 是否启用原图
+            mActivity.setResult(RESULT_OK, result);
+            mActivity.finish();
+        });
+
+        // 点击原图
+        mViewHolder.originalLayout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (getFragmentManager() != null) {
+                    // 如果有大于限制大小的，就提示
+                    int count = countOverMaxSize();
+                    if (count > 0) {
+                        IncapableDialog incapableDialog = IncapableDialog.newInstance("",
+                                getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
+                        incapableDialog.show(getFragmentManager(),
+                                IncapableDialog.class.getName());
+                        return;
+                    }
+
+                    // 设置状态
+                    mOriginalEnable = !mOriginalEnable;
+                    mViewHolder.original.setChecked(mOriginalEnable);
+
+                    // 设置状态是否原图
+                    if (mSpec.onCheckedListener != null) {
+                        mSpec.onCheckedListener.onCheck(mOriginalEnable);
+                    }
+
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mSelectedCollection.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // 销毁相册model
+        mAlbumCollection.onDestroy();
+        mSpec.onCheckedListener = null;
+        mSpec.onSelectedListener = null;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+//            onBackPressed(); // TODO
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK)
+            return;
+        // 请求的预览界面
+        if (requestCode == REQUEST_CODE_PREVIEW) {
+            Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+            // 获取选择的数据
+            ArrayList<Item> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+            // 是否启用原图
+            mOriginalEnable = data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+            int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
+                    SelectedItemCollection.COLLECTION_UNDEFINED);
+            // 如果在预览界面点击了确定
+            if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                Intent result = new Intent();
+                ArrayList<Uri> selectedUris = new ArrayList<>();
+                ArrayList<String> selectedPaths = new ArrayList<>();
+                if (selected != null) {
+                    for (Item item : selected) {
+                        // 添加uri和path
+                        selectedUris.add(item.getContentUri());
+                        selectedPaths.add(PathUtils.getPath(getContext(), item.getContentUri()));
+                    }
+                }
+                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
+                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
+                result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable); // 是否启用原图
+                mActivity.setResult(RESULT_OK, result);
+                mActivity.finish();
+            } else {
+                // 点击了返回
+                mSelectedCollection.overwrite(selected, collectionType);
+                if (getFragmentManager() != null) {
+                    Fragment mediaSelectionFragment = getFragmentManager().findFragmentByTag(
+                            MediaSelectionFragment.class.getSimpleName());
+                    if (mediaSelectionFragment instanceof MediaSelectionFragment) {
+                        // 刷新数据源
+                        ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
+                    }
+                    // 刷新底部
+                    updateBottomToolbar();
+                }
+
+            }
+        } else if (requestCode == REQUEST_CODE_CAPTURE) {
+            // 如果是拍照返回
+            // Just pass the data back to previous calling Activity.
+//            Uri contentUri = mMediaStoreCompat.getCurrentPhotoUri();
+//            String path = mMediaStoreCompat.getCurrentPhotoPath();
+//            ArrayList<Uri> selected = new ArrayList<>();
+//            selected.add(contentUri);
+//            ArrayList<String> selectedPath = new ArrayList<>();
+//            selectedPath.add(path);
+//            Intent result = new Intent();
+//            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selected);
+//            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPath);
+//            setResult(RESULT_OK, result);
+//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+//                MatisseActivity.this.revokeUriPermission(contentUri,
+//                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            finish();
+        }
     }
 
     /**
@@ -259,6 +422,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     /**
      * 选择某个专辑的时候
+     *
      * @param album 专辑
      */
     private void onAlbumSelected(Album album) {

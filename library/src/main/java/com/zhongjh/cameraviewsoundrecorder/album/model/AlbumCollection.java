@@ -71,6 +71,16 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     /**
+     * 进行销毁
+     */
+    public void onDestroy() {
+        if (mLoaderManager != null) {
+            mLoaderManager.destroyLoader(LOADER_ID);
+        }
+        mCallbacks = null;
+    }
+
+    /**
      * 获取所有专辑
      */
     public void loadAlbums() {
@@ -81,7 +91,7 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
         return mCurrentSelection;
     }
 
-    public void setCurrentSelection(int currentSelection) {
+    public void setStateCurrentSelection(int currentSelection) {
         this.mCurrentSelection = currentSelection;
     }
 

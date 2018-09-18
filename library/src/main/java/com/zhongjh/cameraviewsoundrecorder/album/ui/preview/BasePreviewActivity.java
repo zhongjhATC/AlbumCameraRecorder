@@ -16,6 +16,8 @@ import com.zhongjh.cameraviewsoundrecorder.utils.VersionUtils;
 public class BasePreviewActivity extends AppCompatActivity {
 
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
+    public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
+    public static final String EXTRA_RESULT_APPLY = "extra_result_apply";
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     public static final String CHECK_STATE = "checkState";
 

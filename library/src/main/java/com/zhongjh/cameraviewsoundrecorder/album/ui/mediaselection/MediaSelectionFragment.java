@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
+import com.zhongjh.cameraviewsoundrecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 
 /**
  * Created by zhongjh on 2018/8/30.
@@ -11,6 +12,8 @@ import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 public class MediaSelectionFragment extends Fragment {
 
     public static final String EXTRA_ALBUM = "extra_album";     // 专辑数据
+
+    private AlbumMediaAdapter mAdapter;
 
     /**
      * 实例化
@@ -22,6 +25,13 @@ public class MediaSelectionFragment extends Fragment {
         args.putParcelable(EXTRA_ALBUM, album);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    /**
+     * 刷新数据源
+     */
+    public void refreshMediaGrid() {
+        mAdapter.notifyDataSetChanged();
     }
 
 }
