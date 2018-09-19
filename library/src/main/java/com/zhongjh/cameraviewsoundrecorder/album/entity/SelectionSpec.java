@@ -5,8 +5,11 @@ import android.support.annotation.StyleRes;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
+import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
+
+import java.util.List;
 
 /**
  * 选择规格
@@ -14,6 +17,7 @@ import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
  */
 public class SelectionSpec {
 
+    public boolean mediaTypeExclusive; // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
     public boolean hasInited; // 是否通过正规方式进来
     @StyleRes
     public int themeId;         // 样式
@@ -28,6 +32,7 @@ public class SelectionSpec {
     public boolean originalable;    // 是否原图
     public int originalMaxSize;     // 最大原图size,仅当originalEnable为true的时候才有效
     public OnCheckedListener onCheckedListener;
+    public List<Filter> filters;
 
     private SelectionSpec() {
     }
@@ -46,6 +51,7 @@ public class SelectionSpec {
      * 重置
      */
     private void reset() {
+        mediaTypeExclusive = true;
         themeId = R.style.AppTheme_Blue;
         orientation = 0;
         hasInited = true;

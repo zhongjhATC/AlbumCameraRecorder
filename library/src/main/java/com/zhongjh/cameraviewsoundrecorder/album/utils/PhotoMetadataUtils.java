@@ -13,6 +13,12 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 
+import com.zhongjh.cameraviewsoundrecorder.R;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -108,35 +114,43 @@ public final class PhotoMetadataUtils {
         return uri.getPath();
     }
 
-//    public static IncapableCause isAcceptable(Context context, Item item) {
-//        if (!isSelectableType(context, item)) {
-//            return new IncapableCause(context.getString(R.string.error_file_type));
-//        }
-//
-//        if (SelectionSpec.getInstance().filters != null) {
-//            for (Filter filter : SelectionSpec.getInstance().filters) {
-//                IncapableCause incapableCause = filter.filter(context, item);
-//                if (incapableCause != null) {
-//                    return incapableCause;
-//                }
-//            }
-//        }
-//        return null;
-//    }
-//
-//    private static boolean isSelectableType(Context context, Item item) {
-//        if (context == null) {
-//            return false;
-//        }
-//
-//        ContentResolver resolver = context.getContentResolver();
-//        for (MimeType type : SelectionSpec.getInstance().mimeTypeSet) {
-//            if (type.checkType(resolver, item.getContentUri())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    /**
+     *
+     * @param context
+     * @param item
+     * @return
+     */
+    public static IncapableCause isAcceptable(Context context, Item item) {
+        // 判断资源类型是否已设置可选
+        if (!isSelectableType(context, item)) {
+            return new IncapableCause(context.getString(R.string.error_file_type));
+        }
+
+        // 过滤不符合用户设定的资源 Filter提供抽象方法，由用户自行设置过滤规则
+        if (SelectionSpec.getInstance().filters != null) {
+            for (Filter filter : SelectionSpec.getInstance().filters) {
+                IncapableCause incapableCause = filter.filter(context, item);
+                if (incapableCause != null) {
+                    return incapableCause;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isSelectableType(Context context, Item item) {
+        if (context == null) {
+            return false;
+        }
+
+        ContentResolver resolver = context.getContentResolver();
+        for (MimeType type : SelectionSpec.getInstance().mimeTypeSet) {
+            if (type.checkType(resolver, item.getContentUri())) {
+                return true;
+            }
+        }
+        return false;
+    }
 //
 //    private static boolean shouldRotate(ContentResolver resolver, Uri uri) {
 //        ExifInterface exif;

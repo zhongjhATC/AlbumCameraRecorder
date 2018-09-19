@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
 
 

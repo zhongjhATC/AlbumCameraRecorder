@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.base.RecyclerViewCursorAdapter;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
@@ -195,7 +196,7 @@ public class AlbumMediaAdapter extends
      */
     @Override
     public void onCheckViewClicked(CheckView checkView, Item item, RecyclerView.ViewHolder holder) {
-        // 是否多选时,显示数字
+        // 是否多选模式,显示数字
         if (mSelectionSpec.countable) {
             // 获取当前选择的第几个
             int checkedNum = mSelectedCollection.checkedNumOf(item);
@@ -214,10 +215,14 @@ public class AlbumMediaAdapter extends
                 notifyCheckStateChanged();
             }
         } else {
+            // 不是多选模式
             if (mSelectedCollection.isSelected(item)) {
+                // 如果当前已经被选中，再次选择就是取消了
                 mSelectedCollection.remove(item);
+                // 刷新数据源
                 notifyCheckStateChanged();
             } else {
+
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
                     mSelectedCollection.add(item);
                     notifyCheckStateChanged();
