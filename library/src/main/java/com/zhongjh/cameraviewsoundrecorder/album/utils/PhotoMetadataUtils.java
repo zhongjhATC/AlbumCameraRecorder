@@ -17,6 +17,7 @@ import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 
 import java.io.FileNotFoundException;
@@ -115,7 +116,7 @@ public final class PhotoMetadataUtils {
     }
 
     /**
-     *
+     * 过滤文件
      * @param context
      * @param item
      * @return
@@ -138,13 +139,21 @@ public final class PhotoMetadataUtils {
         return null;
     }
 
+    /**
+     * 判断资源类型是否已设置可选
+     * @param context 上下文
+     * @param item 数据源
+     * @return
+     */
     private static boolean isSelectableType(Context context, Item item) {
         if (context == null) {
             return false;
         }
 
         ContentResolver resolver = context.getContentResolver();
+        // 循环当前类型配置
         for (MimeType type : SelectionSpec.getInstance().mimeTypeSet) {
+            // 如果当前类型配置 相等 当前数据
             if (type.checkType(resolver, item.getContentUri())) {
                 return true;
             }

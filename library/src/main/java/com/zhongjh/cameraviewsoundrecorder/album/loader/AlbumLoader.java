@@ -24,6 +24,9 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
+import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+
 
 /**
  * Load all albums (grouped by bucket_id) into a single cursor.

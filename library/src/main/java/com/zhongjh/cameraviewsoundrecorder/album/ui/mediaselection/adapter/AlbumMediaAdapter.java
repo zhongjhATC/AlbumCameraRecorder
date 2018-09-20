@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.base.RecyclerViewCursorAdapter;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
@@ -231,6 +232,9 @@ public class AlbumMediaAdapter extends
         }
     }
 
+    /**
+     * 刷新数据
+     */
     private void notifyCheckStateChanged() {
         notifyDataSetChanged();
         if (mCheckStateListener != null) {
@@ -238,41 +242,70 @@ public class AlbumMediaAdapter extends
         }
     }
 
+    /**
+     * 返回类型
+     * @param position 索引
+     * @param cursor 数据源
+     */
     @Override
     public int getItemViewType(int position, Cursor cursor) {
         return Item.valueOf(cursor).isCapture() ? VIEW_TYPE_CAPTURE : VIEW_TYPE_MEDIA;
     }
 
+    /**
+     * 验证当前item是否满足可以被选中的条件
+     * @param context 上下文
+     * @param item 数据源
+     */
     private boolean assertAddSelection(Context context, Item item) {
         IncapableCause cause = mSelectedCollection.isAcceptable(item);
         IncapableCause.handleCause(context, cause);
         return cause == null;
     }
 
-
+    /**
+     * 注册选择事件
+     * @param listener 事件
+     */
     public void registerCheckStateListener(CheckStateListener listener) {
         mCheckStateListener = listener;
     }
 
+    /**
+     * 注销选择事件
+     */
     public void unregisterCheckStateListener() {
         mCheckStateListener = null;
     }
 
+    /**
+     * 注册图片点击事件
+     * @param listener
+     */
     public void registerOnMediaClickListener(OnMediaClickListener listener) {
         mOnMediaClickListener = listener;
     }
 
+    /**
+     * 注销图片点击事件
+     */
     public void unregisterOnMediaClickListener() {
         mOnMediaClickListener = null;
     }
 
+    /**
+     * 刷新所能看到的选择
+     */
     public void refreshSelection() {
         GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
+        // 获取当前能看到的第一个，和最后一个
         int first = layoutManager.findFirstVisibleItemPosition();
         int last = layoutManager.findLastVisibleItemPosition();
         if (first == -1 || last == -1) {
+            // 如果是-1就直接返回
             return;
         }
+        // 获取数据源
         Cursor cursor = getCursor();
         for (int i = first; i <= last; i++) {
             RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(first);
@@ -284,6 +317,11 @@ public class AlbumMediaAdapter extends
         }
     }
 
+    /**
+     * 返回图片调整大小
+     * @param context 上下文
+     * @return 列表的每个格子的宽度 * 缩放比例
+     */
     private int getImageResize(Context context) {
         if (mImageResize == 0) {
             RecyclerView.LayoutManager lm = mRecyclerView.getLayoutManager();
@@ -291,7 +329,9 @@ public class AlbumMediaAdapter extends
             int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
             int availableWidth = screenWidth - context.getResources().getDimensionPixelSize(
                     R.dimen.media_grid_spacing) * (spanCount - 1);
+            // 图片调整后的大小：获取列表的每个格子的宽度
             mImageResize = availableWidth / spanCount;
+            // 图片调整后的大小 * 缩放比例
             mImageResize = (int) (mImageResize * mSelectionSpec.thumbnailScale);
         }
         return mImageResize;

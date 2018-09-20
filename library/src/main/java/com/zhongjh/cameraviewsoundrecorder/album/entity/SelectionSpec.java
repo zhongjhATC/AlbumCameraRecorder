@@ -5,11 +5,13 @@ import android.support.annotation.StyleRes;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
+import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 选择规格
@@ -17,6 +19,7 @@ import java.util.List;
  */
 public class SelectionSpec {
 
+    public Set<MimeType> mimeTypeSet; // 选择 mime 的类型，MimeType.allOf()
     public boolean mediaTypeExclusive; // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
     public boolean hasInited; // 是否通过正规方式进来
     @StyleRes
@@ -27,6 +30,7 @@ public class SelectionSpec {
     public int maxImageSelectable;  // 最大图片选择数量
     public int maxVideoSelectable;  // 最大视频选择数量
     public boolean capture;         // 是否可以拍照
+    public int thumbnailScale;      // 图片缩放比例
     public ImageEngine imageEngine;
     public OnSelectedListener onSelectedListener;
     public boolean originalable;    // 是否原图
@@ -72,6 +76,20 @@ public class SelectionSpec {
      */
     public boolean singleSelectionModeEnabled() {
         return !countable && (maxSelectable == 1 || (maxImageSelectable == 1 && maxVideoSelectable == 1));
+    }
+
+    /**
+     * 仅显示图片
+     */
+    public boolean onlyShowImages() {
+        return showSingleMediaType && MimeType.ofImage().containsAll(mimeTypeSet);
+    }
+
+    /**
+     * 仅显示视频
+     */
+    public boolean onlyShowVideos() {
+        return showSingleMediaType && MimeType.ofVideo().containsAll(mimeTypeSet);
     }
 
     private static final class InstanceHolder {
