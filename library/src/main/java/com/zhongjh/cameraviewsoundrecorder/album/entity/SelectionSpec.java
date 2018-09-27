@@ -21,6 +21,7 @@ public class SelectionSpec {
 
     public Set<MimeType> mimeTypeSet; // 选择 mime 的类型，MimeType.allOf()
     public boolean mediaTypeExclusive; // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
+    public boolean showSingleMediaType; // 仅仅显示一个多媒体类型
     public boolean hasInited; // 是否通过正规方式进来
     @StyleRes
     public int themeId;         // 样式
