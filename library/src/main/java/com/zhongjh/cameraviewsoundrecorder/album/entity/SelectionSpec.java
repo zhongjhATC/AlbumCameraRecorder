@@ -5,6 +5,7 @@ import android.support.annotation.StyleRes;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
+import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
@@ -31,7 +32,10 @@ public class SelectionSpec {
     public int maxImageSelectable;  // 最大图片选择数量
     public int maxVideoSelectable;  // 最大视频选择数量
     public boolean capture;         // 是否可以拍照
-    public int thumbnailScale;      // 图片缩放比例
+    public CaptureStrategy captureStrategy; // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+    public int spanCount;           // 如果设置了item宽度的具体数值则计算获得列表的列数，否则使用设置的列数。如果你想要固定的跨度计数，请使用 spanCount(int spanCount)，当方向更改时，范围计数将保持不变。
+    public int gridExpectedSize;    // 设置列宽
+    public float thumbnailScale;      // 图片缩放比例
     public ImageEngine imageEngine;
     public OnSelectedListener onSelectedListener;
     public boolean originalable;    // 是否原图
@@ -56,10 +60,24 @@ public class SelectionSpec {
      * 重置
      */
     private void reset() {
+        mimeTypeSet = null;
         mediaTypeExclusive = true;
+        showSingleMediaType = false;
         themeId = R.style.AppTheme_Blue;
         orientation = 0;
+        countable = false;
+        maxSelectable = 1;
+        maxImageSelectable = 0;
+        maxVideoSelectable = 0;
+        filters = null;
+        capture = false;
+        captureStrategy = null;
+        spanCount = 3;
+        thumbnailScale = 0.5f;
+        imageEngine = new GlideEngine();
         hasInited = true;
+        originalable = false;
+        originalMaxSize = Integer.MAX_VALUE;
     }
 
     /**

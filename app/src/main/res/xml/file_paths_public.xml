@@ -14,8 +14,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<resources>
-    <dimen name="grid_expected_size">120dp</dimen>
-    <dimen name="item_margin_horizontal">24dp</dimen>
-    <dimen name="item_margin_vertical">8dp</dimen>
-</resources>
+<paths>
+    <external-path
+        name="my_images"
+        path="Pictures"/>
+</paths>

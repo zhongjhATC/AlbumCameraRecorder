@@ -3,10 +3,13 @@ package com.zhongjh.cameraapp;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,9 +19,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhongjh.cameraviewsoundrecorder.album.MultiMedia;
+import com.zhongjh.cameraviewsoundrecorder.album.entity.CaptureStrategy;
+import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
+import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
+import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
+import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static final int REQUEST_CODE_CHOOSE = 23;
+
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
     private ImageView photo;
     private TextView device;
@@ -49,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                             .PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
                             .PERMISSION_GRANTED) {
-                startActivityForResult(new Intent(MainActivity.this, com.zhongjh.cameraviewsoundrecorder.MainActivity.class), 100);
+                openMain();
             } else {
                 //不具有获取权限，需要进行权限申请
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{
@@ -58,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
             }
         } else {
-            startActivityForResult(new Intent(MainActivity.this, com.zhongjh.cameraviewsoundrecorder.MainActivity.class), 100);
+            openMain();
         }
     }
 
@@ -111,5 +125,45 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    /**
+     * 打开窗体
+     */
+    private void openMain(){
+        MultiMedia.from(MainActivity.this)
+                .choose(MimeType.ofAll(), false) // 设置显示的多媒体类型
+                .countable(false)
+                .capture(true)
+                .captureStrategy(
+                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider"))
+                .maxSelectable(1)
+                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
+                .gridExpectedSize(
+                        getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                .thumbnailScale(0.85f)
+//                                            .imageEngine(new GlideEngine())  // for glide-V3
+                .imageEngine(new Glide4Engine())    // for glide-V4
+                .setOnSelectedListener(new OnSelectedListener() {
+                    @Override
+                    public void onSelected(
+                            @NonNull List<Uri> uriList, @NonNull List<String> pathList) {
+                        // DO SOMETHING IMMEDIATELY HERE
+                        Log.e("onSelected", "onSelected: pathList=" + pathList);
+
+                    }
+                })
+
+                .originalEnable(true)
+                .maxOriginalSize(10)
+                .setOnCheckedListener(new OnCheckedListener() {
+                    @Override
+                    public void onCheck(boolean isChecked) {
+                        // DO SOMETHING IMMEDIATELY HERE
+                        Log.e("isChecked", "onCheck: isChecked=" + isChecked);
+                    }
+                })
+                .forResult(REQUEST_CODE_CHOOSE);
     }
 }
