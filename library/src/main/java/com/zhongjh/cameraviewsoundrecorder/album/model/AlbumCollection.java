@@ -6,13 +6,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+
+import com.zhongjh.cameraviewsoundrecorder.album.loader.AlbumLoader;
 
 import java.lang.ref.WeakReference;
 
 /**
+ * 每个mLoaderManager都要跑onCreateLoader 初始化的方法，不然会是null
  * Created by zhongjh on 2018/8/30.
  */
 public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -23,21 +25,40 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     private LoaderManager mLoaderManager;   // 加载器的管理器
     private AlbumCallbacks mCallbacks;      // 回调
     private int mCurrentSelection;
+    private boolean mLoadFinished;
 
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-        return null;
+        Context context = mContext.get();
+        if (context == null) {
+            return null;
+        }
+        mLoadFinished = false;
+        return AlbumLoader.newInstance(context);
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        Context context = mContext.get();
+        if (context == null) {
+            return;
+        }
 
+        if (!mLoadFinished) {
+            mLoadFinished = true;
+            mCallbacks.onAlbumLoadFinished(data);
+        }
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        Context context = mContext.get();
+        if (context == null) {
+            return;
+        }
 
+        mCallbacks.onAlbumReset();
     }
 
     public void onCreate(Fragment fragment, AlbumCallbacks callbacks) {
@@ -98,11 +119,11 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     public interface AlbumCallbacks {
 
         /**
-         * 加载数据
+         * 加载数据完数据后
          *
          * @param cursor
          */
-        void onAlbumLoad(Cursor cursor);
+        void onAlbumLoadFinished(Cursor cursor);
 
         /**
          * 重置相册

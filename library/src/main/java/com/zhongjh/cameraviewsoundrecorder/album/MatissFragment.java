@@ -392,7 +392,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
-    public void onAlbumLoad(final Cursor cursor) {
+    public void onAlbumLoadFinished(final Cursor cursor) {
         // 更新相册列表
         mAlbumsSpinnerAdapter.swapCursor(cursor);
         // 选择默认相册

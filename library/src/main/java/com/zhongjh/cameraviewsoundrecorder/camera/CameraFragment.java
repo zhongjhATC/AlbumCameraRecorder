@@ -52,9 +52,9 @@ public class CameraFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
-
-        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        // 隐藏状态栏
+//        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         cameraLayout = view.findViewById(R.id.cameraLayout);
 
         // 定制参数
@@ -104,11 +104,8 @@ public class CameraFragment extends Fragment {
             }
         });
 
-        cameraLayout.setLeftClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        cameraLayout.setLeftClickListener(v -> {
 //                CameraActivity.this.finish();
-            }
         });
         cameraLayout.setRightClickListener(new View.OnClickListener() {
             @Override
@@ -126,21 +123,21 @@ public class CameraFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        //全屏显示
-        if (Build.VERSION.SDK_INT >= 19) {
-            View decorView = getActivity().getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        } else {
-            View decorView = getActivity().getWindow().getDecorView();
-            int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
-            decorView.setSystemUiVisibility(option);
-        }
+//        // 全屏显示
+//        if (Build.VERSION.SDK_INT >= 19) {
+//            View decorView = getActivity().getWindow().getDecorView();
+//            decorView.setSystemUiVisibility(
+//                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+//        } else {
+//            View decorView = getActivity().getWindow().getDecorView();
+//            int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
+//            decorView.setSystemUiVisibility(option);
+//        }
     }
 
 
