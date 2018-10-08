@@ -39,10 +39,10 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.media_grid_content, this, true);
 
-        mThumbnail = (ImageView) findViewById(R.id.media_thumbnail);
-        mCheckView = (CheckView) findViewById(R.id.check_view);
-        mGifTag = (ImageView) findViewById(R.id.gif);
-        mVideoDuration = (TextView) findViewById(R.id.video_duration);
+        mThumbnail = findViewById(R.id.media_thumbnail);
+        mCheckView = findViewById(R.id.check_view);
+        mGifTag = findViewById(R.id.gif);
+        mVideoDuration = findViewById(R.id.video_duration);
 
         mThumbnail.setOnClickListener(this);
         mCheckView.setOnClickListener(this);
@@ -108,11 +108,11 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     }
 
     /**
-     * 设置当前被选择
+     * 设置当前的单选框为选择
      * @param checked 是否选择
      */
     public void setChecked(boolean checked) {
-        this.checked = checked;
+        mCheckView.setChecked(checked);
     }
 
 

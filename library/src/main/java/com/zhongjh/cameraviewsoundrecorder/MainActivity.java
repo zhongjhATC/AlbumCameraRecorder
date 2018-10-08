@@ -12,6 +12,7 @@ import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraFragment;
+import com.zhongjh.cameraviewsoundrecorder.soundrecording.SoundRecordingFragment;
 
 /**
  * Created by zhongjh on 2018/8/22.
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1: // Fragment # 0 - This will show FirstFragment different title
                     return CameraFragment.newInstance(1, "拍照");
                 case 2: // Fragment # 1 - This will show SecondFragment
-                    return MatissFragment.newInstance(2, "录音");
+                    return SoundRecordingFragment.newInstance(2, "录音");
 //                    return CameraFragment.newInstance(1, "Page # 2");
                 default:
                     return null;

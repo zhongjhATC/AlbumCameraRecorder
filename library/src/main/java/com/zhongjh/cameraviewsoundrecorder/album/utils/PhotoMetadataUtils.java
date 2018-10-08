@@ -41,28 +41,44 @@ public final class PhotoMetadataUtils {
         return size.x * size.y;
     }
 
-//    public static Point getBitmapSize(Uri uri, Activity activity) {
-//        ContentResolver resolver = activity.getContentResolver();
-//        Point imageSize = getBitmapBound(resolver, uri);
-//        int w = imageSize.x;
-//        int h = imageSize.y;
-//        if (PhotoMetadataUtils.shouldRotate(resolver, uri)) {
-//            w = imageSize.y;
-//            h = imageSize.x;
-//        }
-//        if (h == 0) return new Point(MAX_WIDTH, MAX_WIDTH);
-//        DisplayMetrics metrics = new DisplayMetrics();
-//        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-//        float screenWidth = (float) metrics.widthPixels;
-//        float screenHeight = (float) metrics.heightPixels;
-//        float widthScale = screenWidth / w;
-//        float heightScale = screenHeight / h;
+    /**
+     *
+     * @param uri 图片uri
+     * @param activity 界面
+     * @return xy
+     */
+    public static Point getBitmapSize(Uri uri, Activity activity) {
+        ContentResolver resolver = activity.getContentResolver(); // ContentResolver共享数据库
+        Point imageSize = getBitmapBound(resolver, uri);
+        int w = imageSize.x;
+        int h = imageSize.y;
+        // 判断图片是否旋转了
+        if (PhotoMetadataUtils.shouldRotate(resolver, uri)) {
+            w = imageSize.y;
+            h = imageSize.x;
+        }
+        if (h == 0) return new Point(MAX_WIDTH, MAX_WIDTH);
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        // 获取屏幕的宽度高度
+        float screenWidth = (float) metrics.widthPixels;
+        float screenHeight = (float) metrics.heightPixels;
+        // 屏幕宽度 / 图片宽度 = ？？
+        float widthScale = screenWidth / w;
+        float heightScale = screenHeight / h;
 //        if (widthScale > heightScale) {
 //            return new Point((int) (w * widthScale), (int) (h * heightScale));
 //        }
-//        return new Point((int) (w * widthScale), (int) (h * heightScale));
-//    }
+        // ?? * 宽度
+        return new Point((int) (w * widthScale), (int) (h * heightScale));
+    }
 
+    /**
+     * 获取长度和宽度
+     * @param resolver ContentResolver共享数据库
+     * @param uri 图片uri
+     * @return xy
+     */
     public static Point getBitmapBound(ContentResolver resolver, Uri uri) {
         InputStream is = null;
         try {
@@ -88,7 +104,7 @@ public final class PhotoMetadataUtils {
 
     /**
      * 查询图片
-     * @param resolver 数据共享器
+     * @param resolver ContentResolver共享数据库
      * @param uri 图片的uri
      * @return 图片路径
      */
@@ -160,19 +176,27 @@ public final class PhotoMetadataUtils {
         }
         return false;
     }
-//
-//    private static boolean shouldRotate(ContentResolver resolver, Uri uri) {
-//        ExifInterface exif;
-//        try {
-//            exif = ExifInterfaceCompat.newInstance(getPath(resolver, uri));
-//        } catch (IOException e) {
-//            Log.e(TAG, "could not read exif info of the image: " + uri);
-//            return false;
-//        }
-//        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
-//        return orientation == ExifInterface.ORIENTATION_ROTATE_90
-//                || orientation == ExifInterface.ORIENTATION_ROTATE_270;
-//    }
+
+    /**
+     * 是否应该纠正旋转
+     * @param resolver  ContentResolver共享数据库
+     * @param uri 图片uri
+     * @return 如果图片本身旋转了90或者270就返回是，需要纠正，否则否
+     */
+    private static boolean shouldRotate(ContentResolver resolver, Uri uri) {
+        // 获取 ExifInterface,实际上Exif格式就是在JPEG格式头部插入了数码照片的信息，包括拍摄时的光圈、快门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、色彩编码、拍摄时录制的声音以及GPS全球定位系统数据、缩略图等。
+        ExifInterface exif;
+        try {
+            exif = ExifInterfaceCompat.newInstance(getPath(resolver, uri));
+        } catch (IOException e) {
+            Log.e(TAG, "could not read exif info of the image: " + uri);
+            return false;
+        }
+        // 获取图片的旋转
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
+        return orientation == ExifInterface.ORIENTATION_ROTATE_90
+                || orientation == ExifInterface.ORIENTATION_ROTATE_270;
+    }
 
     /**
      * bytes转换mb

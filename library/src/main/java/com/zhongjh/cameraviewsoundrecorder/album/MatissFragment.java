@@ -12,13 +12,11 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.QuickContactBadge;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -38,8 +35,9 @@ import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.mediaselection.MediaSelectionFragment;
+import com.zhongjh.cameraviewsoundrecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.BasePreviewActivity;
-import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.SelectedPreviewActivity;
+import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.selectedpreview.SelectedPreviewActivity;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView;
@@ -53,7 +51,10 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Created by zhongjh on 2018/8/22.
  */
-public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks {
+public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks,
+        MediaSelectionFragment.SelectionProvider,
+        AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener,
+        AlbumMediaAdapter.OnPhotoCapture {
 
     public static final String EXTRA_RESULT_SELECTION = "extra_result_selection";               // Uri的数据
     public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";     // path的数据
@@ -67,7 +68,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private Context mContext;
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
-    private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(getContext());
+    private SelectedItemCollection mSelectedCollection;
     private SelectionSpec mSpec;
 
     private AlbumsSpinner mAlbumsSpinner;
@@ -112,6 +113,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     public void onAttach(Context context) {
         super.onAttach(context);
         this.mContext = context;
+        mSelectedCollection = new SelectedItemCollection(getContext());
     }
 
     /**
@@ -443,6 +445,40 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
     }
 
+    @Override
+    public void onUpdate() {
+        // notify bottom toolbar that check state changed.
+        updateBottomToolbar();
+
+        if (mSpec.onSelectedListener != null) {
+            mSpec.onSelectedListener.onSelected(
+                    mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
+        }
+    }
+
+    @Override
+    public void onMediaClick(Album album, Item item, int adapterPosition) {
+//        Intent intent = new Intent(this, AlbumPreviewActivity.class);
+//        intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album);
+//        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+//        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+//        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//        startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+    }
+
+    @Override
+    public SelectedItemCollection provideSelectedItemCollection() {
+        return mSelectedCollection;
+    }
+
+    @Override
+    public void capture() {
+//        // 第一个拍照
+//        if (mMediaStoreCompat != null) {
+//            mMediaStoreCompat.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE);
+//        }
+    }
+
     public static class ViewHolder {
         public View rootView;
         public TextView selected_album;
@@ -459,17 +495,17 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
-            this.selected_album = (TextView) rootView.findViewById(R.id.selected_album);
-            this.toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-            this.button_preview = (TextView) rootView.findViewById(R.id.button_preview);
-            this.original = (CheckRadioView) rootView.findViewById(R.id.original);
-            this.originalLayout = (LinearLayout) rootView.findViewById(R.id.originalLayout);
-            this.button_apply = (TextView) rootView.findViewById(R.id.button_apply);
-            this.bottom_toolbar = (FrameLayout) rootView.findViewById(R.id.bottom_toolbar);
-            this.container = (FrameLayout) rootView.findViewById(R.id.container);
-            this.empty_view_content = (TextView) rootView.findViewById(R.id.empty_view_content);
-            this.empty_view = (FrameLayout) rootView.findViewById(R.id.empty_view);
-            this.root = (RelativeLayout) rootView.findViewById(R.id.root);
+            this.selected_album = rootView.findViewById(R.id.selected_album);
+            this.toolbar = rootView.findViewById(R.id.toolbar);
+            this.button_preview = rootView.findViewById(R.id.button_preview);
+            this.original = rootView.findViewById(R.id.original);
+            this.originalLayout = rootView.findViewById(R.id.originalLayout);
+            this.button_apply = rootView.findViewById(R.id.button_apply);
+            this.bottom_toolbar = rootView.findViewById(R.id.bottom_toolbar);
+            this.container = rootView.findViewById(R.id.container);
+            this.empty_view_content = rootView.findViewById(R.id.empty_view_content);
+            this.empty_view = rootView.findViewById(R.id.empty_view);
+            this.root = rootView.findViewById(R.id.root);
         }
 
     }
