@@ -37,7 +37,7 @@ public class SelectionSpec {
     public int gridExpectedSize;    // 设置列宽
     public float thumbnailScale;      // 图片缩放比例
     public ImageEngine imageEngine;
-    public OnSelectedListener onSelectedListener;
+    public OnSelectedListener onSelectedListener; // 触发选择的事件，不管是列表界面还是显示大图的列表界面
     public boolean originalable;    // 是否原图
     public int originalMaxSize;     // 最大原图size,仅当originalEnable为true的时候才有效
     public OnCheckedListener onCheckedListener;

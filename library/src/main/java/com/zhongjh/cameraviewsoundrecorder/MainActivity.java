@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
@@ -21,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
     private SelectionSpec mSpec;
     FragmentPagerAdapter adapterViewPager;
+
+    // 底部控件
+    TabLayout mTabLayout;
 
 
     @Override
@@ -44,13 +48,26 @@ public class MainActivity extends AppCompatActivity {
         vpPager.setOffscreenPageLimit(3);
 
         // 底部
-        TabLayout tabLayout = findViewById(R.id.tableLayout);
+        mTabLayout = findViewById(R.id.tableLayout);
 //        tabLayout.addTab(tabLayout.newTab().setText("相册"));
 //        tabLayout.addTab(tabLayout.newTab().setText("拍照"));
 //        tabLayout.addTab(tabLayout.newTab().setText("录音"));
-        tabLayout.setupWithViewPager(vpPager);
+        mTabLayout.setupWithViewPager(vpPager);
     }
 
+    /**
+     * 显示或者隐藏底部
+     *
+     * @param isShow 是否显示
+     */
+    public void showHideTableLayout(boolean isShow) {
+        if (isShow) {
+            mTabLayout.setVisibility(View.VISIBLE);
+        } else {
+            mTabLayout.setVisibility(View.GONE);
+            // 隐藏之后还需要禁滑viewPager
+        }
+    }
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
         private static int NUM_ITEMS = 3;

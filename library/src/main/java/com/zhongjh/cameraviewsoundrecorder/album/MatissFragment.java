@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
@@ -345,6 +346,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.originalLayout.setVisibility(View.INVISIBLE);
         }
 
+        showBottomView(selectedCount);
     }
 
     /**
@@ -449,7 +451,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     public void onUpdate() {
         // notify bottom toolbar that check state changed.
         updateBottomToolbar();
-
+        // 触发选择的接口事件
         if (mSpec.onSelectedListener != null) {
             mSpec.onSelectedListener.onSelected(
                     mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
@@ -477,6 +479,27 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 //        if (mMediaStoreCompat != null) {
 //            mMediaStoreCompat.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE);
 //        }
+    }
+
+    /**
+     * 显示本身的底部
+     * 隐藏母窗体的table
+     * 以后如果有配置，就检查配置是否需要隐藏母窗体
+     *
+     * @param count 当前选择的数量
+     */
+    private void showBottomView(int count) {
+        if (count > 0) {
+            // 显示底部
+            mViewHolder.bottom_toolbar.setVisibility(View.VISIBLE);
+            // 隐藏母窗体的table
+            ((MainActivity) mActivity).showHideTableLayout(false);
+        } else {
+            // 显示底部
+            mViewHolder.bottom_toolbar.setVisibility(View.GONE);
+            // 隐藏母窗体的table
+            ((MainActivity) mActivity).showHideTableLayout(true);
+        }
     }
 
     public static class ViewHolder {
