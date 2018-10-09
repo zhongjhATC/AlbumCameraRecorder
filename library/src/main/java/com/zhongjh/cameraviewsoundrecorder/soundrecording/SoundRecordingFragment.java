@@ -48,7 +48,7 @@ public class SoundRecordingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
+        View view = inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false);
         return view;
     }
 

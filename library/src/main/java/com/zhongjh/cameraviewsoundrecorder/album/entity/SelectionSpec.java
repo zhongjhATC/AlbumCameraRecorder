@@ -27,7 +27,7 @@ public class SelectionSpec {
     @StyleRes
     public int themeId;         // 样式
     public int orientation;     // 旋转模式
-    public boolean countable;   // 是否多选时,显示数字
+    public boolean countable;   // 是否显示多选图片的数字
     public int maxSelectable;   // 最大选择数量
     public int maxImageSelectable;  // 最大图片选择数量
     public int maxVideoSelectable;  // 最大视频选择数量

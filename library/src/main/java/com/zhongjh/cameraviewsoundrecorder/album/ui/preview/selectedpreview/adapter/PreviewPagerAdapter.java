@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 
 
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.album.ui.previewitem.PreviewItemFragment;
 
 import java.util.ArrayList;
 import java.util.List;

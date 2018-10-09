@@ -133,11 +133,11 @@ public class MainActivity extends AppCompatActivity {
     private void openMain(){
         MultiMedia.from(MainActivity.this)
                 .choose(MimeType.ofAll(), false) // 设置显示的多媒体类型
-                .countable(false)
+                .countable(true)// 是否显示多选图片的数字
                 .capture(true)
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider"))
-                .maxSelectable(1)
+                .maxSelectable(10)// 最多选择几个
                 .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
                 .gridExpectedSize(
                         getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
@@ -145,24 +145,16 @@ public class MainActivity extends AppCompatActivity {
                 .thumbnailScale(0.85f)
 //                                            .imageEngine(new GlideEngine())  // for glide-V3
                 .imageEngine(new Glide4Engine())    // for glide-V4
-                .setOnSelectedListener(new OnSelectedListener() {
-                    @Override
-                    public void onSelected(
-                            @NonNull List<Uri> uriList, @NonNull List<String> pathList) {
-                        // DO SOMETHING IMMEDIATELY HERE
-                        Log.e("onSelected", "onSelected: pathList=" + pathList);
+                .setOnSelectedListener((uriList, pathList) -> {
+                    // 每次选择的事件
+                    Log.e("onSelected", "onSelected: pathList=" + pathList);
 
-                    }
                 })
-
-                .originalEnable(true)
-                .maxOriginalSize(10)
-                .setOnCheckedListener(new OnCheckedListener() {
-                    @Override
-                    public void onCheck(boolean isChecked) {
-                        // DO SOMETHING IMMEDIATELY HERE
-                        Log.e("isChecked", "onCheck: isChecked=" + isChecked);
-                    }
+                .originalEnable(true)// 开启原图
+                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
+                .setOnCheckedListener(isChecked -> {
+                    // DO SOMETHING IMMEDIATELY HERE
+                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
                 })
                 .forResult(REQUEST_CODE_CHOOSE);
     }

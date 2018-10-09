@@ -40,6 +40,7 @@
                 android:padding="16dp"
                 android:id="@+id/originalLayout"
                 android:visibility="gone"
+                tools:visibility="visible"
                 android:orientation="horizontal"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
@@ -102,6 +103,7 @@
         android:layout_alignParentEnd="true">
 
         <com.zhongjh.cameraviewsoundrecorder.album.widget.CheckView
+            android:contentDescription="选择了才可以点击确认这些"
             android:id="@+id/check_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
