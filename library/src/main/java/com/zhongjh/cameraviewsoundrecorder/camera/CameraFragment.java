@@ -19,6 +19,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout;
+import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
 
 import java.io.File;
 
@@ -135,7 +136,7 @@ public class CameraFragment extends Fragment {
                 // 母窗体禁止滑动
                 ((MainActivity) mActivity).setTablayoutScroll(false);
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
-                layoutParams.bottomMargin = 50;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
+                layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(50);//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
                 mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
             }
 

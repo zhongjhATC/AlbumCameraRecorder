@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // 禁滑viewPager
             mVpPager.setScroll(false);
-            mTabLayout.setVisibility(View.INVISIBLE);
+            mTabLayout.setVisibility(View.GONE);
 //            setTablayoutTouch(true);
         }
     }
