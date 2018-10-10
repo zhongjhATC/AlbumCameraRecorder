@@ -128,21 +128,15 @@ public class PhotoVideoLayout extends FrameLayout {
                 }
             }
         });
-        mViewHolder.btnCancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOperaeListener != null)
-                    mOperaeListener.cancel();
-                startTipAlphaAnimation();
-            }
+        mViewHolder.btnCancel.setOnClickListener(v -> {
+            if (mOperaeListener != null)
+                mOperaeListener.cancel();
+            startTipAlphaAnimation();
         });
-        mViewHolder.btnConfirm.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOperaeListener != null)
-                    mOperaeListener.confirm();
-                startTipAlphaAnimation();
-            }
+        mViewHolder.btnConfirm.setOnClickListener(v -> {
+            if (mOperaeListener != null)
+                mOperaeListener.confirm();
+            startTipAlphaAnimation();
         });
         // 默认隐藏
         mViewHolder.btnCancel.setVisibility(GONE);

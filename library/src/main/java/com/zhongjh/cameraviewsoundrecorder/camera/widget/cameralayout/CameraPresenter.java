@@ -1,11 +1,13 @@
-package com.zhongjh.cameraviewsoundrecorder.camera;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraCallback;
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraContact;
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraOperation;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 
@@ -55,12 +57,9 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void capture() {
-        mCameraOperation.takePicture(new CameraCallback.TakePictureCallback() {
-            @Override
-            public void captureResult(Bitmap bitmap, boolean isVertical) {
-                // 显示图片
-                mCameraView.showPicture(bitmap, isVertical);
-            }
+        mCameraOperation.takePicture((bitmap, isVertical) -> {
+            // 显示图片
+            mCameraView.showPicture(bitmap, isVertical);
         });
     }
 
@@ -71,18 +70,15 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void stopRecord(final boolean isShort, long time) {
-        mCameraOperation.stopRecord(isShort, new CameraCallback.StopRecordCallback() {
-            @Override
-            public void recordResult(String url, Bitmap firstFrame) {
-                if (isShort) {
-                    // 如果视频过短就是录制不成功
-                    mCameraView.resetState(TYPE_SHORT);
-                } else {
-                    // 设置成视频播放状态
-                    mCameraView.setState(Constants.STATE_VIDEO);
-                    // 如果录制结束，播放该视频
-                    mCameraView.playVideo(firstFrame, url);
-                }
+        mCameraOperation.stopRecord(isShort, (url, firstFrame) -> {
+            if (isShort) {
+                // 如果视频过短就是录制不成功
+                mCameraView.resetState(TYPE_SHORT);
+            } else {
+                // 设置成视频播放状态
+                mCameraView.setState(Constants.STATE_VIDEO);
+                // 如果录制结束，播放该视频
+                mCameraView.playVideo(firstFrame, url);
             }
         });
     }
@@ -131,12 +127,7 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void doOpenCamera() {
-        mCameraOperation.doOpenCamera(new CameraCallback.CameraOpenOverCallback() {
-            @Override
-            public void cameraHasOpened() {
-                mCameraOperation.doStartPreview(mCameraView.getSurfaceHolder(), mCameraView.getScreenProp());
-            }
-        });
+        mCameraOperation.doOpenCamera(() -> mCameraOperation.doStartPreview(mCameraView.getSurfaceHolder(), mCameraView.getScreenProp()));
     }
 
     @Override

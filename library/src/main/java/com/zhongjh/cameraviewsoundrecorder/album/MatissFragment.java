@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -89,6 +90,19 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.mActivity = activity;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+        mSelectedCollection = new SelectedItemCollection(getContext());
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         mSpec = SelectionSpec.getInstance();
         super.onCreate(savedInstanceState);
@@ -102,19 +116,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         initView(savedInstanceState);
         initListener();
         return view;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.mActivity = activity;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        this.mContext = context;
-        mSelectedCollection = new SelectedItemCollection(getContext());
     }
 
     /**
@@ -150,6 +151,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     private void initListener() {
+        // 关闭事件
+        mViewHolder.imgClose.setOnClickListener(v -> mActivity.finish());
+
         // 下拉框选择的时候
         mAlbumsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -515,6 +519,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public TextView empty_view_content;
         public FrameLayout empty_view;
         public RelativeLayout root;
+        public ImageView imgClose;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -529,6 +534,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             this.empty_view_content = rootView.findViewById(R.id.empty_view_content);
             this.empty_view = rootView.findViewById(R.id.empty_view);
             this.root = rootView.findViewById(R.id.root);
+            this.imgClose = rootView.findViewById(R.id.imgClose);
         }
 
     }

@@ -17,7 +17,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
-import com.zhongjh.cameraviewsoundrecorder.camera.widget.CameraLayout;
+import com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout;
 
 import java.io.File;
 
@@ -85,18 +85,8 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
 
-        cameraLayout.setLeftClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CameraActivity.this.finish();
-            }
-        });
-        cameraLayout.setRightClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        cameraLayout.setLeftClickListener(v -> CameraActivity.this.finish());
+//        cameraLayout.setRightClickListener(v -> Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show());
 
         Log.i("CJT", DeviceUtil.getDeviceModel());
     }

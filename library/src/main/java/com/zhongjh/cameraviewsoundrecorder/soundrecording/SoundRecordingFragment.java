@@ -1,24 +1,12 @@
 package com.zhongjh.cameraviewsoundrecorder.soundrecording;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
-import com.zhongjh.cameraviewsoundrecorder.camera.widget.CameraLayout;
-
-import java.io.File;
-
-import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
-import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
 
 /**
  * 录音

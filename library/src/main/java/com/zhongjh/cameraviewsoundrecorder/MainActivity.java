@@ -1,19 +1,22 @@
 package com.zhongjh.cameraviewsoundrecorder;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 
-import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraFragment;
 import com.zhongjh.cameraviewsoundrecorder.soundrecording.SoundRecordingFragment;
+import com.zhongjh.cameraviewsoundrecorder.widget.NoScrollViewPager;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by zhongjh on 2018/8/22.
@@ -25,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     // 底部控件
     TabLayout mTabLayout;
+    // viewPager
+    NoScrollViewPager mVpPager;
 
 
     @Override
@@ -42,17 +47,17 @@ public class MainActivity extends AppCompatActivity {
         if (mSpec.needOrientationRestriction()) {
             setRequestedOrientation(mSpec.orientation);
         }
-        ViewPager vpPager = findViewById(R.id.viewPager);
+        mVpPager = findViewById(R.id.viewPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
-        vpPager.setAdapter(adapterViewPager);
-        vpPager.setOffscreenPageLimit(3);
+        mVpPager.setAdapter(adapterViewPager);
+        mVpPager.setOffscreenPageLimit(3);
 
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
 //        tabLayout.addTab(tabLayout.newTab().setText("相册"));
 //        tabLayout.addTab(tabLayout.newTab().setText("拍照"));
 //        tabLayout.addTab(tabLayout.newTab().setText("录音"));
-        mTabLayout.setupWithViewPager(vpPager);
+        mTabLayout.setupWithViewPager(mVpPager);
     }
 
     /**
@@ -63,11 +68,76 @@ public class MainActivity extends AppCompatActivity {
     public void showHideTableLayout(boolean isShow) {
         if (isShow) {
             mTabLayout.setVisibility(View.VISIBLE);
+            setTablayoutScroll(true);
         } else {
             mTabLayout.setVisibility(View.GONE);
-            // 隐藏之后还需要禁滑viewPager
+            setTablayoutScroll(false);
         }
     }
+
+    /**
+     * 设置tablayout是否可以滑动
+     *
+     * @param isScroll 是否滑动
+     */
+    public void setTablayoutScroll(boolean isScroll) {
+        if (isScroll) {
+            // 设置可以滑动
+            mVpPager.setScroll(true);
+            mTabLayout.setVisibility(View.VISIBLE);
+//            setTablayoutTouch(false);
+        } else {
+            // 禁滑viewPager
+            mVpPager.setScroll(false);
+            mTabLayout.setVisibility(View.INVISIBLE);
+//            setTablayoutTouch(true);
+        }
+    }
+
+    /**
+     * 设置是否拦截
+     * @param isTouch 是否拦截
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private void setTablayoutTouch(boolean isTouch){
+        for (int i=0;i<mTabLayout.getTabCount();i++) {
+            View view = getTabView(mTabLayout,i);
+            if (view == null) continue;
+            view.setTag(i);
+            view.setOnTouchListener((v, event) -> isTouch);
+        }
+    }
+
+    /**
+     * 反射获取tabview
+     *
+     * @param tabLayout tabLayout
+     * @param index     索引
+     * @return view
+     */
+    private View getTabView(TabLayout tabLayout, int index) {
+        TabLayout.Tab tab = tabLayout.getTabAt(index);
+        if (tab == null) return null;
+        View tabView = null;
+        Field view = null;
+        try {
+            view = TabLayout.Tab.class.getDeclaredField("mView");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        if (view != null) {
+            view.setAccessible(true);
+        }
+        try {
+            if (view != null) {
+                tabView = (View) view.get(tab);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return tabView;
+    }
+
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
         private static int NUM_ITEMS = 3;

@@ -6,14 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.zhongjh.cameraviewsoundrecorder.camera.CameraActivity">
 
-    <com.zhongjh.cameraviewsoundrecorder.camera.widget.CameraLayout
+    <com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout
         android:id="@+id/cameraLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:duration_max="10000"
-        app:iconLeft="@drawable/ic_back"
         app:iconMargin="20dp"
-        app:iconRight="@drawable/ic_photo"
         app:iconSize="30dp"
         app:iconSrc="@drawable/ic_camera" />
 

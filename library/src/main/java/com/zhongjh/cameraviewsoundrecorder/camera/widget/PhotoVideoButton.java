@@ -177,7 +177,6 @@ public class PhotoVideoButton extends View {
         return true;
     }
 
-
     /**
      * 长按线程
      * 通过按钮 按下后经过500毫秒则会修改当前状态为长按状态
@@ -194,6 +193,9 @@ public class PhotoVideoButton extends View {
                     return;
                 }
             }
+
+
+
             //按住按钮的动画：外圆变大，内圆缩小
             startRecordAnimation(
                     mButtonOutsideRadius,
@@ -306,12 +308,9 @@ public class PhotoVideoButton extends View {
      */
     private void startCaptureAnimation(float inside_start) {
         ValueAnimator inside_anim = ValueAnimator.ofFloat(inside_start, inside_start * 0.75f, inside_start);
-        inside_anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mButtonInsideRadius = (float) animation.getAnimatedValue();
-                invalidate();
-            }
+        inside_anim.addUpdateListener(animation -> {
+            mButtonInsideRadius = (float) animation.getAnimatedValue();
+            invalidate();
         });
         inside_anim.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -339,20 +338,14 @@ public class PhotoVideoButton extends View {
         ValueAnimator outsideAnim = ValueAnimator.ofFloat(outsideStart, outsideEnd);
         ValueAnimator insideAnim = ValueAnimator.ofFloat(insideStart, insideEnd);
         // 外圆动画监听
-        outsideAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mButtonOutsideRadius = (float) animation.getAnimatedValue();
-                invalidate();
-            }
+        outsideAnim.addUpdateListener(animation -> {
+            mButtonOutsideRadius = (float) animation.getAnimatedValue();
+            invalidate();
         });
         // 内圆动画监听
-        insideAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mButtonInsideRadius = (float) animation.getAnimatedValue();
-                invalidate();
-            }
+        insideAnim.addUpdateListener(animation -> {
+            mButtonInsideRadius = (float) animation.getAnimatedValue();
+            invalidate();
         });
         AnimatorSet set = new AnimatorSet();
         // 当动画结束后启动录像Runnable并且回调录像开始接口

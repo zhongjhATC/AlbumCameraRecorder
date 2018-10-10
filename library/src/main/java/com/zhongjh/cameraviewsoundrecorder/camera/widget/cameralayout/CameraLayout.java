@@ -1,7 +1,8 @@
-package com.zhongjh.cameraviewsoundrecorder.camera.widget;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -23,12 +24,11 @@ import android.widget.LinearLayout;
 import android.widget.VideoView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.camera.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraContact;
-import com.zhongjh.cameraviewsoundrecorder.camera.CameraPresenter;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.CameraButton;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.CloseListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
@@ -39,7 +39,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.PhotoVideoLayout;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_DEFAULT;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_PICTURE;
@@ -65,12 +65,17 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private float mScreenProp = 0f; // 当前录视频的高/宽的比例
     private int mZoomGradient = 0;  //缩放梯度 @@
 
-    private ViewHolder mViewHolder; // 当前界面的所有控件
+    public ViewHolder mViewHolder; // 当前界面的所有控件
 
     private MediaPlayer mMediaPlayer; // 播放器
 
     private Bitmap mCaptureBitmap;   // 拍照的图片
-    private ArrayList<Bitmap> mCaptureBitmaps = new ArrayList<>(); // 拍照的图片-集合
+
+    @SuppressLint("UseSparseArrays")
+    private HashMap<Integer, Bitmap> mCaptureBitmaps = new HashMap<>();  // 拍照的图片-集合
+    @SuppressLint("UseSparseArrays")
+    private HashMap<Integer, View> mCaptureViews = new HashMap<>();      // 拍照的图片控件-集合
+    private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
     private Bitmap mFirstFrame;       // 第一帧图片
     private String mVideoUrl;         // 视频URL
 
@@ -80,9 +85,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     // 回调监听
     private ErrorListener mErrorLisenter;
-    private OnClickListener mLeftClickListener;
-    private OnClickListener mRightClickListener;
     private CameraSuccessListener mCameraSuccessListener;
+    private CloseListener mCloseListener;      //退出按钮监听
+    private PhotoVideoListener mPhotoVideoListener;// 按钮的监听
     private boolean mIsMultiPicture;
 
     // 赋值Camera错误回调
@@ -91,16 +96,18 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mCameraPresenter.setErrorLinsenter(errorLisenter);
     }
 
-    public void setLeftClickListener(OnClickListener clickListener) {
-        this.mLeftClickListener = clickListener;
-    }
-
-    public void setRightClickListener(OnClickListener clickListener) {
-        this.mRightClickListener = clickListener;
-    }
-
     public void setCameraSuccessListener(CameraSuccessListener cameraSuccessListener) {
         this.mCameraSuccessListener = cameraSuccessListener;
+    }
+
+    // 退出事件
+    public void setCloseListener(CloseListener closeListener) {
+        this.mCloseListener = closeListener;
+    }
+
+    // 核心按钮事件
+    public void setPhotoVideoListener(PhotoVideoListener photoVideoListener) {
+        this.mPhotoVideoListener = photoVideoListener;
     }
 
     /**
@@ -131,8 +138,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mCameraButton.setIconMargin(cameraViewTypedArray.getDimensionPixelSize(R.styleable.CameraView_iconMargin, (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics())));
         mCameraButton.setIconSrc(cameraViewTypedArray.getResourceId(R.styleable.CameraView_iconSrc, R.drawable.ic_camera));
-        mCameraButton.setIconLeft(cameraViewTypedArray.getResourceId(R.styleable.CameraView_iconLeft, 0));
-        mCameraButton.setIconRight(cameraViewTypedArray.getResourceId(R.styleable.CameraView_iconRight, 0));
         mCameraButton.setDuration(cameraViewTypedArray.getInteger(R.styleable.CameraView_duration_max, 10 * 1000));
         // google建议回收对象
         cameraViewTypedArray.recycle();
@@ -178,27 +183,19 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     private void initLisenter() {
         // 切换闪光灯模式
-        mViewHolder.imgFlash.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFlashType++;
-                if (mFlashType > Constants.TYPE_FLASH_OFF)
-                    mFlashType = Constants.TYPE_FLASH_AUTO;
-                // 重新设置当前闪光灯模式
-                setFlashLamp();
-            }
+        mViewHolder.imgFlash.setOnClickListener(v -> {
+            mFlashType++;
+            if (mFlashType > Constants.TYPE_FLASH_OFF)
+                mFlashType = Constants.TYPE_FLASH_AUTO;
+            // 重新设置当前闪光灯模式
+            setFlashLamp();
         });
 
         // 录像机的回调事件
         mViewHolder.vvPreview.getHolder().addCallback(this);
 
         // 切换摄像头前置/后置
-        mViewHolder.imgSwitch.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCameraPresenter.swtich(mViewHolder.vvPreview.getHolder(), mScreenProp);
-            }
-        });
+        mViewHolder.imgSwitch.setOnClickListener(v -> mCameraPresenter.swtich(mViewHolder.vvPreview.getHolder(), mScreenProp));
 
         // 拍照录像监听
         mViewHolder.pvLayout.setPhotoVideoListener(new PhotoVideoListener() {
@@ -208,6 +205,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mViewHolder.imgSwitch.setVisibility(INVISIBLE);
                 mViewHolder.imgFlash.setVisibility(INVISIBLE);
                 mCameraPresenter.capture();
+                if (mPhotoVideoListener != null)
+                    mPhotoVideoListener.takePictures();
             }
 
             @Override
@@ -215,12 +214,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));
                 mViewHolder.imgSwitch.setVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
-                postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCameraPresenter.stopRecord(true, time);
-                    }
-                }, 1500 - time);
+                postDelayed(() -> mCameraPresenter.stopRecord(true, time), 1500 - time);
+                if (mPhotoVideoListener != null)
+                    mPhotoVideoListener.recordShort(time);
             }
 
             @Override
@@ -229,17 +225,23 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mViewHolder.imgSwitch.setVisibility(INVISIBLE);
                 mViewHolder.imgFlash.setVisibility(INVISIBLE);
                 mCameraPresenter.record(mViewHolder.vvPreview.getHolder().getSurface(), mScreenProp);
+                if (mPhotoVideoListener != null)
+                    mPhotoVideoListener.recordStart();
             }
 
             @Override
             public void recordEnd(long time) {
                 // 录像结束
                 mCameraPresenter.stopRecord(false, time);
+                if (mPhotoVideoListener != null)
+                    mPhotoVideoListener.recordEnd(time);
             }
 
             @Override
             public void recordZoom(float zoom) {
                 mCameraPresenter.zoom(zoom, Constants.TYPE_RECORDER);
+                if (mPhotoVideoListener != null)
+                    mPhotoVideoListener.recordZoom(zoom);
             }
 
             @Override
@@ -247,6 +249,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 if (mErrorLisenter != null) {
                     mErrorLisenter.AudioPermissionError();
                 }
+                if (mPhotoVideoListener != null)
+                    mPhotoVideoListener.recordError();
             }
         });
 
@@ -261,6 +265,12 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             public void confirm() {
                 mCameraPresenter.confirm();
             }
+        });
+
+        // 关闭事件
+        mViewHolder.imgClose.setOnClickListener(v -> {
+            if (mCloseListener != null)
+                mCloseListener.onClose();
         });
 
     }
@@ -382,8 +392,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public void showPicture(Bitmap bitmap, boolean isVertical) {
         // 判断是否多个图片
         if (mIsMultiPicture) {
+            mPosition++;
             // 如果是多个图片，就把当前图片添加到集合并显示出来
-            mCaptureBitmaps.add(bitmap);
+            mCaptureBitmaps.put(mPosition, bitmap);
             // 显示横版列表
             mViewHolder.hsvPhoto.setVisibility(View.VISIBLE);
 
@@ -395,27 +406,25 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_horizontal_image_zjh, null));
             viewHolderImageView.imgPhoto.setImageBitmap(bitmap);
             viewHolderImageView.imgPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-            viewHolderImageView.imgCancel.setTag(mCaptureBitmaps.size() - 1);
-            viewHolderImageView.imgCancel.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // 删除
-                    mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
-                    mViewHolder.llPhoto.removeViewAt(Integer.parseInt(v.getTag().toString()));
-                    // 当列表全部删掉的话，就隐藏
-                    if (mCaptureBitmaps.size() <= 0){
-                        // 显示横版列表
-                        mViewHolder.hsvPhoto.setVisibility(View.GONE);
+            viewHolderImageView.imgCancel.setTag(mPosition);
+            viewHolderImageView.imgCancel.setOnClickListener(v -> {
+                // 删除
+                mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
+                mViewHolder.llPhoto.removeView(mCaptureViews.get(Integer.parseInt(v.getTag().toString())));
+                // 当列表全部删掉的话，就隐藏
+                if (mCaptureBitmaps.size() <= 0) {
+                    // 显示横版列表
+                    mViewHolder.hsvPhoto.setVisibility(View.GONE);
 
-                        // 显示横版列表的线条空间
-                        mViewHolder.vLine1.setVisibility(View.GONE);
-                        mViewHolder.vLine2.setVisibility(View.GONE);
+                    // 显示横版列表的线条空间
+                    mViewHolder.vLine1.setVisibility(View.GONE);
+                    mViewHolder.vLine2.setVisibility(View.GONE);
 
-                        // 隐藏右侧按钮
-                        mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
-                    }
+                    // 隐藏右侧按钮
+                    mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
                 }
             });
+            mCaptureViews.put(mPosition, viewHolderImageView.rootView);
             mViewHolder.llPhoto.addView(viewHolderImageView.rootView);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startOperaeBtnAnimatorMulti();
@@ -451,46 +460,33 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public void playVideo(Bitmap firstFrame, String url) {
         mVideoUrl = url;
         mFirstFrame = firstFrame;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (mMediaPlayer == null) {
-                    mMediaPlayer = new MediaPlayer();
-                } else {
-                    // 重置
-                    mMediaPlayer.reset();
+        new Thread(() -> {
+            if (mMediaPlayer == null) {
+                mMediaPlayer = new MediaPlayer();
+            } else {
+                // 重置
+                mMediaPlayer.reset();
+            }
+            try {
+                mMediaPlayer.setDataSource(mVideoUrl);
+                // 进行关联播放控件
+                mMediaPlayer.setSurface(mViewHolder.vvPreview.getHolder().getSurface());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    // 填充模式
+                    mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
                 }
-                try {
-                    mMediaPlayer.setDataSource(mVideoUrl);
-                    // 进行关联播放控件
-                    mMediaPlayer.setSurface(mViewHolder.vvPreview.getHolder().getSurface());
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        // 填充模式
-                        mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-                    }
-                    mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); // 指定流媒体的类型
-                    // 视频尺寸监听
-                    mMediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer
-                            .OnVideoSizeChangedListener() {
-                        @Override
-                        public void
-                        onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                            updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
-                                    .getVideoHeight());
-                        }
-                    });
-                    mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            // 播放视频
-                            mMediaPlayer.start();
-                        }
-                    });
-                    mMediaPlayer.setLooping(true); // 循环播放
-                    mMediaPlayer.prepare(); // 准备(同步)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); // 指定流媒体的类型
+                // 视频尺寸监听
+                mMediaPlayer.setOnVideoSizeChangedListener((mp, width, height) -> updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
+                        .getVideoHeight()));
+                mMediaPlayer.setOnPreparedListener(mp -> {
+                    // 播放视频
+                    mMediaPlayer.start();
+                });
+                mMediaPlayer.setLooping(true); // 循环播放
+                mMediaPlayer.prepare(); // 准备(同步)
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }).start();
     }
@@ -584,12 +580,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     private void setFocusViewWidthAnimation(float x, float y) {
         if (handlerFoucs(x, y)) {
-            mCameraPresenter.handleFocus(x, y, new CameraCallback.FocusCallback() {
-                @Override
-                public void focusSuccess() {
-                    mViewHolder.fouce_view.setVisibility(INVISIBLE);
-                }
-            });
+            mCameraPresenter.handleFocus(x, y, () -> mViewHolder.fouce_view.setVisibility(INVISIBLE));
         }
     }
 
@@ -635,13 +626,14 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         ImageView imgPhoto;
         public ImageView imgFlash;
         public ImageView imgSwitch;
-        PhotoVideoLayout pvLayout;
+        public PhotoVideoLayout pvLayout;
         FoucsView fouce_view;
         public HorizontalScrollView hsvPhoto;
         LinearLayout llPhoto;
         View vLine1;
         View vLine2;
         View vLine3;
+        ImageView imgClose;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -656,6 +648,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             this.vLine1 = rootView.findViewById(R.id.vLine1);
             this.vLine2 = rootView.findViewById(R.id.vLine2);
             this.vLine3 = rootView.findViewById(R.id.vLine3);
+            this.imgClose = rootView.findViewById(R.id.imgClose);
         }
 
     }

@@ -1,8 +1,7 @@
 package com.zhongjh.cameraviewsoundrecorder.camera;
 
-import android.content.pm.ActivityInfo;
+import android.app.Activity;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -10,13 +9,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
 
+import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
-import com.zhongjh.cameraviewsoundrecorder.camera.widget.CameraLayout;
+import com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout;
 
 import java.io.File;
 
@@ -24,11 +26,14 @@ import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
 
 /**
+ * 拍摄视频
  * Created by zhongjh on 2018/8/22.
  */
 public class CameraFragment extends Fragment {
 
-    private CameraLayout cameraLayout;
+    protected Activity mActivity;
+
+    private CameraLayout mCameraLayout;
     private String title;
     private int page;
 
@@ -39,6 +44,12 @@ public class CameraFragment extends Fragment {
         args.putString("someTitle", title);
         cameraFragment.setArguments(args);
         return cameraFragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.mActivity = activity;
     }
 
     @Override
@@ -55,16 +66,16 @@ public class CameraFragment extends Fragment {
         // 隐藏状态栏
 //        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        cameraLayout = view.findViewById(R.id.cameraLayout);
+        mCameraLayout = view.findViewById(R.id.cameraLayout);
 
         // 定制参数
-        cameraLayout.isMultiPicture(true);// 拍照是否允许拍多几张，只拍一张
-        cameraLayout.setPictureMaxNumber(6);// 拍照是否允许拍多几张，只拍一张
-        cameraLayout.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "ZhongjhCamera"); // 设置视频保存路径
-        cameraLayout.setFeatures(BUTTON_STATE_BOTH);
-        cameraLayout.setTip("轻触拍照，长按摄像");
-        cameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率
-        cameraLayout.setErrorLisenter(new ErrorListener() {
+        mCameraLayout.isMultiPicture(true);// 拍照是否允许拍多几张，只拍一张
+        mCameraLayout.setPictureMaxNumber(6);// 拍照是否允许拍多几张，只拍一张
+        mCameraLayout.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "ZhongjhCamera"); // 设置视频保存路径
+        mCameraLayout.setFeatures(BUTTON_STATE_BOTH);
+        mCameraLayout.setTip("轻触拍照，长按摄像");
+        mCameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率
+        mCameraLayout.setErrorLisenter(new ErrorListener() {
             @Override
             public void onError() {
                 //错误监听
@@ -80,7 +91,7 @@ public class CameraFragment extends Fragment {
             }
         });
         // 监听
-        cameraLayout.setCameraSuccessListener(new CameraSuccessListener() {
+        mCameraLayout.setCameraSuccessListener(new CameraSuccessListener() {
             @Override
             public void captureSuccess(Bitmap bitmap) {
                 //获取图片bitmap
@@ -104,15 +115,54 @@ public class CameraFragment extends Fragment {
             }
         });
 
-        cameraLayout.setLeftClickListener(v -> {
-//                CameraActivity.this.finish();
-        });
-        cameraLayout.setRightClickListener(new View.OnClickListener() {
+        // 关闭
+        mCameraLayout.setCloseListener(() -> mActivity.finish());
+
+        // 拍摄按钮事件
+        mCameraLayout.setPhotoVideoListener(new PhotoVideoListener() {
             @Override
-            public void onClick(View v) {
-//                Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show();
+            public void takePictures() {
+
+            }
+
+            @Override
+            public void recordShort(long time) {
+
+            }
+
+            @Override
+            public void recordStart() {
+                // 母窗体禁止滑动
+                ((MainActivity) mActivity).setTablayoutScroll(false);
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
+                layoutParams.bottomMargin = 50;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
+                mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void recordEnd(long time) {
+                // 母船体启动滑动
+                ((MainActivity) mActivity).setTablayoutScroll(true);
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
+                layoutParams.bottomMargin = 0;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
+                mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void recordZoom(float zoom) {
+
+            }
+
+            @Override
+            public void recordError() {
+
             }
         });
+
+//        mCameraLayout.setLeftClickListener(v -> mActivity.finish());
+//        mCameraLayout.setRightClickListener(v -> {
+////                Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show();
+//        });
 
         Log.i("CJT", DeviceUtil.getDeviceModel());
 
@@ -140,28 +190,27 @@ public class CameraFragment extends Fragment {
 //        }
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
-        cameraLayout.onResume();
+        mCameraLayout.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        cameraLayout.onPause();
+        mCameraLayout.onPause();
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (cameraLayout != null)
+        if (mCameraLayout != null)
             if (isVisibleToUser)
                 //相当于Fragment的onResume
-                cameraLayout.onResume();
+                mCameraLayout.onResume();
             else
                 //相当于Fragment的onPause
-                cameraLayout.onPause();
+                mCameraLayout.onPause();
     }
 }
