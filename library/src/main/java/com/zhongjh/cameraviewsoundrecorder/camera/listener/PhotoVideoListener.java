@@ -7,6 +7,11 @@ package com.zhongjh.cameraviewsoundrecorder.camera.listener;
 public interface PhotoVideoListener {
 
     /**
+     * 按钮点击后的效果，用于禁止滑动等别的界面的操作
+     */
+    void actionDown();
+
+    /**
      * 拍照
      */
     void takePictures();

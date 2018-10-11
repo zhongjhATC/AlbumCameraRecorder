@@ -67,6 +67,19 @@ public class PhotoVideoButton extends View {
     private PhotoVideoListener mPhotoVideoListener;       //按钮回调接口
     private RecordCountDownTimer mTimer;                //计时器
 
+    /**
+     * 点击按钮开始时间
+     */
+    private long mClickStartTime = 0;
+    /**
+     * 点击按钮结束时间
+     */
+    private long mClickEndTime = 0;
+    float DownX;//float DownX
+    float DownY;//float DownY
+    float moveX;
+    float moveY;
+
     public PhotoVideoButton(Context context) {
         super(context);
     }
@@ -151,17 +164,33 @@ public class PhotoVideoButton extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                if (mPhotoVideoListener != null)
+                    mPhotoVideoListener.actionDown();
                 // 按下触发事件,必须当前状态是空闲状态
                 if (event.getPointerCount() > 1 || mState != STATE_IDLE)
                     break;
-                event_Y = event.getY();      //记录Y值
+                DownX = event.getX();   // 记录X值
+                DownY = event.getY();   // 记录Y值
+                moveX = 0;
+                moveY = 0;
+                mClickStartTime = System.currentTimeMillis();
+
+                event_Y = event.getY(); // 记录Y值
                 mState = STATE_PRESS;        //修改当前状态为点击按下
 
                 // 判断按钮状态是否为可录制状态
                 if ((mButtonState == BUTTON_STATE_ONLY_RECORDER || mButtonState == BUTTON_STATE_BOTH))
                     postDelayed(mLongPressRunnable, 500);    //同时延长500启动长按后处理的逻辑Runnable
+
+
                 break;
             case MotionEvent.ACTION_MOVE:
+
+                moveX += Math.abs(event.getX() - DownX);//X轴距离
+                moveY += Math.abs(event.getY() - DownY);//y轴距离
+                DownX = event.getX();
+                DownY = event.getY();
+
                 if (mPhotoVideoListener != null
                         && mState == STATE_RECORDERING
                         && (mButtonState == BUTTON_STATE_ONLY_RECORDER || mButtonState == BUTTON_STATE_BOTH)) {
@@ -170,8 +199,18 @@ public class PhotoVideoButton extends View {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                // 判断更多的是不是单纯只是滑动
+                mClickEndTime = System.currentTimeMillis();
+                if ((mClickEndTime - mClickStartTime > 50) && (moveX > 20 || moveY > 20)) {
+                    // 设置空闲状态
+                    mState = STATE_IDLE;
+                    break;
+                }
                 // 根据当前按钮的状态进行相应的处理
                 handlerUnpressByState();
+                break;
+            case MotionEvent.ACTION_CANCEL:
+
                 break;
         }
         return true;
@@ -184,6 +223,10 @@ public class PhotoVideoButton extends View {
     private class LongPressRunnable implements Runnable {
         @Override
         public void run() {
+            // 判断如果当前是休闲状态则不做任何事
+            if (mState == STATE_IDLE)
+                return;
+
             mState = STATE_LONG_PRESS;
             //没有录制权限
             if (PermissionUtil.getRecordState() != PermissionUtil.STATE_SUCCESS) {

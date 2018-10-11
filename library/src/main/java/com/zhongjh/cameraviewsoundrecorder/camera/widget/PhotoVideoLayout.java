@@ -83,6 +83,13 @@ public class PhotoVideoLayout extends FrameLayout {
         mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_photovideo_zjh, this));
         mViewHolder.btnPhotoVideo.setRecordingListener(new PhotoVideoListener() {
             @Override
+            public void actionDown() {
+                if (mPhotoVideoListener != null) {
+                    mPhotoVideoListener.actionDown();
+                }
+            }
+
+            @Override
             public void takePictures() {
                 if (mPhotoVideoListener != null) {
                     mPhotoVideoListener.takePictures();
@@ -128,16 +135,21 @@ public class PhotoVideoLayout extends FrameLayout {
                 }
             }
         });
+
+        // 录像返回
         mViewHolder.btnCancel.setOnClickListener(v -> {
             if (mOperaeListener != null)
                 mOperaeListener.cancel();
             startTipAlphaAnimation();
         });
+
+        // 录像，拍照，提交事件
         mViewHolder.btnConfirm.setOnClickListener(v -> {
             if (mOperaeListener != null)
                 mOperaeListener.confirm();
             startTipAlphaAnimation();
         });
+
         // 默认隐藏
         mViewHolder.btnCancel.setVisibility(GONE);
         mViewHolder.btnConfirm.setVisibility(GONE);

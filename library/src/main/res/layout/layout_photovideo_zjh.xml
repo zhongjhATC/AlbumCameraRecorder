@@ -46,6 +46,7 @@
 
     <!-- 中间的操作按钮 -->
     <com.zhongjh.cameraviewsoundrecorder.camera.widget.PhotoVideoButton
+        android:focusable="true"
         android:id="@+id/btnPhotoVideo"
         android:layout_width="0dp"
         android:layout_height="0dp"

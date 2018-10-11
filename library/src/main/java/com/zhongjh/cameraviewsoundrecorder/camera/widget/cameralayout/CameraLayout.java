@@ -28,6 +28,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.CameraContact;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.CameraButton;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CloseListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
@@ -86,8 +87,10 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     // 回调监听
     private ErrorListener mErrorLisenter;
     private CameraSuccessListener mCameraSuccessListener;
-    private CloseListener mCloseListener;      //退出按钮监听
-    private PhotoVideoListener mPhotoVideoListener;// 按钮的监听
+    private CloseListener mCloseListener;           // 退出当前Activity的按钮监听
+    private PhotoVideoListener mPhotoVideoListener; // 按钮的监听
+    private OperaeListener mOperaeListener;         // 确认跟返回的监听
+    private CaptureListener mCaptureListener;       // 拍摄后操作图片的事件
     private boolean mIsMultiPicture;
 
     // 赋值Camera错误回调
@@ -100,7 +103,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         this.mCameraSuccessListener = cameraSuccessListener;
     }
 
-    // 退出事件
+    // 退出当前Activity的按钮监听
     public void setCloseListener(CloseListener closeListener) {
         this.mCloseListener = closeListener;
     }
@@ -108,6 +111,16 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     // 核心按钮事件
     public void setPhotoVideoListener(PhotoVideoListener photoVideoListener) {
         this.mPhotoVideoListener = photoVideoListener;
+    }
+
+    // 确认跟返回的监听
+    public void setOperaeListener(OperaeListener operaeListener) {
+        this.mOperaeListener = operaeListener;
+    }
+
+    // 拍摄后操作图片的事件
+    public void setCaptureListener(CaptureListener captureListener) {
+        this.mCaptureListener = captureListener;
     }
 
     /**
@@ -200,6 +213,12 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         // 拍照录像监听
         mViewHolder.pvLayout.setPhotoVideoListener(new PhotoVideoListener() {
             @Override
+            public void actionDown() {
+                if (mPhotoVideoListener != null)
+                    mPhotoVideoListener.actionDown();
+            }
+
+            @Override
             public void takePictures() {
                 // 拍照  隐藏 闪光灯、右上角的切换摄像头
                 mViewHolder.imgSwitch.setVisibility(INVISIBLE);
@@ -259,11 +278,15 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             @Override
             public void cancel() {
                 mCameraPresenter.cancle(mViewHolder.vvPreview.getHolder(), mScreenProp);
+                if (mOperaeListener != null)
+                    mOperaeListener.cancel();
             }
 
             @Override
             public void confirm() {
                 mCameraPresenter.confirm();
+                if (mOperaeListener != null)
+                    mOperaeListener.confirm();
             }
         });
 
@@ -411,6 +434,10 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 // 删除
                 mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
                 mViewHolder.llPhoto.removeView(mCaptureViews.get(Integer.parseInt(v.getTag().toString())));
+
+                // 回调接口：删除图片后剩下的相关数据
+                mCaptureListener.remove(mCaptureBitmaps);
+
                 // 当列表全部删掉的话，就隐藏
                 if (mCaptureBitmaps.size() <= 0) {
                     // 显示横版列表
@@ -454,6 +481,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             // 设置当前模式是图片模式
             setState(Constants.STATE_PICTURE);
         }
+        // 回调接口：添加图片后剩下的相关数据
+        mCaptureListener.add(mCaptureBitmap,mCaptureBitmaps);
     }
 
     @Override
