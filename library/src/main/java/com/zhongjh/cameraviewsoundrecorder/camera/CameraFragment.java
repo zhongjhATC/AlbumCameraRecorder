@@ -140,7 +140,11 @@ public class CameraFragment extends Fragment {
 
             @Override
             public void recordShort(long time) {
-
+                // 母窗体启动滑动
+                ((MainActivity) mActivity).setTablayoutScroll(true);
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
+                layoutParams.bottomMargin = 0;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
+                mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
             }
 
             @Override

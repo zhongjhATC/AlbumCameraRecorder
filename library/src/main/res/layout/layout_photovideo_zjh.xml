@@ -45,14 +45,14 @@
         tools:visibility="visible" />
 
     <!-- 中间的操作按钮 -->
-    <com.zhongjh.cameraviewsoundrecorder.camera.widget.PhotoVideoButton
+    <com.zhongjh.cameraviewsoundrecorder.camera.widget.photovieobutton.RecordButton
         android:focusable="true"
         android:id="@+id/btnPhotoVideo"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline60"
         app:layout_constraintStart_toStartOf="@+id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/tvTip" />
+        app:layout_constraintTop_toBottomOf="@+id/tvTip"/>
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline12"

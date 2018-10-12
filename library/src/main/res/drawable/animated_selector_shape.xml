@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/square"
+        android:drawable="@drawable/vector_square"
+        android:state_checked="true"
+        />
+    <item
+        android:id="@+id/circle"
+        android:drawable="@drawable/vector_circle"
+        />
+    <transition
+        android:drawable="@drawable/animated_vector_square_to_circle"
+        android:fromId="@id/square"
+        android:toId="@id/circle"/>
+    <transition
+        android:drawable="@drawable/animated_vector_circle_to_square"
+        android:fromId="@id/circle"
+        android:toId="@id/square"/>
+</animated-selector>

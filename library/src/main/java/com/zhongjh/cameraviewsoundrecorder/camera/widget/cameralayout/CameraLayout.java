@@ -432,7 +432,14 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             viewHolderImageView.imgCancel.setTag(mPosition);
             viewHolderImageView.imgCancel.setOnClickListener(v -> {
                 // 删除
-                mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
+                Bitmap viewBitmap = mCaptureBitmaps.get(Integer.parseInt(v.getTag().toString()));
+                // 先判断是否已经回收
+                if(viewBitmap != null && !viewBitmap.isRecycled()){
+                    // 回收并且置为null
+                    viewBitmap.recycle();
+                    mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
+                }
+                System.gc();// 加速回收机制
                 mViewHolder.llPhoto.removeView(mCaptureViews.get(Integer.parseInt(v.getTag().toString())));
 
                 // 回调接口：删除图片后剩下的相关数据

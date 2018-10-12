@@ -4,4 +4,11 @@
     <color name="preview_bottom_toolbar_bg">#CC000000</color>
     <color name="preview_bottom_size">#61FFFFFF</color>
 
+    <color name="app_color">#ff32dac3</color>
+    <color name="white">#ffffffff</color>
+    <color name="white_sixty_percent">#99ffffff</color>
+    <color name="black_forty_percent">#66000000</color>
+    <color name="black_eighty_percent">#cc000000</color>
+    <color name="circle_shallow_translucent_bg">#26ffffff</color>
+
 </resources>

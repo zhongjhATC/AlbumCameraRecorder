@@ -17,6 +17,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
+import com.zhongjh.cameraviewsoundrecorder.camera.widget.photovieobutton.RecordButton;
 
 /**
  * 关于底部集成各个控件的布局
@@ -286,7 +287,8 @@ public class PhotoVideoLayout extends FrameLayout {
         View rootView;
         OperaeButton btnCancel;
         public OperaeButton btnConfirm;
-        public PhotoVideoButton btnPhotoVideo;
+//        public PhotoVideoButton btnPhotoVideo;
+        public RecordButton btnPhotoVideo;
         TextView tvTip;
 
         ViewHolder(View rootView) {
