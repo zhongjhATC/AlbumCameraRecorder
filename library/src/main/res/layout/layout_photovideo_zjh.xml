@@ -45,7 +45,7 @@
         tools:visibility="visible" />
 
     <!-- 中间的操作按钮 -->
-    <com.zhongjh.cameraviewsoundrecorder.camera.widget.photovieobutton.RecordButton
+    <com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton.RecordButton
         android:focusable="true"
         android:id="@+id/btnPhotoVideo"
         android:layout_width="0dp"

@@ -17,7 +17,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
-import com.zhongjh.cameraviewsoundrecorder.camera.widget.photovieobutton.RecordButton;
+import com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton.RecordButton;
 
 /**
  * 关于底部集成各个控件的布局

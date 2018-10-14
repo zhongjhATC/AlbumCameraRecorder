@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 这个单选可以设置的让图片切换 -->
 <animated-selector
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -19,4 +20,5 @@
         android:drawable="@drawable/animated_vector_circle_to_square"
         android:fromId="@id/circle"
         android:toId="@id/square"/>
+
 </animated-selector>

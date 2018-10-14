@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.camera.widget.photovieobutton;
+package com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton;
 
 import android.content.Context;
 import android.graphics.Canvas;
