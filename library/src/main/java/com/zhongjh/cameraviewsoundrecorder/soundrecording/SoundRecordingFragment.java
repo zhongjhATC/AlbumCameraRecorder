@@ -148,10 +148,7 @@ public class SoundRecordingFragment extends Fragment {
         Intent intent = new Intent(getActivity(), RecordingService.class);
         if (start) {
             // 录音
-            mViewHolder.pvLayout.mViewHolder.iv_record.setImageResource(R.drawable.ic_media_stop);
-
-
-
+            mViewHolder.pvLayout.mViewHolder.iv_record.setImageResource(R.drawable.ic_stop_black_24dp);
             Toast.makeText(getActivity(), "开始录音", Toast.LENGTH_SHORT).show();
             // 创建文件
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
