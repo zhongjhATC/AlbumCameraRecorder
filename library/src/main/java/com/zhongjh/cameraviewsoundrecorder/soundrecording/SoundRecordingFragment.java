@@ -1,12 +1,10 @@
 package com.zhongjh.cameraviewsoundrecorder.soundrecording;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,29 +19,36 @@ import android.widget.Toast;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.soundrecording.db.RecordingItem;
 import com.zhongjh.cameraviewsoundrecorder.soundrecording.service.RecordingService;
-import com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton.RecordButton;
+import com.zhongjh.cameraviewsoundrecorder.soundrecording.widget.PhotoVideoLayout;
 
 import java.io.File;
 import java.io.IOException;
+
+import static android.content.Context.MODE_PRIVATE;
+import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
 
 /**
  * 录音
  * Created by zhongjh on 2018/8/22.
  */
-public class SoundRecordingFragment extends Fragment implements ServiceConnection {
+public class SoundRecordingFragment extends Fragment {
 
     private String title;
     private int page;
 
     // 是否正在录音中
     private boolean mRecording = false;
+    // 是否正在播放中
+    private boolean isPlaying = false;
     private boolean isChecked;
     private ViewHolder mViewHolder;
 
     long timeWhenPaused = 0; //存储用户单击暂停按钮的时间
 
     private MediaPlayer mMediaPlayer = null;
+    RecordingItem recordingItem; // 存储这首歌
 
     public static SoundRecordingFragment newInstance(int page, String title) {
         SoundRecordingFragment soundRecordingFragment = new SoundRecordingFragment();
@@ -67,23 +72,6 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
         View view = inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false);
         mViewHolder = new ViewHolder(view);
         initListener();
-
-//        iv_record.setOnClickListener(v -> {
-//            isChecked = !isChecked;
-//            final int[] stateSet = {android.R.attr.state_checked * (isChecked ? 1 : -1)};
-//            iv_record.setImageState(stateSet,true);
-//            if(isChecked){
-//                iv_ring.setImageResource(R.drawable.shape_ring_red);
-//                tv_hint.setText("录音");
-//                tv_hint.setTextColor(getResources().getColor(R.color.app_color));
-//                // TODO: 2018/3/21  录音
-//            }else {
-//                iv_ring.setImageResource(R.drawable.shape_ring_white);
-//                tv_hint.setText("录制会议");
-//                tv_hint.setTextColor(getResources().getColor(R.color.white));
-//            }
-//        });
-
         return view;
     }
 
@@ -91,7 +79,8 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
      * 事件
      */
     private void initListener() {
-        mViewHolder.btnPhotoVideo.setRecordingListener(new PhotoVideoListener() {
+        // 录音等事件
+        mViewHolder.pvLayout.setPhotoVideoListener(new PhotoVideoListener() {
             @Override
             public void actionDown() {
 
@@ -119,9 +108,6 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
                 // 录音结束
                 mRecording = false;
                 onRecord(mRecording);
-
-                // 显示录音后的布局
-
             }
 
             @Override
@@ -135,11 +121,19 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
             }
         });
 
-        mViewHolder.btnPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        // 播放事件
+        mViewHolder.pvLayout.mViewHolder.rlSoundRecording.setOnClickListener(view -> {
+            // 获取service存储的数据
+            recordingItem = new RecordingItem();
+            SharedPreferences sharePreferences = getActivity().getSharedPreferences("sp_name_audio", MODE_PRIVATE);
+            final String filePath = sharePreferences.getString("audio_path", "");
+            long elpased = sharePreferences.getLong("elpased", 0);
+            recordingItem.setFilePath(filePath);
+            recordingItem.setLength((int) elpased);
 
-            }
+            // 播放
+            onPlay(isPlaying);
+            isPlaying = !isPlaying;
         });
 
     }
@@ -154,7 +148,10 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
         Intent intent = new Intent(getActivity(), RecordingService.class);
         if (start) {
             // 录音
-//            mViewHolder.btnPhotoVideo.setImageResource(R.drawable.ic_media_stop);
+            mViewHolder.pvLayout.mViewHolder.iv_record.setImageResource(R.drawable.ic_media_stop);
+
+
+
             Toast.makeText(getActivity(), "开始录音", Toast.LENGTH_SHORT).show();
             // 创建文件
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
@@ -187,23 +184,23 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
     }
 
 
-
     /**
      * 播放开始或者停止
      * // Play start/stop
+     *
      * @param isPlaying 播放或者停止
      */
-    private void onPlay(boolean isPlaying){
+    private void onPlay(boolean isPlaying) {
         if (!isPlaying) {
             //currently MediaPlayer is not playing audio
-            if(mMediaPlayer == null) {
-                startPlaying(); //start from beginning
+            if (mMediaPlayer == null) {
+                startPlaying(); // 第一次播放
             } else {
-                resumePlaying(); //resume the currently paused MediaPlayer
+                resumePlaying(); // 恢复当前暂停的媒体播放器
             }
 
         } else {
-            //pause the MediaPlayer
+            // 暂停播放
             pausePlaying();
         }
     }
@@ -218,9 +215,8 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
 
         try {
             // 文件地址
-            mMediaPlayer.setDataSource(item.getFilePath());
+            mMediaPlayer.setDataSource(recordingItem.getFilePath());
             mMediaPlayer.prepare();
-            mSeekBar.setMax(mMediaPlayer.getDuration());
 
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -239,10 +235,52 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
             }
         });
 
-        updateSeekBar();
+//        updateSeekBar(); // 进度更新
 
         //keep screen on while playing audio
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    /**
+     * 恢复播放
+     */
+    private void resumePlaying() {
+//        mPlayButton.setImageResource(R.drawable.ic_media_pause); 暂停图
+//        mHandler.removeCallbacks(mRunnable);  进度线程
+        mMediaPlayer.start();
+//        updateSeekBar(); 更新
+    }
+
+    /**
+     * 暂停播放
+     */
+    private void pausePlaying() {
+//        mPlayButton.setImageResource(R.drawable.ic_media_play);  设置播放图
+//        mHandler.removeCallbacks(mRunnable);                     线程停止
+        mMediaPlayer.pause();
+    }
+
+    /**
+     * 停止播放
+     */
+    private void stopPlaying() {
+//        mPlayButton.setImageResource(R.drawable.ic_media_play); 设置成播放的图片
+//        mHandler.removeCallbacks(mRunnable); // 有关进度的
+
+        // 停止mediaPlayer
+        mMediaPlayer.stop();
+        mMediaPlayer.reset();
+        mMediaPlayer.release();
+        mMediaPlayer = null;
+
+//        mSeekBar.setProgress(mSeekBar.getMax()); 进度
+        isPlaying = !isPlaying;
+
+//        mCurrentProgressTextView.setText(mFileLengthTextView.getText()); 进度文本
+//        mSeekBar.setProgress(mSeekBar.getMax()); // 进度
+
+        // 一旦音频播放完毕，保持屏幕常亮 这个设置关闭
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     /**
@@ -254,33 +292,18 @@ public class SoundRecordingFragment extends Fragment implements ServiceConnectio
 
     }
 
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName componentName) {
-
-    }
-
-    @Override
-    public void onBindingDied(ComponentName name) {
-
-    }
 
     public static class ViewHolder {
         public View rootView;
         public Chronometer chronometer;
-        public RecordButton btnPhotoVideo;
         public ProgressBar recordProgressBar;
-        public Button btnPlay;
+        public PhotoVideoLayout pvLayout;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
             this.chronometer = rootView.findViewById(R.id.chronometer);
-            this.btnPhotoVideo = rootView.findViewById(R.id.btnPhotoVideo);
-            this.btnPlay = rootView.findViewById(R.id.btnPlay);
+            this.recordProgressBar = rootView.findViewById(R.id.recordProgressBar);
+            this.pvLayout = rootView.findViewById(R.id.pvLayout);
         }
 
     }

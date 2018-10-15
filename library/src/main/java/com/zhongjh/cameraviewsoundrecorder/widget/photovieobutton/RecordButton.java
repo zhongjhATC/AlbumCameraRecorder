@@ -41,7 +41,7 @@ public class RecordButton
     private Paint outBlackCirclePaint;
     private Paint outMostBlackCirclePaint;
     private float innerCircleRadiusToDraw;
-    private RectF outMostCircleRect;
+    private RectF outMostCircleRect; // 外圈的画布
     private float outBlackCircleRadius;
     private float outMostBlackCircleRadius;
     private int colorWhite;
@@ -132,8 +132,8 @@ public class RecordButton
 
     void init() {
         touchable = recordable = true;
-        BOUNDING_BOX_SIZE = DisplayMetricsUtils.dip2px(100.0F);
-        OUT_CIRCLE_WIDTH = DisplayMetricsUtils.dip2px(2.3F);
+        BOUNDING_BOX_SIZE = DisplayMetricsUtils.dip2px(100.0F); // 整块
+        OUT_CIRCLE_WIDTH = DisplayMetricsUtils.dip2px(2.3F);// 外线宽度
         OUTER_CIRCLE_WIDTH_INC = DisplayMetricsUtils.dip2px(4.3F);
         INNER_CIRCLE_RADIUS = DisplayMetricsUtils.dip2px(32.0F);
         colorRecord = getResources().getColor(R.color.app_color);
@@ -148,11 +148,13 @@ public class RecordButton
         processBarPaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
         processBarPaint.setStyle(Style.STROKE);
         processBarPaint.setStrokeCap(Cap.ROUND);
+        // 外圈样式
         outMostWhiteCirclePaint = new Paint();
         outMostWhiteCirclePaint.setColor(colorWhite);
         outMostWhiteCirclePaint.setAntiAlias(true);
         outMostWhiteCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
         outMostWhiteCirclePaint.setStyle(Style.STROKE);
+        // 内圈样式
         centerCirclePaint = new Paint();
         centerCirclePaint.setColor(colorWhiteP60);
         centerCirclePaint.setAntiAlias(true);
@@ -190,7 +192,7 @@ public class RecordButton
         super.onDraw(canvas);
         canvas.drawCircle(centerX, centerY, translucentCircleRadius, translucentPaint);
 
-        //center white-p40 circle
+        //center white-p40 circle  中心点+半径32，所以直接64就是内圈的宽高度了
         canvas.drawCircle(centerX, centerY, innerCircleRadiusToDraw, centerCirclePaint);
 
         //static out-most white circle

@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.camera.widget;
+package com.zhongjh.cameraviewsoundrecorder.soundrecording.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
@@ -82,8 +84,8 @@ public class PhotoVideoLayout extends FrameLayout {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
 
-        mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_photovideo_operae, this));
-        mViewHolder.btnPhotoVideo.setRecordingListener(new PhotoVideoListener() {
+        mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_soundrecording_operae, this));
+        mViewHolder.btnSoundRecording.setRecordingListener(new PhotoVideoListener() {
             @Override
             public void actionDown() {
                 if (mPhotoVideoListener != null) {
@@ -161,8 +163,10 @@ public class PhotoVideoLayout extends FrameLayout {
      * 拍照录制结果后的动画 - 单图片
      */
     public void startOperaeBtnAnimator() {
-        // 隐藏中间的按钮
-        mViewHolder.btnPhotoVideo.setVisibility(INVISIBLE);
+        // 隐藏录音的按钮
+        mViewHolder.btnSoundRecording.setVisibility(INVISIBLE);
+        // 显示播放的按钮
+        mViewHolder.rlSoundRecording.setVisibility(VISIBLE);
         // 显示提交和取消按钮
         mViewHolder.btnConfirm.setVisibility(VISIBLE);
         mViewHolder.btnCancel.setVisibility(VISIBLE);
@@ -193,7 +197,7 @@ public class PhotoVideoLayout extends FrameLayout {
      */
     public void startOperaeBtnAnimatorMulti() {
         // 如果本身隐藏的，就显示出来
-        if (mViewHolder.btnConfirm.getVisibility() == View.GONE){
+        if (mViewHolder.btnConfirm.getVisibility() == View.GONE) {
             // 显示提交按钮
             mViewHolder.btnConfirm.setVisibility(VISIBLE);
             // 动画未结束前不能让它们点击
@@ -257,50 +261,46 @@ public class PhotoVideoLayout extends FrameLayout {
      * @param duration 时间秒
      */
     public void setDuration(int duration) {
-        mViewHolder.btnPhotoVideo.setDuration(duration);
+        mViewHolder.btnSoundRecording.setDuration(duration);
     }
 
     /**
      * 重置本身
      */
     public void reset() {
-        mViewHolder.btnPhotoVideo.resetState();
+        mViewHolder.btnSoundRecording.resetState();
         // 隐藏第二层的view
         mViewHolder.btnCancel.setVisibility(View.GONE);
         mViewHolder.btnConfirm.setVisibility(View.GONE);
+        // 隐藏播放的按钮
+        mViewHolder.rlSoundRecording.setVisibility(INVISIBLE);
         // 显示第一层的view
-        mViewHolder.btnPhotoVideo.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * 设置按钮支持的功能：
-     *
-     * @param buttonStateBoth {@link Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
-     * @link Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
-     * @link Constants#BUTTON_STATE_BOTH 两者皆可
-     * }
-     */
-    public void setButtonFeatures(int buttonStateBoth) {
-        mViewHolder.btnPhotoVideo.setButtonFeatures(buttonStateBoth);
+        mViewHolder.btnSoundRecording.setVisibility(View.VISIBLE);
     }
 
     public static class ViewHolder {
-        View rootView;
-        OperaeButton btnCancel;
+        public View rootView;
+        public TextView tvTip;
+        public OperaeButton btnCancel;
         public OperaeButton btnConfirm;
-//        public PhotoVideoButton btnPhotoVideo;
-        public RecordButton btnPhotoVideo;
-        TextView tvTip;
+        public RecordButton btnSoundRecording;
+        public ImageView iv_ring;
+        public ImageView iv_record;
+        public RelativeLayout rlSoundRecording;
 
-        ViewHolder(View rootView) {
+        public ViewHolder(View rootView) {
             this.rootView = rootView;
+            this.tvTip = rootView.findViewById(R.id.tvTip);
             this.btnCancel = rootView.findViewById(R.id.btnCancel);
             this.btnConfirm = rootView.findViewById(R.id.btnConfirm);
-            this.btnPhotoVideo = rootView.findViewById(R.id.btnPhotoVideo);
-            this.tvTip = rootView.findViewById(R.id.tvTip);
+            this.btnSoundRecording = rootView.findViewById(R.id.btnSoundRecording);
+            this.iv_ring = rootView.findViewById(R.id.iv_ring);
+            this.iv_record = rootView.findViewById(R.id.iv_record);
+            this.rlSoundRecording = rootView.findViewById(R.id.rlSoundRecording);
         }
 
     }
+
 
     // endregion
 

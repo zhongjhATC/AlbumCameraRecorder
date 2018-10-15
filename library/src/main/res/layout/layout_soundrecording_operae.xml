@@ -1,0 +1,132 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#00000020">
+
+    <!-- 假如360的屏幕宽度 144的左右边距 126 38 -->
+
+    <!-- 提示文本框 -->
+    <TextView
+        android:id="@+id/tvTip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="提示文本" />
+
+    <!-- 左侧的取消按钮  -->
+    <com.zhongjh.cameraviewsoundrecorder.widget.OperaeButton
+        android:id="@+id/btnCancel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSoundRecording"
+        app:layout_constraintEnd_toStartOf="@+id/guideline28"
+        app:layout_constraintStart_toStartOf="@+id/guideline12"
+        app:layout_constraintTop_toTopOf="@+id/btnSoundRecording"
+        app:type="cancel"
+        tools:visibility="visible" />
+
+    <!-- 右侧的确认按钮  -->
+    <com.zhongjh.cameraviewsoundrecorder.widget.OperaeButton
+        android:id="@+id/btnConfirm"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSoundRecording"
+        app:layout_constraintEnd_toStartOf="@+id/guideline88"
+        app:layout_constraintStart_toStartOf="@+id/guideline72"
+        app:layout_constraintTop_toTopOf="@+id/btnSoundRecording"
+        app:type="confirm"
+        tools:visibility="visible" />
+
+    <!-- 中间的操作按钮 -->
+    <com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton.RecordButton
+        android:focusable="true"
+        android:id="@+id/btnSoundRecording"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline60"
+        app:layout_constraintStart_toStartOf="@+id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/tvTip"/>
+
+    <RelativeLayout
+        android:id="@+id/rlSoundRecording"
+        android:contentDescription="录音后显示的播放按钮"
+        android:visibility="invisible"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline60"
+        app:layout_constraintStart_toStartOf="@+id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/tvTip"
+        android:layout_width="100dp"
+        android:layout_height="100dp">
+
+        <ImageView
+            android:contentDescription="外圈"
+            android:layout_margin="13dp"
+            android:layout_centerInParent="true"
+            android:id="@+id/iv_ring"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/shape_ring_white"
+            tools:ignore="HardcodedText" />
+
+        <ImageView
+            android:contentDescription="内圈"
+            android:layout_centerInParent="true"
+            android:id="@+id/iv_record"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/animated_selector_shape"
+            tools:ignore="HardcodedText" />
+
+    </RelativeLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.12" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline28"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.28" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.35" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline60"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.65" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline72"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.72" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline88"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.88" />
+
+
+</android.support.constraint.ConstraintLayout>

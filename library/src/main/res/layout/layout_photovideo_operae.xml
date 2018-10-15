@@ -19,7 +19,7 @@
         tools:text="提示文本" />
 
     <!-- 左侧的取消按钮  -->
-    <com.zhongjh.cameraviewsoundrecorder.camera.widget.OperaeButton
+    <com.zhongjh.cameraviewsoundrecorder.widget.OperaeButton
         android:id="@+id/btnCancel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         tools:visibility="visible" />
 
     <!-- 右侧的确认按钮  -->
-    <com.zhongjh.cameraviewsoundrecorder.camera.widget.OperaeButton
+    <com.zhongjh.cameraviewsoundrecorder.widget.OperaeButton
         android:id="@+id/btnConfirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

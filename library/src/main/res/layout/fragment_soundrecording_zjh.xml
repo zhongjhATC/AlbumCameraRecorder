@@ -42,25 +42,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnPlay"
-        android:text="播放"
-        android:layout_marginBottom="100dp"
+    <com.zhongjh.cameraviewsoundrecorder.soundrecording.widget.PhotoVideoLayout
+        android:id="@+id/pvLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <!-- 中间的操作按钮 -->
-    <com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton.RecordButton
-        android:id="@+id/btnPhotoVideo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:background="#20000000"
+        android:contentDescription="底部功能按钮"
+        tools:ignore="HardcodedText" />
 
 </android.support.constraint.ConstraintLayout>
