@@ -19,35 +19,35 @@
         tools:text="提示文本" />
 
     <!-- 左侧的取消按钮  -->
-    <com.zhongjh.cameraviewsoundrecorder.widget.OperaeButton
+    <com.zhongjh.cameraviewsoundrecorder.widget.OperationButton
         android:id="@+id/btnCancel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/btnPhotoVideo"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
         app:layout_constraintEnd_toStartOf="@+id/guideline28"
         app:layout_constraintStart_toStartOf="@+id/guideline12"
-        app:layout_constraintTop_toTopOf="@+id/btnPhotoVideo"
+        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
         app:type="cancel"
         tools:visibility="visible" />
 
     <!-- 右侧的确认按钮  -->
-    <com.zhongjh.cameraviewsoundrecorder.widget.OperaeButton
+    <com.zhongjh.cameraviewsoundrecorder.widget.OperationButton
         android:id="@+id/btnConfirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/btnPhotoVideo"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
         app:layout_constraintEnd_toStartOf="@+id/guideline88"
         app:layout_constraintStart_toStartOf="@+id/guideline72"
-        app:layout_constraintTop_toTopOf="@+id/btnPhotoVideo"
+        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
         app:type="confirm"
         tools:visibility="visible" />
 
     <!-- 中间的操作按钮 -->
-    <com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton.RecordButton
+    <com.zhongjh.cameraviewsoundrecorder.widget.clickorlongbutton.ClickOrLongButton
         android:focusable="true"
-        android:id="@+id/btnPhotoVideo"
+        android:id="@+id/btnClickOrLong"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline60"

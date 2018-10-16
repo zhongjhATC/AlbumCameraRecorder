@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton;
+package com.zhongjh.cameraviewsoundrecorder.widget.clickorlongbutton;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,17 +13,19 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
 
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
-import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_RECORDER;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONGCLICK;
 
-public class RecordButton
-        extends View {
+/**
+ * 点击或者长按的按钮
+ */
+public class ClickOrLongButton extends View {
 
     private static final String TAG = "RecordButton";
-    public static final long TIME_TO_START_RECORD = 1000L; // 1秒后启动录像
+    public static final long TIME_TO_START_RECORD = 1000L; // 1秒后启动录制
     public  float timeLimitInMils = 10000.0F;       // 录制时间
     private int mMinDuration = 1500;       // 最短录制时间限制
     private long mRecordedTime;             // 记录当前录制多长的时间秒
@@ -79,11 +81,11 @@ public class RecordButton
             mRecordedTime =  (timeLapse - TIME_TO_START_RECORD);
             float percent = mRecordedTime / timeLimitInMils;
             if (timeLapse >= TIME_TO_START_RECORD) {
-                synchronized (RecordButton.this) {
+                synchronized (ClickOrLongButton.this) {
                     if (recordState == RECORD_NOT_STARTED) {
                         recordState = RECORD_STARTED;
-                        if (mPhotoVideoListener != null) {
-                            mPhotoVideoListener.recordStart();
+                        if (mClickOrLongListener != null) {
+                            mClickOrLongListener.onLongClick();
                         }
                     }
                 }
@@ -112,19 +114,19 @@ public class RecordButton
         }
     };
 
-    public RecordButton(Context paramContext) {
+    public ClickOrLongButton(Context paramContext) {
         super(paramContext);
         mContext = paramContext;
         init();
     }
 
-    public RecordButton(Context paramContext, AttributeSet paramAttributeSet) {
+    public ClickOrLongButton(Context paramContext, AttributeSet paramAttributeSet) {
         super(paramContext, paramAttributeSet);
         mContext = paramContext;
         init();
     }
 
-    public RecordButton(Context paramContext, AttributeSet paramAttributeSet, int paramInt) {
+    public ClickOrLongButton(Context paramContext, AttributeSet paramAttributeSet, int paramInt) {
         super(paramContext, paramAttributeSet, paramInt);
         mContext = paramContext;
         init();
@@ -215,19 +217,19 @@ public class RecordButton
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.actionDown();
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.actionDown();
                 event_Y = event.getY(); // 记录Y值
                 Log.d(TAG, "onTouchEvent: down");
                 startTicking();
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG, "onTouchEvent: move");
-                if (mPhotoVideoListener != null
+                if (mClickOrLongListener != null
                         && recordState == RECORD_STARTED
-                        && (mButtonState == BUTTON_STATE_ONLY_RECORDER || mButtonState == BUTTON_STATE_BOTH)) {
+                        && (mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH)) {
                     // 记录当前Y值与按下时候Y值的差值，调用缩放回调接口
-                    mPhotoVideoListener.recordZoom(event_Y - event.getY());
+                    mClickOrLongListener.onLongClickZoom(event_Y - event.getY());
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -241,20 +243,20 @@ public class RecordButton
 
     public void reset() {
         //Log.d(TAG, "reset: "+recordState);
-        synchronized (RecordButton.this) {
+        synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
-                if (mPhotoVideoListener != null){
+                if (mClickOrLongListener != null){
                     if (mRecordedTime < mMinDuration)
-                        mPhotoVideoListener.recordShort(mRecordedTime);//回调录制时间过短
+                        mClickOrLongListener.onLongClickShort(mRecordedTime);//回调录制时间过短
                     else
-                        mPhotoVideoListener.recordEnd(mRecordedTime);  //回调录制结束
+                        mClickOrLongListener.onLongClickEnd(mRecordedTime);  //回调录制结束
                 }
                 recordState = RECORD_ENDED;
             } else if (recordState == RECORD_ENDED) {
                 recordState = RECORD_NOT_STARTED;// 回到初始状态
             } else {
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.takePictures();// 拍照
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.onClick();// 拍照
             }
         }
         touchTimeHandler.clearMsg();
@@ -288,7 +290,7 @@ public class RecordButton
     }
 
     public void startTicking() {
-        synchronized (RecordButton.this) {
+        synchronized (ClickOrLongButton.this) {
             if (recordState != RECORD_NOT_STARTED)
                 recordState = RECORD_NOT_STARTED;
         }
@@ -296,7 +298,7 @@ public class RecordButton
         touchTimeHandler.sendLoopMsg(0L, 16L);
     }
 
-    private PhotoVideoListener mPhotoVideoListener;       //按钮回调接口
+    private ClickOrLongListener mClickOrLongListener;       //按钮回调接口
 
     // region 对外方法
 
@@ -312,17 +314,17 @@ public class RecordButton
     /**
      * 设置回调接口
      *
-     * @param photoVideoListener 回调接口
+     * @param clickOrLongListener 回调接口
      */
-    public void setRecordingListener(PhotoVideoListener photoVideoListener) {
-        this.mPhotoVideoListener = photoVideoListener;
+    public void setRecordingListener(ClickOrLongListener clickOrLongListener) {
+        this.mClickOrLongListener = clickOrLongListener;
     }
 
     /**
-     * 设置按钮功能（拍照和录像）
+     * 设置按钮功能（点击和长按）
      *
-     * @param buttonStateBoth {@link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
-     * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
+     * @param buttonStateBoth {@link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_CLICK 只能点击
+     * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_LONGCLICK 只能长按
      * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_BOTH 两者皆可
      * }
      */

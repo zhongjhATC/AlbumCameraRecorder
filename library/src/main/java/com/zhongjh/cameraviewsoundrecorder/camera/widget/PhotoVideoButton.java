@@ -14,12 +14,12 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.PermissionUtil;
 
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
-import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_CAPTURE;
-import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_RECORDER;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONGCLICK;
 
 
 /**
@@ -66,7 +66,7 @@ public class PhotoVideoButton extends View {
     private RectF mRectF;
 
     private LongPressRunnable mLongPressRunnable;        //长按后处理的逻辑Runnable
-    private PhotoVideoListener mPhotoVideoListener;       //按钮回调接口
+    private ClickOrLongListener mClickOrLongListener;       //按钮回调接口
     private RecordCountDownTimer mTimer;                //计时器
 
     public PhotoVideoButton(Context context) {
@@ -153,8 +153,8 @@ public class PhotoVideoButton extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.actionDown();
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.actionDown();
                 // 按下触发事件,必须当前状态是空闲状态
                 if (event.getPointerCount() > 1 || mState != STATE_IDLE)
                     break;
@@ -162,15 +162,15 @@ public class PhotoVideoButton extends View {
                 mState = STATE_PRESS;        //修改当前状态为点击按下
 
                 // 判断按钮状态是否为可录制状态
-                if ((mButtonState == BUTTON_STATE_ONLY_RECORDER || mButtonState == BUTTON_STATE_BOTH))
+                if ((mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH))
                     postDelayed(mLongPressRunnable, 500);    //同时延长500启动长按后处理的逻辑Runnable
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (mPhotoVideoListener != null
+                if (mClickOrLongListener != null
                         && mState == STATE_RECORDERING
-                        && (mButtonState == BUTTON_STATE_ONLY_RECORDER || mButtonState == BUTTON_STATE_BOTH)) {
+                        && (mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH)) {
                     // 记录当前Y值与按下时候Y值的差值，调用缩放回调接口
-                    mPhotoVideoListener.recordZoom(event_Y - event.getY());
+                    mClickOrLongListener.onLongClickZoom(event_Y - event.getY());
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -198,8 +198,8 @@ public class PhotoVideoButton extends View {
             //没有录制权限
             if (PermissionUtil.getRecordState() != PermissionUtil.STATE_SUCCESS) {
                 mState = STATE_IDLE;
-                if (mPhotoVideoListener != null) {
-                    mPhotoVideoListener.recordError();
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onLongClickError();
                     return;
                 }
             }
@@ -266,7 +266,7 @@ public class PhotoVideoButton extends View {
         switch (mState) {
             //当前是点击按下
             case STATE_PRESS:
-                if (mPhotoVideoListener != null && (mButtonState == BUTTON_STATE_ONLY_CAPTURE || mButtonState ==
+                if (mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState ==
                         BUTTON_STATE_BOTH)) {
                     // 拍照
                     startCaptureAnimation(mButtonInsideRadius);
@@ -286,11 +286,11 @@ public class PhotoVideoButton extends View {
      * 录制结束
      */
     private void recordEnd() {
-        if (mPhotoVideoListener != null) {
+        if (mClickOrLongListener != null) {
             if (mRecordedTime < mMinDuration)
-                mPhotoVideoListener.recordShort(mRecordedTime);//回调录制时间过短
+                mClickOrLongListener.onLongClickShort(mRecordedTime);//回调录制时间过短
             else
-                mPhotoVideoListener.recordEnd(mRecordedTime);  //回调录制结束
+                mClickOrLongListener.onLongClickEnd(mRecordedTime);  //回调录制结束
         }
         resetRecordAnim();  //重置按钮状态
     }
@@ -327,7 +327,7 @@ public class PhotoVideoButton extends View {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 // 回调拍照接口
-                mPhotoVideoListener.takePictures();
+                mClickOrLongListener.onClick();
                 mState = STATE_BAN;
             }
         });
@@ -365,8 +365,8 @@ public class PhotoVideoButton extends View {
                 super.onAnimationEnd(animation);
                 //设置为录制状态
                 if (mState == STATE_LONG_PRESS) {
-                    if (mPhotoVideoListener != null)
-                        mPhotoVideoListener.recordStart();
+                    if (mClickOrLongListener != null)
+                        mClickOrLongListener.onLongClick();
                     mState = STATE_RECORDERING;
                     mTimer.start();
                 }
@@ -393,17 +393,17 @@ public class PhotoVideoButton extends View {
     /**
      * 设置回调接口
      *
-     * @param photoVideoListener 回调接口
+     * @param clickOrLongListener 回调接口
      */
-    public void setRecordingListener(PhotoVideoListener photoVideoListener) {
-        this.mPhotoVideoListener = photoVideoListener;
+    public void setRecordingListener(ClickOrLongListener clickOrLongListener) {
+        this.mClickOrLongListener = clickOrLongListener;
     }
 
     /**
      * 设置按钮功能（拍照和录像）
      *
-     * @param buttonStateBoth {@link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_CAPTURE 只能拍照
-     * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_RECORDER 只能录像
+     * @param buttonStateBoth {@link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_CLICK 只能拍照
+     * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_LONGCLICK 只能录像
      * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_BOTH 两者皆可
      * }
      */

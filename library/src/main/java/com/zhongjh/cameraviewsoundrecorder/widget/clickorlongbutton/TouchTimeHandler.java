@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton;
+package com.zhongjh.cameraviewsoundrecorder.widget.clickorlongbutton;
 
 import android.os.Handler;
 import android.os.Looper;

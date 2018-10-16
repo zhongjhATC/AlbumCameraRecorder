@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.soundrecording.widget;
+package com.zhongjh.cameraviewsoundrecorder.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -10,31 +10,30 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
-import com.zhongjh.cameraviewsoundrecorder.widget.OperaeButton;
-import com.zhongjh.cameraviewsoundrecorder.widget.photovieobutton.RecordButton;
+import com.zhongjh.cameraviewsoundrecorder.widget.clickorlongbutton.ClickOrLongButton;
 
 /**
- * 关于底部集成各个控件的布局
+ * 集成各个控件的布局
+ * {@link com.zhongjh.cameraviewsoundrecorder.widget.clickorlongbutton.ClickOrLongButton 点击或者长按的按钮 }
+ * {@link com.zhongjh.cameraviewsoundrecorder.widget.OperationButton 操作按钮(取消和确认) }
  * Created by zhongjh on 2018/8/7.
  */
-public class PhotoVideoLayout extends FrameLayout {
+public abstract class OperationLayout extends FrameLayout {
 
     // region 回调事件监听
 
-    private PhotoVideoListener mPhotoVideoListener;   // 拍照或录制监听
-    private OperaeListener mOperaeListener; // 拍照或录制监听结束后的 确认取消事件监控
+    private ClickOrLongListener mClickOrLongListener;   // 点击或长按监听
+    private OperaeListener mOperaeListener; // 点击或长按监听结束后的 确认取消事件监控
 
-    public void setPhotoVideoListener(PhotoVideoListener photoVideoListener) {
-        this.mPhotoVideoListener = photoVideoListener;
+    public void setPhotoVideoListener(ClickOrLongListener clickOrLongListener) {
+        this.mClickOrLongListener = clickOrLongListener;
     }
 
     public void setOperaeListener(OperaeListener mOperaeListener) {
@@ -54,15 +53,17 @@ public class PhotoVideoLayout extends FrameLayout {
 
     private boolean mIsFirst = true; // 是否第一次
 
-    public PhotoVideoLayout(@NonNull Context context) {
+    public abstract ViewHolder newViewHolder();
+
+    public OperationLayout(@NonNull Context context) {
         this(context, null);
     }
 
-    public PhotoVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public OperationLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PhotoVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public OperationLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         mLayoutWidth = DisplayMetricsSPUtils.getScreenWidth(context);
@@ -80,74 +81,74 @@ public class PhotoVideoLayout extends FrameLayout {
     /**
      * 初始化view
      */
-    private void initView() {
+    protected void initView() {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
 
-        mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_soundrecording_operae, this));
-        mViewHolder.btnSoundRecording.setRecordingListener(new PhotoVideoListener() {
+        mViewHolder = newViewHolder();
+        mViewHolder.btnClickOrLong.setRecordingListener(new ClickOrLongListener() {
             @Override
             public void actionDown() {
-                if (mPhotoVideoListener != null) {
-                    mPhotoVideoListener.actionDown();
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.actionDown();
                 }
             }
 
             @Override
-            public void takePictures() {
-                if (mPhotoVideoListener != null) {
-                    mPhotoVideoListener.takePictures();
+            public void onClick() {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onClick();
                 }
             }
 
             @Override
-            public void recordShort(long time) {
-                if (mPhotoVideoListener != null) {
-                    mPhotoVideoListener.recordShort(time);
-                }
-                startTipAlphaAnimation();
-            }
-
-            @Override
-            public void recordStart() {
-                if (mPhotoVideoListener != null) {
-                    mPhotoVideoListener.recordStart();
+            public void onLongClickShort(long time) {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onLongClickShort(time);
                 }
                 startTipAlphaAnimation();
             }
 
             @Override
-            public void recordEnd(long time) {
-                if (mPhotoVideoListener != null) {
-                    mPhotoVideoListener.recordEnd(time);
+            public void onLongClick() {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onLongClick();
+                }
+                startTipAlphaAnimation();
+            }
+
+            @Override
+            public void onLongClickEnd(long time) {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onLongClickEnd(time);
                 }
                 startTipAlphaAnimation();
                 startOperaeBtnAnimator();
             }
 
             @Override
-            public void recordZoom(float zoom) {
-                if (mPhotoVideoListener != null) {
-                    mPhotoVideoListener.recordZoom(zoom);
+            public void onLongClickZoom(float zoom) {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onLongClickZoom(zoom);
                 }
             }
 
             @Override
-            public void recordError() {
-                if (mPhotoVideoListener != null) {
-                    mPhotoVideoListener.recordError();
+            public void onLongClickError() {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onLongClickError();
                 }
             }
         });
 
-        // 录像返回
+        // 返回事件
         mViewHolder.btnCancel.setOnClickListener(v -> {
             if (mOperaeListener != null)
                 mOperaeListener.cancel();
             startTipAlphaAnimation();
         });
 
-        // 录像，拍照，提交事件
+        // 提交事件
         mViewHolder.btnConfirm.setOnClickListener(v -> {
             if (mOperaeListener != null)
                 mOperaeListener.confirm();
@@ -160,13 +161,11 @@ public class PhotoVideoLayout extends FrameLayout {
     }
 
     /**
-     * 拍照录制结果后的动画 - 单图片
+     * 点击长按结果后的动画 - 单图片
      */
     public void startOperaeBtnAnimator() {
-        // 隐藏录音的按钮
-        mViewHolder.btnSoundRecording.setVisibility(INVISIBLE);
-        // 显示播放的按钮
-        mViewHolder.rlSoundRecording.setVisibility(VISIBLE);
+        // 隐藏中间的按钮
+        mViewHolder.btnClickOrLong.setVisibility(INVISIBLE);
         // 显示提交和取消按钮
         mViewHolder.btnConfirm.setVisibility(VISIBLE);
         mViewHolder.btnCancel.setVisibility(VISIBLE);
@@ -193,7 +192,7 @@ public class PhotoVideoLayout extends FrameLayout {
     }
 
     /**
-     * 拍照录制结果后的动画 - 多图片
+     * 拍点击长按结果后的动画 - 多图片
      */
     public void startOperaeBtnAnimatorMulti() {
         // 如果本身隐藏的，就显示出来
@@ -256,51 +255,54 @@ public class PhotoVideoLayout extends FrameLayout {
     }
 
     /**
-     * 设置拍照按钮 最长录制时间
+     * 设置按钮 最长长按时间
      *
      * @param duration 时间秒
      */
     public void setDuration(int duration) {
-        mViewHolder.btnSoundRecording.setDuration(duration);
+        mViewHolder.btnClickOrLong.setDuration(duration);
     }
 
     /**
      * 重置本身
      */
     public void reset() {
-        mViewHolder.btnSoundRecording.resetState();
+        mViewHolder.btnClickOrLong.resetState();
         // 隐藏第二层的view
         mViewHolder.btnCancel.setVisibility(View.GONE);
         mViewHolder.btnConfirm.setVisibility(View.GONE);
-        // 隐藏播放的按钮
-        mViewHolder.rlSoundRecording.setVisibility(INVISIBLE);
         // 显示第一层的view
-        mViewHolder.btnSoundRecording.setVisibility(View.VISIBLE);
+        mViewHolder.btnClickOrLong.setVisibility(View.VISIBLE);
     }
 
-    public static class ViewHolder {
-        public View rootView;
-        public TextView tvTip;
-        public OperaeButton btnCancel;
-        public OperaeButton btnConfirm;
-        public RecordButton btnSoundRecording;
-        public ImageView iv_ring;
-        public ImageView iv_record;
-        public RelativeLayout rlSoundRecording;
+    /**
+     * 设置按钮支持的功能：
+     *
+     * @param buttonStateBoth {@link Constants#BUTTON_STATE_ONLY_CLICK 只能点击
+     * @link Constants#BUTTON_STATE_ONLY_LONGCLICK 只能长按
+     * @link Constants#BUTTON_STATE_BOTH 两者皆可
+     * }
+     */
+    public void setButtonFeatures(int buttonStateBoth) {
+        mViewHolder.btnClickOrLong.setButtonFeatures(buttonStateBoth);
+    }
+
+    public class ViewHolder {
+        View rootView;
+        OperationButton btnCancel;
+        public OperationButton btnConfirm;
+        public ClickOrLongButton btnClickOrLong;
+        TextView tvTip;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
-            this.tvTip = rootView.findViewById(R.id.tvTip);
             this.btnCancel = rootView.findViewById(R.id.btnCancel);
             this.btnConfirm = rootView.findViewById(R.id.btnConfirm);
-            this.btnSoundRecording = rootView.findViewById(R.id.btnSoundRecording);
-            this.iv_ring = rootView.findViewById(R.id.iv_ring);
-            this.iv_record = rootView.findViewById(R.id.iv_record);
-            this.rlSoundRecording = rootView.findViewById(R.id.rlSoundRecording);
+            this.btnClickOrLong = rootView.findViewById(R.id.btnClickOrLong);
+            this.tvTip = rootView.findViewById(R.id.tvTip);
         }
 
     }
-
 
     // endregion
 

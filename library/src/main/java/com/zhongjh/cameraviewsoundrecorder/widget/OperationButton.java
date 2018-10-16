@@ -14,10 +14,10 @@ import android.view.View;
 import com.zhongjh.cameraviewsoundrecorder.R;
 
 /**
- * 操作按钮：目前仅仅是拍照或录制完成后弹出的确认和返回按钮
+ * 操作按钮：目前仅仅是点击或长按完成后弹出的确认和返回按钮
  * Created by zhongjh on 2018/8/7.
  */
-public class OperaeButton extends View {
+public class OperationButton extends View {
 
     private int mType;
 
@@ -36,16 +36,16 @@ public class OperaeButton extends View {
     private RectF mRectF;
 
 
-    public OperaeButton(Context context, @Nullable AttributeSet attrs) {
+    public OperationButton(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs,0);
     }
 
-    public OperaeButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public OperationButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         // 获取属性
-        TypedArray operaeButtonArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.OperaeButton, defStyleAttr, 0);
+        TypedArray operaeButtonArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.OperationButton, defStyleAttr, 0);
         // 获取类型
-        mType = operaeButtonArray.getInt(R.styleable.OperaeButton_type,0);
+        mType = operaeButtonArray.getInt(R.styleable.OperationButton_type,0);
     }
 
     @Override

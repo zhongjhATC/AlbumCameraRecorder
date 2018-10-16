@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_dark"
     tools:context="com.zhongjh.cameraviewsoundrecorder.soundrecording.SoundRecordingFragment">
-
 
     <Chronometer
         android:id="@+id/chronometer"
@@ -23,34 +22,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <ProgressBar
-        android:id="@+id/recordProgressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="27dp"
-        android:contentDescription="录音完后的布局"
-        android:indeterminate="false"
-        android:max="100"
-        android:progress="0"
-        android:progressDrawable="@drawable/record_progress_bar"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.zhongjh.cameraviewsoundrecorder.soundrecording.widget.PhotoVideoLayout
+    <com.zhongjh.cameraviewsoundrecorder.soundrecording.widget.SoundrecordingLayout
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_alignParentBottom="true"
         android:background="#20000000"
         android:contentDescription="底部功能按钮"
         tools:ignore="HardcodedText" />
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

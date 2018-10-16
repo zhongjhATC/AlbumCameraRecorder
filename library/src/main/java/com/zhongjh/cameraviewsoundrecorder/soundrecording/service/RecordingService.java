@@ -1,21 +1,13 @@
 package com.zhongjh.cameraviewsoundrecorder.soundrecording.service;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.soundrecording.common.MySharedPreferences;
-import com.zhongjh.cameraviewsoundrecorder.soundrecording.db.DBHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +28,8 @@ public class RecordingService extends Service {
 
     private MediaRecorder mRecorder = null;
 
-    private DBHelper mDatabase;
+
+//    private DBHelper mDatabase;  @Deprecated
 
     private long mStartingTimeMillis = 0;
     private long mElapsedMillis = 0;
@@ -59,7 +52,7 @@ public class RecordingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mDatabase = new DBHelper(getApplicationContext());
+//        mDatabase = new DBHelper(getApplicationContext()); @Deprecated
     }
 
     @Override
@@ -111,7 +104,8 @@ public class RecordingService extends Service {
         do{
             count++;
 
-            mFileName = "我的录音" + "_" + (mDatabase.getCount() + count) + ".mp4";
+//            mFileName = "我的录音" + "_" + (mDatabase.getCount() + count) + ".mp4"; @Deprecated
+            mFileName = "myRecordingTemp_" + System.currentTimeMillis() + ".mp4";
             mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFilePath += "/SoundRecorder/" + mFileName;
 
@@ -123,7 +117,7 @@ public class RecordingService extends Service {
         mRecorder.stop();
         mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
-        Toast.makeText(this,  "录音保存到 " + mFilePath, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this,  "录音保存到 " + mFilePath, Toast.LENGTH_LONG).show();
 
         // 存储到缓存的文件地址
         getSharedPreferences("sp_name_audio", MODE_PRIVATE)
@@ -140,12 +134,12 @@ public class RecordingService extends Service {
 
         mRecorder = null;
 
-        try {
-            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
-
-        } catch (Exception e){
-            Log.e(LOG_TAG, "exception", e);
-        }
+//        try {
+//            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
+//
+//        } catch (Exception e){
+//            Log.e(LOG_TAG, "exception", e);
+//        }
     }
 
     private void startTimer() {

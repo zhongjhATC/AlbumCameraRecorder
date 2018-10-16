@@ -24,7 +24,7 @@
 
     <!-- region 拍照录像相关属性 -->
 
-    <declare-styleable name="OperaeButton">
+    <declare-styleable name="OperationButton">
         <!-- 操作类型的按钮 -->
         <attr name="type">
             <enum name="cancel" value="0" />

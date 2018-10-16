@@ -20,9 +20,9 @@ public class Constants {
     public static final int TYPE_FLASH_ON = 0x102;                  // 闪关灯开启
     public static final int TYPE_FLASH_OFF = 0x103;                 // 闪关灯关闭
 
-    public static final int BUTTON_STATE_ONLY_CAPTURE = 0x201;      //只能拍照
-    public static final int BUTTON_STATE_ONLY_RECORDER = 0x202;     //只能录像
-    public static final int BUTTON_STATE_BOTH = 0x203;              //两者都可以
+    public static final int BUTTON_STATE_ONLY_CLICK = 0x201;        //按钮只能点击
+    public static final int BUTTON_STATE_ONLY_LONGCLICK = 0x202;     //按钮只能长按
+    public static final int BUTTON_STATE_BOTH = 0x203;              //按钮点击或者长按两者都可以
 
     // 录制视频比特率
     public static final int MEDIA_QUALITY_HIGH = 20 * 100000;

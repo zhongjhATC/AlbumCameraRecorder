@@ -32,12 +32,12 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CloseListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView;
-import com.zhongjh.cameraviewsoundrecorder.camera.widget.PhotoVideoLayout;
+import com.zhongjh.cameraviewsoundrecorder.widget.OperationLayout;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -88,7 +88,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private ErrorListener mErrorLisenter;
     private CameraSuccessListener mCameraSuccessListener;
     private CloseListener mCloseListener;           // 退出当前Activity的按钮监听
-    private PhotoVideoListener mPhotoVideoListener; // 按钮的监听
+    private ClickOrLongListener mClickOrLongListener; // 按钮的监听
     private OperaeListener mOperaeListener;         // 确认跟返回的监听
     private CaptureListener mCaptureListener;       // 拍摄后操作图片的事件
     private boolean mIsMultiPicture;
@@ -109,8 +109,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     }
 
     // 核心按钮事件
-    public void setPhotoVideoListener(PhotoVideoListener photoVideoListener) {
-        this.mPhotoVideoListener = photoVideoListener;
+    public void setPhotoVideoListener(ClickOrLongListener clickOrLongListener) {
+        this.mClickOrLongListener = clickOrLongListener;
     }
 
     // 确认跟返回的监听
@@ -211,65 +211,65 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mViewHolder.imgSwitch.setOnClickListener(v -> mCameraPresenter.swtich(mViewHolder.vvPreview.getHolder(), mScreenProp));
 
         // 拍照录像监听
-        mViewHolder.pvLayout.setPhotoVideoListener(new PhotoVideoListener() {
+        mViewHolder.pvLayout.setPhotoVideoListener(new ClickOrLongListener() {
             @Override
             public void actionDown() {
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.actionDown();
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.actionDown();
             }
 
             @Override
-            public void takePictures() {
+            public void onClick() {
                 // 拍照  隐藏 闪光灯、右上角的切换摄像头
                 mViewHolder.imgSwitch.setVisibility(INVISIBLE);
                 mViewHolder.imgFlash.setVisibility(INVISIBLE);
                 mCameraPresenter.capture();
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.takePictures();
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.onClick();
             }
 
             @Override
-            public void recordShort(final long time) {
+            public void onLongClickShort(final long time) {
                 mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));
                 mViewHolder.imgSwitch.setVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
                 postDelayed(() -> mCameraPresenter.stopRecord(true, time), 1500 - time);
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.recordShort(time);
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.onLongClickShort(time);
             }
 
             @Override
-            public void recordStart() {
+            public void onLongClick() {
                 // 开始录像
                 mViewHolder.imgSwitch.setVisibility(INVISIBLE);
                 mViewHolder.imgFlash.setVisibility(INVISIBLE);
                 mCameraPresenter.record(mViewHolder.vvPreview.getHolder().getSurface(), mScreenProp);
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.recordStart();
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.onLongClick();
             }
 
             @Override
-            public void recordEnd(long time) {
+            public void onLongClickEnd(long time) {
                 // 录像结束
                 mCameraPresenter.stopRecord(false, time);
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.recordEnd(time);
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.onLongClickEnd(time);
             }
 
             @Override
-            public void recordZoom(float zoom) {
+            public void onLongClickZoom(float zoom) {
                 mCameraPresenter.zoom(zoom, Constants.TYPE_RECORDER);
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.recordZoom(zoom);
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.onLongClickZoom(zoom);
             }
 
             @Override
-            public void recordError() {
+            public void onLongClickError() {
                 if (mErrorLisenter != null) {
                     mErrorLisenter.AudioPermissionError();
                 }
-                if (mPhotoVideoListener != null)
-                    mPhotoVideoListener.recordError();
+                if (mClickOrLongListener != null)
+                    mClickOrLongListener.onLongClickError();
             }
         });
 
@@ -466,7 +466,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             // 因为拍照后会自动停止预览，所以要重新启动预览
             mCameraPresenter.start(mViewHolder.vvPreview.getHolder(), mScreenProp);
             // 重置按钮，因为每次点击，都会自动关闭
-            mViewHolder.pvLayout.getViewHolder().btnPhotoVideo.resetState();
+            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.resetState();
             // 依然保持当前模式
             setState(Constants.STATE_PREVIEW);
             // 显示右上角
@@ -662,7 +662,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         ImageView imgPhoto;
         public ImageView imgFlash;
         public ImageView imgSwitch;
-        public PhotoVideoLayout pvLayout;
+        public OperationLayout pvLayout;
         FoucsView fouce_view;
         public HorizontalScrollView hsvPhoto;
         LinearLayout llPhoto;

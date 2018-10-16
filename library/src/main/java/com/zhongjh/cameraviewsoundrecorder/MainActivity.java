@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1: // Fragment # 0 - This will show FirstFragment different title
                     return CameraFragment.newInstance(1, "拍照");
                 case 2: // Fragment # 1 - This will show SecondFragment
-                    return SoundRecordingFragment.newInstance(2, "录音");
+                    return SoundRecordingFragment.newInstance();
 //                    return CameraFragment.newInstance(1, "Page # 2");
                 default:
                     return null;

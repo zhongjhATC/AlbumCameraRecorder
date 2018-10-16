@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TableLayout;
 
 import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
@@ -18,10 +17,11 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.PhotoVideoListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout;
 import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
+import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -123,51 +123,40 @@ public class CameraFragment extends Fragment {
         mCameraLayout.setCloseListener(() -> mActivity.finish());
 
         // 拍摄按钮事件
-        mCameraLayout.setPhotoVideoListener(new PhotoVideoListener() {
+        mCameraLayout.setPhotoVideoListener(new ClickOrLongListener() {
             @Override
             public void actionDown() {
                 // 母窗体禁止滑动
-                ((MainActivity) mActivity).setTablayoutScroll(false);
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
-                layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(50);//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
-                mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
+                ViewBusinessUtils.setTablayoutScroll(false,((MainActivity) mActivity),mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
-            public void takePictures() {
+            public void onClick() {
 
             }
 
             @Override
-            public void recordShort(long time) {
+            public void onLongClickShort(long time) {
                 // 母窗体启动滑动
-                ((MainActivity) mActivity).setTablayoutScroll(true);
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
-                layoutParams.bottomMargin = 0;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
-                mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
+                ViewBusinessUtils.setTablayoutScroll(true,((MainActivity) mActivity),mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
-            public void recordStart() {
-//                // 母窗体禁止滑动
-//                ((MainActivity) mActivity).setTablayoutScroll(false);
-//                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
-//                layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(50);//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
-//                mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
+            public void onLongClick() {
             }
 
             @Override
-            public void recordEnd(long time) {
+            public void onLongClickEnd(long time) {
 
             }
 
             @Override
-            public void recordZoom(float zoom) {
+            public void onLongClickZoom(float zoom) {
 
             }
 
             @Override
-            public void recordError() {
+            public void onLongClickError() {
 
             }
         });
@@ -177,10 +166,7 @@ public class CameraFragment extends Fragment {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
-                ((MainActivity) mActivity).setTablayoutScroll(true);
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
-                layoutParams.bottomMargin = 0;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
-                mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
+                ViewBusinessUtils.setTablayoutScroll(true,((MainActivity) mActivity),mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
