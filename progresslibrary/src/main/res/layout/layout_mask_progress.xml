@@ -5,7 +5,7 @@
     android:background="#00000020">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_imagePicker"
+        android:id="@+id/rvMedia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

@@ -33,6 +33,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private ImageEngine mImageEngine;   // 图片加载方式
     private final Drawable mPlaceholder; // 默认图片
 
+    public interface OnRecyclerViewItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
+        this.listener = listener;
+    }
+
     /**
      * 设置数据
      *
@@ -64,11 +72,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     /**
      * 设置百分比
-     * @param position 索引
      * @param percentage 百分比值，1=1%
      */
-    public void setPercentage(int position,int percentage){
-
+    public void setPercentage(ViewHolder viewHolder,int percentage){
+        viewHolder.mpvImage.setPercentage(percentage);
     }
 
     /**
