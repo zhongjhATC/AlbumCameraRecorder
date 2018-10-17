@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
@@ -24,7 +23,7 @@ import java.io.File;
  */
 public class AlbumsSpinnerAdapter extends CursorAdapter {
 
-    private final Drawable mPlaceholder;
+    private final Drawable mPlaceholder; // 默认图片
 
     public AlbumsSpinnerAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
@@ -46,7 +45,7 @@ public class AlbumsSpinnerAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.item_matiss_list_zjh, parent, false);
+        return LayoutInflater.from(context).inflate(R.layout.item_matiss_spinner_zjh, parent, false);
     }
 
     @Override

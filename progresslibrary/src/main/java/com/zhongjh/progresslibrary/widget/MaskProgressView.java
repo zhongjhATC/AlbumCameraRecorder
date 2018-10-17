@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.ImageView;
+import android.util.Log;
 
 import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.utils.DisplayMetricsUtils;
@@ -52,7 +52,8 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
     /**
      * 初始化
      */
-    private void init() {
+    public void init() {
+        rect = new Rect();
         maskingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -90,7 +91,12 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
             rect.top = height * percentage / MAX_PROGRESS;
             // 绘制图片遮罩
             if (percentage < MAX_PROGRESS) {
+                // 画：图片上传中
                 canvas.drawText(textString, centerX, centerY, textPaint);
+                // 画：百分比进度
+                String percentageText = percentage + "%";
+                int percentageTextLength = (int) textPaint.measureText(percentageText);
+                canvas.drawText(percentageText, (width - percentageTextLength) / 2, (int) (height * 0.75), textPaint);
             }
         }
     }
@@ -101,6 +107,66 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
         //获取view的宽高
         width = getWidth();
         height = getHeight();
+        // 每次改变size的时候，修改画布
+        rect.left = 0;
+        rect.top = 0;
+        rect.right = width;
+        rect.bottom = height;
+    }
+
+    /**
+     * 设置进度
+     *
+     * @param percentage 进度值
+     */
+    public void setPercentage(int percentage) {
+        if (percentage > 0 && percentage <= MAX_PROGRESS) {
+            this.percentage = percentage;
+            Log.d(TAG, "setPercentage: " + percentage);
+            // 重画view
+            invalidate();
+        }
+    }
+
+    /**
+     * 重置进度
+     */
+    public void reset() {
+        this.percentage = 0;
+        invalidate();
+    }
+
+    /**
+     * 赋值
+     * @param maskingColor 遮罩的颜色
+     */
+    public void setMaskingColor(String maskingColor) {
+        if (null != maskingPaint) {
+            maskingPaint.setColor(Color.parseColor(maskingColor));
+        }
+    }
+
+    /**
+     * 赋值
+     * @param textSize 进度字体大小
+     */
+    public void setTextSize(int textSize) {
+        if (null != textPaint) {
+            textPaint.setTextSize(textSize);
+        }
+
+
+    }
+
+    /**
+     * 赋值
+     * @param textColor 进度颜色
+     */
+    public void setTextColor(String textColor) {
+        if (null != textPaint) {
+            textPaint.setColor(Color.parseColor(textColor));
+        }
+
     }
 
 

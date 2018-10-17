@@ -10,7 +10,7 @@
     <attr name="album.emptyView.textColor" format="reference|color"/> <!-- 还没有图片或视频 -->
     <attr name="album.dropdown.title.color" format="reference|color"/>
     <attr name="album.dropdown.count.color" format="reference|color"/>
-    <attr name="album.thumbnail.placeholder" format="reference|color"/>
+    <attr name="album.thumbnail.placeholder" format="reference|color"/> <!-- 默认图片，颜色 -->
     <attr name="listPopupWindowStyle" format="reference"/>
     <attr name="page.bg" format="reference|color"/>
     <attr name="preview.bottomToolbar.back.textColor" format="reference|color"/>

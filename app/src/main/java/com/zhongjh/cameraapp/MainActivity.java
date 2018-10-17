@@ -41,12 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPermissions();
-            }
-        });
+        findViewById(R.id.btn).setOnClickListener(v -> getPermissions());
         photo = findViewById(R.id.image_photo);
         device = findViewById(R.id.device);
         device.setText(DeviceUtil.getDeviceInfo());
@@ -158,4 +153,5 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .forResult(REQUEST_CODE_CHOOSE);
     }
+
 }
