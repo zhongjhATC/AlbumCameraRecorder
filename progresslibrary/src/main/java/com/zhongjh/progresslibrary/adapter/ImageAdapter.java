@@ -32,6 +32,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private boolean isLast;   // 是否最后一个图片
     private ImageEngine mImageEngine;   // 图片加载方式
     private final Drawable mPlaceholder; // 默认图片
+    private OnRecyclerViewItemClickListener listener;   // 点击事件
 
     public interface OnRecyclerViewItemClickListener {
         void onItemClick(View view, int position);
