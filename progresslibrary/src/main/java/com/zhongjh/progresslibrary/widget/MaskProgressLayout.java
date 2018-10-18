@@ -68,7 +68,7 @@ public class MaskProgressLayout extends FrameLayout implements ImageAdapter.OnRe
         Drawable drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_album_thumbnail_placeholder);
 
         if (drawable == null){
-            drawable =
+            drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
 
         mImageAdapter = new ImageAdapter(this.getContext(), mImageList, 5, mImageEngine, drawable);

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         device = findViewById(R.id.device);
         device.setText(DeviceUtil.getDeviceInfo());
         mplImageList = findViewById(R.id.mplImageList);
-
+        mplImageList.init(new Glide4EngineProgress());
         mplImageList.setOnRecyclerViewItemClickListener((view, position) -> getPermissions());
     }
 
@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
         // 选择图片
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            mplImageList.init(new Glide4EngineProgress());
             mplImageList.setPath(MultiMedia.obtainPathResult(data),null);
         }
 
