@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="thumbnail.placeholder" format="reference|color"/> <!-- 默认图片，颜色 -->
+    <declare-styleable name="MaskProgressLayoutStyle">
+
+        <attr name="album.thumbnail.placeholder" format="reference|color"/> <!-- 默认图片，颜色 -->
+
+    </declare-styleable>
+
 
 </resources>

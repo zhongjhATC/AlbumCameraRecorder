@@ -26,6 +26,9 @@ import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
+import com.zhongjh.progresslibrary.engine.ImageEngine;
+import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
+import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import java.util.List;
 
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
     private ImageView photo;
     private TextView device;
+    private MaskProgressLayout mplImageList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
         photo = findViewById(R.id.image_photo);
         device = findViewById(R.id.device);
         device.setText(DeviceUtil.getDeviceInfo());
+        mplImageList = findViewById(R.id.mplImageList);
+
+        mplImageList.setOnRecyclerViewItemClickListener((view, position) -> getPermissions());
     }
 
     /**
@@ -74,6 +81,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+//        MultiMedia.obtainResult(data), MultiMedia.obtainPathResult(data);
+
+        // 选择图片
+        if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+            mplImageList.init(new Glide4EngineProgress());
+            mplImageList.setPath(MultiMedia.obtainPathResult(data),null);
+        }
+
         if (resultCode == 101) {
             Log.i("CJT", "picture");
             String path = data.getStringExtra("path");
@@ -127,7 +142,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void openMain(){
         MultiMedia.from(MainActivity.this)
-                .choose(MimeType.ofAll(), false) // 设置显示的多媒体类型
+                .choose(MimeType.ofImage(), false) // 设置显示的多媒体类型
+                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
                 .capture(true)
                 .captureStrategy(
@@ -147,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .originalEnable(true)// 开启原图
                 .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
+                .maxSelectablePerMediaType(5,1) // 最大图片选择数量, 最大视频选择数量
                 .setOnCheckedListener(isChecked -> {
                     // DO SOMETHING IMMEDIATELY HERE
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);

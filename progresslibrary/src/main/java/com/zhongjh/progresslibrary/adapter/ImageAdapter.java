@@ -38,7 +38,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         void onItemClick(View view, int position);
     }
 
-    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
+    public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -73,9 +73,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     /**
      * 设置百分比
+     *
      * @param percentage 百分比值，1=1%
      */
-    public void setPercentage(ViewHolder viewHolder,int percentage){
+    public void setPercentage(ViewHolder viewHolder, int percentage) {
         viewHolder.mpvImage.setPercentage(percentage);
     }
 
@@ -86,17 +87,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
      * @param data          数据源
      * @param maxMediaCount 最大显示 图片/视频
      * @param imageEngine   图片加载方式
+     * @param placeholder   图片
      */
-    public ImageAdapter(Context mContext, List<String> data, int maxMediaCount, ImageEngine imageEngine) {
+    public ImageAdapter(Context mContext, List<String> data, int maxMediaCount, ImageEngine imageEngine, Drawable placeholder) {
         this.mContext = mContext;
         this.maxMediaCount = maxMediaCount;
         this.mInflater = LayoutInflater.from(mContext);
         this.mImageEngine = imageEngine;
 
         // 默认过渡图片/颜色
-        TypedArray ta = mContext.getTheme().obtainStyledAttributes(
-                new int[]{R.attr.thumbnail_placeholder});
-        mPlaceholder = ta.getDrawable(0);
+        mPlaceholder = placeholder;
+
         setImages(data);
     }
 
@@ -127,6 +128,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
 
         public void bind(int position) {
+            this.position = position;
             //设置条目的点击事件
             itemView.setOnClickListener(this);
             //根据条目位置设置图片
@@ -145,7 +147,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
         @Override
         public void onClick(View v) {
-//            if (listener != null) listener.onItemClick(v, clickPosition);
+            if (listener != null) listener.onItemClick(v, position);
         }
     }
 

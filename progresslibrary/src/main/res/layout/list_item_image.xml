@@ -6,7 +6,7 @@
     android:padding="5dp">
 
 
-    <com.zhongjh.progresslibrary.widget.MaskingProgressView
+    <com.zhongjh.progresslibrary.widget.MaskProgressView
         android:id="@+id/mpvImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
