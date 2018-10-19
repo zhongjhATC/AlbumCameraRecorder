@@ -57,6 +57,8 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void capture() {
+        asdfsadfsf
+        // 拍照，并且共享配置，
         mCameraOperation.takePicture((bitmap, isVertical) -> {
             // 显示图片
             mCameraView.showPicture(bitmap, isVertical);
