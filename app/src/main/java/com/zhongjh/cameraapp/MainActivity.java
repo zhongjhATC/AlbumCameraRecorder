@@ -45,19 +45,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.btn).setOnClickListener(v -> getPermissions());
         photo = findViewById(R.id.image_photo);
         device = findViewById(R.id.device);
         device.setText(DeviceUtil.getDeviceInfo());
         mplImageList = findViewById(R.id.mplImageList);
-        mplImageList.init(new Glide4EngineProgress());
-        mplImageList.setOnRecyclerViewItemClickListener((view, position) -> getPermissions());
+        mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+            @Override
+            public void onItemAdd(View view, int position, int alreadyImageCount) {
+                getPermissions(alreadyImageCount);
+            }
+
+            @Override
+            public void onItemImage(View view, int position) {
+
+            }
+        });
     }
 
     /**
      * 获取权限
      */
-    private void getPermissions() {
+    private void getPermissions(int alreadyImageCount) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
                     .PERMISSION_GRANTED &&
@@ -65,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                             .PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
                             .PERMISSION_GRANTED) {
-                openMain();
+                openMain(alreadyImageCount);
             } else {
                 //不具有获取权限，需要进行权限申请
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{
@@ -74,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
             }
         } else {
-            openMain();
+            openMain(alreadyImageCount);
         }
     }
 
@@ -85,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 选择图片
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            mplImageList.setPath(MultiMedia.obtainPathResult(data),null);
+            mplImageList.setPath(MultiMedia.obtainPathResult(data), null);
         }
 
         if (resultCode == 101) {
@@ -137,9 +145,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 打开窗体
+     * @param alreadyImageCount 已经存在显示的几张图片
+     *                          打开窗体
      */
-    private void openMain(){
+    private void openMain(int alreadyImageCount) {
         MultiMedia.from(MainActivity.this)
                 .choose(MimeType.ofImage(), false) // 设置显示的多媒体类型
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
@@ -147,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 .capture(true)
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider"))
-                .maxSelectable(10)// 最多选择几个
+                .maxSelectable(10 - alreadyImageCount)// 最多选择几个
                 .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
                 .gridExpectedSize(
                         getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
@@ -162,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .originalEnable(true)// 开启原图
                 .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
-                .maxSelectablePerMediaType(5,1) // 最大图片选择数量, 最大视频选择数量
                 .setOnCheckedListener(isChecked -> {
                     // DO SOMETHING IMMEDIATELY HERE
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);

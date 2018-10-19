@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="5dp">
-
+    android:orientation="vertical">
 
     <com.zhongjh.progresslibrary.widget.MaskProgressView
         android:id="@+id/mpvImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:scaleType="centerCrop"
         android:src="@drawable/selector_image_add" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/imgClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close_black_24dp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</FrameLayout>

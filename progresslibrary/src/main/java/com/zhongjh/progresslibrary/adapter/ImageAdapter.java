@@ -10,9 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
+import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
 
 import java.io.File;
@@ -25,20 +27,19 @@ import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
+    private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";
+
     private Context mContext;
     private LayoutInflater mInflater;
-    private List<String> mData;
+    private List<String> mData = new ArrayList<>();
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     private boolean isLast;   // 是否最后一个图片
     private ImageEngine mImageEngine;   // 图片加载方式
     private final Drawable mPlaceholder; // 默认图片
-    private OnRecyclerViewItemClickListener listener;   // 点击事件
+    private MaskProgressLayoutListener listener;   // 点击事件
 
-    public interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view, int position);
-    }
 
-    public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener listener) {
+    public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
         this.listener = listener;
     }
 
@@ -48,15 +49,29 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
      * @param data 数据源
      */
     public void setImages(List<String> data) {
-        mData = new ArrayList<>(data);
+        // 添加前，如果最后一个是添加的图标，那么就先删除它，后面再检查是否需要添加 “添加图标”
+        if (mData.size() > 0 && mData.get(mData.size() - 1).equals(ADD)) {
+            mData.remove(mData.size() - 1);
+        }
+        mData.addAll(data);
+        checkLastImages();
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 检查最后一个是否是图片
+     */
+    private void checkLastImages() {
         if (getItemCount() < maxMediaCount) {
+            if (mData.size() > 0 && mData.get(mData.size() - 1).equals(ADD)) {
+                return;
+            }
             // 未满上限数量可以继续设置
-            mData.add(null);
+            mData.add(ADD);
             isLast = false;
         } else {
             isLast = true;
         }
-        notifyDataSetChanged();
     }
 
     /**
@@ -84,12 +99,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
      * 构造
      *
      * @param mContext      上下文
-     * @param data          数据源
      * @param maxMediaCount 最大显示 图片/视频
      * @param imageEngine   图片加载方式
      * @param placeholder   图片
      */
-    public ImageAdapter(Context mContext, List<String> data, int maxMediaCount, ImageEngine imageEngine, Drawable placeholder) {
+    public ImageAdapter(Context mContext, int maxMediaCount, ImageEngine imageEngine, Drawable placeholder) {
         this.mContext = mContext;
         this.maxMediaCount = maxMediaCount;
         this.mInflater = LayoutInflater.from(mContext);
@@ -98,7 +112,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         // 默认过渡图片/颜色
         mPlaceholder = placeholder;
 
-        setImages(data);
+        setImages(new ArrayList<>());
     }
 
     @NonNull
@@ -120,11 +134,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private MaskProgressView mpvImage;
+        private ImageView imgClose;
         private int position;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mpvImage = itemView.findViewById(R.id.mpvImage);
+            imgClose = itemView.findViewById(R.id.imgClose);
         }
 
         public void bind(int position) {
@@ -137,18 +153,37 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             if (!isLast && position == getItemCount() - 1) {
                 // 加载➕图
                 mpvImage.setImageResource(R.drawable.selector_image_add);
+                // 隐藏close
+                imgClose.setVisibility(View.GONE);
+                imgClose.setOnClickListener(null);
             } else {
                 // 加载图片
                 mImageEngine.loadThumbnail(mContext, mpvImage.getWidth(), mPlaceholder,
                         mpvImage, Uri.fromFile(new File(path)));
+                // 显示close
+                imgClose.setVisibility(View.VISIBLE);
+                imgClose.setOnClickListener(v -> {
+                    mData.remove(position);
+                    //删除动画
+                    notifyItemRemoved(position);
+                    checkLastImages();
+                    notifyDataSetChanged();
+                });
             }
-
         }
 
         @Override
         public void onClick(View v) {
-            if (listener != null) listener.onItemClick(v, position);
+            if (listener != null)
+                if (!isLast && position == getItemCount() - 1) {
+                    // 加载➕图
+                    listener.onItemAdd(v, position, getItemCount() - 1);
+                } else {
+                    // 加载图片
+                    listener.onItemImage(v, position);
+                }
         }
+
     }
 
 }

@@ -10,6 +10,8 @@
     <com.zhongjh.progresslibrary.widget.MaskProgressLayout
         android:id="@+id/mplImageList"
         android:layout_width="match_parent"
+        app:image_engine="com.zhongjh.cameraapp.Glide4EngineProgress"
+        app:image_count="10"
         android:layout_height="wrap_content"/>
 
     <TextView
