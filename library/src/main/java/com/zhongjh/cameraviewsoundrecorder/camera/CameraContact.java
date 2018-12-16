@@ -8,6 +8,8 @@ import android.widget.ImageView;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 
+import java.util.HashMap;
+
 /**
  * 摄像器的关联者
  * Created by zhongjh on 2018/8/14.

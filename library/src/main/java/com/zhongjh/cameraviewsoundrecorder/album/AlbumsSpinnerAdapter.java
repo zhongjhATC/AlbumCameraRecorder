@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
 
 import java.io.File;
 

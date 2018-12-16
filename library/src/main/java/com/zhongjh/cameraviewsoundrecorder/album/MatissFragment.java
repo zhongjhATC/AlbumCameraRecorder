@@ -33,7 +33,7 @@ import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.mediaselection.MediaSelectionFragment;
@@ -49,6 +49,8 @@ import com.zhongjh.cameraviewsoundrecorder.widget.IncapableDialog;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION;
+import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * Created by zhongjh on 2018/8/22.
@@ -58,8 +60,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener,
         AlbumMediaAdapter.OnPhotoCapture {
 
-    public static final String EXTRA_RESULT_SELECTION = "extra_result_selection";               // Uri的数据
-    public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";     // path的数据
+
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     private static final int REQUEST_CODE_PREVIEW = 23;     // 预览
     private static final int REQUEST_CODE_CAPTURE = 24;     // 拍照

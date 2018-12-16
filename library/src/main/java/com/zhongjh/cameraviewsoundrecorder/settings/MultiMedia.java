@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.album;
+package com.zhongjh.cameraviewsoundrecorder.settings;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,11 +6,15 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Set;
+
+import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION;
+import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * 多媒体的设置 - Matisse
@@ -68,7 +72,7 @@ public final class MultiMedia {
      * @return User selected media' {@link Uri} list.
      */
     public static List<Uri> obtainResult(Intent data) {
-        return data.getParcelableArrayListExtra(MatissFragment.EXTRA_RESULT_SELECTION);
+        return data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION);
     }
 
     /**
@@ -79,7 +83,7 @@ public final class MultiMedia {
      * @return User selected media path list.
      */
     public static List<String> obtainPathResult(Intent data) {
-        return data.getStringArrayListExtra(MatissFragment.EXTRA_RESULT_SELECTION_PATH);
+        return data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH);
     }
 
     /**

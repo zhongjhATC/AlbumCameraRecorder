@@ -8,7 +8,7 @@ import android.os.Bundle;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckView;
 import com.zhongjh.cameraviewsoundrecorder.utils.PathUtils;
@@ -27,7 +27,7 @@ public class SelectedItemCollection {
     public static final String STATE_COLLECTION_TYPE = "state_collection_type";
 
     /**
-     * 空的数据源
+     * 空的数据类型
      */
     public static final int COLLECTION_UNDEFINED = 0x00;
     /**
@@ -254,7 +254,10 @@ public class SelectedItemCollection {
         return mItems.size() == currentMaxSelectable();
     }
 
-    // depends
+    /**
+     * 返回最多选择的数量
+     * @return 数量
+     */
     private int currentMaxSelectable() {
         SelectionSpec spec = SelectionSpec.getInstance();
         if (spec.maxSelectable > 0) {

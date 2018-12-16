@@ -33,7 +33,7 @@ import com.zhongjh.cameraviewsoundrecorder.album.base.RecyclerViewCursorAdapter;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckView;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.MediaGrid;

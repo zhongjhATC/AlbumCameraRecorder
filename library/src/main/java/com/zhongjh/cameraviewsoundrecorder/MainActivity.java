@@ -7,16 +7,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraFragment;
 import com.zhongjh.cameraviewsoundrecorder.soundrecording.SoundRecordingFragment;
 import com.zhongjh.cameraviewsoundrecorder.widget.NoScrollViewPager;
 
 import java.lang.reflect.Field;
+
+import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 
 /**
  * Created by zhongjh on 2018/8/22.
@@ -161,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
                 case 0:
                     return MatissFragment.newInstance(0, "相册");
 //                    return CameraFragment.newInstance(1, "Page # 2");
-                case 1: // Fragment # 0 - This will show FirstFragment different title
-                    return CameraFragment.newInstance(1, "拍照");
+                case 1: // Fragment # 0 - This will show FirstFragment different title // 看看这个怎样把类型传过去，colltype
+                    return CameraFragment.newInstance(1, "拍照",COLLECTION_IMAGE);
                 case 2: // Fragment # 1 - This will show SecondFragment
                     return SoundRecordingFragment.newInstance();
 //                    return CameraFragment.newInstance(1, "Page # 2");

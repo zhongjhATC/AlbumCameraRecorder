@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.album.entity;
+package com.zhongjh.cameraviewsoundrecorder.settings;
 
 import android.content.pm.ActivityInfo;
 import android.support.annotation.StyleRes;

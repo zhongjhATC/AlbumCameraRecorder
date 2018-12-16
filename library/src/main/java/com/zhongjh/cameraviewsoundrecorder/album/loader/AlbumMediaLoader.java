@@ -26,8 +26,8 @@ import android.support.v4.content.CursorLoader;
 
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
-import com.zhongjh.cameraviewsoundrecorder.album.utils.MediaStoreCompat;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.utils.MediaStoreCompat;
 
 /**
  * 将图像和视频加载到单个光标中

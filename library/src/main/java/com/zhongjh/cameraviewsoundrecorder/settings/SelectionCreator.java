@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.album;
+package com.zhongjh.cameraviewsoundrecorder.settings;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,8 +14,6 @@ import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.PicassoEngine;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.CaptureStrategy;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;

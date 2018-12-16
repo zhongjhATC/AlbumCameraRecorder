@@ -16,6 +16,7 @@ import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
@@ -26,6 +27,8 @@ import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
 import java.io.File;
 import java.util.HashMap;
 
+import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_UNDEFINED;
+import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
 
@@ -40,12 +43,14 @@ public class CameraFragment extends Fragment {
     private CameraLayout mCameraLayout;
     private String title;
     private int page;
+    private int mCollectionType = COLLECTION_UNDEFINED; // 类型
 
-    public static CameraFragment newInstance(int page, String title) {
+    public static CameraFragment newInstance(int page, String title, int collectionType) {
         CameraFragment cameraFragment = new CameraFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
+        args.putInt("collectionType", collectionType);
         cameraFragment.setArguments(args);
         return cameraFragment;
     }
@@ -59,8 +64,12 @@ public class CameraFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = getArguments().getInt("someInt", 0);
-        title = getArguments().getString("someTitle");
+        if (getArguments() != null) {
+            page = getArguments().getInt("someInt", 0);
+            title = getArguments().getString("someTitle");
+            mCollectionType = getArguments().getInt("collectionType");
+            mCollectionType = getArguments().getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
+        }
     }
 
     @Override
@@ -75,6 +84,7 @@ public class CameraFragment extends Fragment {
         // 定制参数
         mCameraLayout.isMultiPicture(true);// 拍照是否允许拍多几张，只拍一张
         mCameraLayout.setPictureMaxNumber(6);// 拍照是否允许拍多几张，只拍一张
+        mCameraLayout.setCollectionType(mCollectionType);
         mCameraLayout.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "ZhongjhCamera"); // 设置视频保存路径
         mCameraLayout.setFeatures(BUTTON_STATE_BOTH);
         mCameraLayout.setTip("轻触拍照，长按摄像");
@@ -99,6 +109,7 @@ public class CameraFragment extends Fragment {
             @Override
             public void captureSuccess(Bitmap bitmap) {
                 //获取图片bitmap
+                int a = 5;
 //                Log.i("JCameraView", "bitmap = " + bitmap.getWidth());
 //                String path = FileUtil.saveBitmap("JCamera", bitmap);
 //                Intent intent = new Intent();
@@ -127,7 +138,7 @@ public class CameraFragment extends Fragment {
             @Override
             public void actionDown() {
                 // 母窗体禁止滑动
-                ViewBusinessUtils.setTablayoutScroll(false,((MainActivity) mActivity),mCameraLayout.mViewHolder.pvLayout);
+                ViewBusinessUtils.setTablayoutScroll(false, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
@@ -138,7 +149,7 @@ public class CameraFragment extends Fragment {
             @Override
             public void onLongClickShort(long time) {
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true,((MainActivity) mActivity),mCameraLayout.mViewHolder.pvLayout);
+                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
@@ -162,15 +173,16 @@ public class CameraFragment extends Fragment {
         });
 
         // 确认取消事件
-        mCameraLayout.setOperaeListener(new OperaeListener() {
+        mCameraLayout.setOperaeCameraListener(new OperaeCameraListener() {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true,((MainActivity) mActivity),mCameraLayout.mViewHolder.pvLayout);
+                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
-            public void confirm() {
+            public void confirm(HashMap<Integer, Bitmap> captureBitmaps) {
+                // 提交数据 //TODO
 
             }
         });
@@ -190,7 +202,7 @@ public class CameraFragment extends Fragment {
 
             @Override
             public void add(Bitmap captureBitmap, HashMap<Integer, Bitmap> captureBitmaps) {
-                if (captureBitmap != null || captureBitmaps.size() > 0){
+                if (captureBitmap != null || captureBitmaps.size() > 0) {
                     // 母窗体禁止滑动
                     ((MainActivity) mActivity).setTablayoutScroll(false);
                     RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();

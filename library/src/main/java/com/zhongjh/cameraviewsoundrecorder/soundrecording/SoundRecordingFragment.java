@@ -3,6 +3,7 @@ package com.zhongjh.cameraviewsoundrecorder.soundrecording;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,6 +28,7 @@ import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import static android.content.Context.MODE_PRIVATE;
 import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;

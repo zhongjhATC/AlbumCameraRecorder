@@ -21,27 +21,35 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraContact;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
+import com.zhongjh.cameraviewsoundrecorder.camera.entity.BitmapData;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.CameraButton;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CloseListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView;
+import com.zhongjh.cameraviewsoundrecorder.utils.BitmapUtils;
 import com.zhongjh.cameraviewsoundrecorder.widget.OperationLayout;
 
 import java.io.IOException;
 import java.util.HashMap;
 
+import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
+import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_UNDEFINED;
+import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_VIDEO;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_DEFAULT;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_SHORT;
@@ -62,6 +70,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     private int mFlashType = Constants.TYPE_FLASH_OFF;  // 闪关灯状态 默认关闭
 
+
     private int mLayoutWidth; // 整体宽度
     private float mScreenProp = 0f; // 当前录视频的高/宽的比例
     private int mZoomGradient = 0;  //缩放梯度 @@
@@ -73,14 +82,18 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private Bitmap mCaptureBitmap;   // 拍照的图片
 
     @SuppressLint("UseSparseArrays")
-    private HashMap<Integer, Bitmap> mCaptureBitmaps = new HashMap<>();  // 拍照的图片-集合
+    private HashMap<Integer, BitmapData> mCaptureBitmaps = new HashMap<>();  // 拍照的图片-集合
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, View> mCaptureViews = new HashMap<>();      // 拍照的图片控件-集合
     private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
+
     private Bitmap mFirstFrame;       // 第一帧图片
     private String mVideoUrl;         // 视频URL
 
     private CameraButton mCameraButton; // 摄像头按钮
+
+    private boolean mIsMultiPicture;    // 是否多张图片
+    private int mCollectionType = COLLECTION_UNDEFINED; // 类型: 允许图片或者视频，跟知乎的选择相片共用模式
 
     // region 属性
 
@@ -89,9 +102,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private CameraSuccessListener mCameraSuccessListener;
     private CloseListener mCloseListener;           // 退出当前Activity的按钮监听
     private ClickOrLongListener mClickOrLongListener; // 按钮的监听
-    private OperaeListener mOperaeListener;         // 确认跟返回的监听
+    private OperaeCameraListener mOperaeCameraListener;         // 确认跟返回的监听
     private CaptureListener mCaptureListener;       // 拍摄后操作图片的事件
-    private boolean mIsMultiPicture;
+
 
     // 赋值Camera错误回调
     public void setErrorLisenter(ErrorListener errorLisenter) {
@@ -114,8 +127,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     }
 
     // 确认跟返回的监听
-    public void setOperaeListener(OperaeListener operaeListener) {
-        this.mOperaeListener = operaeListener;
+    public void setOperaeCameraListener(OperaeCameraListener operaeCameraListener) {
+        this.mOperaeCameraListener = operaeCameraListener;
     }
 
     // 拍摄后操作图片的事件
@@ -131,6 +144,15 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     @Override
     public void isMultiPicture(boolean b) {
         this.mIsMultiPicture = b;
+    }
+
+    /**
+     * 设置类型 允许图片或者视频，跟知乎的选择相片共用模式
+     *
+     * @param mCollectionType 类型
+     */
+    public void setCollectionType(int mCollectionType) {
+        this.mCollectionType = mCollectionType;
     }
 
     // endregion
@@ -220,12 +242,17 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
             @Override
             public void onClick() {
-                // 拍照  隐藏 闪光灯、右上角的切换摄像头
-                mViewHolder.imgSwitch.setVisibility(INVISIBLE);
-                mViewHolder.imgFlash.setVisibility(INVISIBLE);
-                mCameraPresenter.capture();
-                if (mClickOrLongListener != null)
-                    mClickOrLongListener.onClick();
+                // 判断数量
+                if (mViewHolder.llPhoto.getChildCount() < currentMaxSelectable()) {
+                    // 拍照  隐藏 闪光灯、右上角的切换摄像头
+                    mViewHolder.imgSwitch.setVisibility(INVISIBLE);
+                    mViewHolder.imgFlash.setVisibility(INVISIBLE);
+                    mCameraPresenter.capture();
+                    if (mClickOrLongListener != null)
+                        mClickOrLongListener.onClick();
+                } else {
+                    Toast.makeText(mContext, "已经达到拍照上限", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -278,15 +305,15 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             @Override
             public void cancel() {
                 mCameraPresenter.cancle(mViewHolder.vvPreview.getHolder(), mScreenProp);
-                if (mOperaeListener != null)
-                    mOperaeListener.cancel();
+                if (mOperaeCameraListener != null)
+                    mOperaeCameraListener.cancel();
             }
 
             @Override
             public void confirm() {
                 mCameraPresenter.confirm();
-                if (mOperaeListener != null)
-                    mOperaeListener.confirm();
+                if (mOperaeCameraListener != null)
+                    mOperaeCameraListener.confirm(mCaptureBitmaps);
             }
         });
 
@@ -413,6 +440,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     @Override
     public void showPicture(Bitmap bitmap, boolean isVertical) {
+        // 存储到临时文件
+        BitmapUtils.saveToFile(bitmap,)
+
         // 判断是否多个图片
         if (mIsMultiPicture) {
             mPosition++;
@@ -434,7 +464,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 // 删除
                 Bitmap viewBitmap = mCaptureBitmaps.get(Integer.parseInt(v.getTag().toString()));
                 // 先判断是否已经回收
-                if(viewBitmap != null && !viewBitmap.isRecycled()){
+                if (viewBitmap != null && !viewBitmap.isRecycled()) {
                     // 回收并且置为null
                     viewBitmap.recycle();
                     mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
@@ -489,7 +519,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             setState(Constants.STATE_PICTURE);
         }
         // 回调接口：添加图片后剩下的相关数据
-        mCaptureListener.add(mCaptureBitmap,mCaptureBitmaps);
+        mCaptureListener.add(mCaptureBitmap, mCaptureBitmaps);
     }
 
     @Override
@@ -653,6 +683,28 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mViewHolder.imgFlash.setImageResource(R.drawable.ic_flash_off);
                 mCameraPresenter.flash(Camera.Parameters.FLASH_MODE_OFF);
                 break;
+        }
+    }
+
+    /**
+     * 返回最多选择的数量
+     *
+     * @return 数量
+     */
+    private int currentMaxSelectable() {
+        SelectionSpec spec = SelectionSpec.getInstance();
+        if (spec.maxSelectable > 0) {
+            // 返回最大选择数量
+            return spec.maxSelectable;
+        } else if (mCollectionType == COLLECTION_IMAGE) {
+            // 如果是图片类型，则返回最大图片选择数量
+            return spec.maxImageSelectable;
+        } else if (mCollectionType == COLLECTION_VIDEO) {
+            // 如果是视频类型，则返回最大视频选择数量
+            return spec.maxVideoSelectable;
+        } else {
+            // 返回最大选择数量
+            return spec.maxSelectable;
         }
     }
 

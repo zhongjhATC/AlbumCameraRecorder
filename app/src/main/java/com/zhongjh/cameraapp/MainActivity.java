@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,18 +17,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zhongjh.cameraviewsoundrecorder.album.MultiMedia;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.CaptureStrategy;
+import com.zhongjh.cameraviewsoundrecorder.settings.MultiMedia;
+import com.zhongjh.cameraviewsoundrecorder.settings.CaptureStrategy;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
-import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
-import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
-import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -155,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 .countable(true)// 是否显示多选图片的数字
                 .capture(true)
                 .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider"))
+                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider"))// 设置路径和7.0保护路径等等
                 .maxSelectable(10 - alreadyImageCount)// 最多选择几个
                 .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
                 .gridExpectedSize(

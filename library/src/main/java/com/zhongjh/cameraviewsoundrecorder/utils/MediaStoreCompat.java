@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.album.utils;
+package com.zhongjh.cameraviewsoundrecorder.utils;
 
 import android.app.Activity;
 import android.content.Context;

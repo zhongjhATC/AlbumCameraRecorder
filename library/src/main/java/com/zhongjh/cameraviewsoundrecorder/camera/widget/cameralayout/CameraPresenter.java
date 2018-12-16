@@ -1,6 +1,7 @@
 package com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
@@ -10,6 +11,8 @@ import com.zhongjh.cameraviewsoundrecorder.camera.CameraContact;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraOperation;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
+
+import java.util.HashMap;
 
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_SHORT;
@@ -22,12 +25,16 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     private Context mContext;
     private CameraContact.CameraView mCameraView;
-    private CameraOperation mCameraOperation;
+    private CameraOperation mCameraOperation = new CameraOperation();
 
+    /**
+     *
+     * @param context 上下文
+     * @param cameraView view
+     */
     public CameraPresenter(Context context, CameraContact.CameraView cameraView) {
         this.mContext = context;
         this.mCameraView = cameraView;
-        this.mCameraOperation = new CameraOperation();
     }
 
     @Override
@@ -57,8 +64,7 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     @Override
     public void capture() {
-        asdfsadfsf
-        // 拍照，并且共享配置，
+        // 拍照，判断还能拍几张
         mCameraOperation.takePicture((bitmap, isVertical) -> {
             // 显示图片
             mCameraView.showPicture(bitmap, isVertical);
@@ -171,5 +177,7 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     public void setPictureMaxNumber(int i) {
         mCameraOperation.setPictureMaxNumber(i);
     }
+
+
 
 }

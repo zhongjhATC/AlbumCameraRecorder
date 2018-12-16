@@ -25,7 +25,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
 
 
 /**

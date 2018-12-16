@@ -384,26 +384,23 @@ public class CameraOperation implements Camera.PreviewCallback {
 
         Log.i("CJT", mPhoneAngle + " = " + mCameraAngle + " = " + mPictureAngle);
         // 相机调用拍照
-        mCamera.takePicture(null, null, new Camera.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] data, Camera camera) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                Matrix matrix = new Matrix();
-                // 判断是前置还是后置
-                if (mSelectedCamera == CAMERA_POST_POSITION) {
-                    matrix.setRotate(mPictureAngle);
-                } else if (mSelectedCamera == CAMERA_FRONT_POSITION) {
-                    matrix.setRotate(360 - mPictureAngle);
-                    matrix.postScale(-1, 1);
-                }
+        mCamera.takePicture(null, null, (data, camera) -> {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            Matrix matrix = new Matrix();
+            // 判断是前置还是后置
+            if (mSelectedCamera == CAMERA_POST_POSITION) {
+                matrix.setRotate(mPictureAngle);
+            } else if (mSelectedCamera == CAMERA_FRONT_POSITION) {
+                matrix.setRotate(360 - mPictureAngle);
+                matrix.postScale(-1, 1);
+            }
 
-                bitmap = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                if (callback != null) {
-                    if (mPictureAngle == 90 || mPictureAngle == 270) {
-                        callback.captureResult(bitmap, true);
-                    } else {
-                        callback.captureResult(bitmap, false);
-                    }
+            bitmap = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            if (callback != null) {
+                if (mPictureAngle == 90 || mPictureAngle == 270) {
+                    callback.captureResult(bitmap, true);
+                } else {
+                    callback.captureResult(bitmap, false);
                 }
             }
         });
@@ -820,7 +817,11 @@ public class CameraOperation implements Camera.PreviewCallback {
     public void setMediaQuality(int mediaQualityMiddle) {
         this.mMediaQuality = mediaQualityMiddle;
     }
-    
+
+    /**
+     * 拍照是否允许拍多几张，只拍一张
+     * @param i 数量
+     */
     public void setPictureMaxNumber(int i) {
         this.PictureMaxNumber = i;
     }
