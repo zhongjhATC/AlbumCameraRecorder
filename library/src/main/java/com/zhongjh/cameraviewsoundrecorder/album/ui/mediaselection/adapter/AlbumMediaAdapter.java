@@ -45,7 +45,6 @@ public class AlbumMediaAdapter extends
         RecyclerViewCursorAdapter<RecyclerView.ViewHolder> implements
         MediaGrid.OnMediaGridClickListener {
 
-    private static final int VIEW_TYPE_CAPTURE = 0x01;
     private static final int VIEW_TYPE_MEDIA = 0x02;
     private final SelectedItemCollection mSelectedCollection;
     private final Drawable mPlaceholder;
@@ -69,71 +68,33 @@ public class AlbumMediaAdapter extends
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_CAPTURE) {
-            // 拍照的item
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.photo_capture_item, parent, false);
-            CaptureViewHolder holder = new CaptureViewHolder(v);
-            holder.itemView.setOnClickListener(v1 -> {
-                if (v1.getContext() instanceof OnPhotoCapture) {
-                    ((OnPhotoCapture) v1.getContext()).capture();
-                }
-            });
-            return holder;
-        } else if (viewType == VIEW_TYPE_MEDIA) {
-            // 相片的item
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_grid_item, parent, false);
-            return new MediaViewHolder(v);
-        }
-        return null;
+        // 相片的item
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_grid_item, parent, false);
+        return new MediaViewHolder(v);
     }
 
     @Override
     protected void onBindViewHolder(final RecyclerView.ViewHolder holder, Cursor cursor) {
-        if (holder instanceof CaptureViewHolder) {
-            // 拍照item
-            CaptureViewHolder captureViewHolder = (CaptureViewHolder) holder;
-            Drawable[] drawables = captureViewHolder.mHint.getCompoundDrawables();
-            TypedArray ta = holder.itemView.getContext().getTheme().obtainStyledAttributes(
-                    new int[]{R.attr.capture_textColor});
-            int color = ta.getColor(0, 0);
-            ta.recycle();
+        // 相片的item
+        MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
 
-            for (int i = 0; i < drawables.length; i++) {
-                Drawable drawable = drawables[i];
-                if (drawable != null) {
-                    final Drawable.ConstantState state = drawable.getConstantState();
-                    if (state == null) {
-                        continue;
-                    }
-
-                    Drawable newDrawable = state.newDrawable().mutate();
-                    newDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-                    newDrawable.setBounds(drawable.getBounds());
-                    drawables[i] = newDrawable;
-                }
-            }
-            captureViewHolder.mHint.setCompoundDrawables(drawables[0], drawables[1], drawables[2], drawables[3]);
-        } else if (holder instanceof MediaViewHolder) {
-            // 相片的item
-            MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
-
-            final Item item = Item.valueOf(cursor);
-            // 传递相关的值
-            mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
-                    getImageResize(mediaViewHolder.mMediaGrid.getContext()),
-                    mPlaceholder,
-                    mSelectionSpec.countable,
-                    holder
-            ));
-            mediaViewHolder.mMediaGrid.bindMedia(item);
-            mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this);
-            setCheckStatus(item, mediaViewHolder.mMediaGrid);
-        }
+        final Item item = Item.valueOf(cursor);
+        // 传递相关的值
+        mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
+                getImageResize(mediaViewHolder.mMediaGrid.getContext()),
+                mPlaceholder,
+                mSelectionSpec.countable,
+                holder
+        ));
+        mediaViewHolder.mMediaGrid.bindMedia(item);
+        mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this);
+        setCheckStatus(item, mediaViewHolder.mMediaGrid);
     }
 
     /**
      * 设置当前选择状态
-     * @param item 数据
+     *
+     * @param item      数据
      * @param mediaGrid holder
      */
     private void setCheckStatus(Item item, MediaGrid mediaGrid) {
@@ -178,9 +139,10 @@ public class AlbumMediaAdapter extends
 
     /**
      * 点击事件
+     *
      * @param thumbnail 图片控件
-     * @param item 数据
-     * @param holder 控件
+     * @param item      数据
+     * @param holder    控件
      */
     @Override
     public void onThumbnailClicked(ImageView thumbnail, Item item, RecyclerView.ViewHolder holder) {
@@ -191,9 +153,10 @@ public class AlbumMediaAdapter extends
 
     /**
      * 选择事件
+     *
      * @param checkView 选择控件
-     * @param item 数据
-     * @param holder 控件
+     * @param item      数据
+     * @param holder    控件
      */
     @Override
     public void onCheckViewClicked(CheckView checkView, Item item, RecyclerView.ViewHolder holder) {
@@ -244,18 +207,20 @@ public class AlbumMediaAdapter extends
 
     /**
      * 返回类型
+     *
      * @param position 索引
-     * @param cursor 数据源
+     * @param cursor   数据源
      */
     @Override
     public int getItemViewType(int position, Cursor cursor) {
-        return Item.valueOf(cursor).isCapture() ? VIEW_TYPE_CAPTURE : VIEW_TYPE_MEDIA;
+        return VIEW_TYPE_MEDIA;
     }
 
     /**
      * 验证当前item是否满足可以被选中的条件
+     *
      * @param context 上下文
-     * @param item 数据源
+     * @param item    数据源
      */
     private boolean assertAddSelection(Context context, Item item) {
         IncapableCause cause = mSelectedCollection.isAcceptable(item);
@@ -265,6 +230,7 @@ public class AlbumMediaAdapter extends
 
     /**
      * 注册选择事件
+     *
      * @param listener 事件
      */
     public void registerCheckStateListener(CheckStateListener listener) {
@@ -280,6 +246,7 @@ public class AlbumMediaAdapter extends
 
     /**
      * 注册图片点击事件
+     *
      * @param listener
      */
     public void registerOnMediaClickListener(OnMediaClickListener listener) {
@@ -319,6 +286,7 @@ public class AlbumMediaAdapter extends
 
     /**
      * 返回图片调整大小
+     *
      * @param context 上下文
      * @return 列表的每个格子的宽度 * 缩放比例
      */
@@ -345,10 +313,6 @@ public class AlbumMediaAdapter extends
         void onMediaClick(Album album, Item item, int adapterPosition);
     }
 
-    public interface OnPhotoCapture {
-        void capture();
-    }
-
     private static class MediaViewHolder extends RecyclerView.ViewHolder {
 
         private MediaGrid mMediaGrid;
@@ -356,17 +320,6 @@ public class AlbumMediaAdapter extends
         MediaViewHolder(View itemView) {
             super(itemView);
             mMediaGrid = (MediaGrid) itemView;
-        }
-    }
-
-    private static class CaptureViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView mHint;
-
-        CaptureViewHolder(View itemView) {
-            super(itemView);
-
-            mHint = (TextView) itemView.findViewById(R.id.hint);
         }
     }
 

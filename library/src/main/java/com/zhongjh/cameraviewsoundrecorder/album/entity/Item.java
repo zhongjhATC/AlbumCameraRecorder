@@ -29,7 +29,6 @@ public class Item implements Parcelable {
         }
     };
 
-    public static final long ITEM_ID_CAPTURE = -1;
     public static final String ITEM_DISPLAY_NAME_CAPTURE = "Capture";
     public final long id;
     public final String mimeType;
@@ -85,10 +84,6 @@ public class Item implements Parcelable {
 
     public Uri getContentUri() {
         return uri;
-    }
-
-    public boolean isCapture() {
-        return id == ITEM_ID_CAPTURE;
     }
 
     public boolean isImage() {

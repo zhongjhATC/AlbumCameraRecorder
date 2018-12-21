@@ -17,7 +17,6 @@
         android:supportsRtl="true">
 
         <activity android:name=".MainActivity" />
-        <activity android:name=".camera.CameraActivity" />
         <activity android:name=".album.ui.preview.selectedpreview.SelectedPreviewActivity" />
 
         <service android:name=".soundrecording.service.RecordingService" />

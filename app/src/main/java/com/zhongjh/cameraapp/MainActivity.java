@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 .countable(true)// 是否显示多选图片的数字
                 .capture(true)
                 .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider"))// 设置路径和7.0保护路径等等
+                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider","AA/test"))// 设置路径和7.0保护路径等等
                 .maxSelectable(10 - alreadyImageCount)// 最多选择几个
                 .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
                 .gridExpectedSize(

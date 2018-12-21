@@ -2,6 +2,7 @@ package com.zhongjh.cameraviewsoundrecorder.camera.listener;
 
 import android.graphics.Bitmap;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -10,8 +11,22 @@ import java.util.HashMap;
  */
 public interface OperaeCameraListener {
 
+    /**
+     * 取消事件
+     */
     void cancel();
 
-    void confirm(HashMap<Integer, Bitmap> captureBitmaps);
+    /**
+     * 拍照成功后点击确认事件
+     * @param paths 文件地址
+     */
+    void captureSuccess(ArrayList<String> paths);
+
+    /**
+     * 录像成功后点击确认事件
+     * @param url url
+     * @param firstFrame 文件地址
+     */
+    void recordSuccess(String url, Bitmap firstFrame);
 
 }

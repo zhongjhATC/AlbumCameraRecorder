@@ -25,26 +25,24 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
-import com.zhongjh.cameraviewsoundrecorder.camera.CameraContact;
-import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.BitmapData;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.CameraButton;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CloseListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView;
-import com.zhongjh.cameraviewsoundrecorder.utils.BitmapUtils;
+import com.zhongjh.cameraviewsoundrecorder.utils.MediaStoreCompat;
 import com.zhongjh.cameraviewsoundrecorder.widget.OperationLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
@@ -65,6 +63,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     private Context mContext;
     private CameraPresenter mCameraPresenter;  //控制层
+    private MediaStoreCompat mMediaStoreCompat;
+    private SelectionSpec mSpec;
 
     private int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
 
@@ -78,8 +78,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public ViewHolder mViewHolder; // 当前界面的所有控件
 
     private MediaPlayer mMediaPlayer; // 播放器
-
-    private Bitmap mCaptureBitmap;   // 拍照的图片
 
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, BitmapData> mCaptureBitmaps = new HashMap<>();  // 拍照的图片-集合
@@ -99,7 +97,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     // 回调监听
     private ErrorListener mErrorLisenter;
-    private CameraSuccessListener mCameraSuccessListener;
     private CloseListener mCloseListener;           // 退出当前Activity的按钮监听
     private ClickOrLongListener mClickOrLongListener; // 按钮的监听
     private OperaeCameraListener mOperaeCameraListener;         // 确认跟返回的监听
@@ -110,10 +107,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public void setErrorLisenter(ErrorListener errorLisenter) {
         this.mErrorLisenter = errorLisenter;
         mCameraPresenter.setErrorLinsenter(errorLisenter);
-    }
-
-    public void setCameraSuccessListener(CameraSuccessListener cameraSuccessListener) {
-        this.mCameraSuccessListener = cameraSuccessListener;
     }
 
     // 退出当前Activity的按钮监听
@@ -195,6 +188,15 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      * 初始化数据
      */
     private void initData() {
+        // 初始化设置
+        mSpec = SelectionSpec.getInstance();
+        if (mSpec.capture) {
+            mMediaStoreCompat = new MediaStoreCompat(getContext());
+            if (mSpec.captureStrategy == null)
+                throw new RuntimeException("Don't forget to set CaptureStrategy.");
+            mMediaStoreCompat.setCaptureStrategy(mSpec.captureStrategy);
+        }
+
         mLayoutWidth = DisplayMetricsSPUtils.getScreenWidth(mContext);
         //缩放梯度
         mZoomGradient = (int) (mLayoutWidth / 16f);
@@ -301,7 +303,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         });
 
         // 确认和取消
-        mViewHolder.pvLayout.setOperaeListener(new OperaeListener() {
+        mViewHolder.pvLayout.setOperaeListener(new OperationLayout.OperaeListener() {
             @Override
             public void cancel() {
                 mCameraPresenter.cancle(mViewHolder.vvPreview.getHolder(), mScreenProp);
@@ -312,8 +314,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             @Override
             public void confirm() {
                 mCameraPresenter.confirm();
-                if (mOperaeCameraListener != null)
-                    mOperaeCameraListener.confirm(mCaptureBitmaps);
             }
         });
 
@@ -420,14 +420,14 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 stopVideo();    //停止播放
                 mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mCameraPresenter.start(mViewHolder.vvPreview.getHolder(), mScreenProp);
-                if (mCameraSuccessListener != null) {
-                    mCameraSuccessListener.recordSuccess(mVideoUrl, mFirstFrame);
+                if (mOperaeCameraListener != null) {
+                    mOperaeCameraListener.recordSuccess(mVideoUrl, mFirstFrame);
                 }
                 break;
             case TYPE_PICTURE:
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
-                if (mCameraSuccessListener != null) {
-                    mCameraSuccessListener.captureSuccess(mCaptureBitmap);
+                if (mOperaeCameraListener != null) {
+                    mOperaeCameraListener.captureSuccess(getPaths());
                 }
                 break;
             case TYPE_SHORT:
@@ -441,13 +441,16 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     @Override
     public void showPicture(Bitmap bitmap, boolean isVertical) {
         // 存储到临时文件
-        BitmapUtils.saveToFile(bitmap,)
+//        BitmapUtils.saveToFile(bitmap,)
+
+        // 初始化数据
+        BitmapData bitmapData = new BitmapData(bitmap, mMediaStoreCompat.saveFileByBitmap(bitmap));
 
         // 判断是否多个图片
         if (mIsMultiPicture) {
             mPosition++;
             // 如果是多个图片，就把当前图片添加到集合并显示出来
-            mCaptureBitmaps.put(mPosition, bitmap);
+            mCaptureBitmaps.put(mPosition, bitmapData);
             // 显示横版列表
             mViewHolder.hsvPhoto.setVisibility(View.VISIBLE);
 
@@ -462,11 +465,11 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             viewHolderImageView.imgCancel.setTag(mPosition);
             viewHolderImageView.imgCancel.setOnClickListener(v -> {
                 // 删除
-                Bitmap viewBitmap = mCaptureBitmaps.get(Integer.parseInt(v.getTag().toString()));
+                BitmapData viewBitmap = mCaptureBitmaps.get(Integer.parseInt(v.getTag().toString()));
                 // 先判断是否已经回收
-                if (viewBitmap != null && !viewBitmap.isRecycled()) {
+                if (viewBitmap != null && !viewBitmap.getBitmap().isRecycled()) {
                     // 回收并且置为null
-                    viewBitmap.recycle();
+                    viewBitmap.getBitmap().recycle();
                     mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
                 }
                 System.gc();// 加速回收机制
@@ -509,7 +512,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             } else {
                 mViewHolder.imgPhoto.setScaleType(ImageView.ScaleType.FIT_CENTER);
             }
-            mCaptureBitmap = bitmap;
+            mCaptureBitmaps.put(0, bitmapData);
             mViewHolder.imgPhoto.setImageBitmap(bitmap);
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();
@@ -519,7 +522,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             setState(Constants.STATE_PICTURE);
         }
         // 回调接口：添加图片后剩下的相关数据
-        mCaptureListener.add(mCaptureBitmap, mCaptureBitmaps);
+        mCaptureListener.add(mCaptureBitmaps);
     }
 
     @Override
@@ -706,6 +709,17 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             // 返回最大选择数量
             return spec.maxSelectable;
         }
+    }
+
+    /**
+     * 返回当前所有的路径
+     */
+    private ArrayList<String> getPaths() {
+        ArrayList<String> paths = new ArrayList<>();
+        for (BitmapData value : mCaptureBitmaps.values()) {
+            paths.add(value.getPath());
+        }
+        return paths;
     }
 
     public static class ViewHolder {

@@ -94,14 +94,12 @@ public class AlbumMediaLoader extends CursorLoader {
     // ===============================================================
 
     private static final String ORDER_BY = MediaStore.Images.Media.DATE_TAKEN + " DESC";
-    private final boolean mEnableCapture;
 
-    private AlbumMediaLoader(Context context, String selection, String[] selectionArgs, boolean capture) {
+    private AlbumMediaLoader(Context context, String selection, String[] selectionArgs) {
         super(context, QUERY_URI, PROJECTION, selection, selectionArgs, ORDER_BY);
-        mEnableCapture = capture;
     }
 
-    public static CursorLoader newInstance(Context context, Album album, boolean capture) {
+    public static CursorLoader newInstance(Context context, Album album) {
         String selection;
         String[] selectionArgs;
         boolean enableCapture;
@@ -117,7 +115,6 @@ public class AlbumMediaLoader extends CursorLoader {
                 selection = SELECTION_ALL;
                 selectionArgs = SELECTION_ALL_ARGS;
             }
-            enableCapture = capture;
         } else {
             if (SelectionSpec.getInstance().onlyShowImages()) {
                 selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
@@ -133,17 +130,17 @@ public class AlbumMediaLoader extends CursorLoader {
             }
             enableCapture = false;
         }
-        return new AlbumMediaLoader(context, selection, selectionArgs, enableCapture);
+        return new AlbumMediaLoader(context, selection, selectionArgs);
     }
 
     @Override
     public Cursor loadInBackground() {
         Cursor result = super.loadInBackground();
-        if (!mEnableCapture || !MediaStoreCompat.hasCameraFeature(getContext())) {
+        if (!MediaStoreCompat.hasCameraFeature(getContext())) {
             return result;
         }
         MatrixCursor dummy = new MatrixCursor(PROJECTION);
-        dummy.addRow(new Object[]{Item.ITEM_ID_CAPTURE, Item.ITEM_DISPLAY_NAME_CAPTURE, "", 0, 0});
+//        dummy.addRow(new Object[]{Item.ITEM_ID_CAPTURE, Item.ITEM_DISPLAY_NAME_CAPTURE, "", 0, 0});
         return new MergeCursor(new Cursor[]{dummy, result});
     }
 

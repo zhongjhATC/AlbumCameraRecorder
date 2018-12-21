@@ -102,7 +102,9 @@ public class Album implements Parcelable {
     }
 
     /**
+     *
      * 数量添加一个，目前是考虑如果有拍照功能，就数量+1
+     * @deprecated 作废，拍照已经独立出来
      */
     public void addCaptureCount() {
         mCount++;

@@ -5,8 +5,12 @@ import android.graphics.Bitmap;
 public class BitmapData {
 
     private Bitmap bitmap;
-    private String uri;
     private String path;
+
+    public BitmapData(Bitmap bitmap, String path) {
+        this.bitmap = bitmap;
+        this.path = path;
+    }
 
     public Bitmap getBitmap() {
         return bitmap;
@@ -14,14 +18,6 @@ public class BitmapData {
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
     }
 
     public String getPath() {

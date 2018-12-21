@@ -2,6 +2,8 @@ package com.zhongjh.cameraviewsoundrecorder.camera.listener;
 
 import android.graphics.Bitmap;
 
+import com.zhongjh.cameraviewsoundrecorder.camera.entity.BitmapData;
+
 import java.util.HashMap;
 
 /**
@@ -15,14 +17,13 @@ public interface CaptureListener {
      *
      * @param captureBitmaps 数据源
      */
-    void remove(HashMap<Integer, Bitmap> captureBitmaps);
+    void remove(HashMap<Integer, BitmapData> captureBitmaps);
 
     /**
      * 添加图片
      *
-     * @param captureBitmap  单图设置情况下的数据
-     * @param captureBitmaps 多图设置情况下的数据
+     * @param captureBitmaps 图片数据
      */
-    void add(Bitmap captureBitmap, HashMap<Integer, Bitmap> captureBitmaps);
+    void add(HashMap<Integer, BitmapData> captureBitmaps);
 
 }

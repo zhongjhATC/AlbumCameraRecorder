@@ -1,6 +1,7 @@
 package com.zhongjh.cameraviewsoundrecorder.camera;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,11 +14,10 @@ import android.widget.RelativeLayout;
 
 import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.CameraSuccessListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.entity.BitmapData;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout;
@@ -25,12 +25,15 @@ import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_UNDEFINED;
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
+import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * 拍摄视频
@@ -82,7 +85,7 @@ public class CameraFragment extends Fragment {
         mCameraLayout = view.findViewById(R.id.cameraLayout);
 
         // 定制参数
-        mCameraLayout.isMultiPicture(true);// 拍照是否允许拍多几张，只拍一张
+        mCameraLayout.isMultiPicture(false);// 拍照是否允许拍多几张，只拍一张
         mCameraLayout.setPictureMaxNumber(6);// 拍照是否允许拍多几张，只拍一张
         mCameraLayout.setCollectionType(mCollectionType);
         mCameraLayout.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "ZhongjhCamera"); // 设置视频保存路径
@@ -102,31 +105,6 @@ public class CameraFragment extends Fragment {
             @Override
             public void AudioPermissionError() {
 //                Toast.makeText(CameraActivity.this, "没有权限", Toast.LENGTH_SHORT).show();
-            }
-        });
-        // 监听
-        mCameraLayout.setCameraSuccessListener(new CameraSuccessListener() {
-            @Override
-            public void captureSuccess(Bitmap bitmap) {
-                //获取图片bitmap
-                int a = 5;
-//                Log.i("JCameraView", "bitmap = " + bitmap.getWidth());
-//                String path = FileUtil.saveBitmap("JCamera", bitmap);
-//                Intent intent = new Intent();
-//                intent.putExtra("path", path);
-//                setResult(101, intent);
-//                finish();
-            }
-
-            @Override
-            public void recordSuccess(String url, Bitmap firstFrame) {
-                //获取视频路径
-//                String path = FileUtil.saveBitmap("JCamera", firstFrame);
-//                Log.i("CJT", "url = " + url + ", Bitmap = " + path);
-//                Intent intent = new Intent();
-//                intent.putExtra("path", path);
-//                setResult(101, intent);
-//                finish();
             }
         });
 
@@ -181,16 +159,30 @@ public class CameraFragment extends Fragment {
             }
 
             @Override
-            public void confirm(HashMap<Integer, Bitmap> captureBitmaps) {
-                // 提交数据 //TODO
-
+            public void captureSuccess(ArrayList<String> paths) {
+                Intent result = new Intent();
+                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+                mActivity.setResult(RESULT_OK, result);
+                mActivity.finish();
             }
+
+            @Override
+            public void recordSuccess(String url, Bitmap firstFrame) {
+                //获取视频路径
+//                String path = FileUtil.saveBitmap("JCamera", firstFrame);
+//                Log.i("CJT", "url = " + url + ", Bitmap = " + path);
+//                Intent intent = new Intent();
+//                intent.putExtra("path", path);
+//                setResult(101, intent);
+//                finish();
+            }
+
         });
 
         // 拍摄后操作图片的事件
         mCameraLayout.setCaptureListener(new CaptureListener() {
             @Override
-            public void remove(HashMap<Integer, Bitmap> captureBitmaps) {
+            public void remove(HashMap<Integer, BitmapData> captureBitmaps) {
                 // 判断如果删除光图片的时候，母窗体启动滑动
                 if (captureBitmaps.size() <= 0) {
                     ((MainActivity) mActivity).setTablayoutScroll(true);
@@ -201,8 +193,8 @@ public class CameraFragment extends Fragment {
             }
 
             @Override
-            public void add(Bitmap captureBitmap, HashMap<Integer, Bitmap> captureBitmaps) {
-                if (captureBitmap != null || captureBitmaps.size() > 0) {
+            public void add( HashMap<Integer, BitmapData> captureBitmaps) {
+                if (captureBitmaps.size() > 0) {
                     // 母窗体禁止滑动
                     ((MainActivity) mActivity).setTablayoutScroll(false);
                     RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();

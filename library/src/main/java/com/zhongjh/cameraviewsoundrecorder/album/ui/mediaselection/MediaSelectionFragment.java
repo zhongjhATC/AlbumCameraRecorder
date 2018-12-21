@@ -122,7 +122,7 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
         mRecyclerView.setAdapter(mAdapter);
         mAlbumMediaCollection.onCreate(getActivity(), this);
-        mAlbumMediaCollection.load(album, selectionSpec.capture);
+        mAlbumMediaCollection.load(album);
     }
 
     @Override

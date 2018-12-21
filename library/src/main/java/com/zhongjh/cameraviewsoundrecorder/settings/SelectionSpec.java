@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 选择规格
+ * 设置的一些属性,别的界面也根据这个来进行动态改变
  * Created by zhongjh on 2018/8/23.
  */
 public class SelectionSpec {

@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.widget.clickorlongbutton.ClickOrLongButton;
@@ -31,6 +30,16 @@ public abstract class OperationLayout extends FrameLayout {
 
     private ClickOrLongListener mClickOrLongListener;   // 点击或长按监听
     private OperaeListener mOperaeListener; // 点击或长按监听结束后的 确认取消事件监控
+    /**
+     * 操作按钮的Listener
+     */
+    public interface OperaeListener {
+
+        void cancel();
+
+        void confirm();
+
+    }
 
     public void setPhotoVideoListener(ClickOrLongListener clickOrLongListener) {
         this.mClickOrLongListener = clickOrLongListener;

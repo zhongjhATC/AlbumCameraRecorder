@@ -1,18 +1,14 @@
 package com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraCallback;
-import com.zhongjh.cameraviewsoundrecorder.camera.CameraContact;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraOperation;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
-
-import java.util.HashMap;
 
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_SHORT;

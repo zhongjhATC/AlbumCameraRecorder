@@ -57,8 +57,7 @@ import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SE
  */
 public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks,
         MediaSelectionFragment.SelectionProvider,
-        AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener,
-        AlbumMediaAdapter.OnPhotoCapture {
+        AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
 
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
@@ -165,10 +164,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
                 // 获取该位置的专辑
                 Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
-                // 如果有拍照就+1
-                if (album.isAll() && SelectionSpec.getInstance().capture) {
-                    album.addCaptureCount();
-                }
+//                // 如果有拍照就+1 作废
+//                if (album.isAll() && SelectionSpec.getInstance().capture) {
+//                    album.addCaptureCount();
+//                }
                 onAlbumSelected(album);
             }
 
@@ -414,10 +413,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 mAlbumsSpinner.setSelection(getContext(),
                         mAlbumCollection.getCurrentSelection());
                 Album album = Album.valueOf(cursor);
-                if (album.isAll() && SelectionSpec.getInstance().capture) {
-                    // 判断如果是 查询全部 并且可以拍照的话，就相片数量+1，放拍照功能
-                    album.addCaptureCount();
-                }
+                // 作废
+//                if (album.isAll() && SelectionSpec.getInstance().capture) {
+//                    // 判断如果是 查询全部 并且可以拍照的话，就相片数量+1，放拍照功能
+//                    album.addCaptureCount();
+//                }
                 onAlbumSelected(album);
             }
         });
@@ -476,14 +476,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     @Override
     public SelectedItemCollection provideSelectedItemCollection() {
         return mSelectedCollection;
-    }
-
-    @Override
-    public void capture() {
-//        // 第一个拍照
-//        if (mMediaStoreCompat != null) {
-//            mMediaStoreCompat.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE);
-//        }
     }
 
     /**

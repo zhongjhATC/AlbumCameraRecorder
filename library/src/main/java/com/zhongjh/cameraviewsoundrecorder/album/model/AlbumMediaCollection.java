@@ -33,7 +33,6 @@ import java.lang.ref.WeakReference;
 public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 2;
     private static final String ARGS_ALBUM = "args_album";
-    private static final String ARGS_ENABLE_CAPTURE = "args_enable_capture";
     private WeakReference<Context> mContext;
     private LoaderManager mLoaderManager;
     private AlbumMediaCallbacks mCallbacks;
@@ -50,8 +49,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
             return null;
         }
 
-        return AlbumMediaLoader.newInstance(context, album,
-                album.isAll() && args.getBoolean(ARGS_ENABLE_CAPTURE, false));
+        return AlbumMediaLoader.newInstance(context, album);
     }
 
     @Override
@@ -88,13 +86,8 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
     }
 
     public void load(@Nullable Album target) {
-        load(target, false);
-    }
-
-    public void load(@Nullable Album target, boolean enableCapture) {
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);
-        args.putBoolean(ARGS_ENABLE_CAPTURE, enableCapture);
         mLoaderManager.initLoader(LOADER_ID, args, this);
     }
 

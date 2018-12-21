@@ -3,7 +3,6 @@ package com.zhongjh.cameraviewsoundrecorder.soundrecording;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,15 +19,14 @@ import android.widget.Chronometer;
 import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeListener;
 import com.zhongjh.cameraviewsoundrecorder.soundrecording.db.RecordingItem;
 import com.zhongjh.cameraviewsoundrecorder.soundrecording.service.RecordingService;
 import com.zhongjh.cameraviewsoundrecorder.soundrecording.widget.SoundrecordingLayout;
 import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
+import com.zhongjh.cameraviewsoundrecorder.widget.OperationLayout;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 import static android.content.Context.MODE_PRIVATE;
 import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
@@ -136,7 +134,7 @@ public class SoundRecordingFragment extends Fragment {
         });
 
         // 确认和取消
-        mViewHolder.pvLayout.setOperaeListener(new OperaeListener() {
+        mViewHolder.pvLayout.setOperaeListener(new OperationLayout.OperaeListener() {
             @Override
             public void cancel() {
                 // 母窗体启动滑动

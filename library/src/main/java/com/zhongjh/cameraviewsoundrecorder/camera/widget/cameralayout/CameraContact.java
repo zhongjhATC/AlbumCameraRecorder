@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.camera;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -6,9 +6,8 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
-
-import java.util.HashMap;
 
 /**
  * 摄像器的关联者
@@ -129,7 +128,7 @@ public interface CameraContact {
         void setMediaQuality(int mediaQualityMiddle);
 
         /**
-         * 如果 {@link com.zhongjh.cameraviewsoundrecorder.camera.CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
+         * 如果 {@link CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
          * @param i 允许最多多少张图片
          */
         void setPictureMaxNumber(int i);
@@ -262,7 +261,7 @@ public interface CameraContact {
         void isMultiPicture(boolean b);
 
         /**
-         * 如果 {@link com.zhongjh.cameraviewsoundrecorder.camera.CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
+         * 如果 {@link CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
          * @param i 允许最多多少张图片
          */
         void setPictureMaxNumber(int i);
