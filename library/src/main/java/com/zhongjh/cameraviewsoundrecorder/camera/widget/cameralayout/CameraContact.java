@@ -224,11 +224,7 @@ public interface CameraContact {
          */
         SurfaceHolder getSurfaceHolder();
 
-        /**
-         * 设置视频保存路径
-         * @param saveVideoPath 路径文本
-         */
-        void setSaveVideoPath(String saveVideoPath);
+
 
         /**
          * 设置按钮支持的功能：
@@ -253,18 +249,6 @@ public interface CameraContact {
          * }
          */
         void setMediaQuality(int mediaQualityMiddle);
-
-        /**
-         * 设置是否一次性拍摄多张图片
-         * @param b 是否
-         */
-        void isMultiPicture(boolean b);
-
-        /**
-         * 如果 {@link CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
-         * @param i 允许最多多少张图片
-         */
-        void setPictureMaxNumber(int i);
     }
 
 }

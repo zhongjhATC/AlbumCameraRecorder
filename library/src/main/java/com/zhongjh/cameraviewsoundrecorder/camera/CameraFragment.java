@@ -21,6 +21,8 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout;
+import com.zhongjh.cameraviewsoundrecorder.settings.CameraSetting;
+import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
 import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
 
@@ -42,6 +44,8 @@ import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SE
 public class CameraFragment extends Fragment {
 
     protected Activity mActivity;
+
+    private CameraSetting mCameraSetting; // 配置
 
     private CameraLayout mCameraLayout;
     private String title;
@@ -66,6 +70,7 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mCameraSetting = CameraSetting.getInstance();
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             page = getArguments().getInt("someInt", 0);
@@ -89,6 +94,7 @@ public class CameraFragment extends Fragment {
         mCameraLayout.setPictureMaxNumber(6);// 拍照是否允许拍多几张，只拍一张
         mCameraLayout.setCollectionType(mCollectionType);
         mCameraLayout.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "ZhongjhCamera"); // 设置视频保存路径
+
         mCameraLayout.setFeatures(BUTTON_STATE_BOTH);
         mCameraLayout.setTip("轻触拍照，长按摄像");
         mCameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率
@@ -97,9 +103,6 @@ public class CameraFragment extends Fragment {
             public void onError() {
                 //错误监听
                 Log.i("CameraActivity", "camera error");
-//                Intent intent = new Intent();
-//                setResult(103, intent);
-//                finish();
             }
 
             @Override
@@ -203,36 +206,8 @@ public class CameraFragment extends Fragment {
                 }
             }
         });
-
-//        mCameraLayout.setLeftClickListener(v -> mActivity.finish());
-//        mCameraLayout.setRightClickListener(v -> {
-////                Toast.makeText(CameraActivity.this,"Right", Toast.LENGTH_SHORT).show();
-//        });
-
         Log.i("CJT", DeviceUtil.getDeviceModel());
-
-
         return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-//        // 全屏显示
-//        if (Build.VERSION.SDK_INT >= 19) {
-//            View decorView = getActivity().getWindow().getDecorView();
-//            decorView.setSystemUiVisibility(
-//                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-//                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-//                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-//        } else {
-//            View decorView = getActivity().getWindow().getDecorView();
-//            int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
-//            decorView.setSystemUiVisibility(option);
-//        }
     }
 
     @Override

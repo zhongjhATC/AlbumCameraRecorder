@@ -68,15 +68,14 @@ public class CameraOperation implements Camera.PreviewCallback {
     private boolean mIsRecorder = false;    // 录像中
     private MediaRecorder mMediaRecorder;   // 记录音频与视频
     private String mVideoFileName;           // 文件保存的file名称
-    private String mSaveVideoPath;          // 保存文件的路径
+//    private String mSaveVideoPath;          // 保存文件的路径
     private String mVideoFileAbsPath;       // 统一上面两个String的路径
     private Bitmap mVideoFirstFrame = null; // 录像的第一祯bitmap
 
     private int mNowScaleRate = 0;
     private int mRecordScleRate = 0;
 
-    private boolean mIsMultiPicture = false;// 是否一次性可以拍摄多张图片
-    private int PictureMaxNumber = 6; // 默认6张图片
+
     private int mMediaQuality = Constants.MEDIA_QUALITY_MIDDLE;  //视频质量
     private SensorManager mSensorManager = null;
 
