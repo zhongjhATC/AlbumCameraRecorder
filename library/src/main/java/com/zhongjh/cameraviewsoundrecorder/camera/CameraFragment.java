@@ -89,12 +89,6 @@ public class CameraFragment extends Fragment {
 //        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mCameraLayout = view.findViewById(R.id.cameraLayout);
 
-        // 定制参数
-        mCameraLayout.isMultiPicture(false);// 拍照是否允许拍多几张，只拍一张
-        mCameraLayout.setPictureMaxNumber(6);// 拍照是否允许拍多几张，只拍一张
-        mCameraLayout.setCollectionType(mCollectionType);
-        mCameraLayout.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "ZhongjhCamera"); // 设置视频保存路径
-
         mCameraLayout.setFeatures(BUTTON_STATE_BOTH);
         mCameraLayout.setTip("轻触拍照，长按摄像");
         mCameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率

@@ -32,6 +32,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.PermissionUtil;
+import com.zhongjh.cameraviewsoundrecorder.settings.CameraSetting;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -51,6 +52,7 @@ import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_R
 public class CameraOperation implements Camera.PreviewCallback {
 
     private static final String TAG = "CameraOperation";
+    private CameraSetting mCameraSetting; // 拍摄配置
 
     private Camera mCamera;
     private Camera.Parameters mParams; // 相机的属性
@@ -68,7 +70,6 @@ public class CameraOperation implements Camera.PreviewCallback {
     private boolean mIsRecorder = false;    // 录像中
     private MediaRecorder mMediaRecorder;   // 记录音频与视频
     private String mVideoFileName;           // 文件保存的file名称
-//    private String mSaveVideoPath;          // 保存文件的路径
     private String mVideoFileAbsPath;       // 统一上面两个String的路径
     private Bitmap mVideoFirstFrame = null; // 录像的第一祯bitmap
 
@@ -94,6 +95,7 @@ public class CameraOperation implements Camera.PreviewCallback {
     private int mHandlerFocusTime;// 处理焦点
 
     public CameraOperation() {
+        mCameraSetting =
         findAvailableCameras();
         mSelectedCamera = CAMERA_POST_POSITION; // 默认前摄像头
         mSaveVideoPath = "";
