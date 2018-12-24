@@ -65,12 +65,12 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private Context mContext;
     private CameraPresenter mCameraPresenter;  //控制层
     private MediaStoreCompat mMediaStoreCompat;
-    private CameraSetting mCameraSetting; // 配置
+    private SelectionSpec mSpec;          // 公共配置
+    private CameraSetting mCameraSetting; // 拍摄配置
 
     private int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
 
     private int mFlashType = Constants.TYPE_FLASH_OFF;  // 闪关灯状态 默认关闭
-
 
     private int mLayoutWidth; // 整体宽度
     private float mScreenProp = 0f; // 当前录视频的高/宽的比例
@@ -93,8 +93,41 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     private int mCollectionType = COLLECTION_UNDEFINED; // 类型: 允许图片或者视频，跟知乎的选择相片共用模式
 
+    // region 回调监听属性
+    private ErrorListener mErrorLisenter;
+    private CloseListener mCloseListener;           // 退出当前Activity的按钮监听
+    private ClickOrLongListener mClickOrLongListener; // 按钮的监听
+    private OperaeCameraListener mOperaeCameraListener;         // 确认跟返回的监听
+    private CaptureListener mCaptureListener;       // 拍摄后操作图片的事件
 
 
+    // 赋值Camera错误回调
+    public void setErrorLisenter(ErrorListener errorLisenter) {
+        this.mErrorLisenter = errorLisenter;
+        mCameraPresenter.setErrorLinsenter(errorLisenter);
+    }
+
+    // 退出当前Activity的按钮监听
+    public void setCloseListener(CloseListener closeListener) {
+        this.mCloseListener = closeListener;
+    }
+
+    // 核心按钮事件
+    public void setPhotoVideoListener(ClickOrLongListener clickOrLongListener) {
+        this.mClickOrLongListener = clickOrLongListener;
+    }
+
+    // 确认跟返回的监听
+    public void setOperaeCameraListener(OperaeCameraListener operaeCameraListener) {
+        this.mOperaeCameraListener = operaeCameraListener;
+    }
+
+    // 拍摄后操作图片的事件
+    public void setCaptureListener(CaptureListener captureListener) {
+        this.mCaptureListener = captureListener;
+    }
+
+    // endregion
 
     public CameraLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -135,11 +168,18 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private void initData() {
         // 初始化设置
         mCameraSetting = CameraSetting.getInstance();
+        mSpec = SelectionSpec.getInstance();
         if (mCameraSetting.isVideotape) {
             mMediaStoreCompat = new MediaStoreCompat(getContext());
-            if (mSpec.captureStrategy == null)
-                throw new RuntimeException("Don't forget to set CaptureStrategy.");
-            mMediaStoreCompat.setCaptureStrategy(mSpec.captureStrategy);
+            if (mCameraSetting.photoPath == null && mCameraSetting.videoPath == null){
+                if (mSpec.captureStrategy == null) {
+                    throw new RuntimeException("Don't forget to set CaptureStrategy.");
+                }else{
+                    mMediaStoreCompat.setCaptureStrategy(mSpec.captureStrategy);
+                }
+            }else{
+                mMediaStoreCompat.setCaptureStrategy(mCameraSetting.captureStrategy);
+            }
         }
 
         mLayoutWidth = DisplayMetricsSPUtils.getScreenWidth(mContext);
@@ -218,7 +258,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mViewHolder.imgSwitch.setVisibility(INVISIBLE);
                 mViewHolder.imgFlash.setVisibility(INVISIBLE);
                 mCameraPresenter.record(mViewHolder.vvPreview.getHolder().getSurface(), mScreenProp);
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener!= null)
                     mClickOrLongListener.onLongClick();
             }
 
@@ -241,6 +281,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             public void onLongClickError() {
                 if (mErrorLisenter != null) {
                     mErrorLisenter.AudioPermissionError();
+                    mCameraPresenter.setErrorLinsenter(mErrorLisenter);
                 }
                 if (mClickOrLongListener != null)
                     mClickOrLongListener.onLongClickError();
@@ -392,7 +433,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         BitmapData bitmapData = new BitmapData(bitmap, mMediaStoreCompat.saveFileByBitmap(bitmap));
 
         // 判断是否多个图片
-        if (mIsMultiPicture) {
+        if (mCameraSetting.isMultiPicture) {
             mPosition++;
             // 如果是多个图片，就把当前图片添加到集合并显示出来
             mCaptureBitmaps.put(mPosition, bitmapData);
