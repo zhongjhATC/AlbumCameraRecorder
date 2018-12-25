@@ -160,11 +160,6 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     }
 
     @Override
-    public void setSaveVideoPath(String saveVideoPath) {
-        mCameraOperation.setSaveVideoPath(saveVideoPath);
-    }
-
-    @Override
     public void setMediaQuality(int mediaQualityMiddle) {
         mCameraOperation.setMediaQuality(mediaQualityMiddle);
     }

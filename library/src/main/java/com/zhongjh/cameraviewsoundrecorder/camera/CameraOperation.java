@@ -69,8 +69,6 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     private boolean mIsRecorder = false;    // 录像中
     private MediaRecorder mMediaRecorder;   // 记录音频与视频
-    private String mVideoFileName;           // 文件保存的file名称
-    private String mVideoFileAbsPath;       // 统一上面两个String的路径
     private Bitmap mVideoFirstFrame = null; // 录像的第一祯bitmap
 
     private int mNowScaleRate = 0;
@@ -95,10 +93,9 @@ public class CameraOperation implements Camera.PreviewCallback {
     private int mHandlerFocusTime;// 处理焦点
 
     public CameraOperation() {
-        mCameraSetting =
+        mCameraSetting = CameraSetting.getInstance();
         findAvailableCameras();
         mSelectedCamera = CAMERA_POST_POSITION; // 默认前摄像头
-        mSaveVideoPath = "";
     }
 
     @Override
@@ -514,14 +511,8 @@ public class CameraOperation implements Camera.PreviewCallback {
             mMediaRecorder.setVideoEncodingBitRate(mMediaQuality);
         }
         mMediaRecorder.setPreviewDisplay(surface);
-
-        mVideoFileName = "video_" + System.currentTimeMillis() + ".mp4";
-        if (mSaveVideoPath.equals("")) {
-            mSaveVideoPath = Environment.getExternalStorageDirectory().getPath();
-        }
-        mVideoFileAbsPath = mSaveVideoPath + File.separator + mVideoFileName;
         // 输出最终路径
-        mMediaRecorder.setOutputFile(mVideoFileAbsPath);
+        mMediaRecorder.setOutputFile(mCameraSetting.videoPath);
         try {
             mMediaRecorder.prepare();
             mMediaRecorder.start();

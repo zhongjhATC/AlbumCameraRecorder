@@ -16,7 +16,7 @@
 package com.zhongjh.cameraviewsoundrecorder.settings;
 
 /**
- * 设置目录的
+ * 设置目录的的实体
  */
 public class CaptureStrategy {
 
@@ -32,4 +32,7 @@ public class CaptureStrategy {
         this.authority = authority;
         this.directory = directory;
     }
+
+
+
 }

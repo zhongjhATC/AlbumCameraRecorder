@@ -116,12 +116,6 @@ public interface CameraContact {
         void isPreview(boolean b);
 
         /**
-         * 设置视频保存路径
-         * @param saveVideoPath 路径文本
-         */
-        void setSaveVideoPath(String saveVideoPath);
-
-        /**
          * 设置视频比特率
          * @param mediaQualityMiddle 比特率
          */

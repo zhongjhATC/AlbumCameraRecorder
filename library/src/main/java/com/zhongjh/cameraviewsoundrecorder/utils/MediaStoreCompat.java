@@ -66,6 +66,9 @@ public class MediaStoreCompat {
             case 0:
                 fileName = String.format("JPEG_%s.jpg", timeStamp);
                 break;
+            case 1:
+                fileName = String.format("VIDEO_%s.mp4", timeStamp);
+                break;
         }
         File storageDir;
         if (mCaptureStrategy.isPublic) {
