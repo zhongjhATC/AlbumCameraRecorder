@@ -6,7 +6,6 @@ import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraCallback;
-import com.zhongjh.cameraviewsoundrecorder.camera.CameraOperation;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 
@@ -21,7 +20,7 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
 
     private Context mContext;
     private CameraContact.CameraView mCameraView;
-    private CameraOperation mCameraOperation = new CameraOperation();
+    private CameraOperation mCameraOperation;
 
     /**
      *
@@ -31,6 +30,7 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     public CameraPresenter(Context context, CameraContact.CameraView cameraView) {
         this.mContext = context;
         this.mCameraView = cameraView;
+        this.mCameraOperation = new CameraOperation(context);
     }
 
     @Override
@@ -163,12 +163,5 @@ public class CameraPresenter implements CameraContact.CameraPresenter {
     public void setMediaQuality(int mediaQualityMiddle) {
         mCameraOperation.setMediaQuality(mediaQualityMiddle);
     }
-
-    @Override
-    public void setPictureMaxNumber(int i) {
-        mCameraOperation.setPictureMaxNumber(i);
-    }
-
-
 
 }

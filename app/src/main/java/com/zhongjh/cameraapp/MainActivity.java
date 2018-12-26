@@ -143,7 +143,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private void openMain(int alreadyImageCount) {
         MultiMedia.from(MainActivity.this)
-                .choose(MimeType.ofImage(), false) // 设置显示的多媒体类型
+                .choose(MimeType.ofImage(), false)// 设置显示的多媒体类型
+                .forResult(REQUEST_CODE_CHOOSE);
+
+
+        MultiMedia.from(MainActivity.this)
+                .choose(MimeType.ofImage(), false)
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
                 .capture(true)

@@ -8,7 +8,7 @@ import android.os.Bundle;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckView;
 import com.zhongjh.cameraviewsoundrecorder.utils.PathUtils;
@@ -259,7 +259,7 @@ public class SelectedItemCollection {
      * @return 数量
      */
     private int currentMaxSelectable() {
-        SelectionSpec spec = SelectionSpec.getInstance();
+        AlbumSpec spec = AlbumSpec.getInstance();
         if (spec.maxSelectable > 0) {
             // 返回最大选择数量
             return spec.maxSelectable;
@@ -278,11 +278,11 @@ public class SelectedItemCollection {
     /**
      * 判断选择资源(图片跟视频)是否类型冲突
      * Determine whether there will be conflict media types. A user can only select images and videos at the same time
-     * while {@link SelectionSpec#mediaTypeExclusive} is set to false.
+     * while {@link AlbumSpec#mediaTypeExclusive} is set to false.
      */
     public boolean typeConflict(Item item) {
         // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
-        return SelectionSpec.getInstance().mediaTypeExclusive
+        return AlbumSpec.getInstance().mediaTypeExclusive
                 && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_MIXED))
                 || (item.isVideo() && (mCollectionType == COLLECTION_IMAGE || mCollectionType == COLLECTION_MIXED)));
     }

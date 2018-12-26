@@ -42,13 +42,13 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
 
 /**
- * 用于构建媒体选择规范的FLASH API。
+ * 用于构建媒体具体设置 API。
  * Created by zhongjh on 2018/9/28.
  */
-public final class SelectionCreator {
+public final class AlbumSetting {
 
     private final MultiMedia mMultiMedia;
-    private final SelectionSpec mSelectionSpec;
+    private final AlbumSpec mAlbumSpec;
 
     // www.代替枚举的@IntDef用法
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -80,24 +80,24 @@ public final class SelectionCreator {
      * @param multiMedia   a requester context wrapper.
      * @param mimeTypes MIME type set to select.
      */
-    SelectionCreator(MultiMedia multiMedia, @NonNull Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
+    AlbumSetting(MultiMedia multiMedia, @NonNull Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
         mMultiMedia = multiMedia;
-        mSelectionSpec = SelectionSpec.getCleanInstance();
-        mSelectionSpec.mimeTypeSet = mimeTypes;
-        mSelectionSpec.mediaTypeExclusive = mediaTypeExclusive;
-        mSelectionSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
+        mAlbumSpec = AlbumSpec.getCleanInstance();
+        mAlbumSpec.mimeTypeSet = mimeTypes;
+        mAlbumSpec.mediaTypeExclusive = mediaTypeExclusive;
+        mAlbumSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
     /**
      * Whether to show only one media type if choosing medias are only images or videos.
      *
      * @param showSingleMediaType whether to show only one media type, either images or videos.
-     * @return {@link SelectionCreator} for fluent API.
-     * @see SelectionSpec#onlyShowImages()
-     * @see SelectionSpec#onlyShowVideos()
+     * @return {@link AlbumSetting} for fluent API.
+     * @see AlbumSpec#onlyShowImages()
+     * @see AlbumSpec#onlyShowVideos()
      */
-    public SelectionCreator showSingleMediaType(boolean showSingleMediaType) {
-        mSelectionSpec.showSingleMediaType = showSingleMediaType;
+    public AlbumSetting showSingleMediaType(boolean showSingleMediaType) {
+        mAlbumSpec.showSingleMediaType = showSingleMediaType;
         return this;
     }
 
@@ -110,10 +110,10 @@ public final class SelectionCreator {
      * you can define a custom theme derived from the above ones or other themes.
      *
      * @param themeId theme resource id. Default value is com.zhihu.matisse.R.style.Matisse_Zhihu.
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator theme(@StyleRes int themeId) {
-        mSelectionSpec.themeId = themeId;
+    public AlbumSetting theme(@StyleRes int themeId) {
+        mAlbumSpec.themeId = themeId;
         return this;
     }
 
@@ -122,10 +122,10 @@ public final class SelectionCreator {
      *
      * @param countable true for a auto-increased number from 1, false for a check mark. Default
      *                  value is false.
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator countable(boolean countable) {
-        mSelectionSpec.countable = countable;
+    public AlbumSetting countable(boolean countable) {
+        mAlbumSpec.countable = countable;
         return this;
     }
 
@@ -133,31 +133,31 @@ public final class SelectionCreator {
      * Maximum selectable count.
      *
      * @param maxSelectable Maximum selectable count. Default value is 1.
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator maxSelectable(int maxSelectable) {
+    public AlbumSetting maxSelectable(int maxSelectable) {
         if (maxSelectable < 1)
             throw new IllegalArgumentException("maxSelectable must be greater than or equal to one");
-        if (mSelectionSpec.maxImageSelectable > 0 || mSelectionSpec.maxVideoSelectable > 0)
+        if (mAlbumSpec.maxImageSelectable > 0 || mAlbumSpec.maxVideoSelectable > 0)
             throw new IllegalStateException("already set maxImageSelectable and maxVideoSelectable");
-        mSelectionSpec.maxSelectable = maxSelectable;
+        mAlbumSpec.maxSelectable = maxSelectable;
         return this;
     }
 
     /**
-     * Only useful when {@link SelectionSpec#mediaTypeExclusive} set true and you want to set different maximum
+     * Only useful when {@link AlbumSpec#mediaTypeExclusive} set true and you want to set different maximum
      * selectable files for image and video media types.
      *
      * @param maxImageSelectable Maximum selectable count for image.
      * @param maxVideoSelectable Maximum selectable count for video.
      * @return
      */
-    public SelectionCreator maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable) {
+    public AlbumSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable) {
         if (maxImageSelectable < 1 || maxVideoSelectable < 1)
             throw new IllegalArgumentException(("max selectable must be greater than or equal to one"));
-        mSelectionSpec.maxSelectable = -1;
-        mSelectionSpec.maxImageSelectable = maxImageSelectable;
-        mSelectionSpec.maxVideoSelectable = maxVideoSelectable;
+        mAlbumSpec.maxSelectable = -1;
+        mAlbumSpec.maxImageSelectable = maxImageSelectable;
+        mAlbumSpec.maxVideoSelectable = maxVideoSelectable;
         return this;
     }
 
@@ -165,14 +165,14 @@ public final class SelectionCreator {
      * Add filter to filter each selecting item.
      *
      * @param filter {@link Filter}
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator addFilter(@NonNull Filter filter) {
-        if (mSelectionSpec.filters == null) {
-            mSelectionSpec.filters = new ArrayList<>();
+    public AlbumSetting addFilter(@NonNull Filter filter) {
+        if (mAlbumSpec.filters == null) {
+            mAlbumSpec.filters = new ArrayList<>();
         }
         if (filter == null) throw new IllegalArgumentException("filter cannot be null");
-        mSelectionSpec.filters.add(filter);
+        mAlbumSpec.filters.add(filter);
         return this;
     }
 
@@ -182,10 +182,10 @@ public final class SelectionCreator {
      * If this value is set true, photo capturing entry will appear only on All Media's page.
      *
      * @param enable Whether to enable capturing or not. Default value is false;
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator capture(boolean enable) {
-        mSelectionSpec.capture = enable;
+    public AlbumSetting capture(boolean enable) {
+        mAlbumSpec.capture = enable;
         return this;
     }
 
@@ -193,10 +193,10 @@ public final class SelectionCreator {
      * Show a original photo check options.Let users decide whether use original photo after select
      *
      * @param enable Whether to enable original photo or not
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator originalEnable(boolean enable) {
-        mSelectionSpec.originalable = enable;
+    public AlbumSetting originalEnable(boolean enable) {
+        mAlbumSpec.originalable = enable;
         return this;
     }
 
@@ -204,10 +204,10 @@ public final class SelectionCreator {
      * Maximum original size,the unit is MB. Only useful when {link@originalEnable} set true
      *
      * @param size Maximum original size. Default value is Integer.MAX_VALUE
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator maxOriginalSize(int size) {
-        mSelectionSpec.originalMaxSize = size;
+    public AlbumSetting maxOriginalSize(int size) {
+        mAlbumSpec.originalMaxSize = size;
         return this;
     }
 
@@ -216,10 +216,10 @@ public final class SelectionCreator {
      * storage and also a authority for {@link android.support.v4.content.FileProvider}.
      *
      * @param captureStrategy {@link CaptureStrategy}, needed only when capturing is enabled.
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator captureStrategy(CaptureStrategy captureStrategy) {
-        mSelectionSpec.captureStrategy = captureStrategy;
+    public AlbumSetting captureStrategy(CaptureStrategy captureStrategy) {
+        mAlbumSpec.captureStrategy = captureStrategy;
         return this;
     }
 
@@ -228,11 +228,11 @@ public final class SelectionCreator {
      *
      * @param orientation An orientation constant as used in {@link ScreenOrientation}.
      *                    Default value is {@link android.content.pm.ActivityInfo#SCREEN_ORIENTATION_PORTRAIT}.
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      * @see Activity#setRequestedOrientation(int)
      */
-    public SelectionCreator restrictOrientation(@ScreenOrientation int orientation) {
-        mSelectionSpec.orientation = orientation;
+    public AlbumSetting restrictOrientation(@ScreenOrientation int orientation) {
+        mAlbumSpec.orientation = orientation;
         return this;
     }
 
@@ -242,11 +242,11 @@ public final class SelectionCreator {
      * This will be ignored when {@link #gridExpectedSize(int)} is set.
      *
      * @param spanCount Requested span count.
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator spanCount(int spanCount) {
+    public AlbumSetting spanCount(int spanCount) {
         if (spanCount < 1) throw new IllegalArgumentException("spanCount cannot be less than 1");
-        mSelectionSpec.spanCount = spanCount;
+        mAlbumSpec.spanCount = spanCount;
         return this;
     }
 
@@ -256,10 +256,10 @@ public final class SelectionCreator {
      * size will be as close to this value as possible.
      *
      * @param size Expected media grid size in pixel.
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator gridExpectedSize(int size) {
-        mSelectionSpec.gridExpectedSize = size;
+    public AlbumSetting gridExpectedSize(int size) {
+        mAlbumSpec.gridExpectedSize = size;
         return this;
     }
 
@@ -268,12 +268,12 @@ public final class SelectionCreator {
      * 1.0].
      *
      * @param scale Thumbnail's scale in (0.0, 1.0]. Default value is 0.5.
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator thumbnailScale(float scale) {
+    public AlbumSetting thumbnailScale(float scale) {
         if (scale <= 0f || scale > 1f)
             throw new IllegalArgumentException("Thumbnail scale must be between (0.0, 1.0]");
-        mSelectionSpec.thumbnailScale = scale;
+        mAlbumSpec.thumbnailScale = scale;
         return this;
     }
 
@@ -286,10 +286,10 @@ public final class SelectionCreator {
      * And you can implement your own image engine.
      *
      * @param imageEngine {@link ImageEngine}
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator imageEngine(ImageEngine imageEngine) {
-        mSelectionSpec.imageEngine = imageEngine;
+    public AlbumSetting imageEngine(ImageEngine imageEngine) {
+        mAlbumSpec.imageEngine = imageEngine;
         return this;
     }
 
@@ -300,11 +300,11 @@ public final class SelectionCreator {
      * we only suggest you to use this API when you need to do something immediately.
      *
      * @param listener {@link OnSelectedListener}
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
     @NonNull
-    public SelectionCreator setOnSelectedListener(@Nullable OnSelectedListener listener) {
-        mSelectionSpec.onSelectedListener = listener;
+    public AlbumSetting setOnSelectedListener(@Nullable OnSelectedListener listener) {
+        mAlbumSpec.onSelectedListener = listener;
         return this;
     }
 
@@ -312,10 +312,10 @@ public final class SelectionCreator {
      * Set listener for callback immediately when user check or uncheck original.
      *
      * @param listener {@link OnSelectedListener}
-     * @return {@link SelectionCreator} for fluent API.
+     * @return {@link AlbumSetting} for fluent API.
      */
-    public SelectionCreator setOnCheckedListener(@Nullable OnCheckedListener listener) {
-        mSelectionSpec.onCheckedListener = listener;
+    public AlbumSetting setOnCheckedListener(@Nullable OnCheckedListener listener) {
+        mAlbumSpec.onCheckedListener = listener;
         return this;
     }
 

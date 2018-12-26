@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,12 +20,10 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout;
-import com.zhongjh.cameraviewsoundrecorder.settings.CameraSetting;
-import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.CameraSpec;
 import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,7 +42,7 @@ public class CameraFragment extends Fragment {
 
     protected Activity mActivity;
 
-    private CameraSetting mCameraSetting; // 配置
+    private CameraSpec mCameraSpec; // 配置
 
     private CameraLayout mCameraLayout;
     private String title;
@@ -70,7 +67,7 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mCameraSetting = CameraSetting.getInstance();
+        mCameraSpec = CameraSpec.getInstance();
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             page = getArguments().getInt("someInt", 0);

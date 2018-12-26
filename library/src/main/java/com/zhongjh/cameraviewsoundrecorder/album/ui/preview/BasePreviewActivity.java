@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.selectedpreview.adapter.PreviewPagerAdapter;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.previewitem.PreviewItemFragment;
@@ -41,7 +41,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String CHECK_STATE = "checkState";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
-    protected SelectionSpec mSpec;
+    protected AlbumSpec mSpec;
 
     protected PreviewPagerAdapter mAdapter;
 
@@ -53,9 +53,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(SelectionSpec.getInstance().themeId);  // 获取样式
+        setTheme(AlbumSpec.getInstance().themeId);  // 获取样式
         super.onCreate(savedInstanceState);
-        if (!SelectionSpec.getInstance().hasInited) {
+        if (!AlbumSpec.getInstance().hasInited) {
             setResult(RESULT_CANCELED);
             finish();
             return;
@@ -66,7 +66,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
 
-        mSpec = SelectionSpec.getInstance();
+        mSpec = AlbumSpec.getInstance();
         if (mSpec.needOrientationRestriction()) {
             // 设置旋转模式
             setRequestedOrientation(mSpec.orientation);

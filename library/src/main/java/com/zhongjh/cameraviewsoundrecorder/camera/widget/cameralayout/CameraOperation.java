@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.camera;
+package com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -17,12 +17,12 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
+import com.zhongjh.cameraviewsoundrecorder.camera.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.AngleUtil;
@@ -32,10 +32,10 @@ import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.PermissionUtil;
-import com.zhongjh.cameraviewsoundrecorder.settings.CameraSetting;
+import com.zhongjh.cameraviewsoundrecorder.settings.CameraSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.MediaStoreCompat;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,9 @@ import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_R
 public class CameraOperation implements Camera.PreviewCallback {
 
     private static final String TAG = "CameraOperation";
-    private CameraSetting mCameraSetting; // 拍摄配置
+    private CameraSpec mCameraSpec;       // 拍摄配置
+    private MediaStoreCompat mMediaStoreCompat; // 文件配置
+    private String mVideoFileAbsPath;           // 文件路径
 
     private Camera mCamera;
     private Camera.Parameters mParams; // 相机的属性
@@ -92,8 +94,10 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     private int mHandlerFocusTime;// 处理焦点
 
-    public CameraOperation() {
-        mCameraSetting = CameraSetting.getInstance();
+    public CameraOperation(Context context) {
+        mCameraSpec = CameraSpec.getInstance();
+        mMediaStoreCompat = new MediaStoreCompat(context);
+        mMediaStoreCompat.setCaptureStrategy(mCameraSpec.captureStrategy);
         findAvailableCameras();
         mSelectedCamera = CAMERA_POST_POSITION; // 默认前摄像头
     }
@@ -512,7 +516,8 @@ public class CameraOperation implements Camera.PreviewCallback {
         }
         mMediaRecorder.setPreviewDisplay(surface);
         // 输出最终路径
-        mMediaRecorder.setOutputFile(mCameraSetting.videoPath);
+        mVideoFileAbsPath = mMediaStoreCompat.getFilePath(1);
+        mMediaRecorder.setOutputFile(mVideoFileAbsPath);
         try {
             mMediaRecorder.prepare();
             mMediaRecorder.start();
@@ -574,8 +579,7 @@ public class CameraOperation implements Camera.PreviewCallback {
             } else {
                 // 停止预览并且回调
                 doStopPreview();
-                String fileName = mSaveVideoPath + File.separator + mVideoFileName;
-                callback.recordResult(fileName, mVideoFirstFrame);
+                callback.recordResult(mVideoFileAbsPath, mVideoFirstFrame);
             }
 
 
@@ -792,15 +796,6 @@ public class CameraOperation implements Camera.PreviewCallback {
         }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void setSaveVideoPath(String saveVideoPath) {
-        this.mSaveVideoPath = saveVideoPath;
-        File file = new File(saveVideoPath);
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-    }
-
     /**
      * 设置视频比特率
      *
@@ -808,14 +803,6 @@ public class CameraOperation implements Camera.PreviewCallback {
      */
     public void setMediaQuality(int mediaQualityMiddle) {
         this.mMediaQuality = mediaQualityMiddle;
-    }
-
-    /**
-     * 拍照是否允许拍多几张，只拍一张
-     * @param i 数量
-     */
-    public void setPictureMaxNumber(int i) {
-        this.PictureMaxNumber = i;
     }
 
     // endregion

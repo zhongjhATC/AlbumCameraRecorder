@@ -26,8 +26,8 @@ import android.widget.VideoView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.BitmapData;
-import com.zhongjh.cameraviewsoundrecorder.settings.CameraSetting;
-import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.CameraSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.CameraButton;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
@@ -39,7 +39,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView;
-import com.zhongjh.cameraviewsoundrecorder.utils.MediaStoreCompat;
+import com.zhongjh.cameraviewsoundrecorder.settings.MediaStoreCompat;
 import com.zhongjh.cameraviewsoundrecorder.widget.OperationLayout;
 
 import java.io.IOException;
@@ -65,8 +65,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private Context mContext;
     private CameraPresenter mCameraPresenter;  //控制层
     private MediaStoreCompat mMediaStoreCompat;
-    private SelectionSpec mSpec;          // 公共配置
-    private CameraSetting mCameraSetting; // 拍摄配置
+    private AlbumSpec mSpec;          // 公共配置
+    private CameraSpec mCameraSpec; // 拍摄配置
 
     private int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
 
@@ -167,18 +167,18 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     private void initData() {
         // 初始化设置
-        mCameraSetting = CameraSetting.getInstance();
-        mSpec = SelectionSpec.getInstance();
-        if (mCameraSetting.isVideotape) {
+        mCameraSpec = CameraSpec.getInstance();
+        mSpec = AlbumSpec.getInstance();
+        if (mCameraSpec.isVideotape) {
             mMediaStoreCompat = new MediaStoreCompat(getContext());
-            if (mCameraSetting.photoPath == null && mCameraSetting.videoPath == null){
+            if (mCameraSpec.photoPath == null && mCameraSpec.videoPath == null){
                 if (mSpec.captureStrategy == null) {
                     throw new RuntimeException("Don't forget to set CaptureStrategy.");
                 }else{
                     mMediaStoreCompat.setCaptureStrategy(mSpec.captureStrategy);
                 }
             }else{
-                mMediaStoreCompat.setCaptureStrategy(mCameraSetting.captureStrategy);
+                mMediaStoreCompat.setCaptureStrategy(mCameraSpec.captureStrategy);
             }
         }
 
@@ -433,7 +433,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         BitmapData bitmapData = new BitmapData(bitmap, mMediaStoreCompat.saveFileByBitmap(bitmap));
 
         // 判断是否多个图片
-        if (mCameraSetting.isMultiPicture) {
+        if (mCameraSpec.isMultiPicture) {
             mPosition++;
             // 如果是多个图片，就把当前图片添加到集合并显示出来
             mCaptureBitmaps.put(mPosition, bitmapData);
@@ -671,7 +671,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      * @return 数量
      */
     private int currentMaxSelectable() {
-        SelectionSpec spec = SelectionSpec.getInstance();
+        AlbumSpec spec = AlbumSpec.getInstance();
         if (spec.maxSelectable > 0) {
             // 返回最大选择数量
             return spec.maxSelectable;

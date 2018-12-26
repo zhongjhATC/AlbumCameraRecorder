@@ -103,11 +103,11 @@ public final class MultiMedia {
      * Types not included in the set will still be shown in the grid but can't be chosen.
      *
      * @param mimeTypes MIME types set user can choose from.
-     * @return {@link SelectionCreator} to build select specifications.
+     * @return {@link AlbumSetting} to build select specifications.
      * @see MimeType
-     * @see SelectionCreator
+     * @see AlbumSetting
      */
-    public SelectionCreator choose(Set<MimeType> mimeTypes) {
+    public AlbumSetting choose(Set<MimeType> mimeTypes) {
         return this.choose(mimeTypes, true);
     }
 
@@ -120,12 +120,16 @@ public final class MultiMedia {
      * @param mediaTypeExclusive Whether can choose images and videos at the same time during one single choosing
      *                           process. true corresponds to not being able to choose images and videos at the same
      *                           time, and false corresponds to being able to do this.
-     * @return {@link SelectionCreator} to build select specifications.
+     * @return {@link AlbumSetting} to build select specifications.
      * @see MimeType
-     * @see SelectionCreator
+     * @see AlbumSetting
      */
-    public SelectionCreator choose(Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
-        return new SelectionCreator(this, mimeTypes, mediaTypeExclusive);
+    public AlbumSetting choose(Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
+        return new AlbumSetting(this, mimeTypes, mediaTypeExclusive);
+    }
+
+    public CameraSetting chooseCamera(Set<MimeType> mimeTypes){
+        return new CameraSetting(mimeTypes);
     }
 
     @Nullable

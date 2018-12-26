@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
@@ -81,10 +81,10 @@ public class PreviewItemFragment extends Fragment {
 
         Point size = PhotoMetadataUtils.getBitmapSize(item.getContentUri(), getActivity());
         if (item.isGif()) {
-            SelectionSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y, image,
+            AlbumSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y, image,
                     item.getContentUri());
         } else {
-            SelectionSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y, image,
+            AlbumSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y, image,
                     item.getContentUri());
         }
     }

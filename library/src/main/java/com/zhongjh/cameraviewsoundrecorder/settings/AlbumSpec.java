@@ -18,7 +18,7 @@ import java.util.Set;
  * 设置的一些属性,别的界面也根据这个来进行动态改变
  * Created by zhongjh on 2018/8/23.
  */
-public class SelectionSpec {
+public class AlbumSpec {
 
     public Set<MimeType> mimeTypeSet; // 选择 mime 的类型，MimeType.allOf()
     public boolean mediaTypeExclusive; // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
@@ -43,17 +43,17 @@ public class SelectionSpec {
     public OnCheckedListener onCheckedListener;
     public List<Filter> filters;
 
-    private SelectionSpec() {
+    private AlbumSpec() {
     }
 
-    public static SelectionSpec getInstance() {
+    public static AlbumSpec getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
-    public static SelectionSpec getCleanInstance() {
-        SelectionSpec selectionSpec = getInstance();
-        selectionSpec.reset();
-        return selectionSpec;
+    public static AlbumSpec getCleanInstance() {
+        AlbumSpec albumSpec = getInstance();
+        albumSpec.reset();
+        return albumSpec;
     }
 
     /**
@@ -112,7 +112,7 @@ public class SelectionSpec {
     }
 
     private static final class InstanceHolder {
-        private static final SelectionSpec INSTANCE = new SelectionSpec();
+        private static final AlbumSpec INSTANCE = new AlbumSpec();
     }
 
 

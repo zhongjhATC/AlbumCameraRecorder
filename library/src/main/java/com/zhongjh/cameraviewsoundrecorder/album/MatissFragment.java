@@ -33,7 +33,7 @@ import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.settings.SelectionSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.mediaselection.MediaSelectionFragment;
@@ -71,7 +71,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection;
-    private SelectionSpec mSpec;
+    private AlbumSpec mSpec;
 
     private AlbumsSpinner mAlbumsSpinner;
     private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;   // 左上角的下拉框适配器
@@ -104,7 +104,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mSpec = SelectionSpec.getInstance();
+        mSpec = AlbumSpec.getInstance();
         super.onCreate(savedInstanceState);
     }
 
@@ -165,7 +165,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 // 获取该位置的专辑
                 Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
 //                // 如果有拍照就+1 作废
-//                if (album.isAll() && SelectionSpec.getInstance().capture) {
+//                if (album.isAll() && AlbumSpec.getInstance().capture) {
 //                    album.addCaptureCount();
 //                }
                 onAlbumSelected(album);
@@ -414,7 +414,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                         mAlbumCollection.getCurrentSelection());
                 Album album = Album.valueOf(cursor);
                 // 作废
-//                if (album.isAll() && SelectionSpec.getInstance().capture) {
+//                if (album.isAll() && AlbumSpec.getInstance().capture) {
 //                    // 判断如果是 查询全部 并且可以拍照的话，就相片数量+1，放拍照功能
 //                    album.addCaptureCount();
 //                }

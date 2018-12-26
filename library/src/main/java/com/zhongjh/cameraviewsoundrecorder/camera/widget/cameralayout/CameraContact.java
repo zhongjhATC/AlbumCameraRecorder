@@ -120,12 +120,6 @@ public interface CameraContact {
          * @param mediaQualityMiddle 比特率
          */
         void setMediaQuality(int mediaQualityMiddle);
-
-        /**
-         * 如果 {@link CameraContact.CameraView#isMultiPicture } 生效，那么该方法才能生效
-         * @param i 允许最多多少张图片
-         */
-        void setPictureMaxNumber(int i);
     }
 
     /**

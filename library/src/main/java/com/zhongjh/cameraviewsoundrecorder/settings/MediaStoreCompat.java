@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.utils;
+package com.zhongjh.cameraviewsoundrecorder.settings;
 
 import android.app.Activity;
 import android.content.Context;
@@ -89,6 +89,20 @@ public class MediaStoreCompat {
 
         return tempFile;
 
+    }
+
+    /**
+     * 返回创建文件的路径
+     * @param type 0是图片 1是视频 2是音频
+     * @return 路径
+     */
+    public String getFilePath(int type) {
+        try {
+            return createFile(type).getPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
