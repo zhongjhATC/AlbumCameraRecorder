@@ -31,6 +31,7 @@ import com.zhongjh.cameraviewsoundrecorder.album.base.RecyclerViewCursorAdapter;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckView;
@@ -47,6 +48,7 @@ public class AlbumMediaAdapter extends
     private final SelectedItemCollection mSelectedCollection;
     private final Drawable mPlaceholder;
     private GlobalSpec mGlobalSpec;
+    private AlbumSpec mAlbumSpec;
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
     private RecyclerView mRecyclerView;
@@ -81,7 +83,7 @@ public class AlbumMediaAdapter extends
         mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
                 getImageResize(mediaViewHolder.mMediaGrid.getContext()),
                 mPlaceholder,
-                mGlobalSpec.countable,
+                mAlbumSpec.countable,
                 holder
         ));
         mediaViewHolder.mMediaGrid.bindMedia(item);
@@ -97,7 +99,7 @@ public class AlbumMediaAdapter extends
      */
     private void setCheckStatus(Item item, MediaGrid mediaGrid) {
         // 是否多选时,显示数字
-        if (mGlobalSpec.countable) {
+        if (mAlbumSpec.countable) {
             int checkedNum = mSelectedCollection.checkedNumOf(item);
             if (checkedNum > 0) {
                 // 设置启用,设置数量
@@ -159,7 +161,7 @@ public class AlbumMediaAdapter extends
     @Override
     public void onCheckViewClicked(CheckView checkView, Item item, RecyclerView.ViewHolder holder) {
         // 是否多选模式,显示数字
-        if (mGlobalSpec.countable) {
+        if (mAlbumSpec.countable) {
             // 获取当前选择的第几个
             int checkedNum = mSelectedCollection.checkedNumOf(item);
             if (checkedNum == CheckView.UNCHECKED) {
@@ -298,7 +300,7 @@ public class AlbumMediaAdapter extends
             // 图片调整后的大小：获取列表的每个格子的宽度
             mImageResize = availableWidth / spanCount;
             // 图片调整后的大小 * 缩放比例
-            mImageResize = (int) (mImageResize * mGlobalSpec.thumbnailScale);
+            mImageResize = (int) (mImageResize * mAlbumSpec.thumbnailScale);
         }
         return mImageResize;
     }

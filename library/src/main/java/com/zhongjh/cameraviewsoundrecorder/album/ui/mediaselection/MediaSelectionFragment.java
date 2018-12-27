@@ -15,6 +15,7 @@ import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
@@ -109,11 +110,11 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
 
         // 设置recyclerView的布局
         int spanCount;
-        GlobalSpec globalSpec = GlobalSpec.getInstance();
-        if (globalSpec.gridExpectedSize > 0) {
-            spanCount = UIUtils.spanCount(getContext(), globalSpec.gridExpectedSize);
+        AlbumSpec albumSpec = AlbumSpec.getInstance();
+        if (albumSpec.gridExpectedSize > 0) {
+            spanCount = UIUtils.spanCount(getContext(), albumSpec.gridExpectedSize);
         } else {
-            spanCount = globalSpec.spanCount;
+            spanCount = albumSpec.spanCount;
         }
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
 

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckView;
@@ -260,15 +261,18 @@ public class SelectedItemCollection {
      */
     private int currentMaxSelectable() {
         GlobalSpec spec = GlobalSpec.getInstance();
+        AlbumSpec albumSpec = AlbumSpec.getInstance();
         if (spec.maxSelectable > 0) {
             // 返回最大选择数量
             return spec.maxSelectable;
-        } else if (mCollectionType == COLLECTION_IMAGE) {
+        }else if(albumSpec.maxSelectable > 0) {
+            return albumSpec.maxSelectable;
+        }else if (mCollectionType == COLLECTION_IMAGE) {
             // 如果是图片类型，则返回最大图片选择数量
-            return spec.maxImageSelectable;
+            return albumSpec.maxImageSelectable;
         } else if (mCollectionType == COLLECTION_VIDEO) {
             // 如果是视频类型，则返回最大视频选择数量
-            return spec.maxVideoSelectable;
+            return albumSpec.maxVideoSelectable;
         } else {
             // 返回最大选择数量
             return spec.maxSelectable;
@@ -278,11 +282,11 @@ public class SelectedItemCollection {
     /**
      * 判断选择资源(图片跟视频)是否类型冲突
      * Determine whether there will be conflict media types. A user can only select images and videos at the same time
-     * while {@link GlobalSpec#mediaTypeExclusive} is set to false.
+     * while {@link AlbumSpec#mediaTypeExclusive} is set to false.
      */
     public boolean typeConflict(Item item) {
         // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
-        return GlobalSpec.getInstance().mediaTypeExclusive
+        return AlbumSpec.getInstance().mediaTypeExclusive
                 && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_MIXED))
                 || (item.isVideo() && (mCollectionType == COLLECTION_IMAGE || mCollectionType == COLLECTION_MIXED)));
     }

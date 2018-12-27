@@ -33,6 +33,7 @@ import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
@@ -71,7 +72,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection;
-    private GlobalSpec mSpec;
+    private GlobalSpec mGlobalSpec;
+    private AlbumSpec mAlbumSpec;
 
     private AlbumsSpinner mAlbumsSpinner;
     private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;   // 左上角的下拉框适配器
@@ -104,7 +106,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mSpec = GlobalSpec.getInstance();
+        mGlobalSpec = GlobalSpec.getInstance();
         super.onCreate(savedInstanceState);
     }
 
@@ -208,7 +210,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     int count = countOverMaxSize();
                     if (count > 0) {
                         IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                                getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
+                                getString(R.string.error_over_original_count, count, mAlbumSpec.originalMaxSize));
                         incapableDialog.show(getFragmentManager(),
                                 IncapableDialog.class.getName());
                         return;
@@ -219,8 +221,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     mViewHolder.original.setChecked(mOriginalEnable);
 
                     // 设置状态是否原图
-                    if (mSpec.onCheckedListener != null) {
-                        mSpec.onCheckedListener.onCheck(mOriginalEnable);
+                    if (mAlbumSpec.onCheckedListener != null) {
+                        mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);
                     }
 
                 }
@@ -240,8 +242,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         super.onDestroy();
         // 销毁相册model
         mAlbumCollection.onDestroy();
-        mSpec.onCheckedListener = null;
-        mSpec.onSelectedListener = null;
+        mAlbumSpec.onCheckedListener = null;
+        mAlbumSpec.onSelectedListener = null;
     }
 
     @Override
@@ -330,7 +332,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.button_preview.setEnabled(false);
             mViewHolder.button_apply.setEnabled(false);
             mViewHolder.button_apply.setText(getString(R.string.button_sure_default));
-        } else if (selectedCount == 1 && mSpec.singleSelectionModeEnabled()) {
+        } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
             // 不显示选择的数字
             mViewHolder.button_preview.setEnabled(true);
             mViewHolder.button_apply.setText(R.string.button_sure_default);
@@ -343,7 +345,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
 
         // 是否显示原图控件
-        if (mSpec.originalable) {
+        if (mAlbumSpec.originalable) {
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
             updateOriginalState();
         } else {
@@ -364,7 +366,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (mOriginalEnable) {
                 // 弹出窗口提示大于xxmb
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.error_over_original_size, mSpec.originalMaxSize));
+                        getString(R.string.error_over_original_size, mAlbumSpec.originalMaxSize));
                 if (this.getFragmentManager() == null)
                     return;
                 incapableDialog.show(this.getFragmentManager(),
@@ -391,7 +393,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMB(item.size);
 
-                if (size > mSpec.originalMaxSize) {
+                if (size > mAlbumSpec.originalMaxSize) {
                     count++;
                 }
             }
@@ -457,8 +459,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // notify bottom toolbar that check state changed.
         updateBottomToolbar();
         // 触发选择的接口事件
-        if (mSpec.onSelectedListener != null) {
-            mSpec.onSelectedListener.onSelected(
+        if (mAlbumSpec.onSelectedListener != null) {
+            mAlbumSpec.onSelectedListener.onSelected(
                     mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
         }
     }

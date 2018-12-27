@@ -102,20 +102,6 @@ public final class MultiMedia {
      * <p>
      * Types not included in the set will still be shown in the grid but can't be chosen.
      *
-     * @param mimeTypes MIME types set user can choose from.
-     * @return {@link GlobalSetting} to build select specifications.
-     * @see MimeType
-     * @see GlobalSetting
-     */
-    public GlobalSetting choose(Set<MimeType> mimeTypes) {
-        return this.choose(mimeTypes, true);
-    }
-
-    /**
-     * MIME types the selection constrains on.
-     * <p>
-     * Types not included in the set will still be shown in the grid but can't be chosen.
-     *
      * @param mimeTypes          MIME types set user can choose from.
      * @return {@link GlobalSetting} to build select specifications.
      * @see MimeType
