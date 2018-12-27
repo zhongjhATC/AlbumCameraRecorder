@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
-import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraFragment;
 import com.zhongjh.cameraviewsoundrecorder.soundrecording.SoundRecordingFragment;
 import com.zhongjh.cameraviewsoundrecorder.widget.NoScrollViewPager;
@@ -24,7 +24,7 @@ import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollec
  */
 public class MainActivity extends AppCompatActivity {
 
-    private AlbumSpec mSpec;
+    private GlobalSpec mSpec;
     FragmentPagerAdapter adapterViewPager;
 
     // 底部控件
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mSpec = AlbumSpec.getInstance();
+        mSpec = GlobalSpec.getInstance();
         setTheme(mSpec.themeId);
         super.onCreate(savedInstanceState);
         // @@确认是否进行了配置

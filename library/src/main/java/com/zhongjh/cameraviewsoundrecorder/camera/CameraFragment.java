@@ -19,7 +19,6 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
-import com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout.CameraLayout;
 import com.zhongjh.cameraviewsoundrecorder.settings.CameraSpec;
 import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;

@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 
 public class MediaGrid extends SquareFrameLayout implements View.OnClickListener {
 
@@ -121,10 +121,10 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
      */
     private void setImage() {
         if (mMedia.isGif()) {
-            AlbumSpec.getInstance().imageEngine.loadGifThumbnail(getContext(), mPreBindInfo.mResize,
+            GlobalSpec.getInstance().imageEngine.loadGifThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getContentUri());
         } else {
-            AlbumSpec.getInstance().imageEngine.loadThumbnail(getContext(), mPreBindInfo.mResize,
+            GlobalSpec.getInstance().imageEngine.loadThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getContentUri());
         }
     }

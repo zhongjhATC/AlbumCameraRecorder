@@ -103,11 +103,11 @@ public final class MultiMedia {
      * Types not included in the set will still be shown in the grid but can't be chosen.
      *
      * @param mimeTypes MIME types set user can choose from.
-     * @return {@link AlbumSetting} to build select specifications.
+     * @return {@link GlobalSetting} to build select specifications.
      * @see MimeType
-     * @see AlbumSetting
+     * @see GlobalSetting
      */
-    public AlbumSetting choose(Set<MimeType> mimeTypes) {
+    public GlobalSetting choose(Set<MimeType> mimeTypes) {
         return this.choose(mimeTypes, true);
     }
 
@@ -117,18 +117,27 @@ public final class MultiMedia {
      * Types not included in the set will still be shown in the grid but can't be chosen.
      *
      * @param mimeTypes          MIME types set user can choose from.
+     * @return {@link GlobalSetting} to build select specifications.
+     * @see MimeType
+     * @see GlobalSetting
+     */
+    public GlobalSetting choose(Set<MimeType> mimeTypes) {
+        return new GlobalSetting(this, mimeTypes);
+    }
+
+    /**
+     *
+     * @param mimeTypes
      * @param mediaTypeExclusive Whether can choose images and videos at the same time during one single choosing
      *                           process. true corresponds to not being able to choose images and videos at the same
      *                           time, and false corresponds to being able to do this.
-     * @return {@link AlbumSetting} to build select specifications.
-     * @see MimeType
-     * @see AlbumSetting
+     * @return
      */
-    public AlbumSetting choose(Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
-        return new AlbumSetting(this, mimeTypes, mediaTypeExclusive);
+    public AlbumSetting chooseAlbum(Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
+        return new AlbumSetting(mimeTypes, mediaTypeExclusive);
     }
 
-    public CameraSetting chooseCamera(Set<MimeType> mimeTypes){
+    public CameraSetting chooseCamera(Set<MimeType> mimeTypes) {
         return new CameraSetting(mimeTypes);
     }
 

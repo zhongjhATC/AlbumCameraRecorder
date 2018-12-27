@@ -25,7 +25,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
-import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 
 
 /**
@@ -80,10 +80,10 @@ public class AlbumLoader extends CursorLoader {
     public static CursorLoader newInstance(Context context) {
         String selection;
         String[] selectionArgs;
-        if (AlbumSpec.getInstance().onlyShowImages()) {
+        if (GlobalSpec.getInstance().onlyShowImages()) {
             selection = SELECTION_FOR_SINGLE_MEDIA_TYPE;
             selectionArgs = getSelectionArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
-        } else if (AlbumSpec.getInstance().onlyShowVideos()) {
+        } else if (GlobalSpec.getInstance().onlyShowVideos()) {
             selection = SELECTION_FOR_SINGLE_MEDIA_TYPE;
             selectionArgs = getSelectionArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
         } else {

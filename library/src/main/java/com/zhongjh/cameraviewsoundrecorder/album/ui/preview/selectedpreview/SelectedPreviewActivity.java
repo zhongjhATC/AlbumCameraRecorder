@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.BasePreviewActivity;
 
@@ -15,7 +15,7 @@ public class SelectedPreviewActivity extends BasePreviewActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!AlbumSpec.getInstance().hasInited) {
+        if (!GlobalSpec.getInstance().hasInited) {
             setResult(RESULT_CANCELED);
             finish();
             return;

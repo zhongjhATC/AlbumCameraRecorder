@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.zhongjh.cameraviewsoundrecorder.widget.ChildClickableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rlMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
@@ -58,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_flash_on"
+            app:srcCompat="@drawable/ic_flash_on"
             tools:ignore="ContentDescription" />
 
         <ImageView
@@ -66,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_camera"
+            app:srcCompat="@drawable/ic_camera"
             tools:ignore="ContentDescription" />
 
     </LinearLayout>
@@ -123,4 +124,4 @@
         android:contentDescription="底部功能按钮"
         tools:ignore="HardcodedText" />
 
-</RelativeLayout>
+</com.zhongjh.cameraviewsoundrecorder.widget.ChildClickableRelativeLayout>

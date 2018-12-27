@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhongjh.cameraviewsoundrecorder.settings.CameraSetting;
 import com.zhongjh.cameraviewsoundrecorder.settings.MultiMedia;
 import com.zhongjh.cameraviewsoundrecorder.settings.CaptureStrategy;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
@@ -142,13 +143,16 @@ public class MainActivity extends AppCompatActivity {
      *                          打开窗体
      */
     private void openMain(int alreadyImageCount) {
-        MultiMedia.from(MainActivity.this)
-                .choose(MimeType.ofImage(), false)// 设置显示的多媒体类型
-                .forResult(REQUEST_CODE_CHOOSE);
 
+        // 拍摄
+        CameraSetting cameraSetting = new CameraSetting(MimeType.ofAll());
+        cameraSetting.supportSingleMediaType(false);
+        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider","AA/camera"));
 
+        // 全局
         MultiMedia.from(MainActivity.this)
                 .choose(MimeType.ofImage(), false)
+                .cameraSetting(cameraSetting)
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
                 .capture(true)

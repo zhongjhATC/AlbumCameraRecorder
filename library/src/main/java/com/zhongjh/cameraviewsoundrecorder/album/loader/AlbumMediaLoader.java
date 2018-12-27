@@ -25,7 +25,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
-import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
+import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.MediaStoreCompat;
 
 /**
@@ -104,10 +104,10 @@ public class AlbumMediaLoader extends CursorLoader {
         boolean enableCapture;
 
         if (album.isAll()) {
-            if (AlbumSpec.getInstance().onlyShowImages()) {
+            if (GlobalSpec.getInstance().onlyShowImages()) {
                 selection = SELECTION_ALL_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
-            } else if (AlbumSpec.getInstance().onlyShowVideos()) {
+            } else if (GlobalSpec.getInstance().onlyShowVideos()) {
                 selection = SELECTION_ALL_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
             } else {
@@ -115,11 +115,11 @@ public class AlbumMediaLoader extends CursorLoader {
                 selectionArgs = SELECTION_ALL_ARGS;
             }
         } else {
-            if (AlbumSpec.getInstance().onlyShowImages()) {
+            if (GlobalSpec.getInstance().onlyShowImages()) {
                 selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionAlbumArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE,
                         album.getId());
-            } else if (AlbumSpec.getInstance().onlyShowVideos()) {
+            } else if (GlobalSpec.getInstance().onlyShowVideos()) {
                 selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionAlbumArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO,
                         album.getId());

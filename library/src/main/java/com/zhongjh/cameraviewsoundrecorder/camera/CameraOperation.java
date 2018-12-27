@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.camera.widget.cameralayout;
+package com.zhongjh.cameraviewsoundrecorder.camera;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -617,7 +617,7 @@ public class CameraOperation implements Camera.PreviewCallback {
      * @param zoom 缩放数值
      * @param type 拍照或者录制模式
      */
-    public void zoom(float zoom, int type) {
+    public void setZoom(float zoom, int type) {
         if (mCamera == null) {
             return;
         }
@@ -803,6 +803,19 @@ public class CameraOperation implements Camera.PreviewCallback {
      */
     public void setMediaQuality(int mediaQualityMiddle) {
         this.mMediaQuality = mediaQualityMiddle;
+    }
+
+    /**
+     * 设置闪光灯模式
+     *
+     * @param flashMode 模式
+     */
+    public void setFlashMode(String flashMode) {
+        if (mCamera == null)
+            return;
+        Camera.Parameters params = mCamera.getParameters();
+        params.setFlashMode(flashMode);
+        mCamera.setParameters(params);
     }
 
     // endregion
