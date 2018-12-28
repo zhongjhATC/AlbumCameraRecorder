@@ -25,7 +25,7 @@ public class SelectedPreviewActivity extends BasePreviewActivity {
         List<Item> selected = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
         mAdapter.addAll(selected);
         mAdapter.notifyDataSetChanged();
-        if (mSpec.countable) {
+        if (mAlbumSpec.countable) {
             mViewHolder.check_view.setCheckedNum(1);
         } else {
             mViewHolder.check_view.setChecked(true);

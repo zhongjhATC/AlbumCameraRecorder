@@ -72,7 +72,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection;
-    private GlobalSpec mGlobalSpec;
     private AlbumSpec mAlbumSpec;
 
     private AlbumsSpinner mAlbumsSpinner;
@@ -106,7 +105,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mGlobalSpec = GlobalSpec.getInstance();
+        mAlbumSpec = AlbumSpec.getInstance();
         super.onCreate(savedInstanceState);
     }
 

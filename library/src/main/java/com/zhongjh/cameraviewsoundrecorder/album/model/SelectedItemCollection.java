@@ -210,6 +210,7 @@ public class SelectedItemCollection {
 
     /**
      * 验证当前item是否满足可以被选中的条件
+     *
      * @param item
      * @return
      */
@@ -224,7 +225,7 @@ public class SelectedItemCollection {
                         R.string.error_over_count,
                         maxSelectable
                 );
-            }catch (Resources.NotFoundException e) {
+            } catch (Resources.NotFoundException e) {
                 cause = mContext.getString(
                         R.string.error_over_count,
                         maxSelectable
@@ -237,7 +238,7 @@ public class SelectedItemCollection {
             }
             // 生成窗口
             return new IncapableCause(cause);
-        }else if(typeConflict(item)){
+        } else if (typeConflict(item)) {
             // 判断选择资源(图片跟视频)是否类型冲突
             return new IncapableCause(mContext.getString(R.string.error_type_conflict));
         }
@@ -257,6 +258,7 @@ public class SelectedItemCollection {
 
     /**
      * 返回最多选择的数量
+     *
      * @return 数量
      */
     private int currentMaxSelectable() {
@@ -265,9 +267,7 @@ public class SelectedItemCollection {
         if (spec.maxSelectable > 0) {
             // 返回最大选择数量
             return spec.maxSelectable;
-        }else if(albumSpec.maxSelectable > 0) {
-            return albumSpec.maxSelectable;
-        }else if (mCollectionType == COLLECTION_IMAGE) {
+        } else if (mCollectionType == COLLECTION_IMAGE) {
             // 如果是图片类型，则返回最大图片选择数量
             return albumSpec.maxImageSelectable;
         } else if (mCollectionType == COLLECTION_VIDEO) {

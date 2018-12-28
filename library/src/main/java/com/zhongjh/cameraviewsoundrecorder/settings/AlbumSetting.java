@@ -1,9 +1,17 @@
 package com.zhongjh.cameraviewsoundrecorder.settings;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
+import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.GlideEngine;
+import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.PicassoEngine;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
+import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
+import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -11,10 +19,10 @@ import java.util.Set;
 /**
  * Created by zhongjh on 2018/12/27.
  */
-
 public class AlbumSetting {
 
     private final AlbumSpec mAlbumSpec;
+    private final GlobalSpec mGlobalSpec;
 
     /**
      *
@@ -23,6 +31,7 @@ public class AlbumSetting {
      */
     public AlbumSetting(@NonNull Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
         mAlbumSpec = AlbumSpec.getInstance();
+        mGlobalSpec = GlobalSpec.getInstance();
         mAlbumSpec.mimeTypeSet = mimeTypes;
         mAlbumSpec.mediaTypeExclusive = mediaTypeExclusive;
     }
@@ -53,21 +62,6 @@ public class AlbumSetting {
     }
 
     /**
-     * Maximum selectable count.
-     *
-     * @param maxSelectable Maximum selectable count. Default value is 1.
-     * @return {@link GlobalSetting} for fluent API.
-     */
-    public AlbumSetting maxSelectable(int maxSelectable) {
-        if (maxSelectable < 1)
-            throw new IllegalArgumentException("maxSelectable must be greater than or equal to one");
-        if (mAlbumSpec.maxImageSelectable > 0 || mAlbumSpec.maxVideoSelectable > 0)
-            throw new IllegalStateException("already set maxImageSelectable and maxVideoSelectable");
-        mAlbumSpec.maxSelectable = maxSelectable;
-        return this;
-    }
-
-    /**
      * Only useful when {@link AlbumSpec#mediaTypeExclusive} set true and you want to set different maximum
      * selectable files for image and video media types.
      *
@@ -78,7 +72,7 @@ public class AlbumSetting {
     public AlbumSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable) {
         if (maxImageSelectable < 1 || maxVideoSelectable < 1)
             throw new IllegalArgumentException(("max selectable must be greater than or equal to one"));
-        mAlbumSpec.maxSelectable = -1;
+        mGlobalSpec.maxSelectable = -1;
         mAlbumSpec.maxImageSelectable = maxImageSelectable;
         mAlbumSpec.maxVideoSelectable = maxVideoSelectable;
         return this;
@@ -121,6 +115,85 @@ public class AlbumSetting {
         return this;
     }
 
+    /**
+     * Capture strategy provided for the location to save photos including internal and external
+     * storage and also a authority for {@link android.support.v4.content.FileProvider}.
+     *
+     * @param captureStrategy {@link CaptureStrategy}, needed only when capturing is enabled.
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public AlbumSetting captureStrategy(CaptureStrategy captureStrategy) {
+        mAlbumSpec.captureStrategy = captureStrategy;
+        return this;
+    }
 
+    /**
+     * Set a fixed span count for the media grid. Same for different screen orientations.
+     * <p>
+     * This will be ignored when {@link #gridExpectedSize(int)} is set.
+     *
+     * @param spanCount Requested span count.
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public AlbumSetting spanCount(int spanCount) {
+        if (spanCount < 1) throw new IllegalArgumentException("spanCount cannot be less than 1");
+        mAlbumSpec.spanCount = spanCount;
+        return this;
+    }
+
+    /**
+     * Set expected size for media grid to adapt to different screen sizes. This won't necessarily
+     * be applied cause the media grid should fill the view container. The measured media grid's
+     * size will be as close to this value as possible.
+     *
+     * @param size Expected media grid size in pixel.
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public AlbumSetting gridExpectedSize(int size) {
+        mAlbumSpec.gridExpectedSize = size;
+        return this;
+    }
+
+    /**
+     * Photo thumbnail's scale compared to the View's size. It should be a float value in (0.0,
+     * 1.0].
+     *
+     * @param scale Thumbnail's scale in (0.0, 1.0]. Default value is 0.5.
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public AlbumSetting thumbnailScale(float scale) {
+        if (scale <= 0f || scale > 1f)
+            throw new IllegalArgumentException("Thumbnail scale must be between (0.0, 1.0]");
+        mAlbumSpec.thumbnailScale = scale;
+        return this;
+    }
+
+
+
+    /**
+     * Set listener for callback immediately when user select or unselect something.
+     * <p>
+     * It's a redundant API with {@link MultiMedia#obtainResult(Intent)},
+     * we only suggest you to use this API when you need to do something immediately.
+     *
+     * @param listener {@link OnSelectedListener}
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    @NonNull
+    public AlbumSetting setOnSelectedListener(@Nullable OnSelectedListener listener) {
+        mAlbumSpec.onSelectedListener = listener;
+        return this;
+    }
+
+    /**
+     * Set listener for callback immediately when user check or uncheck original.
+     *
+     * @param listener {@link OnSelectedListener}
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public AlbumSetting setOnCheckedListener(@Nullable OnCheckedListener listener) {
+        mAlbumSpec.onCheckedListener = listener;
+        return this;
+    }
 
 }

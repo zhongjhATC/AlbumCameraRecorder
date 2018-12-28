@@ -111,21 +111,18 @@ public final class MultiMedia {
         return new GlobalSetting(this, mimeTypes);
     }
 
-    /**
-     *
-     * @param mimeTypes
-     * @param mediaTypeExclusive Whether can choose images and videos at the same time during one single choosing
-     *                           process. true corresponds to not being able to choose images and videos at the same
-     *                           time, and false corresponds to being able to do this.
-     * @return
-     */
-    public AlbumSetting chooseAlbum(Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
-        return new AlbumSetting(mimeTypes, mediaTypeExclusive);
-    }
+//    /**
+//     *
+//     * @param mimeTypes
+//     * @param mediaTypeExclusive Whether can choose images and videos at the same time during one single choosing
+//     *                           process. true corresponds to not being able to choose images and videos at the same
+//     *                           time, and false corresponds to being able to do this.
+//     * @return
+//     */
+//    public AlbumSetting chooseAlbum(Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
+//        return new AlbumSetting(mimeTypes, mediaTypeExclusive);
+//    }
 
-    public CameraSetting chooseCamera(Set<MimeType> mimeTypes) {
-        return new CameraSetting(mimeTypes);
-    }
 
     @Nullable
     Activity getActivity() {

@@ -20,7 +20,8 @@ import java.util.Set;
  */
 public class GlobalSpec {
 
-    public CameraSetting cameraSetting;// 拍摄的设置
+    public AlbumSetting albumSetting;   // 相册的设置
+    public CameraSetting cameraSetting; // 拍摄的设置
     public Set<MimeType> mimeTypeSet; // 选择 mime 的类型，MimeType.allOf()
     public boolean hasInited; // 是否通过正规方式进来
     @StyleRes
@@ -28,7 +29,7 @@ public class GlobalSpec {
     public int orientation;     // 旋转模式
     public int maxSelectable;   // 最大选择数量
     public CaptureStrategy captureStrategy; // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
-
+    public ImageEngine imageEngine;
 
     private GlobalSpec() {
     }
@@ -48,14 +49,14 @@ public class GlobalSpec {
      */
     private void reset() {
         cameraSetting = null;
-
         mimeTypeSet = null;
         themeId = R.style.AppTheme_Blue;
         orientation = 0;
-
         maxSelectable = 1;
         captureStrategy = null;
         hasInited = true;
+        imageEngine = new GlideEngine();
+
     }
 
     /**

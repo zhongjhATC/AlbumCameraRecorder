@@ -122,10 +122,10 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
      */
     private void setImage() {
         if (mMedia.isGif()) {
-            AlbumSpec.getInstance().imageEngine.loadGifThumbnail(getContext(), mPreBindInfo.mResize,
+            GlobalSpec.getInstance().imageEngine.loadGifThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getContentUri());
         } else {
-            AlbumSpec.getInstance().imageEngine.loadThumbnail(getContext(), mPreBindInfo.mResize,
+            GlobalSpec.getInstance().imageEngine.loadThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getContentUri());
         }
     }

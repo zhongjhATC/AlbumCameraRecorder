@@ -16,6 +16,7 @@ import android.util.Log;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
@@ -144,8 +145,8 @@ public final class PhotoMetadataUtils {
         }
 
         // 过滤不符合用户设定的资源 Filter提供抽象方法，由用户自行设置过滤规则
-        if (GlobalSpec.getInstance().filters != null) {
-            for (Filter filter : GlobalSpec.getInstance().filters) {
+        if (AlbumSpec.getInstance().filters != null) {
+            for (Filter filter : AlbumSpec.getInstance().filters) {
                 IncapableCause incapableCause = filter.filter(context, item);
                 if (incapableCause != null) {
                     return incapableCause;

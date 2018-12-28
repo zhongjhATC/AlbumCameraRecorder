@@ -264,7 +264,7 @@ public class PhotoVideoButton extends View {
         removeCallbacks(mLongPressRunnable); //移除长按逻辑的Runnable
         //根据当前状态处理
         switch (mState) {
-            //当前是点击按下
+            // 当前是点击按下
             case STATE_PRESS:
                 if (mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState ==
                         BUTTON_STATE_BOTH)) {
@@ -274,7 +274,7 @@ public class PhotoVideoButton extends View {
                     mState = STATE_IDLE;
                 }
                 break;
-            //当前是长按状态
+            // 当前是长按状态
             case STATE_RECORDERING:
                 mTimer.cancel(); //停止计时器
                 recordEnd();    //录制结束

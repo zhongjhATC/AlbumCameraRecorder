@@ -22,7 +22,6 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
-import com.zhongjh.cameraviewsoundrecorder.camera.CameraCallback;
 import com.zhongjh.cameraviewsoundrecorder.camera.common.Constants;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.AngleUtil;
@@ -624,13 +623,8 @@ public class CameraOperation implements Camera.PreviewCallback {
         if (mParams == null) {
             mParams = mCamera.getParameters();
         }
-        //isZoomSupported()是判断设备是否支持缩放，isSmoothZoomSupported()是判断是否支持平滑缩放，
-        // android的部分机型这两个返回一个是：isZoomSupported()放回true，isSmoothZoomSupported()返回false，
-        // 也就是说支持缩放，但是不支持平滑缩放，于是我把setZoom() 方法改成了：
-//        if (!mParams.isZoomSupported() || !mParams.isSmoothZoomSupported()) {
-//            return;
-//        }
-        if (!mParams.isZoomSupported()) {
+        // 还是要用这个，如果只用一个，部分机器不兼容会直接闪退
+        if (!mParams.isZoomSupported() || !mParams.isSmoothZoomSupported()) {
             return;
         }
         switch (type) {

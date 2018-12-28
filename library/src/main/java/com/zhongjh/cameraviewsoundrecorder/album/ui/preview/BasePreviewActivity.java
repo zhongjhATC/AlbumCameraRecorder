@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.selectedpreview.adapter.PreviewPagerAdapter;
@@ -42,6 +43,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected GlobalSpec mSpec;
+    protected AlbumSpec mAlbumSpec;
 
     protected PreviewPagerAdapter mAdapter;
 
@@ -67,6 +69,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         }
 
         mSpec = GlobalSpec.getInstance();
+        mAlbumSpec = AlbumSpec.getInstance();
         if (mSpec.needOrientationRestriction()) {
             // 设置旋转模式
             setRequestedOrientation(mSpec.orientation);
@@ -86,7 +89,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         mAdapter = new PreviewPagerAdapter(getSupportFragmentManager(), null);
         mViewHolder.pager.setAdapter(mAdapter);
-        mViewHolder.check_view.setCountable(mSpec.countable);
+        mViewHolder.check_view.setCountable(mAlbumSpec.countable);
 
         initListener();
     }
@@ -106,7 +109,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             Item item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
                 mSelectedCollection.remove(item);
-                if (mSpec.countable) {
+                if (mAlbumSpec.countable) {
                     mViewHolder.check_view.setCheckedNum(CheckView.UNCHECKED);
                 } else {
                     mViewHolder.check_view.setChecked(false);
@@ -114,7 +117,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             } else {
                 if (assertAddSelection(item)) {
                     mSelectedCollection.add(item);
-                    if (mSpec.countable) {
+                    if (mAlbumSpec.countable) {
                         mViewHolder.check_view.setCheckedNum(mSelectedCollection.checkedNumOf(item));
                     } else {
                         mViewHolder.check_view.setChecked(true);
@@ -123,9 +126,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             }
             updateApplyButton();
 
-            if (mSpec.onSelectedListener != null) {
+            if (mAlbumSpec.onSelectedListener != null) {
                 // 触发选择的接口事件
-                mSpec.onSelectedListener.onSelected(
+                mAlbumSpec.onSelectedListener.onSelected(
                         mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
             }
         });
@@ -134,7 +137,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             int count = countOverMaxSize();
             if (count > 0) {
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
+                        getString(R.string.error_over_original_count, count, mAlbumSpec.originalMaxSize));
                 incapableDialog.show(getSupportFragmentManager(),
                         IncapableDialog.class.getName());
                 return;
@@ -147,8 +150,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             }
 
 
-            if (mSpec.onCheckedListener != null) {
-                mSpec.onCheckedListener.onCheck(mOriginalEnable);
+            if (mAlbumSpec.onCheckedListener != null) {
+                mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);
             }
         });
         updateApplyButton();
@@ -193,7 +196,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             ((PreviewItemFragment) adapter.instantiateItem(mViewHolder.pager, mPreviousPos)).resetView();
 
             Item item = adapter.getMediaItem(position);
-            if (mSpec.countable) {
+            if (mAlbumSpec.countable) {
                 int checkedNum = mSelectedCollection.checkedNumOf(item);
                 mViewHolder.check_view.setCheckedNum(checkedNum);
                 if (checkedNum > 0) {
@@ -230,7 +233,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             // 禁用
             mViewHolder.button_apply.setText(R.string.button_sure_default);
             mViewHolder.button_apply.setEnabled(false);
-        } else if (selectedCount == 1 && mSpec.singleSelectionModeEnabled()) {
+        } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
             // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
             mViewHolder.button_apply.setText(R.string.button_sure_default);
             mViewHolder.button_apply.setEnabled(true);
@@ -241,7 +244,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         }
 
         // 判断是否开启原图
-        if (mSpec.originalable) {
+        if (mAlbumSpec.originalable) {
             // 显示
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
             updateOriginalState();
@@ -266,7 +269,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (mOriginalEnable) {
                 // 弹框提示取消原图
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.error_over_original_size, mSpec.originalMaxSize));
+                        getString(R.string.error_over_original_size, mAlbumSpec.originalMaxSize));
                 incapableDialog.show(getSupportFragmentManager(),
                         IncapableDialog.class.getName());
                 // 去掉原图按钮的选择状态
@@ -288,7 +291,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             Item item = mSelectedCollection.asList().get(i);
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMB(item.size);
-                if (size > mSpec.originalMaxSize) {
+                if (size > mAlbumSpec.originalMaxSize) {
                     count++;
                 }
             }
@@ -312,7 +315,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         if (item.isVideo()) {
             mViewHolder.originalLayout.setVisibility(View.GONE);
-        } else if (mSpec.originalable) {
+        } else if (mAlbumSpec.originalable) {
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
         }
     }

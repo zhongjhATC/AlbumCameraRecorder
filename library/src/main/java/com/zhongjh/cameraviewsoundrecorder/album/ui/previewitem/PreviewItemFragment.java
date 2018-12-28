@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 

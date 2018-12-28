@@ -87,6 +87,11 @@ public final class GlobalSetting {
         mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
+    public GlobalSetting albumSetting(AlbumSetting albumSetting){
+        mGlobalSpec.albumSetting = albumSetting;
+        return this;
+    }
+
     public GlobalSetting cameraSetting(CameraSetting cameraSetting){
         mGlobalSpec.cameraSetting = cameraSetting;
         return this;
@@ -147,6 +152,22 @@ public final class GlobalSetting {
     }
 
     /**
+     * Provide an image engine.
+     * <p>
+     * There are two built-in image engines:
+     * 1. {@link GlideEngine}
+     * 2. {@link PicassoEngine}
+     * And you can implement your own image engine.
+     *
+     * @param imageEngine {@link ImageEngine}
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public GlobalSetting imageEngine(ImageEngine imageEngine) {
+        mGlobalSpec.imageEngine = imageEngine;
+        return this;
+    }
+
+    /**
      * Start to select media and wait for result.
      *
      * @param requestCode Identity of the request Activity or Fragment.
@@ -166,5 +187,7 @@ public final class GlobalSetting {
             activity.startActivityForResult(intent, requestCode);
         }
     }
+
+
 
 }

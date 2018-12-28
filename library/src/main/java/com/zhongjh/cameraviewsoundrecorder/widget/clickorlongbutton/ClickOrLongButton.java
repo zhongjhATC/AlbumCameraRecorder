@@ -221,7 +221,11 @@ public class ClickOrLongButton extends View {
                     mClickOrLongListener.actionDown();
                 event_Y = event.getY(); // 记录Y值
                 Log.d(TAG, "onTouchEvent: down");
-                startTicking();
+                // 禁止长按方式
+                if (mClickOrLongListener != null
+                        && (mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH)) {
+                    startTicking();
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG, "onTouchEvent: move");
@@ -241,6 +245,9 @@ public class ClickOrLongButton extends View {
         return true;
     }
 
+    /**
+     * 重置
+     */
     public void reset() {
         //Log.d(TAG, "reset: "+recordState);
         synchronized (ClickOrLongButton.this) {

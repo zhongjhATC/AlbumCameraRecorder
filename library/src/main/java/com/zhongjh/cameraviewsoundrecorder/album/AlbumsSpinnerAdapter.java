@@ -56,7 +56,7 @@ public class AlbumsSpinnerAdapter extends CursorAdapter {
         ((TextView) view.findViewById(R.id.album_media_count)).setText(String.valueOf(album.getCount()));
 
         // do not need to load animated Gif
-        AlbumSpec.getInstance().imageEngine.loadThumbnail(context, context.getResources().getDimensionPixelSize(R
+        GlobalSpec.getInstance().imageEngine.loadThumbnail(context, context.getResources().getDimensionPixelSize(R
                         .dimen.media_grid_size), mPlaceholder,
                 view.findViewById(R.id.album_cover), Uri.fromFile(new File(album.getCoverPath())));
     }

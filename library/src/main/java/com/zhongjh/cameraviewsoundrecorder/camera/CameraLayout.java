@@ -50,6 +50,8 @@ import java.util.HashMap;
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_UNDEFINED;
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_VIDEO;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_DEFAULT;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_SHORT;
@@ -516,15 +518,22 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
                 // 当列表全部删掉的话，就隐藏
                 if (mCaptureBitmaps.size() <= 0) {
-                    // 显示横版列表
+                    // 隐藏横版列表
                     mViewHolder.hsvPhoto.setVisibility(View.GONE);
 
-                    // 显示横版列表的线条空间
+                    // 隐藏横版列表的线条空间
                     mViewHolder.vLine1.setVisibility(View.GONE);
                     mViewHolder.vLine2.setVisibility(View.GONE);
 
                     // 隐藏右侧按钮
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
+
+                    // 恢复长按事件，即重新启用录像
+                    mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
+
+                    // 图片模式的取消
+                    mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp); // 重新启动录像
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
                 }
             });
             mCaptureViews.put(mPosition, viewHolderImageView.rootView);
@@ -536,14 +545,15 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
             // 重置按钮，因为每次点击，都会自动关闭
             mViewHolder.pvLayout.getViewHolder().btnClickOrLong.resetState();
-            // 依然保持当前模式
-            setState(Constants.STATE_PREVIEW);
             // 显示右上角
             mViewHolder.imgSwitch.setVisibility(View.VISIBLE);
             mViewHolder.imgFlash.setVisibility(View.VISIBLE);
 
             // 设置当前模式是图片休闲并存模式
             setState(Constants.STATE_PICTURE_PREVIEW);
+
+            // 禁用长按事件，即禁止录像
+            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
         } else {
             // 如果只有单个图片，就显示相应的提示结果等等
             if (isVertical) {
@@ -560,6 +570,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             // 设置当前模式是图片模式
             setState(Constants.STATE_PICTURE);
         }
+
         // 回调接口：添加图片后剩下的相关数据
         mCaptureListener.add(mCaptureBitmaps);
     }
@@ -777,19 +788,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     private int currentMaxSelectable() {
         GlobalSpec spec = GlobalSpec.getInstance();
-        if (spec.maxSelectable > 0) {
-            // 返回最大选择数量
-            return spec.maxSelectable;
-        } else if (mCollectionType == COLLECTION_IMAGE) {
-            // 如果是图片类型，则返回最大图片选择数量
-            return spec.maxImageSelectable;
-        } else if (mCollectionType == COLLECTION_VIDEO) {
-            // 如果是视频类型，则返回最大视频选择数量
-            return spec.maxVideoSelectable;
-        } else {
-            // 返回最大选择数量
-            return spec.maxSelectable;
-        }
+        // 返回最大选择数量
+        return spec.maxSelectable;
     }
 
     /**

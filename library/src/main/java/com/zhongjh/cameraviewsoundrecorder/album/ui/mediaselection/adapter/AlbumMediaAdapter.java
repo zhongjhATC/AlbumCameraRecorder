@@ -47,7 +47,6 @@ public class AlbumMediaAdapter extends
     private static final int VIEW_TYPE_MEDIA = 0x02;
     private final SelectedItemCollection mSelectedCollection;
     private final Drawable mPlaceholder;
-    private GlobalSpec mGlobalSpec;
     private AlbumSpec mAlbumSpec;
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
@@ -56,7 +55,7 @@ public class AlbumMediaAdapter extends
 
     public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, RecyclerView recyclerView) {
         super(null);
-        mGlobalSpec = GlobalSpec.getInstance();
+        mAlbumSpec = AlbumSpec.getInstance();
         mSelectedCollection = selectedCollection;
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.item_placeholder});
