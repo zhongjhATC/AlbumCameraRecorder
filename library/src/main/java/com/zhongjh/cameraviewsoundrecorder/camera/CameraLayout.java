@@ -36,6 +36,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.FileUtil;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.LogUtil;
+import com.zhongjh.cameraviewsoundrecorder.camera.widget.AutoFitTextureView;
 import com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView;
 import com.zhongjh.cameraviewsoundrecorder.settings.CameraSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
@@ -824,7 +825,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
 
     public static class ViewHolder {
+
         View rootView;
+        AutoFitTextureView texture;
         ChildClickableRelativeLayout rlMain;
         VideoView vvPreview;
         ImageView imgPhoto;
@@ -842,6 +845,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
+            this.texture = rootView.findViewById(R.id.texture);
             this.rlMain = rootView.findViewById(R.id.rlMain);
             this.vvPreview = rootView.findViewById(R.id.vvPreview);
             this.imgPhoto = rootView.findViewById(R.id.imgPhoto);

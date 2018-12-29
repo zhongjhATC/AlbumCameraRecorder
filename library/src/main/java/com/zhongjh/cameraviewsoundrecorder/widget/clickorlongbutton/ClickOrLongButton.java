@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
+import android.hardware.camera2.CameraCharacteristics;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -34,6 +35,8 @@ public class ClickOrLongButton extends View {
     private int OUT_CIRCLE_WIDTH;
     private int OUTER_CIRCLE_WIDTH_INC;
     private float INNER_CIRCLE_RADIUS;
+
+    private CameraCharacteristics mCameraCharacteristics;
 
     private TouchTimeHandler touchTimeHandler;
     private boolean touchable;
@@ -346,6 +349,13 @@ public class ClickOrLongButton extends View {
         recordState = RECORD_NOT_STARTED;// 回到初始状态
     }
 
+    /**
+     * 摄像机的一些属性设置
+     * @param characteristics
+     */
+    public void setCharacteristics(CameraCharacteristics characteristics) {
+        mCameraCharacteristics = characteristics;
+    }
 
     // endregion
 
