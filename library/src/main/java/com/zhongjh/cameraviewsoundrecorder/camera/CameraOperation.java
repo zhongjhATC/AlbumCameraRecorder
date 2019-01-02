@@ -48,9 +48,10 @@ import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_R
  * 关于照相机Camera的操作类
  * Created by zhongjh on 2018/8/10.
  */
-public class CameraOperation implements Camera.PreviewCallback {
+public class CameraOperation implements CameraInterface, Camera.PreviewCallback {
 
     private static final String TAG = "CameraOperation";
+    private CameraLayout mCameraLayout;
     private CameraSpec mCameraSpec;       // 拍摄配置
     private MediaStoreCompat mMediaStoreCompat; // 文件配置
     private String mVideoFileAbsPath;           // 文件路径
@@ -93,7 +94,16 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     private int mHandlerFocusTime;// 处理焦点
 
-    public CameraOperation(Context context) {
+    CameraCallback.TakePictureCallback mTakePictureCallback; // 拍照回调事件
+
+    /**
+     * @param context             上下文
+     * @param cameraLayout        整体布局类
+     * @param takePictureCallback 拍照回调事件
+     */
+    public CameraOperation(Context context, CameraLayout cameraLayout, CameraCallback.TakePictureCallback takePictureCallback) {
+        mCameraLayout = cameraLayout;
+        mTakePictureCallback = takePictureCallback;
         mCameraSpec = CameraSpec.getInstance();
         mMediaStoreCompat = new MediaStoreCompat(context);
         mMediaStoreCompat.setCaptureStrategy(mCameraSpec.captureStrategy);
@@ -280,6 +290,77 @@ public class CameraOperation implements Camera.PreviewCallback {
 
     // region 对外开放的API
 
+    @Override
+    public synchronized void switchCamera() {
+        if (mSelectedCamera == CAMERA_POST_POSITION) {
+            mSelectedCamera = CAMERA_FRONT_POSITION;
+        } else {
+            mSelectedCamera = CAMERA_POST_POSITION;
+        }
+        doDestroyCamera();
+        openCamera(mSelectedCamera);
+        doStartPreview(mCameraLayout.getSurfaceHolder(), mCameraLayout.getScreenProp());
+    }
+
+    @Override
+    public void takePicture() {
+        if (mCamera == null) {
+            return;
+        }
+        // 无论怎么旋转手机是正常的角度
+        switch (mCameraAngle) {
+            case 90:
+                mPictureAngle = Math.abs(mPhoneAngle + mCameraAngle) % 360;
+                break;
+            case 270:
+                mPictureAngle = Math.abs(mCameraAngle - mPhoneAngle);
+                break;
+        }
+
+        Log.i("CJT", mPhoneAngle + " = " + mCameraAngle + " = " + mPictureAngle);
+        // 相机调用拍照
+        mCamera.takePicture(null, null, (data, camera) -> {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            Matrix matrix = new Matrix();
+            // 判断是前置还是后置
+            if (mSelectedCamera == CAMERA_POST_POSITION) {
+                matrix.setRotate(mPictureAngle);
+            } else if (mSelectedCamera == CAMERA_FRONT_POSITION) {
+                matrix.setRotate(360 - mPictureAngle);
+                matrix.postScale(-1, 1);
+            }
+
+            bitmap = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            if (mTakePictureCallback != null) {
+                if (mPictureAngle == 90 || mPictureAngle == 270) {
+                    mTakePictureCallback.captureResult(bitmap, true);
+                } else {
+                    mTakePictureCallback.captureResult(bitmap, false);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void recordStart() {
+
+    }
+
+    @Override
+    public void recordEnd() {
+
+    }
+
+    @Override
+    public void recordZoom(Rect zoom) {
+
+    }
+
+    @Override
+    public void setErrorLinsenter(ErrorListener errorLisenter) {
+        this.mErrorLisenter = errorLisenter;
+    }
+
     /**
      * 摄像头启动录像
      *
@@ -362,49 +443,6 @@ public class CameraOperation implements Camera.PreviewCallback {
         doDestroyCamera();
         openCamera(mSelectedCamera);
         doStartPreview(surfaceHolder, screenProp);
-    }
-
-    /**
-     * 拍照
-     *
-     * @param callback 拍照后的回调
-     */
-    public void takePicture(final CameraCallback.TakePictureCallback callback) {
-        if (mCamera == null) {
-            return;
-        }
-        // 无论怎么旋转手机是正常的角度
-        switch (mCameraAngle) {
-            case 90:
-                mPictureAngle = Math.abs(mPhoneAngle + mCameraAngle) % 360;
-                break;
-            case 270:
-                mPictureAngle = Math.abs(mCameraAngle - mPhoneAngle);
-                break;
-        }
-
-        Log.i("CJT", mPhoneAngle + " = " + mCameraAngle + " = " + mPictureAngle);
-        // 相机调用拍照
-        mCamera.takePicture(null, null, (data, camera) -> {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            Matrix matrix = new Matrix();
-            // 判断是前置还是后置
-            if (mSelectedCamera == CAMERA_POST_POSITION) {
-                matrix.setRotate(mPictureAngle);
-            } else if (mSelectedCamera == CAMERA_FRONT_POSITION) {
-                matrix.setRotate(360 - mPictureAngle);
-                matrix.postScale(-1, 1);
-            }
-
-            bitmap = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            if (callback != null) {
-                if (mPictureAngle == 90 || mPictureAngle == 270) {
-                    callback.captureResult(bitmap, true);
-                } else {
-                    callback.captureResult(bitmap, false);
-                }
-            }
-        });
     }
 
     /**
@@ -680,12 +718,6 @@ public class CameraOperation implements Camera.PreviewCallback {
         }
     }
 
-    /**
-     * 赋值异常事件
-     */
-    public void setErrorLinsenter(ErrorListener errorLisenter) {
-        this.mErrorLisenter = errorLisenter;
-    }
 
     /**
      * 打开camera
@@ -811,6 +843,7 @@ public class CameraOperation implements Camera.PreviewCallback {
         params.setFlashMode(flashMode);
         mCamera.setParameters(params);
     }
+
 
     // endregion
 
