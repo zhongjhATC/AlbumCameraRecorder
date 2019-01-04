@@ -50,7 +50,8 @@ public interface CameraManager<CameraId, SurfaceListener> {
     void closeCamera(CameraCloseListener<CameraId> cameraCloseListener);
 
     /**
-     * 拍摄照片
+     * 拍摄照片，仔细说说cameraPictureListener和callback之间关系
+     * 当拍摄完返回byte数据后，v-p-b先调用cameraPictureListener，里面参数包含callback，然后再回调给b-p-v
      *
      * @param photoFile             存储的图片路径
      * @param cameraPictureListener 自身view执行的事件
