@@ -705,20 +705,20 @@ public class CameraOperation2 implements CameraInterface {
                 case 0:
 //                        //这里拍照保存完成，可以进行相关的操作
 //                        rl_preview.setVisibility(View.VISIBLE);
-                    //展示图片
-                    try {
-                        File captureImage = new File(mCameraOperation2.get().picSavePath);
-                        Bitmap bitmap = BitmapDecoder.decodeSampledBitmapFromFile(captureImage, new BitmapSize(DisplayMetricsSPUtils.getScreenWidth(mCameraOperation2.get().mContext), DisplayMetricsSPUtils.getScreenHeight(mCameraOperation2.get().mContext)), Bitmap.Config.RGB_565);
-                        if (mCameraOperation2.get().mTakePictureCallback != null) {
-                            if (mPictureAngle == 90 || mPictureAngle == 270) {
-                                mCameraOperation2.get().mTakePictureCallback.captureResult(bitmap, true);
-                            } else {
-                                mCameraOperation2.get().mTakePictureCallback.captureResult(bitmap, false);
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+//                    //展示图片
+//                    try {
+//                        File captureImage = new File(mCameraOperation2.get().picSavePath);
+//                        Bitmap bitmap = BitmapDecoder.decodeSampledBitmapFromFile(captureImage, new BitmapSize(DisplayMetricsSPUtils.getScreenWidth(mCameraOperation2.get().mContext), DisplayMetricsSPUtils.getScreenHeight(mCameraOperation2.get().mContext)), Bitmap.Config.RGB_565);
+//                        if (mCameraOperation2.get().mTakePictureCallback != null) {
+//                            if (mPictureAngle == 90 || mPictureAngle == 270) {
+//                                mCameraOperation2.get().mTakePictureCallback.captureResult(bitmap, true);
+//                            } else {
+//                                mCameraOperation2.get().mTakePictureCallback.captureResult(bitmap, false);
+//                            }
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
 //                        iv_preview.setVisibility(View.VISIBLE);
 //                        video_preview.setVisibility(View.GONE);
 //                        //设置发送图片参数

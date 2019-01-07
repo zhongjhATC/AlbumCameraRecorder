@@ -13,10 +13,13 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
@@ -34,8 +37,13 @@ import com.zhongjh.cameraviewsoundrecorder.camera.manager.listener.CameraOpenLis
 import com.zhongjh.cameraviewsoundrecorder.camera.manager.listener.CameraPictureListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.manager.listener.CameraVideoListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.CameraUtils;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.ImageSaver;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.STATE_PREVIEW;
 
 /**
  * Created by zhongjh on 2019/1/4.
@@ -48,10 +56,22 @@ public class Camera2Manager extends BaseCameraManager<String, TextureView.Surfac
 
     Context mContext;
 
+    private static final int STATE_PREVIEW = 0;                     // 休闲状态
+    private static final int STATE_WAITING_LOCK = 1;
+    private static final int STATE_WAITING_PRE_CAPTURE = 2;
+    private static final int STATE_WAITING_NON_PRE_CAPTURE = 3;
+    private static final int STATE_PICTURE_TAKEN = 4;
+
     private CameraOpenListener<String, TextureView.SurfaceTextureListener> mCameraOpenListener;
+    private CameraPictureListener mCameraPictureListener;
+    private File mOutputPath;
+
+    @CameraPreviewState
+    private int mPreviewState = STATE_PREVIEW;
 
     private CameraManager mCameraManager;   // CameraManager是一个用于检测、连接和描述相机设备的系统服务,负责管理所有的CameraDevice相机设备
     private CameraDevice mCameraDevice;     // 代表系统摄像头。该类的功能类似于早期的Camera类。
+    private CaptureRequest mPreviewRequest; // 需要构建CaptureRequest，它定义了用于拍摄的所有参数，包括聚焦、闪光灯、曝光率等等一切拍照可能需要的或者相机设备支持的参数
     private CaptureRequest.Builder mPreviewRequestBuilder;
     private CameraCaptureSession mCaptureSession;   // 这是一个非常重要的API，当程序需要预览、拍照时，都需要先通过该类的实例创建Session。而且不管预览还是拍照，也都是由该对象的方法进行控制的，其中控制预览的方法为setRepeatingRequest()；控制拍照的方法为capture()。
     private CameraCharacteristics mFrontCameraCharacteristics;      // 摄像头特性。该对象通过CameraManager来获取，用于描述特定摄像头所支持的各种特性
@@ -62,17 +82,19 @@ public class Camera2Manager extends BaseCameraManager<String, TextureView.Surfac
     private ImageReader mImageReader;
     private SurfaceTexture mSurfaceTexture;     // Camera 把视频采集的内容交给 SurfaceTexture， SurfaceTexture 在对内容做个美颜， 然后SurfaceTexture 再把内容交给 SurfaceView。这就是最后呈现给用户视觉上的美颜内容了
 
+    private OnCameraResultListener mOnCameraResultListener;     // 拍照返回的Listener
+
+    /**
+     * 用于接收相机状态的更新和后续的处理
+     */
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice cameraDevice) {
             Camera2Manager.this.mCameraDevice = cameraDevice;
             if (mCameraOpenListener != null) {
-                mUiiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!TextUtils.isEmpty(mCameraId) && mPreviewSize != null)
-                            mCameraOpenListener.onCameraOpened(mCameraId, mPreviewSize, Camera2Manager.this);
-                    }
+                mUiiHandler.post(() -> {
+                    if (!TextUtils.isEmpty(mCameraId) && mPreviewSize != null)
+                        mCameraOpenListener.onCameraOpened(mCameraId, mPreviewSize, Camera2Manager.this);
                 });
             }
         }
@@ -81,25 +103,36 @@ public class Camera2Manager extends BaseCameraManager<String, TextureView.Surfac
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             cameraDevice.close();
             Camera2Manager.this.mCameraDevice = null;
-            mUiiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mCameraOpenListener.onCameraOpenError();
-                }
-            });
+            mUiiHandler.post(() -> mCameraOpenListener.onCameraOpenError());
         }
 
         @Override
         public void onError(@NonNull CameraDevice cameraDevice, int error) {
             cameraDevice.close();
             Camera2Manager.this.mCameraDevice = null;
-            mUiiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mCameraOpenListener.onCameraOpenError();
-                }
-            });
+            mUiiHandler.post(() -> mCameraOpenListener.onCameraOpenError());
         }
+    };
+
+    /**
+     * 将处理预览和拍照图片的工作，需要重点对待
+     */
+    private CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session,
+                                        @NonNull CaptureRequest request,
+                                        @NonNull CaptureResult partialResult) {
+//            processCaptureResult(partialResult);
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session,
+                                       @NonNull CaptureRequest request,
+                                       @NonNull TotalCaptureResult result) {
+//            processCaptureResult(result);
+        }
+
     };
 
     @Override
@@ -187,9 +220,32 @@ public class Camera2Manager extends BaseCameraManager<String, TextureView.Surfac
         setFlashModeAndBuildPreviewRequest(flashMode);
     }
 
+    /**
+     * imageReader处理器
+     * @param imageReader 图片数据源
+     */
     @Override
-    public void onImageAvailable(ImageReader reader) {
+    public void onImageAvailable(ImageReader imageReader) {
+        final File outputFile = mOutputPath;
+        mBackgroundHandler.post(new ImageSaver(imageReader.acquireNextImage(), outputFile, new ImageSaver.ImageSaverCallback() {
+            @Override
+            public void onSuccessFinish(final byte[] bytes) {
+                Log.d(TAG, "onPhotoSuccessFinish: ");
+                if (mCameraPictureListener != null) {
+                    mUiiHandler.post(() -> {
+                        mCameraPictureListener.onPictureTaken(bytes, mOutputPath, mOnCameraResultListener);
+                        mOnCameraResultListener = null;
+                    });
+                }
+                unlockFocus();
+            }
 
+            @Override
+            public void onError() {
+                Log.d(TAG, "onPhotoError: ");
+                mUiiHandler.post(() -> mCameraPictureListener.onPictureTakeError());
+            }
+        }));
     }
 
     @Override
@@ -387,6 +443,22 @@ public class Camera2Manager extends BaseCameraManager<String, TextureView.Surfac
     }
 
     /**
+     * 解锁焦点
+     */
+    private void unlockFocus() {
+        try {
+            // 关闭触发对焦
+            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+            mCaptureSession.capture(mPreviewRequestBuilder.build(), captureCallback, mBackgroundHandler);
+            mPreviewState = STATE_PREVIEW;
+            // 重新打开预览
+            mCaptureSession.setRepeatingRequest(mPreviewRequest, captureCallback, mBackgroundHandler);
+        } catch (Exception e) {
+            Log.e(TAG, "Error during focus unlocking");
+        }
+    }
+
+    /**
      * 设置闪光灯模式
      * @param flashMode 闪光灯模式
      */
@@ -422,6 +494,11 @@ public class Camera2Manager extends BaseCameraManager<String, TextureView.Surfac
         } catch (Exception ignore) {
             Log.e(TAG, "Error setting flash: ", ignore);
         }
+    }
+
+    @IntDef({STATE_PREVIEW, STATE_WAITING_LOCK, STATE_WAITING_PRE_CAPTURE, STATE_WAITING_NON_PRE_CAPTURE, STATE_PICTURE_TAKEN})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface CameraPreviewState {
     }
 
 }

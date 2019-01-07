@@ -70,8 +70,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private MediaStoreCompat mMediaStoreCompat;
     private GlobalSpec mGlobalSpec;          // 公共配置
     private CameraSpec mCameraSpec; // 拍摄配置
-    private CameraInterface mCameraInterface;// 拍摄操作类
-//    private CameraOperation mCameraOperation;// 拍摄操作类
+//    private CameraInterface mCameraInterface;// 拍摄操作类
+    private CameraOperation mCameraOperation;// 拍摄操作类
 //    private CameraOperation2 mCameraOperation2;// 拍摄操作类2
 
 
@@ -111,7 +111,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     // 赋值Camera错误回调
     public void setErrorLisenter(ErrorListener errorLisenter) {
         this.mErrorLisenter = errorLisenter;
-        mCameraInterface.setErrorLinsenter(errorLisenter);
+        mCameraOperation.setErrorLinsenter(errorLisenter);
     }
 
     // 退出当前Activity的按钮监听
@@ -192,6 +192,30 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mLayoutWidth = DisplayMetricsSPUtils.getScreenWidth(mContext);
         //缩放梯度
         mZoomGradient = (int) (mLayoutWidth / 16f);
+
+        mCameraOperation = new CameraOperation(mContext, this, (bitmap, isVertical) -> {
+            // 显示图片
+            showPicture(bitmap, isVertical);
+            // 恢复点击
+            mViewHolder.rlMain.setChildClickable(true);
+        });
+
+        //        if (Build.VERSION.SDK_INT >= 21) {
+//            mCameraInterface = new CameraOperation2(mContext, this, (bitmap, isVertical) -> {
+//                // 显示图片
+//                showPicture(bitmap, isVertical);
+//                // 恢复点击
+//                mViewHolder.rlMain.setChildClickable(true);
+//            });
+//        } else {
+//            mCameraInterface = new CameraOperation(mContext, this, (bitmap, isVertical) -> {
+//                // 显示图片
+//                showPicture(bitmap, isVertical);
+//                // 恢复点击
+//                mViewHolder.rlMain.setChildClickable(true);
+//            });
+//        }
+
     }
 
     /**
@@ -204,12 +228,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mViewHolder = new ViewHolder(view);
         setFlashLamp(); // 设置闪光灯模式
         mViewHolder.pvLayout.setDuration(mCameraButton.getDuration());
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            mCameraInterface = new CameraOperation2(mContext, this);
-        } else {
-            mCameraInterface = new CameraOperation(mContext, this);
-        }
     }
 
     /**
@@ -229,8 +247,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mViewHolder.vvPreview.getHolder().addCallback(this);
 
         // 切换摄像头前置/后置
-        mViewHolder.imgSwitch.setOnClickListener(v -> mCameraInterface.switchCamera());
-        mViewHolder.imgSwitch.setOnClickListener(v -> mCameraInterface.switchCamera());
+        mViewHolder.imgSwitch.setOnClickListener(v -> mCameraOperation.switchCamera());
+        mViewHolder.imgSwitch.setOnClickListener(v -> mCameraOperation.switchCamera());
 
         // 拍照录像监听
         mViewHolder.pvLayout.setPhotoVideoListener(new ClickOrLongListener() {
@@ -250,15 +268,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                     mViewHolder.imgFlash.setVisibility(INVISIBLE);
                     // 设置不能点击，防止多次点击报错
                     mViewHolder.rlMain.setChildClickable(false);
-                    // 拍摄
-                    mCameraInterface.takePictures();
-
-                    mCameraOperation.takePicture((bitmap, isVertical) -> {
-                        // 显示图片
-                        showPicture(bitmap, isVertical);
-                        // 恢复点击
-                        mViewHolder.rlMain.setChildClickable(true);
-                    });
 //                    mCameraOperation2.takePictures();
                     if (mClickOrLongListener != null)
                         mClickOrLongListener.onClick();
