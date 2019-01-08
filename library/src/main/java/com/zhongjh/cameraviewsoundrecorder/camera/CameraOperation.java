@@ -57,7 +57,6 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
     private String mVideoFileAbsPath;           // 文件路径
 
     private Camera mCamera;
-    private Camera.Parameters mParams; // 相机的属性
     private boolean mIsPreviewing = false; // 目前是否处于录像状态
     private int mPreviewWidth; // 录像的宽度
     private int mPreviewHeight; // 录像的高度
@@ -380,39 +379,39 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         this.mSurfaceHolder = surfaceHolder;
 
         if (mCamera != null) {
-            mParams = mCamera.getParameters();
+            Camera.Parameters parameters = mCamera.getParameters();
             // 这是预览时帧数据的尺寸
-            Camera.Size previewSize = CameraParamUtil.getInstance().getPreviewSize(mParams
+            Camera.Size previewSize = CameraParamUtil.getInstance().getPreviewSize(parameters
                     .getSupportedPreviewSizes(), 1000, screenProp);
 
             // 这是拍照后的PictureSize尺寸
-            Camera.Size pictureSize = CameraParamUtil.getInstance().getPictureSize(mParams
+            Camera.Size pictureSize = CameraParamUtil.getInstance().getPictureSize(parameters
                     .getSupportedPictureSizes(), 1200, screenProp);
 
             // 设置预览的宽度和高度
-            mParams.setPreviewSize(previewSize.width, previewSize.height);
+            parameters.setPreviewSize(previewSize.width, previewSize.height);
 
             mPreviewHeight = previewSize.height;
             mPreviewWidth = previewSize.width;
 
             // 设置图片的宽度和高度
-            mParams.setPictureSize(pictureSize.width, pictureSize.height);
+            parameters.setPictureSize(pictureSize.width, pictureSize.height);
 
             // 判断该相机有没有自动对焦模式
-            if (CameraParamUtil.getInstance().isSupportedFocusMode(mParams.getSupportedFocusModes(), Camera.Parameters.FOCUS_MODE_AUTO)) {
+            if (CameraParamUtil.getInstance().isSupportedFocusMode(parameters.getSupportedFocusModes(), Camera.Parameters.FOCUS_MODE_AUTO)) {
                 // 如果有，就设置自动对焦
-                mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
 
-            if (CameraParamUtil.getInstance().isSupportedPictureFormats(mParams.getSupportedPictureFormats(),
+            if (CameraParamUtil.getInstance().isSupportedPictureFormats(parameters.getSupportedPictureFormats(),
                     ImageFormat.JPEG)) {
                 // 设置照片的输出格式
-                mParams.setPictureFormat(ImageFormat.JPEG);
+                parameters.setPictureFormat(ImageFormat.JPEG);
                 // 照片质量
-                mParams.setJpegQuality(100);
+                parameters.setJpegQuality(100);
             }
 
-            mCamera.setParameters(mParams);
+            mCamera.setParameters(parameters);
             //SurfaceView
             try {
                 mCamera.setPreviewDisplay(surfaceHolder);
@@ -484,15 +483,11 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         if (mMediaRecorder == null)
             mMediaRecorder = new MediaRecorder();
 
-        if (mParams == null) {
-            mParams = mCamera.getParameters();
-        }
-
-        List<String> focusModes = mParams.getSupportedFocusModes();
+        List<String> focusModes = parameters.getSupportedFocusModes();
         if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
-            mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
         }
-        mCamera.setParameters(mParams);
+        mCamera.setParameters(parameters);
         mCamera.unlock();
 
         mMediaRecorder.reset();// 重置
@@ -506,11 +501,11 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
         Camera.Size videoSize;
-        if (mParams.getSupportedVideoSizes() == null) {
-            videoSize = CameraParamUtil.getInstance().getPreviewSize(mParams.getSupportedPreviewSizes(), 600,
+        if (parameters.getSupportedVideoSizes() == null) {
+            videoSize = CameraParamUtil.getInstance().getPreviewSize(parameters.getSupportedPreviewSizes(), 600,
                     screenProp);
         } else {
-            videoSize = CameraParamUtil.getInstance().getPreviewSize(mParams.getSupportedVideoSizes(), 600,
+            videoSize = CameraParamUtil.getInstance().getPreviewSize(parameters.getSupportedVideoSizes(), 600,
                     screenProp);
         }
         Log.i(TAG, "setVideoSize    width = " + videoSize.width + "height = " + videoSize.height);
@@ -658,11 +653,12 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         if (mCamera == null) {
             return;
         }
-        if (mParams == null) {
-            mParams = mCamera.getParameters();
-        }
-        // 还是要用这个，如果只用一个，部分机器不兼容会直接闪退
-        if (!mParams.isZoomSupported() || !mParams.isSmoothZoomSupported()) {
+//        if (mParams == null) {
+//            mParams = mCamera.getParameters();
+//        }
+        Camera.Parameters params = mCamera.getParameters();
+        if (params == null) return;
+        if (!params.isZoomSupported() ) {
             return;
         }
         switch (type) {
@@ -674,9 +670,9 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
                 if (zoom >= 0) {
                     // 每移动50个像素缩放一个级别
                     int scaleRate = (int) (zoom / 40);
-                    if (scaleRate <= mParams.getMaxZoom() && scaleRate >= mNowScaleRate && mRecordScleRate != scaleRate) {
-                        mParams.setZoom(scaleRate);
-                        mCamera.setParameters(mParams);
+                    if (scaleRate <= params.getMaxZoom() && scaleRate >= mNowScaleRate && mRecordScleRate != scaleRate) {
+                        params.setZoom(scaleRate);
+                        mCamera.setParameters(params);
                         mRecordScleRate = scaleRate;
                     }
                 }
@@ -687,15 +683,15 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
                 }
                 // 每移动50个像素缩放一个级别
                 int scaleRate = (int) (zoom / 50);
-                if (scaleRate < mParams.getMaxZoom()) {
+                if (scaleRate < params.getMaxZoom()) {
                     mNowScaleRate += scaleRate;
                     if (mNowScaleRate < 0) {
                         mNowScaleRate = 0;
-                    } else if (mNowScaleRate > mParams.getMaxZoom()) {
-                        mNowScaleRate = mParams.getMaxZoom();
+                    } else if (mNowScaleRate > params.getMaxZoom()) {
+                        mNowScaleRate = params.getMaxZoom();
                     }
-                    mParams.setZoom(mNowScaleRate);
-                    mCamera.setParameters(mParams);
+                    params.setZoom(mNowScaleRate);
+                    mCamera.setParameters(params);
                 }
                 LogUtil.i("setZoom = " + mNowScaleRate);
                 break;

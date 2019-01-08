@@ -91,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
             mplImageList.setPath(MultiMedia.obtainPathResult(data), null);
         }
 
+        // 录像
+
+
+        // 语音
+
         if (resultCode == 101) {
             Log.i("CJT", "picture");
             String path = data.getStringExtra("path");

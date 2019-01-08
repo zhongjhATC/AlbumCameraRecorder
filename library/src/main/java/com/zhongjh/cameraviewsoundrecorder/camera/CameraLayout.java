@@ -268,7 +268,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                     mViewHolder.imgFlash.setVisibility(INVISIBLE);
                     // 设置不能点击，防止多次点击报错
                     mViewHolder.rlMain.setChildClickable(false);
-//                    mCameraOperation2.takePictures();
+                    mCameraOperation.takePicture();
                     if (mClickOrLongListener != null)
                         mClickOrLongListener.onClick();
                 } else {
