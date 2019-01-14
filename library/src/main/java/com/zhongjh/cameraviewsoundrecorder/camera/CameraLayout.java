@@ -471,6 +471,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public void confirmState(int type) {
         switch (type) {
             case TYPE_VIDEO:
+                // 录视频完成
                 stopVideo();    //停止播放
                 mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
@@ -479,6 +480,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 }
                 break;
             case TYPE_PICTURE:
+                // 拍照完成
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
                 if (mOperaeCameraListener != null) {
                     mOperaeCameraListener.captureSuccess(getPaths());

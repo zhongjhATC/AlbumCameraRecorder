@@ -162,6 +162,11 @@ public class CameraFragment extends Fragment {
             @Override
             public void recordSuccess(String url, Bitmap firstFrame) {
                 //获取视频路径
+                Intent result = new Intent();
+                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+                mActivity.setResult(RESULT_OK, result);
+                mActivity.finish();
+
 //                String path = FileUtil.saveBitmap("JCamera", firstFrame);
 //                Log.i("CJT", "url = " + url + ", Bitmap = " + path);
 //                Intent intent = new Intent();
