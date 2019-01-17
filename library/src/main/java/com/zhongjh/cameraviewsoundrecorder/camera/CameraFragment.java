@@ -31,6 +31,7 @@ import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollec
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
+import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_FIRST_FRAME;
 import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
@@ -163,16 +164,10 @@ public class CameraFragment extends Fragment {
             public void recordSuccess(String url, Bitmap firstFrame) {
                 //获取视频路径
                 Intent result = new Intent();
-                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+                result.putExtra(EXTRA_RESULT_SELECTION_PATH, url);
+                result.putExtra(EXTRA_RESULT_FIRST_FRAME,firstFrame);
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
-
-//                String path = FileUtil.saveBitmap("JCamera", firstFrame);
-//                Log.i("CJT", "url = " + url + ", Bitmap = " + path);
-//                Intent intent = new Intent();
-//                intent.putExtra("path", path);
-//                setResult(101, intent);
-//                finish();
             }
 
         });
