@@ -25,7 +25,7 @@ public interface OperaeCameraListener {
     /**
      * 录像成功后点击确认事件
      * @param url url
-     * @param firstFrame 文件地址
+     * @param firstFrame 第一帧图片
      */
     void recordSuccess(String url, Bitmap firstFrame);
 
