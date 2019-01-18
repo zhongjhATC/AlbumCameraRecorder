@@ -12,7 +12,7 @@ import android.view.View;
 import com.zhongjh.cameraviewsoundrecorder.album.MatissFragment;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.camera.CameraFragment;
-import com.zhongjh.cameraviewsoundrecorder.soundrecording.SoundRecordingFragment;
+import com.zhongjh.cameraviewsoundrecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.cameraviewsoundrecorder.widget.NoScrollViewPager;
 
 import java.lang.reflect.Field;

@@ -22,7 +22,12 @@ public interface CameraCallback {
      * 停止录像的回调
      */
     interface StopRecordCallback {
-        void recordResult(String url, Bitmap firstFrame);
+
+        /**
+         * 停止录像的回调
+         * @param url 视频地址
+         */
+        void recordResult(String url);
     }
 
     interface FocusCallback {

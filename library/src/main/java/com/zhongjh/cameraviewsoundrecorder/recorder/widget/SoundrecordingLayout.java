@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.soundrecording.widget;
+package com.zhongjh.cameraviewsoundrecorder.recorder.widget;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,12 +7,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.zhongjh.cameraviewsoundrecorder.R;
-import com.zhongjh.cameraviewsoundrecorder.widget.OperationButton;
 import com.zhongjh.cameraviewsoundrecorder.widget.OperationLayout;
-import com.zhongjh.cameraviewsoundrecorder.widget.clickorlongbutton.ClickOrLongButton;
 
 /**
  * 录音控件，多了一个控件集成

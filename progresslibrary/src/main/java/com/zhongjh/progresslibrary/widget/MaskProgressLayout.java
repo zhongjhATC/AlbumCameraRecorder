@@ -2,6 +2,7 @@ package com.zhongjh.progresslibrary.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -91,10 +92,19 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
     }
 
     /**
-     * 设置图片、视频地址同时更新表格
+     * 设置视频地址
      */
-    public void setPath(List<String> photoAndVideo, String recording) {
-        mImageAdapter.setImages(photoAndVideo);
+    public void setVideo(List<String> videoPath){
+        mImageAdapter.addVideo(videoPath.get(0));
+    }
+
+    /**
+     * 设置图片同时更新表格
+     * @param imagePaths 图片数据源
+     * @param recording
+     */
+    public void setImages(List<String> imagePaths, String recording) {
+        mImageAdapter.setImages(imagePaths);
     }
 
 
@@ -107,7 +117,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
     public void onItemImage(View view, int position) {
         listener.onItemImage(view, position);
     }
-
 
     public static class ViewHolder {
         public View rootView;

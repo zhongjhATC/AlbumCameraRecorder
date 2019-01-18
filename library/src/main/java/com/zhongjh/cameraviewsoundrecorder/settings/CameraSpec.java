@@ -1,6 +1,7 @@
 package com.zhongjh.cameraviewsoundrecorder.settings;
 
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.ModuleTypes;
 
 import java.util.Set;
 
@@ -38,14 +39,14 @@ public class CameraSpec {
      * 仅支持图片
      */
     public boolean onlySupportImages() {
-        return supportSingleMediaType && MimeType.ofImage().containsAll(mimeTypeSet);
+        return supportSingleMediaType && MimeType.ofImage().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.CAMERA));
     }
 
     /**
      * 仅支持视频
      */
     public boolean onlySupportVideos() {
-        return supportSingleMediaType && MimeType.ofVideo().containsAll(mimeTypeSet);
+        return supportSingleMediaType && MimeType.ofVideo().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.CAMERA));
     }
 
     private static final class InstanceHolder {

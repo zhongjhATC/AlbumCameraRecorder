@@ -99,6 +99,12 @@ public class AlbumMediaLoader extends CursorLoader {
         super(context, QUERY_URI, PROJECTION, selection, selectionArgs, ORDER_BY);
     }
 
+    /**
+     * 返回数据源
+     * @param context 上下文
+     * @param album 专辑
+     * @return 游标数据源
+     */
     public static CursorLoader newInstance(Context context, Album album) {
         String selection;
         String[] selectionArgs;

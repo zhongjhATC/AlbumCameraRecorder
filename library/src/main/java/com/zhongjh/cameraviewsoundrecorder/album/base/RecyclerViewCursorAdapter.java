@@ -34,6 +34,11 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
         swapCursor(c);
     }
 
+    /**
+     * 绑定数据源
+     * @param holder 控件
+     * @param cursor 加载完成的游标
+     */
     protected abstract void onBindViewHolder(VH holder, Cursor cursor);
 
     @Override
@@ -82,6 +87,10 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
         return mCursor.getLong(mRowIDColumn);
     }
 
+    /**
+     * 填充数据源
+     * @param newCursor 数据源
+     */
     public void swapCursor(Cursor newCursor) {
         if (newCursor == mCursor) {
             return;

@@ -146,9 +146,6 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
         mListener = listener;
     }
 
-
-
-
     public interface OnMediaGridClickListener {
 
         void onThumbnailClicked(ImageView thumbnail, Item item, RecyclerView.ViewHolder holder);

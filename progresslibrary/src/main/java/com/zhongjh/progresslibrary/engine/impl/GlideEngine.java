@@ -16,6 +16,7 @@
 package com.zhongjh.progresslibrary.engine.impl;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.ImageView;
@@ -53,6 +54,7 @@ public class GlideEngine implements ImageEngine {
                 .centerCrop()
                 .into(imageView);
     }
+
 
     @Override
     public void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {

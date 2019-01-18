@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.soundrecording;
+package com.zhongjh.cameraviewsoundrecorder.recorder;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,9 +19,9 @@ import android.widget.Chronometer;
 import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
-import com.zhongjh.cameraviewsoundrecorder.soundrecording.db.RecordingItem;
-import com.zhongjh.cameraviewsoundrecorder.soundrecording.service.RecordingService;
-import com.zhongjh.cameraviewsoundrecorder.soundrecording.widget.SoundrecordingLayout;
+import com.zhongjh.cameraviewsoundrecorder.recorder.db.RecordingItem;
+import com.zhongjh.cameraviewsoundrecorder.recorder.service.RecordingService;
+import com.zhongjh.cameraviewsoundrecorder.recorder.widget.SoundrecordingLayout;
 import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
 import com.zhongjh.cameraviewsoundrecorder.widget.OperationLayout;
 

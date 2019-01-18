@@ -27,7 +27,7 @@ import com.zhongjh.cameraviewsoundrecorder.album.widget.MediaGridInset;
  * 相册 界面
  * Created by zhongjh on 2018/8/30.
  */
-public class MediaSelectionFragment extends Fragment implements AlbumMediaCollection.AlbumMediaCallbacks,
+public class MediaSelectionFragment extends Fragment implements
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
     public static final String EXTRA_ALBUM = "extra_album";     // 专辑数据
@@ -102,6 +102,7 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         super.onActivityCreated(savedInstanceState);
         Album album = getArguments().getParcelable(EXTRA_ALBUM);
 
+        // 实例化适配器并且传递数据源
         mAdapter = new AlbumMediaAdapter(getContext(),
                 mSelectionProvider.provideSelectedItemCollection(), mRecyclerView);
         mAdapter.registerCheckStateListener(this);
@@ -122,7 +123,27 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
         mRecyclerView.setAdapter(mAdapter);
-        mAlbumMediaCollection.onCreate(getActivity(), this);
+        mAlbumMediaCollection.onCreate(getActivity(), new AlbumMediaCollection.AlbumMediaCallbacks() {
+
+            /**
+             * 加载数据完毕
+             *
+             * @param cursor 光标数据
+             */
+            @Override
+            public void onAlbumMediaLoad(Cursor cursor) {
+                mAdapter.swapCursor(cursor);
+            }
+
+            /**
+             * 当一个已创建的加载器被重置从而使其数据无效时，此方法被调用
+             */
+            @Override
+            public void onAlbumMediaReset() {
+                // 此处是用于上面的onLoadFinished()的游标将被关闭时执行，我们需确保我们不再使用它
+                mAdapter.swapCursor(null);
+            }
+        });
         mAlbumMediaCollection.load(album);
     }
 
@@ -144,25 +165,6 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
      */
     public void refreshSelection() {
         mAdapter.refreshSelection();
-    }
-
-    /**
-     * 加载数据完毕
-     *
-     * @param cursor 光标数据
-     */
-    @Override
-    public void onAlbumMediaLoad(Cursor cursor) {
-        mAdapter.swapCursor(cursor);
-    }
-
-    /**
-     * 当一个已创建的加载器被重置从而使其数据无效时，此方法被调用
-     */
-    @Override
-    public void onAlbumMediaReset() {
-        // 此处是用于上面的onLoadFinished()的游标将被关闭时执行，我们需确保我们不再使用它
-        mAdapter.swapCursor(null);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.soundrecording.common;
+package com.zhongjh.cameraviewsoundrecorder.recorder.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;

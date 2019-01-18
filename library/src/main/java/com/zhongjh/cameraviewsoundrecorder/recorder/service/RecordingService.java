@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.soundrecording.service;
+package com.zhongjh.cameraviewsoundrecorder.recorder.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -7,7 +7,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.zhongjh.cameraviewsoundrecorder.soundrecording.common.MySharedPreferences;
+import com.zhongjh.cameraviewsoundrecorder.recorder.common.MySharedPreferences;
 
 import java.io.File;
 import java.io.IOException;

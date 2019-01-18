@@ -1,4 +1,4 @@
-package com.zhongjh.cameraviewsoundrecorder.soundrecording.db;
+package com.zhongjh.cameraviewsoundrecorder.recorder.db;
 
 import android.os.Parcel;
 import android.os.Parcelable;

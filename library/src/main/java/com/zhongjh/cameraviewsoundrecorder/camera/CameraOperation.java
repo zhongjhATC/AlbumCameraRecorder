@@ -70,7 +70,6 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     private boolean mIsRecorder = false;    // 录像中
     private MediaRecorder mMediaRecorder;   // 记录音频与视频
-    private Bitmap mVideoFirstFrame = null; // 录像的第一祯bitmap
 
     private int mNowScaleRate = 0;
     private int mRecordScleRate = 0;
@@ -453,23 +452,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
     public void startRecord(Surface surface, float screenProp) {
         mCamera.setPreviewCallback(null);
         final int nowAngle = (mPhoneAngle + 90) % 360;
-        // 获取第一帧图片
         Camera.Parameters parameters = mCamera.getParameters();
-        int width = parameters.getPreviewSize().width;
-        int height = parameters.getPreviewSize().height;
-        YuvImage yuv = new YuvImage(mPreviewFrameData, parameters.getPreviewFormat(), width, height, null);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuv.compressToJpeg(new Rect(0, 0, width, height), 50, out);
-        byte[] bytes = out.toByteArray();
-        mVideoFirstFrame = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        Matrix matrix = new Matrix();
-        if (mSelectedCamera == CAMERA_POST_POSITION) {
-            matrix.setRotate(nowAngle);
-        } else if (mSelectedCamera == CAMERA_FRONT_POSITION) {
-            matrix.setRotate(270);
-        }
-        mVideoFirstFrame = createBitmap(mVideoFirstFrame, 0, 0, mVideoFirstFrame.getWidth(), mVideoFirstFrame
-                .getHeight(), matrix, true);
 
         // 录像中则直接返回
         if (mIsRecorder)
@@ -606,12 +589,12 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
                 // 如果是短视频则删除文件，并且直接回调返回
                 if (FileUtil.deleteFile(mVideoFileAbsPath)) {
                     // 回调
-                    callback.recordResult(null, null);
+                    callback.recordResult(null);
                 }
             } else {
                 // 停止预览并且回调
                 doStopPreview();
-                callback.recordResult(mVideoFileAbsPath, mVideoFirstFrame);
+                callback.recordResult(mVideoFileAbsPath);
             }
 
 

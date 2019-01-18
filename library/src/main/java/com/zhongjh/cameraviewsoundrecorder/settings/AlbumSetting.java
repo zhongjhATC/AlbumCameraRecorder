@@ -26,14 +26,23 @@ public class AlbumSetting {
 
     /**
      *
-     * @param mimeTypes
      * @param mediaTypeExclusive 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
      */
-    public AlbumSetting(@NonNull Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
+    public AlbumSetting(boolean mediaTypeExclusive) {
         mAlbumSpec = AlbumSpec.getInstance();
         mGlobalSpec = GlobalSpec.getInstance();
-        mAlbumSpec.mimeTypeSet = mimeTypes;
+
         mAlbumSpec.mediaTypeExclusive = mediaTypeExclusive;
+    }
+
+    /**
+     * 支持的类型：图片，视频
+     * @param mimeTypes 类型
+     * @return this
+     */
+    public AlbumSetting mimeTypeSet(@NonNull Set<MimeType> mimeTypes) {
+        mAlbumSpec.mimeTypeSet = mimeTypes;
+        return this;
     }
 
     /**

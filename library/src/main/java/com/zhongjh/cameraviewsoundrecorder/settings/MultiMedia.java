@@ -13,8 +13,9 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Set;
 
-import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION;
-import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION_PATH;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * 多媒体的设置 - Matisse
@@ -65,22 +66,36 @@ public final class MultiMedia {
     }
 
     /**
-     * Obtain user selected media' {@link Uri} list in the starting Activity or Fragment.
+     * 获取用户确认后的多媒体类型
      *
-     * @param data Intent passed by {@link Activity#onActivityResult(int, int, Intent)} or
+     * @param data 通过以下方法获取
+     *             {@link Activity#onActivityResult(int, int, Intent)} 或者
      *             {@link Fragment#onActivityResult(int, int, Intent)}.
-     * @return User selected media' {@link Uri} list.
+     * @return 用户确认后的多媒体类型
+     */
+    public static int obtainMultimediaType(Intent data) {
+        return data.getIntExtra(EXTRA_MULTIMEDIA_TYPES, -1);
+    }
+
+    /**
+     * 获取用户选择/拍照的媒体路径列表 {@link Uri}
+     *
+     * @param data 通过以下方法获取
+     *             {@link Activity#onActivityResult(int, int, Intent)} 或者
+     *             {@link Fragment#onActivityResult(int, int, Intent)}.
+     * @return 用户选择/拍照的媒体路径列表. {@link Uri}
      */
     public static List<Uri> obtainResult(Intent data) {
         return data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION);
     }
 
     /**
-     * Obtain user selected media path list in the starting Activity or Fragment.
+     * 获取用户选择/拍照的媒体路径列表
      *
-     * @param data Intent passed by {@link Activity#onActivityResult(int, int, Intent)} or
-     *             {@link Fragment#onActivityResult(int, int, Intent)}.
-     * @return User selected media path list.
+     * @param data 通过以下方法获取
+     *             {@link Fragment#onActivityResult(int, int, Intent)} 或者
+     *             {@link Activity#onActivityResult(int, int, Intent)}
+     * @return 用户选择/拍照的媒体路径列表.
      */
     public static List<String> obtainPathResult(Intent data) {
         return data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH);
@@ -102,7 +117,7 @@ public final class MultiMedia {
      * <p>
      * Types not included in the set will still be shown in the grid but can't be chosen.
      *
-     * @param mimeTypes          MIME types set user can choose from.
+     * @param mimeTypes MIME types set user can choose from.
      * @return {@link GlobalSetting} to build select specifications.
      * @see MimeType
      * @see GlobalSetting

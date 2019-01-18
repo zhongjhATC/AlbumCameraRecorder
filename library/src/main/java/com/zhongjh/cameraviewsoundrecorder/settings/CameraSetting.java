@@ -13,13 +13,22 @@ public final class CameraSetting {
 
     private final CameraSpec mCameraSpec;
 
-    public CameraSetting(@NonNull Set<MimeType> mimeTypes) {
+    public CameraSetting() {
         mCameraSpec = CameraSpec.getInstance();
-        mCameraSpec.mimeTypeSet = mimeTypes;
     }
 
     /**
-     * 仅仅支持一个多媒体类型
+     * 支持的类型：图片，视频
+     * @param mimeTypes 类型
+     * @return
+     */
+    public CameraSetting mimeTypeSet(@NonNull Set<MimeType> mimeTypes) {
+        mCameraSpec.mimeTypeSet = mimeTypes;
+        return this;
+    }
+
+    /**
+     * 仅仅支持一个相片
      * @param supportSingleMediaType 是否
      * @return this
      */

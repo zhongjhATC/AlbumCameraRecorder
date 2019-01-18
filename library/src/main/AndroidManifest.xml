@@ -19,7 +19,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".album.ui.preview.selectedpreview.SelectedPreviewActivity" />
 
-        <service android:name=".soundrecording.service.RecordingService" />
+        <service android:name=".recorder.service.RecordingService" />
     </application>
 
 

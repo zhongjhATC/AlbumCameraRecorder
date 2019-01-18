@@ -10,6 +10,8 @@ import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.ModuleTypes;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
 
 import java.util.List;
 import java.util.Set;
@@ -22,7 +24,7 @@ public class GlobalSpec {
 
     public AlbumSetting albumSetting;   // 相册的设置
     public CameraSetting cameraSetting; // 拍摄的设置
-    public Set<MimeType> mimeTypeSet; // 选择 mime 的类型，MimeType.allOf()
+    private Set<MimeType> mimeTypeSet; // 选择 mime 的类型，MimeType.allOf()
     public boolean hasInited; // 是否通过正规方式进来
     @StyleRes
     public int themeId;         // 样式
@@ -61,6 +63,7 @@ public class GlobalSpec {
 
     /**
      * 是否需要旋转约束
+     *
      * @return 是否
      */
     public boolean needOrientationRestriction() {
@@ -68,11 +71,27 @@ public class GlobalSpec {
         return orientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
-
-
     private static final class InstanceHolder {
         private static final GlobalSpec INSTANCE = new GlobalSpec();
     }
 
+    /**
+     * @return 返回 mime 的类型，MimeType.allOf()
+     */
+    public Set<MimeType> getMimeTypeSet(@ModuleTypes int moduleTypes) {
+        // 优先取各自的类型，如果没设置则取公共的
+        switch (moduleTypes) {
+            case ModuleTypes.ALBUM:
+                if (AlbumSpec.getInstance().mimeTypeSet != null)
+                    return AlbumSpec.getInstance().mimeTypeSet;
+            case ModuleTypes.CAMERA:
+                if (CameraSpec.getInstance().mimeTypeSet != null)
+                    return CameraSpec.getInstance().mimeTypeSet;
+        }
+        return mimeTypeSet;
+    }
 
+    public void setMimeTypeSet(Set<MimeType> mimeTypeSet) {
+        this.mimeTypeSet = mimeTypeSet;
+    }
 }

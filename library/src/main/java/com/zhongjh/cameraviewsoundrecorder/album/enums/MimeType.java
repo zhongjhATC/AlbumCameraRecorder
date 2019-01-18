@@ -14,7 +14,7 @@ import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 
-public enum MimeType {
+public enum MimeType  {
 
     // ============== 图片 ==============
     JPEG("image/jpeg", arraySetOf(

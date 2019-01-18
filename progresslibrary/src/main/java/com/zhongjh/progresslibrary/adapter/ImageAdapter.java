@@ -3,6 +3,8 @@ package com.zhongjh.progresslibrary.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -33,14 +35,50 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private LayoutInflater mInflater;
     private List<String> mData = new ArrayList<>();
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
-    private boolean isLast;   // 是否最后一个图片
+
+    private boolean isLast;         // 是否最后一个图片
+    private boolean isExistingVideo;// 是否存在视频,如果为true,那么第一个必定是视频类型
+
     private ImageEngine mImageEngine;   // 图片加载方式
     private final Drawable mPlaceholder; // 默认图片
     private MaskProgressLayoutListener listener;   // 点击事件
 
+    /**
+     * 构造
+     *
+     * @param mContext      上下文
+     * @param maxMediaCount 最大显示 图片/视频
+     * @param imageEngine   图片加载方式
+     * @param placeholder   图片
+     */
+    public ImageAdapter(Context mContext, int maxMediaCount, ImageEngine imageEngine, Drawable placeholder) {
+        this.mContext = mContext;
+        this.maxMediaCount = maxMediaCount;
+        this.mInflater = LayoutInflater.from(mContext);
+        this.mImageEngine = imageEngine;
+
+        // 默认过渡图片/颜色
+        mPlaceholder = placeholder;
+
+        setImages(new ArrayList<>());
+    }
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * 添加视频
+     */
+    public void addVideo(String video) {
+        isExistingVideo = true;
+        // 添加前，如果最后一个是添加的图标，那么就先删除它，后面再检查是否需要添加 “添加图标”
+        if (mData.size() > 0 && mData.get(mData.size() - 1).equals(ADD)) {
+            mData.remove(mData.size() - 1);
+        }
+        mData.add(0, video);
+        checkLastImages();
+        notifyDataSetChanged();
     }
 
     /**
@@ -80,10 +118,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
      * @return 返回所有地址
      */
     public List<String> getImages() {
+        int positionFirst = 0;
+        if (isExistingVideo)
+            // 如果存在视频，那么索引从第二个算起
+            positionFirst = 1;
         if (!isLast)
-            return new ArrayList<>(mData.subList(0, mData.size() - 1));
+            return new ArrayList<>(mData.subList(positionFirst, mData.size() - 1));
         else
-            return mData;
+            return new ArrayList<>(mData.subList(positionFirst, mData.size()));
     }
 
     /**
@@ -95,25 +137,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         viewHolder.mpvImage.setPercentage(percentage);
     }
 
-    /**
-     * 构造
-     *
-     * @param mContext      上下文
-     * @param maxMediaCount 最大显示 图片/视频
-     * @param imageEngine   图片加载方式
-     * @param placeholder   图片
-     */
-    public ImageAdapter(Context mContext, int maxMediaCount, ImageEngine imageEngine, Drawable placeholder) {
-        this.mContext = mContext;
-        this.maxMediaCount = maxMediaCount;
-        this.mInflater = LayoutInflater.from(mContext);
-        this.mImageEngine = imageEngine;
-
-        // 默认过渡图片/颜色
-        mPlaceholder = placeholder;
-
-        setImages(new ArrayList<>());
-    }
 
     @NonNull
     @Override

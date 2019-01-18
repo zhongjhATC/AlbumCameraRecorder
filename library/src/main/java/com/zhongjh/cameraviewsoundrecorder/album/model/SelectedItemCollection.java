@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * 选择的数据源
  * Created by zhongjh on 2018/8/28.
  */
 public class SelectedItemCollection {

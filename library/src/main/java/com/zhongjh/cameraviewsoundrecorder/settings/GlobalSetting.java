@@ -83,7 +83,7 @@ public final class GlobalSetting {
     GlobalSetting(MultiMedia multiMedia, @NonNull Set<MimeType> mimeTypes) {
         mMultiMedia = multiMedia;
         mGlobalSpec = GlobalSpec.getCleanInstance();
-        mGlobalSpec.mimeTypeSet = mimeTypes;
+        mGlobalSpec.setMimeTypeSet(mimeTypes);
         mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
     }
 

@@ -72,6 +72,7 @@ public class AlbumMediaAdapter extends
         return new MediaViewHolder(v);
     }
 
+
     @Override
     protected void onBindViewHolder(final RecyclerView.ViewHolder holder, Cursor cursor) {
         // 相片的item

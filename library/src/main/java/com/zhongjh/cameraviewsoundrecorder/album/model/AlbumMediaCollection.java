@@ -30,6 +30,9 @@ import com.zhongjh.cameraviewsoundrecorder.album.loader.AlbumMediaLoader;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * 多媒体数据源
+ */
 public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 2;
     private static final String ARGS_ALBUM = "args_album";
@@ -49,6 +52,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
             return null;
         }
 
+        // 根据专辑返回图片数据源
         return AlbumMediaLoader.newInstance(context, album);
     }
 
@@ -85,6 +89,10 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
         mCallbacks = null;
     }
 
+    /**
+     * 加载图片
+     * @param target 专辑
+     */
     public void load(@Nullable Album target) {
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);

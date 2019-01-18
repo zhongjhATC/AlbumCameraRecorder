@@ -20,6 +20,8 @@ import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.ModuleTypes;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -169,7 +171,7 @@ public final class PhotoMetadataUtils {
 
         ContentResolver resolver = context.getContentResolver();
         // 循环当前类型配置
-        for (MimeType type : GlobalSpec.getInstance().mimeTypeSet) {
+        for (MimeType type : GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM)) {
             // 如果当前类型配置 相等 当前数据
             if (type.checkType(resolver, item.getContentUri())) {
                 return true;

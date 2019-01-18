@@ -22,6 +22,7 @@ import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
 import com.zhongjh.cameraviewsoundrecorder.settings.CameraSpec;
 import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +32,9 @@ import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollec
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
-import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_FIRST_FRAME;
-import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION_PATH;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_RESULT_FIRST_FRAME;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * 拍摄视频
@@ -156,16 +158,19 @@ public class CameraFragment extends Fragment {
             public void captureSuccess(ArrayList<String> paths) {
                 Intent result = new Intent();
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
             }
 
             @Override
-            public void recordSuccess(String url, Bitmap firstFrame) {
+            public void recordSuccess(String url) {
+                ArrayList<String> arrayList = new ArrayList<>();
+                arrayList.add(url);
                 //获取视频路径
                 Intent result = new Intent();
-                result.putExtra(EXTRA_RESULT_SELECTION_PATH, url);
-                result.putExtra(EXTRA_RESULT_FIRST_FRAME,firstFrame);
+                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
+                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
             }

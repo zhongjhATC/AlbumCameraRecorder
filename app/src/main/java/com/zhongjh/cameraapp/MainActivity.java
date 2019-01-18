@@ -24,6 +24,7 @@ import com.zhongjh.cameraviewsoundrecorder.settings.CaptureStrategy;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
@@ -85,17 +86,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 //        MultiMedia.obtainResult(data), MultiMedia.obtainPathResult(data);
-
-        // 选择图片
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            mplImageList.setPath(MultiMedia.obtainPathResult(data), null);
+            // 获取类型，根据类型设置不同的事情
+            switch (MultiMedia.obtainMultimediaType(data)) {
+                case MultimediaTypes.PICTURE:
+                    // 图片
+                    mplImageList.setImages(MultiMedia.obtainPathResult(data), null);
+                    break;
+                case MultimediaTypes.VIDEO:
+                    // 录像
+                    mplImageList.setVideo(MultiMedia.obtainPathResult(data));
+                    break;
+                case MultimediaTypes.AUDIO:
+                    // 语音
+                    break;
+                case MultimediaTypes.BLEND:
+                    // 混合类型，意思是图片可能跟录像在一起.
+                    mplImageList.setImages(MultiMedia.obtainPathResult(data), null);
+                    break;
+            }
+
         }
-
-        // 录像
-
-
-        // 语音
-
         if (resultCode == 101) {
             Log.i("CJT", "picture");
             String path = data.getStringExtra("path");
@@ -151,12 +162,13 @@ public class MainActivity extends AppCompatActivity {
     private void openMain(int alreadyImageCount) {
 
         // 拍摄
-        CameraSetting cameraSetting = new CameraSetting(MimeType.ofAll());
+        CameraSetting cameraSetting = new CameraSetting();
+        cameraSetting.mimeTypeSet(MimeType.ofAll());
         cameraSetting.supportSingleMediaType(false);
         cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera"));
 
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(MimeType.ofImage(), false)
+        AlbumSetting albumSetting = new AlbumSetting(false)
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
@@ -167,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
                 .setOnSelectedListener((uriList, pathList) -> {
                     // 每次选择的事件
                     Log.e("onSelected", "onSelected: pathList=" + pathList);
-
                 })
                 .originalEnable(true)// 开启原图
                 .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效

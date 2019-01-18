@@ -93,7 +93,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private HashMap<Integer, View> mCaptureViews = new HashMap<>();      // 拍照的图片控件-集合
     private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
 
-    private Bitmap mFirstFrame;       // 第一帧图片
     private String mVideoUrl;         // 视频URL
 
     private CameraButton mCameraButton; // 摄像头按钮
@@ -476,7 +475,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
                 if (mOperaeCameraListener != null) {
-                    mOperaeCameraListener.recordSuccess(mVideoUrl, mFirstFrame);
+                    mOperaeCameraListener.recordSuccess(mVideoUrl);
                 }
                 break;
             case TYPE_PICTURE:
@@ -601,12 +600,10 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     /**
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      *
-     * @param firstFrame @@
      * @param url        路径
      */
-    public void playVideo(Bitmap firstFrame, String url) {
+    public void playVideo(String url) {
         mVideoUrl = url;
-        mFirstFrame = firstFrame;
         new Thread(() -> {
             if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer();
@@ -832,7 +829,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      * @param isShort 是否因为视频过短而停止
      */
     private void stopRecord(boolean isShort) {
-        mCameraOperation.stopRecord(isShort, (url, firstFrame) -> {
+        mCameraOperation.stopRecord(isShort, (url) -> {
             if (isShort) {
                 // 如果视频过短就是录制不成功
                 resetState(TYPE_SHORT);
@@ -840,7 +837,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 // 设置成视频播放状态
                 setState(Constants.STATE_VIDEO);
                 // 如果录制结束，播放该视频
-                playVideo(firstFrame, url);
+                playVideo(url);
             }
         });
     }

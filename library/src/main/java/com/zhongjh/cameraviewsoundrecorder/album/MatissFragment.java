@@ -34,7 +34,6 @@ import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
 import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
-import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.ui.mediaselection.MediaSelectionFragment;
@@ -45,13 +44,15 @@ import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView;
 import com.zhongjh.cameraviewsoundrecorder.utils.PathUtils;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
 import com.zhongjh.cameraviewsoundrecorder.widget.IncapableDialog;
 
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION;
-import static com.zhongjh.cameraviewsoundrecorder.utils.Constant.EXTRA_RESULT_SELECTION_PATH;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
+import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * Created by zhongjh on 2018/8/22.
@@ -194,6 +195,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
             ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
             result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
+            result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.BLEND);
             result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);// 是否启用原图
             mActivity.setResult(RESULT_OK, result);
             mActivity.finish();
@@ -282,6 +284,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 }
                 result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
+                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.BLEND);
                 result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable); // 是否启用原图
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();

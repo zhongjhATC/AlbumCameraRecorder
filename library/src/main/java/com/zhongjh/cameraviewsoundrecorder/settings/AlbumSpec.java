@@ -4,6 +4,8 @@ import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.ModuleTypes;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
 
 import java.util.List;
 import java.util.Set;
@@ -77,14 +79,14 @@ public class AlbumSpec {
      * 仅显示图片
      */
     public boolean onlyShowImages() {
-        return showSingleMediaType && MimeType.ofImage().containsAll(mimeTypeSet);
+        return showSingleMediaType && MimeType.ofImage().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM));
     }
 
     /**
      * 仅显示视频
      */
     public boolean onlyShowVideos() {
-        return showSingleMediaType && MimeType.ofVideo().containsAll(mimeTypeSet);
+        return showSingleMediaType && MimeType.ofVideo().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM));
     }
 
     private static final class InstanceHolder {
