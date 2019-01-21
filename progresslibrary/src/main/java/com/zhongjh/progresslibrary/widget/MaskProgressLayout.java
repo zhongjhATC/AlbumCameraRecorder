@@ -107,10 +107,9 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
         mImageAdapter.setImages(imagePaths);
     }
 
-
     @Override
-    public void onItemAdd(View view, int position, int alreadyImageCount) {
-        listener.onItemAdd(view, position, alreadyImageCount);
+    public void onItemAdd(View view, int position, int alreadyImageCount, int alreadyVideoCount) {
+        listener.onItemAdd(view, position, alreadyImageCount,alreadyVideoCount);
     }
 
     @Override

@@ -264,20 +264,22 @@ public class SelectedItemCollection {
      */
     private int currentMaxSelectable() {
         GlobalSpec spec = GlobalSpec.getInstance();
-        AlbumSpec albumSpec = AlbumSpec.getInstance();
-        if (spec.maxSelectable > 0) {
-            // 返回最大选择数量
-            return spec.maxSelectable;
-        } else if (mCollectionType == COLLECTION_IMAGE) {
-            // 如果是图片类型，则返回最大图片选择数量
-            return albumSpec.maxImageSelectable;
-        } else if (mCollectionType == COLLECTION_VIDEO) {
-            // 如果是视频类型，则返回最大视频选择数量
-            return albumSpec.maxVideoSelectable;
-        } else {
-            // 返回最大选择数量
-            return spec.maxSelectable;
+        int leastCount = spec.maxSelectable;
+        if (mCollectionType == COLLECTION_IMAGE) {
+            if (spec.maxSelectable < spec.maxImageSelectable){
+                leastCount = spec.maxSelectable;
+            }else{
+                leastCount = spec.maxImageSelectable;
+            }
         }
+        if (mCollectionType == COLLECTION_VIDEO) {
+            if (spec.maxSelectable < spec.maxVideoSelectable){
+                leastCount = spec.maxSelectable;
+            }else{
+                leastCount = spec.maxVideoSelectable;
+            }
+        }
+        return leastCount;
     }
 
     /**

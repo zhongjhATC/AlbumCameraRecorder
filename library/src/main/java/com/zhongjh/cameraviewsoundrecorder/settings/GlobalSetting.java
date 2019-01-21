@@ -127,6 +127,19 @@ public final class GlobalSetting {
     }
 
     /**
+     * 仅当 {@link AlbumSpec#mediaTypeExclusive} 设置为true并且您希望为图像和视频媒体类型设置不同的最大可选文件时才有用。
+     *
+     * @param maxImageSelectable Maximum selectable count for image.
+     * @param maxVideoSelectable Maximum selectable count for video.
+     * @return
+     */
+    public GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable) {
+        mGlobalSpec.maxImageSelectable = maxImageSelectable;
+        mGlobalSpec.maxVideoSelectable = maxVideoSelectable;
+        return this;
+    }
+
+    /**
      * Capture strategy provided for the location to save photos including internal and external
      * storage and also a authority for {@link android.support.v4.content.FileProvider}.
      *

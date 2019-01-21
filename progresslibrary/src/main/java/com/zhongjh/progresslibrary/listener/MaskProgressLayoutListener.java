@@ -10,11 +10,13 @@ public interface MaskProgressLayoutListener {
 
     /**
      * 点击➕号的事件
-     * @param view 当前itemView
-     * @param position 索引
+     *
+     * @param view              当前itemView
+     * @param position          索引
      * @param alreadyImageCount 目前已经显示的几个图片数量
+     * @oaran akreadtVideoCount 目前已经显示的几个视频数量
      */
-    void onItemAdd(View view, int position,int alreadyImageCount);
+    void onItemAdd(View view, int position, int alreadyImageCount, int alreadyVideoCount);
 
     /**
      * 点击图片的事件

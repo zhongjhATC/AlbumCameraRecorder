@@ -53,6 +53,7 @@ import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollec
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_VIDEO;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
+import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONGCLICK;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_DEFAULT;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.TYPE_SHORT;
@@ -96,8 +97,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private String mVideoUrl;         // 视频URL
 
     private CameraButton mCameraButton; // 摄像头按钮
-
-    private int mCollectionType = COLLECTION_UNDEFINED; // 类型: 允许图片或者视频，跟知乎的选择相片共用模式
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -198,23 +197,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             // 恢复点击
             mViewHolder.rlMain.setChildClickable(true);
         });
-
-        //        if (Build.VERSION.SDK_INT >= 21) {
-//            mCameraInterface = new CameraOperation2(mContext, this, (bitmap, isVertical) -> {
-//                // 显示图片
-//                showPicture(bitmap, isVertical);
-//                // 恢复点击
-//                mViewHolder.rlMain.setChildClickable(true);
-//            });
-//        } else {
-//            mCameraInterface = new CameraOperation(mContext, this, (bitmap, isVertical) -> {
-//                // 显示图片
-//                showPicture(bitmap, isVertical);
-//                // 恢复点击
-//                mViewHolder.rlMain.setChildClickable(true);
-//            });
-//        }
-
     }
 
     /**
@@ -227,6 +209,20 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mViewHolder = new ViewHolder(view);
         setFlashLamp(); // 设置闪光灯模式
         mViewHolder.pvLayout.setDuration(mCameraButton.getDuration());
+
+        // 判断点击和长按的权限
+        if (mGlobalSpec.maxImageSelectable == 0){
+            // 禁用点击功能
+            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONGCLICK);
+            mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_camera));
+        }else if (mGlobalSpec.maxVideoSelectable == 0){
+            // 禁用长按功能
+            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
+            mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take));
+        }else{
+            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_BOTH);
+            mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take_long_press_camera));
+        }
     }
 
     /**
@@ -499,7 +495,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      * @param bitmap     bitmap
      * @param isVertical 是否铺满
      */
-    public void showPicture(Bitmap bitmap, boolean isVertical) {
+    private void showPicture(Bitmap bitmap, boolean isVertical) {
         // 存储到临时文件
 //        BitmapUtils.saveToFile(bitmap,)
 
@@ -647,15 +643,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     }
 
     /**
-     * 设置提示
-     *
-     * @param tip 提示文本
-     */
-    public void setTip(String tip) {
-        mViewHolder.pvLayout.setTip(tip);
-    }
-
-    /**
      * 处理焦点，View界面显示绿色焦点框
      *
      * @param x 坐标x
@@ -722,18 +709,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     public SurfaceHolder getSurfaceHolder() {
         return mViewHolder.vvPreview.getHolder();
-    }
-
-    /**
-     * 设置按钮支持的功能：
-     *
-     * @param buttonStateBoth {@link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_CLICK 只能拍照
-     * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_ONLY_LONGCLICK 只能录像
-     * @link com.zhongjh.cameraviewsoundrecorder.camera.common.Constants#BUTTON_STATE_BOTH 两者皆可
-     * }
-     */
-    public void setFeatures(int buttonStateBoth) {
-        mViewHolder.pvLayout.setButtonFeatures(buttonStateBoth);
     }
 
     /**

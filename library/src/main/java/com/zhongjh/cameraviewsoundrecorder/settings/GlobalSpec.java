@@ -30,6 +30,8 @@ public class GlobalSpec {
     public int themeId;         // 样式
     public int orientation;     // 旋转模式
     public int maxSelectable;   // 最大选择数量
+    public int maxImageSelectable = -1;  // 最大图片选择数量
+    public int maxVideoSelectable = -1;  // 最大视频选择数量
     public CaptureStrategy captureStrategy; // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
     public ImageEngine imageEngine;
 
@@ -55,6 +57,8 @@ public class GlobalSpec {
         themeId = R.style.AppTheme_Blue;
         orientation = 0;
         maxSelectable = 1;
+        maxImageSelectable = -1;
+        maxVideoSelectable = -1;
         captureStrategy = null;
         hasInited = true;
         imageEngine = new GlideEngine();

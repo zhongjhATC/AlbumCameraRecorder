@@ -1,10 +1,6 @@
 package com.zhongjh.progresslibrary.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -36,7 +32,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private List<String> mData = new ArrayList<>();
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
 
-    private boolean isLast;         // 是否最后一个图片
+    private boolean isFill;         // 是否填充满数据
     private boolean isExistingVideo;// 是否存在视频,如果为true,那么第一个必定是视频类型
 
     private ImageEngine mImageEngine;   // 图片加载方式
@@ -97,7 +93,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     }
 
     /**
-     * 检查最后一个是否是图片
+     * 检查最后一个是否是添加
      */
     private void checkLastImages() {
         if (getItemCount() < maxMediaCount) {
@@ -106,9 +102,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             }
             // 未满上限数量可以继续设置
             mData.add(ADD);
-            isLast = false;
+            isFill = false;
         } else {
-            isLast = true;
+            isFill = true;
         }
     }
 
@@ -122,7 +118,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         if (isExistingVideo)
             // 如果存在视频，那么索引从第二个算起
             positionFirst = 1;
-        if (!isLast)
+        if (!isFill)
             return new ArrayList<>(mData.subList(positionFirst, mData.size() - 1));
         else
             return new ArrayList<>(mData.subList(positionFirst, mData.size()));
@@ -158,12 +154,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
         private MaskProgressView mpvImage;
         private ImageView imgClose;
+        private ImageView imgPlay;
         private int position;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mpvImage = itemView.findViewById(R.id.mpvImage);
             imgClose = itemView.findViewById(R.id.imgClose);
+            imgPlay = itemView.findViewById(R.id.imgPlay);
         }
 
         public void bind(int position) {
@@ -173,7 +171,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             //根据条目位置设置图片
             String path = mData.get(position);
 
-            if (!isLast && position == getItemCount() - 1) {
+            if (!isFill && position == getItemCount() - 1) {
                 // 加载➕图
                 mpvImage.setImageResource(R.drawable.selector_image_add);
                 // 隐藏close
@@ -192,15 +190,19 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                     checkLastImages();
                     notifyDataSetChanged();
                 });
+                // 判断是否显示播放按钮
+                if (isExistingVideo && position == 0) {
+                    imgPlay.setVisibility(View.VISIBLE);
+                }
             }
         }
 
         @Override
         public void onClick(View v) {
             if (listener != null)
-                if (!isLast && position == getItemCount() - 1) {
+                if (!isFill && position == getItemCount() - 1) {
                     // 加载➕图
-                    listener.onItemAdd(v, position, getItemCount() - 1);
+                    listener.onItemAdd(v, position, getImages().size(), isExistingVideo ? 1 : 0);
                 } else {
                     // 加载图片
                     listener.onItemImage(v, position);

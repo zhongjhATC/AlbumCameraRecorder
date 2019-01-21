@@ -2,7 +2,6 @@ package com.zhongjh.cameraviewsoundrecorder.camera;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,11 +14,10 @@ import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.camera.entity.BitmapData;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.CaptureListener;
+import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.ErrorListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.listener.OperaeCameraListener;
-import com.zhongjh.cameraviewsoundrecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
-import com.zhongjh.cameraviewsoundrecorder.settings.CameraSpec;
 import com.zhongjh.cameraviewsoundrecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.cameraviewsoundrecorder.utils.ViewBusinessUtils;
 import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
@@ -30,10 +28,8 @@ import java.util.HashMap;
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.COLLECTION_UNDEFINED;
 import static com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
-import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.cameraviewsoundrecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
 import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
-import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_RESULT_FIRST_FRAME;
 import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
@@ -43,8 +39,6 @@ import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA
 public class CameraFragment extends Fragment {
 
     protected Activity mActivity;
-
-    private CameraSpec mCameraSpec; // 配置
 
     private CameraLayout mCameraLayout;
     private String title;
@@ -69,7 +63,6 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mCameraSpec = CameraSpec.getInstance();
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             page = getArguments().getInt("someInt", 0);
@@ -86,10 +79,8 @@ public class CameraFragment extends Fragment {
         // 隐藏状态栏
 //        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        mCameraLayout = view.findViewById(R.id.cameraLayout);
 
-        mCameraLayout.setFeatures(BUTTON_STATE_BOTH);
-        mCameraLayout.setTip("轻触拍照，长按摄像");
+        mCameraLayout = view.findViewById(R.id.cameraLayout);
         mCameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率
         mCameraLayout.setErrorLisenter(new ErrorListener() {
             @Override

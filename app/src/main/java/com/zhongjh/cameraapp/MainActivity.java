@@ -46,9 +46,10 @@ public class MainActivity extends AppCompatActivity {
         device.setText(DeviceUtil.getDeviceInfo());
         mplImageList = findViewById(R.id.mplImageList);
         mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+
             @Override
-            public void onItemAdd(View view, int position, int alreadyImageCount) {
-                getPermissions(alreadyImageCount);
+            public void onItemAdd(View view, int position, int alreadyImageCount, int alreadyVideoCount) {
+                getPermissions(alreadyImageCount, alreadyVideoCount);
             }
 
             @Override
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 获取权限
      */
-    private void getPermissions(int alreadyImageCount) {
+    private void getPermissions(int alreadyImageCount, int alreadyVideoCount) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
                     .PERMISSION_GRANTED &&
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                             .PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
                             .PERMISSION_GRANTED) {
-                openMain(alreadyImageCount);
+                openMain(alreadyImageCount, alreadyVideoCount);
             } else {
                 //不具有获取权限，需要进行权限申请
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
             }
         } else {
-            openMain(alreadyImageCount);
+            openMain(alreadyImageCount, alreadyVideoCount);
         }
     }
 
@@ -157,9 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * @param alreadyImageCount 已经存在显示的几张图片
+     * @param alreadyVideoCount 已经存在显示的几个视频
      *                          打开窗体
      */
-    private void openMain(int alreadyImageCount) {
+    private void openMain(int alreadyImageCount, int alreadyVideoCount) {
 
         // 拍摄
         CameraSetting cameraSetting = new CameraSetting();
@@ -168,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera"));
 
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(false)
+        AlbumSetting albumSetting = new AlbumSetting(true)
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
@@ -196,7 +198,8 @@ public class MainActivity extends AppCompatActivity {
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
                 //                                            .imageEngine(new GlideEngine())  // for glide-V3
                 .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectable(10 - alreadyImageCount)// 最多选择几个
+                .maxSelectable(10 - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
+                .maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount)// 最大10张图片或者最大1个视频
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .forResult(REQUEST_CODE_CHOOSE);
     }

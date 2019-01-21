@@ -5,6 +5,7 @@ package com.zhongjh.cameraviewsoundrecorder.album;
  */
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -33,6 +34,7 @@ import com.zhongjh.cameraviewsoundrecorder.MainActivity;
 import com.zhongjh.cameraviewsoundrecorder.R;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Album;
 import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
+import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSpec;
 import com.zhongjh.cameraviewsoundrecorder.album.model.AlbumCollection;
 import com.zhongjh.cameraviewsoundrecorder.album.model.SelectedItemCollection;
@@ -43,7 +45,9 @@ import com.zhongjh.cameraviewsoundrecorder.album.ui.preview.selectedpreview.Sele
 import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView;
+import com.zhongjh.cameraviewsoundrecorder.settings.GlobalSpec;
 import com.zhongjh.cameraviewsoundrecorder.utils.PathUtils;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.ModuleTypes;
 import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
 import com.zhongjh.cameraviewsoundrecorder.widget.IncapableDialog;
 
@@ -195,41 +199,69 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
             ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
             result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
-            result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.BLEND);
+            result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(selectedUris));
             result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);// 是否启用原图
             mActivity.setResult(RESULT_OK, result);
             mActivity.finish();
         });
 
         // 点击原图
-        mViewHolder.originalLayout.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                if (getFragmentManager() != null) {
-                    // 如果有大于限制大小的，就提示
-                    int count = countOverMaxSize();
-                    if (count > 0) {
-                        IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                                getString(R.string.error_over_original_count, count, mAlbumSpec.originalMaxSize));
-                        incapableDialog.show(getFragmentManager(),
-                                IncapableDialog.class.getName());
-                        return;
-                    }
-
-                    // 设置状态
-                    mOriginalEnable = !mOriginalEnable;
-                    mViewHolder.original.setChecked(mOriginalEnable);
-
-                    // 设置状态是否原图
-                    if (mAlbumSpec.onCheckedListener != null) {
-                        mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);
-                    }
-
+        mViewHolder.originalLayout.setOnClickListener(view -> {
+            if (getFragmentManager() != null) {
+                // 如果有大于限制大小的，就提示
+                int count = countOverMaxSize();
+                if (count > 0) {
+                    IncapableDialog incapableDialog = IncapableDialog.newInstance("",
+                            getString(R.string.error_over_original_count, count, mAlbumSpec.originalMaxSize));
+                    incapableDialog.show(getFragmentManager(),
+                            IncapableDialog.class.getName());
+                    return;
                 }
+
+                // 设置状态
+                mOriginalEnable = !mOriginalEnable;
+                mViewHolder.original.setChecked(mOriginalEnable);
+
+                // 设置状态是否原图
+                if (mAlbumSpec.onCheckedListener != null) {
+                    mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);
+                }
+
             }
         });
 
+    }
+
+    /**
+     * 根据uri列表返回当前全部的类型
+     * @param selectedUris uri列表
+     * @return 返回当前全部的类型
+     */
+    private int getMultimediaType(ArrayList<Uri> selectedUris){
+        // 循环判断类型
+        int isImageSize = 0;// 图片类型的数量
+        int isVideoSize = 0;// 视频的数量
+        ContentResolver resolver = mContext.getContentResolver();
+        for (Uri uri : selectedUris){
+            for (MimeType type : MimeType.ofImage()) {
+                if (type.checkType(resolver, uri)) {
+                    isImageSize++;
+                }
+            }
+            for (MimeType type : MimeType.ofVideo()) {
+                if (type.checkType(resolver, uri)) {
+                    isVideoSize++;
+                }
+            }
+        }
+        // 判断是纯图片还是纯视频
+        if (selectedUris.size() == isImageSize){
+             return MultimediaTypes.PICTURE;
+        }
+        if (selectedUris.size() == isVideoSize){
+            return MultimediaTypes.VIDEO;
+        }
+        return MultimediaTypes.BLEND;
     }
 
     @Override
@@ -284,7 +316,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 }
                 result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
-                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.BLEND);
+                result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(selectedUris));
                 result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable); // 是否启用原图
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();

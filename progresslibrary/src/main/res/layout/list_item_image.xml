@@ -21,4 +21,13 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
+    <ImageView
+        android:id="@+id/imgPlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_bf_gray"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
 </FrameLayout>

@@ -70,22 +70,7 @@ public class AlbumSetting {
         return this;
     }
 
-    /**
-     * Only useful when {@link AlbumSpec#mediaTypeExclusive} set true and you want to set different maximum
-     * selectable files for image and video media types.
-     *
-     * @param maxImageSelectable Maximum selectable count for image.
-     * @param maxVideoSelectable Maximum selectable count for video.
-     * @return
-     */
-    public AlbumSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable) {
-        if (maxImageSelectable < 1 || maxVideoSelectable < 1)
-            throw new IllegalArgumentException(("max selectable must be greater than or equal to one"));
-        mGlobalSpec.maxSelectable = -1;
-        mAlbumSpec.maxImageSelectable = maxImageSelectable;
-        mAlbumSpec.maxVideoSelectable = maxVideoSelectable;
-        return this;
-    }
+
 
     /**
      * Add filter to filter each selecting item.
