@@ -44,4 +44,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    // 条形进度条
+    compile 'com.daimajia.numberprogressbar:library:1.4@aar'
+
 }

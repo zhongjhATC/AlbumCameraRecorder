@@ -63,14 +63,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
         textPaint.setTextSize(textSize);
         textPaint.setColor(textColor);
 
-        //测量文字的长度
-        int textLength = (int) textPaint.measureText(textString);
-        Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
-        // 获取文字的高度
-        int textHeight = (int) (fontMetrics.descent - fontMetrics.ascent);
-        // 计算x轴居中的坐标
-        centerX = (width - textLength) / 2;
-        centerY = (int) ((height + textHeight) / 2 - fontMetrics.descent);
+
     }
 
     @Override
@@ -90,7 +83,18 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
             // 设置顶部，假设高度70 * 0.1 / 100
             rect.top = height * percentage / MAX_PROGRESS;
             // 绘制图片遮罩
+            canvas.drawRect(rect, maskingPaint);
             if (percentage < MAX_PROGRESS) {
+                if (centerX == 0){
+                    //测量文字的长度
+                    int textLength = (int) textPaint.measureText(textString);
+                    Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
+                    // 获取文字的高度
+                    int textHeight = (int) (fontMetrics.descent - fontMetrics.ascent);
+                    // 计算x轴居中的坐标
+                    centerX = (width - textLength) / 2;
+                    centerY = (int) ((height + textHeight) / 2 - fontMetrics.descent);
+                }
                 // 画：图片上传中
                 canvas.drawText(textString, centerX, centerY, textPaint);
                 // 画：百分比进度

@@ -21,20 +21,20 @@ import static com.zhongjh.cameraviewsoundrecorder.utils.constants.Constant.EXTRA
  * 多媒体的设置 - Matisse
  * Created by zhongjh on 2018/9/28.
  */
-public final class MultiMedia {
+public final class MultiMediaSetting {
 
     private final WeakReference<Activity> mContext;
     private final WeakReference<Fragment> mFragment;
 
-    private MultiMedia(Activity activity) {
+    private MultiMediaSetting(Activity activity) {
         this(activity, null);
     }
 
-    private MultiMedia(Fragment fragment) {
+    private MultiMediaSetting(Fragment fragment) {
         this(fragment.getActivity(), fragment);
     }
 
-    private MultiMedia(Activity activity, Fragment fragment) {
+    private MultiMediaSetting(Activity activity, Fragment fragment) {
         mContext = new WeakReference<>(activity);
         mFragment = new WeakReference<>(fragment);
     }
@@ -48,8 +48,8 @@ public final class MultiMedia {
      * @param activity Activity instance.
      * @return Matisse instance.
      */
-    public static MultiMedia from(Activity activity) {
-        return new MultiMedia(activity);
+    public static MultiMediaSetting from(Activity activity) {
+        return new MultiMediaSetting(activity);
     }
 
     /**
@@ -61,8 +61,8 @@ public final class MultiMedia {
      * @param fragment Fragment instance.
      * @return Matisse instance.
      */
-    public static MultiMedia from(Fragment fragment) {
-        return new MultiMedia(fragment);
+    public static MultiMediaSetting from(Fragment fragment) {
+        return new MultiMediaSetting(fragment);
     }
 
     /**

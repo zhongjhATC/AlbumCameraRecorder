@@ -1,13 +1,9 @@
 package com.zhongjh.cameraviewsoundrecorder.settings;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
-import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.GlideEngine;
-import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.PicassoEngine;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
 import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
 import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
@@ -167,7 +163,7 @@ public class AlbumSetting {
     /**
      * Set listener for callback immediately when user select or unselect something.
      * <p>
-     * It's a redundant API with {@link MultiMedia#obtainResult(Intent)},
+     * It's a redundant API with {@link MultiMediaSetting#obtainResult(Intent)},
      * we only suggest you to use this API when you need to do something immediately.
      *
      * @param listener {@link OnSelectedListener}

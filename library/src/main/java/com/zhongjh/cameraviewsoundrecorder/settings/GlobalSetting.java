@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.StyleRes;
 import android.support.v4.app.Fragment;
@@ -15,13 +14,9 @@ import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.cameraviewsoundrecorder.album.engine.impl.PicassoEngine;
 import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
-import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
-import com.zhongjh.cameraviewsoundrecorder.album.listener.OnCheckedListener;
-import com.zhongjh.cameraviewsoundrecorder.album.listener.OnSelectedListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.Set;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_BEHIND;
@@ -47,7 +42,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
  */
 public final class GlobalSetting {
 
-    private final MultiMedia mMultiMedia;
+    private final MultiMediaSetting mMultiMediaSetting;
     private final GlobalSpec mGlobalSpec;
 
     // www.代替枚举的@IntDef用法
@@ -77,11 +72,11 @@ public final class GlobalSetting {
     /**
      * Constructs a new specification builder on the context.
      *
-     * @param multiMedia   a requester context wrapper.
+     * @param multiMediaSetting   a requester context wrapper.
      * @param mimeTypes MIME type set to select.
      */
-    GlobalSetting(MultiMedia multiMedia, @NonNull Set<MimeType> mimeTypes) {
-        mMultiMedia = multiMedia;
+    GlobalSetting(MultiMediaSetting multiMediaSetting, @NonNull Set<MimeType> mimeTypes) {
+        mMultiMediaSetting = multiMediaSetting;
         mGlobalSpec = GlobalSpec.getCleanInstance();
         mGlobalSpec.setMimeTypeSet(mimeTypes);
         mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
@@ -186,14 +181,14 @@ public final class GlobalSetting {
      * @param requestCode Identity of the request Activity or Fragment.
      */
     public void forResult(int requestCode) {
-        Activity activity = mMultiMedia.getActivity();
+        Activity activity = mMultiMediaSetting.getActivity();
         if (activity == null) {
             return;
         }
 
         Intent intent = new Intent(activity, MainActivity.class);
 
-        Fragment fragment = mMultiMedia.getFragment();
+        Fragment fragment = mMultiMediaSetting.getFragment();
         if (fragment != null) {
             fragment.startActivityForResult(intent, requestCode);
         } else {
