@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AlbumCameraRecorder.iml" filepath="$PROJECT_DIR$/AlbumCameraRecorder.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cameraviewsoundrecorder.iml" filepath="$PROJECT_DIR$/cameraviewsoundrecorder.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
       <module fileurl="file://$PROJECT_DIR$/progresslibrary/progresslibrary.iml" filepath="$PROJECT_DIR$/progresslibrary/progresslibrary.iml" />
     </modules>

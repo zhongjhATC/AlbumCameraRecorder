@@ -18,7 +18,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/album_item_height">
 
-    <com.zhongjh.cameraviewsoundrecorder.album.widget.RoundedRectangleImageView
+    <com.zhongjh.albumcamerarecorder.album.widget.RoundedRectangleImageView
         android:id="@+id/album_cover"
         android:layout_width="40dp"
         android:layout_height="40dp"

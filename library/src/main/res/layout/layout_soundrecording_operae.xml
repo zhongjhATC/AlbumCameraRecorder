@@ -19,7 +19,7 @@
         tools:text="提示文本" />
 
     <!-- 左侧的取消按钮  -->
-    <com.zhongjh.cameraviewsoundrecorder.widget.OperationButton
+    <com.zhongjh.albumcamerarecorder.widget.OperationButton
         android:id="@+id/btnCancel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         tools:visibility="visible" />
 
     <!-- 右侧的确认按钮  -->
-    <com.zhongjh.cameraviewsoundrecorder.widget.OperationButton
+    <com.zhongjh.albumcamerarecorder.widget.OperationButton
         android:id="@+id/btnConfirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         tools:visibility="visible" />
 
     <!-- 中间的操作按钮 -->
-    <com.zhongjh.cameraviewsoundrecorder.widget.clickorlongbutton.ClickOrLongButton
+    <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
         android:focusable="true"
         android:id="@+id/btnClickOrLong"
         android:layout_width="0dp"

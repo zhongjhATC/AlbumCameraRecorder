@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_dark"
-    tools:context="com.zhongjh.cameraviewsoundrecorder.recorder.SoundRecordingFragment">
+    tools:context="com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment">
 
     <Chronometer
         android:id="@+id/chronometer"
@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.zhongjh.cameraviewsoundrecorder.recorder.widget.SoundrecordingLayout
+    <com.zhongjh.albumcamerarecorder.recorder.widget.SoundrecordingLayout
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

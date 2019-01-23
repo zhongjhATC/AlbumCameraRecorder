@@ -4,7 +4,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <com.zhongjh.cameraviewsoundrecorder.album.widget.PreviewViewPager
+    <com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -49,7 +49,7 @@
                 tools:showIn="@layout/fragment_matiss_zjh">
 
 
-                <com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView
+                <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
                     android:id="@+id/original"
                     android:src="@drawable/ic_radio_button_unchecked_white_24dp"
                     android:layout_gravity="center_vertical"
@@ -102,7 +102,7 @@
         android:fitsSystemWindows="true"
         android:layout_alignParentEnd="true">
 
-        <com.zhongjh.cameraviewsoundrecorder.album.widget.CheckView
+        <com.zhongjh.albumcamerarecorder.album.widget.CheckView
             android:contentDescription="选择了才可以点击确认这些"
             android:id="@+id/check_view"
             android:layout_width="wrap_content"

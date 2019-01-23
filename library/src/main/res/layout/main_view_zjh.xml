@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.zhongjh.cameraviewsoundrecorder.widget.ChildClickableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rlMain"
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.zhongjh.cameraviewsoundrecorder.camera.widget.AutoFitTextureView
+        <com.zhongjh.albumcamerarecorder.camera.widget.AutoFitTextureView
             android:id="@+id/texture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
 
     </FrameLayout>
 
-    <com.zhongjh.cameraviewsoundrecorder.camera.widget.FoucsView
+    <com.zhongjh.albumcamerarecorder.camera.widget.FoucsView
         android:id="@+id/fouceView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -127,7 +127,7 @@
         android:layout_above="@+id/pvLayout"
         android:background="#20000000" />
 
-    <com.zhongjh.cameraviewsoundrecorder.camera.widget.PhotoVideoLayout
+    <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -136,4 +136,4 @@
         android:contentDescription="底部功能按钮"
         tools:ignore="HardcodedText" />
 
-</com.zhongjh.cameraviewsoundrecorder.widget.ChildClickableRelativeLayout>
+</com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout>

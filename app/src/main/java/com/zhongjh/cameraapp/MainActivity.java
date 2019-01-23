@@ -20,19 +20,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSetting;
-import com.zhongjh.cameraviewsoundrecorder.settings.CameraSetting;
-import com.zhongjh.cameraviewsoundrecorder.settings.MultiMediaSetting;
-import com.zhongjh.cameraviewsoundrecorder.settings.CaptureStrategy;
-import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
-import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
-import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
-import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
+import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
+import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
+import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
+import com.zhongjh.albumcamerarecorder.settings.CaptureStrategy;
+import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
+import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
 import com.zhongjh.progresslibrary.adapter.ImageAdapter;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
-import com.zhongjh.progresslibrary.widget.MaskProgressView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -245,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     size++;
                 }
                 if (size == 0) {
-                    startActivityForResult(new Intent(MainActivity.this, com.zhongjh.cameraviewsoundrecorder.MainActivity.class), 100);
+                    startActivityForResult(new Intent(MainActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                 }

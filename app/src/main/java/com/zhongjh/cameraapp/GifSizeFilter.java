@@ -19,11 +19,11 @@ import android.content.Context;
 import android.graphics.Point;
 
 
-import com.zhongjh.cameraviewsoundrecorder.album.entity.IncapableCause;
-import com.zhongjh.cameraviewsoundrecorder.album.entity.Item;
-import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
-import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
-import com.zhongjh.cameraviewsoundrecorder.album.utils.PhotoMetadataUtils;
+import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
+import com.zhongjh.albumcamerarecorder.album.entity.Item;
+import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 
 import java.util.HashSet;
 import java.util.Set;

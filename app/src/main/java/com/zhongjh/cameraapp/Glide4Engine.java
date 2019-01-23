@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
-import com.zhongjh.cameraviewsoundrecorder.album.engine.ImageEngine;
+import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 
 
 /**

@@ -14,7 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<com.zhongjh.cameraviewsoundrecorder.album.widget.SquareFrameLayout
+<com.zhongjh.albumcamerarecorder.album.widget.SquareFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -33,4 +33,4 @@
         android:textColor="?capture.textColor"
         android:textSize="14sp"/>
 
-</com.zhongjh.cameraviewsoundrecorder.album.widget.SquareFrameLayout>
+</com.zhongjh.albumcamerarecorder.album.widget.SquareFrameLayout>

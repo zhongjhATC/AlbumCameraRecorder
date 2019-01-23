@@ -94,7 +94,7 @@
             android:visibility="visible"
             tools:showIn="@layout/fragment_matiss_zjh">
 
-            <com.zhongjh.cameraviewsoundrecorder.album.widget.CheckRadioView
+            <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
                 android:id="@+id/original"
                 android:layout_width="16dp"
                 android:layout_height="16dp"

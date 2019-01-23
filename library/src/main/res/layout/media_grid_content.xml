@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <com.zhongjh.cameraviewsoundrecorder.album.widget.CheckView
+    <com.zhongjh.albumcamerarecorder.album.widget.CheckView
         android:id="@+id/check_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
