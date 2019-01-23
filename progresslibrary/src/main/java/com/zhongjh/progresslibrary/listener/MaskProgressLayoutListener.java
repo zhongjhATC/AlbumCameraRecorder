@@ -23,4 +23,9 @@ public interface MaskProgressLayoutListener {
      */
     void onItemImage(View view, int position);
 
+    /**
+     * 回调删除事件
+     */
+    void onItemClose(View view,int position);
+
 }

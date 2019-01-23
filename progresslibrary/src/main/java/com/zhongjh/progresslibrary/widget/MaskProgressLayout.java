@@ -29,6 +29,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
     private ImageAdapter mImageAdapter;     // 适配器
     private ImageEngine mImageEngine;       // 图片加载方式
 
+    public boolean isExistingVideo;// 是否存在视频,如果为true,那么第一个必定是视频类型
+
     private MaskProgressLayoutListener listener;   // 点击事件
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
@@ -91,6 +93,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
      * 设置视频地址
      */
     public MultiMedia setVideo(List<String> videoPath) {
+        isExistingVideo = true;
         return mImageAdapter.addVideo(videoPath.get(0));
     }
 
@@ -130,8 +133,9 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
         if (mImageAdapter.isExistingVideo)
             position++;
         ImageAdapter.ViewHolder viewHolder = ((ImageAdapter.ViewHolder) (mViewHolder.rvMedia.findViewHolderForAdapterPosition(position)));
-        if (viewHolder != null)
+        if (viewHolder != null) {
             viewHolder.mpvImage.setPercentage(percentage);
+        }
         return viewHolder;
     }
 
@@ -143,6 +147,18 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
     @Override
     public void onItemImage(View view, int position) {
         listener.onItemImage(view, position);
+    }
+
+    @Override
+    public void onItemClose(View view, int position) {
+        if (isExistingVideo && position == 0)
+            // 删除视频
+            isExistingVideo = false;
+    }
+
+    public void upload() {
+
+
     }
 
     public static class ViewHolder {

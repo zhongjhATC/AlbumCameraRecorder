@@ -72,6 +72,11 @@ public class MainActivity extends AppCompatActivity {
             public void onItemImage(View view, int position) {
 
             }
+
+            @Override
+            public void onItemClose(View view, int position) {
+
+            }
         });
     }
 
@@ -110,39 +115,27 @@ public class MainActivity extends AppCompatActivity {
                     // 图片
                     List<String> path = MultiMediaSetting.obtainPathResult(data);
                     List<MultiMedia> multiMedias = mplImageList.addImages(path, null);
+
+                    // 修改数据前，其他线程全部暂停
+                    for (MyTask timer : timers) {
+                        timer.cancel();
+                    }
                     for (int position = 0; position < multiMedias.size(); position++) {
-                        MyTask timer = new MyTask(multiMedias.get(position).getPosition());
+                        MyTask timer = new MyTask(multiMedias.get(position).getPosition(), false);
                         timers.add(timer);
-                        timer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                runOnUiThread(() -> {
-                                    timer.percentage++;
-                                    ImageAdapter.ViewHolder viewHolder = mplImageList.setImageProgress(timer.position, timer.percentage);
-                                    if (viewHolder == null)
-                                        timer.cancel();
-                                });
-                            }
-                        }, 1000, 100);
+                    }
+                    // 重新开启
+                    for (MyTask timer : timers) {
+                        timer.schedule();
                     }
                     break;
                 case MultimediaTypes.VIDEO:
                     // 录像
                     List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
                     MultiMedia multiMedia = mplImageList.setVideo(videoPath);
-                    MyTask timer = new MyTask(multiMedia.getPosition());
+                    MyTask timer = new MyTask(multiMedia.getPosition(), true);
                     timers.add(timer);
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(() -> {
-                                timer.percentage++;
-                                ImageAdapter.ViewHolder viewHolder = mplImageList.setVideoProgress(timer.position, timer.percentage);
-                                if (viewHolder == null)
-                                    timer.cancel();
-                            });
-                        }
-                    }, 1000, 100);
+                    timer.schedule();
                     break;
                 case MultimediaTypes.AUDIO:
                     // 语音
@@ -168,13 +161,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static class MyTask extends Timer {
+    class MyTask extends Timer {
 
         public int position = 0;//需求
         public int percentage = 0;// 百分比
+        public boolean isVideo = false;// 是否视频
 
-        public MyTask(int position) {
+        public MyTask(int position, boolean isVideo) {
             this.position = position;
+            this.isVideo = isVideo;
+        }
+
+        public void schedule() {
+            this.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(() -> {
+                        percentage++;
+                        ImageAdapter.ViewHolder viewHolder;
+                        if (isVideo)
+                            viewHolder = mplImageList.setVideoProgress(position, percentage);
+                        else
+                            viewHolder = mplImageList.setImageProgress(position, percentage);
+                        if (viewHolder == null || percentage == 100) {
+                            cancel();
+                        }
+                    });
+                }
+            }, 1000, 100);
         }
 
     }

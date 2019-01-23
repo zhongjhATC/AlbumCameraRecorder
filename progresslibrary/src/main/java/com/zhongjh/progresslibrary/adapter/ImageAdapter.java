@@ -26,14 +26,13 @@ import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
-    private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";
+    private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";     // 用于判断最后一个添加符号标签图片
 
     private Context mContext;
     private LayoutInflater mInflater;
     private List<MultiMedia> mData = new ArrayList<>();
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
 
-    private boolean isFill;         // 是否填充满数据
     public boolean isExistingVideo;// 是否存在视频,如果为true,那么第一个必定是视频类型
 
     private ImageEngine mImageEngine;   // 图片加载方式
@@ -118,9 +117,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             // 未满上限数量可以继续设置
             MultiMedia multiMedia = new MultiMedia(ADD, mData.size());
             mData.add(multiMedia);
-            isFill = false;
-        } else {
-            isFill = true;
         }
     }
 
@@ -132,7 +128,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         if (isExistingVideo)
             // 如果存在视频，那么索引从第二个算起
             positionFirst = 1;
-        if (!isFill)
+        if (mData.size() > 0 && mData.get(mData.size() - 1).getPath().equals(ADD))
             return mData.subList(positionFirst, mData.size() - 1);
         else
             return mData.subList(positionFirst, mData.size());
@@ -143,7 +139,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
      */
     public int getImagesCount() {
         int size;
-        if (!isFill)
+        if (mData.size() > 0 && mData.get(mData.size() - 1).getPath().equals(ADD))
             size = mData.size() - 1 < 0 ? 0 : mData.size() - 1;
         else
             size = mData.size();
@@ -158,7 +154,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
      * @return 返回图片/视频的所有数据
      */
     public List<MultiMedia> getItemData() {
-        if (!isFill)
+        if (mData.size() > 0 && mData.get(mData.size() - 1).getPath().equals(ADD))
             return mData.subList(0, mData.size() - 1);
         else
             return mData.subList(0, mData.size());
@@ -168,7 +164,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
      * @return 返回图片/视频的所有数据长度
      */
     public int getItemDataCount() {
-        if (!isFill)
+        if (mData.size() > 0 && mData.get(mData.size() - 1).getPath().equals(ADD))
             return mData.size() - 1 < 0 ? 0 : mData.size() - 1;
         else
             return mData.size();
@@ -212,7 +208,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             //根据条目位置设置图片
             MultiMedia multiMedia = mData.get(position);
 
-            if (!isFill && position == getItemCount() - 1) {
+            if (mData.get(position).getPath().equals(ADD)) {
                 // 加载➕图
                 mpvImage.setImageResource(R.drawable.selector_image_add);
                 // 隐藏close
@@ -226,6 +222,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 // 显示close
                 imgClose.setVisibility(View.VISIBLE);
                 imgClose.setOnClickListener(v -> {
+                    if (listener != null)
+                        listener.onItemClose(v, position);
                     // 如果删除是第一个并且是视频，那么把视频关闭
                     if (position == 0 && isExistingVideo) {
                         isExistingVideo = false;
@@ -248,7 +246,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         @Override
         public void onClick(View v) {
             if (listener != null)
-                if (!isFill && position == getItemCount() - 1) {
+                if (mData.get(position).getPath().equals(ADD)) {
                     // 加载➕图
                     listener.onItemAdd(v, position, getImages().size(), isExistingVideo ? 1 : 0);
                 } else {
