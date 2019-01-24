@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/lib/com.zhongjh.albumcamerarecorder"
+    xmlns:acr="http://schemas.android.com/apk/lib/com.zhongjh.albumcamerarecorder"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent">
 
     <com.zhongjh.albumcamerarecorder.camera.CameraLayout
         android:id="@+id/cameraLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:duration_max="10000"
-        app:iconMargin="20dp"
-        app:iconSize="30dp"
-        app:iconSrc="@drawable/ic_camera" />
+        acr:duration_max="10000"
+        acr:iconMargin="20dp"
+        acr:iconSize="30dp"
+        acr:iconSrc="@drawable/ic_camera" />
 
 </LinearLayout>

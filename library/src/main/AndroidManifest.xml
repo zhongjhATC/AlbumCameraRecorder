@@ -16,10 +16,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <activity android:name="com.zhongjh.albumcamerarecorder.MainActivity" />
-        <activity android:name="com.zhongjh.albumcamerarecorder.album.ui.preview.selectedpreview.SelectedPreviewActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".album.ui.preview.selectedpreview.SelectedPreviewActivity" />
 
-        <service android:name="com.zhongjh.albumcamerarecorder.recorder.service.RecordingService" />
+        <service android:name=".recorder.service.RecordingService" />
     </application>
 
 

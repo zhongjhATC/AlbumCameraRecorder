@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.zhongjh.cameraviewsoundrecorder.test", appContext.getPackageName());
+        assertEquals("com.zhongjh.albumcamerarecorder.test", appContext.getPackageName());
     }
 }

@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="toolbar" format="reference"/>
-    <attr name="album.element.color" format="reference|color"/> <!-- title文本颜色 -->
-    <attr name="bottomToolbar.bg" format="reference|color"/> <!-- 底部背景颜色 -->
-    <attr name="bottomToolbar.preview.textColor" format="reference|color"/> <!-- 预览文本颜色 -->
-    <attr name="bottomToolbar.apply.textColor" format="reference|color"/> <!-- 原图文本颜色 -->
-    <attr name="album.emptyView" format="reference"/> <!-- 还没有图片或视频 -->
-    <attr name="album.emptyView.textColor" format="reference|color"/> <!-- 还没有图片或视频 -->
-    <attr name="album.dropdown.title.color" format="reference|color"/>
-    <attr name="album.dropdown.count.color" format="reference|color"/>
-    <attr name="album.thumbnail.placeholder" format="reference|color"/> <!-- 默认图片，颜色 -->
-    <attr name="listPopupWindowStyle" format="reference"/>
-    <attr name="page.bg" format="reference|color"/>
-    <attr name="preview.bottomToolbar.back.textColor" format="reference|color"/>
-    <attr name="preview.bottomToolbar.apply.textColor" format="reference|color"/>
-    <attr name="item.placeholder" format="reference|color"/>
-    <attr name="item.checkCircle.backgroundColor" format="reference|color"/>
-    <attr name="item.checkCircle.borderColor" format="reference|color"/>
-    <attr name="capture.textColor" format="reference|color"/>
-
+    <attr name="toolbar" format="reference" />
+    <attr name="album.element.color" format="reference|color" /> <!-- title文本颜色 -->
+    <attr name="bottomToolbar.bg" format="reference|color" /> <!-- 底部背景颜色 -->
+    <attr name="bottomToolbar.preview.textColor" format="reference|color" /> <!-- 预览文本颜色 -->
+    <attr name="bottomToolbar.apply.textColor" format="reference|color" /> <!-- 原图文本颜色 -->
+    <attr name="album.emptyView" format="reference" /> <!-- 还没有图片或视频 -->
+    <attr name="album.emptyView.textColor" format="reference|color" /> <!-- 还没有图片或视频 -->
+    <attr name="album.dropdown.title.color" format="reference|color" />
+    <attr name="album.dropdown.count.color" format="reference|color" />
+    <attr name="album.thumbnail.placeholder" format="reference|color" /> <!-- 默认图片，颜色 -->
+    <attr name="listPopupWindowStyle" format="reference" />
+    <attr name="page.bg" format="reference|color" />
+    <attr name="preview.bottomToolbar.back.textColor" format="reference|color" />
+    <attr name="preview.bottomToolbar.apply.textColor" format="reference|color" />
+    <attr name="item.placeholder" format="reference|color" />
+    <attr name="item.checkCircle.backgroundColor" format="reference|color" />
+    <attr name="item.checkCircle.borderColor" format="reference|color" />
+    <attr name="capture.textColor" format="reference|color" />
 
 
     <!-- region 拍照录像相关属性 -->
@@ -32,12 +31,12 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="CameraView">
+    <declare-styleable name="AlbumCameraRecorderCameraView">
         <!-- 图标大小 -->
-        <attr name="iconSize"/>
-        <attr name="iconMargin"/>
-        <attr name="iconSrc"/>
-        <attr name="duration_max"/>
+        <attr name="iconSize" />
+        <attr name="iconMargin" />
+        <attr name="iconSrc" />
+        <attr name="duration_max" />
     </declare-styleable>
 
     <!-- endregion -->

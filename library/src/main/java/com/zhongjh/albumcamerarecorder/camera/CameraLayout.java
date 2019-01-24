@@ -139,14 +139,14 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         super(context, attrs, defStyleAttr);
         mContext = context;
         // 获取属性
-        TypedArray cameraViewTypedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CameraView, defStyleAttr, 0);
+        TypedArray cameraViewTypedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AlbumCameraRecorderCameraView, defStyleAttr, 0);
         mCameraButton = new CameraButton();
-        mCameraButton.setIconSize(cameraViewTypedArray.getDimensionPixelSize(R.styleable.CameraView_iconSize, (int) TypedValue.applyDimension(
+        mCameraButton.setIconSize(cameraViewTypedArray.getDimensionPixelSize(R.styleable.AlbumCameraRecorderCameraView_iconSize, (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, 35, getResources().getDisplayMetrics())));
-        mCameraButton.setIconMargin(cameraViewTypedArray.getDimensionPixelSize(R.styleable.CameraView_iconMargin, (int) TypedValue.applyDimension(
+        mCameraButton.setIconMargin(cameraViewTypedArray.getDimensionPixelSize(R.styleable.AlbumCameraRecorderCameraView_iconMargin, (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics())));
-        mCameraButton.setIconSrc(cameraViewTypedArray.getResourceId(R.styleable.CameraView_iconSrc, R.drawable.ic_camera));
-        mCameraButton.setDuration(cameraViewTypedArray.getInteger(R.styleable.CameraView_duration_max, 10 * 1000));
+        mCameraButton.setIconSrc(cameraViewTypedArray.getResourceId(R.styleable.AlbumCameraRecorderCameraView_iconSrc, R.drawable.ic_camera));
+        mCameraButton.setDuration(cameraViewTypedArray.getInteger(R.styleable.AlbumCameraRecorderCameraView_duration_max, 10 * 1000));
         // google建议回收对象
         cameraViewTypedArray.recycle();
         initData();
