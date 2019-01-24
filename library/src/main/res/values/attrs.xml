@@ -33,10 +33,10 @@
 
     <declare-styleable name="AlbumCameraRecorderCameraView">
         <!-- 图标大小 -->
-        <attr name="iconSize" />
-        <attr name="iconMargin" />
-        <attr name="iconSrc" />
-        <attr name="duration_max" />
+        <attr name="iconSize" format="reference" />
+        <attr name="iconMargin" format="reference" />
+        <attr name="iconSrc" format="reference" />
+        <attr name="duration_max" format="reference" />
     </declare-styleable>
 
     <!-- endregion -->
