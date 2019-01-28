@@ -174,7 +174,7 @@ public class SoundRecordingFragment extends Fragment {
     private void onRecord(boolean start) {
         Intent intent = new Intent(getActivity(), RecordingService.class);
         if (start) {
-//            Toast.makeText(getActivity(), "开始录音", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(BaseApplication.getInstance(), "开始录音", Toast.LENGTH_SHORT).show();
             // 创建文件
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
             if (!folder.exists()) {

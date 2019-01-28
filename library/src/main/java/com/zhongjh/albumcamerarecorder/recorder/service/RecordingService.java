@@ -117,7 +117,7 @@ public class RecordingService extends Service {
         mRecorder.stop();
         mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
-//        Toast.makeText(this,  "录音保存到 " + mFilePath, Toast.LENGTH_LONG).show();
+//        Toast.makeText(BaseApplication.getInstance(),  "录音保存到 " + mFilePath, Toast.LENGTH_LONG).show();
 
         // 存储到缓存的文件地址
         getSharedPreferences("sp_name_audio", MODE_PRIVATE)
