@@ -77,6 +77,9 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            if (mImageEngine== null){
+                throw new RuntimeException("image_engine找不到相关类");
+            }
         }
         if (drawable == null) {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
