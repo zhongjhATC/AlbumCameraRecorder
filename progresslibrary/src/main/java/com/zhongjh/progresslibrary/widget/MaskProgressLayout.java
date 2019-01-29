@@ -17,7 +17,11 @@ import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.zhongjh.progresslibrary.widget.AutoLineFeedLayout.ADD;
 
 /**
  * 这是返回图片（视频、录音）等文件后，显示的Layout
@@ -26,7 +30,6 @@ import java.util.List;
 public class MaskProgressLayout extends FrameLayout implements MaskProgressLayoutListener {
 
     public ViewHolder mViewHolder;          // 控件集合
-    private ImageAdapter mImageAdapter;     // 适配器
     private ImageEngine mImageEngine;       // 图片加载方式
 
     public boolean isExistingVideo;// 是否存在视频,如果为true,那么第一个必定是视频类型
@@ -77,19 +80,22 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (mImageEngine== null){
+            if (mImageEngine == null) {
                 throw new RuntimeException("image_engine找不到相关类");
             }
         }
         if (drawable == null) {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
+        mViewHolder.alfMedia.setPlaceholder(drawable);
+        mViewHolder.alfMedia.setImageEngine(mImageEngine);
+        mViewHolder.alfMedia.setListener(this);
 
-        mImageAdapter = new ImageAdapter(this.getContext(), imageCount, mImageEngine, drawable);
-        mImageAdapter.setMaskProgressLayoutListener(this);
-        mViewHolder.rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), 4));
-        mViewHolder.rvMedia.setHasFixedSize(true);
-        mViewHolder.rvMedia.setAdapter(mImageAdapter);
+//        mImageAdapter = new ImageAdapter(this.getContext(), imageCount, mImageEngine, drawable);
+//        mImageAdapter.setMaskProgressLayoutListener(this);
+//        mViewHolder.rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), 4));
+//        mViewHolder.rvMedia.setHasFixedSize(true);
+//        mViewHolder.rvMedia.setAdapter(mImageAdapter);
     }
 
     /**
@@ -97,7 +103,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
      */
     public MultiMedia setVideo(List<String> videoPath) {
         isExistingVideo = true;
-        return mImageAdapter.addVideo(videoPath.get(0));
+//        return mImageAdapter.addVideo(videoPath.get(0));
+        return null;
     }
 
     /**
@@ -107,7 +114,14 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
      * @param recording
      */
     public List<MultiMedia> addImages(List<String> imagePaths, String recording) {
-        return mImageAdapter.addImages(imagePaths);
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        for (String string : imagePaths) {
+            MultiMedia multiMedia = new MultiMedia(string, 1);
+            multiMedias.add(multiMedia);
+        }
+        mViewHolder.alfMedia.addMultiMedia(multiMedias);
+        return null;
+//        return mImageAdapter.addImages(imagePaths);
     }
 
     /**
@@ -118,10 +132,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
      * @return 本身控件
      */
     public ImageAdapter.ViewHolder setVideoProgress(int position, int percentage) {
-        ImageAdapter.ViewHolder viewHolder = ((ImageAdapter.ViewHolder) (mViewHolder.rvMedia.findViewHolderForAdapterPosition(position)));
-        if (viewHolder != null)
-            viewHolder.mpvImage.setPercentage(percentage);
-        return viewHolder;
+//        ImageAdapter.ViewHolder viewHolder = ((ImageAdapter.ViewHolder) (mViewHolder.rvMedia.findViewHolderForAdapterPosition(position)));
+//        if (viewHolder != null)
+//            viewHolder.mpvImage.setPercentage(percentage);
+//        return viewHolder;
+        return null;
     }
 
     /**
@@ -132,31 +147,34 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
      * @return 本身控件
      */
     public ImageAdapter.ViewHolder setImageProgress(int position, int percentage) {
-        // 判断有没有视频
-        if (mImageAdapter.isExistingVideo)
-            position++;
-        ImageAdapter.ViewHolder viewHolder = ((ImageAdapter.ViewHolder) (mViewHolder.rvMedia.findViewHolderForAdapterPosition(position)));
-        if (viewHolder != null) {
-            viewHolder.mpvImage.setPercentage(percentage);
-        }
-        return viewHolder;
+//        // 判断有没有视频
+//        if (mImageAdapter.isExistingVideo)
+//            position++;
+//        ImageAdapter.ViewHolder viewHolder = ((ImageAdapter.ViewHolder) (mViewHolder.rvMedia.findViewHolderForAdapterPosition(position)));
+//        if (viewHolder != null) {
+//            viewHolder.mpvImage.setPercentage(percentage);
+//        }
+//        return viewHolder;
+        return null;
+
+
     }
 
     @Override
-    public void onItemAdd(View view, int position, int alreadyImageCount, int alreadyVideoCount) {
-        listener.onItemAdd(view, position, alreadyImageCount, alreadyVideoCount);
+    public void onItemAdd(View view, MultiMedia multiMedia, int alreadyImageCount, int alreadyVideoCount) {
+        listener.onItemAdd(view, multiMedia, alreadyImageCount, alreadyVideoCount);
     }
 
     @Override
-    public void onItemImage(View view, int position) {
-        listener.onItemImage(view, position);
+    public void onItemImage(View view, MultiMedia multiMedia) {
+        listener.onItemImage(view, multiMedia);
     }
 
     @Override
-    public void onItemClose(View view, int position) {
-        if (isExistingVideo && position == 0)
-            // 删除视频
-            isExistingVideo = false;
+    public void onItemClose(View view, MultiMedia multiMedia) {
+//        if (isExistingVideo && position == 0)
+//            // 删除视频
+//            isExistingVideo = false;
     }
 
     public void upload() {
@@ -166,11 +184,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
 
     public static class ViewHolder {
         public View rootView;
-        public RecyclerView rvMedia;
+        public AutoLineFeedLayout alfMedia;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
-            this.rvMedia = rootView.findViewById(R.id.rvMedia);
+            this.alfMedia = rootView.findViewById(R.id.alfMedia);
         }
     }
 }

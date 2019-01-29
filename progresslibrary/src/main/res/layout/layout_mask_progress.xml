@@ -4,13 +4,14 @@
     android:layout_height="wrap_content"
     android:background="#00000020">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvMedia"
+    <com.zhongjh.progresslibrary.widget.AutoLineFeedLayout
+        android:id="@+id/alfMedia"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"/>
+
 
     <TextView
         android:id="@+id/tvRecorderTip"
@@ -22,7 +23,7 @@
         android:text="语音上传中"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvMedia" />
+        app:layout_constraintTop_toBottomOf="@+id/alfMedia" />
 
     <com.daimajia.numberprogressbar.NumberProgressBar
         android:id="@+id/numberProgressBar"

@@ -202,57 +202,57 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
 
         public void bind(int position) {
-            this.position = position;
-            //设置条目的点击事件
-            itemView.setOnClickListener(this);
-            //根据条目位置设置图片
-            MultiMedia multiMedia = mData.get(position);
-
-            if (mData.get(position).getPath().equals(ADD)) {
-                // 加载➕图
-                mpvImage.setImageResource(R.drawable.selector_image_add);
-                // 隐藏close
-                imgClose.setVisibility(View.GONE);
-                imgClose.setOnClickListener(null);
-                imgPlay.setVisibility(View.GONE);
-            } else {
-                // 加载图片
-                mImageEngine.loadThumbnail(mContext, mpvImage.getWidth(), mPlaceholder,
-                        mpvImage, Uri.fromFile(new File(multiMedia.getPath())));
-                // 显示close
-                imgClose.setVisibility(View.VISIBLE);
-                imgClose.setOnClickListener(v -> {
-                    if (listener != null)
-                        listener.onItemClose(v, position);
-                    // 如果删除是第一个并且是视频，那么把视频关闭
-                    if (position == 0 && isExistingVideo) {
-                        isExistingVideo = false;
-                    }
-                    mData.remove(position);
-                    //删除动画
-                    notifyItemRemoved(position);
-                    checkLastImages();
-                    notifyDataSetChanged();
-                });
-                // 判断是否显示播放按钮
-                if (isExistingVideo && position == 0) {
-                    imgPlay.setVisibility(View.VISIBLE);
-                } else {
-                    imgPlay.setVisibility(View.GONE);
-                }
-            }
+//            this.position = position;
+//            //设置条目的点击事件
+//            itemView.setOnClickListener(this);
+//            //根据条目位置设置图片
+//            MultiMedia multiMedia = mData.get(position);
+//
+//            if (mData.get(position).getPath().equals(ADD)) {
+//                // 加载➕图
+//                mpvImage.setImageResource(R.drawable.selector_image_add);
+//                // 隐藏close
+//                imgClose.setVisibility(View.GONE);
+//                imgClose.setOnClickListener(null);
+//                imgPlay.setVisibility(View.GONE);
+//            } else {
+//                // 加载图片
+//                mImageEngine.loadThumbnail(mContext, mpvImage.getWidth(), mPlaceholder,
+//                        mpvImage, Uri.fromFile(new File(multiMedia.getPath())));
+//                // 显示close
+//                imgClose.setVisibility(View.VISIBLE);
+//                imgClose.setOnClickListener(v -> {
+//                    if (listener != null)
+//                        listener.onItemClose(v, position);
+//                    // 如果删除是第一个并且是视频，那么把视频关闭
+//                    if (position == 0 && isExistingVideo) {
+//                        isExistingVideo = false;
+//                    }
+//                    mData.remove(position);
+//                    //删除动画
+//                    notifyItemRemoved(position);
+//                    checkLastImages();
+//                    notifyDataSetChanged();
+//                });
+//                // 判断是否显示播放按钮
+//                if (isExistingVideo && position == 0) {
+//                    imgPlay.setVisibility(View.VISIBLE);
+//                } else {
+//                    imgPlay.setVisibility(View.GONE);
+//                }
+//            }
         }
 
         @Override
         public void onClick(View v) {
-            if (listener != null)
-                if (mData.get(position).getPath().equals(ADD)) {
-                    // 加载➕图
-                    listener.onItemAdd(v, position, getImages().size(), isExistingVideo ? 1 : 0);
-                } else {
-                    // 加载图片
-                    listener.onItemImage(v, position);
-                }
+//            if (listener != null)
+//                if (mData.get(position).getPath().equals(ADD)) {
+//                    // 加载➕图
+//                    listener.onItemAdd(v, position, getImages().size(), isExistingVideo ? 1 : 0);
+//                } else {
+//                    // 加载图片
+//                    listener.onItemImage(v, position);
+//                }
         }
 
     }
