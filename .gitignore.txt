@@ -1,8 +1,0 @@
-EventBusDemo.iws
-.idea/workspace.xml
-.gradle/
-.idea/
-build/
-app/build/
-local.properties
-*.iml
