@@ -26,6 +26,11 @@ public interface MaskProgressLayoutListener {
     void onItemImage(View view, MultiMedia multiMedia);
 
     /**
+     * 开始上传 - 指刚添加后的
+     */
+    void onItemStartUploading(MultiMedia multiMedia);
+
+    /**
      * 回调删除事件
      */
     void onItemClose(View view, MultiMedia multiMedia);

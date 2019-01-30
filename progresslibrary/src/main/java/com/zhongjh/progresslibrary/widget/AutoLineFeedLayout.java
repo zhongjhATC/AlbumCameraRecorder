@@ -28,36 +28,21 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     private final static String TAG = "AutoLineFeedLayout";
 
+    // region 相关属性
     List<MultiMedia> imageList = new ArrayList<>();     // 图片数据
     List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
-    private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     public boolean isExistingVideo;// 是否存在视频,如果为true,那么第一个必定是视频类型
-
-    public final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";     // 用于判断最后一个添加符号标签图片
-    ViewHolder viewHolderAdd;
-
-    // region 相关属性
-
+    private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     private ImageEngine imageEngine;   // 图片加载方式
     private Drawable placeholder; // 默认图片
     private MaskProgressLayoutListener listener;   // 点击事件
     private int LEFT_RIGHT_SPACE = 10; //dip
     private int ROW_SPACE = 10;
-
-    public void setImageList(List<MultiMedia> imageList) {
-        this.imageList = imageList;
-    }
-
-    public void setPlaceholder(Drawable placeholder) {
-        this.placeholder = placeholder;
-    }
+    public final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";     // 用于判断最后一个添加符号标签图片
+    ViewHolder viewHolderAdd;
 
     public void setListener(MaskProgressLayoutListener listener) {
         this.listener = listener;
-    }
-
-    public void setImageEngine(ImageEngine imageEngine) {
-        this.imageEngine = imageEngine;
     }
 
     // endregion
@@ -77,6 +62,18 @@ public class AutoLineFeedLayout extends ViewGroup {
         init();
     }
 
+    /**
+     * 初始化赋值配置
+     */
+    public void initConfig(ImageEngine imageEngine, Drawable placeholder, int maxMediaCount) {
+        this.placeholder = placeholder;
+        this.imageEngine = imageEngine;
+        this.maxMediaCount = maxMediaCount;
+    }
+
+    /**
+     * 初始化
+     */
     private void init() {
         // 默认➕号
         ArrayList<MultiMedia> multiMedias = new ArrayList<>();
@@ -89,11 +86,11 @@ public class AutoLineFeedLayout extends ViewGroup {
     }
 
     /**
-     * 添加数据
+     * 添加图片数据
      *
      * @param multiMedias 数据集合
      */
-    public void addMultiMedia(List<MultiMedia> multiMedias) {
+    public void addImageData(List<MultiMedia> multiMedias) {
         if (this.imageList == null) {
             this.imageList = new ArrayList<>();
         }
@@ -106,8 +103,32 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMedia);
                 addView(viewHolder.itemView, endingPostion);
+                this.listener.onItemStartUploading(multiMedia);
             }
         }
+        checkLastImages();
+    }
+
+    /**
+     * 添加视频数据
+     *
+     * @param multiMedias 数据集合
+     */
+    public void addVideoData(List<MultiMedia> multiMedias) {
+        if (this.imageList == null) {
+            this.imageList = new ArrayList<>();
+        }
+        this.videoList.addAll(multiMedias);
+        if (imageList != null && imageList.size() > 0) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            for (MultiMedia multiMedia : multiMedias) {
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+                viewHolder.bind(multiMedia);
+                addView(viewHolder.itemView, 0);
+                this.listener.onItemStartUploading(multiMedia);
+            }
+        }
+        checkLastImages();
     }
 
     @Override
@@ -219,6 +240,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         public void bind(MultiMedia multiMedia) {
             this.multiMedia = multiMedia;
+            this.multiMedia.setMaskProgressView(mpvImage);
             //设置条目的点击事件
             itemView.setOnClickListener(this);
             //设置图片
@@ -238,23 +260,22 @@ public class AutoLineFeedLayout extends ViewGroup {
                 imgClose.setOnClickListener(v -> {
                     if (listener != null)
                         listener.onItemClose(v, multiMedia);
-                    // 如果删除是第一个并且是视频，那么把视频关闭
-                    if (multiMedia.getPosition() == 0 && isExistingVideo) {
+                    // 判断类型
+                    if (multiMedia.getType() == 0) {
+                        imageList.remove(multiMedia);
+                    } else if (multiMedia.getType() == 1) {
+                        videoList.remove(multiMedia);
                         isExistingVideo = false;
                     }
-                    // TODO
-//                    mData.remove(position);
-//                    //删除动画
-//                    notifyItemRemoved(position);
-//                    checkLastImages();
-//                    notifyDataSetChanged();
+                    ViewGroup parent = (ViewGroup) this.itemView.getParent();
+                    parent.removeView(this.itemView);
                 });
-//                // 判断是否显示播放按钮
-//                if (isExistingVideo && position == 0) {
-//                    imgPlay.setVisibility(View.VISIBLE);
-//                } else {
-//                    imgPlay.setVisibility(View.GONE);
-//                }
+                // 判断是否显示播放按钮
+                if (multiMedia.getType() == 1) {
+                    imgPlay.setVisibility(View.VISIBLE);
+                } else {
+                    imgPlay.setVisibility(View.GONE);
+                }
             }
         }
 
@@ -265,7 +286,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                     // 加载➕图
                     listener.onItemAdd(v, multiMedia, imageList.size(), isExistingVideo ? 1 : 0);
                 } else {
-                    // 加载图片
+                    // 点击详情
                     listener.onItemImage(v, multiMedia);
                 }
         }

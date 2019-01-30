@@ -5,39 +5,29 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.zhongjh.progresslibrary.R;
-import com.zhongjh.progresslibrary.adapter.ImageAdapter;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.zhongjh.progresslibrary.widget.AutoLineFeedLayout.ADD;
 
 /**
  * 这是返回图片（视频、录音）等文件后，显示的Layout
  * Created by zhongjh on 2018/10/17.
  */
-public class MaskProgressLayout extends FrameLayout implements MaskProgressLayoutListener {
+public class MaskProgressLayout extends FrameLayout {
 
     public ViewHolder mViewHolder;          // 控件集合
     private ImageEngine mImageEngine;       // 图片加载方式
 
-    public boolean isExistingVideo;// 是否存在视频,如果为true,那么第一个必定是视频类型
-
-    private MaskProgressLayoutListener listener;   // 点击事件
-
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
-        this.listener = listener;
+        mViewHolder.alfMedia.setListener(listener);
     }
 
     public MaskProgressLayout(@NonNull Context context) {
@@ -68,7 +58,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
         Drawable drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_album_thumbnail_placeholder);
         // 获取显示图片的类
         String imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_image_engine);
-        // 获取最多显示多少个图片
+        // 获取最多显示多少个方框
         int imageCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_image_count, 5);
         if (imageEngineStr == null) {
             throw new RuntimeException("必须定义image_engine属性，指定某个显示图片类");
@@ -87,99 +77,34 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressLayou
         if (drawable == null) {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
-        mViewHolder.alfMedia.setPlaceholder(drawable);
-        mViewHolder.alfMedia.setImageEngine(mImageEngine);
-        mViewHolder.alfMedia.setListener(this);
 
-//        mImageAdapter = new ImageAdapter(this.getContext(), imageCount, mImageEngine, drawable);
-//        mImageAdapter.setMaskProgressLayoutListener(this);
-//        mViewHolder.rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), 4));
-//        mViewHolder.rvMedia.setHasFixedSize(true);
-//        mViewHolder.rvMedia.setAdapter(mImageAdapter);
+        mViewHolder.alfMedia.initConfig(mImageEngine, drawable, imageCount);
     }
 
     /**
      * 设置视频地址
      */
-    public MultiMedia setVideo(List<String> videoPath) {
-        isExistingVideo = true;
-//        return mImageAdapter.addVideo(videoPath.get(0));
-        return null;
+    public void setVideo(List<String> videoPath) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        for (String string : videoPath) {
+            MultiMedia multiMedia = new MultiMedia(string, 1);
+            multiMedias.add(multiMedia);
+        }
+        mViewHolder.alfMedia.addVideoData(multiMedias);
     }
 
     /**
      * 设置图片同时更新表格
      *
      * @param imagePaths 图片数据源
-     * @param recording
      */
-    public List<MultiMedia> addImages(List<String> imagePaths, String recording) {
+    public void addImages(List<String> imagePaths) {
         ArrayList<MultiMedia> multiMedias = new ArrayList<>();
         for (String string : imagePaths) {
-            MultiMedia multiMedia = new MultiMedia(string, 1);
+            MultiMedia multiMedia = new MultiMedia(string, 0);
             multiMedias.add(multiMedia);
         }
-        mViewHolder.alfMedia.addMultiMedia(multiMedias);
-        return null;
-//        return mImageAdapter.addImages(imagePaths);
-    }
-
-    /**
-     * 设置视频进度展示
-     *
-     * @param position   图片的索引
-     * @param percentage 百分比值，1=1%
-     * @return 本身控件
-     */
-    public ImageAdapter.ViewHolder setVideoProgress(int position, int percentage) {
-//        ImageAdapter.ViewHolder viewHolder = ((ImageAdapter.ViewHolder) (mViewHolder.rvMedia.findViewHolderForAdapterPosition(position)));
-//        if (viewHolder != null)
-//            viewHolder.mpvImage.setPercentage(percentage);
-//        return viewHolder;
-        return null;
-    }
-
-    /**
-     * 设置图片进度展示
-     *
-     * @param position   图片的索引
-     * @param percentage 百分比值，1=1%
-     * @return 本身控件
-     */
-    public ImageAdapter.ViewHolder setImageProgress(int position, int percentage) {
-//        // 判断有没有视频
-//        if (mImageAdapter.isExistingVideo)
-//            position++;
-//        ImageAdapter.ViewHolder viewHolder = ((ImageAdapter.ViewHolder) (mViewHolder.rvMedia.findViewHolderForAdapterPosition(position)));
-//        if (viewHolder != null) {
-//            viewHolder.mpvImage.setPercentage(percentage);
-//        }
-//        return viewHolder;
-        return null;
-
-
-    }
-
-    @Override
-    public void onItemAdd(View view, MultiMedia multiMedia, int alreadyImageCount, int alreadyVideoCount) {
-        listener.onItemAdd(view, multiMedia, alreadyImageCount, alreadyVideoCount);
-    }
-
-    @Override
-    public void onItemImage(View view, MultiMedia multiMedia) {
-        listener.onItemImage(view, multiMedia);
-    }
-
-    @Override
-    public void onItemClose(View view, MultiMedia multiMedia) {
-//        if (isExistingVideo && position == 0)
-//            // 删除视频
-//            isExistingVideo = false;
-    }
-
-    public void upload() {
-
-
+        mViewHolder.alfMedia.addImageData(multiMedias);
     }
 
     public static class ViewHolder {

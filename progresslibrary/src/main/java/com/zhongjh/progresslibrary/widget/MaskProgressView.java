@@ -28,6 +28,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
     private Paint maskingPaint;     // 遮罩层画笔
     private Paint textPaint;        // 显示在遮罩层的字体画笔
     private int percentage = 0;     // 设置进度
+    private int percentageTxt = 0;     // 设置文字进度
     private int centerX;            // 字体的x位置
     private int centerY;            // 字体的y位置
 
@@ -85,7 +86,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
             // 绘制图片遮罩
             canvas.drawRect(rect, maskingPaint);
             if (percentage < MAX_PROGRESS) {
-                if (centerX == 0){
+                if (centerX == 0) {
                     //测量文字的长度
                     int textLength = (int) textPaint.measureText(textString);
                     Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
@@ -98,7 +99,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
                 // 画：图片上传中
                 canvas.drawText(textString, centerX, centerY, textPaint);
                 // 画：百分比进度
-                String percentageText = percentage + "%";
+                String percentageText = percentageTxt + "%";
                 int percentageTextLength = (int) textPaint.measureText(percentageText);
                 canvas.drawText(percentageText, (width - percentageTextLength) / 2, (int) (height * 0.75), textPaint);
             }
@@ -125,7 +126,8 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
      */
     public void setPercentage(int percentage) {
         if (percentage > 0 && percentage <= MAX_PROGRESS) {
-            this.percentage = percentage;
+            this.percentage = 100 - percentage;
+            this.percentageTxt = percentage;
             Log.d(TAG, "setPercentage: " + percentage);
             // 重画view
             invalidate();
@@ -142,6 +144,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
 
     /**
      * 赋值
+     *
      * @param maskingColor 遮罩的颜色
      */
     public void setMaskingColor(String maskingColor) {
@@ -152,6 +155,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
 
     /**
      * 赋值
+     *
      * @param textSize 进度字体大小
      */
     public void setTextSize(int textSize) {
@@ -164,6 +168,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
 
     /**
      * 赋值
+     *
      * @param textColor 进度颜色
      */
     public void setTextColor(String textColor) {
