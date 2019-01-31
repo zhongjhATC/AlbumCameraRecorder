@@ -14,6 +14,8 @@ import com.zhongjh.progresslibrary.utils.DisplayMetricsUtils;
 
 /**
  * 用于图片、视频的加载进度的view
+ *
+ * 可以考虑这个：https://github.com/dudu90/FreshDownloadView
  * Created by zhongjh on 2018/10/16.
  */
 public class MaskProgressView extends android.support.v7.widget.AppCompatImageView {
@@ -35,7 +37,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
     private int maskingColor = R.attr.colorPrimary; // 遮罩颜色，默认用主颜色
     private int textSize = DisplayMetricsUtils.dip2px(12);  // 显示在遮罩层的字体大小
     private int textColor = Color.BLACK; // 显示在遮罩层的字体颜色
-    private String textString = "图片上传中";    // 加载中的文字
+    private String textString = "上传中";    // 加载中的文字
 
     public MaskProgressView(Context context) {
         this(context, null);

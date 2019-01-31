@@ -8,12 +8,14 @@ import android.support.v4.app.Fragment;
 
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Set;
 
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
@@ -99,6 +101,18 @@ public final class MultiMediaSetting {
      */
     public static List<String> obtainPathResult(Intent data) {
         return data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH);
+    }
+
+    /**
+     * 获取用户录音的数据
+     *
+     * @param data 通过以下方法获取
+     *             {@link Fragment#onActivityResult(int, int, Intent)} 或者
+     *             {@link Activity#onActivityResult(int, int, Intent)}
+     * @return 用户录音的数据
+     */
+    public static RecordingItem obtainRecordingItemResult(Intent data) {
+        return data.getParcelableExtra(EXTRA_RESULT_RECORDING_ITEM);
     }
 
     /**

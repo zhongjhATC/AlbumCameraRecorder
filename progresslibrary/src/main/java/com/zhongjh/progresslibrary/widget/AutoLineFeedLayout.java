@@ -31,7 +31,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     // region 相关属性
     List<MultiMedia> imageList = new ArrayList<>();     // 图片数据
     List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
-    public boolean isExistingVideo;// 是否存在视频,如果为true,那么第一个必定是视频类型
+    List<MultiMedia> audioList = new ArrayList<>();     // 音频数据
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     private ImageEngine imageEngine;   // 图片加载方式
     private Drawable placeholder; // 默认图片
@@ -129,6 +129,21 @@ public class AutoLineFeedLayout extends ViewGroup {
             }
         }
         checkLastImages();
+    }
+
+    /**
+     * 添加音频数据
+     * @param multiMedia 数据
+     */
+    public void addAudioData(MultiMedia multiMedia) {
+        if (this.audioList == null) {
+            this.audioList = new ArrayList<>();
+        }
+        this.audioList.add(multiMedia);
+        if (audioList != null && audioList.size() > 0) {
+            // 显示音频的进度条
+            this.listener.onItemStartUploading(multiMedia);
+        }
     }
 
     @Override
@@ -240,7 +255,9 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         public void bind(MultiMedia multiMedia) {
             this.multiMedia = multiMedia;
-            this.multiMedia.setMaskProgressView(mpvImage);
+            if (multiMedia.getType() == 0 || multiMedia.getType() == 1) {
+                this.multiMedia.setMaskProgressView(mpvImage);
+            }
             //设置条目的点击事件
             itemView.setOnClickListener(this);
             //设置图片
@@ -265,7 +282,6 @@ public class AutoLineFeedLayout extends ViewGroup {
                         imageList.remove(multiMedia);
                     } else if (multiMedia.getType() == 1) {
                         videoList.remove(multiMedia);
-                        isExistingVideo = false;
                     }
                     ViewGroup parent = (ViewGroup) this.itemView.getParent();
                     parent.removeView(this.itemView);
@@ -284,7 +300,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             if (listener != null)
                 if (multiMedia.getPath().equals(ADD)) {
                     // 加载➕图
-                    listener.onItemAdd(v, multiMedia, imageList.size(), isExistingVideo ? 1 : 0);
+                    listener.onItemAdd(v, multiMedia, imageList.size(), videoList.size());
                 } else {
                     // 点击详情
                     listener.onItemImage(v, multiMedia);

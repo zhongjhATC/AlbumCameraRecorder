@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
@@ -82,18 +83,6 @@ public class MaskProgressLayout extends FrameLayout {
     }
 
     /**
-     * 设置视频地址
-     */
-    public void setVideo(List<String> videoPath) {
-        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
-        for (String string : videoPath) {
-            MultiMedia multiMedia = new MultiMedia(string, 1);
-            multiMedias.add(multiMedia);
-        }
-        mViewHolder.alfMedia.addVideoData(multiMedias);
-    }
-
-    /**
      * 设置图片同时更新表格
      *
      * @param imagePaths 图片数据源
@@ -107,13 +96,38 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.alfMedia.addImageData(multiMedias);
     }
 
+    /**
+     * 设置视频地址
+     */
+    public void setVideo(List<String> videoPath) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        for (String string : videoPath) {
+            MultiMedia multiMedia = new MultiMedia(string, 1);
+            multiMedias.add(multiMedia);
+        }
+        mViewHolder.alfMedia.addVideoData(multiMedias);
+    }
+
+    /**
+     * 设置音频数据
+     *
+     * @param path 文件地址
+     */
+    public void setAudio(String path) {
+        MultiMedia multiMedia = new MultiMedia(path, 2);
+        multiMedia.setNumberProgressBar(mViewHolder);
+        mViewHolder.alfMedia.addAudioData(multiMedia);
+    }
+
     public static class ViewHolder {
         public View rootView;
         public AutoLineFeedLayout alfMedia;
+        public NumberProgressBar numberProgressBar;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
             this.alfMedia = rootView.findViewById(R.id.alfMedia);
+            this.numberProgressBar = rootView.findViewById(R.id.numberProgressBar);
         }
     }
 }

@@ -23,12 +23,18 @@ import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.recorder.service.RecordingService;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundrecordingLayout;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
+import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
 
 /**
@@ -45,7 +51,7 @@ public class SoundRecordingFragment extends Fragment {
     long timeWhenPaused = 0; //存储用户单击暂停按钮的时间
 
     private MediaPlayer mMediaPlayer = null;
-    RecordingItem recordingItem; // 存储这首歌
+    RecordingItem recordingItem; // 存储的数据
 
     public static SoundRecordingFragment newInstance() {
         return  new SoundRecordingFragment();
@@ -143,7 +149,12 @@ public class SoundRecordingFragment extends Fragment {
 
             @Override
             public void confirm() {
-
+                //获取视频路径
+                Intent result = new Intent();
+                result.putExtra(EXTRA_RESULT_RECORDING_ITEM, recordingItem);
+                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.AUDIO);
+                mActivity.setResult(RESULT_OK, result);
+                mActivity.finish();
             }
         });
     }
