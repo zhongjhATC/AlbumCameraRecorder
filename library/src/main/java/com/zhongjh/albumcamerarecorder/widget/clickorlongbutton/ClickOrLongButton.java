@@ -18,6 +18,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
+import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONGCLICK;
 
 /**
@@ -27,7 +28,7 @@ public class ClickOrLongButton extends View {
 
     private static final String TAG = "RecordButton";
     public static final long TIME_TO_START_RECORD = 1000L; // 1秒后启动录制
-    public  float timeLimitInMils = 10000.0F;       // 录制时间
+    public float timeLimitInMils = 10000.0F;       // 录制时间
     private int mMinDuration = 1500;       // 最短录制时间限制
     private long mRecordedTime;             // 记录当前录制多长的时间秒
     public static final float PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1F;
@@ -81,7 +82,7 @@ public class ClickOrLongButton extends View {
     private TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
         public void run() {
             long timeLapse = System.currentTimeMillis() - btnPressTime;
-            mRecordedTime =  (timeLapse - TIME_TO_START_RECORD);
+            mRecordedTime = (timeLapse - TIME_TO_START_RECORD);
             float percent = mRecordedTime / timeLimitInMils;
             if (timeLapse >= TIME_TO_START_RECORD) {
                 synchronized (ClickOrLongButton.this) {
@@ -89,6 +90,11 @@ public class ClickOrLongButton extends View {
                         recordState = RECORD_STARTED;
                         if (mClickOrLongListener != null) {
                             mClickOrLongListener.onLongClick();
+                            // 如果禁止点击，那么就轮到长按触发actionDown
+                            if (mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONGCLICK) {
+                                // 如果禁止点击也不能触发该事件
+                                mClickOrLongListener.actionDown();
+                            }
                         }
                     }
                 }
@@ -220,8 +226,10 @@ public class ClickOrLongButton extends View {
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH)) {
+                    // 如果禁止点击也不能触发该事件
                     mClickOrLongListener.actionDown();
+                }
                 event_Y = event.getY(); // 记录Y值
                 Log.d(TAG, "onTouchEvent: down");
                 // 禁止长按方式
@@ -255,7 +263,7 @@ public class ClickOrLongButton extends View {
         //Log.d(TAG, "reset: "+recordState);
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
-                if (mClickOrLongListener != null){
+                if (mClickOrLongListener != null) {
                     if (mRecordedTime < mMinDuration)
                         mClickOrLongListener.onLongClickShort(mRecordedTime);//回调录制时间过短
                     else
@@ -351,6 +359,7 @@ public class ClickOrLongButton extends View {
 
     /**
      * 摄像机的一些属性设置
+     *
      * @param characteristics
      */
     public void setCharacteristics(CameraCharacteristics characteristics) {

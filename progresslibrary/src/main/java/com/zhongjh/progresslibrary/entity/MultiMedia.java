@@ -1,6 +1,5 @@
 package com.zhongjh.progresslibrary.entity;
 
-import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
 
@@ -51,8 +50,8 @@ public class MultiMedia {
         if (type == 0 || type == 1) {
             this.maskProgressView.setPercentage(percent);
         } else if (type == 2) {
-            // 隐藏显示设置一系列动作
-//            this.viewHolder.setProgress(percent);
+            // 隐藏显示音频的设置一系列动作
+            this.viewHolder.numberProgressBar.setProgress(percent);
         }
     }
 

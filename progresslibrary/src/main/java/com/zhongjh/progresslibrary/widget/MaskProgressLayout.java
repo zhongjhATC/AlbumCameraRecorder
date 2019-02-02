@@ -5,9 +5,11 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.Group;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.zhongjh.progresslibrary.R;
@@ -53,14 +55,26 @@ public class MaskProgressLayout extends FrameLayout {
 
         mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_mask_progress, this));
 
+        // 获取系统颜色
+        int defaultColor = 0xFF000000;
+        int[] attrsArray = {R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent};
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrsArray);
+        int colorPrimary = typedArray.getColor(0, defaultColor);
+        int colorPrimaryDark = typedArray.getColor(0, defaultColor);
+        int colorAccent = typedArray.getColor(0, defaultColor);
+
         // 获取自定义属性。
         TypedArray maskProgressLayoutStyle = getContext().obtainStyledAttributes(attrs, R.styleable.MaskProgressLayoutStyle);
         // 获取默认图片
         Drawable drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_album_thumbnail_placeholder);
         // 获取显示图片的类
-        String imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_image_engine);
+        String imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_imageEngine);
         // 获取最多显示多少个方框
-        int imageCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_image_count, 5);
+        int imageCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_maxCount, 5);
+        // 音频，删除按钮的颜色
+        int audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioDeleteColor, colorPrimary);
+        // 音频 文件的进度条颜色
+        int audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioProgressColor, colorPrimary);
         if (imageEngineStr == null) {
             throw new RuntimeException("必须定义image_engine属性，指定某个显示图片类");
         } else {
@@ -78,8 +92,13 @@ public class MaskProgressLayout extends FrameLayout {
         if (drawable == null) {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
-
         mViewHolder.alfMedia.initConfig(mImageEngine, drawable, imageCount);
+        mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
+        mViewHolder.numberProgressBar.setProgressTextColor(audioProgressColor);
+        mViewHolder.numberProgressBar.setReachedBarColor(audioProgressColor);
+        maskProgressLayoutStyle.recycle();
+        typedArray.recycle();
+
     }
 
     /**
@@ -115,7 +134,7 @@ public class MaskProgressLayout extends FrameLayout {
      */
     public void setAudio(String path) {
         MultiMedia multiMedia = new MultiMedia(path, 2);
-        multiMedia.setNumberProgressBar(mViewHolder);
+        multiMedia.setViewHolder(mViewHolder);
         mViewHolder.alfMedia.addAudioData(multiMedia);
     }
 
@@ -123,11 +142,14 @@ public class MaskProgressLayout extends FrameLayout {
         public View rootView;
         public AutoLineFeedLayout alfMedia;
         public NumberProgressBar numberProgressBar;
+        public ImageView imgRemoveRecorder;
+        public Group groupRecorderProgress;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
             this.alfMedia = rootView.findViewById(R.id.alfMedia);
             this.numberProgressBar = rootView.findViewById(R.id.numberProgressBar);
+            this.imgRemoveRecorder = rootView.findViewById(R.id.imgRemoveRecorder);
         }
     }
 }

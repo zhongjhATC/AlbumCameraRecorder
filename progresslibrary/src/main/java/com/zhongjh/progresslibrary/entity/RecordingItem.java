@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.recorder.db;
+package com.zhongjh.progresslibrary.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 自动换行的layout
+ * 自动换行的layout,只包含方框等等view
  * Created by zhongjh on 2019/1/29.
  */
 public class AutoLineFeedLayout extends ViewGroup {
@@ -133,6 +133,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     /**
      * 添加音频数据
+     *
      * @param multiMedia 数据
      */
     public void addAudioData(MultiMedia multiMedia) {

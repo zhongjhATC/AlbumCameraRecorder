@@ -8,7 +8,6 @@ import android.widget.RelativeLayout;
 /**
  * Created by zhongjh on 2018/12/27.
  */
-
 public class ChildClickableRelativeLayout extends RelativeLayout {
 
     //子控件是否可以接受点击事件
