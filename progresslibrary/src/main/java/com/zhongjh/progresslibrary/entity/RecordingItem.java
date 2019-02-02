@@ -7,55 +7,30 @@ import android.os.Parcelable;
  * 音频文件的存储
  */
 public class RecordingItem implements Parcelable {
-    private String mName; // file name
-    private String mFilePath; //file path
-    private int mId; //id in database
-    private int mLength; // length of recording in seconds
-    private long mTime; // date/time of the recording
+
+    private String filePath; // 路径
+    private int length; // 长度，单位秒
 
     public RecordingItem()
     {
     }
 
     public String getFilePath() {
-        return mFilePath;
+        return filePath;
     }
 
     public void setFilePath(String filePath) {
-        mFilePath = filePath;
+        this.filePath = filePath;
     }
 
     public int getLength() {
-        return mLength;
+        return length;
     }
 
     public void setLength(int length) {
-        mLength = length;
+        this.length = length;
     }
 
-    public int getId() {
-        return mId;
-    }
-
-    public void setId(int id) {
-        mId = id;
-    }
-
-    public String getName() {
-        return mName;
-    }
-
-    public void setName(String name) {
-        mName = name;
-    }
-
-    public long getTime() {
-        return mTime;
-    }
-
-    public void setTime(long time) {
-        mTime = time;
-    }
 
 
     @Override
@@ -65,19 +40,13 @@ public class RecordingItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mName);
-        dest.writeString(this.mFilePath);
-        dest.writeInt(this.mId);
-        dest.writeInt(this.mLength);
-        dest.writeLong(this.mTime);
+        dest.writeString(this.filePath);
+        dest.writeInt(this.length);
     }
 
     protected RecordingItem(Parcel in) {
-        this.mName = in.readString();
-        this.mFilePath = in.readString();
-        this.mId = in.readInt();
-        this.mLength = in.readInt();
-        this.mTime = in.readLong();
+        this.filePath = in.readString();
+        this.length = in.readInt();
     }
 
     public static final Creator<RecordingItem> CREATOR = new Creator<RecordingItem>() {

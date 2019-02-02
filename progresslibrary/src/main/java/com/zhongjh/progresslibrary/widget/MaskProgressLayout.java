@@ -15,6 +15,7 @@ import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
+import com.zhongjh.progresslibrary.entity.RecordingItem;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class MaskProgressLayout extends FrameLayout {
 
     public ViewHolder mViewHolder;          // 控件集合
     private ImageEngine mImageEngine;       // 图片加载方式
+    private int audioProgressColor;                 // 音频 文件的进度条颜色
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
         mViewHolder.alfMedia.setListener(listener);
@@ -74,7 +76,7 @@ public class MaskProgressLayout extends FrameLayout {
         // 音频，删除按钮的颜色
         int audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioDeleteColor, colorPrimary);
         // 音频 文件的进度条颜色
-        int audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioProgressColor, colorPrimary);
+        audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioProgressColor, colorPrimary);
         if (imageEngineStr == null) {
             throw new RuntimeException("必须定义image_engine属性，指定某个显示图片类");
         } else {
@@ -96,6 +98,8 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
         mViewHolder.numberProgressBar.setProgressTextColor(audioProgressColor);
         mViewHolder.numberProgressBar.setReachedBarColor(audioProgressColor);
+
+
         maskProgressLayoutStyle.recycle();
         typedArray.recycle();
 
@@ -130,12 +134,19 @@ public class MaskProgressLayout extends FrameLayout {
     /**
      * 设置音频数据
      *
-     * @param path 文件地址
+     * @param filePath 音频文件地址
+     * @
      */
-    public void setAudio(String path) {
-        MultiMedia multiMedia = new MultiMedia(path, 2);
+    public void setAudio(String filePath, int length) {
+        MultiMedia multiMedia = new MultiMedia(filePath, 2);
         multiMedia.setViewHolder(mViewHolder);
         mViewHolder.alfMedia.addAudioData(multiMedia);
+
+        // 初始化播放控件
+        RecordingItem recordingItem = new RecordingItem();
+        recordingItem.setFilePath(filePath);
+        recordingItem.setLength(length);
+        mViewHolder.playView.setData(recordingItem, audioProgressColor);
     }
 
     public static class ViewHolder {
@@ -144,12 +155,14 @@ public class MaskProgressLayout extends FrameLayout {
         public NumberProgressBar numberProgressBar;
         public ImageView imgRemoveRecorder;
         public Group groupRecorderProgress;
+        public PlayView playView;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
             this.alfMedia = rootView.findViewById(R.id.alfMedia);
             this.numberProgressBar = rootView.findViewById(R.id.numberProgressBar);
             this.imgRemoveRecorder = rootView.findViewById(R.id.imgRemoveRecorder);
+            this.playView = rootView.findViewById(R.id.playView);
         }
     }
 }
