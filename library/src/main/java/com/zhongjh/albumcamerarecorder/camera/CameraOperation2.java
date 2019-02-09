@@ -43,6 +43,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.util.Camera2Util;
 import com.zhongjh.albumcamerarecorder.camera.util.CompareSizeByArea;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
 
 import java.io.FileOutputStream;
@@ -62,7 +63,6 @@ import java.util.List;
 public class CameraOperation2 implements CameraInterface {
 
     private static final String TAG = "CameraOperation2";
-    private CameraSpec mCameraSpec;       // 拍摄配置
     private MediaStoreCompat mMediaStoreCompat; // 文件配置
     /**
      * Max preview width that is guaranteed by Camera2 API
@@ -125,9 +125,10 @@ public class CameraOperation2 implements CameraInterface {
         mContext = context;
         mTakePictureCallback = takePictureCallback;
         mViewHolder = cameraLayout.mViewHolder;
-        mCameraSpec = CameraSpec.getInstance();
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        CameraSpec cameraSpec = CameraSpec.getInstance();
         mMediaStoreCompat = new MediaStoreCompat(context);
-        mMediaStoreCompat.setCaptureStrategy(mCameraSpec.captureStrategy);
+        mMediaStoreCompat.setCaptureStrategy(cameraSpec.captureStrategy == null ? globalSpec.captureStrategy : cameraSpec.captureStrategy);
     }
 
     // region 对外开放的API

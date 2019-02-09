@@ -21,6 +21,7 @@ import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.entity.RecordingItem;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -82,12 +83,13 @@ public class PlayView extends FrameLayout {
      * @param recordingItem      音频数据源
      * @param audioProgressColor 进度条颜色
      */
-    public void setData(RecordingItem recordingItem, int audioProgressColor){
+    public void setData(RecordingItem recordingItem, int audioProgressColor) {
         this.mRecordingItem = recordingItem;
         long itemDuration = mRecordingItem.getLength();
         minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
         seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
                 - TimeUnit.MINUTES.toSeconds(minutes);
+        mFileLength = String.format(Locale.CANADA, "%02d:%02d", minutes, seconds);
 
         // 设置进度条颜色
         ColorFilter filter = new LightingColorFilter
@@ -155,12 +157,13 @@ public class PlayView extends FrameLayout {
 
     /**
      * 播放或者暂停
+     *
      * @param isPlaying 播放或者暂停
      */
-    private void onPlay(boolean isPlaying){
+    private void onPlay(boolean isPlaying) {
         if (!isPlaying) {
             // 当前MediaPlayer未播放音频
-            if(mMediaPlayer == null) {
+            if (mMediaPlayer == null) {
                 startPlaying(); // 从头开始
             } else {
                 resumePlaying(); // 恢复当前暂停的MediaPlayer
@@ -199,6 +202,7 @@ public class PlayView extends FrameLayout {
 
     /**
      * 将MediaPlayer设置为从音频文件中间直接开始（意思即为拉到一半立即播放）
+     *
      * @param progress 进度
      */
     private void prepareMediaPlayerFromPoint(int progress) {
@@ -266,7 +270,7 @@ public class PlayView extends FrameLayout {
      * 更新 进度条
      */
     private Runnable mRunnable = () -> {
-        if(mMediaPlayer != null){
+        if (mMediaPlayer != null) {
             int mCurrentPosition = mMediaPlayer.getCurrentPosition();   // 获取当前进度
             mViewHolder.seekbar.setProgress(mCurrentPosition); // 赋值
 

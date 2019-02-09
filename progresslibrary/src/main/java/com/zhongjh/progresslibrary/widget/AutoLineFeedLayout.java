@@ -232,7 +232,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 检查最后一个是否是添加
      */
     private void checkLastImages() {
-        if ((imageList.size() + videoList.size()) < maxMediaCount) {
+        if ((imageList.size() + videoList.size() ) < maxMediaCount) {
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
             viewHolderAdd.itemView.setVisibility(View.GONE);
@@ -286,6 +286,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                     }
                     ViewGroup parent = (ViewGroup) this.itemView.getParent();
                     parent.removeView(this.itemView);
+                    checkLastImages();
                 });
                 // 判断是否显示播放按钮
                 if (multiMedia.getType() == 1) {
@@ -301,7 +302,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             if (listener != null)
                 if (multiMedia.getPath().equals(ADD)) {
                     // 加载➕图
-                    listener.onItemAdd(v, multiMedia, imageList.size(), videoList.size());
+                    listener.onItemAdd(v, multiMedia, imageList.size(), videoList.size(), audioList.size());
                 } else {
                     // 点击详情
                     listener.onItemImage(v, multiMedia);

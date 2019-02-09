@@ -5,15 +5,18 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.StyleRes;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;
 import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -72,8 +75,8 @@ public final class GlobalSetting {
     /**
      * Constructs a new specification builder on the context.
      *
-     * @param multiMediaSetting   a requester context wrapper.
-     * @param mimeTypes MIME type set to select.
+     * @param multiMediaSetting a requester context wrapper.
+     * @param mimeTypes         MIME type set to select.
      */
     GlobalSetting(MultiMediaSetting multiMediaSetting, @NonNull Set<MimeType> mimeTypes) {
         mMultiMediaSetting = multiMediaSetting;
@@ -82,13 +85,18 @@ public final class GlobalSetting {
         mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
-    public GlobalSetting albumSetting(AlbumSetting albumSetting){
+    public GlobalSetting albumSetting(AlbumSetting albumSetting) {
         mGlobalSpec.albumSetting = albumSetting;
         return this;
     }
 
-    public GlobalSetting cameraSetting(CameraSetting cameraSetting){
+    public GlobalSetting cameraSetting(CameraSetting cameraSetting) {
         mGlobalSpec.cameraSetting = cameraSetting;
+        return this;
+    }
+
+    public GlobalSetting recorderSetting(RecorderSetting recorderSetting) {
+        mGlobalSpec.recorderSetting = recorderSetting;
         return this;
     }
 
@@ -126,11 +134,13 @@ public final class GlobalSetting {
      *
      * @param maxImageSelectable Maximum selectable count for image.
      * @param maxVideoSelectable Maximum selectable count for video.
-     * @return
+     * @param maxVideoSelectable Maximum selectable count for audio.
+     * @return this
      */
-    public GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable) {
+    public GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
         mGlobalSpec.maxImageSelectable = maxImageSelectable;
         mGlobalSpec.maxVideoSelectable = maxVideoSelectable;
+        mGlobalSpec.maxAudioSelectable = maxAudioSelectable;
         return this;
     }
 
@@ -176,6 +186,21 @@ public final class GlobalSetting {
     }
 
     /**
+     * 有关首页的一些事件
+     * <p>
+     * 这是一个冗余的api {@link MultiMediaSetting#obtainResult(Intent)},
+     * 我们只建议您在需要立即执行某些操作时使用此API。
+     *
+     * @param listener {@link OnMainListener}
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    @NonNull
+    public GlobalSetting setOnMainListener(@Nullable OnMainListener listener) {
+        mGlobalSpec.onMainListener = listener;
+        return this;
+    }
+
+    /**
      * Start to select media and wait for result.
      *
      * @param requestCode Identity of the request Activity or Fragment.
@@ -184,6 +209,30 @@ public final class GlobalSetting {
         Activity activity = mMultiMediaSetting.getActivity();
         if (activity == null) {
             return;
+        }
+
+        int numItems = 0;// 数量
+        // 根据相关配置做相应的初始化
+        if (mGlobalSpec.albumSetting != null) {
+            numItems++;
+        }
+        if (mGlobalSpec.cameraSetting != null) {
+            numItems++;
+        }
+        if (mGlobalSpec.recorderSetting != null) {
+            if (mGlobalSpec.maxAudioSelectable > 0) {
+                numItems++;
+            } else {
+                if (mGlobalSpec.onMainListener != null){
+                    mGlobalSpec.onMainListener.onOpenFail("录音已经达到上限");
+                }else{
+                    Toast.makeText(activity.getApplicationContext(), "录音已经达到上限", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+        }
+        if (numItems <= 0) {
+            throw new IllegalStateException("必须在这三项 albumSetting、cameraSetting、recorderSetting设置其中一项 ");
         }
 
         Intent intent = new Intent(activity, MainActivity.class);
@@ -195,7 +244,6 @@ public final class GlobalSetting {
             activity.startActivityForResult(intent, requestCode);
         }
     }
-
 
 
 }

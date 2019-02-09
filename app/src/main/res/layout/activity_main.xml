@@ -4,15 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
-    tools:context=".MainActivity">
+    android:background="@color/colorPrimary">
 
     <com.zhongjh.progresslibrary.widget.MaskProgressLayout
         android:id="@+id/mplImageList"
         android:layout_width="match_parent"
-        app:image_engine="com.zhongjh.cameraapp.Glide4EngineProgress"
-        app:image_count="10"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:audioDeleteColor="@color/white"
+        app:audioPlayColor="@color/white"
+        app:audioProgressColor="@color/white"
+        app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
+        app:maxCount="10" />
 
     <TextView
         android:id="@+id/tv_author"
@@ -24,22 +26,6 @@
         android:text="Create By zhongjh\n\nEmail 254191389@qq.com"
         android:textColor="#FFF" />
 
-    <ImageView
-        android:id="@+id/btn"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_above="@id/tv_author"
-        android:layout_centerHorizontal="true"
-        android:text="JCameraView"
-        android:tint="#FFF"
-        app:srcCompat="@drawable/ic_perm_media_white_24dp" />
-
-    <ImageView
-        android:id="@+id/image_photo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/btn"
-        android:layout_margin="32dp" />
 
     <TextView
         android:id="@+id/device"

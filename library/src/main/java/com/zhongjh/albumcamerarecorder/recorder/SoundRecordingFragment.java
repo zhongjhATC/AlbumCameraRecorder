@@ -141,6 +141,10 @@ public class SoundRecordingFragment extends Fragment {
             public void cancel() {
                 // 母窗体启动滑动
                 ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
+                // 重置取消确认按钮
+                mViewHolder.pvLayout.reset();
+                // 重置时间
+                mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
             }
 
             @Override
@@ -195,7 +199,6 @@ public class SoundRecordingFragment extends Fragment {
     private void onRecord(boolean start) {
         Intent intent = new Intent(getActivity(), RecordingService.class);
         if (start) {
-//            Toast.makeText(BaseApplication.getInstance(), "开始录音", Toast.LENGTH_SHORT).show();
             // 创建文件
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
             if (!folder.exists()) {
@@ -205,9 +208,6 @@ public class SoundRecordingFragment extends Fragment {
             // 开始计时,从1秒开始算起
             mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime() - 1000);
             mViewHolder.chronometer.start();
-            // 这个暂时不需要
-//            mViewHolder.chronometer.setOnChronometerTickListener(chronometer -> {
-//            });
 
             //start RecordingService
             mActivity.startService(intent);
@@ -265,8 +265,6 @@ public class SoundRecordingFragment extends Fragment {
 
         mMediaPlayer.setOnCompletionListener(mp -> stopPlaying());
 
-//        updateSeekBar(); // 进度更新
-
         //keep screen on while playing audio
         mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -277,9 +275,7 @@ public class SoundRecordingFragment extends Fragment {
     private void resumePlaying() {
         // 暂停图
         ((SoundrecordingLayout.ViewHolder) mViewHolder.pvLayout.mViewHolder).iv_record.setImageResource(R.drawable.ic_pause_white_24dp);
-//        mHandler.removeCallbacks(mRunnable);  进度线程
         mMediaPlayer.start();
-//        updateSeekBar(); 更新
     }
 
     /**
@@ -288,7 +284,6 @@ public class SoundRecordingFragment extends Fragment {
     private void pausePlaying() {
         // 设置成播放的图片
         ((SoundrecordingLayout.ViewHolder) mViewHolder.pvLayout.mViewHolder).iv_record.setImageResource(R.drawable.ic_play_arrow_white_24dp);
-//        mHandler.removeCallbacks(mRunnable);                     线程停止
         mMediaPlayer.pause();
     }
 
@@ -298,18 +293,13 @@ public class SoundRecordingFragment extends Fragment {
     private void stopPlaying() {
         // 设置成播放的图片
         ((SoundrecordingLayout.ViewHolder) mViewHolder.pvLayout.mViewHolder).iv_record.setImageResource(R.drawable.ic_play_arrow_white_24dp);
-//        mHandler.removeCallbacks(mRunnable); // 有关进度的
         // 停止mediaPlayer
         mMediaPlayer.stop();
         mMediaPlayer.reset();
         mMediaPlayer.release();
         mMediaPlayer = null;
 
-//        mSeekBar.setProgress(mSeekBar.getMax()); 进度
         isPlaying = !isPlaying;
-
-//        mCurrentProgressTextView.setText(mFileLengthTextView.getText()); 进度文本
-//        mSeekBar.setProgress(mSeekBar.getMax()); // 进度
 
         // 一旦音频播放完毕，保持屏幕常亮 这个设置关闭
         mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

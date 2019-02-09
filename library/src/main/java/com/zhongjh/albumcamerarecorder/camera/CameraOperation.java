@@ -31,6 +31,7 @@ import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.PermissionUtil;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
 
 import java.io.IOException;
@@ -50,7 +51,6 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     private static final String TAG = "CameraOperation";
     private CameraLayout mCameraLayout;
-    private CameraSpec mCameraSpec;       // 拍摄配置
     private MediaStoreCompat mMediaStoreCompat; // 文件配置
     private String mVideoFileAbsPath;           // 文件路径
 
@@ -100,9 +100,10 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
     public CameraOperation(Context context, CameraLayout cameraLayout, CameraCallback.TakePictureCallback takePictureCallback) {
         mCameraLayout = cameraLayout;
         mTakePictureCallback = takePictureCallback;
-        mCameraSpec = CameraSpec.getInstance();
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        CameraSpec cameraSpec = CameraSpec.getInstance();
         mMediaStoreCompat = new MediaStoreCompat(context);
-        mMediaStoreCompat.setCaptureStrategy(mCameraSpec.captureStrategy);
+        mMediaStoreCompat.setCaptureStrategy(cameraSpec.captureStrategy == null ? globalSpec.captureStrategy : cameraSpec.captureStrategy);
         findAvailableCameras();
         mSelectedCamera = CAMERA_POST_POSITION; // 默认前摄像头
     }
@@ -639,7 +640,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 //        }
         Camera.Parameters params = mCamera.getParameters();
         if (params == null) return;
-        if (!params.isZoomSupported() ) {
+        if (!params.isZoomSupported()) {
             return;
         }
         switch (type) {

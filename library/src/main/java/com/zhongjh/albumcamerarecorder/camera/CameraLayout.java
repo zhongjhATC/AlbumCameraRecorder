@@ -172,7 +172,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mCameraSpec = CameraSpec.getInstance();
         mGlobalSpec = GlobalSpec.getInstance();
         mMediaStoreCompat = new MediaStoreCompat(getContext());
-        if (mCameraSpec.captureStrategy != null) {
+        if (mCameraSpec != null && mCameraSpec.captureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
             mMediaStoreCompat.setCaptureStrategy(mCameraSpec.captureStrategy);
         } else {

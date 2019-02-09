@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:text="123333333333"
+        android:text="00:00"
         android:textColor="#333333"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/imgPlay"

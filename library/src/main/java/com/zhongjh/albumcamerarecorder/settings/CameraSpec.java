@@ -10,6 +10,10 @@ public class CameraSpec {
     private CameraSpec() {
     }
 
+    private static final class InstanceHolder {
+        private static final CameraSpec INSTANCE = new CameraSpec();
+    }
+
     public static CameraSpec getInstance() {
         return InstanceHolder.INSTANCE;
     }
@@ -31,6 +35,7 @@ public class CameraSpec {
 
 
     // region 属性
+
     public Set<MimeType> mimeTypeSet; // 选择 视频图片 的类型，MimeType.allOf()
     public boolean supportSingleMediaType; // 仅仅支持一个多媒体类型
     public CaptureStrategy captureStrategy; // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
@@ -49,9 +54,7 @@ public class CameraSpec {
         return supportSingleMediaType && MimeType.ofVideo().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.CAMERA));
     }
 
-    private static final class InstanceHolder {
-        private static final CameraSpec INSTANCE = new CameraSpec();
-    }
+    // endregion 属性
 
 
 }

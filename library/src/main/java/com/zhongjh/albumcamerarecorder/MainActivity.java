@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -16,6 +17,7 @@ import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 
@@ -49,15 +51,12 @@ public class MainActivity extends AppCompatActivity {
             setRequestedOrientation(mSpec.orientation);
         }
         mVpPager = findViewById(R.id.viewPager);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
+        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), mSpec);
         mVpPager.setAdapter(adapterViewPager);
         mVpPager.setOffscreenPageLimit(3);
 
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
-//        tabLayout.addTab(tabLayout.newTab().setText("相册"));
-//        tabLayout.addTab(tabLayout.newTab().setText("拍照"));
-//        tabLayout.addTab(tabLayout.newTab().setText("录音"));
         mTabLayout.setupWithViewPager(mVpPager);
     }
 
@@ -97,12 +96,13 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 设置是否拦截
+     *
      * @param isTouch 是否拦截
      */
     @SuppressLint("ClickableViewAccessibility")
-    private void setTablayoutTouch(boolean isTouch){
-        for (int i=0;i<mTabLayout.getTabCount();i++) {
-            View view = getTabView(mTabLayout,i);
+    private void setTablayoutTouch(boolean isTouch) {
+        for (int i = 0; i < mTabLayout.getTabCount(); i++) {
+            View view = getTabView(mTabLayout, i);
             if (view == null) continue;
             view.setTag(i);
             view.setOnTouchListener((v, event) -> isTouch);
@@ -140,33 +140,48 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 3;
+    public class MyPagerAdapter extends FragmentPagerAdapter {
 
-        String[] mTitles = new String[]{"相册", "拍照", "录音"};
+        private int numItems;// 数量
 
-        public MyPagerAdapter(FragmentManager fragmentManager) {
+        ArrayList<String> mTitles = new ArrayList<>(); // 标题
+
+        public MyPagerAdapter(FragmentManager fragmentManager, GlobalSpec mSpec) {
             super(fragmentManager);
+
+            // 根据相关配置做相应的初始化
+            if (mSpec.albumSetting != null) {
+                numItems++;
+                mTitles.add("相册");
+            }
+            if (mSpec.cameraSetting != null) {
+                numItems++;
+                mTitles.add("拍照");
+            }
+            if (mSpec.recorderSetting != null) {
+                if (mSpec.maxAudioSelectable > 0) {
+                    numItems++;
+                    mTitles.add("录音");
+                }
+            }
         }
 
         // Returns total number of pages
         @Override
         public int getCount() {
-            return NUM_ITEMS;
+            return numItems;
         }
 
         // Returns the fragment to display for that page
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
+            switch (mTitles.get(position)) {
+                case "相册":
                     return MatissFragment.newInstance(0, "相册");
-//                    return CameraFragment.newInstance(1, "Page # 2");
-                case 1: // Fragment # 0 - This will show FirstFragment different title // 看看这个怎样把类型传过去，colltype
-                    return CameraFragment.newInstance(1, "拍照",COLLECTION_IMAGE);
-                case 2: // Fragment # 1 - This will show SecondFragment
+                case "拍照":
+                    return CameraFragment.newInstance(1, "拍照", COLLECTION_IMAGE);
+                case "录音":
                     return SoundRecordingFragment.newInstance();
-//                    return CameraFragment.newInstance(1, "Page # 2");
                 default:
                     return null;
             }
@@ -175,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         // Returns the page title for the top indicator
         @Override
         public CharSequence getPageTitle(int position) {
-            return mTitles[position];
+            return mTitles.get(position);
         }
 
     }

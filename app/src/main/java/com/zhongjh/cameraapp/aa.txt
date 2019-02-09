@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,22 +19,24 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
-import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
-import com.zhongjh.albumcamerarecorder.settings.CaptureStrategy;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
-import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
-import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
+
+import com.zhongjh.cameraviewsoundrecorder.settings.AlbumSetting;
+import com.zhongjh.cameraviewsoundrecorder.settings.CameraSetting;
+import com.zhongjh.cameraviewsoundrecorder.settings.MultiMediaSetting;
+import com.zhongjh.cameraviewsoundrecorder.settings.CaptureStrategy;
+import com.zhongjh.cameraviewsoundrecorder.album.enums.MimeType;
+import com.zhongjh.cameraviewsoundrecorder.album.filter.Filter;
+import com.zhongjh.cameraviewsoundrecorder.camera.util.DeviceUtil;
+import com.zhongjh.cameraviewsoundrecorder.utils.constants.MultimediaTypes;
+import com.zhongjh.progresslibrary.adapter.ImageAdapter;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
-import java.util.HashMap;
+import com.zhongjh.progresslibrary.widget.MaskProgressView;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,57 +48,42 @@ public class MainActivity extends AppCompatActivity {
     private ImageView photo;
     private TextView device;
     public MaskProgressLayout mplImageList;
-    private HashMap<MultiMedia,MyTask> timers = new HashMap<>();
 
-    /**
-     * @param activity 要跳转的activity
-     */
-    public static void newInstance(Activity activity) {
-        activity.startActivity(new Intent(activity, MainActivity.class));
-    }
+    private DoActionHandler mDoActionHandler = new DoActionHandler(this);
+    private ArrayList<MyTask> timers = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        photo = findViewById(R.id.image_photo);
         device = findViewById(R.id.device);
         device.setText(DeviceUtil.getDeviceInfo());
         mplImageList = findViewById(R.id.mplImageList);
         mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onItemAdd(View view, MultiMedia multiMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-                // 点击添加
-                getPermissions(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+            public void onItemAdd(View view, int position, int alreadyImageCount, int alreadyVideoCount) {
+                getPermissions(alreadyImageCount, alreadyVideoCount);
             }
 
             @Override
-            public void onItemImage(View view, MultiMedia multiMedia) {
-                // 点击详情
+            public void onItemImage(View view, int position) {
+
             }
 
             @Override
-            public void onItemStartUploading(MultiMedia multiMedia) {
-                // 开始上传 - 指刚添加后的
-                MyTask timer = new MyTask(multiMedia);
-                timers.put(multiMedia,timer);
-                timer.schedule();
+            public void onItemClose(View view, int position) {
+
             }
-
-            @Override
-            public void onItemClose(View view, MultiMedia multiMedia) {
-                // 停止上传
-                timers.get(multiMedia).cancel();
-            }
-
-
         });
     }
 
     /**
      * 获取权限
      */
-    private void getPermissions(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+    private void getPermissions(int alreadyImageCount, int alreadyVideoCount) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
                     .PERMISSION_GRANTED &&
@@ -102,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                             .PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
                             .PERMISSION_GRANTED) {
-                openMain(alreadyImageCount, alreadyVideoCount,alreadyAudioCount);
+                openMain(alreadyImageCount, alreadyVideoCount);
             } else {
                 //不具有获取权限，需要进行权限申请
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{
@@ -111,47 +100,123 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
             }
         } else {
-            openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+            openMain(alreadyImageCount, alreadyVideoCount);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+//        MultiMediaSetting.obtainResult(data), MultiMediaSetting.obtainPathResult(data);
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             // 获取类型，根据类型设置不同的事情
             switch (MultiMediaSetting.obtainMultimediaType(data)) {
                 case MultimediaTypes.PICTURE:
                     // 图片
                     List<String> path = MultiMediaSetting.obtainPathResult(data);
-                    mplImageList.addImages(path);
+                    List<MultiMedia> multiMedias = mplImageList.addImages(path, null);
+
+                    // 修改数据前，其他线程全部暂停
+                    for (MyTask timer : timers) {
+                        timer.cancel();
+                    }
+                    for (int position = 0; position < multiMedias.size(); position++) {
+                        MyTask timer = new MyTask(multiMedias.get(position).getPosition(), false);
+                        timers.add(timer);
+                    }
+                    // 重新开启
+                    for (MyTask timer : timers) {
+                        timer.schedule();
+                    }
                     break;
                 case MultimediaTypes.VIDEO:
                     // 录像
                     List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                    mplImageList.setVideo(videoPath);
+                    MultiMedia multiMedia = mplImageList.setVideo(videoPath);
+                    MyTask timer = new MyTask(multiMedia.getPosition(), true);
+                    timers.add(timer);
+                    timer.schedule();
                     break;
                 case MultimediaTypes.AUDIO:
                     // 语音
-                    RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    mplImageList.setAudio(recordingItem.getFilePath(), recordingItem.getLength());
                     break;
                 case MultimediaTypes.BLEND:
                     // 混合类型，意思是图片可能跟录像在一起.
-                    mplImageList.addImages(MultiMediaSetting.obtainPathResult(data));
+                    mplImageList.addImages(MultiMediaSetting.obtainPathResult(data), null);
                     break;
             }
 
         }
+        if (resultCode == 101) {
+            Log.i("CJT", "picture");
+            String path = data.getStringExtra("path");
+            photo.setImageBitmap(BitmapFactory.decodeFile(path));
+        }
+        if (resultCode == 102) {
+            Log.i("CJT", "video");
+            String path = data.getStringExtra("path");
+        }
+        if (resultCode == 103) {
+            Toast.makeText(this, "请检查相机权限~", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class MyTask extends Timer {
+
+        public int position = 0;//需求
+        public int percentage = 0;// 百分比
+        public boolean isVideo = false;// 是否视频
+
+        public MyTask(int position, boolean isVideo) {
+            this.position = position;
+            this.isVideo = isVideo;
+        }
+
+        public void schedule() {
+            this.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(() -> {
+                        percentage++;
+                        ImageAdapter.ViewHolder viewHolder;
+                        if (isVideo)
+                            viewHolder = mplImageList.setVideoProgress(position, percentage);
+                        else
+                            viewHolder = mplImageList.setImageProgress(position, percentage);
+                        if (viewHolder == null || percentage == 100) {
+                            cancel();
+                        }
+                    });
+                }
+            }, 1000, 100);
+        }
+
+    }
+
+    /**
+     * do some action
+     */
+    static class DoActionHandler extends Handler {
+        private final WeakReference<Activity> mActivity;
+
+        DoActionHandler(Activity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            MainActivity activity = (MainActivity) mActivity.get();
+            activity.mplImageList.setImageProgress(msg.what, 1);
+        }
+
     }
 
     @Override
     protected void onDestroy() {
-        // 停止所有的上传
-        for (Map.Entry<MultiMedia, MyTask> entry : timers.entrySet()) {
-            entry.getValue().cancel();
-        }
         super.onDestroy();
+        for (Timer timer : timers) {
+            timer.cancel();
+        }
     }
 
     @TargetApi(23)
@@ -180,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                     size++;
                 }
                 if (size == 0) {
-                    startActivityForResult(new Intent(MainActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
+                    startActivityForResult(new Intent(MainActivity.this, com.zhongjh.cameraviewsoundrecorder.MainActivity.class), 100);
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                 }
@@ -191,10 +256,9 @@ public class MainActivity extends AppCompatActivity {
     /**
      * @param alreadyImageCount 已经存在显示的几张图片
      * @param alreadyVideoCount 已经存在显示的几个视频
-     * @param alreadyAudioCount 已经存在显示的几个音频
      *                          打开窗体
      */
-    private void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+    private void openMain(int alreadyImageCount, int alreadyVideoCount) {
 
         // 拍摄
         CameraSetting cameraSetting = new CameraSetting();
@@ -222,48 +286,19 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);
                 });
 
-        // 录音机
-        RecorderSetting recorderSetting = new RecorderSetting();
-        recorderSetting.captureStrategy(new CaptureStrategy(true,"com.zhongjh.cameraapp.fileprovider", "AA/recorder"));
-
         // 全局
         MultiMediaSetting.from(MainActivity.this)
                 .choose(MimeType.ofImage())
                 .albumSetting(albumSetting)
                 .cameraSetting(cameraSetting)
-                .recorderSetting(recorderSetting)
-                .setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
                 //                                            .imageEngine(new GlideEngine())  // for glide-V3
                 .imageEngine(new Glide4Engine())    // for glide-V4
                 .maxSelectable(10 - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
-                .maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+                .maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount)// 最大10张图片或者最大1个视频
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .forResult(REQUEST_CODE_CHOOSE);
-    }
-
-    class MyTask extends Timer {
-
-        public int percentage = 0;// 百分比
-        public MultiMedia multiMedia;
-
-        public MyTask( MultiMedia multiMedia) {
-            this.multiMedia = multiMedia;
-        }
-
-        public void schedule() {
-            this.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    runOnUiThread(() -> {
-                        percentage++;
-                        multiMedia.setPercentage(percentage);
-                    });
-                }
-            }, 1000, 100);
-        }
-
     }
 
 }

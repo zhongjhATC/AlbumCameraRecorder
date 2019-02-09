@@ -8,6 +8,7 @@
         <attr name="maxCount" format="integer" /> <!-- 只能显示多少个图片包括视频 -->
         <attr name="audioDeleteColor" format="color"/><!-- 音频文件的删除按钮颜色 -->
         <attr name="audioProgressColor" format="color"/><!-- 音频文件的进度条颜色 -->
+        <attr name="audioPlayColor" format="color"/><!-- 音频文件的播放按钮颜色 -->
 
     </declare-styleable>
 

@@ -1,5 +1,7 @@
 package com.zhongjh.progresslibrary.entity;
 
+import android.view.View;
+
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
 
@@ -52,6 +54,11 @@ public class MultiMedia {
         } else if (type == 2) {
             // 隐藏显示音频的设置一系列动作
             this.viewHolder.numberProgressBar.setProgress(percent);
+            if (percent == 100){
+                // 显示完成后的音频
+                this.viewHolder.groupRecorderProgress.setVisibility(View.GONE);
+                this.viewHolder.playView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
