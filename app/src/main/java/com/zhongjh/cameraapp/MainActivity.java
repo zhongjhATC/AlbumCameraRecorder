@@ -196,11 +196,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
 
-        // 拍摄
+        // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());
-        cameraSetting.supportSingleMediaType(false);
-        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera"));
+        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
+        cameraSetting.supportSingleMediaType(false);// 仅仅支持一个相片
+        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
@@ -208,8 +208,8 @@ public class MainActivity extends AppCompatActivity {
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
-                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 查看的大小限制
+                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
                 .thumbnailScale(0.85f)
                 .setOnSelectedListener((uriList, pathList) -> {
                     // 每次选择的事件
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
-        recorderSetting.captureStrategy(new CaptureStrategy(true,"com.zhongjh.cameraapp.fileprovider", "AA/recorder"));
+        recorderSetting.captureStrategy(new CaptureStrategy(true,"com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
 
         // 全局
         MultiMediaSetting.from(MainActivity.this)
