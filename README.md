@@ -1,5 +1,8 @@
 # AlbumCameraRecorder
 
+![Methods](https://img.shields.io/badge/Methods%20%7C%20Size-723%20%7C%2076%20KB-e91e63.svg)
+ 
+ 
  // 拍摄
         CameraSetting cameraSetting = new CameraSetting();
         cameraSetting.mimeTypeSet(MimeType.ofAll());
