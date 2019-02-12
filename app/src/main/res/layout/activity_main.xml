@@ -24,7 +24,8 @@
         android:gravity="center"
         android:padding="16dp"
         android:text="Create By zhongjh\n\nEmail 254191389@qq.com"
-        android:textColor="#FFF" />
+        android:textColor="#FFF"
+        tools:ignore="HardcodedText" />
 
 
     <TextView
@@ -35,7 +36,8 @@
         android:gravity="center"
         android:text="Andriod Device"
         android:textColor="#FFF"
-        android:textSize="18dp"
-        android:textStyle="bold" />
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:ignore="HardcodedText" />
 
 </RelativeLayout>

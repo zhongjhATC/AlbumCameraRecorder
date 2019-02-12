@@ -14,6 +14,7 @@
   limitations under the License.
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -37,7 +38,8 @@
                 android:id="@+id/imgClose"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_close_white_24dp" />
+                android:contentDescription="@string/delete_button"
+                app:srcCompat="@drawable/ic_close_white_24dp" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -58,7 +60,6 @@
             </RelativeLayout>
 
         </RelativeLayout>
-
 
 
     </android.support.v7.widget.Toolbar>

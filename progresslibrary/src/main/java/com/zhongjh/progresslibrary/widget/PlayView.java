@@ -112,7 +112,7 @@ public class PlayView extends FrameLayout {
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
                     long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
                             - TimeUnit.MINUTES.toSeconds(minutes);
-                    mViewHolder.tvCurrentProgress.setText(String.format("%02d:%02d", minutes, seconds));
+                    mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA,"%02d:%02d", minutes, seconds));
 
                     updateSeekBar();
 
@@ -140,7 +140,7 @@ public class PlayView extends FrameLayout {
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
                     long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
                             - TimeUnit.MINUTES.toSeconds(minutes);
-                    mViewHolder.tvCurrentProgress.setText(String.format("%02d:%02d", minutes, seconds));
+                    mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA,"%02d:%02d", minutes, seconds));
                     updateSeekBar();
                 }
             }
@@ -277,7 +277,7 @@ public class PlayView extends FrameLayout {
             long minutes = TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition);
             long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition)
                     - TimeUnit.MINUTES.toSeconds(minutes);
-            mViewHolder.tvCurrentProgress.setText(String.format("%02d:%02d", minutes, seconds));
+            mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA,"%02d:%02d", minutes, seconds));
 
             updateSeekBar();
         }

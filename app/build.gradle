@@ -12,6 +12,12 @@ android {
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true // 添加多密度矢量图形
     }
+
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+        baseline file("lint-baseline.xml")
+    }
+
     buildTypes {
         release {
             minifyEnabled false

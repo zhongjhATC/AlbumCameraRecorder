@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.widget.clickorlongbutton;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -26,7 +27,7 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STA
  */
 public class ClickOrLongButton extends View {
 
-    private static final String TAG = "RecordButton";
+    private static final String TAG = "ClickOrLongButton";
     public static final long TIME_TO_START_RECORD = 1000L; // 1秒后启动录制
     public float timeLimitInMils = 10000.0F;       // 录制时间
     private int mMinDuration = 1500;       // 最短录制时间限制
@@ -84,6 +85,14 @@ public class ClickOrLongButton extends View {
             long timeLapse = System.currentTimeMillis() - btnPressTime;
             mRecordedTime = (timeLapse - TIME_TO_START_RECORD);
             float percent = mRecordedTime / timeLimitInMils;
+            if (!isActionDown && timeLapse >= 1) {
+                if (mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH)) {
+                    // 如果禁止点击也不能触发该事件
+                    mClickOrLongListener.actionDown();
+                    isActionDown = true;
+                }
+            }
+
             if (timeLapse >= TIME_TO_START_RECORD) {
                 synchronized (ClickOrLongButton.this) {
                     if (recordState == RECORD_NOT_STARTED) {
@@ -91,9 +100,10 @@ public class ClickOrLongButton extends View {
                         if (mClickOrLongListener != null) {
                             mClickOrLongListener.onLongClick();
                             // 如果禁止点击，那么就轮到长按触发actionDown
-                            if (mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONGCLICK) {
+                            if (!isActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONGCLICK) {
                                 // 如果禁止点击也不能触发该事件
                                 mClickOrLongListener.actionDown();
+                                isActionDown = true;
                             }
                         }
                     }
@@ -220,16 +230,14 @@ public class ClickOrLongButton extends View {
         setMeasuredDimension(BOUNDING_BOX_SIZE, BOUNDING_BOX_SIZE);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
         if (!touchable) {
             return false;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH)) {
-                    // 如果禁止点击也不能触发该事件
-                    mClickOrLongListener.actionDown();
-                }
+
                 event_Y = event.getY(); // 记录Y值
                 Log.d(TAG, "onTouchEvent: down");
                 // 禁止长按方式
@@ -260,7 +268,7 @@ public class ClickOrLongButton extends View {
      * 重置
      */
     public void reset() {
-        //Log.d(TAG, "reset: "+recordState);
+        Log.d(TAG, "reset: " + recordState);
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null) {
@@ -277,6 +285,7 @@ public class ClickOrLongButton extends View {
                     mClickOrLongListener.onClick();// 拍照
             }
         }
+        isActionDown = false;
         touchTimeHandler.clearMsg();
         percentInDegree = 0.0F;
         centerCirclePaint.setColor(colorWhiteP60);
@@ -316,7 +325,8 @@ public class ClickOrLongButton extends View {
         touchTimeHandler.sendLoopMsg(0L, 16L);
     }
 
-    private ClickOrLongListener mClickOrLongListener;       //按钮回调接口
+    private ClickOrLongListener mClickOrLongListener;       // 按钮回调接口
+    private boolean isActionDown;                           // 判断是否已经调用过isActionDwon,结束后重置此值
 
     // region 对外方法
 

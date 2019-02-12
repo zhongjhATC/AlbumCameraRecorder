@@ -427,6 +427,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mCameraOperation.doDestroyCamera();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {

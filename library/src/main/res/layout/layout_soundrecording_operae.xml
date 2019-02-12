@@ -46,41 +46,41 @@
 
     <!-- 中间的操作按钮 -->
     <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
-        android:focusable="true"
         android:id="@+id/btnClickOrLong"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:focusable="true"
         app:layout_constraintEnd_toStartOf="@+id/guideline60"
         app:layout_constraintStart_toStartOf="@+id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/tvTip"/>
+        app:layout_constraintTop_toBottomOf="@+id/tvTip" />
 
     <RelativeLayout
         android:id="@+id/rlSoundRecording"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="10dp"
         android:contentDescription="录音后显示的播放按钮"
         android:visibility="invisible"
-        android:layout_marginBottom="10dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline60"
         app:layout_constraintStart_toStartOf="@+id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/tvTip"
-        android:layout_width="100dp"
-        android:layout_height="100dp">
+        app:layout_constraintTop_toBottomOf="@+id/tvTip">
 
         <ImageView
-            android:contentDescription="外圈"
-            android:layout_margin="13dp"
-            android:layout_centerInParent="true"
             android:id="@+id/iv_ring"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_margin="13dp"
+            android:contentDescription="外圈"
             android:src="@drawable/shape_ring_white"
             tools:ignore="HardcodedText" />
 
         <ImageView
-            android:contentDescription="内圈"
-            android:layout_centerInParent="true"
             android:id="@+id/iv_record"
             android:layout_width="64dp"
             android:layout_height="64dp"
+            android:layout_centerInParent="true"
+            android:contentDescription="内圈"
             android:src="@drawable/animated_selector_shape"
             tools:ignore="HardcodedText" />
 

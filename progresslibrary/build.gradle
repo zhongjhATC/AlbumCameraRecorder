@@ -9,7 +9,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
-
+        vectorDrawables.useSupportLibrary = true // 添加多密度矢量图形
     }
 
     buildTypes {

@@ -63,8 +63,6 @@ public class MaskProgressLayout extends FrameLayout {
         int[] attrsArray = {R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent};
         TypedArray typedArray = getContext().obtainStyledAttributes(attrsArray);
         int colorPrimary = typedArray.getColor(0, defaultColor);
-        int colorPrimaryDark = typedArray.getColor(0, defaultColor);
-        int colorAccent = typedArray.getColor(0, defaultColor);
 
         // 获取自定义属性。
         TypedArray maskProgressLayoutStyle = getContext().obtainStyledAttributes(attrs, R.styleable.MaskProgressLayoutStyle);
@@ -163,8 +161,8 @@ public class MaskProgressLayout extends FrameLayout {
     }
 
     public static class ViewHolder {
-        public View rootView;
-        public AutoLineFeedLayout alfMedia;
+        View rootView;
+        AutoLineFeedLayout alfMedia;
         public NumberProgressBar numberProgressBar;
         public ImageView imgRemoveRecorder;
         public Group groupRecorderProgress;

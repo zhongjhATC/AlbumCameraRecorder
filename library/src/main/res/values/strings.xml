@@ -26,6 +26,9 @@
     <string name="button_sure_default">确定</string>
     <string name="button_sure">确定(%1$d)</string>
 
+    <string name="show_thumbnails">展现的缩略图</string>
+    <string name="gif_label">gif标签</string>
+
     <!-- endregion -->
 
     <string name="light_touch_take_long_press_camera">轻触拍照，长按摄像</string>
@@ -37,6 +40,9 @@
     <!-- region 录像 -->
     <string name="path_square">M 35,43 v 34 A 8 8 0 0 0 43,85 h 34 A 8 8 0 0 0 85 77 v -34 A 8 8 0 0 0 77 35 h -34 A 8 8 0 0 0 35 43</string>
     <string name="path_circle">M 0 60 v 0 A 60 60 0 0 0 60 120 h 0 A 60 60 0 0 0 120 60 v 0 A 60 60 0 0 0 60 0 h 0 A 60 60 0 0 0 0 60</string>
+    <string name="delete_button">删除按钮</string>
+    <string name="play_button">播放按钮</string>
+
     <!-- endregion -->
 
 </resources>

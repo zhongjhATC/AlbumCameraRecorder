@@ -18,7 +18,6 @@ import java.util.Set;
 public class AlbumSetting {
 
     private final AlbumSpec mAlbumSpec;
-    private final GlobalSpec mGlobalSpec;
 
     /**
      *
@@ -26,7 +25,6 @@ public class AlbumSetting {
      */
     public AlbumSetting(boolean mediaTypeExclusive) {
         mAlbumSpec = AlbumSpec.getInstance();
-        mGlobalSpec = GlobalSpec.getInstance();
 
         mAlbumSpec.mediaTypeExclusive = mediaTypeExclusive;
     }

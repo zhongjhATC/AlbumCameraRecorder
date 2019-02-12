@@ -4,6 +4,6 @@
 
     <target
         android:name="iconPath"
-        android:animation="@animator/animation_circle_to_square"></target>
+        android:animation="@animator/animation_circle_to_square"/>
 
 </animated-vector>

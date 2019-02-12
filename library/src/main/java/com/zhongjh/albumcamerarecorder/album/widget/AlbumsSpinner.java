@@ -15,6 +15,7 @@
  */
 package com.zhongjh.albumcamerarecorder.album.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -22,6 +23,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.ListPopupWindow;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
@@ -146,17 +148,13 @@ public class AlbumsSpinner {
         right.setColorFilter(color, PorterDuff.Mode.SRC_IN);
 
         mSelected.setVisibility(View.GONE);
-        mSelected.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // 显示选择框
-                int itemHeight = v.getResources().getDimensionPixelSize(R.dimen.album_item_height);
-                mListPopupWindow.setHeight(
-                        mAdapter.getCount() > MAX_SHOWN_COUNT ? itemHeight * MAX_SHOWN_COUNT
-                                : itemHeight * mAdapter.getCount());
-                mListPopupWindow.show();
-            }
+        mSelected.setOnClickListener(v -> {
+            // 显示选择框
+            int itemHeight = v.getResources().getDimensionPixelSize(R.dimen.album_item_height);
+            mListPopupWindow.setHeight(
+                    mAdapter.getCount() > MAX_SHOWN_COUNT ? itemHeight * MAX_SHOWN_COUNT
+                            : itemHeight * mAdapter.getCount());
+            mListPopupWindow.show();
         });
         // 设置textView向下拖拽可下拉ListPopupWindow
         mSelected.setOnTouchListener(mListPopupWindow.createDragToOpenListener(mSelected));
