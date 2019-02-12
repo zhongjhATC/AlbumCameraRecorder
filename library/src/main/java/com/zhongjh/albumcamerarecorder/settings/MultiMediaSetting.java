@@ -42,26 +42,24 @@ public final class MultiMediaSetting {
     }
 
     /**
-     * Start Matisse from an Activity.
+     * 由Activity打开
      * <p>
-     * This Activity's {@link Activity#onActivityResult(int, int, Intent)} will be called when user
-     * finishes selecting.
+     * 当用户完成选择时，将调用此方法：{@link Activity#onActivityResult(int, int, Intent)}
      *
      * @param activity Activity instance.
-     * @return Matisse instance.
+     * @return this.
      */
     public static MultiMediaSetting from(Activity activity) {
         return new MultiMediaSetting(activity);
     }
 
     /**
-     * Start Matisse from a Fragment.
+     *  由Fragment打开
      * <p>
-     * This Fragment's {@link Fragment#onActivityResult(int, int, Intent)} will be called when user
-     * finishes selecting.
+     * 当用户完成选择时，将调用此方法： {@link Fragment#onActivityResult(int, int, Intent)}
      *
      * @param fragment Fragment instance.
-     * @return Matisse instance.
+     * @return this.
      */
     public static MultiMediaSetting from(Fragment fragment) {
         return new MultiMediaSetting(fragment);
@@ -116,42 +114,18 @@ public final class MultiMediaSetting {
     }
 
     /**
-     * Obtain state whether user decide to use selected media in original
-     *
-     * @param data Intent passed by {@link Activity#onActivityResult(int, int, Intent)} or
-     *             {@link Fragment#onActivityResult(int, int, Intent)}.
-     * @return Whether use original photo
-     */
-    public static boolean obtainOriginalState(Intent data) {
-        return data.getBooleanExtra(MatissFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-    }
-
-    /**
-     * MIME types the selection constrains on.
+     * 设置支持的类型
      * <p>
-     * Types not included in the set will still be shown in the grid but can't be chosen.
+     * 未包含在集合中的类型仍将显示在网格中，但无法选择。
      *
-     * @param mimeTypes MIME types set user can choose from.
-     * @return {@link GlobalSetting} to build select specifications.
+     * @param mimeTypes 类型
+     * @return {@link GlobalSetting} this
      * @see MimeType
      * @see GlobalSetting
      */
     public GlobalSetting choose(Set<MimeType> mimeTypes) {
         return new GlobalSetting(this, mimeTypes);
     }
-
-//    /**
-//     *
-//     * @param mimeTypes
-//     * @param mediaTypeExclusive Whether can choose images and videos at the same time during one single choosing
-//     *                           process. true corresponds to not being able to choose images and videos at the same
-//     *                           time, and false corresponds to being able to do this.
-//     * @return
-//     */
-//    public AlbumSetting chooseAlbum(Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
-//        return new AlbumSetting(mimeTypes, mediaTypeExclusive);
-//    }
-
 
     @Nullable
     Activity getActivity() {

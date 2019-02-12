@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
+import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;
@@ -73,10 +74,10 @@ public final class GlobalSetting {
     }
 
     /**
-     * Constructs a new specification builder on the context.
+     * 在上下文中构造新的规范生成器。
      *
-     * @param multiMediaSetting a requester context wrapper.
-     * @param mimeTypes         MIME type set to select.
+     * @param multiMediaSetting 在 requester context wrapper.
+     * @param mimeTypes         设置为选择的 {@link MimeType} 类型
      */
     GlobalSetting(MultiMediaSetting multiMediaSetting, @NonNull Set<MimeType> mimeTypes) {
         mMultiMediaSetting = multiMediaSetting;
@@ -101,15 +102,15 @@ public final class GlobalSetting {
     }
 
     /**
-     * Theme for media selecting Activity.
+     * 主题
      * <p>
-     * There are two built-in themes:
-     * 1. com.zhihu.matisse.R.style.Matisse_Zhihu;
-     * 2. com.zhihu.matisse.R.style.Matisse_Dracula
-     * you can define a custom theme derived from the above ones or other themes.
+     * 有两个内置主题：
+     * 1. R.style.AppTheme_Blue
+     * 2. R.style.AppTheme.Dracula
+     * 你可以定义从上述主题或其他主题派生的自定义主题。
      *
-     * @param themeId theme resource id. Default value is com.zhihu.matisse.R.style.Matisse_Zhihu.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param themeId 样式id. 默认为R.style.AppTheme_Blue
+     * @return {@link GlobalSetting} this
      */
     public GlobalSetting theme(@StyleRes int themeId) {
         mGlobalSpec.themeId = themeId;
@@ -117,14 +118,14 @@ public final class GlobalSetting {
     }
 
     /**
-     * Maximum selectable count.
+     * 最大可选计数
      *
-     * @param maxSelectable Maximum selectable count. Default value is 1.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param maxSelectable 最大可选计数。默认值为1.
+     * @return {@link GlobalSetting} this
      */
     public GlobalSetting maxSelectable(int maxSelectable) {
         if (maxSelectable < 1)
-            throw new IllegalArgumentException("maxSelectable must be greater than or equal to one");
+            throw new IllegalArgumentException("maxSelectable必须大于或等于1");
         mGlobalSpec.maxSelectable = maxSelectable;
         return this;
     }
@@ -132,10 +133,10 @@ public final class GlobalSetting {
     /**
      * 仅当 {@link AlbumSpec#mediaTypeExclusive} 设置为true并且您希望为图像和视频媒体类型设置不同的最大可选文件时才有用。
      *
-     * @param maxImageSelectable Maximum selectable count for image.
-     * @param maxVideoSelectable Maximum selectable count for video.
-     * @param maxVideoSelectable Maximum selectable count for audio.
-     * @return this
+     * @param maxImageSelectable imga的最大可选计数.
+     * @param maxVideoSelectable video的最大可选计数.
+     * @param maxAudioSelectable audio的最大可选计数.
+     * @return {@link GlobalSetting} this
      */
     public GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
         mGlobalSpec.maxImageSelectable = maxImageSelectable;
@@ -145,11 +146,10 @@ public final class GlobalSetting {
     }
 
     /**
-     * Capture strategy provided for the location to save photos including internal and external
-     * storage and also a authority for {@link android.support.v4.content.FileProvider}.
+     * 为保存内部和外部照片的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
      *
-     * @param captureStrategy {@link CaptureStrategy}, needed only when capturing is enabled.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param captureStrategy {@link CaptureStrategy}, 仅在启用捕获时需要
+     * @return {@link GlobalSetting} this
      */
     public GlobalSetting captureStrategy(CaptureStrategy captureStrategy) {
         mGlobalSpec.captureStrategy = captureStrategy;
@@ -157,28 +157,28 @@ public final class GlobalSetting {
     }
 
     /**
-     * Set the desired orientation of this activity.
+     * 设置此活动的所需方向。
      *
-     * @param orientation An orientation constant as used in {@link ScreenOrientation}.
-     *                    Default value is {@link android.content.pm.ActivityInfo#SCREEN_ORIENTATION_PORTRAIT}.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param orientation 设置此活动的所需方向。 {@link ScreenOrientation}. 默认值 {@link android.content.pm.ActivityInfo#SCREEN_ORIENTATION_PORTRAIT}.
+     * @return {@link GlobalSetting} this
      * @see Activity#setRequestedOrientation(int)
      */
+    @Deprecated
     public GlobalSetting restrictOrientation(@ScreenOrientation int orientation) {
         mGlobalSpec.orientation = orientation;
         return this;
     }
 
     /**
-     * Provide an image engine.
+     * 提供图像引擎。
      * <p>
-     * There are two built-in image engines:
+     * 有两个内置图像引擎：
      * 1. {@link GlideEngine}
      * 2. {@link PicassoEngine}
-     * And you can implement your own image engine.
+     * 你可以实现你自己的图像引擎。
      *
      * @param imageEngine {@link ImageEngine}
-     * @return {@link GlobalSetting} for fluent API.
+     * @return {@link GlobalSetting} this
      */
     public GlobalSetting imageEngine(ImageEngine imageEngine) {
         mGlobalSpec.imageEngine = imageEngine;
@@ -201,9 +201,9 @@ public final class GlobalSetting {
     }
 
     /**
-     * Start to select media and wait for result.
+     * 开始进行多媒体操作并等待结果.
      *
-     * @param requestCode Identity of the request Activity or Fragment.
+     * @param requestCode 请求活动或片段的标识.
      */
     public void forResult(int requestCode) {
         Activity activity = mMultiMediaSetting.getActivity();

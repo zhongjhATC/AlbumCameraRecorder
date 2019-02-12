@@ -22,9 +22,11 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 public interface OnSelectedListener {
+
     /**
-     * @param uriList the selected item {@link Uri} list.
-     * @param pathList the selected item file path list.
+     * @param uriList 所选项目{@link Uri} 列表.
+     * @param pathList 所选项目文件路径列表.
      */
     void onSelected(@NonNull List<Uri> uriList, @NonNull List<String> pathList);
+
 }

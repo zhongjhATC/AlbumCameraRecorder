@@ -198,12 +198,12 @@ public class MainActivity extends AppCompatActivity {
 
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
-        cameraSetting.supportSingleMediaType(false);// 仅仅支持一个相片
+        cameraSetting.mimeTypeSet(MimeType.ofImage());// 支持的类型：图片，视频
         cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
+                .mimeTypeSet(MimeType.ofImage())// 支持的类型：图片，视频
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 全局
         MultiMediaSetting.from(MainActivity.this)
-                .choose(MimeType.ofImage())
+                .choose(MimeType.ofAll())
                 .albumSetting(albumSetting)
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)

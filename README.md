@@ -37,14 +37,14 @@ Step 2. Add the dependency
 ## 使用   
 #### 在代码中打开设置（这方面最近继续完善）
  
-       // 拍摄有关设置
+        // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
-        cameraSetting.supportSingleMediaType(false);// 仅仅支持一个相片
+        cameraSetting.mimeTypeSet(MimeType.ofImage());// 支持的类型：图片，视频
         cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
+                .mimeTypeSet(MimeType.ofImage())// 支持的类型：图片，视频
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
@@ -69,7 +69,7 @@ Step 2. Add the dependency
 
         // 全局
         MultiMediaSetting.from(MainActivity.this)
-                .choose(MimeType.ofImage())
+                .choose(MimeType.ofAll())
                 .albumSetting(albumSetting)
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
@@ -82,3 +82,8 @@ Step 2. Add the dependency
                 .maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .forResult(REQUEST_CODE_CHOOSE);
+
+## 近期计划更新
+#### 1.0.1
+ - 进一步完善代码加强注释，方便阅读理解
+ - 完善Theme

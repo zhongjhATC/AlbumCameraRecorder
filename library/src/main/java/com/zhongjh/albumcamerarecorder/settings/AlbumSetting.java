@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder.settings;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 /**
+ * 相册设置
  * Created by zhongjh on 2018/12/27.
  */
 public class AlbumSetting {
@@ -33,8 +33,9 @@ public class AlbumSetting {
 
     /**
      * 支持的类型：图片，视频
+     * 这个优先于 {@link MultiMediaSetting#choose}
      * @param mimeTypes 类型
-     * @return this
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting mimeTypeSet(@NonNull Set<MimeType> mimeTypes) {
         mAlbumSpec.mimeTypeSet = mimeTypes;
@@ -42,10 +43,10 @@ public class AlbumSetting {
     }
 
     /**
-     * Whether to show only one media type if choosing medias are only images or videos.
+     * 如果选择的媒体仅为图像或视频，是否仅显示一种媒体类型。
      *
-     * @param showSingleMediaType whether to show only one media type, either images or videos.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param showSingleMediaType 是否只显示一种媒体类型，图像或视频。
+     * @return {@link AlbumSetting} this
      * @see AlbumSpec#onlyShowImages()
      * @see AlbumSpec#onlyShowVideos()
      */
@@ -55,24 +56,21 @@ public class AlbumSetting {
     }
 
     /**
-     * Show a auto-increased number or a check mark when user select media.
+     * 用户选择媒体时显示自动增加的数字或复选标记。
      *
-     * @param countable true for a auto-increased number from 1, false for a check mark. Default
-     *                  value is false.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param countable 如果是自动增加的数字，则为真；如果是复选标记，则为假。默认值为假。
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting countable(boolean countable) {
         mAlbumSpec.countable = countable;
         return this;
     }
 
-
-
     /**
-     * Add filter to filter each selecting item.
+     * 添加筛选器以筛选每个文件。
      *
      * @param filter {@link Filter}
-     * @return {@link GlobalSetting} for fluent API.
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting addFilter(@NonNull Filter filter) {
         if (mAlbumSpec.filters == null) {
@@ -84,10 +82,10 @@ public class AlbumSetting {
     }
 
     /**
-     * Show a original photo check options.Let users decide whether use original photo after select
+     * 显示原始照片检查选项。让用户在选择后决定是否使用原始照片
      *
-     * @param enable Whether to enable original photo or not
-     * @return {@link GlobalSetting} for fluent API.
+     * @param enable 是否启用原始照片
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting originalEnable(boolean enable) {
         mAlbumSpec.originalable = enable;
@@ -95,10 +93,10 @@ public class AlbumSetting {
     }
 
     /**
-     * Maximum original size,the unit is MB. Only useful when {link@originalEnable} set true
+     * 最大原始大小，单位为MB。 仅当 {@link #originalEnable} 设置为真时才有用
      *
-     * @param size Maximum original size. Default value is Integer.MAX_VALUE
-     * @return {@link GlobalSetting} for fluent API.
+     * @param size 最大原始大小.默认值为 Integer.MAX_VALUE
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting maxOriginalSize(int size) {
         mAlbumSpec.originalMaxSize = size;
@@ -106,11 +104,12 @@ public class AlbumSetting {
     }
 
     /**
-     * Capture strategy provided for the location to save photos including internal and external
-     * storage and also a authority for {@link android.support.v4.content.FileProvider}.
+     * 提供保存公有或者私有的文件路径
+     * 文件路径存储于 {@link android.support.v4.content.FileProvider}.
+     * 这个优先于 {@link GlobalSetting#captureStrategy}
      *
-     * @param captureStrategy {@link CaptureStrategy}, needed only when capturing is enabled.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param captureStrategy {@link CaptureStrategy},仅仅启用时才需要
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting captureStrategy(CaptureStrategy captureStrategy) {
         mAlbumSpec.captureStrategy = captureStrategy;
@@ -118,12 +117,12 @@ public class AlbumSetting {
     }
 
     /**
-     * Set a fixed span count for the media grid. Same for different screen orientations.
-     * <p>
-     * This will be ignored when {@link #gridExpectedSize(int)} is set.
+     * 设置媒体网格的固定跨度计数。不同屏幕方向相同。
      *
-     * @param spanCount Requested span count.
-     * @return {@link GlobalSetting} for fluent API.
+     * 设置时将忽略 {@link #gridExpectedSize(int)} 此项.
+     *
+     * @param spanCount 请求的范围计数
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting spanCount(int spanCount) {
         if (spanCount < 1) throw new IllegalArgumentException("spanCount cannot be less than 1");
@@ -132,12 +131,11 @@ public class AlbumSetting {
     }
 
     /**
-     * Set expected size for media grid to adapt to different screen sizes. This won't necessarily
-     * be applied cause the media grid should fill the view container. The measured media grid's
-     * size will be as close to this value as possible.
+     * 设置媒体网格的预期大小以适应不同的屏幕大小。
+     * 这不一定适用，因为媒体网格应该填充视图容器。测量的媒体网格大小将尽可能接近该值。
      *
-     * @param size Expected media grid size in pixel.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param size 预期的媒体网格大小（像素）.
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting gridExpectedSize(int size) {
         mAlbumSpec.gridExpectedSize = size;
@@ -145,29 +143,24 @@ public class AlbumSetting {
     }
 
     /**
-     * Photo thumbnail's scale compared to the View's size. It should be a float value in (0.0,
-     * 1.0].
+     * 照片缩略图的比例与视图的大小相比。它应该是(0.0,1.0] 中的浮点值.
      *
-     * @param scale Thumbnail's scale in (0.0, 1.0]. Default value is 0.5.
-     * @return {@link GlobalSetting} for fluent API.
+     * @param scale 缩略图的缩放比例（0.0，1.0）。默认值为0.5。
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting thumbnailScale(float scale) {
         if (scale <= 0f || scale > 1f)
-            throw new IllegalArgumentException("Thumbnail scale must be between (0.0, 1.0]");
+            throw new IllegalArgumentException("缩略图比例必须介于(0.0, 1.0]之间");
         mAlbumSpec.thumbnailScale = scale;
         return this;
     }
 
-
-
     /**
-     * Set listener for callback immediately when user select or unselect something.
+     * 当用户选择或取消选择某个内容时，立即为回调设置侦听器。
      * <p>
-     * It's a redundant API with {@link MultiMediaSetting#obtainResult(Intent)},
-     * we only suggest you to use this API when you need to do something immediately.
      *
      * @param listener {@link OnSelectedListener}
-     * @return {@link GlobalSetting} for fluent API.
+     * @return {@link AlbumSetting} this
      */
     @NonNull
     public AlbumSetting setOnSelectedListener(@Nullable OnSelectedListener listener) {
@@ -176,10 +169,10 @@ public class AlbumSetting {
     }
 
     /**
-     * Set listener for callback immediately when user check or uncheck original.
+     * 当用户选中或取消选中“原始”时，立即为回调设置侦听器。
      *
      * @param listener {@link OnSelectedListener}
-     * @return {@link GlobalSetting} for fluent API.
+     * @return {@link AlbumSetting} this
      */
     public AlbumSetting setOnCheckedListener(@Nullable OnCheckedListener listener) {
         mAlbumSpec.onCheckedListener = listener;

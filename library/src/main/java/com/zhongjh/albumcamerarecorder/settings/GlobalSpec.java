@@ -90,9 +90,14 @@ public class GlobalSpec {
             case ModuleTypes.ALBUM:
                 if (AlbumSpec.getInstance().mimeTypeSet != null)
                     return AlbumSpec.getInstance().mimeTypeSet;
+                else
+                    return GlobalSpec.getInstance().mimeTypeSet;
             case ModuleTypes.CAMERA:
                 if (CameraSpec.getInstance().mimeTypeSet != null)
                     return CameraSpec.getInstance().mimeTypeSet;
+                else
+                    return GlobalSpec.getInstance().mimeTypeSet;
+
         }
         return mimeTypeSet;
     }

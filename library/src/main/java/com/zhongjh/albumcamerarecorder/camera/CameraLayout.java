@@ -25,6 +25,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.entity.CameraButton;
@@ -41,6 +42,7 @@ import com.zhongjh.albumcamerarecorder.camera.widget.FoucsView;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
+import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
@@ -68,7 +70,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private MediaStoreCompat mMediaStoreCompat;
     private GlobalSpec mGlobalSpec;          // 公共配置
     private CameraSpec mCameraSpec; // 拍摄配置
-//    private CameraInterface mCameraInterface;// 拍摄操作类
+    //    private CameraInterface mCameraInterface;// 拍摄操作类
     private CameraOperation mCameraOperation;// 拍摄操作类
 //    private CameraOperation2 mCameraOperation2;// 拍摄操作类2
 
@@ -208,17 +210,28 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mViewHolder.pvLayout.setDuration(mCameraButton.getDuration());
 
         // 判断点击和长按的权限
-        if (mGlobalSpec.maxImageSelectable == 0){
-            // 禁用点击功能
-            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONGCLICK);
-            mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_camera));
-        }else if (mGlobalSpec.maxVideoSelectable == 0){
+        if (mCameraSpec.onlySupportImages()) {
             // 禁用长按功能
             mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
             mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take));
-        }else{
-            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_BOTH);
-            mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take_long_press_camera));
+        } else if (mCameraSpec.onlySupportVideos()) {
+            // 禁用点击功能
+            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONGCLICK);
+            mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_camera));
+        } else {
+            // 支持所有，不过要判断数量
+            if (mGlobalSpec.maxImageSelectable == 0) {
+                // 禁用点击功能
+                mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONGCLICK);
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_camera));
+            } else if (mGlobalSpec.maxVideoSelectable == 0) {
+                // 禁用长按功能
+                mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take));
+            } else {
+                mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_BOTH);
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take_long_press_camera));
+            }
         }
     }
 
@@ -593,7 +606,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     /**
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      *
-     * @param url        路径
+     * @param url 路径
      */
     public void playVideo(String url) {
         mVideoUrl = url;
