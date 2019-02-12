@@ -17,14 +17,15 @@
  
 ## 引入
 
-Step 1. Add the JitPack repository to your build file
+#### Step 1. Add the JitPack repository to your build file
+
 	allprojects {
 		repositories {
 			...
 			maven { url 'https://www.jitpack.io' }
 		}
 	}
-Step 2. Add the dependency
+#### Step 2. Add the dependency
 
 	dependencies {
 	        implementation 'com.github.zhongjhATC.AlbumCameraRecorder:library:1.0.0'         // 核心lib，调用显示相册、录屏、录音等
