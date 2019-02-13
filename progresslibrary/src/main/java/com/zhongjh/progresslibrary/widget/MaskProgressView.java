@@ -14,7 +14,7 @@ import com.zhongjh.progresslibrary.utils.DisplayMetricsUtils;
 
 /**
  * 用于图片、视频的加载进度的view
- *
+ * <p>
  * 可以考虑这个：https://github.com/dudu90/FreshDownloadView
  * Created by zhongjh on 2018/10/16.
  */
@@ -34,10 +34,38 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
     private int centerX;            // 字体的x位置
     private int centerY;            // 字体的y位置
 
-    private int maskingColor = R.attr.colorPrimary; // 遮罩颜色，默认用主颜色
-    private int textSize = DisplayMetricsUtils.dip2px(12);  // 显示在遮罩层的字体大小
-    private int textColor = Color.BLACK; // 显示在遮罩层的字体颜色
+    // region 属性
+
+    private int maskingColor; // 遮罩颜色，默认用主颜色
+    private int textSize ;  // 显示在遮罩层的字体大小
+    private int textColor; // 显示在遮罩层的字体颜色
     private String textString = "上传中";    // 加载中的文字
+
+    public void setMaskingColor(int maskingColor) {
+        this.maskingColor = maskingColor;
+        if (maskingPaint != null) {
+            maskingPaint.setColor(maskingColor);
+        }
+    }
+
+    public void setTextSize(int textSize) {
+        this.textSize = textSize;
+        if (textPaint != null) {
+            textPaint.setTextSize(DisplayMetricsUtils.dip2px(textSize));
+        }
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+        if (textPaint != null)
+            textPaint.setColor(textColor);
+    }
+
+    public void setTextString(String textString) {
+        this.textString = textString;
+    }
+
+    // endregion 属性
 
     public MaskProgressView(Context context) {
         this(context, null);
@@ -65,9 +93,8 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
 
         textPaint.setTextSize(textSize);
         textPaint.setColor(textColor);
-
-
     }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -142,42 +169,6 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
     public void reset() {
         this.percentage = 0;
         invalidate();
-    }
-
-    /**
-     * 赋值
-     *
-     * @param maskingColor 遮罩的颜色
-     */
-    public void setMaskingColor(String maskingColor) {
-        if (null != maskingPaint) {
-            maskingPaint.setColor(Color.parseColor(maskingColor));
-        }
-    }
-
-    /**
-     * 赋值
-     *
-     * @param textSize 进度字体大小
-     */
-    public void setTextSize(int textSize) {
-        if (null != textPaint) {
-            textPaint.setTextSize(textSize);
-        }
-
-
-    }
-
-    /**
-     * 赋值
-     *
-     * @param textColor 进度颜色
-     */
-    public void setTextColor(String textColor) {
-        if (null != textPaint) {
-            textPaint.setColor(Color.parseColor(textColor));
-        }
-
     }
 
 

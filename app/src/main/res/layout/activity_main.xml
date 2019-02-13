@@ -14,6 +14,10 @@
         app:audioPlayColor="@color/white"
         app:audioProgressColor="@color/white"
         app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
+        app:maskingColor="?attr/colorPrimary"
+        app:maskingTextColor="@color/black_eighty_percent"
+        app:maskingTextContent="上传中可自定义"
+        app:maskingTextSize="12"
         app:maxCount="10" />
 
     <TextView

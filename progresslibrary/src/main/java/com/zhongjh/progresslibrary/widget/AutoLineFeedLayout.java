@@ -35,6 +35,10 @@ public class AutoLineFeedLayout extends ViewGroup {
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     private ImageEngine imageEngine;   // 图片加载方式
     private Drawable placeholder; // 默认图片
+    private int maskingColor; // 有关遮罩层
+    private int maskingTextSize;// 有关遮罩层
+    private int maskingTextColor;// 有关遮罩层
+    private String maskingTextContent;// 有关遮罩层
     private MaskProgressLayoutListener listener;   // 点击事件
     private int LEFT_RIGHT_SPACE = 10; //dip
     private int ROW_SPACE = 10;
@@ -65,10 +69,14 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 初始化赋值配置
      */
-    public void initConfig(ImageEngine imageEngine, Drawable placeholder, int maxMediaCount) {
+    public void initConfig(ImageEngine imageEngine, Drawable placeholder, int maxMediaCount, int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent) {
         this.placeholder = placeholder;
         this.imageEngine = imageEngine;
         this.maxMediaCount = maxMediaCount;
+        this.maskingColor = maskingColor;
+        this.maskingTextSize = maskingTextSize;
+        this.maskingTextColor = maskingTextColor;
+        this.maskingTextContent = maskingTextContent;
     }
 
     /**
@@ -80,7 +88,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         MultiMedia multiMedia = new MultiMedia(ADD, -1);
         multiMedias.add(multiMedia);
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+        viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null), maskingColor, maskingTextSize, maskingTextColor, maskingTextContent);
         viewHolderAdd.bind(multiMedia);
         addView(viewHolderAdd.itemView);
     }
@@ -100,7 +108,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (imageList != null && imageList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             for (MultiMedia multiMedia : multiMedias) {
-                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null), maskingColor, maskingTextSize, maskingTextColor, maskingTextContent);
                 viewHolder.bind(multiMedia);
                 addView(viewHolder.itemView, endingPostion);
                 this.listener.onItemStartUploading(multiMedia);
@@ -122,7 +130,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (imageList != null && imageList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             for (MultiMedia multiMedia : multiMedias) {
-                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null), maskingColor, maskingTextSize, maskingTextColor, maskingTextContent);
                 viewHolder.bind(multiMedia);
                 addView(viewHolder.itemView, 0);
                 this.listener.onItemStartUploading(multiMedia);
@@ -232,7 +240,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 检查最后一个是否是添加
      */
     private void checkLastImages() {
-        if ((imageList.size() + videoList.size() ) < maxMediaCount) {
+        if ((imageList.size() + videoList.size()) < maxMediaCount) {
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
             viewHolderAdd.itemView.setVisibility(View.GONE);
@@ -247,11 +255,15 @@ public class AutoLineFeedLayout extends ViewGroup {
         private MultiMedia multiMedia;
 
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent) {
             super(itemView);
             mpvImage = itemView.findViewById(R.id.mpvImage);
             imgClose = itemView.findViewById(R.id.imgClose);
             imgPlay = itemView.findViewById(R.id.imgPlay);
+            mpvImage.setMaskingColor(maskingColor);
+            mpvImage.setTextSize(maskingTextSize);
+            mpvImage.setTextColor(maskingTextColor);
+            mpvImage.setTextString(maskingTextContent);
         }
 
         public void bind(MultiMedia multiMedia) {

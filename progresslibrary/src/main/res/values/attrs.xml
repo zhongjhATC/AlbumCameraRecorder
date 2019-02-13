@@ -10,6 +10,12 @@
         <attr name="audioProgressColor" format="color"/><!-- 音频文件的进度条颜色 -->
         <attr name="audioPlayColor" format="color"/><!-- 音频文件的播放按钮颜色 -->
 
+        <!-- 遮罩层 -->
+        <attr name="maskingColor" format="color"/><!-- 遮罩颜色，默认用主颜色 -->
+        <attr name="maskingTextSize" format="integer"/><!-- 显示在遮罩层的字体大小 -->
+        <attr name="maskingTextColor" format="color"/><!-- 显示在遮罩层的字体颜色 -->
+        <attr name="maskingTextContent" format="string"/><!-- 显示在遮罩层加载中的文字 -->
+
     </declare-styleable>
 
 
