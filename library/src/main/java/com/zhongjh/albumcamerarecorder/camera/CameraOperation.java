@@ -85,9 +85,6 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
     private int mCameraAngle = 90;      //摄像头角度   默认为后置摄像头90度 前置摄像头180度 270度是
     private int mPictureAngle;          // 拍照后给予照片的角度，通过当前手机角度、摄像头角度计算
     private int mImageViewRotation = 0; // 用于判断当前图片的旋转角度跟mPhoneAngle是否一样，如果不一样就做相应操作
-
-    private byte[] mPreviewFrameData; // 照相机返回的数据源
-
     private int mHandlerFocusTime;// 处理焦点
 
     CameraCallback.TakePictureCallback mTakePictureCallback; // 拍照回调事件
@@ -110,7 +107,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        mPreviewFrameData = data;
+
     }
 
     /**

@@ -84,11 +84,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private ViewHolder mViewHolder;
 
-    public static MatissFragment newInstance(int page, String title) {
+    public static MatissFragment newInstance() {
         MatissFragment matissFragment = new MatissFragment();
         Bundle args = new Bundle();
-        args.putInt("someInt", page);
-        args.putString("someTitle", title);
         matissFragment.setArguments(args);
         return matissFragment;
     }

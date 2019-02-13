@@ -26,7 +26,6 @@ import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
  */
 public class MainActivity extends AppCompatActivity {
 
-    private GlobalSpec mSpec;
     FragmentPagerAdapter adapterViewPager;
 
     // 底部控件
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mSpec = GlobalSpec.getInstance();
+        GlobalSpec mSpec = GlobalSpec.getInstance();
         setTheme(mSpec.themeId);
         super.onCreate(savedInstanceState);
         // @@确认是否进行了配置
@@ -177,9 +176,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (mTitles.get(position)) {
                 case "相册":
-                    return MatissFragment.newInstance(0, "相册");
+                    return MatissFragment.newInstance();
                 case "拍照":
-                    return CameraFragment.newInstance(1, "拍照", COLLECTION_IMAGE);
+                    return CameraFragment.newInstance();
                 case "录音":
                     return SoundRecordingFragment.newInstance();
                 default:

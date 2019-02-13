@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
     private ImageView photo;
-    private TextView device;
     public MaskProgressLayout mplImageList;
     private HashMap<MultiMedia,MyTask> timers = new HashMap<>();
 
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        device = findViewById(R.id.device);
+        TextView device = findViewById(R.id.device);
         device.setText(DeviceUtil.getDeviceInfo());
         mplImageList = findViewById(R.id.mplImageList);
         mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {

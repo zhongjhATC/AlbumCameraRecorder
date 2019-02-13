@@ -41,4 +41,70 @@ public final class CameraSetting {
         return this;
     }
 
+    /**
+     * 最长录制时间,默认10秒
+     *
+     * @param duration 最长录制时间,单位为秒
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public CameraSetting duration(int duration) {
+        mCameraSpec.duration = duration;
+        return this;
+    }
+
+    /**
+     * 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+     *
+     * @param minDuration 最短录制时间限制，单位为毫秒
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public CameraSetting minDuration(int minDuration) {
+        mCameraSpec.minDuration = minDuration;
+        return this;
+    }
+
+    /**
+     * 更换 切换前置/后置摄像头图标资源
+     *
+     * @param imageSwitch 切换前置/后置摄像头图标资源
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public CameraSetting imageSwitch(int imageSwitch) {
+        mCameraSpec.imageSwitch = imageSwitch;
+        return this;
+    }
+
+    /**
+     * 更换 闪光灯开启状态图标
+     *
+     * @param imageFlashOn 闪光灯开启状态图标
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public CameraSetting imageFlashOn(int imageFlashOn) {
+        mCameraSpec.imageFlashOn = imageFlashOn;
+        return this;
+    }
+
+    /**
+     * 更换 闪光灯关闭状态图标
+     *
+     * @param imageFlashOff 闪光灯关闭状态图标
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public CameraSetting imageFlashOff(int imageFlashOff) {
+        mCameraSpec.imageFlashOff = imageFlashOff;
+        return this;
+    }
+
+    /**
+     * 更换 闪光灯自动状态图标
+     *
+     * @param imageFlashAuto 闪光灯自动状态图标
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    public CameraSetting imageFlashAuto(int imageFlashAuto) {
+        mCameraSpec.imageFlashAuto = imageFlashAuto;
+        return this;
+    }
+
 }

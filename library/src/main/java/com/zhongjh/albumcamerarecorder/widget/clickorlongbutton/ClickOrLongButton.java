@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
-import android.hardware.camera2.CameraCharacteristics;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -38,8 +37,6 @@ public class ClickOrLongButton extends View {
     private int OUTER_CIRCLE_WIDTH_INC;
     private float INNER_CIRCLE_RADIUS;
 
-    private CameraCharacteristics mCameraCharacteristics;
-
     private TouchTimeHandler touchTimeHandler;
     private boolean touchable;
     private boolean recordable;
@@ -54,9 +51,6 @@ public class ClickOrLongButton extends View {
     private int colorWhite;
     private int colorRecord;
     private int colorWhiteP60;
-    private int colorBlackP40;
-    private int colorBlackP80;
-    private int colorTranslucent;
     //top
     private float startAngle270;
     private float percentInDegree;
@@ -65,7 +59,6 @@ public class ClickOrLongButton extends View {
     private Paint processBarPaint;
     private Paint outMostWhiteCirclePaint;
     private Paint translucentPaint;
-    private Context mContext;
     private int translucentCircleRadius = 0;
     private float outMostCircleRadius;
     private float innerCircleRadiusWhenRecord;
@@ -135,19 +128,16 @@ public class ClickOrLongButton extends View {
 
     public ClickOrLongButton(Context paramContext) {
         super(paramContext);
-        mContext = paramContext;
         init();
     }
 
     public ClickOrLongButton(Context paramContext, AttributeSet paramAttributeSet) {
         super(paramContext, paramAttributeSet);
-        mContext = paramContext;
         init();
     }
 
     public ClickOrLongButton(Context paramContext, AttributeSet paramAttributeSet, int paramInt) {
         super(paramContext, paramAttributeSet, paramInt);
-        mContext = paramContext;
         init();
     }
 
@@ -160,9 +150,9 @@ public class ClickOrLongButton extends View {
         colorRecord = getResources().getColor(R.color.app_color);
         colorWhite = getResources().getColor(R.color.white);
         colorWhiteP60 = getResources().getColor(R.color.white_sixty_percent);
-        colorBlackP40 = getResources().getColor(R.color.black_forty_percent);
-        colorBlackP80 = getResources().getColor(R.color.black_eighty_percent);
-        colorTranslucent = getResources().getColor(R.color.circle_shallow_translucent_bg);
+        int colorBlackP40 = getResources().getColor(R.color.black_forty_percent);
+        int colorBlackP80 = getResources().getColor(R.color.black_eighty_percent);
+        int colorTranslucent = getResources().getColor(R.color.circle_shallow_translucent_bg);
         processBarPaint = new Paint();
         processBarPaint.setColor(colorRecord);
         processBarPaint.setAntiAlias(true);
@@ -340,6 +330,15 @@ public class ClickOrLongButton extends View {
     }
 
     /**
+     * 最短录制时间
+     *
+     * @param duration 时间
+     */
+    public void setMinDuration(int duration){
+        mMinDuration = duration;
+    }
+
+    /**
      * 设置回调接口
      *
      * @param clickOrLongListener 回调接口
@@ -365,15 +364,6 @@ public class ClickOrLongButton extends View {
      */
     public void resetState() {
         recordState = RECORD_NOT_STARTED;// 回到初始状态
-    }
-
-    /**
-     * 摄像机的一些属性设置
-     *
-     * @param characteristics
-     */
-    public void setCharacteristics(CameraCharacteristics characteristics) {
-        mCameraCharacteristics = characteristics;
     }
 
     // endregion

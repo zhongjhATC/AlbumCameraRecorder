@@ -25,10 +25,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.camera.entity.CameraButton;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.CloseListener;
@@ -42,7 +40,6 @@ import com.zhongjh.albumcamerarecorder.camera.widget.FoucsView;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
-import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
@@ -81,7 +78,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     private int mLayoutWidth; // 整体宽度
     private float mScreenProp = 0f; // 当前录视频的高/宽的比例
-    private int mZoomGradient = 0;  //缩放梯度 @@
 
     public ViewHolder mViewHolder; // 当前界面的所有控件
 
@@ -92,10 +88,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, View> mCaptureViews = new HashMap<>();      // 拍照的图片控件-集合
     private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
-
     private String mVideoUrl;         // 视频URL
-
-    private CameraButton mCameraButton; // 摄像头按钮
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -140,17 +133,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public CameraLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        // 获取属性
-        TypedArray cameraViewTypedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AlbumCameraRecorderCameraView, defStyleAttr, 0);
-        mCameraButton = new CameraButton();
-        mCameraButton.setIconSize(cameraViewTypedArray.getDimensionPixelSize(R.styleable.AlbumCameraRecorderCameraView_iconSize, (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, 35, getResources().getDisplayMetrics())));
-        mCameraButton.setIconMargin(cameraViewTypedArray.getDimensionPixelSize(R.styleable.AlbumCameraRecorderCameraView_iconMargin, (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics())));
-        mCameraButton.setIconSrc(cameraViewTypedArray.getResourceId(R.styleable.AlbumCameraRecorderCameraView_iconSrc, R.drawable.ic_camera));
-        mCameraButton.setDuration(cameraViewTypedArray.getInteger(R.styleable.AlbumCameraRecorderCameraView_duration_max, 10 * 1000));
-        // google建议回收对象
-        cameraViewTypedArray.recycle();
         initData();
         initView();
         initLisenter();
@@ -187,8 +169,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         }
 
         mLayoutWidth = DisplayMetricsSPUtils.getScreenWidth(mContext);
-        //缩放梯度
-        mZoomGradient = (int) (mLayoutWidth / 16f);
 
         mCameraOperation = new CameraOperation(mContext, this, (bitmap, isVertical) -> {
             // 显示图片
@@ -207,7 +187,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         View view = LayoutInflater.from(mContext).inflate(R.layout.main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
         setFlashLamp(); // 设置闪光灯模式
-        mViewHolder.pvLayout.setDuration(mCameraButton.getDuration());
+        mViewHolder.pvLayout.setDuration(mCameraSpec.duration * 1000);// 设置录制时间
+        mViewHolder.pvLayout.setMinDuration(mCameraSpec.minDuration);// 最短录制时间
+        mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
 
         // 判断点击和长按的权限
         if (mCameraSpec.onlySupportImages()) {
@@ -443,7 +425,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     /**
      * 针对当前状态重新设置状态
      *
-     * @param type
+     * @param type 类型
      */
     public void resetState(int type) {
         switch (type) {
@@ -773,15 +755,15 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private void setFlashLamp() {
         switch (mFlashType) {
             case Constants.TYPE_FLASH_AUTO:
-                mViewHolder.imgFlash.setImageResource(R.drawable.ic_flash_auto);
+                mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashAuto);
                 mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
                 break;
             case Constants.TYPE_FLASH_ON:
-                mViewHolder.imgFlash.setImageResource(R.drawable.ic_flash_on);
+                mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOn);
                 mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
                 break;
             case Constants.TYPE_FLASH_OFF:
-                mViewHolder.imgFlash.setImageResource(R.drawable.ic_flash_off);
+                mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOff);
                 mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                 break;
         }

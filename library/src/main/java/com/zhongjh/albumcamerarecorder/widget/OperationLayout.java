@@ -273,6 +273,15 @@ public abstract class OperationLayout extends FrameLayout {
     }
 
     /**
+     * 最短录制时间
+     *
+     * @param duration 时间
+     */
+    public void setMinDuration(int duration){
+        mViewHolder.btnClickOrLong.setMinDuration(duration);
+    }
+
+    /**
      * 重置本身
      */
     public void reset() {

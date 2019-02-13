@@ -41,16 +41,10 @@ public class CameraFragment extends Fragment {
     protected Activity mActivity;
 
     private CameraLayout mCameraLayout;
-    private String title;
-    private int page;
-    private int mCollectionType = COLLECTION_UNDEFINED; // 类型
 
-    public static CameraFragment newInstance(int page, String title, int collectionType) {
+    public static CameraFragment newInstance() {
         CameraFragment cameraFragment = new CameraFragment();
         Bundle args = new Bundle();
-        args.putInt("someInt", page);
-        args.putString("someTitle", title);
-        args.putInt("collectionType", collectionType);
         cameraFragment.setArguments(args);
         return cameraFragment;
     }
@@ -64,12 +58,6 @@ public class CameraFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            page = getArguments().getInt("someInt", 0);
-            title = getArguments().getString("someTitle");
-            mCollectionType = getArguments().getInt("collectionType");
-            mCollectionType = getArguments().getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
-        }
     }
 
     @Override
