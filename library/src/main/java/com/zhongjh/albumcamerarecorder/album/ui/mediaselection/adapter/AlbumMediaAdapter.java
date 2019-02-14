@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -31,10 +32,10 @@ import com.zhongjh.albumcamerarecorder.album.base.RecyclerViewCursorAdapter;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.MediaGrid;
+import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 
 /**
  * 相册适配器
@@ -65,10 +66,9 @@ public class AlbumMediaAdapter extends
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // 相片的item
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_grid_item, parent, false);
-        return new MediaViewHolder(v);
+        return new MediaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.media_grid_item, parent, false));
     }
 
 

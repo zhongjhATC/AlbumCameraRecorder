@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 /**
  * 有关 Camera 的回调
  */
-public interface CameraCallback {
+interface CameraCallback {
 
     interface CameraOpenOverCallback {
         void cameraHasOpened();
@@ -25,6 +25,7 @@ public interface CameraCallback {
 
         /**
          * 停止录像的回调
+         *
          * @param url 视频地址
          */
         void recordResult(String url);
@@ -38,7 +39,6 @@ public interface CameraCallback {
     interface TakePictureCallback {
         void captureResult(Bitmap bitmap, boolean isVertical);
     }
-
 
 
 }

@@ -29,9 +29,9 @@ public class AutoLineFeedLayout extends ViewGroup {
     private final static String TAG = "AutoLineFeedLayout";
 
     // region 相关属性
-    List<MultiMedia> imageList = new ArrayList<>();     // 图片数据
-    List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
-    List<MultiMedia> audioList = new ArrayList<>();     // 音频数据
+    private List<MultiMedia> imageList = new ArrayList<>();     // 图片数据
+    private List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
+    private List<MultiMedia> audioList = new ArrayList<>();     // 音频数据
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     private ImageEngine imageEngine;   // 图片加载方式
     private Drawable placeholder; // 默认图片
@@ -42,8 +42,8 @@ public class AutoLineFeedLayout extends ViewGroup {
     private MaskProgressLayoutListener listener;   // 点击事件
     private int LEFT_RIGHT_SPACE = 10; //dip
     private int ROW_SPACE = 10;
-    public final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";     // 用于判断最后一个添加符号标签图片
-    ViewHolder viewHolderAdd;
+    private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";     // 用于判断最后一个添加符号标签图片
+    private ViewHolder viewHolderAdd;
 
     public void setListener(MaskProgressLayoutListener listener) {
         this.listener = listener;

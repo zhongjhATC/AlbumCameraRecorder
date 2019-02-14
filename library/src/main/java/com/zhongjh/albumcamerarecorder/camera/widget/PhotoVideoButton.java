@@ -40,9 +40,9 @@ public class PhotoVideoButton extends View {
     private int mState;              // 当前按钮状态
     private int mButtonState;        // 按钮可执行的功能状态（拍照,录制,两者）
 
-    private int mProgressColor = 0xEE16AE16;            // 进度条颜色
-    private int mOutsideColor = 0xEEDCDCDC;             // 外圆背景色
-    private int mInsideColor = 0xFFFFFFFF;              // 内圆背景色
+    private final static int mProgressColor = 0xEE16AE16;            // 进度条颜色
+    private final static int mOutsideColor = 0xEEDCDCDC;             // 外圆背景色
+    private final static int mInsideColor = 0xFFFFFFFF;              // 内圆背景色
     private int mButtonSize;                // 按钮大小
     private float mButtonRadius;            // 按钮半径
     private float mButtonOutsideRadius;     // 外圆半径

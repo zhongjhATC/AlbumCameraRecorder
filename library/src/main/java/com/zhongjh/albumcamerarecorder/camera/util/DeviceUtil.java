@@ -18,11 +18,9 @@ public class DeviceUtil {
     };
 
     public static String getDeviceInfo() {
-        String handSetInfo =
-                "手机型号：" + Build.DEVICE +
-                        "\n系统版本：" + Build.VERSION.RELEASE +
-                        "\nSDK版本：" + Build.VERSION.SDK_INT;
-        return handSetInfo;
+        return "手机型号：" + Build.DEVICE +
+                "\n系统版本：" + Build.VERSION.RELEASE +
+                "\nSDK版本：" + Build.VERSION.SDK_INT;
     }
 
     public static String getDeviceModel() {

@@ -38,7 +38,7 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RES
  */
 public class CameraFragment extends Fragment {
 
-    protected Activity mActivity;
+    private Activity mActivity;
 
     private CameraLayout mCameraLayout;
 

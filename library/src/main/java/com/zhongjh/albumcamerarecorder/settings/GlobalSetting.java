@@ -219,7 +219,7 @@ public final class GlobalSetting {
         if (mGlobalSpec.cameraSetting != null) {
             numItems++;
         }
-        if (mGlobalSpec.recorderSetting != null) {
+        if (mGlobalSpec.recorderSetting != null && numItems <= 0) {
             if (mGlobalSpec.maxAudioSelectable > 0) {
                 numItems++;
             } else {
@@ -228,7 +228,6 @@ public final class GlobalSetting {
                 }else{
                     Toast.makeText(activity.getApplicationContext(), "录音已经达到上限", Toast.LENGTH_LONG).show();
                 }
-                return;
             }
         }
         if (numItems <= 0) {

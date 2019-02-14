@@ -5,10 +5,10 @@ import android.graphics.Rect;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 
 /**
+ * 相机接口
  * Created by zhongjh on 2019/1/2.
  */
-
-public interface CameraInterface {
+interface CameraInterface {
 
     /**
      * 切换摄像头

@@ -23,7 +23,6 @@ public class RecordingService extends Service {
 
     private static final String LOG_TAG = "RecordingService";
 
-    private String mFileName = null;
     private String mFilePath = null;
 
     private MediaRecorder mRecorder = null;
@@ -32,12 +31,10 @@ public class RecordingService extends Service {
 //    private DBHelper mDatabase;  @Deprecated
 
     private long mStartingTimeMillis = 0;
-    private long mElapsedMillis = 0;
     private int mElapsedSeconds = 0;
     private OnTimerChangedListener onTimerChangedListener = null;
     private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
 
-    private Timer mTimer = null;
     private TimerTask mIncrementTimerTask = null;
 
     @Override
@@ -105,7 +102,7 @@ public class RecordingService extends Service {
             count++;
 
 //            mFileName = "我的录音" + "_" + (mDatabase.getCount() + count) + ".mp4"; @Deprecated
-            mFileName = "myRecordingTemp_" + System.currentTimeMillis() + ".mp4";
+            String mFileName = "myRecordingTemp_" + System.currentTimeMillis() + ".mp4";
             mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFilePath += "/SoundRecorder/" + mFileName;
 
@@ -115,7 +112,7 @@ public class RecordingService extends Service {
 
     public void stopRecording() {
         mRecorder.stop();
-        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+        long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
 //        Toast.makeText(BaseApplication.getInstance(),  "录音保存到 " + mFilePath, Toast.LENGTH_LONG).show();
 
@@ -143,7 +140,7 @@ public class RecordingService extends Service {
     }
 
     private void startTimer() {
-        mTimer = new Timer();
+        Timer mTimer = new Timer();
         mIncrementTimerTask = new TimerTask() {
             @Override
             public void run() {

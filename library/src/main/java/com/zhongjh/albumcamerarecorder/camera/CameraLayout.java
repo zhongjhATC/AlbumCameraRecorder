@@ -427,7 +427,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      *
      * @param type 类型
      */
-    public void resetState(int type) {
+    private void resetState(int type) {
         switch (type) {
             case TYPE_VIDEO:
                 stopVideo();    //停止播放
@@ -456,7 +456,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      *
      * @param type
      */
-    public void confirmState(int type) {
+    private void confirmState(int type) {
         switch (type) {
             case TYPE_VIDEO:
                 // 录视频完成
@@ -591,7 +591,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      *
      * @param url 路径
      */
-    public void playVideo(String url) {
+    private void playVideo(String url) {
         mVideoUrl = url;
         new Thread(() -> {
             if (mMediaPlayer == null) {
@@ -627,7 +627,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     /**
      * 停止播放视频
      */
-    public void stopVideo() {
+    private void stopVideo() {
         if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
@@ -642,7 +642,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      * @param y 坐标y
      * @return 是否在点击范围内
      */
-    public boolean handlerFoucs(float x, float y) {
+    private boolean handlerFoucs(float x, float y) {
         if (y > mViewHolder.pvLayout.getTop()) {
             return false;
         }
@@ -673,7 +673,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      *
      * @return 状态
      */
-    public int getState() {
+    private int getState() {
         return mState;
     }
 
@@ -682,7 +682,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      *
      * @param state 状态
      */
-    public void setState(int state) {
+    private void setState(int state) {
         this.mState = state;
     }
 

@@ -25,7 +25,6 @@ import java.util.Set;
 
 /**
  * Filter for choosing a {@link Item}. You can add multiple Filters through
- * {@link SelectionCreator#addFilter(Filter)}.
  */
 @SuppressWarnings("unused")
 public abstract class Filter {

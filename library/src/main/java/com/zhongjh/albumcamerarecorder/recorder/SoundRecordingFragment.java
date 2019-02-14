@@ -67,14 +67,13 @@ public class SoundRecordingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false);
-        mViewHolder = new ViewHolder(view);
+        mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
         // 设置录音最长录制时间30秒
         mViewHolder.pvLayout.setDuration(30000);
         // 设置只能长按
         mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONGCLICK);
         initListener();
-        return view;
+        return mViewHolder.rootView;
     }
 
     /**

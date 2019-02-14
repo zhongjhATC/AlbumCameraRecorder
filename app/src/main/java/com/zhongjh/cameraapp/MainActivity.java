@@ -238,7 +238,6 @@ public class MainActivity extends AppCompatActivity {
                 .imageEngine(new Glide4Engine())    // for glide-V4
                 .maxSelectable(10 - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
                 .maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
-                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

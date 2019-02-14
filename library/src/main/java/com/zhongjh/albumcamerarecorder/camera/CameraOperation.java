@@ -87,7 +87,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
     private int mImageViewRotation = 0; // 用于判断当前图片的旋转角度跟mPhoneAngle是否一样，如果不一样就做相应操作
     private int mHandlerFocusTime;// 处理焦点
 
-    CameraCallback.TakePictureCallback mTakePictureCallback; // 拍照回调事件
+    private CameraCallback.TakePictureCallback mTakePictureCallback; // 拍照回调事件
 
     /**
      * @param context             上下文

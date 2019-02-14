@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class PictureProgressBar extends View {
     private final String TAG = "PictureProgressBar";
     //画笔
-    private Paint paintPicture, paintBackGround, paintBar;
+    private Paint paintBackGround, paintBar;
     //颜色
     private int backGroundColor = Color.GRAY, barColor = Color.RED;
     //图片
@@ -75,11 +75,11 @@ public class PictureProgressBar extends View {
 
     private boolean isAnimRun = true;
     //动画模式
-    private final int ANIM_NULL = 0;
-    private final int ANIM_ROTATE = 1;
-    private final int ANIM_SCALE = 2;
-    private final int ANIM_ROTATE_SCALE = 3;
-    private final int ANIM_FRAME = 4;
+    private final static int ANIM_NULL = 0;
+    private final static int ANIM_ROTATE = 1;
+    private final static int ANIM_SCALE = 2;
+    private final static int ANIM_ROTATE_SCALE = 3;
+    private final static int ANIM_FRAME = 4;
     private int animMode = ANIM_NULL;
 
     private int rotateRate = 10;
@@ -92,7 +92,7 @@ public class PictureProgressBar extends View {
     //帧动画图片
     private int drawableIds[];
     private ArrayList<Drawable> drawableList = new ArrayList<>();
-    ;
+
     private int frameIndex = 0;
     private int gradientStartColor = Color.RED, gradientEndColor = Color.YELLOW;
 
@@ -145,8 +145,6 @@ public class PictureProgressBar extends View {
     //初始化
     private void init() {
         //初始化画笔
-        paintPicture = new Paint();
-
         paintBackGround = new Paint();
         paintBackGround.setColor(backGroundColor);
 
@@ -232,13 +230,11 @@ public class PictureProgressBar extends View {
         }
     }
 
-    //对backgroundDrawable和barDrawable的图片进行缩放以适应进度条的高度，平铺填充
+    // 对backgroundDrawable和barDrawable的图片进行缩放以适应进度条的高度，平铺填充
     private void updateDrawableBounds(int h) {
         if (backgroundDrawable != null && barDrawable != null) {
             int bgWidth = 0;
-            int bgHeight = h;
             int barWidth = 0;
-            int barHeight = h;
             // 根据Drawable资源的宽高计算缩放比例。
             int intrinsicWidth = backgroundDrawable.getIntrinsicWidth();
             int intrinsicHeight = backgroundDrawable.getIntrinsicHeight();
@@ -251,9 +247,9 @@ public class PictureProgressBar extends View {
             barWidth = (int) (h * barIntrinsicAspect);
 
             float bgScaleX = (float) bgWidth / intrinsicWidth;
-            float bgScaleY = (float) bgHeight / intrinsicHeight;
+            float bgScaleY = (float) h / intrinsicHeight;
             float barScaleX = (float) barWidth / barIntrinsicWidth;
-            float barScaleY = (float) barHeight / barIntrinsicHeight;
+            float barScaleY = (float) h / barIntrinsicHeight;
 
             Matrix bgMatrix = new Matrix();
             bgMatrix.postScale(bgScaleX, bgScaleY);
@@ -634,9 +630,9 @@ public class PictureProgressBar extends View {
     //进度监听器
     public interface OnProgressChangeListener {
         //进度改变时的回调
-        public void onOnProgressChange(int progress);
+        void onOnProgressChange(int progress);
 
         //进度完成时的回调
-        public void onOnProgressFinish();
+        void onOnProgressFinish();
     }
 }
