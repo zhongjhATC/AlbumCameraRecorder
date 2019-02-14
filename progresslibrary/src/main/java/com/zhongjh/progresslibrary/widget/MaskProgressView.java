@@ -2,14 +2,12 @@ package com.zhongjh.progresslibrary.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.utils.DisplayMetricsUtils;
 
 /**
@@ -83,7 +81,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
     /**
      * 初始化
      */
-    public void init() {
+    private void init() {
         rect = new Rect();
         maskingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -103,8 +101,6 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
 
     /**
      * 每次绘画
-     *
-     * @param canvas
      */
     @Override
     protected void onDraw(Canvas canvas) {
@@ -179,7 +175,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
      * @return 返回大小
      */
     private int measureSize(int MeasureSpecSize) {
-        int size = 0;
+        int size;
         int[] ints = measureSpec(MeasureSpecSize);
         // 判断模式
         if (ints[0] == MeasureSpec.EXACTLY) {

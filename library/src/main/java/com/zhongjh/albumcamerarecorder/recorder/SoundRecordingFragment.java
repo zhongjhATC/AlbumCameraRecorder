@@ -28,14 +28,12 @@ import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONGCLICK;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
-import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
 
 /**

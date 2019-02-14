@@ -55,7 +55,7 @@ public class OperationButton extends View {
         setMeasuredDimension(mButtonSize, mButtonSize);
     }
 
-    public void init( int type, int size) {
+    private void init( int type, int size) {
         this.mButtonType = type;
         this.mButtonSize = size;
         this.mButtonRadius = size / 2.0f;

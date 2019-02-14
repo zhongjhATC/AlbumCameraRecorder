@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 

@@ -1,8 +1,5 @@
 package com.zhongjh.albumcamerarecorder.album;
 
-/**
- * Created by zhongjh on 2018/8/23.
- */
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -57,6 +54,7 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RES
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
+ * 相册
  * Created by zhongjh on 2018/8/22.
  */
 public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks,
@@ -64,13 +62,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
 
-    public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
+    private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     private static final int REQUEST_CODE_PREVIEW = 23;     // 预览
     private static final int REQUEST_CODE_CAPTURE = 24;     // 拍照
 
-    public static final String CHECK_STATE = "checkState";
+    private static final String CHECK_STATE = "checkState";
 
-    protected Activity mActivity;
+    private Activity mActivity;
     private Context mContext;
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
@@ -111,7 +109,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
         mViewHolder = new ViewHolder(view);
@@ -277,11 +275,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-//            onBackPressed(); // TODO
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        //            onBackPressed(); // TODO
+        return item.getItemId() == android.R.id.home || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -331,9 +326,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 }
 
             }
-        } else if (requestCode == REQUEST_CODE_CAPTURE) {
-            // 如果是拍照返回
-            // Just pass the data back to previous calling Activity.
+        }
+//        else if (requestCode == REQUEST_CODE_CAPTURE) {
+//            // 如果是拍照返回
+//            // Just pass the data back to previous calling Activity.
 //            Uri contentUri = mMediaStoreCompat.getCurrentPhotoUri();
 //            String path = mMediaStoreCompat.getCurrentPhotoPath();
 //            ArrayList<Uri> selected = new ArrayList<>();
@@ -348,7 +344,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 //                MatisseActivity.this.revokeUriPermission(contentUri,
 //                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 //            finish();
-        }
+//        }
     }
 
     /**
@@ -437,21 +433,17 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumsSpinnerAdapter.swapCursor(cursor);
         // 选择默认相册
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
-                mAlbumsSpinner.setSelection(getContext(),
-                        mAlbumCollection.getCurrentSelection());
-                Album album = Album.valueOf(cursor);
-                // 作废
+        handler.post(() -> {
+            cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
+            mAlbumsSpinner.setSelection(getContext(),
+                    mAlbumCollection.getCurrentSelection());
+            Album album = Album.valueOf(cursor);
+            // 作废
 //                if (album.isAll() && GlobalSpec.getInstance().capture) {
 //                    // 判断如果是 查询全部 并且可以拍照的话，就相片数量+1，放拍照功能
 //                    album.addCaptureCount();
 //                }
-                onAlbumSelected(album);
-            }
+            onAlbumSelected(album);
         });
     }
 

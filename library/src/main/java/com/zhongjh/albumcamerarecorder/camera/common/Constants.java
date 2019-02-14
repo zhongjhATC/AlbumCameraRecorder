@@ -32,7 +32,7 @@ public class Constants {
     public static final int MEDIA_QUALITY_POOR = 8 * 100000;
     public static final int MEDIA_QUALITY_FUNNY = 4 * 100000;
     public static final int MEDIA_QUALITY_DESPAIR = 2 * 100000;
-    public static final int MEDIA_QUALITY_SORRY = 1 * 80000;
+    public static final int MEDIA_QUALITY_SORRY = 80000;
 
     // 拍照浏览时候的类型
     public static final int TYPE_PICTURE = 0x001;   // 图片

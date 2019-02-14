@@ -52,7 +52,6 @@ public class MediaStoreCompat {
      *
      * @param type 0是图片 1是视频 2是音频
      * @return 临时文件
-     * @throws IOException
      */
     private File createFile(int type) throws IOException {
         String timeStamp =
@@ -76,6 +75,7 @@ public class MediaStoreCompat {
         }
 
         // Avoid joining path components manually
+        assert fileName != null;
         File tempFile = new File(storageDir, fileName);
 
         // Handle the situation that user's external storage is not ready

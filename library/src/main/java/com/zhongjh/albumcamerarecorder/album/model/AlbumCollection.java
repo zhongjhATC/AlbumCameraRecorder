@@ -121,7 +121,7 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
         /**
          * 加载数据完数据后
          *
-         * @param cursor
+         * @param cursor 数据源
          */
         void onAlbumLoadFinished(Cursor cursor);
 

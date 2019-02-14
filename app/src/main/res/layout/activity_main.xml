@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:text="Andriod Device"
+        android:text="Android Device"
         android:textColor="#FFF"
         android:textSize="18sp"
         android:textStyle="bold"

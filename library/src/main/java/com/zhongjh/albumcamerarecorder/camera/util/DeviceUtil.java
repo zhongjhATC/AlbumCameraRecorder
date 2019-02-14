@@ -29,8 +29,8 @@ public class DeviceUtil {
 
     public static boolean isHuaWeiRongyao() {
         int length = huaweiRongyao.length;
-        for (int i = 0; i < length; i++) {
-            if (huaweiRongyao[i].equals(getDeviceModel())) {
+        for (String aHuaweiRongyao : huaweiRongyao) {
+            if (aHuaweiRongyao.equals(getDeviceModel())) {
                 return true;
             }
         }

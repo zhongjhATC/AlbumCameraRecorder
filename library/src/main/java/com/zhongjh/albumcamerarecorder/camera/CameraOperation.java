@@ -777,19 +777,16 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         try {
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             mCamera.setParameters(params);
-            mCamera.autoFocus(new Camera.AutoFocusCallback() {
-                @Override
-                public void onAutoFocus(boolean success, Camera camera) {
-                    if (success || mHandlerFocusTime > 10) {
-                        Camera.Parameters params = camera.getParameters();
-                        params.setFocusMode(currentFocusMode);
-                        camera.setParameters(params);
-                        mHandlerFocusTime = 0;
-                        callback.focusSuccess();
-                    } else {
-                        mHandlerFocusTime++;
-                        handleFocus(context, x, y, callback);
-                    }
+            mCamera.autoFocus((success, camera) -> {
+                if (success || mHandlerFocusTime > 10) {
+                    Camera.Parameters params1 = camera.getParameters();
+                    params1.setFocusMode(currentFocusMode);
+                    camera.setParameters(params1);
+                    mHandlerFocusTime = 0;
+                    callback.focusSuccess();
+                } else {
+                    mHandlerFocusTime++;
+                    handleFocus(context, x, y, callback);
                 }
             });
         } catch (Exception e) {

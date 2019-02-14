@@ -35,15 +35,15 @@ public class SelectedItemCollection {
     /**
      * 图像数据类型
      */
-    public static final int COLLECTION_IMAGE = 0x01;
+    private static final int COLLECTION_IMAGE = 0x01;
     /**
      * 视频数据类型
      */
-    public static final int COLLECTION_VIDEO = 0x01 << 1;
+    private static final int COLLECTION_VIDEO = 0x01 << 1;
     /**
      * 图像和视频混合类型
      */
-    public static final int COLLECTION_MIXED = COLLECTION_IMAGE | COLLECTION_VIDEO;
+    private static final int COLLECTION_MIXED = COLLECTION_IMAGE | COLLECTION_VIDEO;
 
     private final Context mContext;
     private Set<Item> mItems;       // 数据源
@@ -212,8 +212,8 @@ public class SelectedItemCollection {
     /**
      * 验证当前item是否满足可以被选中的条件
      *
-     * @param item
-     * @return
+     * @param item 数据源
+     * @return 弹窗
      */
     public IncapableCause isAcceptable(Item item) {
         // 检查是否超过最大设置数量
@@ -287,7 +287,7 @@ public class SelectedItemCollection {
      * Determine whether there will be conflict media types. A user can only select images and videos at the same time
      * while {@link AlbumSpec#mediaTypeExclusive} is set to false.
      */
-    public boolean typeConflict(Item item) {
+    private boolean typeConflict(Item item) {
         // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
         return AlbumSpec.getInstance().mediaTypeExclusive
                 && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_MIXED))

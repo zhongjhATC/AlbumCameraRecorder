@@ -27,11 +27,11 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STA
 public class ClickOrLongButton extends View {
 
     private static final String TAG = "ClickOrLongButton";
-    public static final long TIME_TO_START_RECORD = 1000L; // 1秒后启动录制
-    public float timeLimitInMils = 10000.0F;       // 录制时间
+    private static final long TIME_TO_START_RECORD = 1000L; // 1秒后启动录制
+    private float timeLimitInMils = 10000.0F;       // 录制时间
     private int mMinDuration = 1500;       // 最短录制时间限制
     private long mRecordedTime;             // 记录当前录制多长的时间秒
-    public static final float PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1F;
+    private static final float PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1F;
     private int BOUNDING_BOX_SIZE;
     private int OUT_CIRCLE_WIDTH;
     private int OUTER_CIRCLE_WIDTH_INC;
@@ -65,9 +65,9 @@ public class ClickOrLongButton extends View {
     private long btnPressTime;
     private int outBlackCircleRadiusInc;
     private int recordState;                        // 当前状态
-    public static final int RECORD_NOT_STARTED = 0; // 未启动状态
-    public static final int RECORD_STARTED = 1;     // 启动状态
-    public static final int RECORD_ENDED = 2;       // 结束状态
+    private static final int RECORD_NOT_STARTED = 0; // 未启动状态
+    private static final int RECORD_STARTED = 1;     // 启动状态
+    private static final int RECORD_ENDED = 2;       // 结束状态
 
     private int mButtonState;        // 按钮可执行的功能状态（拍照,录制,两者）
 
@@ -141,7 +141,7 @@ public class ClickOrLongButton extends View {
         init();
     }
 
-    void init() {
+    private void init() {
         touchable = recordable = true;
         BOUNDING_BOX_SIZE = DisplayMetricsUtils.dip2px(100.0F); // 整块
         OUT_CIRCLE_WIDTH = DisplayMetricsUtils.dip2px(2.3F);// 外线宽度
@@ -257,7 +257,7 @@ public class ClickOrLongButton extends View {
     /**
      * 重置
      */
-    public void reset() {
+    private void reset() {
         Log.d(TAG, "reset: " + recordState);
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
@@ -306,7 +306,7 @@ public class ClickOrLongButton extends View {
         this.touchable = touchable;
     }
 
-    public void startTicking() {
+    private void startTicking() {
         synchronized (ClickOrLongButton.this) {
             if (recordState != RECORD_NOT_STARTED)
                 recordState = RECORD_NOT_STARTED;

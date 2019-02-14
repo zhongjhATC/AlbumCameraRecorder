@@ -4,14 +4,12 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -454,7 +452,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     /**
      * 确认状态
      *
-     * @param type
+     * @param type 类型
      */
     private void confirmState(int type) {
         switch (type) {

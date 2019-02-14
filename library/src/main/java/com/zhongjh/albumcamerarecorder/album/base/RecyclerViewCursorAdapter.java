@@ -17,6 +17,7 @@ package com.zhongjh.albumcamerarecorder.album.base;
 
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 /**
@@ -29,7 +30,7 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
     private Cursor mCursor;
     private int mRowIDColumn;
 
-    public RecyclerViewCursorAdapter(Cursor c) {
+    protected RecyclerViewCursorAdapter(Cursor c) {
         setHasStableIds(true);
         swapCursor(c);
     }
@@ -42,7 +43,7 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
     protected abstract void onBindViewHolder(VH holder, Cursor cursor);
 
     @Override
-    public void onBindViewHolder(VH holder, int position) {
+    public void onBindViewHolder(@NonNull VH holder, int position) {
         if (!isDataValid(mCursor)) {
             throw new IllegalStateException("Cannot bind view holder when cursor is in invalid state.");
         }
@@ -108,7 +109,7 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
         }
     }
 
-    public Cursor getCursor() {
+    protected Cursor getCursor() {
         return mCursor;
     }
 

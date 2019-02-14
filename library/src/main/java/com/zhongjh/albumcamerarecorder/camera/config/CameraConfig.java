@@ -135,7 +135,7 @@ public final class CameraConfig implements Serializable {
 
         /**
          * @param videoDurationInMilliseconds - video duration in milliseconds
-         * @return
+         * @return 配置本身
          */
         public Builder setVideoDuration(@IntRange(from = 1000, to = Integer.MAX_VALUE) int videoDurationInMilliseconds) {
             cameraConfig.videoDuration = videoDurationInMilliseconds;
@@ -145,7 +145,7 @@ public final class CameraConfig implements Serializable {
         /**
          * @param minimumVideoDurationInMilliseconds - minimum video duration in milliseconds, used only in video mode
          *                                           for auto quality.
-         * @return
+         * @return 配置本身
          */
         public Builder setMinimumVideoDuration(@IntRange(from = 1000, to = Integer.MAX_VALUE) int minimumVideoDurationInMilliseconds) {
             cameraConfig.minimumVideoDuration = minimumVideoDurationInMilliseconds;
@@ -154,9 +154,9 @@ public final class CameraConfig implements Serializable {
 
         /**
          * @param videoSizeInBytes - file size in bytes
-         * @return
+         * @return 配置本身
          */
-        public Builder setVideoFileSize(@IntRange(from = 1048576, to = Long.MAX_VALUE) long videoSizeInBytes) {
+        public Builder setVideoFileSize(@IntRange(from = 1048576) long videoSizeInBytes) {
             cameraConfig.videoFileSize = videoSizeInBytes;
             return this;
         }

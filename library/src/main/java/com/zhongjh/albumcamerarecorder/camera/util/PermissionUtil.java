@@ -17,7 +17,7 @@ public class PermissionUtil {
     /**
      * 用于检测是否具有录音权限
      *
-     * @return
+     * @return 状态：是否具有
      */
     public static int getRecordState() {
         int minBuffer = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat
@@ -25,7 +25,7 @@ public class PermissionUtil {
         AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, 44100, AudioFormat
                 .CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, (minBuffer * 100));
         short[] point = new short[minBuffer];
-        int readSize = 0;
+        int readSize;
         try {
 
             audioRecord.startRecording();//检测是否可以进入初始化状态
@@ -42,7 +42,6 @@ public class PermissionUtil {
             if (audioRecord != null) {
                 audioRecord.stop();
                 audioRecord.release();
-                audioRecord = null;
                 Log.d("CheckAudioPermission", "录音机被占用");
             }
             return STATE_RECORDING;
@@ -56,7 +55,6 @@ public class PermissionUtil {
                 if (audioRecord != null) {
                     audioRecord.stop();
                     audioRecord.release();
-                    audioRecord = null;
 
                 }
                 Log.d("CheckAudioPermission", "录音的结果为空");
@@ -66,7 +64,6 @@ public class PermissionUtil {
                 if (audioRecord != null) {
                     audioRecord.stop();
                     audioRecord.release();
-                    audioRecord = null;
 
                 }
 
@@ -92,7 +89,6 @@ public class PermissionUtil {
             } else {
                 canUse = false;
             }
-            mCamera = null;
         }
         return canUse;
     }

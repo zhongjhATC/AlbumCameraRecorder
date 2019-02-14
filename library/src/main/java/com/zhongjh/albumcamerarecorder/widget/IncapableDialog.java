@@ -17,7 +17,6 @@ package com.zhongjh.albumcamerarecorder.widget;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -31,8 +30,8 @@ import com.zhongjh.albumcamerarecorder.R;
  */
 public class IncapableDialog extends DialogFragment {
 
-    public static final String EXTRA_TITLE = "extra_title";
-    public static final String EXTRA_MESSAGE = "extra_message";
+    private static final String EXTRA_TITLE = "extra_title";
+    private static final String EXTRA_MESSAGE = "extra_message";
 
     private Context mContext;
 
@@ -63,12 +62,7 @@ public class IncapableDialog extends DialogFragment {
         if (!TextUtils.isEmpty(message)) {
             builder.setMessage(message);
         }
-        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setPositiveButton(R.string.button_ok, (dialog, which) -> dialog.dismiss());
 
         return builder.create();
     }

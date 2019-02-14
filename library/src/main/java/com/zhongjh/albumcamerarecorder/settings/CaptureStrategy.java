@@ -21,18 +21,17 @@ package com.zhongjh.albumcamerarecorder.settings;
 public class CaptureStrategy {
 
     // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；
-    public final boolean isPublic;
+    boolean isPublic;
     // 参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
-    public final String authority;
+    String authority;
     // 参数3 子文件夹的具体路径
-    public final String directory;
+    String directory;
 
     public CaptureStrategy(boolean isPublic, String authority, String directory) {
         this.isPublic = isPublic;
         this.authority = authority;
         this.directory = directory;
     }
-
 
 
 }

@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -19,19 +18,17 @@ import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
-
 /**
  * Created by zhongjh on 2018/8/22.
  */
 public class MainActivity extends AppCompatActivity {
 
-    FragmentPagerAdapter adapterViewPager;
+    private FragmentPagerAdapter adapterViewPager;
 
     // 底部控件
-    TabLayout mTabLayout;
+    private TabLayout mTabLayout;
     // viewPager
-    NoScrollViewPager mVpPager;
+    private NoScrollViewPager mVpPager;
 
 
     @Override

@@ -65,6 +65,7 @@ public class AlbumMediaAdapter extends
         mRecyclerView = recyclerView;
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // 相片的item
@@ -246,7 +247,7 @@ public class AlbumMediaAdapter extends
     /**
      * 注册图片点击事件
      *
-     * @param listener
+     * @param listener 事件
      */
     public void registerOnMediaClickListener(OnMediaClickListener listener) {
         mOnMediaClickListener = listener;

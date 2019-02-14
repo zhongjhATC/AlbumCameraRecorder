@@ -10,7 +10,7 @@ import java.util.Map;
  * 保存信息配置类
  * Created by zhongjh on 2018/8/7.
  */
-public class SharedPreferencesUtil {
+class SharedPreferencesUtil {
 
     private SharedPreferences sharedPreferences;
     /*
@@ -18,7 +18,7 @@ public class SharedPreferencesUtil {
      */private SharedPreferences.Editor editor;
 
     @SuppressLint("CommitPrefEdits")
-    public SharedPreferencesUtil(Context context, String FILE_NAME) {
+    SharedPreferencesUtil(Context context, String FILE_NAME) {
         sharedPreferences = context.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();

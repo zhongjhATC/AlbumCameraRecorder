@@ -87,7 +87,7 @@ public class PictureProgressBar extends View {
     private float scaleMax = 1.5f, scaleMin = 0.5f;
     private float scaleLevel = 1;
     private float scaleRate = 0.1f;
-    boolean isScaleIncrease = true;
+    private boolean isScaleIncrease = true;
 
     //帧动画图片
     private int drawableIds[];
@@ -233,8 +233,8 @@ public class PictureProgressBar extends View {
     // 对backgroundDrawable和barDrawable的图片进行缩放以适应进度条的高度，平铺填充
     private void updateDrawableBounds(int h) {
         if (backgroundDrawable != null && barDrawable != null) {
-            int bgWidth = 0;
-            int barWidth = 0;
+            int bgWidth;
+            int barWidth;
             // 根据Drawable资源的宽高计算缩放比例。
             int intrinsicWidth = backgroundDrawable.getIntrinsicWidth();
             int intrinsicHeight = backgroundDrawable.getIntrinsicHeight();
@@ -380,7 +380,7 @@ public class PictureProgressBar extends View {
         } else {
             this.progress = max;
         }
-        progressPercentage = progress / Float.valueOf(max);
+        progressPercentage = progress / (float) max;
         doProgressRefresh();
     }
 
@@ -419,7 +419,7 @@ public class PictureProgressBar extends View {
         this.linearGradient = linearGradient;
     }
 
-    //设置进度条图片
+    // 设置进度条图片
     public void setBarBackgroundDrawableId(int id) throws Exception {
         Drawable drawable = getResources().getDrawable(id);
         if (drawable instanceof BitmapDrawable) {
@@ -440,7 +440,11 @@ public class PictureProgressBar extends View {
 //    }
 
 
-    //设置进度条背景图片
+    /**
+     * 设置进度条背景图片
+     * @param id 图片id
+     * @throws Exception 异常
+     */
     public void setBarDrawableId(int id) throws Exception {
         Drawable drawable = getResources().getDrawable(id);
         if (drawable instanceof BitmapDrawable) {

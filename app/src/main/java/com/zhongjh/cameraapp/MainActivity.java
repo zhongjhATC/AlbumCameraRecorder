@@ -4,11 +4,10 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
     private ImageView photo;
-    public MaskProgressLayout mplImageList;
+    private MaskProgressLayout mplImageList;
     private HashMap<MultiMedia,MyTask> timers = new HashMap<>();
 
     /**
@@ -155,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
     @TargetApi(23)
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == GET_PERMISSION_REQUEST) {
             int size = 0;

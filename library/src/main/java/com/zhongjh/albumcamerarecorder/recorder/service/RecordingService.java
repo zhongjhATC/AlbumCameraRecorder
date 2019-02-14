@@ -47,12 +47,6 @@ public class RecordingService extends Service {
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-//        mDatabase = new DBHelper(getApplicationContext()); @Deprecated
-    }
-
-    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         startRecording();
         return START_STICKY;
@@ -67,7 +61,7 @@ public class RecordingService extends Service {
         super.onDestroy();
     }
 
-    public void startRecording() {
+    private void startRecording() {
         setFileNameAndPath();
 
         mRecorder = new MediaRecorder();
@@ -94,14 +88,10 @@ public class RecordingService extends Service {
         }
     }
 
-    public void setFileNameAndPath(){
-        int count = 0;
+    private void setFileNameAndPath(){
         File f;
 
         do{
-            count++;
-
-//            mFileName = "我的录音" + "_" + (mDatabase.getCount() + count) + ".mp4"; @Deprecated
             String mFileName = "myRecordingTemp_" + System.currentTimeMillis() + ".mp4";
             mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFilePath += "/SoundRecorder/" + mFileName;
@@ -110,11 +100,10 @@ public class RecordingService extends Service {
         }while (f.exists() && !f.isDirectory());
     }
 
-    public void stopRecording() {
+    private void stopRecording() {
         mRecorder.stop();
         long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
-//        Toast.makeText(BaseApplication.getInstance(),  "录音保存到 " + mFilePath, Toast.LENGTH_LONG).show();
 
         // 存储到缓存的文件地址
         getSharedPreferences("sp_name_audio", MODE_PRIVATE)

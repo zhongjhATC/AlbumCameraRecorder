@@ -133,7 +133,6 @@ public class AlbumMediaLoader extends CursorLoader {
                 selection = SELECTION_ALBUM;
                 selectionArgs = getSelectionAlbumArgs(album.getId());
             }
-            enableCapture = false;
         }
         return new AlbumMediaLoader(context, selection, selectionArgs);
     }

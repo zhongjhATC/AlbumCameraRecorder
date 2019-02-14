@@ -16,7 +16,7 @@ public interface MaskProgressLayoutListener {
      * @param view              当前itemView
      * @param multiMedia        当前数据
      * @param alreadyImageCount 目前已经显示的几个图片数量
-     * @oaran akreadtVideoCount 目前已经显示的几个视频数量
+     * @param alreadyVideoCount 目前已经显示的几个视频数量
      * @param alreadyAudioCount 目前已经显示的几个音频数量
      */
     void onItemAdd(View view, MultiMedia multiMedia, int alreadyImageCount, int alreadyVideoCount,int alreadyAudioCount);

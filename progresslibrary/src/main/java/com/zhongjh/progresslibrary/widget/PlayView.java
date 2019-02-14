@@ -1,7 +1,6 @@
 package com.zhongjh.progresslibrary.widget;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
@@ -11,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -38,11 +36,7 @@ public class PlayView extends FrameLayout {
 
     private boolean isPlaying = false;      // 标记当前播放状态
 
-    // stores minutes and seconds of the length of the file.
-    long minutes = 0;
-    long seconds = 0;
-
-    String mFileLength;// 该音频文件的总时
+    private String mFileLength;// 该音频文件的总时
 
     // region 有关音频
 
@@ -86,8 +80,8 @@ public class PlayView extends FrameLayout {
     public void setData(RecordingItem recordingItem, int audioProgressColor) {
         this.mRecordingItem = recordingItem;
         long itemDuration = mRecordingItem.getLength();
-        minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
-        seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
                 - TimeUnit.MINUTES.toSeconds(minutes);
         mFileLength = String.format(Locale.CANADA, "%02d:%02d", minutes, seconds);
 

@@ -15,7 +15,6 @@
  */
 package com.zhongjh.albumcamerarecorder.album.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -23,7 +22,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.ListPopupWindow;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
@@ -54,14 +52,10 @@ public class AlbumsSpinner {
         mListPopupWindow.setVerticalOffset((int) (-48 * density));
 
         // 点击事件
-        mListPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AlbumsSpinner.this.onItemSelected(parent.getContext(), position);
-                if (mOnItemSelectedListener != null) {
-                    mOnItemSelectedListener.onItemSelected(parent, view, position, id);
-                }
+        mListPopupWindow.setOnItemClickListener((parent, view, position, id) -> {
+            AlbumsSpinner.this.onItemSelected(parent.getContext(), position);
+            if (mOnItemSelectedListener != null) {
+                mOnItemSelectedListener.onItemSelected(parent, view, position, id);
             }
         });
     }

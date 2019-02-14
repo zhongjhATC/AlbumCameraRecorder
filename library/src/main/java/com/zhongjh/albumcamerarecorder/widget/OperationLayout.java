@@ -62,7 +62,7 @@ public abstract class OperationLayout extends FrameLayout {
 
     private boolean mIsFirst = true; // 是否第一次
 
-    public abstract ViewHolder newViewHolder();
+    protected abstract ViewHolder newViewHolder();
 
     public OperationLayout(@NonNull Context context) {
         this(context, null);
@@ -90,7 +90,7 @@ public abstract class OperationLayout extends FrameLayout {
     /**
      * 初始化view
      */
-    protected void initView() {
+    private void initView() {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
 

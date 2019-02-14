@@ -44,8 +44,7 @@ public final class PhotoMetadataUtils {
     }
 
     /**
-     *
-     * @param uri 图片uri
+     * @param uri      图片uri
      * @param activity 界面
      * @return xy
      */
@@ -77,8 +76,9 @@ public final class PhotoMetadataUtils {
 
     /**
      * 获取长度和宽度
+     *
      * @param resolver ContentResolver共享数据库
-     * @param uri 图片uri
+     * @param uri      图片uri
      * @return xy
      */
     public static Point getBitmapBound(ContentResolver resolver, Uri uri) {
@@ -106,8 +106,9 @@ public final class PhotoMetadataUtils {
 
     /**
      * 查询图片
+     *
      * @param resolver ContentResolver共享数据库
-     * @param uri 图片的uri
+     * @param uri      图片的uri
      * @return 图片路径
      */
     public static String getPath(ContentResolver resolver, Uri uri) {
@@ -135,9 +136,10 @@ public final class PhotoMetadataUtils {
 
     /**
      * 过滤文件
-     * @param context
-     * @param item
-     * @return
+     *
+     * @param context 上下文
+     * @param item    数据源
+     * @return 提示框
      */
     public static IncapableCause isAcceptable(Context context, Item item) {
         // 判断资源类型是否已设置可选
@@ -159,9 +161,10 @@ public final class PhotoMetadataUtils {
 
     /**
      * 判断资源类型是否已设置可选
+     *
      * @param context 上下文
-     * @param item 数据源
-     * @return
+     * @param item    数据源
+     * @return 是否
      */
     private static boolean isSelectableType(Context context, Item item) {
         if (context == null) {
@@ -181,8 +184,9 @@ public final class PhotoMetadataUtils {
 
     /**
      * 是否应该纠正旋转
-     * @param resolver  ContentResolver共享数据库
-     * @param uri 图片uri
+     *
+     * @param resolver ContentResolver共享数据库
+     * @param uri      图片uri
      * @return 如果图片本身旋转了90或者270就返回是，需要纠正，否则否
      */
     private static boolean shouldRotate(ContentResolver resolver, Uri uri) {
@@ -202,6 +206,7 @@ public final class PhotoMetadataUtils {
 
     /**
      * bytes转换mb
+     *
      * @param sizeInBytes 容量大小
      * @return mb
      */

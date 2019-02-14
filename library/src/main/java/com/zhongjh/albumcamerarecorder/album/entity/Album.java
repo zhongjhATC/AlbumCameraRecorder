@@ -21,6 +21,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -31,7 +32,7 @@ import com.zhongjh.albumcamerarecorder.album.loader.AlbumLoader;
  */
 public class Album implements Parcelable {
     public static final Creator<Album> CREATOR = new Creator<Album>() {
-        @Nullable
+        @NonNull
         @Override
         public Album createFromParcel(Parcel source) {
             return new Album(source);

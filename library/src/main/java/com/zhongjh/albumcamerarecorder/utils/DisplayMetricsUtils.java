@@ -17,6 +17,7 @@ public class DisplayMetricsUtils {
     public static DisplayMetrics getDisplayMetrics(Context context) {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics metrics = new DisplayMetrics();
+        assert windowManager != null;
         windowManager.getDefaultDisplay().getMetrics(metrics);
         return metrics;
     }

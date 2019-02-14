@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
@@ -17,8 +18,8 @@ import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
 public class Item implements Parcelable {
 
     public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @NonNull
         @Override
-        @Nullable
         public Item createFromParcel(Parcel source) {
             return new Item(source);
         }
@@ -30,8 +31,8 @@ public class Item implements Parcelable {
     };
 
     public static final String ITEM_DISPLAY_NAME_CAPTURE = "Capture";
-    public final long id;
-    public final String mimeType;
+    private final long id;
+    private final String mimeType;
     public final Uri uri;
     public final long size;
     public final long duration; // only for video, in ms

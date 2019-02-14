@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
-import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;

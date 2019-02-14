@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.album.ui.mediaselection;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -29,7 +30,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.MediaGridInset;
 public class MediaSelectionFragment extends Fragment implements
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
-    public static final String EXTRA_ALBUM = "extra_album";     // 专辑数据
+    private static final String EXTRA_ALBUM = "extra_album";     // 专辑数据
 
     private final AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
     private RecyclerView mRecyclerView;
@@ -62,36 +63,27 @@ public class MediaSelectionFragment extends Fragment implements
 
         // 旧版的知乎是用Activity，而这边则使用Fragments的获取到MatissFragment
         Fragment matissFragment = null;
-        for (Fragment fragment :getFragmentManager().getFragments()) {
-            if (fragment instanceof MatissFragment){
+        for (Fragment fragment : getFragmentManager().getFragments()) {
+            if (fragment instanceof MatissFragment) {
                 matissFragment = fragment;
             }
         }
         if (matissFragment == null)
             throw new IllegalStateException("matissFragment 不能为null");
-        if (matissFragment instanceof SelectionProvider) {
-            mSelectionProvider = (SelectionProvider) matissFragment;
-        }else {
-            // 并没有实现这个接口
-            throw new IllegalStateException("Context must implement SelectionProvider.");
-        }
-        if (matissFragment instanceof AlbumMediaAdapter.CheckStateListener) {
-            mCheckStateListener = (AlbumMediaAdapter.CheckStateListener) matissFragment;
-        }
-        if (matissFragment instanceof AlbumMediaAdapter.OnMediaClickListener) {
-            mOnMediaClickListener = (AlbumMediaAdapter.OnMediaClickListener) matissFragment;
-        }
+        mSelectionProvider = (SelectionProvider) matissFragment;
+        mCheckStateListener = (AlbumMediaAdapter.CheckStateListener) matissFragment;
+        mOnMediaClickListener = (AlbumMediaAdapter.OnMediaClickListener) matissFragment;
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_media_selection_zjh, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = view.findViewById(R.id.recyclerview);
     }

@@ -31,11 +31,11 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STA
  */
 public class PhotoVideoButton extends View {
 
-    public static final int STATE_IDLE = 0x001;        // 空闲状态
-    public static final int STATE_PRESS = 0x002;       // 按下状态
-    public static final int STATE_LONG_PRESS = 0x003;  // 长按状态
-    public static final int STATE_RECORDERING = 0x004; // 录制状态
-    public static final int STATE_BAN = 0x005;         // 禁止状态
+    private static final int STATE_IDLE = 0x001;        // 空闲状态
+    private static final int STATE_PRESS = 0x002;       // 按下状态
+    private static final int STATE_LONG_PRESS = 0x003;  // 长按状态
+    private static final int STATE_RECORDERING = 0x004; // 录制状态
+    private static final int STATE_BAN = 0x005;         // 禁止状态
 
     private int mState;              // 当前按钮状态
     private int mButtonState;        // 按钮可执行的功能状态（拍照,录制,两者）
@@ -92,7 +92,7 @@ public class PhotoVideoButton extends View {
     }
 
 
-    public void init(int size) {
+    private void init(int size) {
         if (this.mButtonSize != 0 && this.mButtonSize != -1)
             return;
         this.mButtonSize = size;
@@ -250,7 +250,7 @@ public class PhotoVideoButton extends View {
     /**
      * 更新进度条
      *
-     * @param millisUntilFinished
+     * @param millisUntilFinished 前进的进度
      */
     private void updateProgress(long millisUntilFinished) {
         mRecordedTime = (int) (mDuration - millisUntilFinished); // 最大时间长度 - 前进的进度 = 当前进度
