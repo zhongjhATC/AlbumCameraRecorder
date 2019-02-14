@@ -40,5 +40,7 @@ dependencies {
 
     // 条形进度条
     compile 'com.daimajia.numberprogressbar:library:1.4@aar'
+    // 处理svg图片的颜色
+    compile 'com.sdsmdg.harjot:vectormaster:1.1.3'
 
 }

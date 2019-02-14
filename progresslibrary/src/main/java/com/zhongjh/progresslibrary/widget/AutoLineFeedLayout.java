@@ -1,8 +1,10 @@
 package com.zhongjh.progresslibrary.widget;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.sdsmdg.harjot.vectormaster.VectorMasterView;
+import com.sdsmdg.harjot.vectormaster.models.PathModel;
 import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
@@ -39,6 +43,8 @@ public class AutoLineFeedLayout extends ViewGroup {
     private int maskingTextSize;// 有关遮罩层
     private int maskingTextColor;// 有关遮罩层
     private String maskingTextContent;// 有关遮罩层
+    private int deleteColor = -1;// 删除图片的内圆颜色
+    private int deleteImage = -1;// 删除图片的资源,优先权比deleteColor高
     private MaskProgressLayoutListener listener;   // 点击事件
     private int LEFT_RIGHT_SPACE = 10; //dip
     private int ROW_SPACE = 10;
@@ -69,7 +75,9 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 初始化赋值配置
      */
-    public void initConfig(ImageEngine imageEngine, Drawable placeholder, int maxMediaCount, int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent) {
+    public void initConfig(ImageEngine imageEngine, Drawable placeholder, int maxMediaCount,
+                           int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent,
+                           int deleteColor,int deleteImage) {
         this.placeholder = placeholder;
         this.imageEngine = imageEngine;
         this.maxMediaCount = maxMediaCount;
@@ -77,6 +85,8 @@ public class AutoLineFeedLayout extends ViewGroup {
         this.maskingTextSize = maskingTextSize;
         this.maskingTextColor = maskingTextColor;
         this.maskingTextContent = maskingTextContent;
+        this.deleteColor = deleteColor;
+        this.deleteImage = deleteImage;
     }
 
     /**
@@ -248,7 +258,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public MaskProgressView mpvImage;
-        private ImageView imgClose;
+        private VectorMasterView imgClose;
         private ImageView imgPlay;
         private MultiMedia multiMedia;
 
@@ -257,6 +267,11 @@ public class AutoLineFeedLayout extends ViewGroup {
             super(itemView);
             mpvImage = itemView.findViewById(R.id.mpvImage);
             imgClose = itemView.findViewById(R.id.imgClose);
+            // 赋值颜色
+            // find the correct path using name
+            PathModel outline = imgClose.getPathModelByName("close");
+            // set the stroke color
+            outline.setFillColor(Color.parseColor("#ED4337"));
             imgPlay = itemView.findViewById(R.id.imgPlay);
             mpvImage.setMaskingColor(maskingColor);
             mpvImage.setTextSize(maskingTextSize);

@@ -24,13 +24,13 @@
         android:scaleType="centerCrop"
         android:src="@drawable/selector_image_add" />
 
-    <ImageView
+    <com.sdsmdg.harjot.vectormaster.VectorMasterView
         android:id="@+id/imgClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:contentDescription="@string/delete_button"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_close_black_24dp"
+        app:vector_src="@drawable/ic_twotone_highlight_off_24dp"
         tools:visibility="visible" />
 
 
