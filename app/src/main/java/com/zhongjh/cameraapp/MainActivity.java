@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -196,12 +197,12 @@ public class MainActivity extends AppCompatActivity {
 
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofImage());// 支持的类型：图片，视频
+        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
         cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
-                .mimeTypeSet(MimeType.ofImage())// 支持的类型：图片，视频
+                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
@@ -237,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
                 .imageEngine(new Glide4Engine())    // for glide-V4
                 .maxSelectable(10 - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
                 .maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

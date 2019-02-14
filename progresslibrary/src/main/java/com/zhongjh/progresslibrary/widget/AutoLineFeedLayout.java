@@ -100,8 +100,8 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (this.imageList == null) {
             this.imageList = new ArrayList<>();
         }
-        // 记录数据的结尾
-        int endingPostion = imageList.size();
+        // 记录数据的结尾,为了保证视频在第一位
+        int endingPostion = imageList.size() + videoList.size();
         this.imageList.addAll(multiMedias);
         if (imageList != null && imageList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -121,11 +121,11 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param multiMedias 数据集合
      */
     public void addVideoData(List<MultiMedia> multiMedias) {
-        if (this.imageList == null) {
-            this.imageList = new ArrayList<>();
+        if (this.videoList == null) {
+            this.videoList = new ArrayList<>();
         }
         this.videoList.addAll(multiMedias);
-        if (imageList != null && imageList.size() > 0) {
+        if (videoList != null && videoList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             for (MultiMedia multiMedia : multiMedias) {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null), maskingColor, maskingTextSize, maskingTextColor, maskingTextContent);

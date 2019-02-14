@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 
@@ -35,7 +36,7 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
     // region 属性
 
     private int maskingColor; // 遮罩颜色，默认用主颜色
-    private int textSize ;  // 显示在遮罩层的字体大小
+    private int textSize;  // 显示在遮罩层的字体大小
     private int textColor; // 显示在遮罩层的字体颜色
     private String textString = "上传中";    // 加载中的文字
 
@@ -60,7 +61,8 @@ public class MaskProgressView extends android.support.v7.widget.AppCompatImageVi
     }
 
     public void setTextString(String textString) {
-        this.textString = textString;
+        if (!TextUtils.isEmpty(textString))
+            this.textString = textString;
     }
 
     // endregion 属性

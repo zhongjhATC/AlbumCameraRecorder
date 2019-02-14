@@ -162,7 +162,6 @@ public final class GlobalSetting {
      * @return {@link GlobalSetting} this
      * @see Activity#setRequestedOrientation(int)
      */
-    @Deprecated
     public GlobalSetting restrictOrientation(@ScreenOrientation int orientation) {
         mGlobalSpec.orientation = orientation;
         return this;
