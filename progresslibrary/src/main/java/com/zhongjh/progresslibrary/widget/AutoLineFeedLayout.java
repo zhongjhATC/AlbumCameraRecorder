@@ -258,6 +258,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public MaskProgressView mpvImage;
+        private VectorMasterView vmvClose;
         private VectorMasterView imgClose;
         private ImageView imgPlay;
         private MultiMedia multiMedia;
@@ -266,7 +267,12 @@ public class AutoLineFeedLayout extends ViewGroup {
         public ViewHolder(View itemView, int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent) {
             super(itemView);
             mpvImage = itemView.findViewById(R.id.mpvImage);
+            vmvClose = itemView.findViewById(R.id.vmvClose);
             imgClose = itemView.findViewById(R.id.imgClose);
+            // 判断有没有自定义图片
+            if (deleteImage != -1){
+                // 使用自定义图片
+            }
             // 赋值颜色
             // find the correct path using name
             PathModel outline = imgClose.getPathModelByName("close");
