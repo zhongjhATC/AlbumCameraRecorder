@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -28,6 +29,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.entity.Item;
+import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.album.ui.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.album.ui.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
@@ -53,6 +56,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.zhongjh.albumcamerarecorder.album.MatissFragment.REQUEST_CODE_PREVIEW;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
@@ -498,17 +502,23 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mViewHolder.pvLayout.reset();
     }
 
-//    /**
-//     * 将数据保存进Bundle并且返回
-//     *
-//     * @return Bundle
-//     */
-//    public Bundle getDataWithBundle() {
-//        Bundle bundle = new Bundle();
-//        bundle.putParcelableArrayList(STATE_SELECTION, new ArrayList<>(mItems));
-//        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
-//        return bundle;
-//    }
+    /**
+     * 将数据保存进Bundle并且返回
+     *
+     * @return Bundle
+     */
+    public Bundle getDataWithBundle() {
+        // 转换成items
+        ArrayList<Item> items = new ArrayList<>();
+        for (BitmapData value : mCaptureBitmaps.values()) {
+            Item item = new Item(value.getUri());
+            items.add(item);
+        }
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, items);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+        return bundle;
+    }
 
     /**
      * 显示图片
@@ -573,13 +583,13 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 }
             });
 
-//            // 打开显示大图
-//            viewHolderImageView.imgPhoto.setOnClickListener(v -> {
-//                Intent intent = new Intent(mContext, SelectedPreviewActivity.class);
-//                intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, getDataWithBundle());
-//                intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-//                startActivityForResult(intent, REQUEST_CODE_PREVIEW);
-//            });
+            // 打开显示大图
+            viewHolderImageView.imgPhoto.setOnClickListener(v -> {
+                Intent intent = new Intent(mContext, SelectedPreviewActivity.class);
+                intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, getDataWithBundle());
+                intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+                ((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+            });
 
 
             mCaptureViews.put(mPosition, viewHolderImageView.rootView);

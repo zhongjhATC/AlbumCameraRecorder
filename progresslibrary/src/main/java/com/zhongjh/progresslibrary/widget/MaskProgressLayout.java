@@ -239,8 +239,6 @@ public class MaskProgressLayout extends FrameLayout {
             this.playView = rootView.findViewById(R.id.playView);
             this.groupRecorderProgress = rootView.findViewById(R.id.groupRecorderProgress);
             this.tvRecorderTip = rootView.findViewById(R.id.tvRecorderTip);
-
-
         }
     }
 }

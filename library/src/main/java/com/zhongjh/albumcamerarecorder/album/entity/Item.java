@@ -54,6 +54,14 @@ public class Item implements Parcelable {
         this.duration = duration;
     }
 
+    public Item(Uri uri) {
+        this.id = -1;
+        this.mimeType = MimeType.JPEG.toString();
+        this.uri = uri;
+        this.size = -1;
+        this.duration = -1;
+    }
+
     private Item(Parcel source) {
         id = source.readLong();
         mimeType = source.readString();
@@ -123,9 +131,9 @@ public class Item implements Parcelable {
         Item other = (Item) obj;
         return id == other.id
                 && (mimeType != null && mimeType.equals(other.mimeType)
-                    || (mimeType == null && other.mimeType == null))
+                || (mimeType == null && other.mimeType == null))
                 && (uri != null && uri.equals(other.uri)
-                    || (uri == null && other.uri == null))
+                || (uri == null && other.uri == null))
                 && size == other.size
                 && duration == other.duration;
     }
