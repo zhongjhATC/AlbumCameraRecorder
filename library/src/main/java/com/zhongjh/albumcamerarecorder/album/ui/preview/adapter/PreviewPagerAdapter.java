@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.albumcamerarecorder.album.ui.preview.selectedpreview.adapter;
+package com.zhongjh.albumcamerarecorder.album.ui.preview.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 
 
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.album.ui.previewitem.PreviewItemFragment;
+import com.zhongjh.albumcamerarecorder.album.ui.preview.previewitem.PreviewItemFragment;
 
 import java.util.ArrayList;
 import java.util.List;

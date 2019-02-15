@@ -17,11 +17,11 @@ import android.widget.TextView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
+import com.zhongjh.albumcamerarecorder.album.ui.preview.adapter.PreviewPagerAdapter;
+import com.zhongjh.albumcamerarecorder.album.ui.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.ui.preview.selectedpreview.adapter.PreviewPagerAdapter;
-import com.zhongjh.albumcamerarecorder.album.ui.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
@@ -42,7 +42,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String CHECK_STATE = "checkState";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
-    protected GlobalSpec mSpec;
+    protected GlobalSpec mGlobalSpec;
     protected AlbumSpec mAlbumSpec;
 
     protected PreviewPagerAdapter mAdapter;
@@ -68,11 +68,11 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
 
-        mSpec = GlobalSpec.getInstance();
+        mGlobalSpec = GlobalSpec.getInstance();
         mAlbumSpec = AlbumSpec.getInstance();
-        if (mSpec.needOrientationRestriction()) {
+        if (mGlobalSpec.needOrientationRestriction()) {
             // 设置旋转模式
-            setRequestedOrientation(mSpec.orientation);
+            setRequestedOrientation(mGlobalSpec.orientation);
         }
 
         if (savedInstanceState == null) {
@@ -345,7 +345,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     public static class ViewHolder {
         public Activity activity;
-        PreviewViewPager pager;
+        public PreviewViewPager pager;
         TextView button_back;
         public CheckRadioView original;
         public LinearLayout originalLayout;

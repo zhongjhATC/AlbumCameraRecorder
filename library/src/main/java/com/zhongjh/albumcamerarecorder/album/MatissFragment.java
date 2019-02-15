@@ -32,13 +32,14 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import com.zhongjh.albumcamerarecorder.album.ui.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaSelectionFragment;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.ui.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.album.ui.preview.selectedpreview.SelectedPreviewActivity;
+import com.zhongjh.albumcamerarecorder.album.ui.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
@@ -327,24 +328,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
             }
         }
-//        else if (requestCode == REQUEST_CODE_CAPTURE) {
-//            // 如果是拍照返回
-//            // Just pass the data back to previous calling Activity.
-//            Uri contentUri = mMediaStoreCompat.getCurrentPhotoUri();
-//            String path = mMediaStoreCompat.getCurrentPhotoPath();
-//            ArrayList<Uri> selected = new ArrayList<>();
-//            selected.add(contentUri);
-//            ArrayList<String> selectedPath = new ArrayList<>();
-//            selectedPath.add(path);
-//            Intent result = new Intent();
-//            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selected);
-//            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPath);
-//            setResult(RESULT_OK, result);
-//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-//                MatisseActivity.this.revokeUriPermission(contentUri,
-//                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//            finish();
-//        }
     }
 
     /**
@@ -438,11 +421,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mAlbumsSpinner.setSelection(getContext(),
                     mAlbumCollection.getCurrentSelection());
             Album album = Album.valueOf(cursor);
-            // 作废
-//                if (album.isAll() && GlobalSpec.getInstance().capture) {
-//                    // 判断如果是 查询全部 并且可以拍照的话，就相片数量+1，放拍照功能
-//                    album.addCaptureCount();
-//                }
             onAlbumSelected(album);
         });
     }
@@ -489,12 +467,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onMediaClick(Album album, Item item, int adapterPosition) {
-//        Intent intent = new Intent(this, AlbumPreviewActivity.class);
-//        intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album);
-//        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
-//        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-//        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-//        startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+        Intent intent = new Intent(mActivity, AlbumPreviewActivity.class);
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album);
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+        startActivityForResult(intent, REQUEST_CODE_PREVIEW);
     }
 
     @Override

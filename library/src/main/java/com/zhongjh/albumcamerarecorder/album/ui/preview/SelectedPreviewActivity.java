@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.preview.selectedpreview;
+package com.zhongjh.albumcamerarecorder.album.ui.preview;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.ui.preview.BasePreviewActivity;
 
 import java.util.List;
 
