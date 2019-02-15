@@ -132,7 +132,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                         mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
             }
         });
-        // 原图事件
+        // 点击原图事件
         mViewHolder.originalLayout.setOnClickListener(v -> {
             int count = countOverMaxSize();
             if (count > 0) {
@@ -148,7 +148,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (!mOriginalEnable) {
                 mViewHolder.original.setColor(Color.WHITE);
             }
-
 
             if (mAlbumSpec.onCheckedListener != null) {
                 mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);

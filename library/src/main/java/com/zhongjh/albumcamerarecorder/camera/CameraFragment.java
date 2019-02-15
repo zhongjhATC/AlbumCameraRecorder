@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
@@ -61,6 +63,15 @@ public class CameraFragment extends Fragment {
         // 隐藏状态栏
 //        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        view.setOnKeyListener((v, keyCode, event) -> {
+            if( keyCode == KeyEvent.KEYCODE_BACK )
+            {
+                Toast.makeText(mActivity, "拍摄界面onBack", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            return false;
+        });
 
         mCameraLayout = view.findViewById(R.id.cameraLayout);
         mCameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率
@@ -201,4 +212,7 @@ public class CameraFragment extends Fragment {
                 //相当于Fragment的onPause
                 mCameraLayout.onPause();
     }
+
+
+
 }

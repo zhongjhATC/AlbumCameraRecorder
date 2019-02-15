@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     // viewPager
     private NoScrollViewPager mVpPager;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         GlobalSpec mSpec = GlobalSpec.getInstance();
@@ -134,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return tabView;
     }
-
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 

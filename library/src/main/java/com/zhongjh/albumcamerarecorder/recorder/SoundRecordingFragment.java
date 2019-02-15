@@ -10,11 +10,13 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Chronometer;
+import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
@@ -66,6 +68,16 @@ public class SoundRecordingFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
+
+        mViewHolder.rootView.setOnKeyListener((v, keyCode, event) -> {
+            if( keyCode == KeyEvent.KEYCODE_BACK )
+            {
+                Toast.makeText(mActivity, "语音界面onBack", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            return false;
+        });
+
         // 设置录音最长录制时间30秒
         mViewHolder.pvLayout.setDuration(30000);
         // 设置只能长按
