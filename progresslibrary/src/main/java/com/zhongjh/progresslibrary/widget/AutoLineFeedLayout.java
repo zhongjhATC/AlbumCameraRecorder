@@ -44,7 +44,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     private int maskingTextColor;// 有关遮罩层
     private String maskingTextContent;// 有关遮罩层
     private int deleteColor = -1;// 删除图片的内圆颜色
-    private int deleteImage = -1;// 删除图片的资源,优先权比deleteColor高
+    private Drawable deleteImage = null;// 删除图片的资源,优先权比deleteColor高
     private MaskProgressLayoutListener listener;   // 点击事件
     private int LEFT_RIGHT_SPACE = 10; //dip
     private int ROW_SPACE = 10;
@@ -77,7 +77,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     public void initConfig(ImageEngine imageEngine, Drawable placeholder, int maxMediaCount,
                            int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent,
-                           int deleteColor,int deleteImage) {
+                           int deleteColor, Drawable deleteImage) {
         this.placeholder = placeholder;
         this.imageEngine = imageEngine;
         this.maxMediaCount = maxMediaCount;
@@ -258,10 +258,12 @@ public class AutoLineFeedLayout extends ViewGroup {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public MaskProgressView mpvImage;
-        private VectorMasterView vmvClose;
-        private VectorMasterView imgClose;
         private ImageView imgPlay;
         private MultiMedia multiMedia;
+
+        private View vClose;
+        private VectorMasterView vmvClose;
+        private ImageView imgClose;
 
 
         public ViewHolder(View itemView, int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent) {
@@ -270,14 +272,21 @@ public class AutoLineFeedLayout extends ViewGroup {
             vmvClose = itemView.findViewById(R.id.vmvClose);
             imgClose = itemView.findViewById(R.id.imgClose);
             // 判断有没有自定义图片
-            if (deleteImage != -1){
+            if (deleteImage != null) {
                 // 使用自定义图片
+                imgClose.setVisibility(View.VISIBLE);
+                imgClose.setImageDrawable(deleteImage);
+                vClose = imgClose;
+            } else {
+                // 使用自定义颜色
+                vmvClose.setVisibility(View.VISIBLE);
+                // find the correct path using name
+                PathModel outline = vmvClose.getPathModelByName("close");
+                // set the stroke color
+                outline.setFillColor(deleteColor);
+                vClose = vmvClose;
             }
-            // 赋值颜色
-            // find the correct path using name
-            PathModel outline = imgClose.getPathModelByName("close");
-            // set the stroke color
-            outline.setFillColor(Color.parseColor("#ED4337"));
+
             imgPlay = itemView.findViewById(R.id.imgPlay);
             mpvImage.setMaskingColor(maskingColor);
             mpvImage.setTextSize(maskingTextSize);
@@ -297,16 +306,16 @@ public class AutoLineFeedLayout extends ViewGroup {
                 // 加载➕图
                 mpvImage.setImageResource(R.drawable.selector_image_add);
                 // 隐藏close
-                imgClose.setVisibility(View.GONE);
-                imgClose.setOnClickListener(null);
+                vClose.setVisibility(View.GONE);
+                vClose.setOnClickListener(null);
                 imgPlay.setVisibility(View.GONE);
             } else {
                 // 加载图片
                 imageEngine.loadThumbnail(getContext(), mpvImage.getWidth(), placeholder,
                         mpvImage, Uri.fromFile(new File(multiMedia.getPath())));
                 // 显示close
-                imgClose.setVisibility(View.VISIBLE);
-                imgClose.setOnClickListener(v -> {
+                vClose.setVisibility(View.VISIBLE);
+                vClose.setOnClickListener(v -> {
                     if (listener != null)
                         listener.onItemClose(v, multiMedia);
                     // 判断类型

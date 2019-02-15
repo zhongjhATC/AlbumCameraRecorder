@@ -72,12 +72,18 @@ public class MaskProgressLayout extends FrameLayout {
         String imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_imageEngine);
         // 获取最多显示多少个方框
         int imageCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_maxCount, 5);
+        int imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_imageDeleteColor, colorPrimary);
+        Drawable imageDeleteDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_imageDeleteDrawable);
+
+        // region 音频
         // 音频，删除按钮的颜色
         int audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioDeleteColor, colorPrimary);
         // 音频 文件的进度条颜色
         audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioProgressColor, colorPrimary);
         // 音频 播放按钮的颜色
         int audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioPlayColor, colorPrimary);
+        // endregion 音频
+
         // region 遮罩层相关属性
 
         int maskingColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_maskingColor, colorPrimary);
@@ -105,7 +111,7 @@ public class MaskProgressLayout extends FrameLayout {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
-        mViewHolder.alfMedia.initConfig(mImageEngine, drawable, imageCount,maskingColor,maskingTextSize,maskingTextColor,maskingTextContent);
+        mViewHolder.alfMedia.initConfig(mImageEngine, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable);
         // 设置上传音频等属性
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
         mViewHolder.numberProgressBar.setProgressTextColor(audioProgressColor);

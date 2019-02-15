@@ -13,6 +13,7 @@
         app:audioDeleteColor="@color/white"
         app:audioPlayColor="@color/white"
         app:audioProgressColor="@color/white"
+        app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
         app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
         app:maskingColor="?attr/colorPrimary"
         app:maskingTextColor="@color/black_eighty_percent"
