@@ -14,7 +14,7 @@ public class MultiMedia {
     private String path;        // 路径
     private int type;           // 类型,0是图片,1是视频,2是音频,-1是添加功能
     private MaskProgressView maskProgressView; // 绑定view
-    private MaskProgressLayout.ViewHolder viewHolder;// 绑定view
+    private MaskProgressLayout maskProgressLayout;// 绑定view
 
     public MultiMedia(String path, int type) {
         this.path = path;
@@ -41,8 +41,8 @@ public class MultiMedia {
         this.maskProgressView = maskProgressView;
     }
 
-    public void setViewHolder(MaskProgressLayout.ViewHolder viewHolder) {
-        this.viewHolder = viewHolder;
+    public void setViewHolder(MaskProgressLayout maskProgressLayout) {
+        this.maskProgressLayout = maskProgressLayout;
     }
 
     /**
@@ -53,11 +53,9 @@ public class MultiMedia {
             this.maskProgressView.setPercentage(percent);
         } else if (type == 2) {
             // 隐藏显示音频的设置一系列动作
-            this.viewHolder.numberProgressBar.setProgress(percent);
-            if (percent == 100){
-                // 显示完成后的音频
-                this.viewHolder.groupRecorderProgress.setVisibility(View.GONE);
-                this.viewHolder.playView.setVisibility(View.VISIBLE);
+            this.maskProgressLayout.mViewHolder.numberProgressBar.setProgress(percent);
+            if (percent == 100) {
+                this.maskProgressLayout.audioUploadCompleted();
             }
         }
     }

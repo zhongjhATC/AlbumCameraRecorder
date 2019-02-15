@@ -31,11 +31,13 @@ import java.util.List;
 public class AutoLineFeedLayout extends ViewGroup {
 
     private final static String TAG = "AutoLineFeedLayout";
+    private MaskProgressLayout maskProgressLayout;
+
 
     // region 相关属性
     private List<MultiMedia> imageList = new ArrayList<>();     // 图片数据
     private List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
-    private List<MultiMedia> audioList = new ArrayList<>();     // 音频数据
+
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     private ImageEngine imageEngine;   // 图片加载方式
     private Drawable placeholder; // 默认图片
@@ -75,9 +77,10 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 初始化赋值配置
      */
-    public void initConfig(ImageEngine imageEngine, Drawable placeholder, int maxMediaCount,
+    public void initConfig(MaskProgressLayout maskProgressLayout, ImageEngine imageEngine, Drawable placeholder, int maxMediaCount,
                            int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent,
                            int deleteColor, Drawable deleteImage) {
+        this.maskProgressLayout = maskProgressLayout;
         this.placeholder = placeholder;
         this.imageEngine = imageEngine;
         this.maxMediaCount = maxMediaCount;
@@ -96,7 +99,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         // 默认➕号
         MultiMedia multiMedia = new MultiMedia(ADD, -1);
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null), maskingColor, maskingTextSize, maskingTextColor, maskingTextContent);
+        viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
         viewHolderAdd.bind(multiMedia);
         addView(viewHolderAdd.itemView);
     }
@@ -116,7 +119,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (imageList != null && imageList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             for (MultiMedia multiMedia : multiMedias) {
-                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null), maskingColor, maskingTextSize, maskingTextColor, maskingTextContent);
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMedia);
                 addView(viewHolder.itemView, endingPostion);
                 this.listener.onItemStartUploading(multiMedia);
@@ -138,7 +141,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (videoList != null && videoList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             for (MultiMedia multiMedia : multiMedias) {
-                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null), maskingColor, maskingTextSize, maskingTextColor, maskingTextContent);
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMedia);
                 addView(viewHolder.itemView, 0);
                 this.listener.onItemStartUploading(multiMedia);
@@ -147,21 +150,6 @@ public class AutoLineFeedLayout extends ViewGroup {
         checkLastImages();
     }
 
-    /**
-     * 添加音频数据
-     *
-     * @param multiMedia 数据
-     */
-    public void addAudioData(MultiMedia multiMedia) {
-        if (this.audioList == null) {
-            this.audioList = new ArrayList<>();
-        }
-        this.audioList.add(multiMedia);
-        if (audioList != null && audioList.size() > 0) {
-            // 显示音频的进度条
-            this.listener.onItemStartUploading(multiMedia);
-        }
-    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -266,7 +254,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         private ImageView imgClose;
 
 
-        public ViewHolder(View itemView, int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent) {
+        public ViewHolder(View itemView) {
             super(itemView);
             mpvImage = itemView.findViewById(R.id.mpvImage);
             vmvClose = itemView.findViewById(R.id.vmvClose);
@@ -342,7 +330,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             if (listener != null)
                 if (multiMedia.getPath().equals(ADD)) {
                     // 加载➕图
-                    listener.onItemAdd(v, multiMedia, imageList.size(), videoList.size(), audioList.size());
+                    listener.onItemAdd(v, multiMedia, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
                 } else {
                     // 点击详情
                     listener.onItemImage(v, multiMedia);

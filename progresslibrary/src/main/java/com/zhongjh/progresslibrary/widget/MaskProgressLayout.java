@@ -23,17 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 这是返回图片（视频、录音）等文件后，显示的Layout
+ * 这是返回（图片、视频、录音）等文件后，显示的Layout
  * Created by zhongjh on 2018/10/17.
  */
 public class MaskProgressLayout extends FrameLayout {
 
     public ViewHolder mViewHolder;          // 控件集合
     private ImageEngine mImageEngine;       // 图片加载方式
+
+    public List<MultiMedia> audioList = new ArrayList<>();     // 音频数据
     private int audioProgressColor;                 // 音频 文件的进度条颜色
+    private MaskProgressLayoutListener listener;   // 点击事件(这里只针对音频)
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
         mViewHolder.alfMedia.setListener(listener);
+        this.listener = listener;
     }
 
     public MaskProgressLayout(@NonNull Context context) {
@@ -111,7 +115,7 @@ public class MaskProgressLayout extends FrameLayout {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
-        mViewHolder.alfMedia.initConfig(mImageEngine, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable);
+        mViewHolder.alfMedia.initConfig(this, mImageEngine, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable);
         // 设置上传音频等属性
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
         mViewHolder.numberProgressBar.setProgressTextColor(audioProgressColor);
@@ -124,6 +128,8 @@ public class MaskProgressLayout extends FrameLayout {
 
         maskProgressLayoutStyle.recycle();
         typedArray.recycle();
+
+        initListener();
     }
 
     /**
@@ -161,10 +167,11 @@ public class MaskProgressLayout extends FrameLayout {
      */
     public void setAudio(String filePath, int length) {
         MultiMedia multiMedia = new MultiMedia(filePath, 2);
-        multiMedia.setViewHolder(mViewHolder);
-        mViewHolder.alfMedia.addAudioData(multiMedia);
+        multiMedia.setViewHolder(this);
+        addAudioData(multiMedia);
 
         // 显示上传中的音频
+        mViewHolder.imgRemoveRecorder.setVisibility(View.VISIBLE);
         mViewHolder.groupRecorderProgress.setVisibility(View.VISIBLE);
         mViewHolder.playView.setVisibility(View.GONE);
 
@@ -173,6 +180,46 @@ public class MaskProgressLayout extends FrameLayout {
         recordingItem.setFilePath(filePath);
         recordingItem.setLength(length);
         mViewHolder.playView.setData(recordingItem, audioProgressColor);
+    }
+
+    /**
+     * 添加音频数据
+     *
+     * @param multiMedia 数据
+     */
+    public void addAudioData(MultiMedia multiMedia) {
+        if (this.audioList == null) {
+            this.audioList = new ArrayList<>();
+        }
+        this.audioList.add(multiMedia);
+        if (audioList != null && audioList.size() > 0) {
+            // 显示音频的进度条
+            this.listener.onItemStartUploading(multiMedia);
+        }
+    }
+
+    /**
+     * 音频上传完成后
+     */
+    public void audioUploadCompleted() {
+        // 显示完成后的音频
+        mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
+        mViewHolder.playView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 初始化所有事件
+     */
+    private void initListener() {
+        // 音频删除事件
+        this.mViewHolder.imgRemoveRecorder.setOnClickListener(v -> {
+            listener.onItemClose(MaskProgressLayout.this, audioList.get(0));
+            // 隐藏音频相关控件
+            mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
+            mViewHolder.playView.setVisibility(View.GONE);
+            mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
+            audioList.clear();
+        });
     }
 
     public static class ViewHolder {
@@ -192,6 +239,8 @@ public class MaskProgressLayout extends FrameLayout {
             this.playView = rootView.findViewById(R.id.playView);
             this.groupRecorderProgress = rootView.findViewById(R.id.groupRecorderProgress);
             this.tvRecorderTip = rootView.findViewById(R.id.tvRecorderTip);
+
+
         }
     }
 }

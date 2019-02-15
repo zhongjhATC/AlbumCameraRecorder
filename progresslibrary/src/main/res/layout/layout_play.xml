@@ -10,9 +10,6 @@
         android:id="@+id/imgPlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:contentDescription="@string/play_button"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_play_circle_outline_black_24dp" />
@@ -39,5 +36,21 @@
         app:layout_constraintStart_toEndOf="@+id/imgPlay"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
+
+    <!--<ImageView-->
+    <!--android:id="@+id/imgPlayRemoveRecorder"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:contentDescription="@string/delete_button"-->
+    <!--android:paddingBottom="10dp"-->
+    <!--android:paddingEnd="16dp"-->
+    <!--android:paddingLeft="10dp"-->
+    <!--android:paddingRight="16dp"-->
+    <!--android:paddingStart="10dp"-->
+    <!--android:paddingTop="10dp"-->
+    <!--app:layout_constraintBottom_toBottomOf="@+id/imgPlay"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/imgPlay"-->
+    <!--app:srcCompat="@drawable/ic_remove_circle_black_24dp" />-->
 
 </android.support.constraint.ConstraintLayout>

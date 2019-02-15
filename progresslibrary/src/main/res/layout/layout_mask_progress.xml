@@ -13,61 +13,59 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.constraint.Group
-        android:id="@+id/groupRecorderProgress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="tvRecorderTip,numberProgressBar,imgRemoveRecorder"
-        tools:visibility="visible" />
-
-    <TextView
-        android:id="@+id/tvRecorderTip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/voice_upload"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/alfMedia" />
-
-    <com.daimajia.numberprogressbar.NumberProgressBar
-        android:id="@+id/numberProgressBar"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/clRecorder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toStartOf="@+id/imgRemoveRecorder"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvRecorderTip" />
+        app:layout_constraintTop_toBottomOf="@+id/alfMedia">
+
+        <android.support.constraint.Group
+            android:id="@+id/groupRecorderProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="tvRecorderTip,numberProgressBar"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvRecorderTip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voice_upload"
+            android:textSize="12sp" />
+
+        <com.daimajia.numberprogressbar.NumberProgressBar
+            android:id="@+id/numberProgressBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvRecorderTip" />
+
+        <com.zhongjh.progresslibrary.widget.PlayView
+            android:id="@+id/playView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </android.support.constraint.ConstraintLayout>
 
     <ImageView
         android:id="@+id/imgRemoveRecorder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/delete_button"
         android:padding="16dp"
-        app:srcCompat="@drawable/ic_remove_circle_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/numberProgressBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/numberProgressBar"
-        android:contentDescription="@string/delete_button" />
-
-    <android.support.constraint.Group
-        android:id="@+id/groupRecorderPlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="imgPlay" />
-
-    <com.zhongjh.progresslibrary.widget.PlayView
-        android:id="@+id/playView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/alfMedia" />
+        app:layout_constraintBottom_toBottomOf="@+id/clRecorder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/clRecorder"
+        app:srcCompat="@drawable/ic_remove_circle_black_24dp" />
 
 
 </android.support.constraint.ConstraintLayout>
