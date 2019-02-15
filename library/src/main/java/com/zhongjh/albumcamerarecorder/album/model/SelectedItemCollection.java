@@ -35,7 +35,7 @@ public class SelectedItemCollection {
     /**
      * 图像数据类型
      */
-    private static final int COLLECTION_IMAGE = 0x01;
+    public static final int COLLECTION_IMAGE = 0x01;
     /**
      * 视频数据类型
      */

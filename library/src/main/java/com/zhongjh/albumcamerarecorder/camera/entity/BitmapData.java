@@ -1,23 +1,17 @@
 package com.zhongjh.albumcamerarecorder.camera.entity;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
+
+import java.io.File;
 
 public class BitmapData {
 
-    private Bitmap bitmap;
     private String path;
+    private Uri uri;
 
     public BitmapData(Bitmap bitmap, String path) {
-        this.bitmap = bitmap;
         this.path = path;
-    }
-
-    public Bitmap getBitmap() {
-        return bitmap;
-    }
-
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = bitmap;
     }
 
     public String getPath() {
@@ -28,6 +22,10 @@ public class BitmapData {
         this.path = path;
     }
 
-
+    public Uri getUri() {
+        if (uri == null)
+            uri = Uri.fromFile(new File(path));
+        return uri;
+    }
 
 }

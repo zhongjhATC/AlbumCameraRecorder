@@ -4,11 +4,16 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,6 +28,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.ui.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.album.ui.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
@@ -41,10 +48,14 @@ import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONGCLICK;
@@ -81,6 +92,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     private MediaPlayer mMediaPlayer; // 播放器
 
+    private Drawable mPlaceholder; // 默认图片
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, BitmapData> mCaptureBitmaps = new HashMap<>();  // 拍照的图片-集合
     @SuppressLint("UseSparseArrays")
@@ -154,6 +166,12 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mCameraSpec = CameraSpec.getInstance();
         mGlobalSpec = GlobalSpec.getInstance();
         mMediaStoreCompat = new MediaStoreCompat(getContext());
+
+        // 默认图片
+        TypedArray ta = mContext.getTheme().obtainStyledAttributes(
+                new int[]{R.attr.album_thumbnail_placeholder});
+        mPlaceholder = ta.getDrawable(0);
+
         if (mCameraSpec != null && mCameraSpec.captureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
             mMediaStoreCompat.setCaptureStrategy(mCameraSpec.captureStrategy);
@@ -480,6 +498,18 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         mViewHolder.pvLayout.reset();
     }
 
+//    /**
+//     * 将数据保存进Bundle并且返回
+//     *
+//     * @return Bundle
+//     */
+//    public Bundle getDataWithBundle() {
+//        Bundle bundle = new Bundle();
+//        bundle.putParcelableArrayList(STATE_SELECTION, new ArrayList<>(mItems));
+//        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+//        return bundle;
+//    }
+
     /**
      * 显示图片
      *
@@ -487,11 +517,14 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      * @param isVertical 是否铺满
      */
     private void showPicture(Bitmap bitmap, boolean isVertical) {
-        // 存储到临时文件
-//        BitmapUtils.saveToFile(bitmap,)
-
-        // 初始化数据
+        // 初始化数据并且存储进file
         BitmapData bitmapData = new BitmapData(bitmap, mMediaStoreCompat.saveFileByBitmap(bitmap));
+        // 回收bitmap
+        if (bitmap != null && bitmap.isRecycled()) {
+            // 回收并且置为null
+            bitmap.recycle();
+        }
+        System.gc();// 加速回收机制
 
         // 判断是否多个图片
         if (mGlobalSpec.maxSelectable > 1) {
@@ -507,19 +540,13 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
             // 添加view
             ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_horizontal_image_zjh, null));
-            viewHolderImageView.imgPhoto.setImageBitmap(bitmap);
-            viewHolderImageView.imgPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+            mGlobalSpec.imageEngine.loadThumbnail(getContext(), viewHolderImageView.imgPhoto.getWidth(), mPlaceholder,
+                    viewHolderImageView.imgPhoto, bitmapData.getUri());
+            // 删除事件
             viewHolderImageView.imgCancel.setTag(mPosition);
             viewHolderImageView.imgCancel.setOnClickListener(v -> {
                 // 删除
-                BitmapData viewBitmap = mCaptureBitmaps.get(Integer.parseInt(v.getTag().toString()));
-                // 先判断是否已经回收
-                if (viewBitmap != null && !viewBitmap.getBitmap().isRecycled()) {
-                    // 回收并且置为null
-                    viewBitmap.getBitmap().recycle();
-                    mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
-                }
-                System.gc();// 加速回收机制
+                mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
                 mViewHolder.llPhoto.removeView(mCaptureViews.get(Integer.parseInt(v.getTag().toString())));
 
                 // 回调接口：删除图片后剩下的相关数据
@@ -545,6 +572,16 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                     setState(Constants.STATE_PREVIEW); // 设置空闲状态
                 }
             });
+
+//            // 打开显示大图
+//            viewHolderImageView.imgPhoto.setOnClickListener(v -> {
+//                Intent intent = new Intent(mContext, SelectedPreviewActivity.class);
+//                intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, getDataWithBundle());
+//                intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//                startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+//            });
+
+
             mCaptureViews.put(mPosition, viewHolderImageView.rootView);
             mViewHolder.llPhoto.addView(viewHolderImageView.rootView);
             mViewHolder.pvLayout.startTipAlphaAnimation();
