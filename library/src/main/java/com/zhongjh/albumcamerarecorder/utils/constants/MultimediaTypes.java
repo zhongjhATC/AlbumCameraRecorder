@@ -14,7 +14,8 @@ import java.lang.annotation.RetentionPolicy;
         MultimediaTypes.PICTURE,
         MultimediaTypes.VIDEO,
         MultimediaTypes.AUDIO,
-        MultimediaTypes.BLEND
+        MultimediaTypes.BLEND,
+        MultimediaTypes.ADD
 })
 @Retention(RetentionPolicy.SOURCE) // 表示告诉编译器，该注解是源代码级别的，生成 class 文件的时候这个注解就被编译器自动去掉了。
 public @interface MultimediaTypes {
