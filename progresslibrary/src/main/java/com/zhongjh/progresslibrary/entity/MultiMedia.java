@@ -12,7 +12,7 @@ import com.zhongjh.progresslibrary.widget.MaskProgressView;
 public class MultiMedia {
 
     private String path;        // 路径
-    private int type;           // 类型,0是图片,1是视频,2是音频,-1是添加功能
+    private int type;           // 类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
     private MaskProgressView maskProgressView; // 绑定view
     private MaskProgressLayout maskProgressLayout;// 绑定view
 

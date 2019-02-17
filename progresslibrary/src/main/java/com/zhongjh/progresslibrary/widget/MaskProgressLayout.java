@@ -208,6 +208,20 @@ public class MaskProgressLayout extends FrameLayout {
     }
 
     /**
+     * @return 返回当前图片数据
+     */
+    public List<MultiMedia> getImages() {
+        return mViewHolder.alfMedia.imageList;
+    }
+
+    /**
+     * @return 返回当前视频数据
+     */
+    public List<MultiMedia> getVideos() {
+        return mViewHolder.alfMedia.videoList;
+    }
+
+    /**
      * 初始化所有事件
      */
     private void initListener() {

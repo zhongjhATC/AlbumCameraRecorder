@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -30,9 +29,8 @@ import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
-import com.zhongjh.albumcamerarecorder.album.ui.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.album.ui.preview.SelectedPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
@@ -51,7 +49,6 @@ import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +82,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 //    private CameraOperation2 mCameraOperation2;// 拍摄操作类2
 
 
-    private int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
+    public int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
 
     private int mFlashType = Constants.TYPE_FLASH_OFF;  // 闪关灯状态 默认关闭
 

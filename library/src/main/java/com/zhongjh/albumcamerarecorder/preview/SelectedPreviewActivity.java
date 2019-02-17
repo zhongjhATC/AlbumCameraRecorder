@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.preview;
+package com.zhongjh.albumcamerarecorder.preview;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

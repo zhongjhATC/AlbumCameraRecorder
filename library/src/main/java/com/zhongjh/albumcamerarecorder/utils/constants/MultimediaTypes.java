@@ -29,4 +29,8 @@ public @interface MultimediaTypes {
      * 混合类型
      */
     int BLEND = 3;
+    /**
+     * 添加的一个标记
+     */
+    int ADD = -1;
 }

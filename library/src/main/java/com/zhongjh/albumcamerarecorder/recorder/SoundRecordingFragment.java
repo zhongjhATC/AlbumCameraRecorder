@@ -18,8 +18,10 @@ import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.Toast;
 
+import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.recorder.service.RecordingService;
@@ -42,7 +44,7 @@ import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
  * 录音
  * Created by zhongjh on 2018/8/22.
  */
-public class SoundRecordingFragment extends Fragment {
+public class SoundRecordingFragment extends BaseFragment {
 
     protected Activity mActivity;
     // 是否正在播放中
@@ -53,6 +55,9 @@ public class SoundRecordingFragment extends Fragment {
 
     private MediaPlayer mMediaPlayer = null;
     RecordingItem recordingItem; // 存储的数据
+
+    //声明一个long类型变量：用于存放上一点击“返回键”的时刻
+    private long mExitTime;
 
     public static SoundRecordingFragment newInstance() {
         return new SoundRecordingFragment();
@@ -69,21 +74,31 @@ public class SoundRecordingFragment extends Fragment {
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
 
-        mViewHolder.rootView.setOnKeyListener((v, keyCode, event) -> {
-            if( keyCode == KeyEvent.KEYCODE_BACK )
-            {
-                Toast.makeText(mActivity, "语音界面onBack", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            return false;
-        });
-
         // 设置录音最长录制时间30秒
         mViewHolder.pvLayout.setDuration(30000);
         // 设置只能长按
         mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONGCLICK);
         initListener();
         return mViewHolder.rootView;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        // 判断当前状态是否休闲
+        if (mCameraLayout.mState == Constants.STATE_PREVIEW) {
+            return false;
+        } else {
+            //与上次点击返回键时刻作差
+            if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                //大于2000ms则认为是误操作，使用Toast进行提示
+                Toast.makeText(mActivity.getApplicationContext(), "再按一次确认关闭", Toast.LENGTH_SHORT).show();
+                //并记录下本次点击“返回键”的时刻，以便下次进行判断
+                mExitTime = System.currentTimeMillis();
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     /**
@@ -231,7 +246,6 @@ public class SoundRecordingFragment extends Fragment {
             mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
-
 
     /**
      * 播放开始或者停止

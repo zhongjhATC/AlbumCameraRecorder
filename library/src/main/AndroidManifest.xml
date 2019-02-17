@@ -14,8 +14,8 @@
     <application>
 
         <activity android:name=".MainActivity" />
-        <activity android:name=".album.ui.preview.SelectedPreviewActivity" />
-        <activity android:name=".album.ui.preview.AlbumPreviewActivity" />
+        <activity android:name=".preview.SelectedPreviewActivity" />
+        <activity android:name=".preview.AlbumPreviewActivity" />
 
         <service android:name=".recorder.service.RecordingService" />
 

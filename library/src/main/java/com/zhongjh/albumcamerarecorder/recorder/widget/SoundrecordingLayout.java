@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 /**
@@ -16,6 +17,8 @@ import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
  * Created by zhongjh on 2018/10/16.
  */
 public class SoundrecordingLayout extends OperationLayout {
+
+    public int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
 
     public SoundrecordingLayout(@NonNull Context context) {
         super(context);
@@ -39,6 +42,7 @@ public class SoundrecordingLayout extends OperationLayout {
         super.startOperaeBtnAnimator();
         // 显示播放的按钮
         ((ViewHolder)mViewHolder).rlSoundRecording.setVisibility(VISIBLE);
+        mState = Constants.STATE_RECORDER;
     }
 
     /**

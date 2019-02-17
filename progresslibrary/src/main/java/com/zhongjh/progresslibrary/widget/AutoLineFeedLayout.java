@@ -35,8 +35,8 @@ public class AutoLineFeedLayout extends ViewGroup {
 
 
     // region 相关属性
-    private List<MultiMedia> imageList = new ArrayList<>();     // 图片数据
-    private List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
+    public List<MultiMedia> imageList = new ArrayList<>();     // 图片数据
+    public List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
 
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     private ImageEngine imageEngine;   // 图片加载方式

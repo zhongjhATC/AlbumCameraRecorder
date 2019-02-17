@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.preview;
+package com.zhongjh.albumcamerarecorder.preview;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -17,8 +17,8 @@ import android.widget.TextView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.album.ui.preview.adapter.PreviewPagerAdapter;
-import com.zhongjh.albumcamerarecorder.album.ui.preview.previewitem.PreviewItemFragment;
+import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
+import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;

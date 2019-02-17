@@ -13,6 +13,7 @@ import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
+import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 
 import java.lang.reflect.Field;
@@ -53,6 +54,13 @@ public class MainActivity extends AppCompatActivity {
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
         mTabLayout.setupWithViewPager(mVpPager);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!HandleBackUtil.handleBackPress(this)) {
+            super.onBackPressed();
+        }
     }
 
     /**

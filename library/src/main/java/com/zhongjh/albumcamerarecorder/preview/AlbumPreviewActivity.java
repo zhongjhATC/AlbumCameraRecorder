@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.albumcamerarecorder.album.ui.preview;
+package com.zhongjh.albumcamerarecorder.preview;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -23,7 +23,7 @@ import android.support.annotation.Nullable;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
-import com.zhongjh.albumcamerarecorder.album.ui.preview.adapter.PreviewPagerAdapter;
+import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
 import java.util.ArrayList;

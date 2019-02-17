@@ -13,6 +13,7 @@ public class Constants {
     public static final int STATE_PICTURE = 0x02;      // 图片状态 - 拍照后，就修改成这个状态
     public static final int STATE_VIDEO = 0x03;        // 视频状态 - 录制视频后，播放当前视频，就修改成这个状态
     public static final int STATE_PICTURE_PREVIEW = 0x04;      // 图片休闲状态 - 拍照后，如果是多图情况，就修改成这个状态
+    public static final int STATE_RECORDER = 0x05;      // 图片状态 - 拍照后，就修改成这个状态
 
     public static final int TYPE_RECORDER = 0x090; // 录像模式
     public static final int TYPE_CAPTURE = 0x091;  // 拍照模式

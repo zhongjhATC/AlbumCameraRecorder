@@ -3,16 +3,27 @@ package com.zhongjh.albumcamerarecorder.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static com.zhongjh.albumcamerarecorder.album.MatissFragment.REQUEST_CODE_PREVIEW;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
@@ -135,5 +146,51 @@ public final class MultiMediaSetting {
     Fragment getFragment() {
         return mFragment != null ? mFragment.get() : null;
     }
+
+    /**
+     * 调用打开多个大图
+     * @param activity 窗体
+     * @param requestCode 请求码
+     * @param list 需要显示的大图
+     */
+    public static void openPreviewImage(Activity activity,List<Uri> list) {
+        // 转换成items
+        ArrayList<Item> items = new ArrayList<>();
+        for (Uri value : list) {
+            Item item = new Item(value);
+            items.add(item);
+        }
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, items);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+
+
+        Intent intent = new Intent(activity, SelectedPreviewActivity.class);
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+    }
+
+//    public static void openPreviewSiginImage(Activity activity,int requestCode,Uri list) {
+//        // 转换成items
+//        ArrayList<Item> items = new ArrayList<>();
+//        for (Uri value : list) {
+//            Item item = new Item(value);
+//            items.add(item);
+//        }
+//        Bundle bundle = new Bundle();
+//        bundle.putParcelableArrayList(STATE_SELECTION, items);
+//        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+//
+//
+//    Intent intent = new Intent(activity, AlbumPreviewActivity.class);
+//        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+//        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+//        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//    startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+//    }
+
+
+
 
 }

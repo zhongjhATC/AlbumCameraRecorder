@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -30,6 +31,7 @@ import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
     private ImageView photo;
     private MaskProgressLayout mplImageList;
-    private HashMap<MultiMedia,MyTask> timers = new HashMap<>();
+    private HashMap<MultiMedia, MyTask> timers = new HashMap<>();
 
     /**
      * @param activity 要跳转的activity
@@ -69,14 +71,22 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemImage(View view, MultiMedia multiMedia) {
+                // 判断如果是图片类型就预览图片
+                if (multiMedia.getType() == 0) {
+
+                } else if () {
+
+                }
                 // 点击详情
+                MultiMediaSetting.openPreviewImage(this, );
+
             }
 
             @Override
             public void onItemStartUploading(MultiMedia multiMedia) {
                 // 开始上传 - 指刚添加后的
                 MyTask timer = new MyTask(multiMedia);
-                timers.put(multiMedia,timer);
+                timers.put(multiMedia, timer);
                 timer.schedule();
             }
 
@@ -101,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                             .PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
                             .PERMISSION_GRANTED) {
-                openMain(alreadyImageCount, alreadyVideoCount,alreadyAudioCount);
+                openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             } else {
                 //不具有获取权限，需要进行权限申请
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{
@@ -223,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
-        recorderSetting.captureStrategy(new CaptureStrategy(true,"com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
+        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
 
         // 全局
         MultiMediaSetting.from(MainActivity.this)
@@ -240,6 +250,8 @@ public class MainActivity extends AppCompatActivity {
                 .maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .forResult(REQUEST_CODE_CHOOSE);
+
+
     }
 
     class MyTask extends Timer {
@@ -247,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
         public int percentage = 0;// 百分比
         public MultiMedia multiMedia;
 
-        public MyTask( MultiMedia multiMedia) {
+        public MyTask(MultiMedia multiMedia) {
             this.multiMedia = multiMedia;
         }
 

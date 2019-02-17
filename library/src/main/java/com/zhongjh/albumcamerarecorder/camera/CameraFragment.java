@@ -13,8 +13,10 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
@@ -37,11 +39,14 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RES
  * 拍摄视频
  * Created by zhongjh on 2018/8/22.
  */
-public class CameraFragment extends Fragment {
+public class CameraFragment extends BaseFragment {
 
     private Activity mActivity;
 
     private CameraLayout mCameraLayout;
+
+    //声明一个long类型变量：用于存放上一点击“返回键”的时刻
+    private long mExitTime;
 
     public static CameraFragment newInstance() {
         CameraFragment cameraFragment = new CameraFragment();
@@ -65,8 +70,7 @@ public class CameraFragment extends Fragment {
 //        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         view.setOnKeyListener((v, keyCode, event) -> {
-            if( keyCode == KeyEvent.KEYCODE_BACK )
-            {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
                 Toast.makeText(mActivity, "拍摄界面onBack", Toast.LENGTH_SHORT).show();
                 return true;
             }
@@ -175,7 +179,7 @@ public class CameraFragment extends Fragment {
             }
 
             @Override
-            public void add( HashMap<Integer, BitmapData> captureBitmaps) {
+            public void add(HashMap<Integer, BitmapData> captureBitmaps) {
                 if (captureBitmaps.size() > 0) {
                     // 母窗体禁止滑动
                     ((MainActivity) mActivity).setTablayoutScroll(false);
@@ -187,6 +191,26 @@ public class CameraFragment extends Fragment {
         });
         Log.i("CJT", DeviceUtil.getDeviceModel());
         return view;
+    }
+
+
+    @Override
+    public boolean onBackPressed() {
+        // 判断当前状态是否休闲
+        if (mCameraLayout.mState == Constants.STATE_PREVIEW) {
+            return false;
+        } else {
+            //与上次点击返回键时刻作差
+            if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                //大于2000ms则认为是误操作，使用Toast进行提示
+                Toast.makeText(mActivity.getApplicationContext(), "再按一次确认关闭", Toast.LENGTH_SHORT).show();
+                //并记录下本次点击“返回键”的时刻，以便下次进行判断
+                mExitTime = System.currentTimeMillis();
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -212,7 +236,6 @@ public class CameraFragment extends Fragment {
                 //相当于Fragment的onPause
                 mCameraLayout.onPause();
     }
-
 
 
 }
