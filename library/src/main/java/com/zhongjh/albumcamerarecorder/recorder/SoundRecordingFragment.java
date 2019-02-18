@@ -85,7 +85,7 @@ public class SoundRecordingFragment extends BaseFragment {
     @Override
     public boolean onBackPressed() {
         // 判断当前状态是否休闲
-        if (mCameraLayout.mState == Constants.STATE_PREVIEW) {
+        if (mViewHolder.pvLayout.mState == Constants.STATE_PREVIEW) {
             return false;
         } else {
             //与上次点击返回键时刻作差

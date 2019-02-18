@@ -1,9 +1,12 @@
 package com.zhongjh.progresslibrary.entity;
 
+import android.net.Uri;
 import android.view.View;
 
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
+
+import java.io.File;
 
 /**
  * 多媒体实体类
@@ -12,6 +15,7 @@ import com.zhongjh.progresslibrary.widget.MaskProgressView;
 public class MultiMedia {
 
     private String path;        // 路径
+    private Uri uri;
     private int type;           // 类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
     private MaskProgressView maskProgressView; // 绑定view
     private MaskProgressLayout maskProgressLayout;// 绑定view
@@ -58,6 +62,12 @@ public class MultiMedia {
                 this.maskProgressLayout.audioUploadCompleted();
             }
         }
+    }
+
+    public Uri getUri() {
+        if (uri == null)
+            uri = Uri.fromFile(new File(path));
+        return uri;
     }
 
 }

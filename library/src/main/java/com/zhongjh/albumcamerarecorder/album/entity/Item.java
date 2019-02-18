@@ -32,7 +32,8 @@ public class Item implements Parcelable {
 
     public static final String ITEM_DISPLAY_NAME_CAPTURE = "Capture";
     private final long id;
-    private final String mimeType;
+
+    private String mimeType;
     public final Uri uri;
     public final long size;
     public final long duration; // only for video, in ms
@@ -60,6 +61,10 @@ public class Item implements Parcelable {
         this.uri = uri;
         this.size = -1;
         this.duration = -1;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
     }
 
     private Item(Parcel source) {

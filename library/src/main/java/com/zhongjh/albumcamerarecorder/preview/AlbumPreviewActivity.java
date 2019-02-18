@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
+import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
@@ -49,7 +50,13 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
         }
         mCollection.onCreate(this, this);
         Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);
-        mCollection.load(album);
+        if (album != null) {
+            mCollection.load(album);
+        } else {
+            Bundle bundle = getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE);
+            List<Item> items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+            initItems(items);
+        }
 
         Item item = getIntent().getParcelableExtra(EXTRA_ITEM);
         if (mAlbumSpec.countable) {
@@ -72,12 +79,15 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
         while (cursor.moveToNext()) {
             items.add(Item.valueOf(cursor));
         }
-//        cursor.close();
 
         if (items.isEmpty()) {
             return;
         }
 
+        initItems(items);
+    }
+
+    private void initItems(List<Item> items) {
         PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
         adapter.addAll(items);
         adapter.notifyDataSetChanged();

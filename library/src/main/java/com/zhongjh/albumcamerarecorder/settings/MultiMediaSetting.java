@@ -22,6 +22,7 @@ import java.util.Set;
 
 import static com.zhongjh.albumcamerarecorder.album.MatissFragment.REQUEST_CODE_PREVIEW;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_VIDEO;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
@@ -64,7 +65,7 @@ public final class MultiMediaSetting {
     }
 
     /**
-     *  由Fragment打开
+     * 由Fragment打开
      * <p>
      * 当用户完成选择时，将调用此方法： {@link Fragment#onActivityResult(int, int, Intent)}
      *
@@ -149,11 +150,11 @@ public final class MultiMediaSetting {
 
     /**
      * 调用打开多个大图
+     *
      * @param activity 窗体
-     * @param requestCode 请求码
-     * @param list 需要显示的大图
+     * @param list     需要显示的大图
      */
-    public static void openPreviewImage(Activity activity,List<Uri> list) {
+    public static void openPreviewImage(Activity activity, List<Uri> list) {
         // 转换成items
         ArrayList<Item> items = new ArrayList<>();
         for (Uri value : list) {
@@ -171,26 +172,33 @@ public final class MultiMediaSetting {
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
     }
 
-//    public static void openPreviewSiginImage(Activity activity,int requestCode,Uri list) {
-//        // 转换成items
-//        ArrayList<Item> items = new ArrayList<>();
-//        for (Uri value : list) {
-//            Item item = new Item(value);
-//            items.add(item);
-//        }
-//        Bundle bundle = new Bundle();
-//        bundle.putParcelableArrayList(STATE_SELECTION, items);
-//        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
-//
-//
-//    Intent intent = new Intent(activity, AlbumPreviewActivity.class);
-//        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
-//        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-//        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-//    startActivityForResult(intent, REQUEST_CODE_PREVIEW);
-//    }
+    /**
+     * 调用打开单个视频
+     *
+     * @param activity 窗体
+     * @param list     需要显示的大图
+     */
+    public static void openPreviewVideo(Activity activity, List<Uri> list) {
+        // 转换成items
+        ArrayList<Item> items = new ArrayList<>();
+        for (Uri value : list) {
+            Item item = new Item(value);
+            item.setMimeType(MimeType.MP4.toString());
+            items.add(item);
+        }
+        Item item = new Item(list.get(0));
+        item.setMimeType(MimeType.MP4.toString());
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, items);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_VIDEO);
 
+        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
 
+    }
 
 
 }

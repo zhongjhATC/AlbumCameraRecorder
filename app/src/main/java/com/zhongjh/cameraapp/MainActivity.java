@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,6 +33,7 @@ import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,15 +73,21 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemImage(View view, MultiMedia multiMedia) {
-                // 判断如果是图片类型就预览图片
-                if (multiMedia.getType() == 0) {
 
-                } else if () {
-
-                }
                 // 点击详情
-                MultiMediaSetting.openPreviewImage(this, );
-
+                if (multiMedia.getType() == MultimediaTypes.PICTURE) {
+                    // 判断如果是图片类型就预览当前所有图片
+                    List<Uri> uris = new ArrayList<>();
+                    for (MultiMedia item : mplImageList.getImages()) {
+                        uris.add(item.getUri());
+                    }
+                    MultiMediaSetting.openPreviewImage(MainActivity.this, uris);
+                } else if (multiMedia.getType() == MultimediaTypes.VIDEO) {
+                    // 判断如果是视频类型就预览视频
+                    List<Uri> uris = new ArrayList<>();
+                    uris.add(multiMedia.getUri());
+                    MultiMediaSetting.openPreviewVideo(MainActivity.this, uris);
+                }
             }
 
             @Override
@@ -95,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 // 停止上传
                 timers.get(multiMedia).cancel();
             }
-
 
         });
     }
