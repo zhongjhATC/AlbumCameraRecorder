@@ -82,7 +82,7 @@ public final class GlobalSetting {
         mMultiMediaSetting = multiMediaSetting;
         mGlobalSpec = GlobalSpec.getCleanInstance();
         mGlobalSpec.setMimeTypeSet(mimeTypes);
-        mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
+//        mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
     public GlobalSetting albumSetting(AlbumSetting albumSetting) {
@@ -152,18 +152,6 @@ public final class GlobalSetting {
      */
     public GlobalSetting captureStrategy(CaptureStrategy captureStrategy) {
         mGlobalSpec.captureStrategy = captureStrategy;
-        return this;
-    }
-
-    /**
-     * 设置此活动的所需方向。
-     *
-     * @param orientation 设置此活动的所需方向。 {@link ScreenOrientation}. 默认值 {@link android.content.pm.ActivityInfo#SCREEN_ORIENTATION_PORTRAIT}.
-     * @return {@link GlobalSetting} this
-     * @see Activity#setRequestedOrientation(int)
-     */
-    public GlobalSetting restrictOrientation(@ScreenOrientation int orientation) {
-        mGlobalSpec.orientation = orientation;
         return this;
     }
 

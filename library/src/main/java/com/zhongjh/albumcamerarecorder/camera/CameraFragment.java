@@ -67,7 +67,6 @@ public class CameraFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
         // 隐藏状态栏
 //        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         view.setOnKeyListener((v, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {

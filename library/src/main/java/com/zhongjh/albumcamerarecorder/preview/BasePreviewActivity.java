@@ -70,10 +70,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         mGlobalSpec = GlobalSpec.getInstance();
         mAlbumSpec = AlbumSpec.getInstance();
-        if (mGlobalSpec.needOrientationRestriction()) {
-            // 设置旋转模式
-            setRequestedOrientation(mGlobalSpec.orientation);
-        }
 
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据

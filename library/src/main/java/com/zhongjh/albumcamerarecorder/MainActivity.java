@@ -43,9 +43,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.activity_main_zjh);
-        if (mSpec.needOrientationRestriction()) {
-            setRequestedOrientation(mSpec.orientation);
-        }
+
         mVpPager = findViewById(R.id.viewPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), mSpec);
         mVpPager.setAdapter(adapterViewPager);

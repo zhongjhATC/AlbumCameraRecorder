@@ -1,6 +1,4 @@
 package com.zhongjh.albumcamerarecorder.settings;
-
-import android.content.pm.ActivityInfo;
 import android.support.annotation.StyleRes;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -25,7 +23,6 @@ public class GlobalSpec {
     public boolean hasInited; // 是否通过正规方式进来
     @StyleRes
     public int themeId;         // 样式
-    public int orientation;     // 旋转模式
     public int maxSelectable;   // 最大选择数量
     public int maxImageSelectable = -1;  // 最大图片选择数量
     public int maxVideoSelectable = -1;  // 最大视频选择数量
@@ -56,7 +53,6 @@ public class GlobalSpec {
         recorderSetting = null;
         mimeTypeSet = null;
         themeId = R.style.AppTheme_Blue;
-        orientation = 0;
         maxSelectable = 1;
         maxImageSelectable = -1;
         maxVideoSelectable = -1;
@@ -65,16 +61,6 @@ public class GlobalSpec {
         hasInited = true;
         imageEngine = new GlideEngine();
 
-    }
-
-    /**
-     * 是否需要旋转约束
-     *
-     * @return 是否
-     */
-    public boolean needOrientationRestriction() {
-        // SCREEN_ORIENTATION_UNSPECIFIED:未指定，此为默认值。由Android系统自己选择合适的方向
-        return orientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
     private static final class InstanceHolder {
