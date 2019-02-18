@@ -6,8 +6,8 @@
 ## 目前还是测试版，基本锥形功能已经形成，还需要更进一步完成相关测试才可正式使用
 
 ## 中文
-一个高效的多媒体支持操作库，可多方面的简单配置操作相册、录制、录音等功能。  
-本开源库的部分代码来自[Matisse](https://github.com/zhihu/Matisse)、[Matisse](https://github.com/zhihu/Matisse).    
+一个高效的多媒体支持操作库，可多方面的简单配置操作相册、录制、录音等功能.
+本开源库的部分代码来自[Matisse](https://github.com/zhihu/Matisse).
 非常感谢知乎提供的这么棒的开源项目！    
 
 ## 特性
