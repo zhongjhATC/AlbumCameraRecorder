@@ -222,9 +222,9 @@ public class MainActivity extends AppCompatActivity {
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 查看的大小限制
+                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
                 .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
-                .thumbnailScale(0.85f)
+                .thumbnailScale(0.85f)// 图片缩放比例
                 .setOnSelectedListener((uriList, pathList) -> {
                     // 每次选择的事件
                     Log.e("onSelected", "onSelected: pathList=" + pathList);
