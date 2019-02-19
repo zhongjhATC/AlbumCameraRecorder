@@ -60,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView device = findViewById(R.id.device);
-        device.setText(DeviceUtil.getDeviceInfo());
         mplImageList = findViewById(R.id.mplImageList);
         mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 

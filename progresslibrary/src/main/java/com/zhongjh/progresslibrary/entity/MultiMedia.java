@@ -49,6 +49,14 @@ public class MultiMedia {
         this.maskProgressLayout = maskProgressLayout;
     }
 
+    public MaskProgressView getMaskProgressView() {
+        return maskProgressView;
+    }
+
+    public MaskProgressLayout getMaskProgressLayout() {
+        return maskProgressLayout;
+    }
+
     /**
      * 给予进度，根据类型设置相应进度动作
      */

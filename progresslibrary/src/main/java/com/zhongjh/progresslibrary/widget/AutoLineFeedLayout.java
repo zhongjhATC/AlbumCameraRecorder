@@ -47,6 +47,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     private String maskingTextContent;// 有关遮罩层
     private int deleteColor = -1;// 删除图片的内圆颜色
     private Drawable deleteImage = null;// 删除图片的资源,优先权比deleteColor高
+    private Drawable addDrawable = null;// 添加图片的资源
     private MaskProgressLayoutListener listener;   // 点击事件
     private int LEFT_RIGHT_SPACE = 10; //dip
     private int ROW_SPACE = 10;
@@ -79,7 +80,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     public void initConfig(MaskProgressLayout maskProgressLayout, ImageEngine imageEngine, Drawable placeholder, int maxMediaCount,
                            int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent,
-                           int deleteColor, Drawable deleteImage) {
+                           int deleteColor, Drawable deleteImage, Drawable addDrawable) {
         this.maskProgressLayout = maskProgressLayout;
         this.placeholder = placeholder;
         this.imageEngine = imageEngine;
@@ -90,6 +91,10 @@ public class AutoLineFeedLayout extends ViewGroup {
         this.maskingTextContent = maskingTextContent;
         this.deleteColor = deleteColor;
         this.deleteImage = deleteImage;
+        this.addDrawable = addDrawable;
+
+        if (this.addDrawable != null)
+            viewHolderAdd.mpvImage.setImageDrawable(this.addDrawable);
     }
 
     /**

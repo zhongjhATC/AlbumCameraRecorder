@@ -1,48 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:layout_height="match_parent">
 
-    <com.zhongjh.progresslibrary.widget.MaskProgressLayout
-        android:id="@+id/mplImageList"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:audioDeleteColor="@color/white"
-        app:audioPlayColor="@color/white"
-        app:audioProgressColor="@color/white"
-        app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
-        app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
-        app:maskingColor="?attr/colorPrimary"
-        app:maskingTextColor="@color/black_eighty_percent"
-        app:maskingTextContent="上传中可自定义"
-        app:maskingTextSize="12"
-        app:maxCount="10" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_author"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:padding="16dp"
-        android:text="Create By zhongjh\n\nEmail 254191389@qq.com"
-        android:textColor="#FFF"
-        tools:ignore="HardcodedText" />
+        <com.zhongjh.progresslibrary.widget.MaskProgressLayout
+            android:id="@+id/mplImageList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:audioDeleteColor="@color/white"
+            app:audioPlayColor="@color/white"
+            app:audioProgressColor="@color/white"
+            app:imageAddDrawable="@drawable/ic_add_gray"
+            app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
+            app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
+            app:maskingColor="?attr/colorPrimary"
+            app:maskingTextColor="@color/black_eighty_percent"
+            app:maskingTextContent="上传中可自定义"
+            app:maskingTextSize="12"
+            app:maxCount="10" />
+
+        <LinearLayout
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="全局功能" />
+
+           <LinearLayout
+               android:orientation="horizontal"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <CheckBox
+                   android:id="@+id/cbAllImage"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="10dp"
+                   android:text="支持图片" />
+
+               <CheckBox
+                   android:id="@+id/cbAllVideo"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="10dp"
+                   android:text="支持视频" />
+
+           </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="最多选择几个"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etAllCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
 
-    <TextView
-        android:id="@+id/device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="Android Device"
-        android:textColor="#FFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        tools:ignore="HardcodedText" />
+            </LinearLayout>
 
-</RelativeLayout>
+
+            <CheckBox
+                android:id="@+id/checkBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="开启相册功能" />
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</ScrollView>
