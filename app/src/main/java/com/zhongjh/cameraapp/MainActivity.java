@@ -4,8 +4,8 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,27 +16,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.CaptureStrategy;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
-import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
+import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
+import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
-import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,9 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_CHOOSE = 23;
 
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
-    private ImageView photo;
-    private MaskProgressLayout mplImageList;
     private HashMap<MultiMedia, MyTask> timers = new HashMap<>();
+    ActivityMainBinding mBinding;
 
     /**
      * @param activity 要跳转的activity
@@ -60,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mplImageList = findViewById(R.id.mplImageList);
-        mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
             public void onItemAdd(View view, MultiMedia multiMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
@@ -71,12 +70,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemImage(View view, MultiMedia multiMedia) {
-
                 // 点击详情
                 if (multiMedia.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
                     List<Uri> uris = new ArrayList<>();
-                    for (MultiMedia item : mplImageList.getImages()) {
+                    for (MultiMedia item : mBinding.mplImageList.getImages()) {
                         uris.add(item.getUri());
                     }
                     MultiMediaSetting.openPreviewImage(MainActivity.this, uris);
@@ -90,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemStartUploading(MultiMedia multiMedia) {
-                // 开始上传 - 指刚添加后的
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
                 MyTask timer = new MyTask(multiMedia);
                 timers.put(multiMedia, timer);
                 timer.schedule();
@@ -103,6 +101,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        initListener();
+    }
+
+    /**
+     * 主要是配置的一些事件
+     */
+    private void initListener() {
     }
 
     /**
@@ -138,21 +144,21 @@ public class MainActivity extends AppCompatActivity {
                 case MultimediaTypes.PICTURE:
                     // 图片
                     List<String> path = MultiMediaSetting.obtainPathResult(data);
-                    mplImageList.addImages(path);
+                    mBinding.mplImageList.addImages(path);
                     break;
                 case MultimediaTypes.VIDEO:
                     // 录像
                     List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                    mplImageList.setVideo(videoPath);
+                    mBinding.mplImageList.setVideo(videoPath);
                     break;
                 case MultimediaTypes.AUDIO:
                     // 语音
                     RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    mplImageList.setAudio(recordingItem.getFilePath(), recordingItem.getLength());
+                    mBinding.mplImageList.setAudio(recordingItem.getFilePath(), recordingItem.getLength());
                     break;
                 case MultimediaTypes.BLEND:
                     // 混合类型，意思是图片可能跟录像在一起.
-                    mplImageList.addImages(MultiMediaSetting.obtainPathResult(data));
+                    mBinding.mplImageList.addImages(MultiMediaSetting.obtainPathResult(data));
                     break;
             }
 
@@ -240,6 +246,69 @@ public class MainActivity extends AppCompatActivity {
         RecorderSetting recorderSetting = new RecorderSetting();
         recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
 
+        // 全局,确定类型
+        Set<MimeType> mimeTypes = null;
+        if (mBinding.rbAllAll.isChecked())
+            mimeTypes = MimeType.ofAll();
+        else if (mBinding.rbAllVideo.isChecked())
+            mimeTypes = MimeType.ofVideo();
+        else if (mBinding.rbAllImage.isChecked())
+            mimeTypes = MimeType.ofImage();
+
+        GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
+
+        if (mBinding.cbAlbum.isChecked())
+            globalSetting.albumSetting(albumSetting);
+        if (mBinding.cbCamera.isChecked())
+            globalSetting.cameraSetting(cameraSetting);
+
+        globalSetting
+                .albumSetting(albumSetting)
+                .cameraSetting(cameraSetting)
+                .recorderSetting(recorderSetting)
+                .setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
+                .captureStrategy(
+                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
+                //                                            .imageEngine(new GlideEngine())  // for glide-V3
+                .imageEngine(new Glide4Engine())    // for glide-V4
+                .maxSelectable(Integer.valueOf(mBinding.etAllCount.getText().toString()) - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
+                .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAllCount.getText().toString()) - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+                .forResult(REQUEST_CODE_CHOOSE);
+
+
+    }
+
+    private void openMain2(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+        // 拍摄有关设置
+        CameraSetting cameraSetting = new CameraSetting();
+        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
+        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
+
+        // 相册
+        AlbumSetting albumSetting = new AlbumSetting(true)
+                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
+                .captureStrategy(
+                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
+                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
+                .countable(true)// 是否显示多选图片的数字
+                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
+                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
+                .thumbnailScale(0.85f)// 图片缩放比例
+                .setOnSelectedListener((uriList, pathList) -> {
+                    // 每次选择的事件
+                    Log.e("onSelected", "onSelected: pathList=" + pathList);
+                })
+                .originalEnable(true)// 开启原图
+                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
+                .setOnCheckedListener(isChecked -> {
+                    // DO SOMETHING IMMEDIATELY HERE
+                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
+                });
+
+        // 录音机
+        RecorderSetting recorderSetting = new RecorderSetting();
+        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
+
         // 全局
         MultiMediaSetting.from(MainActivity.this)
                 .choose(MimeType.ofAll())
@@ -251,24 +320,21 @@ public class MainActivity extends AppCompatActivity {
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
                 //                                            .imageEngine(new GlideEngine())  // for glide-V3
                 .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectable(10 - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
-                .maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
-//                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                .maxSelectable(Integer.valueOf(mBinding.etAllCount.getText().toString()) - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
+                .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAllCount.getText().toString()) - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);
-
-
     }
 
     class MyTask extends Timer {
 
-        public int percentage = 0;// 百分比
-        public MultiMedia multiMedia;
+        int percentage = 0;// 百分比
+        MultiMedia multiMedia;
 
-        public MyTask(MultiMedia multiMedia) {
+        MyTask(MultiMedia multiMedia) {
             this.multiMedia = multiMedia;
         }
 
-        public void schedule() {
+        void schedule() {
             this.schedule(new TimerTask() {
                 @Override
                 public void run() {

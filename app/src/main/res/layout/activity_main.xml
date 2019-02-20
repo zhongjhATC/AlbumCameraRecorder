@@ -1,324 +1,404 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <com.zhongjh.progresslibrary.widget.MaskProgressLayout
-            android:id="@+id/mplImageList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:audioDeleteColor="@color/white"
-            app:audioPlayColor="@color/white"
-            app:audioProgressColor="@color/white"
-            app:imageAddDrawable="@drawable/ic_add_gray"
-            app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
-            app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
-            app:maskingColor="?attr/colorPrimary"
-            app:maskingTextColor="@color/black_eighty_percent"
-            app:maskingTextContent="上传中可自定义"
-            app:maskingTextSize="12"
-            app:maxCount="10" />
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <com.zhongjh.progresslibrary.widget.MaskProgressLayout
+                android:id="@+id/mplImageList"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="全局功能" />
+                app:audioDeleteColor="@color/white"
+                app:audioPlayColor="@color/white"
+                app:audioProgressColor="@color/white"
+                app:imageAddDrawable="@drawable/ic_add_gray"
+                app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
+                app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
+                app:maskingColor="?attr/colorPrimary"
+                app:maskingTextColor="@color/black_eighty_percent"
+                app:maskingTextContent="上传中可自定义"
+                app:maskingTextSize="12"
+                app:maxCount="10" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/cbAllImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="支持图片" />
-
-                <CheckBox
-                    android:id="@+id/cbAllVideo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="支持视频" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="最多选择几个" />
+                    android:text="全局功能" />
 
-                <EditText
-                    android:id="@+id/etAllCount"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:text="5" />
+                    android:orientation="horizontal">
 
+                    <RadioGroup
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
 
-            </LinearLayout>
+                        <RadioButton
+                            android:text="全部"
+                            android:id="@+id/rbAllAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:checked="true"/>
 
-            <CheckBox
-                android:id="@+id/cbAlbum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="开启相册功能" />
+                        <RadioButton
+                            android:text="支持图片"
+                            android:id="@+id/rbAllImage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                        <RadioButton
+                            android:text="支持视频"
+                            android:id="@+id/rbAllVideo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="如果勾选这些,那么相册功能则以这些为标准" />
+                    </RadioGroup>
 
-                <CheckBox
-                    android:id="@+id/cbAlbumImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="支持图片" />
+                </LinearLayout>
 
-                <CheckBox
-                    android:id="@+id/cbAlbumVideo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="支持视频" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="是否只能选择一种类型" />
-
-                <CheckBox
-                    android:id="@+id/cbShowSingleMediaTypeTrue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="true" />
-
-                <CheckBox
-                    android:id="@+id/cbShowSingleMediaTypeFalse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="false" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="是否显示多选图片的数字" />
-
-                <CheckBox
-                    android:id="@+id/cbCountableTrue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="true" />
-
-                <CheckBox
-                    android:id="@+id/cbCountableFalse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="false" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="九宫格大小(dp)" />
-
-                <EditText
-                    android:id="@+id/etGridExpectedSize"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:text="120" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="最多可以选择几个多媒体：" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/etAllCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="5" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="自定义过滤器" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="宽度不少于(px)" />
-
-                <EditText
-                    android:id="@+id/etAddFilterMinWidth"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="320" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="高度不少于(px)" />
-
-                <EditText
-                    android:id="@+id/etAddFilterMinHeight"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="320" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="文件不能大于(m)" />
-
-                <EditText
-                    android:id="@+id/etMaxSizeInBytes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="5" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="图片缩放比例(最大为1)" />
-
-                <EditText
-                    android:id="@+id/etThumbnailScale"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="0.85" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="是否开启原图选项" />
+                </LinearLayout>
 
                 <CheckBox
-                    android:id="@+id/cbOriginalEnableTrue"
+                    android:id="@+id/cbAlbum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="true" />
-
-                <CheckBox
-                    android:id="@+id/cbOriginalEnableFalse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="false" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    android:checked="true"
+                    android:text="开启相册功能" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="最大原图size,仅当originalEnable为true的时候才有效(M)" />
+                    android:text="如果勾选这些,那么相册功能则以如下这些为标准：" />
 
-                <EditText
-                    android:id="@+id/etMaxOriginalSize"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="1" />
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbAlbumImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="支持图片" />
+
+                    <CheckBox
+                        android:id="@+id/cbAlbumVideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="支持视频" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="是否只能选择一种类型" />
+
+                    <CheckBox
+                        android:id="@+id/cbShowSingleMediaTypeTrue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="true" />
+
+                    <CheckBox
+                        android:id="@+id/cbShowSingleMediaTypeFalse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="false" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="是否显示多选图片的数字" />
+
+                    <CheckBox
+                        android:id="@+id/cbCountableTrue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="true" />
+
+                    <CheckBox
+                        android:id="@+id/cbCountableFalse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="false" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="九宫格大小(dp)" />
+
+                    <EditText
+                        android:id="@+id/etGridExpectedSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="120" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="自定义过滤器："
+                        android:textColor="@color/dracula_album_dropdown_thumbnail_placeholder"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="过滤宽度不少于(px)" />
+
+                    <EditText
+                        android:id="@+id/etAddFilterMinWidth"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="320" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="过滤高度不少于(px)" />
+
+                    <EditText
+                        android:id="@+id/etAddFilterMinHeight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="320" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="过滤文件不能大于(m)" />
+
+                    <EditText
+                        android:id="@+id/etMaxSizeInBytes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="5" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="过滤图片缩放比例(最大为1)" />
+
+                    <EditText
+                        android:id="@+id/etThumbnailScale"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="0.85" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="是否开启原图选项" />
+
+                    <CheckBox
+                        android:id="@+id/cbOriginalEnableTrue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="true" />
+
+                    <CheckBox
+                        android:id="@+id/cbOriginalEnableFalse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="false" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:lines="3"
+                        android:text="最大原图size,仅当originalEnable为true的时候才有效(M)" />
+
+                    <EditText
+                        android:id="@+id/etMaxOriginalSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="1" />
+
+                </LinearLayout>
+
+                <CheckBox
+                    android:id="@+id/cbCamera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:checked="true"
+                    android:text="开启拍摄功能" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="保存拍摄文件路径" />
+
+                    <EditText
+                        android:id="@+id/etCameraFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/camera" />
+
+                </LinearLayout>
+
+                <CheckBox
+                    android:id="@+id/cbRecorder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:checked="true"
+                    android:text="开启录音功能" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="保存录音文件路径" />
+
+                    <EditText
+                        android:id="@+id/etRecorderFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/recorder" />
+
+                </LinearLayout>
+
 
             </LinearLayout>
-
 
         </LinearLayout>
 
-    </LinearLayout>
+
+    </ScrollView>
 
 
-</ScrollView>
+</layout>

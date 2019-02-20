@@ -74,7 +74,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
 
     private int mMediaQuality = Constants.MEDIA_QUALITY_MIDDLE;  //视频质量
-    private SensorManager mSensorManager = null;
+//    private SensorManager mSensorManager = null;
 
     private ErrorListener mErrorLisenter; // 异常事件
 
@@ -719,12 +719,12 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
      * @param context 上下文
      */
     public void registerSensorManager(Context context) {
-        if (mSensorManager == null) {
-            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        }
-        assert mSensorManager != null;
-        mSensorManager.registerListener(sensorEventListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager
-                .SENSOR_DELAY_NORMAL);
+//        if (mSensorManager == null) {
+//            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+//        }
+//        assert mSensorManager != null;
+//        mSensorManager.registerListener(sensorEventListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager
+//                .SENSOR_DELAY_NORMAL);
     }
 
     /**
@@ -733,11 +733,11 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
      * @param context 上下文
      */
     public void unregisterSensorManager(Context context) {
-        if (mSensorManager == null) {
-            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        }
-        assert mSensorManager != null;
-        mSensorManager.unregisterListener(sensorEventListener);
+//        if (mSensorManager == null) {
+//            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+//        }
+//        assert mSensorManager != null;
+//        mSensorManager.unregisterListener(sensorEventListener);
     }
 
     /**
