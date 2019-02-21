@@ -44,6 +44,8 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidSupportSdkVersion"
     compile project(path: ':library')
     compile project(path: ':progresslibrary')
+    implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.1'
+
     // 图片
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'

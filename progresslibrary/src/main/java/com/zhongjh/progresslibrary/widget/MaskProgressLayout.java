@@ -3,6 +3,8 @@ package com.zhongjh.progresslibrary.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.Group;
@@ -19,6 +21,7 @@ import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.entity.RecordingItem;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,7 +120,7 @@ public class MaskProgressLayout extends FrameLayout {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
-        mViewHolder.alfMedia.initConfig(this, mImageEngine, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable,imageAddDrawable);
+        mViewHolder.alfMedia.initConfig(this, mImageEngine, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
         // 设置上传音频等属性
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
         mViewHolder.numberProgressBar.setProgressTextColor(audioProgressColor);
@@ -138,6 +141,7 @@ public class MaskProgressLayout extends FrameLayout {
      * 设置图片同时更新表格
      *
      * @param imagePaths 图片数据源
+     *                   // @param isUpload 是否上传，如果为true,则显示过渡动画，并且
      */
     public void addImages(List<String> imagePaths) {
         ArrayList<MultiMedia> multiMedias = new ArrayList<>();
@@ -151,7 +155,7 @@ public class MaskProgressLayout extends FrameLayout {
     /**
      * 设置视频地址
      */
-    public void setVideo(List<String> videoPath) {
+    public void addVideo(List<String> videoPath) {
         ArrayList<MultiMedia> multiMedias = new ArrayList<>();
         for (String string : videoPath) {
             MultiMedia multiMedia = new MultiMedia(string, 1);
@@ -167,7 +171,7 @@ public class MaskProgressLayout extends FrameLayout {
      * @param filePath 音频文件地址
      * @
      */
-    public void setAudio(String filePath, int length) {
+    public void addAudio(String filePath, int length) {
         MultiMedia multiMedia = new MultiMedia(filePath, 2);
         multiMedia.setViewHolder(this);
         addAudioData(multiMedia);
@@ -181,6 +185,65 @@ public class MaskProgressLayout extends FrameLayout {
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(filePath);
         recordingItem.setLength(length);
+        mViewHolder.playView.setData(recordingItem, audioProgressColor);
+    }
+
+    /**
+     * 添加音频网址数据
+     *
+     * @param audioUrl 音频网址
+     */
+    public void addAudioUrl(String audioUrl) {
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(audioUrl);
+            mediaPlayer.prepare();
+            int duration = mediaPlayer.getDuration();
+            if (0 != duration) {
+                MultiMedia multiMedia = new MultiMedia(2);
+                multiMedia.setUrl(audioUrl);
+                multiMedia.setViewHolder(this);
+
+                // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
+                mViewHolder.playView.setVisibility(View.VISIBLE);
+                RecordingItem recordingItem = new RecordingItem();
+                recordingItem.setUrl(audioUrl);
+                recordingItem.setLength(duration);
+                mViewHolder.playView.setData(recordingItem, audioProgressColor);
+                //记得释放资源
+                mediaPlayer.release();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 添加音频实际的文件
+     * @param file 文件路径
+     */
+    public void addVideoFile(String file){
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(file);
+//        String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+//        String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+//        String mime = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
+//        String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); // ms,时长
+//        String bitrate = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE); // bit/s api >= 14
+//        String date = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);
+
+
+
+        MultiMedia multiMedia = new MultiMedia(2);
+        multiMedia.setPath(file);
+        multiMedia.setViewHolder(this);
+
+        // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
+        mViewHolder.playView.setVisibility(View.VISIBLE);
+        RecordingItem recordingItem = new RecordingItem();
+        recordingItem.setFilePath(file);
+        recordingItem.setLength(Integer.valueOf(duration));
         mViewHolder.playView.setData(recordingItem, audioProgressColor);
     }
 
@@ -223,6 +286,7 @@ public class MaskProgressLayout extends FrameLayout {
         return mViewHolder.alfMedia.videoList;
     }
 
+
     /**
      * 初始化所有事件
      */
@@ -237,6 +301,7 @@ public class MaskProgressLayout extends FrameLayout {
             audioList.clear();
         });
     }
+
 
     public static class ViewHolder {
         View rootView;

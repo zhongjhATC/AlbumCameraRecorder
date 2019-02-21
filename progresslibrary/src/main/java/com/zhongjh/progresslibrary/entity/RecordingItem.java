@@ -9,6 +9,7 @@ import android.os.Parcelable;
 public class RecordingItem implements Parcelable {
 
     private String filePath; // 路径
+    private String url; // 网址
     private int length; // 长度，单位秒
 
     public RecordingItem()
@@ -31,7 +32,13 @@ public class RecordingItem implements Parcelable {
         this.length = length;
     }
 
+    public String getUrl() {
+        return url;
+    }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     @Override
     public int describeContents() {
@@ -41,11 +48,13 @@ public class RecordingItem implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.filePath);
+        dest.writeString(this.url);
         dest.writeInt(this.length);
     }
 
     protected RecordingItem(Parcel in) {
         this.filePath = in.readString();
+        this.url = in.readString();
         this.length = in.readInt();
     }
 
@@ -60,4 +69,6 @@ public class RecordingItem implements Parcelable {
             return new RecordingItem[size];
         }
     };
+
+
 }

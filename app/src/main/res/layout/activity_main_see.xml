@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.zhongjh.progresslibrary.widget.MaskProgressLayout
+            android:id="@+id/mplImageList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:audioDeleteColor="@color/blue_primary"
+            app:audioPlayColor="@color/blue_primary"
+            app:audioProgressColor="@color/blue_primary"
+            app:imageAddDrawable="@drawable/ic_add_gray"
+            app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
+            app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
+            app:maskingColor="?attr/colorPrimary"
+            app:maskingTextColor="@color/black_eighty_percent"
+            app:maskingTextContent="上传中可自定义"
+            app:maskingTextSize="12"
+            app:maxCount="10" />
+
+    </LinearLayout>
+
+
+</layout>

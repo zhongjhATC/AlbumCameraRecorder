@@ -48,7 +48,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     private int deleteColor = -1;// 删除图片的内圆颜色
     private Drawable deleteImage = null;// 删除图片的资源,优先权比deleteColor高
     private Drawable addDrawable = null;// 添加图片的资源
-    private MaskProgressLayoutListener listener;   // 点击事件
+    private MaskProgressLayoutListener listener;   // 相关事件
     private int LEFT_RIGHT_SPACE = 10; //dip
     private int ROW_SPACE = 10;
     private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";     // 用于判断最后一个添加符号标签图片

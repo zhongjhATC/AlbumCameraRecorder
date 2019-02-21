@@ -15,9 +15,9 @@
                 android:id="@+id/mplImageList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:audioDeleteColor="@color/white"
-                app:audioPlayColor="@color/white"
-                app:audioProgressColor="@color/white"
+                app:audioDeleteColor="@color/blue_primary"
+                app:audioPlayColor="@color/blue_primary"
+                app:audioProgressColor="@color/blue_primary"
                 app:imageAddDrawable="@drawable/ic_add_gray"
                 app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
                 app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
@@ -26,6 +26,14 @@
                 app:maskingTextContent="上传中可自定义"
                 app:maskingTextSize="12"
                 app:maxCount="10" />
+
+            <Button
+                android:id="@+id/btnOpenSee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:text="打开默认有数据的" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,31 +52,31 @@
                     android:orientation="horizontal">
 
                     <RadioGroup
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" >
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
                         <RadioButton
-                            android:text="全部"
                             android:id="@+id/rbAllAll"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
+                            android:checked="true"
                             android:gravity="center"
-                            android:checked="true"/>
+                            android:text="全部" />
 
                         <RadioButton
-                            android:text="支持图片"
                             android:id="@+id/rbAllImage"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:gravity="center"/>
+                            android:gravity="center"
+                            android:text="支持图片" />
 
                         <RadioButton
-                            android:text="支持视频"
                             android:id="@+id/rbAllVideo"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:gravity="center"/>
+                            android:gravity="center"
+                            android:text="支持视频" />
 
                     </RadioGroup>
 
@@ -337,6 +345,24 @@
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal"
                         android:text="1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="保存拍摄文件路径" />
+
+                    <EditText
+                        android:id="@+id/etAlbumFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/album" />
 
                 </LinearLayout>
 

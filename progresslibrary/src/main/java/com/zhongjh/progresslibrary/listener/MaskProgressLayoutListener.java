@@ -36,4 +36,21 @@ public interface MaskProgressLayoutListener {
      */
     void onItemClose(View view, MultiMedia multiMedia);
 
+    /**
+     * 开始下载音频
+     * @param url 网址
+     */
+    void onItemAudioStartDownload(String url);
+
+    /**
+     * 下载成功
+     */
+    void onItemSuccessDownload();
+
+    /**
+     * 下载失败
+     */
+    void onItemFailDownload();
+
+
 }

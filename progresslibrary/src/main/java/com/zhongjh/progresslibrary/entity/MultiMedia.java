@@ -15,6 +15,7 @@ import java.io.File;
 public class MultiMedia {
 
     private String path;        // 路径
+    private String url;         // 在线网址
     private Uri uri;
     private int type;           // 类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
     private MaskProgressView maskProgressView; // 绑定view
@@ -25,12 +26,24 @@ public class MultiMedia {
         this.type = type;
     }
 
+    public MultiMedia(int type) {
+        this.type = type;
+    }
+
     public String getPath() {
         return path;
     }
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public int getType() {

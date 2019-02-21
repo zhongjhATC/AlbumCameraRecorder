@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.entity.RecordingItem;
+import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -38,13 +40,20 @@ public class PlayView extends FrameLayout {
 
     private String mFileLength;// 该音频文件的总时
 
+    private MaskProgressLayoutListener listener;   // 相关事件
+
+    public void setListener(MaskProgressLayoutListener listener) {
+        this.listener = listener;
+        this.listener.onItemSuccessDownload();
+    }
+
     // region 有关音频
 
     private MediaPlayer mMediaPlayer = null;
 
     private Handler mHandler = new Handler();
 
-    // endreigon 有关音频
+    // endregion 有关音频
 
     public PlayView(@NonNull Context context) {
         this(context, null);
@@ -79,21 +88,30 @@ public class PlayView extends FrameLayout {
      */
     public void setData(RecordingItem recordingItem, int audioProgressColor) {
         this.mRecordingItem = recordingItem;
-        long itemDuration = mRecordingItem.getLength();
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
-                - TimeUnit.MINUTES.toSeconds(minutes);
-        mFileLength = String.format(Locale.CANADA, "%02d:%02d", minutes, seconds);
-
         // 设置进度条颜色
         ColorFilter filter = new LightingColorFilter
                 (audioProgressColor, audioProgressColor);
         mViewHolder.seekbar.getProgressDrawable().setColorFilter(filter);
         mViewHolder.seekbar.getThumb().setColorFilter(filter);
+
+        initData();
     }
 
-    private void initListener() {
+    /**
+     * 根据当前文件初始化一些相关数据
+     */
+    private void initData() {
+        long itemDuration = mRecordingItem.getLength();
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
+                - TimeUnit.MINUTES.toSeconds(minutes);
+        mFileLength = String.format(Locale.CANADA, "%02d:%02d", minutes, seconds);
+    }
 
+    /**
+     * 所有事件
+     */
+    private void initListener() {
         // 进度条
         mViewHolder.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -106,7 +124,7 @@ public class PlayView extends FrameLayout {
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
                     long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
                             - TimeUnit.MINUTES.toSeconds(minutes);
-                    mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA,"%02d:%02d", minutes, seconds));
+                    mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA, "%02d:%02d", minutes, seconds));
 
                     updateSeekBar();
 
@@ -134,7 +152,7 @@ public class PlayView extends FrameLayout {
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
                     long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
                             - TimeUnit.MINUTES.toSeconds(minutes);
-                    mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA,"%02d:%02d", minutes, seconds));
+                    mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA, "%02d:%02d", minutes, seconds));
                     updateSeekBar();
                 }
             }
@@ -142,9 +160,22 @@ public class PlayView extends FrameLayout {
 
         // 播放按钮
         mViewHolder.imgPlay.setOnClickListener(v -> {
-            onPlay(isPlaying);
-            isPlaying = !isPlaying;
+            // 判断该音频是否有文件地址，如果没有则请求下载
+            if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
+                onPlay(isPlaying);
+                isPlaying = !isPlaying;
+            } else {
+                // 调用下载
+                listener.onItemAudioStartDownload(mRecordingItem.getUrl());
+            }
         });
+    }
+
+    /**
+     * 下载完毕，提供给外部，当音频下载完毕后，调用此方法
+     */
+    public void successDownload() {
+
     }
 
     // region 有关音频的方法
@@ -271,7 +302,7 @@ public class PlayView extends FrameLayout {
             long minutes = TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition);
             long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition)
                     - TimeUnit.MINUTES.toSeconds(minutes);
-            mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA,"%02d:%02d", minutes, seconds));
+            mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA, "%02d:%02d", minutes, seconds));
 
             updateSeekBar();
         }
