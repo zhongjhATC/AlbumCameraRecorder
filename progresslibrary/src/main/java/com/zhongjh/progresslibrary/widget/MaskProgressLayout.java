@@ -40,6 +40,7 @@ public class MaskProgressLayout extends FrameLayout {
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
         mViewHolder.alfMedia.setListener(listener);
+        mViewHolder.playView.setListener(listener);
         this.listener = listener;
     }
 

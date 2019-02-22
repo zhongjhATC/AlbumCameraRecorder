@@ -10,6 +10,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -123,9 +124,9 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 }
 
                 // 获取文件名
-                String fileName = url.hashCode() + suffixName;
+                String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
                 // 调用方法
-                mDownloadHelper.downloadFile(url, "AA/videoCache", fileName);
+                mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "videoCache", fileName);
             }
 
             @Override
@@ -148,8 +149,8 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         List<String> imageUrls = new ArrayList<>();
         imageUrls.add("http://img.huoyunji.com/photo_20190221105726_Android_15181?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("http://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        mBinding.mplImageList.addAudioUrl("http://img.huoyunji.com/video_20190221105749_Android_31228");
-//        mBinding.mplImageList.addAudioUrl("http://img.huoyunji.com/audio_20190221105823_Android_28360");
+        mBinding.mplImageList.addAudioUrl("http://img.huoyunji.com/audio_20190221105823_Android_28360");
+//        mBinding.mplImageList.addAudioUrl("http://img.huoyunji.com/video_20190221105749_Android_31228");
 //        mBinding.mplImageList.addImageUrls(imageUrls);
     }
 
@@ -318,11 +319,13 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
     public void onFinishDownload(File file) {
         // 下载完成
         mBinding.mplImageList.addVideoFile(file.getPath());
+        progressDialog.hide();
     }
 
     @Override
     public void onFail(Throwable throwable) {
-
+        progressDialog.hide();
+        Toast.makeText(this, "下载失败：" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 
     class MyTask extends Timer {
