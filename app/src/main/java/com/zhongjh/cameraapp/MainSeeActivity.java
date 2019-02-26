@@ -38,7 +38,6 @@ import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
 import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -215,7 +214,6 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         mBinding.mplImageList.addImageUrls(imageUrls);
         mBinding.mplImageList.addAudioUrl("http://img.huoyunji.com/audio_20190221105823_Android_28360");
         mBinding.mplImageList.addVideoUrl("http://img.huoyunji.com/video_20190221105749_Android_31228");
-
     }
 
     /**
@@ -344,10 +342,10 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         String suffix = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
         switch (suffix) {
             case "mp3":
-                mBinding.mplImageList.addVideoFile(file.getPath());
+                mBinding.mplImageList.addAudioFile(file.getPath());
                 break;
             case "mp4":
-                mBinding.mplImageList.addAudioFile(file.getPath());
+                mBinding.mplImageList.addVideoFile(file.getPath());
                 break;
         }
         progressDialog.hide();
