@@ -165,7 +165,7 @@ public class MaskProgressLayout extends FrameLayout {
             MultiMedia multiMedia = new MultiMedia(string, 1);
             multiMedias.add(multiMedia);
         }
-        mViewHolder.alfMedia.addVideoData(multiMedias);
+        mViewHolder.alfMedia.addVideoData(multiMedias, false, true);
     }
 
     /**
@@ -246,11 +246,11 @@ public class MaskProgressLayout extends FrameLayout {
         MultiMedia multiMedia = new MultiMedia(1);
         multiMedia.setUrl(videoUrl);
         multiMedias.add(multiMedia);
-        mViewHolder.alfMedia.addVideoData(multiMedias);
+        mViewHolder.alfMedia.addVideoData(multiMedias, false, false);
     }
 
     /**
-     * 添加音频实际的文件
+     * 直接添加音频实际的文件
      *
      * @param file 文件路径
      *             String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
@@ -260,7 +260,7 @@ public class MaskProgressLayout extends FrameLayout {
      *             String bitrate = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE); // bit/s api >= 14
      *             String date = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);
      */
-    public void addVideoFile(String file) {
+    public void addAudioFile(String file) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(file);
 
@@ -277,6 +277,18 @@ public class MaskProgressLayout extends FrameLayout {
         recordingItem.setFilePath(file);
         recordingItem.setLength(Integer.valueOf(duration));
         mViewHolder.playView.setData(recordingItem, audioProgressColor);
+    }
+
+    /**
+     * 直接添加视频实际的文件
+     *
+     * @param file 文件路径
+     */
+    public void addVideoFile(String file) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        MultiMedia multiMedia = new MultiMedia(file, 1);
+        multiMedias.add(multiMedia);
+        mViewHolder.alfMedia.addVideoData(multiMedias, true, false);
     }
 
     /**
@@ -317,7 +329,6 @@ public class MaskProgressLayout extends FrameLayout {
     public List<MultiMedia> getVideos() {
         return mViewHolder.alfMedia.videoList;
     }
-
 
     /**
      * 初始化所有事件

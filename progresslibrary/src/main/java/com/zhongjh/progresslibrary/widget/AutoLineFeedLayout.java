@@ -141,10 +141,17 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 添加视频数据
      *
      * @param multiMedias 数据集合
+     * @param isClean     添加前是否清空
+     * @param isUploading 是否执行相关上传动作
      */
-    public void addVideoData(List<MultiMedia> multiMedias) {
+    public void addVideoData(List<MultiMedia> multiMedias, boolean isClean, boolean isUploading) {
         if (this.videoList == null) {
             this.videoList = new ArrayList<>();
+        }
+        if (isClean && this.videoList.size() > 0) {
+            // 清空有关数据
+            this.videoList.clear();
+            removeViewAt(0);
         }
         this.videoList.addAll(multiMedias);
         if (videoList != null && videoList.size() > 0) {
@@ -154,7 +161,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 viewHolder.bind(multiMedia);
                 addView(viewHolder.itemView, 0);
                 // 判断multiMedia有没有path,有path没有uri就执行上传
-                if (TextUtils.isEmpty(multiMedia.getUrl()) && !TextUtils.isEmpty(multiMedia.getPath())) {
+                if (isUploading) {
                     this.listener.onItemStartUploading(multiMedia);
                 }
             }
@@ -362,15 +369,15 @@ public class AutoLineFeedLayout extends ViewGroup {
                     listener.onItemAdd(v, multiMedia, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
                 } else {
                     // 点击
-                    if (multiMedia.getType() == 0){
+                    if (multiMedia.getType() == 0) {
                         // 如果是图片，直接跳转详情
                         listener.onItemImage(v, multiMedia);
-                    }else{
+                    } else {
                         // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
-                        if (TextUtils.isEmpty(multiMedia.getPath())){
+                        if (TextUtils.isEmpty(multiMedia.getPath())) {
                             // 执行下载事件
-                            listener.onItemAudioStartDownload(multiMedia.getUrl());
-                        }else{
+                            listener.onItemVideoStartDownload(multiMedia.getUrl());
+                        } else {
                             // 点击事件
                             listener.onItemImage(v, multiMedia);
                         }
