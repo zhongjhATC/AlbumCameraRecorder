@@ -112,12 +112,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemSuccessDownload() {
-
-            }
-
-            @Override
-            public void onItemFailDownload() {
+            public void onItemVideoStartDownload(String url) {
 
             }
 
@@ -275,11 +270,10 @@ public class MainActivity extends AppCompatActivity {
             globalSetting.albumSetting(albumSetting);
         if (mBinding.cbCamera.isChecked())
             globalSetting.cameraSetting(cameraSetting);
+        if (mBinding.cbRecorder.isChecked())
+            globalSetting.recorderSetting(recorderSetting);
 
         globalSetting
-                .albumSetting(albumSetting)
-                .cameraSetting(cameraSetting)
-                .recorderSetting(recorderSetting)
                 .setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
                 .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
