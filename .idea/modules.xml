@@ -3,8 +3,13 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AlbumCameraRecorder.iml" filepath="$PROJECT_DIR$/AlbumCameraRecorder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AlbumCameraRecorder.iml" filepath="$PROJECT_DIR$/AlbumCameraRecorder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/multilibrary/library.iml" filepath="$PROJECT_DIR$/multilibrary/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/multilibrary/multilibrary.iml" filepath="$PROJECT_DIR$/multilibrary/multilibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/multilibrary/multilibrary.iml" filepath="$PROJECT_DIR$/multilibrary/multilibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/progresslibrary/progresslibrary.iml" filepath="$PROJECT_DIR$/progresslibrary/progresslibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/progresslibrary/progresslibrary.iml" filepath="$PROJECT_DIR$/progresslibrary/progresslibrary.iml" />
     </modules>
   </component>
