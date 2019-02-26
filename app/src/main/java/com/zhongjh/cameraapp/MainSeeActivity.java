@@ -22,10 +22,12 @@ import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.CaptureStrategy;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
@@ -36,6 +38,7 @@ import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
 import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +64,8 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
     private DownloadHelper mDownloadHelper = new DownloadHelper("http://www.baseurl.com", this);
 
     ProgressDialog progressDialog;
+
+    GlobalSetting mGlobalSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -88,11 +93,12 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 // 点击详情
                 if (multiMedia.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    List<Uri> uris = new ArrayList<>();
+                    List<PreviewItem> previewItems = new ArrayList<>();
                     for (MultiMedia item : mBinding.mplImageList.getImages()) {
-                        uris.add(item.getUri());
+                        PreviewItem previewItem = new PreviewItem(item.getUri(), item.getUrl());
+                        previewItems.add(previewItem);
                     }
-                    MultiMediaSetting.openPreviewImage(MainSeeActivity.this, uris);
+                    MultiMediaSetting.openPreviewImage(MainSeeActivity.this, previewItems);
                 } else if (multiMedia.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
                     List<Uri> uris = new ArrayList<>();
@@ -112,7 +118,8 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
             @Override
             public void onItemClose(View view, MultiMedia multiMedia) {
                 // 停止上传
-                timers.get(multiMedia).cancel();
+                if (timers.get(multiMedia) != null)
+                    timers.get(multiMedia).cancel();
             }
 
             @Override
@@ -126,32 +133,89 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 // 获取文件名
                 String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
                 // 调用方法
+                mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "audioCache", fileName);
+            }
+
+            @Override
+            public void onItemVideoStartDownload(String url) {
+                // 获取后缀名
+                String suffixName = ".mp4";
+                if (!TextUtils.isEmpty(url) && url.contains(".mp4")) {
+                    suffixName = ".mp4";
+                }
+
+                // 获取文件名
+                String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
+                // 调用方法
                 mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "videoCache", fileName);
             }
 
-            @Override
-            public void onItemSuccessDownload() {
-
-            }
-
-            @Override
-            public void onItemFailDownload() {
-
-            }
-
         });
+
+        initConfig();
 
         initData();
 
     }
 
+    /**
+     * 初始化相关配置
+     */
+    private void initConfig() {
+        // 拍摄有关设置
+        CameraSetting cameraSetting = new CameraSetting();
+        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
+        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
+
+        // 相册
+        AlbumSetting albumSetting = new AlbumSetting(true)
+                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
+                .captureStrategy(
+                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
+                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
+                .countable(true)// 是否显示多选图片的数字
+                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
+                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
+                .thumbnailScale(0.85f)// 图片缩放比例
+                .setOnSelectedListener((uriList, pathList) -> {
+                    // 每次选择的事件
+                    Log.e("onSelected", "onSelected: pathList=" + pathList);
+                })
+                .originalEnable(true)// 开启原图
+                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
+                .setOnCheckedListener(isChecked -> {
+                    // DO SOMETHING IMMEDIATELY HERE
+                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
+                });
+
+        // 录音机
+        RecorderSetting recorderSetting = new RecorderSetting();
+        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
+
+        // 全局
+        mGlobalSetting = MultiMediaSetting.from(MainSeeActivity.this)
+                .choose(MimeType.ofAll())
+                .albumSetting(albumSetting)
+                .cameraSetting(cameraSetting)
+                .recorderSetting(recorderSetting)
+                .setOnMainListener(errorMessage -> Toast.makeText(MainSeeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
+                .captureStrategy(
+                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
+                //                                            .imageEngine(new GlideEngine())  // for glide-V3
+                .imageEngine(new Glide4Engine());    // for glide-V4
+    }
+
+    /**
+     * 初始化数据
+     */
     private void initData() {
         List<String> imageUrls = new ArrayList<>();
         imageUrls.add("http://img.huoyunji.com/photo_20190221105726_Android_15181?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("http://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
+        mBinding.mplImageList.addImageUrls(imageUrls);
         mBinding.mplImageList.addAudioUrl("http://img.huoyunji.com/audio_20190221105823_Android_28360");
-//        mBinding.mplImageList.addAudioUrl("http://img.huoyunji.com/video_20190221105749_Android_31228");
-//        mBinding.mplImageList.addImageUrls(imageUrls);
+        mBinding.mplImageList.addVideoUrl("http://img.huoyunji.com/video_20190221105749_Android_31228");
+
     }
 
     /**
@@ -258,48 +322,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
      *                          打开窗体
      */
     private void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-        // 拍摄有关设置
-        CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
-        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
-
-        // 相册
-        AlbumSetting albumSetting = new AlbumSetting(true)
-                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
-                .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
-                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
-                .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
-                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
-                .thumbnailScale(0.85f)// 图片缩放比例
-                .setOnSelectedListener((uriList, pathList) -> {
-                    // 每次选择的事件
-                    Log.e("onSelected", "onSelected: pathList=" + pathList);
-                })
-                .originalEnable(true)// 开启原图
-                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
-                .setOnCheckedListener(isChecked -> {
-                    // DO SOMETHING IMMEDIATELY HERE
-                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
-                });
-
-        // 录音机
-        RecorderSetting recorderSetting = new RecorderSetting();
-        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
-
-        // 全局
-        MultiMediaSetting.from(MainSeeActivity.this)
-                .choose(MimeType.ofAll())
-                .albumSetting(albumSetting)
-                .cameraSetting(cameraSetting)
-                .recorderSetting(recorderSetting)
-                .setOnMainListener(errorMessage -> Toast.makeText(MainSeeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
-                //                                            .imageEngine(new GlideEngine())  // for glide-V3
-                .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectable(10 - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
+        mGlobalSetting.maxSelectable(10 - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
                 .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);
     }
@@ -317,8 +340,16 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
 
     @Override
     public void onFinishDownload(File file) {
-        // 下载完成
-        mBinding.mplImageList.addVideoFile(file.getPath());
+        // 下载完成，判断后缀名进行相应的处理
+        String suffix = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
+        switch (suffix) {
+            case "mp3":
+                mBinding.mplImageList.addVideoFile(file.getPath());
+                break;
+            case "mp4":
+                mBinding.mplImageList.addAudioFile(file.getPath());
+                break;
+        }
         progressDialog.hide();
     }
 

@@ -21,12 +21,12 @@ public class MultiMedia {
     private MaskProgressView maskProgressView; // 绑定view
     private MaskProgressLayout maskProgressLayout;// 绑定view
 
-    public MultiMedia(String path, int type) {
-        this.path = path;
+    public MultiMedia(int type) {
         this.type = type;
     }
 
-    public MultiMedia(int type) {
+    public MultiMedia(String path, int type) {
+        this.path = path;
         this.type = type;
     }
 
@@ -86,7 +86,7 @@ public class MultiMedia {
     }
 
     public Uri getUri() {
-        if (uri == null)
+        if (uri == null && path != null)
             uri = Uri.fromFile(new File(path));
         return uri;
     }

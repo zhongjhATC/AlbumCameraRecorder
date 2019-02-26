@@ -44,7 +44,6 @@ public class PlayView extends FrameLayout {
 
     public void setListener(MaskProgressLayoutListener listener) {
         this.listener = listener;
-        this.listener.onItemSuccessDownload();
     }
 
     // region 有关音频
@@ -169,13 +168,6 @@ public class PlayView extends FrameLayout {
                 listener.onItemAudioStartDownload(mRecordingItem.getUrl());
             }
         });
-    }
-
-    /**
-     * 下载完毕，提供给外部，当音频下载完毕后，调用此方法
-     */
-    public void successDownload() {
-
     }
 
     // region 有关音频的方法

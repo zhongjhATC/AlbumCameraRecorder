@@ -2,9 +2,12 @@ package com.zhongjh.progresslibrary.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.Group;
@@ -20,6 +23,7 @@ import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.entity.RecordingItem;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
+import com.zhongjh.progresslibrary.utils.VideoUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -142,7 +146,6 @@ public class MaskProgressLayout extends FrameLayout {
      * 设置图片同时更新表格
      *
      * @param imagePaths 图片数据源
-     *                   // @param isUpload 是否上传，如果为true,则显示过渡动画，并且
      */
     public void addImages(List<String> imagePaths) {
         ArrayList<MultiMedia> multiMedias = new ArrayList<>();
@@ -163,7 +166,6 @@ public class MaskProgressLayout extends FrameLayout {
             multiMedias.add(multiMedia);
         }
         mViewHolder.alfMedia.addVideoData(multiMedias);
-
     }
 
     /**
@@ -220,20 +222,49 @@ public class MaskProgressLayout extends FrameLayout {
     }
 
     /**
-     * 添加音频实际的文件
-     * @param file 文件路径
+     * 添加图片网址数据
+     *
+     * @param imagesUrls 图片网址
      */
-    public void addVideoFile(String file){
+    public void addImageUrls(List<String> imagesUrls) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        for (String string : imagesUrls) {
+            MultiMedia multiMedia = new MultiMedia(0);
+            multiMedia.setUrl(string);
+            multiMedias.add(multiMedia);
+        }
+        mViewHolder.alfMedia.addImageData(multiMedias);
+    }
+
+    /**
+     * 添加视频网址数据
+     *
+     * @param videoUrl 视频网址
+     */
+    public void addVideoUrl(String videoUrl) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        MultiMedia multiMedia = new MultiMedia(1);
+        multiMedia.setUrl(videoUrl);
+        multiMedias.add(multiMedia);
+        mViewHolder.alfMedia.addVideoData(multiMedias);
+    }
+
+    /**
+     * 添加音频实际的文件
+     *
+     * @param file 文件路径
+     *             String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+     *             String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+     *             String mime = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
+     *             String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+     *             String bitrate = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE); // bit/s api >= 14
+     *             String date = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);
+     */
+    public void addVideoFile(String file) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(file);
-//        String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-//        String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-//        String mime = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
-//        String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); // ms,时长
-//        String bitrate = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE); // bit/s api >= 14
-//        String date = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);
 
+        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); // ms,时长
 
 
         MultiMedia multiMedia = new MultiMedia(2);

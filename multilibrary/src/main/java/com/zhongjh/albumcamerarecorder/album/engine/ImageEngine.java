@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.progresslibrary.engine;
+package com.zhongjh.albumcamerarecorder.album.engine;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -22,8 +22,8 @@ import android.widget.ImageView;
 
 /**
  * 图片不同加载方式
- * Image loader interface. There are predefined {@link com.zhongjh.progresslibrary.engine.impl.GlideEngine}
- * and {@link com.zhongjh.progresslibrary.engine.impl.PicassoEngine}.
+ * Image loader interface. There are predefined {@link com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine}
+ * and {@link com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine}.
  */
 @SuppressWarnings("unused")
 public interface ImageEngine {
@@ -32,7 +32,7 @@ public interface ImageEngine {
      * Load thumbnail of a static image resource.
      *
      * @param context     Context
-     * @param resize      原产地图像的期望尺寸
+     * @param resize      Desired size of the origin image
      * @param placeholder Placeholder drawable when image is not loaded yet
      * @param imageView   ImageView widget
      * @param uri         Uri of the loaded image
@@ -63,6 +63,8 @@ public interface ImageEngine {
      * @param uri       Uri of the loaded image
      */
     void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri);
+
+    void loadUrlImage(Context context, ImageView imageView, String url);
 
     /**
      * Load a gif image resource.

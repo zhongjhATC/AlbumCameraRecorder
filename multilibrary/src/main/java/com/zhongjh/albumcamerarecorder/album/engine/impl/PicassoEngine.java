@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.progresslibrary.engine.impl;
+package com.zhongjh.albumcamerarecorder.album.engine.impl;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -21,7 +21,7 @@ import android.net.Uri;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.zhongjh.progresslibrary.engine.ImageEngine;
+import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 
 
 /**
@@ -55,6 +55,12 @@ public class PicassoEngine implements ImageEngine {
     @Override
     public void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
         Picasso.with(context).load(uri).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
+                .centerInside().into(imageView);
+    }
+
+    @Override
+    public void loadUrlImage(Context context, ImageView imageView, String url) {
+        Picasso.with(context).load(url).priority(Picasso.Priority.HIGH)
                 .centerInside().into(imageView);
     }
 

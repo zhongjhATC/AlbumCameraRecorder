@@ -6,6 +6,14 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <com.zhongjh.progresslibrary.widget.MaskProgressView
+        android:id="@+id/mpvImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/selector_image_add" />
+
     <ImageView
         android:id="@+id/imgPlay"
         android:layout_width="wrap_content"
@@ -15,14 +23,6 @@
         android:src="@drawable/ic_bf_gray"
         android:visibility="gone"
         tools:visibility="visible" />
-
-    <com.zhongjh.progresslibrary.widget.MaskProgressView
-        android:id="@+id/mpvImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/selector_image_add" />
 
     <com.sdsmdg.harjot.vectormaster.VectorMasterView
         android:id="@+id/vmvClose"

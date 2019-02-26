@@ -42,7 +42,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidSupportSdkVersion"
-    compile project(path: ':library')
+    compile project(path: ':multilibrary')
     compile project(path: ':progresslibrary')
     implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.1'
 

@@ -43,14 +43,10 @@ public interface MaskProgressLayoutListener {
     void onItemAudioStartDownload(String url);
 
     /**
-     * 下载成功
+     * 开始下载视频
+     * @param url 网址
      */
-    void onItemSuccessDownload();
-
-    /**
-     * 下载失败
-     */
-    void onItemFailDownload();
+    void onItemVideoStartDownload(String url);
 
 
 }

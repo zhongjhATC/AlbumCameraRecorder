@@ -45,6 +45,18 @@ public class Glide4EngineProgress implements ImageEngine {
     }
 
     @Override
+    public void loadUrlThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, String url) {
+        Glide.with(context)
+                .asBitmap() // some .jpeg files are actually gif
+                .load(url)
+                .apply(new RequestOptions()
+                        .override(resize, resize)
+                        .placeholder(placeholder)
+                        .centerCrop())
+                .into(imageView);
+    }
+
+    @Override
     public void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView,
                                  Uri uri) {
         Glide.with(context)

@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -77,11 +78,12 @@ public class MainActivity extends AppCompatActivity {
                 // 点击详情
                 if (multiMedia.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    List<Uri> uris = new ArrayList<>();
+                    List<PreviewItem> previewItems = new ArrayList<>();
                     for (MultiMedia item : mBinding.mplImageList.getImages()) {
-                        uris.add(item.getUri());
+                        PreviewItem previewItem = new PreviewItem(item.getUri(),item.getUrl());
+                        previewItems.add(previewItem);
                     }
-                    MultiMediaSetting.openPreviewImage(MainActivity.this, uris);
+                    MultiMediaSetting.openPreviewImage(MainActivity.this, previewItems);
                 } else if (multiMedia.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
                     List<Uri> uris = new ArrayList<>();

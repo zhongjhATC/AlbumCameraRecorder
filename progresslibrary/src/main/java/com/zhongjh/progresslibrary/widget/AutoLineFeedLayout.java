@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -127,7 +128,10 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMedia);
                 addView(viewHolder.itemView, endingPostion);
-                this.listener.onItemStartUploading(multiMedia);
+                // 判断multiMedia有没有path,有path没有uri就执行上传
+                if (TextUtils.isEmpty(multiMedia.getUrl()) && !TextUtils.isEmpty(multiMedia.getPath())) {
+                    this.listener.onItemStartUploading(multiMedia);
+                }
             }
         }
         checkLastImages();
@@ -149,7 +153,10 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMedia);
                 addView(viewHolder.itemView, 0);
-                this.listener.onItemStartUploading(multiMedia);
+                // 判断multiMedia有没有path,有path没有uri就执行上传
+                if (TextUtils.isEmpty(multiMedia.getUrl()) && !TextUtils.isEmpty(multiMedia.getPath())) {
+                    this.listener.onItemStartUploading(multiMedia);
+                }
             }
         }
         checkLastImages();
@@ -295,7 +302,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             //设置条目的点击事件
             itemView.setOnClickListener(this);
             //设置图片
-            if (multiMedia.getPath().equals(ADD)) {
+            if (!TextUtils.isEmpty(multiMedia.getPath()) && multiMedia.getPath().equals(ADD)) {
                 // 加载➕图
                 mpvImage.setImageResource(R.drawable.selector_image_add);
                 // 隐藏close
@@ -303,9 +310,17 @@ public class AutoLineFeedLayout extends ViewGroup {
                 vClose.setOnClickListener(null);
                 imgPlay.setVisibility(View.GONE);
             } else {
-                // 加载图片
-                imageEngine.loadThumbnail(getContext(), mpvImage.getWidth(), placeholder,
-                        mpvImage, Uri.fromFile(new File(multiMedia.getPath())));
+                // 根据类型做相关设置
+                if (multiMedia.getType() == 1) {
+                    // 判断是否显示播放按钮
+                    imgPlay.setVisibility(View.VISIBLE);
+                    // 视频处理
+                } else if (multiMedia.getType() == 0) {
+                    imgPlay.setVisibility(View.GONE);
+                }
+
+                loadImage();
+
                 // 显示close
                 vClose.setVisibility(View.VISIBLE);
                 vClose.setOnClickListener(v -> {
@@ -321,24 +336,45 @@ public class AutoLineFeedLayout extends ViewGroup {
                     parent.removeView(this.itemView);
                     checkLastImages();
                 });
-                // 判断是否显示播放按钮
-                if (multiMedia.getType() == 1) {
-                    imgPlay.setVisibility(View.VISIBLE);
-                } else {
-                    imgPlay.setVisibility(View.GONE);
-                }
+
+            }
+        }
+
+        /**
+         * 加载图片
+         */
+        private void loadImage() {
+            // 加载图片
+            if (!TextUtils.isEmpty(multiMedia.getPath())) {
+                imageEngine.loadThumbnail(getContext(), mpvImage.getWidth(), placeholder,
+                        mpvImage, Uri.fromFile(new File(multiMedia.getPath())));
+            } else if (!TextUtils.isEmpty(multiMedia.getUrl())) {
+                imageEngine.loadUrlThumbnail(getContext(), mpvImage.getWidth(), placeholder,
+                        mpvImage, multiMedia.getUrl());
             }
         }
 
         @Override
         public void onClick(View v) {
             if (listener != null)
-                if (multiMedia.getPath().equals(ADD)) {
+                if (!TextUtils.isEmpty(multiMedia.getPath()) && multiMedia.getPath().equals(ADD)) {
                     // 加载➕图
                     listener.onItemAdd(v, multiMedia, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
                 } else {
-                    // 点击详情
-                    listener.onItemImage(v, multiMedia);
+                    // 点击
+                    if (multiMedia.getType() == 0){
+                        // 如果是图片，直接跳转详情
+                        listener.onItemImage(v, multiMedia);
+                    }else{
+                        // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
+                        if (TextUtils.isEmpty(multiMedia.getPath())){
+                            // 执行下载事件
+                            listener.onItemAudioStartDownload(multiMedia.getUrl());
+                        }else{
+                            // 点击事件
+                            listener.onItemImage(v, multiMedia);
+                        }
+                    }
                 }
         }
 

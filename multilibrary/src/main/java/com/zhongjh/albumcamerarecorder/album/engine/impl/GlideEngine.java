@@ -13,35 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.progresslibrary.engine.impl;
+package com.zhongjh.albumcamerarecorder.album.engine.impl;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
-import com.zhongjh.progresslibrary.engine.ImageEngine;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 
 
 /**
- * {@link ImageEngine} implementation using Picasso.
+ * {@link ImageEngine} implementation using Glide.
  */
 
-public class PicassoEngine implements ImageEngine {
+public class GlideEngine implements ImageEngine {
 
     @Override
     public void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri) {
-        Picasso.with(context).load(uri).placeholder(placeholder)
-                .resize(resize, resize)
+        Glide.with(context)
+                .load(uri)
+                .asBitmap()  // some .jpeg files are actually gif
+                .placeholder(placeholder)
+                .override(resize, resize)
                 .centerCrop()
                 .into(imageView);
     }
 
     @Override
     public void loadUrlThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, String url) {
-        Picasso.with(context).load(url).placeholder(placeholder)
-                .resize(resize, resize)
+        Glide.with(context)
+                .load(url)
+                .asBitmap()  // some .jpeg files are actually gif
+                .placeholder(placeholder)
+                .override(resize, resize)
                 .centerCrop()
                 .into(imageView);
     }
@@ -49,22 +56,47 @@ public class PicassoEngine implements ImageEngine {
     @Override
     public void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView,
                                  Uri uri) {
-        loadThumbnail(context, resize, placeholder, imageView, uri);
+        Glide.with(context)
+                .load(uri)
+                .asBitmap()
+                .placeholder(placeholder)
+                .override(resize, resize)
+                .centerCrop()
+                .into(imageView);
     }
 
     @Override
     public void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
-        Picasso.with(context).load(uri).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
-                .centerInside().into(imageView);
+        Glide.with(context)
+                .load(uri)
+                .override(resizeX, resizeY)
+                .priority(Priority.HIGH)
+                .fitCenter()
+                .into(imageView);
+    }
+
+    @Override
+    public void loadUrlImage(Context context, ImageView imageView, String url) {
+        Glide.with(context)
+                .load(url)
+                .priority(Priority.HIGH)
+                .fitCenter()
+                .into(imageView);
     }
 
     @Override
     public void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
-        loadImage(context, resizeX, resizeY, imageView, uri);
+        Glide.with(context)
+                .load(uri)
+                .asGif()
+                .override(resizeX, resizeY)
+                .priority(Priority.HIGH)
+                .into(imageView);
     }
 
     @Override
     public boolean supportAnimatedGif() {
-        return false;
+        return true;
     }
+
 }
