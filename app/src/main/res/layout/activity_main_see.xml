@@ -11,6 +11,7 @@
             android:id="@+id/mplImageList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:isOperation="false"
             app:audioDeleteColor="@color/blue_primary"
             app:audioPlayColor="@color/blue_primary"
             app:audioProgressColor="@color/blue_primary"

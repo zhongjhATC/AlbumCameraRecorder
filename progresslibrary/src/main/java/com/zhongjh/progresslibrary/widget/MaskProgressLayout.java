@@ -35,6 +35,8 @@ import java.util.List;
  */
 public class MaskProgressLayout extends FrameLayout {
 
+    private boolean isOperation = true;            // 是否允许操作
+
     public ViewHolder mViewHolder;          // 控件集合
     private ImageEngine mImageEngine;       // 图片加载方式
 
@@ -78,6 +80,8 @@ public class MaskProgressLayout extends FrameLayout {
 
         // 获取自定义属性。
         TypedArray maskProgressLayoutStyle = getContext().obtainStyledAttributes(attrs, R.styleable.MaskProgressLayoutStyle);
+        // 是否允许操作
+        isOperation = maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayoutStyle_isOperation, true);
         // 获取默认图片
         Drawable drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_album_thumbnail_placeholder);
         // 获取添加图片
@@ -125,7 +129,7 @@ public class MaskProgressLayout extends FrameLayout {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
-        mViewHolder.alfMedia.initConfig(this, mImageEngine, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
+        mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
         // 设置上传音频等属性
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
         mViewHolder.numberProgressBar.setProgressTextColor(audioProgressColor);
@@ -319,14 +323,14 @@ public class MaskProgressLayout extends FrameLayout {
     /**
      * 语音点击
      */
-    public void onAudioClick(){
+    public void onAudioClick() {
         mViewHolder.playView.mViewHolder.imgPlay.performClick();
     }
 
     /**
      * 视频点击
      */
-    public void onVideoClick(){
+    public void onVideoClick() {
         mViewHolder.alfMedia.getChildAt(0).performClick();
     }
 
@@ -342,6 +346,16 @@ public class MaskProgressLayout extends FrameLayout {
      */
     public List<MultiMedia> getVideos() {
         return mViewHolder.alfMedia.videoList;
+    }
+
+    /**
+     * 设置是否操作
+     *
+     * @param isOperation
+     */
+    public void isOperation(boolean isOperation) {
+        this.isOperation = isOperation;
+        mViewHolder.imgRemoveRecorder.setVisibility(isOperation ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -365,8 +379,6 @@ public class MaskProgressLayout extends FrameLayout {
             audioList.clear();
         });
     }
-
-
 
 
     public static class ViewHolder {

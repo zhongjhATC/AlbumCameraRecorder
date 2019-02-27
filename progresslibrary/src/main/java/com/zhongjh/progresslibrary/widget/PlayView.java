@@ -42,6 +42,7 @@ public class PlayView extends FrameLayout {
     private String mFileLength;// 该音频文件的总时
 
     private MaskProgressLayoutListener listener;   // 相关事件
+    private boolean operation;
 
     public void setListener(MaskProgressLayoutListener listener) {
         this.listener = listener;
@@ -76,6 +77,7 @@ public class PlayView extends FrameLayout {
         setWillNotDraw(false);
 
         mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_play, this));
+        mViewHolder.seekbar.setEnabled(false);
 
         initListener();
     }
@@ -93,6 +95,12 @@ public class PlayView extends FrameLayout {
                 (audioProgressColor, audioProgressColor);
         mViewHolder.seekbar.getProgressDrawable().setColorFilter(filter);
         mViewHolder.seekbar.getThumb().setColorFilter(filter);
+
+        if (!TextUtils.isEmpty(mRecordingItem.getFilePath())){
+            mViewHolder.seekbar.setEnabled(true);
+        }else{
+            mViewHolder.seekbar.setEnabled(false);
+        }
 
         initData();
     }

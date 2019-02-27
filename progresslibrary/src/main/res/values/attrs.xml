@@ -3,6 +3,8 @@
 
     <declare-styleable name="MaskProgressLayoutStyle">
 
+        <attr name="isOperation" format="boolean"/><!-- 是否允许操作 -->
+
         <attr name="album.thumbnail.placeholder" format="reference|color"/> <!-- 默认图片，颜色 -->
         <attr name="maxCount" format="integer" /> <!-- 只能显示多少个图片包括视频 -->
         <attr name="imageEngine" format="string"/> <!-- 显示图片的类 -->

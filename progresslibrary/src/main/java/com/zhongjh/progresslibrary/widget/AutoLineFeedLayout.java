@@ -39,6 +39,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     public List<MultiMedia> imageList = new ArrayList<>();     // 图片数据
     public List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
 
+    private boolean isOperation;// 是否操作
     private int maxMediaCount;  // 设置最多显示多少个图片或者视频
     private ImageEngine imageEngine;   // 图片加载方式
     private Drawable placeholder; // 默认图片
@@ -79,12 +80,13 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 初始化赋值配置
      */
-    public void initConfig(MaskProgressLayout maskProgressLayout, ImageEngine imageEngine, Drawable placeholder, int maxMediaCount,
+    public void initConfig(MaskProgressLayout maskProgressLayout, ImageEngine imageEngine, boolean isOperation, Drawable placeholder, int maxMediaCount,
                            int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent,
                            int deleteColor, Drawable deleteImage, Drawable addDrawable) {
         this.maskProgressLayout = maskProgressLayout;
         this.placeholder = placeholder;
         this.imageEngine = imageEngine;
+        this.isOperation = isOperation;
         this.maxMediaCount = maxMediaCount;
         this.maskingColor = maskingColor;
         this.maskingTextSize = maskingTextSize;
@@ -96,6 +98,9 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         if (this.addDrawable != null)
             viewHolderAdd.mpvImage.setImageDrawable(this.addDrawable);
+
+        if (!isOperation)
+            viewHolderAdd.itemView.setVisibility(View.GONE);
     }
 
     /**
@@ -255,7 +260,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 检查最后一个是否是添加
      */
     private void checkLastImages() {
-        if ((imageList.size() + videoList.size()) < maxMediaCount) {
+        if ((imageList.size() + videoList.size()) < maxMediaCount && isOperation) {
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
             viewHolderAdd.itemView.setVisibility(View.GONE);
@@ -329,20 +334,22 @@ public class AutoLineFeedLayout extends ViewGroup {
                 loadImage();
 
                 // 显示close
-                vClose.setVisibility(View.VISIBLE);
-                vClose.setOnClickListener(v -> {
-                    if (listener != null)
-                        listener.onItemClose(v, multiMedia);
-                    // 判断类型
-                    if (multiMedia.getType() == 0) {
-                        imageList.remove(multiMedia);
-                    } else if (multiMedia.getType() == 1) {
-                        videoList.remove(multiMedia);
-                    }
-                    ViewGroup parent = (ViewGroup) this.itemView.getParent();
-                    parent.removeView(this.itemView);
-                    checkLastImages();
-                });
+                if (isOperation) {
+                    vClose.setVisibility(View.VISIBLE);
+                    vClose.setOnClickListener(v -> {
+                        if (listener != null)
+                            listener.onItemClose(v, multiMedia);
+                        // 判断类型
+                        if (multiMedia.getType() == 0) {
+                            imageList.remove(multiMedia);
+                        } else if (multiMedia.getType() == 1) {
+                            videoList.remove(multiMedia);
+                        }
+                        ViewGroup parent = (ViewGroup) this.itemView.getParent();
+                        parent.removeView(this.itemView);
+                        checkLastImages();
+                    });
+                }
 
             }
         }
