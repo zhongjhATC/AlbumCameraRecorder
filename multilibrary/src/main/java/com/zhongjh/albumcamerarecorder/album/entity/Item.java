@@ -24,8 +24,7 @@ public class Item implements Parcelable {
     public final Uri uri;
 
 
-
-    public  String url;
+    public String url;
     public final long size;
     public final long duration; // only for video, in ms
 
@@ -37,7 +36,7 @@ public class Item implements Parcelable {
         this.duration = -1;
     }
 
-    public Item(Uri uri,String url) {
+    public Item(Uri uri, String url) {
         this.id = -1;
         this.mimeType = MimeType.JPEG.toString();
         this.uri = uri;
@@ -69,6 +68,42 @@ public class Item implements Parcelable {
 
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * 重写equals
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Item)) {
+            return false;
+        }
+
+        Item other = (Item) obj;
+        return id == other.id
+                && (mimeType != null && mimeType.equals(other.mimeType)
+                || (mimeType == null && other.mimeType == null))
+                && (uri != null && uri.equals(other.uri)
+                || (uri == null && other.uri == null))
+                && size == other.size
+                && duration == other.duration;
+    }
+
+    /**
+     * 重写hashCode
+     */
+    @Override
+    public int hashCode() {
+        int result = 1;
+        result = 31 * result + Long.valueOf(id).hashCode();
+        if (mimeType != null) {
+            result = 31 * result + mimeType.hashCode();
+        }
+        if (uri != null)
+            result = 31 * result + uri.hashCode();
+        result = 31 * result + Long.valueOf(size).hashCode();
+        result = 31 * result + Long.valueOf(duration).hashCode();
+        return result;
     }
 
     public boolean isImage() {

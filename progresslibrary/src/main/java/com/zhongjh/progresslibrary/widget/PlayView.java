@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -265,7 +266,7 @@ public class PlayView extends FrameLayout {
     /**
      * 播放停止
      */
-    private void stopPlaying() {
+    public void stopPlaying() {
         mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
         mHandler.removeCallbacks(mRunnable);
         mMediaPlayer.stop();

@@ -127,16 +127,17 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
             public void onItemAudioStartDownload(String url) {
                 boolean isOk = getPermissions();
                 if (isOk) {
-                    // 获取后缀名
-                    String suffixName = ".mp3";
-                    if (!TextUtils.isEmpty(url) && url.contains(".mp3")) {
-                        suffixName = ".mp3";
+                    // 判断是否存在文件
+                    String[] fileFullPath = getFileFullPath(url, 0);
+                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
+                    if (!isExists) {
+                        // 调用方法
+                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
+                    } else {
+                        // 直接赋值
+                        mBinding.mplImageList.addAudioFile(fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.mplImageList.onAudioClick();
                     }
-
-                    // 获取文件名
-                    String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
-                    // 调用方法
-                    mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "audioCache", fileName);
                 }
             }
 
@@ -144,16 +145,16 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
             public void onItemVideoStartDownload(String url) {
                 boolean isOk = getPermissions();
                 if (isOk) {
-                    // 获取后缀名
-                    String suffixName = ".mp4";
-                    if (!TextUtils.isEmpty(url) && url.contains(".mp4")) {
-                        suffixName = ".mp4";
+                    String[] fileFullPath = getFileFullPath(url, 1);
+                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
+                    if (!isExists) {
+                        // 调用方法
+                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
+                    } else {
+                        // 直接赋值
+                        mBinding.mplImageList.addVideoFile(fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.mplImageList.onVideoClick();
                     }
-
-                    // 获取文件名
-                    String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
-                    // 调用方法
-                    mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "videoCache", fileName);
                 }
             }
 
@@ -285,6 +286,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         for (Map.Entry<MultiMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
+        mBinding.mplImageList.destroy();
         super.onDestroy();
     }
 
@@ -364,6 +366,48 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
     public void onFail(Throwable throwable) {
         progressDialog.hide();
         Toast.makeText(this, "下载失败：" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 返回文件路径
+     *
+     * @param url  网址
+     * @param type 0是mp3,1是mp4
+     */
+    private String[] getFileFullPath(String url, int type) {
+        // 获取后缀名
+        String suffixName = null;
+        switch (type) {
+            case 0:
+                suffixName = ".mp3";
+                break;
+            case 1:
+                // 获取后缀名
+                suffixName = ".mp4";
+                break;
+        }
+        // 获取文件名
+        String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
+        return new String[]{Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "audioCache", fileName};
+    }
+
+    /**
+     * 判断是否存在文件
+     *
+     * @param strFile 文件路径
+     */
+    public boolean fileIsExists(String strFile) {
+        try {
+            File f = new File(strFile);
+            if (!f.exists()) {
+                return false;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     class MyTask extends Timer {

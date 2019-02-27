@@ -317,6 +317,20 @@ public class MaskProgressLayout extends FrameLayout {
     }
 
     /**
+     * 语音点击
+     */
+    public void onAudioClick(){
+        mViewHolder.playView.mViewHolder.imgPlay.performClick();
+    }
+
+    /**
+     * 视频点击
+     */
+    public void onVideoClick(){
+        mViewHolder.alfMedia.getChildAt(0).performClick();
+    }
+
+    /**
      * @return 返回当前图片数据
      */
     public List<MultiMedia> getImages() {
@@ -328,6 +342,13 @@ public class MaskProgressLayout extends FrameLayout {
      */
     public List<MultiMedia> getVideos() {
         return mViewHolder.alfMedia.videoList;
+    }
+
+    /**
+     * 销毁所有相关正在执行的东西
+     */
+    public void destroy() {
+        mViewHolder.playView.stopPlaying();//   停止播放语音
     }
 
     /**
@@ -344,6 +365,8 @@ public class MaskProgressLayout extends FrameLayout {
             audioList.clear();
         });
     }
+
+
 
 
     public static class ViewHolder {
