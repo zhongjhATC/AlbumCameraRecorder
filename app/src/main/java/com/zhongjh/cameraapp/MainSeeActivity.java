@@ -84,7 +84,9 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
             @Override
             public void onItemAdd(View view, MultiMedia multiMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                getPermissions(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                boolean isOk = getPermissions();
+                if (isOk)
+                    openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
@@ -123,30 +125,36 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
 
             @Override
             public void onItemAudioStartDownload(String url) {
-                // 获取后缀名
-                String suffixName = ".mp3";
-                if (!TextUtils.isEmpty(url) && url.contains(".mp3")) {
-                    suffixName = ".mp3";
-                }
+                boolean isOk = getPermissions();
+                if (isOk) {
+                    // 获取后缀名
+                    String suffixName = ".mp3";
+                    if (!TextUtils.isEmpty(url) && url.contains(".mp3")) {
+                        suffixName = ".mp3";
+                    }
 
-                // 获取文件名
-                String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
-                // 调用方法
-                mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "audioCache", fileName);
+                    // 获取文件名
+                    String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
+                    // 调用方法
+                    mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "audioCache", fileName);
+                }
             }
 
             @Override
             public void onItemVideoStartDownload(String url) {
-                // 获取后缀名
-                String suffixName = ".mp4";
-                if (!TextUtils.isEmpty(url) && url.contains(".mp4")) {
-                    suffixName = ".mp4";
-                }
+                boolean isOk = getPermissions();
+                if (isOk) {
+                    // 获取后缀名
+                    String suffixName = ".mp4";
+                    if (!TextUtils.isEmpty(url) && url.contains(".mp4")) {
+                        suffixName = ".mp4";
+                    }
 
-                // 获取文件名
-                String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
-                // 调用方法
-                mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "videoCache", fileName);
+                    // 获取文件名
+                    String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
+                    // 调用方法
+                    mDownloadHelper.downloadFile(url, Environment.getExternalStorageDirectory() + File.separator + "AA" + File.separator + "videoCache", fileName);
+                }
             }
 
         });
@@ -219,7 +227,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
     /**
      * 获取权限
      */
-    private void getPermissions(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+    private boolean getPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
                     .PERMISSION_GRANTED &&
@@ -227,16 +235,17 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                             .PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
                             .PERMISSION_GRANTED) {
-                openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                return true;
             } else {
                 //不具有获取权限，需要进行权限申请
                 ActivityCompat.requestPermissions(MainSeeActivity.this, new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
+                return false;
             }
         } else {
-            openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+            return true;
         }
     }
 
@@ -305,7 +314,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                     size++;
                 }
                 if (size == 0) {
-                    startActivityForResult(new Intent(MainSeeActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
+                    Toast.makeText(this, "你可以重新打开相关功能", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                 }
