@@ -9,9 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -50,7 +48,7 @@ public class PlayView extends FrameLayout {
 
     // region 有关音频
 
-    private MediaPlayer mMediaPlayer = null;
+    private MediaPlayer mMediaPlayer = new MediaPlayer();
 
     private Handler mHandler = new Handler();
 
@@ -96,9 +94,9 @@ public class PlayView extends FrameLayout {
         mViewHolder.seekbar.getProgressDrawable().setColorFilter(filter);
         mViewHolder.seekbar.getThumb().setColorFilter(filter);
 
-        if (!TextUtils.isEmpty(mRecordingItem.getFilePath())){
+        if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
             mViewHolder.seekbar.setEnabled(true);
-        }else{
+        } else {
             mViewHolder.seekbar.setEnabled(false);
         }
 
@@ -107,6 +105,7 @@ public class PlayView extends FrameLayout {
 
     /**
      * 根据当前文件初始化一些相关数据
+     * asdfsafd
      */
     private void initData() {
         long itemDuration = mRecordingItem.getLength();
@@ -114,6 +113,19 @@ public class PlayView extends FrameLayout {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
                 - TimeUnit.MINUTES.toSeconds(minutes);
         mFileLength = String.format(Locale.CANADA, "%02d:%02d", minutes, seconds);
+
+        // 初始化MediaPlayer
+        if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
+            try {
+                mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
+                mMediaPlayer.prepare(); // 预备好
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 相关控件不能使用
+
+        }
+
     }
 
     /**
@@ -177,6 +189,10 @@ public class PlayView extends FrameLayout {
                 listener.onItemAudioStartDownload(mRecordingItem.getUrl());
             }
         });
+
+        mMediaPlayer.setOnPreparedListener(mp -> mMediaPlayer.start());
+        mMediaPlayer.setOnCompletionListener(mp -> stopPlaying());
+
     }
 
     // region 有关音频的方法
@@ -206,22 +222,7 @@ public class PlayView extends FrameLayout {
      */
     private void startPlaying() {
         mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
-        mMediaPlayer = new MediaPlayer();
-
-        try {
-            mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
-            mMediaPlayer.prepare();
-            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());
-
-            mMediaPlayer.setOnPreparedListener(mp -> mMediaPlayer.start());
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-
-        mMediaPlayer.setOnCompletionListener(mp -> stopPlaying());
-
         updateSeekBar();
-
 //        // 播放音频时保持屏幕打开
 //        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -232,23 +233,9 @@ public class PlayView extends FrameLayout {
      * @param progress 进度
      */
     private void prepareMediaPlayerFromPoint(int progress) {
-        //set mediaPlayer to start from middle of the audio file
-
-        mMediaPlayer = new MediaPlayer();
-
-        try {
-            mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
-            mMediaPlayer.prepare();
-            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());
-            mMediaPlayer.seekTo(progress);
-
-            mMediaPlayer.setOnCompletionListener(mp -> stopPlaying());
-
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-
-//        // 播放完音频后允许再次关闭屏幕
+        mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());
+        mMediaPlayer.seekTo(progress);
+        //        // 播放完音频后允许再次关闭屏幕
 //        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -279,8 +266,6 @@ public class PlayView extends FrameLayout {
         mHandler.removeCallbacks(mRunnable);
         mMediaPlayer.stop();
         mMediaPlayer.reset();
-        mMediaPlayer.release();
-        mMediaPlayer = null;
 
         mViewHolder.seekbar.setProgress(mViewHolder.seekbar.getMax());
         isPlaying = !isPlaying;
@@ -290,6 +275,14 @@ public class PlayView extends FrameLayout {
 
 //        // 播放完音频后允许再次关闭屏幕
 //        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    /**
+     * 销毁播放器
+     */
+    public void deStory() {
+        mMediaPlayer.release();
+        mMediaPlayer = null;
     }
 
     /**

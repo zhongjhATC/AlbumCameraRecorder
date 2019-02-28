@@ -363,6 +363,7 @@ public class MaskProgressLayout extends FrameLayout {
      */
     public void destroy() {
         mViewHolder.playView.stopPlaying();//   停止播放语音
+        mViewHolder.playView.deStory();
     }
 
     /**
