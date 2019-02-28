@@ -30,10 +30,23 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:text="00:00"
+        android:text="00:00 /"
         android:textColor="#333333"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/imgPlay"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tvTotalProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+        android:text="00:00"
+        android:textColor="#333333"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/tvCurrentProgress"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
 

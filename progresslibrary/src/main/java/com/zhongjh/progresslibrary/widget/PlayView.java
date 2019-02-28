@@ -1,10 +1,12 @@
 package com.zhongjh.progresslibrary.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -20,7 +22,10 @@ import com.zhongjh.progresslibrary.entity.RecordingItem;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,8 +54,13 @@ public class PlayView extends FrameLayout {
     // region 有关音频
 
     private MediaPlayer mMediaPlayer = new MediaPlayer();
+    //定时器  由于功能中有付费播放功能，需要定时器来判断
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+    private boolean isChanging = false;  //互斥变量，防止定时器与SeekBar拖动时进度冲突
 
-    private Handler mHandler = new Handler();
+
+    private Handler mHandler = new MyHandler(PlayView.this);
 
     // endregion 有关音频
 
@@ -105,7 +115,6 @@ public class PlayView extends FrameLayout {
 
     /**
      * 根据当前文件初始化一些相关数据
-     * asdfsafd
      */
     private void initData() {
         long itemDuration = mRecordingItem.getLength();
@@ -114,18 +123,8 @@ public class PlayView extends FrameLayout {
                 - TimeUnit.MINUTES.toSeconds(minutes);
         mFileLength = String.format(Locale.CANADA, "%02d:%02d", minutes, seconds);
 
-        // 初始化MediaPlayer
-        if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
-            try {
-                mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
-                mMediaPlayer.prepare(); // 预备好
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // 相关控件不能使用
-
-        }
-
+        //准备播放
+        play();
     }
 
     /**
@@ -133,180 +132,151 @@ public class PlayView extends FrameLayout {
      */
     private void initListener() {
         // 进度条
-        mViewHolder.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (mMediaPlayer != null && fromUser) {
-                    // 如果处于播放中
-                    mMediaPlayer.seekTo(progress);
-                    mHandler.removeCallbacks(mRunnable);
-
-                    long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
-                            - TimeUnit.MINUTES.toSeconds(minutes);
-                    mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA, "%02d:%02d", minutes, seconds));
-
-                    updateSeekBar();
-
-                } else if (mMediaPlayer == null && fromUser) {
-                    // 如果还未播放
-                    prepareMediaPlayerFromPoint(progress);
-                    updateSeekBar();
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                if (mMediaPlayer != null) {
-                    // remove message Handler from updating progress bar
-                    mHandler.removeCallbacks(mRunnable);
-                }
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (mMediaPlayer != null) {
-                    mHandler.removeCallbacks(mRunnable);
-                    mMediaPlayer.seekTo(seekBar.getProgress());
-
-                    long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
-                            - TimeUnit.MINUTES.toSeconds(minutes);
-                    mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA, "%02d:%02d", minutes, seconds));
-                    updateSeekBar();
-                }
-            }
-        });
+        mViewHolder.seekbar.setOnSeekBarChangeListener(new MySeekbar());
 
         // 播放按钮
         mViewHolder.imgPlay.setOnClickListener(v -> {
             // 判断该音频是否有文件地址，如果没有则请求下载
             if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
-                onPlay(isPlaying);
-                isPlaying = !isPlaying;
+                onPlay();
             } else {
                 // 调用下载
                 listener.onItemAudioStartDownload(mRecordingItem.getUrl());
             }
         });
 
-        mMediaPlayer.setOnPreparedListener(mp -> mMediaPlayer.start());
-        mMediaPlayer.setOnCompletionListener(mp -> stopPlaying());
+        //异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
+        mMediaPlayer.setOnPreparedListener(mediaPlayer -> {
+            mViewHolder.seekbar.setProgress(0);
+            mViewHolder.imgPlay.setEnabled(true);
+            mViewHolder.tvCurrentProgress.setText("00:00/");// 当前时间
+            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration() + 1000)); // 总计时间
+            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration() + 1000);//设置进度条
+        });
+
+        // 播放完成事件
+        mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
+            //进度归零
+            mMediaPlayer.seekTo(0);
+            //进度条归零
+            mViewHolder.seekbar.setProgress(0);
+            //控制栏中的播放按钮显示暂停状态
+            mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
+            isPlaying = false;
+            //重置并准备重新播放
+            mMediaPlayer.reset();
+            play();
+        });
 
     }
 
     // region 有关音频的方法
 
     /**
-     * 播放或者暂停
-     *
-     * @param isPlaying 播放或者暂停
+     * 播放
      */
-    private void onPlay(boolean isPlaying) {
-        if (!isPlaying) {
-            // 当前MediaPlayer未播放音频
-            if (mMediaPlayer == null) {
-                startPlaying(); // 从头开始
-            } else {
-                resumePlaying(); // 恢复当前暂停的MediaPlayer
+    public void play() {
+        if (!TextUtils.isEmpty(mRecordingItem.getFilePath()))
+            try {
+                mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
+                //采用异步准备，使用prepare方法时，用户进入该界面需要等待几秒，如同死机一般，，，
+                mMediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+    }
 
+    /**
+     * 播放或者暂停
+     */
+    private void onPlay() {
+        if (isPlaying) {
+            //如果当前正在播放  停止播放 更改控制栏播放状态
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+                mMediaPlayer.pause();
+                mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
+            }
         } else {
-            // 暂停MediaPlayer
-            pausePlaying();
+            //如果当前停止播放  继续播放 更改控制栏状态
+            if (mMediaPlayer != null) {
+                mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
+                mMediaPlayer.start();
+                //定时器 更新进度
+                if (mTimer == null) {
+                    mTimer = new Timer();
+                    mTimerTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (isChanging) {
+                                return;
+                            }
+                            if (isPlaying) {
+                                mHandler.sendEmptyMessage(0);
+                                mViewHolder.seekbar.setProgress(mMediaPlayer.getCurrentPosition());
+                            }
+                        }
+                    };
+                    mTimer.schedule(mTimerTask, 0, 1000);
+                }
+            }
         }
-    }
-
-    /**
-     * 从头开始播放
-     */
-    private void startPlaying() {
-        mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
-        updateSeekBar();
-//        // 播放音频时保持屏幕打开
-//        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
-
-    /**
-     * 将MediaPlayer设置为从音频文件中间直接开始（意思即为拉到一半立即播放）
-     *
-     * @param progress 进度
-     */
-    private void prepareMediaPlayerFromPoint(int progress) {
-        mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());
-        mMediaPlayer.seekTo(progress);
-        //        // 播放完音频后允许再次关闭屏幕
-//        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
-
-    /**
-     * 暂停MediaPlayer
-     */
-    private void pausePlaying() {
-        mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
-        mHandler.removeCallbacks(mRunnable);
-        mMediaPlayer.pause();
-    }
-
-    /**
-     * 恢复当前暂停的MediaPlayer
-     */
-    private void resumePlaying() {
-        mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
-        mHandler.removeCallbacks(mRunnable);
-        mMediaPlayer.start();
-        updateSeekBar();
-    }
-
-    /**
-     * 播放停止
-     */
-    public void stopPlaying() {
-        mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
-        mHandler.removeCallbacks(mRunnable);
-        mMediaPlayer.stop();
-        mMediaPlayer.reset();
-
-        mViewHolder.seekbar.setProgress(mViewHolder.seekbar.getMax());
         isPlaying = !isPlaying;
-
-        mViewHolder.tvCurrentProgress.setText(mFileLength);
-        mViewHolder.seekbar.setProgress(mViewHolder.seekbar.getMax());
-
-//        // 播放完音频后允许再次关闭屏幕
-//        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     /**
      * 销毁播放器
      */
     public void deStory() {
-        mMediaPlayer.release();
-        mMediaPlayer = null;
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+            mTimerTask = null;
+        }
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            mMediaPlayer.release();
+        }
     }
 
     /**
-     * 更新 进度条
+     * 格式化显示的时间
      */
-    private Runnable mRunnable = () -> {
-        if (mMediaPlayer != null) {
-            int mCurrentPosition = mMediaPlayer.getCurrentPosition();   // 获取当前进度
-            mViewHolder.seekbar.setProgress(mCurrentPosition); // 赋值
-
-            long minutes = TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition);
-            long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition)
-                    - TimeUnit.MINUTES.toSeconds(minutes);
-            mViewHolder.tvCurrentProgress.setText(String.format(Locale.CHINA, "%02d:%02d", minutes, seconds));
-
-            updateSeekBar();
-        }
-    };
+    @SuppressLint("DefaultLocale")
+    private String generateTime(long time) {
+        int totalSeconds = (int) (time / 1000);
+        int seconds = totalSeconds % 60;
+        int minutes = (totalSeconds / 60) % 60;
+        int hours = totalSeconds / 3600;
+        return hours > 0 ? String.format("%02d:%02d:%02d", hours, minutes,
+                seconds) : String.format("%02d:%02d", minutes, seconds);
+    }
 
     /**
-     * 每隔一秒更新
+     * 操作ui
      */
-    private void updateSeekBar() {
-        mHandler.postDelayed(mRunnable, 1000);
+    private static class MyHandler extends Handler {
+        private final WeakReference<PlayView> mPlayView;
+
+        public MyHandler(PlayView playView) {
+            mPlayView = new WeakReference<>(playView);
+        }
+
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void handleMessage(Message msg) {
+            PlayView playView = mPlayView.get();
+            if (playView != null) {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case 0:
+                        //设置当前播放进度
+                        playView.mViewHolder.tvCurrentProgress.setText(playView.generateTime(playView.mMediaPlayer.getCurrentPosition()) + "/");
+                        break;
+                }
+            }
+        }
     }
 
     // endregion
@@ -317,13 +287,40 @@ public class PlayView extends FrameLayout {
         public ImageView imgPlay;
         public SeekBar seekbar;
         public TextView tvCurrentProgress;
+        public TextView tvTotalProgress;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
             this.imgPlay = rootView.findViewById(R.id.imgPlay);
             this.seekbar = rootView.findViewById(R.id.seekbar);
             this.tvCurrentProgress = rootView.findViewById(R.id.tvCurrentProgress);
+            this.tvTotalProgress = rootView.findViewById(R.id.tvTotalProgress);
         }
 
     }
+
+    /**
+     * 进度条的进度变化事件
+     */
+    class MySeekbar implements SeekBar.OnSeekBarChangeListener {
+
+        //当进度条变化时触发
+        public void onProgressChanged(SeekBar seekBar, int progress,
+                                      boolean fromUser) {
+        }
+
+        //开始拖拽进度条
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            isChanging = true;
+        }
+
+        //停止拖拽进度条
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            mMediaPlayer.seekTo(mViewHolder.seekbar.getProgress());
+            mViewHolder.tvCurrentProgress.setText(generateTime(mMediaPlayer.getCurrentPosition()) + "/");
+            isChanging = false;
+        }
+
+    }
+
 }

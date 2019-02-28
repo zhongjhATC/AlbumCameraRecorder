@@ -32,6 +32,7 @@ import java.util.List;
 /**
  * 这是返回（图片、视频、录音）等文件后，显示的Layout
  * Created by zhongjh on 2018/10/17.
+ * https://www.jianshu.com/p/191c41f63dc7
  */
 public class MaskProgressLayout extends FrameLayout {
 
@@ -362,7 +363,6 @@ public class MaskProgressLayout extends FrameLayout {
      * 销毁所有相关正在执行的东西
      */
     public void destroy() {
-        mViewHolder.playView.stopPlaying();//   停止播放语音
         mViewHolder.playView.deStory();
     }
 
