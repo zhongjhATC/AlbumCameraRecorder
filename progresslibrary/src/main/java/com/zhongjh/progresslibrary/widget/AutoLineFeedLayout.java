@@ -40,7 +40,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     public List<MultiMedia> videoList = new ArrayList<>();     // 视频数据
 
     private boolean isOperation;// 是否操作
-    private int maxMediaCount;  // 设置最多显示多少个图片或者视频
+    private int maxMediaCount;  // 设置最多显示多少个图片/视频/语音
     private ImageEngine imageEngine;   // 图片加载方式
     private Drawable placeholder; // 默认图片
     private int maskingColor; // 有关遮罩层
@@ -77,6 +77,16 @@ public class AutoLineFeedLayout extends ViewGroup {
         init();
     }
 
+    public boolean isOperation() {
+        return isOperation;
+    }
+
+    public void setOperation(boolean operation) {
+        isOperation = operation;
+        if (!isOperation)
+            viewHolderAdd.itemView.setVisibility(View.GONE);
+    }
+
     /**
      * 初始化赋值配置
      */
@@ -102,6 +112,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (!isOperation)
             viewHolderAdd.itemView.setVisibility(View.GONE);
     }
+
 
     /**
      * 初始化
@@ -259,8 +270,8 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 检查最后一个是否是添加
      */
-    private void checkLastImages() {
-        if ((imageList.size() + videoList.size()) < maxMediaCount && isOperation) {
+    public void checkLastImages() {
+        if ((imageList.size() + videoList.size() + this.maskProgressLayout.audioList.size()) < maxMediaCount && isOperation) {
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
             viewHolderAdd.itemView.setVisibility(View.GONE);
@@ -349,6 +360,8 @@ public class AutoLineFeedLayout extends ViewGroup {
                         parent.removeView(this.itemView);
                         checkLastImages();
                     });
+                } else {
+                    vClose.setVisibility(View.GONE);
                 }
 
             }

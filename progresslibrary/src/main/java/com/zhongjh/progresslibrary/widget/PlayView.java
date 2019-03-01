@@ -150,8 +150,8 @@ public class PlayView extends FrameLayout {
             mViewHolder.seekbar.setProgress(0);
             mViewHolder.imgPlay.setEnabled(true);
             mViewHolder.tvCurrentProgress.setText("00:00/");// 当前时间
-            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration() + 1000)); // 总计时间
-            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration() + 1000);//设置进度条
+            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration() )); // 总计时间
+            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration() );//设置进度条
         });
 
         // 播放完成事件
@@ -179,8 +179,8 @@ public class PlayView extends FrameLayout {
         if (!TextUtils.isEmpty(mRecordingItem.getFilePath()))
             try {
                 mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
-                //采用异步准备，使用prepare方法时，用户进入该界面需要等待几秒，如同死机一般，，，
-                mMediaPlayer.prepareAsync();
+                //采用同步准备，使用prepare方法时，用户进入该界面需要等待几秒，如同死机一般，，，
+                mMediaPlayer.prepare();
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -217,7 +217,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
      * 初始化数据
      */
     private void initData() {
-        mBinding.mplImageList.isOperation(false);
+        mBinding.mplImageList.setOperation(false);
         List<String> imageUrls = new ArrayList<>();
         imageUrls.add("http://img.huoyunji.com/photo_20190221105726_Android_15181?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("http://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
@@ -332,8 +332,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
      *                          打开窗体
      */
     private void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-        mGlobalSetting.maxSelectable(10 - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
-                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+        mGlobalSetting.maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

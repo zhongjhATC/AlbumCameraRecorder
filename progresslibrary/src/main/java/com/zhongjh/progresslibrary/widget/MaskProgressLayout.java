@@ -310,6 +310,9 @@ public class MaskProgressLayout extends FrameLayout {
             // 显示音频的进度条
             this.listener.onItemStartUploading(multiMedia);
         }
+
+        // 检测添加多媒体上限
+        mViewHolder.alfMedia.checkLastImages();
     }
 
     /**
@@ -354,9 +357,10 @@ public class MaskProgressLayout extends FrameLayout {
      *
      * @param isOperation
      */
-    public void isOperation(boolean isOperation) {
+    public void setOperation(boolean isOperation) {
         this.isOperation = isOperation;
-        mViewHolder.imgRemoveRecorder.setVisibility(isOperation ? View.VISIBLE : View.GONE);
+        mViewHolder.imgRemoveRecorder.setVisibility(isOperation ? View.VISIBLE : View.GONE); // 隐藏音频
+        mViewHolder.alfMedia.setOperation(isOperation);
     }
 
     /**
@@ -378,6 +382,8 @@ public class MaskProgressLayout extends FrameLayout {
             mViewHolder.playView.setVisibility(View.GONE);
             mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
             audioList.clear();
+
+            mViewHolder.alfMedia.checkLastImages();
         });
     }
 

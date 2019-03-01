@@ -25,7 +25,7 @@
                 app:maskingTextColor="@color/black_eighty_percent"
                 app:maskingTextContent="上传中可自定义"
                 app:maskingTextSize="12"
-                app:maxCount="10" />
+                app:maxCount="7" />
 
             <Button
                 android:id="@+id/btnOpenSee"

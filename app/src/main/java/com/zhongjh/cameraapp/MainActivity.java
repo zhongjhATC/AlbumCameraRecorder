@@ -3,7 +3,6 @@ package com.zhongjh.cameraapp;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
@@ -32,10 +31,7 @@ import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.progresslibrary.entity.MultiMedia;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
-import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
-import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -279,7 +275,6 @@ public class MainActivity extends AppCompatActivity {
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
                 //                                            .imageEngine(new GlideEngine())  // for glide-V3
                 .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectable(Integer.valueOf(mBinding.etAllCount.getText().toString()) - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
                 .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAllCount.getText().toString()) - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);
 
@@ -328,7 +323,6 @@ public class MainActivity extends AppCompatActivity {
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
                 //                                            .imageEngine(new GlideEngine())  // for glide-V3
                 .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectable(Integer.valueOf(mBinding.etAllCount.getText().toString()) - (alreadyImageCount + alreadyVideoCount))// 全部最多选择几个
                 .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAllCount.getText().toString()) - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);
     }

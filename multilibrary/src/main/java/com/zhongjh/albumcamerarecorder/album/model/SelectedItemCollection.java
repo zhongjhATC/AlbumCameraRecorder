@@ -264,20 +264,14 @@ public class SelectedItemCollection {
      */
     private int currentMaxSelectable() {
         GlobalSpec spec = GlobalSpec.getInstance();
-        int leastCount = spec.maxSelectable;
+        int leastCount;
         if (mCollectionType == COLLECTION_IMAGE) {
-            if (spec.maxSelectable < spec.maxImageSelectable){
-                leastCount = spec.maxSelectable;
-            }else{
-                leastCount = spec.maxImageSelectable;
-            }
-        }
-        if (mCollectionType == COLLECTION_VIDEO) {
-            if (spec.maxSelectable < spec.maxVideoSelectable){
-                leastCount = spec.maxSelectable;
-            }else{
-                leastCount = spec.maxVideoSelectable;
-            }
+            leastCount = spec.maxImageSelectable;
+        } else if (mCollectionType == COLLECTION_VIDEO) {
+            leastCount = spec.maxVideoSelectable;
+        } else {
+            // 视频+语音
+            leastCount = spec.maxImageSelectable + spec.maxVideoSelectable;
         }
         return leastCount;
     }

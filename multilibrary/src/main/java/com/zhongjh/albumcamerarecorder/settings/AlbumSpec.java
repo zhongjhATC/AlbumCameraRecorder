@@ -68,7 +68,7 @@ public class AlbumSpec {
      * @return 是否
      */
     public boolean singleSelectionModeEnabled() {
-        return !countable && (GlobalSpec.getInstance().maxSelectable == 1 || (GlobalSpec.getInstance().maxImageSelectable == 1 && GlobalSpec.getInstance().maxVideoSelectable == 1));
+        return !countable && GlobalSpec.getInstance().maxImageSelectable == 1 && GlobalSpec.getInstance().maxVideoSelectable == 1;
     }
 
     /**

@@ -117,19 +117,6 @@ public final class GlobalSetting {
     }
 
     /**
-     * 最大可选计数
-     *
-     * @param maxSelectable 最大可选计数。默认值为1.
-     * @return {@link GlobalSetting} this
-     */
-    public GlobalSetting maxSelectable(int maxSelectable) {
-        if (maxSelectable < 1)
-            throw new IllegalArgumentException("maxSelectable必须大于或等于1");
-        mGlobalSpec.maxSelectable = maxSelectable;
-        return this;
-    }
-
-    /**
      * 仅当 {@link AlbumSpec#mediaTypeExclusive} 设置为true并且您希望为图像和视频媒体类型设置不同的最大可选文件时才有用。
      *
      * @param maxImageSelectable imga的最大可选计数.

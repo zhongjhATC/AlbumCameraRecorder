@@ -23,7 +23,6 @@ public class GlobalSpec {
     public boolean hasInited; // 是否通过正规方式进来
     @StyleRes
     public int themeId;         // 样式
-    public int maxSelectable;   // 最大选择数量
     public int maxImageSelectable = -1;  // 最大图片选择数量
     public int maxVideoSelectable = -1;  // 最大视频选择数量
     public int maxAudioSelectable = -1;  // 最大音频选择数量
@@ -53,7 +52,6 @@ public class GlobalSpec {
         recorderSetting = null;
         mimeTypeSet = null;
         themeId = R.style.AppTheme_Blue;
-        maxSelectable = 1;
         maxImageSelectable = -1;
         maxVideoSelectable = -1;
         maxAudioSelectable = -1;

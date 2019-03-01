@@ -534,7 +534,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         System.gc();// 加速回收机制
 
         // 判断是否多个图片
-        if (mGlobalSpec.maxSelectable > 1) {
+        if (mGlobalSpec.maxImageSelectable > 1) {
             mPosition++;
             // 如果是多个图片，就把当前图片添加到集合并显示出来
             mCaptureBitmaps.put(mPosition, bitmapData);
@@ -812,14 +812,14 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     }
 
     /**
-     * 返回最多选择的数量
+     * 返回最多选择的图片数量
      *
      * @return 数量
      */
     private int currentMaxSelectable() {
         GlobalSpec spec = GlobalSpec.getInstance();
         // 返回最大选择数量
-        return spec.maxSelectable;
+        return spec.maxImageSelectable;
     }
 
     /**
