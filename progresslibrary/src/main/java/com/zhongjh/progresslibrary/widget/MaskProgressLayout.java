@@ -376,7 +376,9 @@ public class MaskProgressLayout extends FrameLayout {
     private void initListener() {
         // 音频删除事件
         this.mViewHolder.imgRemoveRecorder.setOnClickListener(v -> {
-            listener.onItemClose(MaskProgressLayout.this, audioList.get(0));
+            if (audioList.size() > 0)
+                // 需要判断，防止是网址状态未提供实体数据的
+                listener.onItemClose(MaskProgressLayout.this, audioList.get(0));
             // 隐藏音频相关控件
             mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
             mViewHolder.playView.setVisibility(View.GONE);

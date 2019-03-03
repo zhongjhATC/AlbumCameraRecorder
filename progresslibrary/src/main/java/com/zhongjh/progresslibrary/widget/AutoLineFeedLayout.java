@@ -271,7 +271,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 检查最后一个是否是添加
      */
     public void checkLastImages() {
-        if ((imageList.size() + videoList.size() + this.maskProgressLayout.audioList.size()) < maxMediaCount && isOperation) {
+        if ((imageList.size() + videoList.size() + (this.maskProgressLayout.mViewHolder.playView.getVisibility() == View.VISIBLE ? 1 : 0)) < maxMediaCount && isOperation) {
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
             viewHolderAdd.itemView.setVisibility(View.GONE);

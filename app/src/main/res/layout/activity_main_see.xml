@@ -11,7 +11,7 @@
             android:id="@+id/mplImageList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:isOperation="false"
+            app:isOperation="true"
             app:audioDeleteColor="@color/blue_primary"
             app:audioPlayColor="@color/blue_primary"
             app:audioProgressColor="@color/blue_primary"
@@ -22,7 +22,7 @@
             app:maskingTextColor="@color/black_eighty_percent"
             app:maskingTextContent="上传中可自定义"
             app:maskingTextSize="12"
-            app:maxCount="10" />
+            app:maxCount="7" />
 
     </LinearLayout>
 
