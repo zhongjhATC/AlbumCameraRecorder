@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     // 判断如果是图片类型就预览当前所有图片
                     List<PreviewItem> previewItems = new ArrayList<>();
                     for (MultiMedia item : mBinding.mplImageList.getImages()) {
-                        PreviewItem previewItem = new PreviewItem(item.getUri(),item.getUrl());
+                        PreviewItem previewItem = new PreviewItem(item.getUri(), item.getUrl());
                         previewItems.add(previewItem);
                     }
                     MultiMediaSetting.openPreviewImage(MainActivity.this, previewItems);
@@ -223,13 +224,36 @@ public class MainActivity extends AppCompatActivity {
 
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
-        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
+        Set<MimeType> mimeTypeCameras;
+        if (mBinding.cbCameraImage.isChecked() && mBinding.cbCameraVideo.isChecked()) {
+            mimeTypeCameras = MimeType.ofAll();
+            cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
+        } else if (mBinding.cbCameraImage.isChecked()) {
+            mimeTypeCameras = MimeType.ofVideo();
+            cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
+        } else if (mBinding.cbCameraVideo.isChecked()) {
+            mimeTypeCameras = MimeType.ofImage();
+            cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
+        }
+        if (!TextUtils.isEmpty(mBinding.etCameraFile.getText().toString()))
+            cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etCameraFile.getText().toString())); // 保存目录
 
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(true)
-                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
-                .captureStrategy(
+        AlbumSetting albumSetting = new AlbumSetting(true);
+        Set<MimeType> mimeTypeAlbum;
+        if (mBinding.cbAlbumImage.isChecked() && mBinding.cbAlbumVideo.isChecked()) {
+            mimeTypeAlbum = MimeType.ofAll();
+            cameraSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
+        } else if (mBinding.cbAlbumImage.isChecked()) {
+            mimeTypeAlbum = MimeType.ofVideo();
+            cameraSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
+        } else if (mBinding.cbAlbumVideo.isChecked()) {
+            mimeTypeAlbum = MimeType.ofImage();
+            cameraSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
+        }
+
+
+        albumSetting .captureStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
@@ -263,68 +287,76 @@ public class MainActivity extends AppCompatActivity {
         GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
 
         if (mBinding.cbAlbum.isChecked())
+            // 开启相册功能
             globalSetting.albumSetting(albumSetting);
         if (mBinding.cbCamera.isChecked())
+            // 开启拍摄功能
             globalSetting.cameraSetting(cameraSetting);
         if (mBinding.cbRecorder.isChecked())
+            // 开启录音功能
             globalSetting.recorderSetting(recorderSetting);
 
-        globalSetting
-                .setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
-                //                                            .imageEngine(new GlideEngine())  // for glide-V3
-                .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAllCount.getText().toString()) - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+        // 自定义失败信息
+        globalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show());
+
+        // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
+        if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString()))
+            globalSetting.captureStrategy(
+                    new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"));// 设置路径和7.0保护路径等等
+        //                                            .imageEngine(new GlideEngine())  // for glide-V3
+        globalSetting.imageEngine(new Glide4Engine())    // for glide-V4
+                .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
+                        Integer.valueOf(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
+                        Integer.valueOf(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);
 
 
     }
 
     private void openMain2(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-        // 拍摄有关设置
-        CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
-        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
-
-        // 相册
-        AlbumSetting albumSetting = new AlbumSetting(true)
-                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
-                .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
-                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
-                .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
-                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
-                .thumbnailScale(0.85f)// 图片缩放比例
-                .setOnSelectedListener((uriList, pathList) -> {
-                    // 每次选择的事件
-                    Log.e("onSelected", "onSelected: pathList=" + pathList);
-                })
-                .originalEnable(true)// 开启原图
-                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
-                .setOnCheckedListener(isChecked -> {
-                    // DO SOMETHING IMMEDIATELY HERE
-                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
-                });
-
-        // 录音机
-        RecorderSetting recorderSetting = new RecorderSetting();
-        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
-
-        // 全局
-        MultiMediaSetting.from(MainActivity.this)
-                .choose(MimeType.ofAll())
-                .albumSetting(albumSetting)
-                .cameraSetting(cameraSetting)
-                .recorderSetting(recorderSetting)
-                .setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
-                //                                            .imageEngine(new GlideEngine())  // for glide-V3
-                .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAllCount.getText().toString()) - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
-                .forResult(REQUEST_CODE_CHOOSE);
+//        // 拍摄有关设置
+//        CameraSetting cameraSetting = new CameraSetting();
+//        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
+//        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
+//
+//        // 相册
+//        AlbumSetting albumSetting = new AlbumSetting(true)
+//                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
+//                .captureStrategy(
+//                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
+//                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
+//                .countable(true)// 是否显示多选图片的数字
+//                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
+//                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
+//                .thumbnailScale(0.85f)// 图片缩放比例
+//                .setOnSelectedListener((uriList, pathList) -> {
+//                    // 每次选择的事件
+//                    Log.e("onSelected", "onSelected: pathList=" + pathList);
+//                })
+//                .originalEnable(true)// 开启原图
+//                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
+//                .setOnCheckedListener(isChecked -> {
+//                    // DO SOMETHING IMMEDIATELY HERE
+//                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
+//                });
+//
+//        // 录音机
+//        RecorderSetting recorderSetting = new RecorderSetting();
+//        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
+//
+//        // 全局
+//        MultiMediaSetting.from(MainActivity.this)
+//                .choose(MimeType.ofAll())
+//                .albumSetting(albumSetting)
+//                .cameraSetting(cameraSetting)
+//                .recorderSetting(recorderSetting)
+//                .setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
+//                .captureStrategy(
+//                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
+//                //                                            .imageEngine(new GlideEngine())  // for glide-V3
+//                .imageEngine(new Glide4Engine())    // for glide-V4
+//                .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAllCount.getText().toString()) - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+//                .forResult(REQUEST_CODE_CHOOSE);
     }
 
     class MyTask extends Timer {

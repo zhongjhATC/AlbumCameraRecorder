@@ -90,10 +90,28 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="最多可以选择几个多媒体：" />
+                        android:text="保存所有文件路径" />
 
                     <EditText
-                        android:id="@+id/etAllCount"
+                        android:id="@+id/etAllFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/test" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="最多可以设置几个图片：" />
+
+                    <EditText
+                        android:id="@+id/etAlbumCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
@@ -101,6 +119,48 @@
 
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="最多可以设置几个视频：" />
+
+                    <EditText
+                        android:id="@+id/etVideoCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="1" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="最多可以设置几个视频：" />
+
+                    <EditText
+                        android:id="@+id/etAudioCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="1" />
+
+
+                </LinearLayout>
+
+
 
                 <CheckBox
                     android:id="@+id/cbAlbum"
@@ -373,6 +433,29 @@
                     android:layout_marginTop="10dp"
                     android:checked="true"
                     android:text="开启拍摄功能" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbCameraImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="支持图片" />
+
+                    <CheckBox
+                        android:id="@+id/cbCameraVideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="支持视频" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
