@@ -211,17 +211,10 @@
                     <CheckBox
                         android:id="@+id/cbShowSingleMediaTypeTrue"
                         android:layout_width="wrap_content"
+                        android:checked="true"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:text="true" />
-
-                    <CheckBox
-                        android:id="@+id/cbShowSingleMediaTypeFalse"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:checked="true"
-                        android:text="false" />
 
                 </LinearLayout>
 
@@ -242,13 +235,6 @@
                         android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
-
-                    <CheckBox
-                        android:id="@+id/cbCountableFalse"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="false" />
 
                 </LinearLayout>
 
@@ -378,13 +364,6 @@
                         android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
-
-                    <CheckBox
-                        android:id="@+id/cbOriginalEnableFalse"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="false" />
 
                 </LinearLayout>
 

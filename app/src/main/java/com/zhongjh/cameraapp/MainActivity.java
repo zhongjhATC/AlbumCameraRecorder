@@ -253,19 +253,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        albumSetting .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
-                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
-                .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
-                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
+        albumSetting.captureStrategy(
+                new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAlbumFile.getText().toString()))// 设置路径和7.0保护路径等等
+                .showSingleMediaType(mBinding.cbShowSingleMediaTypeTrue.isChecked()) // 仅仅显示一个多媒体类型
+                .countable(mBinding.cbCountableTrue.isChecked())// 是否显示多选图片的数字
+                .addFilter(new GifSizeFilter(Integer.parseInt(mBinding.etAddFilterMinWidth.getText().toString()), Integer.parseInt(mBinding.etAddFilterMinHeight.getText().toString()), Integer.parseInt(mBinding.etMaxSizeInBytes.getText().toString()) * Filter.K * Filter.K))// 自定义过滤器
+                .gridExpectedSize(dip2px(Integer.parseInt(mBinding.etGridExpectedSize.getText().toString())))// 九宫格大小 ,建议这样使用getResources().getDimensionPixelSize(R.dimen.grid_expected_size)
                 .thumbnailScale(0.85f)// 图片缩放比例
                 .setOnSelectedListener((uriList, pathList) -> {
                     // 每次选择的事件
                     Log.e("onSelected", "onSelected: pathList=" + pathList);
                 })
-                .originalEnable(true)// 开启原图
-                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
+                .originalEnable(mBinding.cbOriginalEnableTrue.isChecked())// 开启原图
+                .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString())) // 最大原图size,仅当originalEnable为true的时候才有效
                 .setOnCheckedListener(isChecked -> {
                     // DO SOMETHING IMMEDIATELY HERE
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
-        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
+        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etRecorderFile.getText().toString()));// 保存目录
 
         // 全局,确定类型
         Set<MimeType> mimeTypes = null;
@@ -357,6 +357,14 @@ public class MainActivity extends AppCompatActivity {
 //                .imageEngine(new Glide4Engine())    // for glide-V4
 //                .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAllCount.getText().toString()) - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
 //                .forResult(REQUEST_CODE_CHOOSE);
+    }
+
+    /**
+     * dp转px
+     */
+    public int dip2px(int dp) {
+        float density = this.getResources().getDisplayMetrics().density;
+        return (int) (dp * density + 0.5);
     }
 
     class MyTask extends Timer {
