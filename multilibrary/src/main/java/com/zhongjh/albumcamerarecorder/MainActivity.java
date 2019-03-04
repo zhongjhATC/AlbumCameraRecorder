@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**
+ * 包含三大fragment
  * Created by zhongjh on 2018/8/22.
  */
 public class MainActivity extends AppCompatActivity {
@@ -154,12 +155,16 @@ public class MainActivity extends AppCompatActivity {
 
             // 根据相关配置做相应的初始化
             if (mSpec.albumSetting != null) {
-                numItems++;
-                mTitles.add("相册");
+                if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
+                    numItems++;
+                    mTitles.add("相册");
+                }
             }
             if (mSpec.cameraSetting != null) {
-                numItems++;
-                mTitles.add("拍照");
+                if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
+                    numItems++;
+                    mTitles.add("拍照");
+                }
             }
             if (mSpec.recorderSetting != null) {
                 if (mSpec.maxAudioSelectable > 0) {

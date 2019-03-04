@@ -123,7 +123,7 @@ public class PlayView extends FrameLayout {
                 - TimeUnit.MINUTES.toSeconds(minutes);
         mFileLength = String.format(Locale.CANADA, "%02d:%02d", minutes, seconds);
 
-        //准备播放
+        // 准备播放
         play();
     }
 
@@ -221,6 +221,23 @@ public class PlayView extends FrameLayout {
             }
         }
         isPlaying = !isPlaying;
+    }
+
+    /**
+     * 重置播放器
+     */
+    public void reset(){
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+            mTimerTask = null;
+        }
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            mMediaPlayer.reset();
+        }
     }
 
     /**

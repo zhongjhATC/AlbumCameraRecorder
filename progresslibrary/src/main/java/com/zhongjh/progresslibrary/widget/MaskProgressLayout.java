@@ -133,6 +133,7 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
         // 设置上传音频等属性
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
+        isShowRemovceRecorder();
         mViewHolder.numberProgressBar.setProgressTextColor(audioProgressColor);
         mViewHolder.numberProgressBar.setReachedBarColor(audioProgressColor);
         mViewHolder.tvRecorderTip.setTextColor(audioProgressColor);
@@ -140,6 +141,7 @@ public class MaskProgressLayout extends FrameLayout {
         // 设置播放控件里面的播放按钮的颜色
         mViewHolder.playView.mViewHolder.imgPlay.setColorFilter(audioPlayColor);
         mViewHolder.playView.mViewHolder.tvCurrentProgress.setTextColor(audioProgressColor);
+        mViewHolder.playView.mViewHolder.tvTotalProgress.setTextColor(audioProgressColor);
 
         maskProgressLayoutStyle.recycle();
         typedArray.recycle();
@@ -185,15 +187,18 @@ public class MaskProgressLayout extends FrameLayout {
         addAudioData(multiMedia);
 
         // 显示上传中的音频
-        mViewHolder.imgRemoveRecorder.setVisibility(View.VISIBLE);
         mViewHolder.groupRecorderProgress.setVisibility(View.VISIBLE);
         mViewHolder.playView.setVisibility(View.GONE);
+        isShowRemovceRecorder();
 
         // 初始化播放控件
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(filePath);
         recordingItem.setLength(length);
         mViewHolder.playView.setData(recordingItem, audioProgressColor);
+
+        // 检测添加多媒体上限
+        mViewHolder.alfMedia.checkLastImages();
     }
 
     /**
@@ -212,8 +217,14 @@ public class MaskProgressLayout extends FrameLayout {
                 multiMedia.setUrl(audioUrl);
                 multiMedia.setViewHolder(this);
 
+                if (this.audioList == null) {
+                    this.audioList = new ArrayList<>();
+                }
+                audioList.add(multiMedia);
+
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 mViewHolder.playView.setVisibility(View.VISIBLE);
+                isShowRemovceRecorder();
                 RecordingItem recordingItem = new RecordingItem();
                 recordingItem.setUrl(audioUrl);
                 recordingItem.setLength(duration);
@@ -278,6 +289,7 @@ public class MaskProgressLayout extends FrameLayout {
 
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         mViewHolder.playView.setVisibility(View.VISIBLE);
+        isShowRemovceRecorder();
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(file);
         recordingItem.setLength(Integer.valueOf(duration));
@@ -310,9 +322,6 @@ public class MaskProgressLayout extends FrameLayout {
             // 显示音频的进度条
             this.listener.onItemStartUploading(multiMedia);
         }
-
-        // 检测添加多媒体上限
-        mViewHolder.alfMedia.checkLastImages();
     }
 
     /**
@@ -322,6 +331,7 @@ public class MaskProgressLayout extends FrameLayout {
         // 显示完成后的音频
         mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
         mViewHolder.playView.setVisibility(View.VISIBLE);
+        isShowRemovceRecorder();
     }
 
     /**
@@ -339,17 +349,24 @@ public class MaskProgressLayout extends FrameLayout {
     }
 
     /**
-     * @return 返回当前图片数据
+     * @return 返回当前包含url的图片数据
      */
     public List<MultiMedia> getImages() {
         return mViewHolder.alfMedia.imageList;
     }
 
     /**
-     * @return 返回当前视频数据
+     * @return 返回当前包含url的视频数据
      */
     public List<MultiMedia> getVideos() {
         return mViewHolder.alfMedia.videoList;
+    }
+
+    /**
+     * @return 返回当前包含url的音频数据
+     */
+    public List<MultiMedia> getAudios() {
+        return this.audioList;
     }
 
     /**
@@ -359,8 +376,8 @@ public class MaskProgressLayout extends FrameLayout {
      */
     public void setOperation(boolean isOperation) {
         this.isOperation = isOperation;
-        mViewHolder.imgRemoveRecorder.setVisibility(isOperation ? View.VISIBLE : View.GONE); // 隐藏音频
         mViewHolder.alfMedia.setOperation(isOperation);
+        isShowRemovceRecorder();
     }
 
     /**
@@ -382,13 +399,28 @@ public class MaskProgressLayout extends FrameLayout {
             // 隐藏音频相关控件
             mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
             mViewHolder.playView.setVisibility(View.GONE);
-            mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
             audioList.clear();
-
+            mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
             mViewHolder.alfMedia.checkLastImages();
+            isShowRemovceRecorder();
+            mViewHolder.playView.reset();
         });
     }
 
+    /**
+     * 设置是否显示删除音频按钮
+     */
+    private void isShowRemovceRecorder() {
+        if (isOperation) {
+            // 如果是可操作的，就判断是否有音频数据
+            if (this.mViewHolder.playView.getVisibility() == View.VISIBLE || this.mViewHolder.groupRecorderProgress.getVisibility() == View.VISIBLE)
+                mViewHolder.imgRemoveRecorder.setVisibility(View.VISIBLE);
+            else
+                mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
+        } else {
+            mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
+        }
+    }
 
     public static class ViewHolder {
         View rootView;

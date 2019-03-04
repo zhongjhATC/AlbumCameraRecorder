@@ -375,6 +375,10 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         percentage++;
                         multiMedia.setPercentage(percentage);
+                        // 现实应用设置完成赋值url的时候可以这样写如下代码：
+//                        // 赋值完成
+//                        multiMedia.setUrl(url);
+//                        multiMedia.setPercentage(100);
                     });
                 }
             }, 1000, 100);

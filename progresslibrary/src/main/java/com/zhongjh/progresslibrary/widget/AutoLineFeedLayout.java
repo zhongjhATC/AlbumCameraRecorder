@@ -203,15 +203,24 @@ public class AutoLineFeedLayout extends ViewGroup {
             //如果高度模式为EXACTLY（match_perent或者size），则使用建议高度
             height = heightSize;
         } else {
+            int childCount = 0;
             //其他情况下（AT_MOST、UNSPECIFIED）需要计算计算高度
-            int childCount = getChildCount();
+            for (int i = 0; i < getChildCount(); i++) {
+                View childView = getChildAt(i);
+                if (childView.getVisibility() != GONE) {
+                    childCount++;
+                }
+            }
             if (childCount <= 0) {
                 height = 0;   //没有标签时，高度为0
             } else {
                 int row = 1;  // 标签行数
                 int widthSpace = width;// 当前行右侧剩余的宽度
-                for (int i = 0; i < childCount; i++) {
+                for (int i = 0; i < getChildCount(); i++) {
                     View view = getChildAt(i);
+                    if (view.getVisibility() == GONE) {
+                        break;
+                    }
                     //获取标签宽度
                     int childW = view.getMeasuredWidth();
                     Log.v(TAG, "标签宽度:" + childW + " 行数：" + row + "  剩余宽度：" + widthSpace);
@@ -246,24 +255,26 @@ public class AutoLineFeedLayout extends ViewGroup {
         int botom;       // 标签相对于布局的底部位置
         for (int i = 0; i < getChildCount(); i++) {
             View childView = getChildAt(i);
-            int childW = childView.getMeasuredWidth();
-            int childH = childView.getMeasuredHeight();
-            //右侧位置=本行已经占有的位置+当前标签的宽度
-            right += childW;
-            //底部位置=已经摆放的行数*（标签高度+行距）+当前标签高度
-            botom = row * (childH + ROW_SPACE) + childH;
-            // 如果右侧位置已经超出布局右边缘，跳到下一行
-            // if it can't drawing on a same line , skip to next line
-            if (right > (r - LEFT_RIGHT_SPACE)) {
-                row++;
-                right = childW;
+            if (childView.getVisibility() != GONE) {
+                int childW = childView.getMeasuredWidth();
+                int childH = childView.getMeasuredHeight();
+                //右侧位置=本行已经占有的位置+当前标签的宽度
+                right += childW;
+                //底部位置=已经摆放的行数*（标签高度+行距）+当前标签高度
                 botom = row * (childH + ROW_SPACE) + childH;
-            }
-            Log.d(TAG, "left = " + (right - childW) + " top = " + (botom - childH) +
-                    " right = " + right + " botom = " + botom);
-            childView.layout(right - childW, botom - childH, right, botom);
+                // 如果右侧位置已经超出布局右边缘，跳到下一行
+                // if it can't drawing on a same line , skip to next line
+                if (right > (r - LEFT_RIGHT_SPACE)) {
+                    row++;
+                    right = childW;
+                    botom = row * (childH + ROW_SPACE) + childH;
+                }
+                Log.d(TAG, "left = " + (right - childW) + " top = " + (botom - childH) +
+                        " right = " + right + " botom = " + botom);
+                childView.layout(right - childW, botom - childH, right, botom);
 
-            right += LEFT_RIGHT_SPACE;
+                right += LEFT_RIGHT_SPACE;
+            }
         }
     }
 
@@ -271,7 +282,9 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 检查最后一个是否是添加
      */
     public void checkLastImages() {
-        if ((imageList.size() + videoList.size() + (this.maskProgressLayout.mViewHolder.playView.getVisibility() == View.VISIBLE ? 1 : 0)) < maxMediaCount && isOperation) {
+        if ((imageList.size() + videoList.size() +
+                (this.maskProgressLayout.mViewHolder.playView.getVisibility() == View.VISIBLE || this.maskProgressLayout.mViewHolder.groupRecorderProgress.getVisibility() == View.VISIBLE ? 1 : 0)) < maxMediaCount
+                && isOperation) {
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
             viewHolderAdd.itemView.setVisibility(View.GONE);
