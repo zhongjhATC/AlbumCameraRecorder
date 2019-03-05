@@ -36,6 +36,7 @@
 
 ## 快照
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/Demonstration.gif)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/DemonstrationShowImg1.png)
 
 ## 使用   
 #### 在代码中打开设置（这方面最近继续完善）
