@@ -3,7 +3,8 @@
 [![MinSdk](https://img.shields.io/badge/MinSdk-16-blue.svg)](https://developer.android.com/about/versions/android-4.1)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/LICENSE)
 
-## 目前还是测试版，基本锥形功能已经形成，还需要更进一步完成相关测试才可正式使用
+## 目前已经投入到正式项目中使用，基本锥形功能已经形成，当然还需要更进一步完成相关测试。
+## 有开了兼容云测试包月的小伙伴们，可以麻烦私聊下我吗谢谢！
 
 ## 中文
 一个高效的多媒体支持操作库，可多方面的简单配置操作相册、录制、录音等功能。
