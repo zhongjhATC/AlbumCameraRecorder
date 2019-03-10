@@ -39,9 +39,6 @@
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/Demonstration.gif)
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/DemonstrationShowImg.png)
 
-## apk直接体验下载
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/qrcode.png)
-https://fir.im/s9b6?release_id=5c84dcd3ca87a807f7ef5181&fir_source=%E7%89%88%E6%9C%AC1&fir_campaign=%E7%89%88%E6%9C%AC1
 
 
 ## 使用   
@@ -97,3 +94,9 @@ https://fir.im/s9b6?release_id=5c84dcd3ca87a807f7ef5181&fir_source=%E7%89%88%E6%
 #### 1.0.1
  - 进一步完善代码加强注释，方便阅读理解
  - 完善Theme
+
+
+## apk直接体验下载
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/qrcode.png)
+
+ - 链接下载地址：https://fir.im/s9b6?release_id=5c84dcd3ca87a807f7ef5181&fir_source=%E7%89%88%E6%9C%AC1&fir_campaign=%E7%89%88%E6%9C%AC1
