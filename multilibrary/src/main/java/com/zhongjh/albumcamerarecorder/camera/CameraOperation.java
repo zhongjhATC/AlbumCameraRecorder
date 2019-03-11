@@ -388,7 +388,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
             mPreviewHeight = previewSize.height;
             mPreviewWidth = previewSize.width;
-
+            Log.e("设置的所有的高宽 预览时候的高宽",mPreviewHeight + " " + mPreviewWidth);
             // 设置图片的宽度和高度
             parameters.setPictureSize(pictureSize.width, pictureSize.height);
 
