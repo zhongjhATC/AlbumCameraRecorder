@@ -45,6 +45,7 @@ public class CameraParamUtil {
         Collections.sort(list, sizeComparator);
         int i = 0;
         for (Camera.Size s : list) {
+            Log.e("设置的所有的高宽", s.height + " " + s.width);
             if ((s.width > width) && equalRate(s, rate)) {
                 Log.i(TAG, "MakeSure Preview :w = " + s.width + " h = " + s.height);
                 break;
