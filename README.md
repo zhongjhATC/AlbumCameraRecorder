@@ -100,3 +100,5 @@
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/qrcode.png)
 
  - 链接下载地址：https://fir.im/s9b6?release_id=5c84dcd3ca87a807f7ef5181&fir_source=%E7%89%88%E6%9C%AC1&fir_campaign=%E7%89%88%E6%9C%AC1
+
+## 喜欢的麻烦在顶部点个star
