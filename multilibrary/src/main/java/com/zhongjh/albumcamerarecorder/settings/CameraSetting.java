@@ -29,19 +29,6 @@ public final class CameraSetting {
     }
 
     /**
-     * 提供保存公有或者私有的文件路径
-     * 文件路径存储于 {@link android.support.v4.content.FileProvider}.
-     * 这个优先于 {@link GlobalSetting#captureStrategy}
-     *
-     * @param captureStrategy {@link CaptureStrategy},仅仅启用时才需要
-     * @return {@link GlobalSetting} for fluent API.
-     */
-    public CameraSetting captureStrategy(CaptureStrategy captureStrategy) {
-        mCameraSpec.captureStrategy = captureStrategy;
-        return this;
-    }
-
-    /**
      * 最长录制时间,默认10秒
      *
      * @param duration 最长录制时间,单位为秒

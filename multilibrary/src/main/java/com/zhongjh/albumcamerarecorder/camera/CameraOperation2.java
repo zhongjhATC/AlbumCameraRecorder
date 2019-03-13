@@ -129,7 +129,7 @@
 //        GlobalSpec globalSpec = GlobalSpec.getInstance();
 //        CameraSpec cameraSpec = CameraSpec.getInstance();
 //        mMediaStoreCompat = new MediaStoreCompat(context);
-//        mMediaStoreCompat.setCaptureStrategy(cameraSpec.captureStrategy == null ? globalSpec.captureStrategy : cameraSpec.captureStrategy);
+//        mMediaStoreCompat.setCaptureStrategy(cameraSpec.allStrategy == null ? globalSpec.allStrategy : cameraSpec.allStrategy);
 //    }
 //
 //    // region 对外开放的API

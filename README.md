@@ -47,12 +47,12 @@
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
         cameraSetting.mimeTypeSet(MimeType.ofImage());// 支持的类型：图片，视频
-        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
+        cameraSetting.saveStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
                 .mimeTypeSet(MimeType.ofImage())// 支持的类型：图片，视频
-                .captureStrategy(
+                .saveStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
@@ -72,7 +72,7 @@
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
-        recorderSetting.captureStrategy(new CaptureStrategy(true,"com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
+        recorderSetting.saveStrategy(new CaptureStrategy(true,"com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
 
         // 全局
         MultiMediaSetting.from(MainActivity.this)
@@ -81,7 +81,7 @@
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
                 .setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .captureStrategy(
+                .saveStrategy(
                         new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
                 //                                            .imageEngine(new GlideEngine())  // for glide-V3
                 .imageEngine(new Glide4Engine())    // for glide-V4

@@ -30,14 +30,12 @@ public class CameraSpec {
      */
     private void reset() {
         mimeTypeSet = null;
-        captureStrategy = null;
     }
 
 
     // region 属性
 
     public Set<MimeType> mimeTypeSet; // 选择 视频图片 的类型，MimeType.allOf()
-    public CaptureStrategy captureStrategy; // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
     public int imageSwitch = R.drawable.ic_camera;    // 切换前置/后置摄像头图标资源
     public int imageFlashOn = R.drawable.ic_flash_on;      // 闪光灯开启状态图标
     public int imageFlashOff = R.drawable.ic_flash_off;       // 闪光灯关闭状态图标

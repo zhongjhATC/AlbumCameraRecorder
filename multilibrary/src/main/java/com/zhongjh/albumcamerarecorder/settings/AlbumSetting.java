@@ -102,19 +102,6 @@ public class AlbumSetting {
     }
 
     /**
-     * 提供保存公有或者私有的文件路径
-     * 文件路径存储于 {@link android.support.v4.content.FileProvider}.
-     * 这个优先于 {@link GlobalSetting#captureStrategy}
-     *
-     * @param captureStrategy {@link CaptureStrategy},仅仅启用时才需要
-     * @return {@link AlbumSetting} this
-     */
-    public AlbumSetting captureStrategy(CaptureStrategy captureStrategy) {
-        mAlbumSpec.captureStrategy = captureStrategy;
-        return this;
-    }
-
-    /**
      * 设置媒体网格的固定跨度计数。不同屏幕方向相同。
      *
      * 设置时将忽略 {@link #gridExpectedSize(int)} 此项.

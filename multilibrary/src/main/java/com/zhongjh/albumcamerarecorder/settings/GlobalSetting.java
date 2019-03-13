@@ -132,13 +132,49 @@ public final class GlobalSetting {
     }
 
     /**
-     * 为保存内部和外部照片的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     * 为保存内部和外部文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
      *
-     * @param captureStrategy {@link CaptureStrategy}, 仅在启用捕获时需要
+     * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
      * @return {@link GlobalSetting} this
      */
-    public GlobalSetting captureStrategy(CaptureStrategy captureStrategy) {
-        mGlobalSpec.captureStrategy = captureStrategy;
+    public GlobalSetting allStrategy(SaveStrategy saveStrategy) {
+        mGlobalSpec.saveStrategy = saveStrategy;
+        return this;
+    }
+
+    /**
+     * 如果设置这个，有关图片的优先权比allStrategy高
+     * 为保存内部和外部图片文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     *
+     * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
+     * @return {@link GlobalSetting} this
+     */
+    public GlobalSetting pictureStrategy(SaveStrategy saveStrategy) {
+        mGlobalSpec.pictureStrategy = saveStrategy;
+        return this;
+    }
+
+    /**
+     * 如果设置这个，有关视频的优先权比allStrategy高
+     * 为保存内部和外部视频文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     *
+     * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
+     * @return {@link GlobalSetting} this
+     */
+    public GlobalSetting videoStrategy(SaveStrategy saveStrategy) {
+        mGlobalSpec.videoStrategy = saveStrategy;
+        return this;
+    }
+
+    /**
+     * 如果设置这个，有关音频的优先权比allStrategy高
+     * 为保存内部和外部音频文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     *
+     * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
+     * @return {@link GlobalSetting} this
+     */
+    public GlobalSetting audioStrategy(SaveStrategy saveStrategy) {
+        mGlobalSpec.audioStrategy = saveStrategy;
         return this;
     }
 

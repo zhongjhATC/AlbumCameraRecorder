@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -26,7 +25,7 @@ import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.CaptureStrategy;
+import com.zhongjh.albumcamerarecorder.settings.SaveStrategy;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
@@ -173,13 +172,10 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
         cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
-        cameraSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/camera")); // 保存目录
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
                 .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
-                .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/album"))// 设置路径和7.0保护路径等等
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
                 .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
@@ -198,7 +194,6 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
-        recorderSetting.captureStrategy(new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/recorder"));// 保存目录
 
         // 全局
         mGlobalSetting = MultiMediaSetting.from(MainSeeActivity.this)
@@ -207,8 +202,10 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
                 .setOnMainListener(errorMessage -> Toast.makeText(MainSeeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .captureStrategy(
-                        new CaptureStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
+                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
+                .pictureStrategy( new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/picture")) // 如果设置这个，有关图片的优先权比allStrategy高
+                .audioStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/audio")) // 如果设置这个，有关音频的优先权比allStrategy高
+                .videoStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/video")) // 如果设置这个，有关视频的优先权比allStrategy高
                 //                                            .imageEngine(new GlideEngine())  // for glide-V3
                 .imageEngine(new Glide4Engine());    // for glide-V4
     }

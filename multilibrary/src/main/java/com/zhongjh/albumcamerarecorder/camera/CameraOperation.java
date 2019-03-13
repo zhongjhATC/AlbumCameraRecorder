@@ -13,7 +13,6 @@ import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.util.Log;
@@ -51,7 +50,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     private static final String TAG = "CameraOperation";
     private CameraLayout mCameraLayout;
-    private MediaStoreCompat mMediaStoreCompat; // 文件配置
+    private MediaStoreCompat mVideoMediaStoreCompat; // 录像文件配置路径
     private String mVideoFileAbsPath;           // 文件路径
 
     private Camera mCamera;
@@ -98,9 +97,8 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         mCameraLayout = cameraLayout;
         mTakePictureCallback = takePictureCallback;
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        CameraSpec cameraSpec = CameraSpec.getInstance();
-        mMediaStoreCompat = new MediaStoreCompat(context);
-        mMediaStoreCompat.setCaptureStrategy(cameraSpec.captureStrategy == null ? globalSpec.captureStrategy : cameraSpec.captureStrategy);
+        mVideoMediaStoreCompat = new MediaStoreCompat(context);
+        mVideoMediaStoreCompat.setCaptureStrategy(globalSpec.videoStrategy == null ? globalSpec.saveStrategy : globalSpec.videoStrategy);
         findAvailableCameras();
         mSelectedCamera = CAMERA_POST_POSITION; // 默认前摄像头
     }
@@ -527,7 +525,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         }
         mMediaRecorder.setPreviewDisplay(surface);
         // 输出最终路径
-        mVideoFileAbsPath = mMediaStoreCompat.getFilePath(1);
+        mVideoFileAbsPath = mVideoMediaStoreCompat.getFilePath(1);
         mMediaRecorder.setOutputFile(mVideoFileAbsPath);
         try {
             mMediaRecorder.prepare();

@@ -16,9 +16,9 @@
 package com.zhongjh.albumcamerarecorder.settings;
 
 /**
- * 设置目录的的实体
+ * 设置保存目录的实体
  */
-public class CaptureStrategy {
+public class SaveStrategy {
 
     // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；
     boolean isPublic;
@@ -27,7 +27,7 @@ public class CaptureStrategy {
     // 参数3 子文件夹的具体路径
     String directory;
 
-    public CaptureStrategy(boolean isPublic, String authority, String directory) {
+    public SaveStrategy(boolean isPublic, String authority, String directory) {
         this.isPublic = isPublic;
         this.authority = authority;
         this.directory = directory;

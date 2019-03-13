@@ -26,7 +26,10 @@ public class GlobalSpec {
     public int maxImageSelectable = -1;  // 最大图片选择数量
     public int maxVideoSelectable = -1;  // 最大视频选择数量
     public int maxAudioSelectable = -1;  // 最大音频选择数量
-    public CaptureStrategy captureStrategy; // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+    public SaveStrategy saveStrategy; // 拍照\录像\存储的保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+    public SaveStrategy pictureStrategy; // 图片保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+    public SaveStrategy videoStrategy; // 视频保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+    public SaveStrategy audioStrategy; // 音频保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
     public ImageEngine imageEngine;
     public OnMainListener onMainListener;// 主界面的有关事件
 
@@ -55,7 +58,10 @@ public class GlobalSpec {
         maxImageSelectable = -1;
         maxVideoSelectable = -1;
         maxAudioSelectable = -1;
-        captureStrategy = null;
+        saveStrategy = null;
+        pictureStrategy = null;
+        videoStrategy = null;
+        audioStrategy = null;
         hasInited = true;
         imageEngine = new GlideEngine();
 
@@ -89,4 +95,5 @@ public class GlobalSpec {
     public void setMimeTypeSet(Set<MimeType> mimeTypeSet) {
         this.mimeTypeSet = mimeTypeSet;
     }
+
 }

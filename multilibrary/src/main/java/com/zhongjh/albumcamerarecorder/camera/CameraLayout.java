@@ -74,7 +74,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         .Callback {
 
     private Context mContext;
-    private MediaStoreCompat mMediaStoreCompat;
+    private MediaStoreCompat mPictureMediaStoreCompat;  // 图片
     private GlobalSpec mGlobalSpec;          // 公共配置
     private CameraSpec mCameraSpec; // 拍摄配置
     //    private CameraInterface mCameraInterface;// 拍摄操作类
@@ -166,22 +166,23 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         // 初始化设置
         mCameraSpec = CameraSpec.getInstance();
         mGlobalSpec = GlobalSpec.getInstance();
-        mMediaStoreCompat = new MediaStoreCompat(getContext());
+        mPictureMediaStoreCompat = new MediaStoreCompat(getContext());
 
         // 默认图片
         TypedArray ta = mContext.getTheme().obtainStyledAttributes(
                 new int[]{R.attr.album_thumbnail_placeholder});
         mPlaceholder = ta.getDrawable(0);
 
-        if (mCameraSpec != null && mCameraSpec.captureStrategy != null) {
+        // 设置图片路径
+        if (mGlobalSpec.pictureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mMediaStoreCompat.setCaptureStrategy(mCameraSpec.captureStrategy);
+            mPictureMediaStoreCompat.setCaptureStrategy(mGlobalSpec.pictureStrategy);
         } else {
             // 否则使用全局的
-            if (mGlobalSpec.captureStrategy == null) {
-                throw new RuntimeException("Don't forget to set CaptureStrategy.");
+            if (mGlobalSpec.saveStrategy == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mMediaStoreCompat.setCaptureStrategy(mGlobalSpec.captureStrategy);
+                mPictureMediaStoreCompat.setCaptureStrategy(mGlobalSpec.saveStrategy);
             }
         }
 
@@ -525,7 +526,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     private void showPicture(Bitmap bitmap, boolean isVertical) {
         // 初始化数据并且存储进file
-        BitmapData bitmapData = new BitmapData(bitmap, mMediaStoreCompat.saveFileByBitmap(bitmap));
+        BitmapData bitmapData = new BitmapData(bitmap, mPictureMediaStoreCompat.saveFileByBitmap(bitmap));
         // 回收bitmap
         if (bitmap != null && bitmap.isRecycled()) {
             // 回收并且置为null
