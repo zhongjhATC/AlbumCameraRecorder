@@ -1,1 +1,1 @@
-include ':app', ':multilibrary', ':progresslibrary'
+include ':app', ':multilibrary', ':progresslibrary', ':common'
