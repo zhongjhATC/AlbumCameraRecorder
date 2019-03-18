@@ -19,7 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
@@ -31,7 +31,7 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
-import com.zhongjh.progresslibrary.entity.MultiMedia;
+import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
 import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
@@ -55,7 +55,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
     private static final int REQUEST_CODE_CHOOSE = 23;
 
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
-    private HashMap<MultiMedia, MyTask> timers = new HashMap<>();
+    private HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
     ActivityMainSeeBinding mBinding;
 
     // 初始化
@@ -81,7 +81,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onItemAdd(View view, MultiMedia multiMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions();
                 if (isOk)
@@ -89,37 +89,32 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
             }
 
             @Override
-            public void onItemImage(View view, MultiMedia multiMedia) {
+            public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMedia.getType() == MultimediaTypes.PICTURE) {
+                if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    List<PreviewItem> previewItems = new ArrayList<>();
-                    for (MultiMedia item : mBinding.mplImageList.getImages()) {
-                        PreviewItem previewItem = new PreviewItem(item.getUri(), item.getUrl());
-                        previewItems.add(previewItem);
-                    }
-                    MultiMediaSetting.openPreviewImage(MainSeeActivity.this, previewItems);
-                } else if (multiMedia.getType() == MultimediaTypes.VIDEO) {
+                    MultiMediaSetting.openPreviewImage2(MainSeeActivity.this, (ArrayList)mBinding.mplImageList.getImages(), multiMediaView.getPosition());
+                } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
                     List<Uri> uris = new ArrayList<>();
-                    uris.add(multiMedia.getUri());
+                    uris.add(multiMediaView.getUri());
                     MultiMediaSetting.openPreviewVideo(MainSeeActivity.this, uris);
                 }
             }
 
             @Override
-            public void onItemStartUploading(MultiMedia multiMedia) {
+            public void onItemStartUploading(MultiMediaView multiMediaView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(multiMedia);
-                timers.put(multiMedia, timer);
+                MyTask timer = new MyTask(multiMediaView);
+                timers.put(multiMediaView, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(View view, MultiMedia multiMedia) {
+            public void onItemClose(View view, MultiMediaView multiMediaView) {
                 // 停止上传
-                if (timers.get(multiMedia) != null)
-                    timers.get(multiMedia).cancel();
+                if (timers.get(multiMediaView) != null)
+                    timers.get(multiMediaView).cancel();
             }
 
             @Override
@@ -281,7 +276,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<MultiMedia, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<MultiMediaView, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         mBinding.mplImageList.destroy();
@@ -410,10 +405,10 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
     class MyTask extends Timer {
 
         int percentage = 0;// 百分比
-        MultiMedia multiMedia;
+        MultiMediaView multiMediaView;
 
-        MyTask(MultiMedia multiMedia) {
-            this.multiMedia = multiMedia;
+        MyTask(MultiMediaView multiMediaView) {
+            this.multiMediaView = multiMediaView;
         }
 
         void schedule() {
@@ -422,7 +417,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 public void run() {
                     runOnUiThread(() -> {
                         percentage++;
-                        multiMedia.setPercentage(percentage);
+                        multiMediaView.setPercentage(percentage);
                     });
                 }
             }, 1000, 100);

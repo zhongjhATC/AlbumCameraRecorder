@@ -21,7 +21,6 @@ import android.support.annotation.Nullable;
 
 
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
@@ -30,6 +29,11 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import java.util.ArrayList;
 import java.util.List;
 
+import gaode.zhongjh.com.common.entity.MultiMedia;
+
+/**
+ * 点击相册图片或者视频进来的
+ */
 public class AlbumPreviewActivity extends BasePreviewActivity implements
         AlbumMediaCollection.AlbumMediaCallbacks {
 
@@ -54,11 +58,11 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
             mCollection.load(album);
         } else {
             Bundle bundle = getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE);
-            List<Item> items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+            List<MultiMedia> items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
             initItems(items);
         }
 
-        Item item = getIntent().getParcelableExtra(EXTRA_ITEM);
+        MultiMedia item = getIntent().getParcelableExtra(EXTRA_ITEM);
         if (mAlbumSpec.countable) {
             mViewHolder.check_view.setCheckedNum(mSelectedCollection.checkedNumOf(item));
         } else {
@@ -75,9 +79,9 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
 
     @Override
     public void onAlbumMediaLoad(Cursor cursor) {
-        List<Item> items = new ArrayList<>();
+        List<MultiMedia> items = new ArrayList<>();
         while (cursor.moveToNext()) {
-            items.add(Item.valueOf(cursor));
+            items.add(MultiMedia.valueOf(cursor));
         }
 
         if (items.isEmpty()) {
@@ -87,14 +91,14 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
         initItems(items);
     }
 
-    private void initItems(List<Item> items) {
+    private void initItems(List<MultiMedia> items) {
         PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
         adapter.addAll(items);
         adapter.notifyDataSetChanged();
         if (!mIsAlreadySetPosition) {
             //onAlbumMediaLoad is called many times..
             mIsAlreadySetPosition = true;
-            Item selected = getIntent().getParcelableExtra(EXTRA_ITEM);
+            MultiMedia selected = getIntent().getParcelableExtra(EXTRA_ITEM);
             int selectedIndex = items.indexOf(selected);
             mViewHolder.pager.setCurrentItem(selectedIndex, false);
             mPreviousPos = selectedIndex;

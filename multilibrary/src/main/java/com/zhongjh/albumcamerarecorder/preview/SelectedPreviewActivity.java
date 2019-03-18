@@ -3,12 +3,16 @@ package com.zhongjh.albumcamerarecorder.preview;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 
 import java.util.List;
 
+import gaode.zhongjh.com.common.entity.MultiMedia;
+
+/**
+ * 预览界面进来的
+ */
 public class SelectedPreviewActivity extends BasePreviewActivity {
 
     @Override
@@ -21,7 +25,7 @@ public class SelectedPreviewActivity extends BasePreviewActivity {
         }
 
         Bundle bundle = getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE);
-        List<Item> selected = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+        List<MultiMedia> selected = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
         mAdapter.addAll(selected);
         mAdapter.notifyDataSetChanged();
         if (mAlbumSpec.countable) {

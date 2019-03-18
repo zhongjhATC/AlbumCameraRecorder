@@ -7,12 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
-import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
+
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 
@@ -149,25 +148,13 @@ public final class MultiMediaSetting {
         return mFragment != null ? mFragment.get() : null;
     }
 
-    /**
-     * 调用打开多个大图
-     *
-     * @param activity 窗体
-     * @param list     需要显示的大图
-     */
-    public static void openPreviewImage(Activity activity, List<PreviewItem> list) {
-        // 转换成items
-        ArrayList<Item> items = new ArrayList<>();
-        for (PreviewItem value : list) {
-            Item item = new Item(value.getUri(), value.getUrl());
-            items.add(item);
-        }
+    public static void openPreviewImage2(Activity activity, ArrayList<MultiMedia> list, int position) {
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, items);
+        bundle.putParcelableArrayList(STATE_SELECTION, list);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
-
-        Intent intent = new Intent(activity, SelectedPreviewActivity.class);
+        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(position));
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
@@ -181,13 +168,13 @@ public final class MultiMediaSetting {
      */
     public static void openPreviewVideo(Activity activity, List<Uri> list) {
         // 转换成items
-        ArrayList<Item> items = new ArrayList<>();
+        ArrayList<MultiMedia> items = new ArrayList<>();
         for (Uri value : list) {
-            Item item = new Item(value);
+            MultiMedia item = new MultiMedia(value);
             item.setMimeType(MimeType.MP4.toString());
             items.add(item);
         }
-        Item item = new Item(list.get(0));
+        MultiMedia item = new MultiMedia(list.get(0));
         item.setMimeType(MimeType.MP4.toString());
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, items);
@@ -200,6 +187,7 @@ public final class MultiMediaSetting {
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
 
     }
+
 
 
 }
