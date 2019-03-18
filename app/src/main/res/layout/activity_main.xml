@@ -108,6 +108,60 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="保存图片路径" />
+
+                    <EditText
+                        android:id="@+id/etPictureFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/picture" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="保存视频文件路径" />
+
+                    <EditText
+                        android:id="@+id/etVideoFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/video" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="保存音频文件路径" />
+
+                    <EditText
+                        android:id="@+id/etAudioFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/audio" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="最多可以设置几个图片：" />
 
                     <EditText
@@ -387,23 +441,7 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="保存拍摄文件路径" />
-
-                    <EditText
-                        android:id="@+id/etAlbumFile"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="AA/album" />
-
-                </LinearLayout>
 
                 <CheckBox
                     android:id="@+id/cbCamera"
@@ -436,23 +474,7 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="保存拍摄文件路径" />
-
-                    <EditText
-                        android:id="@+id/etCameraFile"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="AA/camera" />
-
-                </LinearLayout>
 
                 <CheckBox
                     android:id="@+id/cbRecorder"
@@ -462,23 +484,7 @@
                     android:checked="true"
                     android:text="开启录音功能" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="保存录音文件路径" />
-
-                    <EditText
-                        android:id="@+id/etRecorderFile"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="AA/recorder" />
-
-                </LinearLayout>
 
 
             </LinearLayout>

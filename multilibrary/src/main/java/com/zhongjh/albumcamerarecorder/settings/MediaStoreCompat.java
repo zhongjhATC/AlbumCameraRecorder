@@ -23,7 +23,7 @@ public class MediaStoreCompat {
 
     private final WeakReference<Context> mContext;
 
-    private CaptureStrategy mCaptureStrategy;           // 设置目录
+    private SaveStrategy mSaveStrategy;           // 设置目录
 
     public MediaStoreCompat(Context context) {
         mContext = new WeakReference<>(context);
@@ -43,8 +43,8 @@ public class MediaStoreCompat {
     /**
      * 设置目录
      */
-    public void setCaptureStrategy(CaptureStrategy strategy) {
-        mCaptureStrategy = strategy;
+    public void setCaptureStrategy(SaveStrategy strategy) {
+        mSaveStrategy = strategy;
     }
 
     /**
@@ -64,14 +64,17 @@ public class MediaStoreCompat {
             case 1:
                 fileName = String.format("VIDEO_%s.mp4", timeStamp);
                 break;
+            case 2:
+                fileName = String.format("AUDIO_%s.mp4", timeStamp);
+                break;
         }
         File storageDir;
-        if (mCaptureStrategy.isPublic) {
+        if (mSaveStrategy.isPublic) {
             storageDir = Environment.getExternalStoragePublicDirectory(
-                    mCaptureStrategy.directory);
+                    mSaveStrategy.directory);
             if (!storageDir.exists()) storageDir.mkdirs();
         } else {
-            storageDir = mContext.get().getExternalFilesDir(mCaptureStrategy.directory);
+            storageDir = mContext.get().getExternalFilesDir(mSaveStrategy.directory);
         }
 
         // Avoid joining path components manually

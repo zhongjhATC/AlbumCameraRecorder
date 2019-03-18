@@ -8,6 +8,8 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.recorder.common.MySharedPreferences;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +29,7 @@ public class RecordingService extends Service {
 
     private MediaRecorder mRecorder = null;
 
+    private MediaStoreCompat mAudioMediaStoreCompat; // 音频文件配置路径
 
 //    private DBHelper mDatabase;  @Deprecated
 
@@ -62,6 +65,12 @@ public class RecordingService extends Service {
     }
 
     private void startRecording() {
+
+        // 根据配置创建文件配置
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        mAudioMediaStoreCompat = new MediaStoreCompat(getApplicationContext());
+        mAudioMediaStoreCompat.setCaptureStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
+
         setFileNameAndPath();
 
         mRecorder = new MediaRecorder();
@@ -89,15 +98,7 @@ public class RecordingService extends Service {
     }
 
     private void setFileNameAndPath(){
-        File f;
-
-        do{
-            String mFileName = "myRecordingTemp_" + System.currentTimeMillis() + ".mp4";
-            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFilePath += "/SoundRecorder/" + mFileName;
-
-            f = new File(mFilePath);
-        }while (f.exists() && !f.isDirectory());
+        mFilePath = mAudioMediaStoreCompat.getFilePath(2);
     }
 
     private void stopRecording() {

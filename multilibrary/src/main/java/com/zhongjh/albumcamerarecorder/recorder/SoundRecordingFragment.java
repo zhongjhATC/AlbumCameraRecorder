@@ -173,7 +173,7 @@ public class SoundRecordingFragment extends BaseFragment {
 
             @Override
             public void confirm() {
-                //获取视频路径
+                // 获取音频路径
                 Intent result = new Intent();
                 initAudio();
                 result.putExtra(EXTRA_RESULT_RECORDING_ITEM, recordingItem);
