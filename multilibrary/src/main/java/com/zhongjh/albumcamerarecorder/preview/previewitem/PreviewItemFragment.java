@@ -29,10 +29,11 @@ import android.widget.Toast;
 
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
@@ -40,7 +41,7 @@ public class PreviewItemFragment extends Fragment {
 
     private static final String ARGS_ITEM = "args_item";
 
-    public static PreviewItemFragment newInstance(Item item) {
+    public static PreviewItemFragment newInstance(MultiMedia item) {
         PreviewItemFragment fragment = new PreviewItemFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(ARGS_ITEM, item);
@@ -56,7 +57,7 @@ public class PreviewItemFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final Item item = getArguments().getParcelable(ARGS_ITEM);
+        final MultiMedia item = getArguments().getParcelable(ARGS_ITEM);
         if (item == null) {
             return;
         }

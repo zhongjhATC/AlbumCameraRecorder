@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,7 +24,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
 import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
-import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
+import gaode.zhongjh.com.common.entity.MultimediaTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;

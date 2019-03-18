@@ -11,8 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
 
 public class MediaGrid extends SquareFrameLayout implements View.OnClickListener {
 
@@ -21,7 +22,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     private ImageView mGifTag;// gif标志图片
     private TextView mVideoDuration; // 文本的时长（类似指视频的时长）
 
-    private Item mMedia;// 值
+    private MultiMedia mMedia;// 值
     private PreBindInfo mPreBindInfo; // 控件和一些别的变量
     private OnMediaGridClickListener mListener; // 事件
     private boolean checked;
@@ -69,7 +70,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
      * 绑定值
      * @param item 值
      */
-    public void bindMedia(Item item) {
+    public void bindMedia(MultiMedia item) {
         mMedia = item;
         setGifTag();
         initCheckView();
@@ -147,9 +148,9 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
 
     public interface OnMediaGridClickListener {
 
-        void onThumbnailClicked(ImageView thumbnail, Item item, RecyclerView.ViewHolder holder);
+        void onThumbnailClicked(ImageView thumbnail, MultiMedia item, RecyclerView.ViewHolder holder);
 
-        void onCheckViewClicked(CheckView checkView, Item item, RecyclerView.ViewHolder holder);
+        void onCheckViewClicked(CheckView checkView, MultiMedia item, RecyclerView.ViewHolder holder);
 
     }
 

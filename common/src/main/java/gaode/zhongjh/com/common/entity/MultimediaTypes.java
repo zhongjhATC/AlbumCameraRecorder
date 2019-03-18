@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.utils.constants;
+package gaode.zhongjh.com.common.entity;
 
 import android.support.annotation.IntDef;
 
@@ -24,7 +24,13 @@ public @interface MultimediaTypes {
      * 图片
      */
     int PICTURE = 0;
+    /**
+     * 视频
+     */
     int VIDEO = 1;
+    /**
+     * 音频
+     */
     int AUDIO = 2;
     /**
      * 混合类型

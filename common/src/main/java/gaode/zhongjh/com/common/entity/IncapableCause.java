@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.albumcamerarecorder.album.entity;
+package gaode.zhongjh.com.common.entity;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
@@ -21,9 +21,10 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 
-import com.zhongjh.albumcamerarecorder.widget.IncapableDialog;
 
 import java.lang.annotation.Retention;
+
+import gaode.zhongjh.com.common.widget.IncapableDialog;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 

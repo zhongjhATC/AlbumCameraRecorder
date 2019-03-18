@@ -2,12 +2,9 @@ package com.zhongjh.progresslibrary.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.Group;
@@ -20,14 +17,15 @@ import android.widget.TextView;
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
-import com.zhongjh.progresslibrary.entity.MultiMedia;
+import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.entity.RecordingItem;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
-import com.zhongjh.progresslibrary.utils.VideoUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import gaode.zhongjh.com.common.entity.MultimediaTypes;
 
 /**
  * 这是返回（图片、视频、录音）等文件后，显示的Layout
@@ -41,7 +39,7 @@ public class MaskProgressLayout extends FrameLayout {
     public ViewHolder mViewHolder;          // 控件集合
     private ImageEngine mImageEngine;       // 图片加载方式
 
-    public List<MultiMedia> audioList = new ArrayList<>();     // 音频数据
+    public List<MultiMediaView> audioList = new ArrayList<>();     // 音频数据
     private int audioProgressColor;                 // 音频 文件的进度条颜色
     private MaskProgressLayoutListener listener;   // 点击事件(这里只针对音频)
 
@@ -155,24 +153,24 @@ public class MaskProgressLayout extends FrameLayout {
      * @param imagePaths 图片数据源
      */
     public void addImages(List<String> imagePaths) {
-        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : imagePaths) {
-            MultiMedia multiMedia = new MultiMedia(string, 0);
-            multiMedias.add(multiMedia);
+            MultiMediaView multiMediaView = new MultiMediaView(string, MultimediaTypes.PICTURE);
+            multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addImageData(multiMedias);
+        mViewHolder.alfMedia.addImageData(multiMediaViews);
     }
 
     /**
      * 设置视频地址
      */
     public void addVideo(List<String> videoPath) {
-        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : videoPath) {
-            MultiMedia multiMedia = new MultiMedia(string, 1);
-            multiMedias.add(multiMedia);
+            MultiMediaView multiMediaView = new MultiMediaView(string, MultimediaTypes.VIDEO);
+            multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addVideoData(multiMedias, false, true);
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, false, true);
     }
 
     /**
@@ -182,9 +180,9 @@ public class MaskProgressLayout extends FrameLayout {
      * @
      */
     public void addAudio(String filePath, int length) {
-        MultiMedia multiMedia = new MultiMedia(filePath, 2);
-        multiMedia.setViewHolder(this);
-        addAudioData(multiMedia);
+        MultiMediaView multiMediaView = new MultiMediaView(filePath, MultimediaTypes.AUDIO);
+        multiMediaView.setViewHolder(this);
+        addAudioData(multiMediaView);
 
         // 显示上传中的音频
         mViewHolder.groupRecorderProgress.setVisibility(View.VISIBLE);
@@ -213,14 +211,14 @@ public class MaskProgressLayout extends FrameLayout {
             mediaPlayer.prepare();
             int duration = mediaPlayer.getDuration();
             if (0 != duration) {
-                MultiMedia multiMedia = new MultiMedia(2);
-                multiMedia.setUrl(audioUrl);
-                multiMedia.setViewHolder(this);
+                MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
+                multiMediaView.setUrl(audioUrl);
+                multiMediaView.setViewHolder(this);
 
                 if (this.audioList == null) {
                     this.audioList = new ArrayList<>();
                 }
-                audioList.add(multiMedia);
+                audioList.add(multiMediaView);
 
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 mViewHolder.playView.setVisibility(View.VISIBLE);
@@ -243,13 +241,13 @@ public class MaskProgressLayout extends FrameLayout {
      * @param imagesUrls 图片网址
      */
     public void addImageUrls(List<String> imagesUrls) {
-        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : imagesUrls) {
-            MultiMedia multiMedia = new MultiMedia(0);
-            multiMedia.setUrl(string);
-            multiMedias.add(multiMedia);
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
+            multiMediaView.setUrl(string);
+            multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addImageData(multiMedias);
+        mViewHolder.alfMedia.addImageData(multiMediaViews);
     }
 
     /**
@@ -258,11 +256,11 @@ public class MaskProgressLayout extends FrameLayout {
      * @param videoUrl 视频网址
      */
     public void addVideoUrl(String videoUrl) {
-        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
-        MultiMedia multiMedia = new MultiMedia(1);
-        multiMedia.setUrl(videoUrl);
-        multiMedias.add(multiMedia);
-        mViewHolder.alfMedia.addVideoData(multiMedias, false, false);
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
+        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
+        multiMediaView.setUrl(videoUrl);
+        multiMediaViews.add(multiMediaView);
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, false, false);
     }
 
     /**
@@ -283,9 +281,9 @@ public class MaskProgressLayout extends FrameLayout {
         String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); // ms,时长
 
 
-        MultiMedia multiMedia = new MultiMedia(2);
-        multiMedia.setPath(file);
-        multiMedia.setViewHolder(this);
+        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
+        multiMediaView.setPath(file);
+        multiMediaView.setViewHolder(this);
 
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         mViewHolder.playView.setVisibility(View.VISIBLE);
@@ -302,25 +300,25 @@ public class MaskProgressLayout extends FrameLayout {
      * @param file 文件路径
      */
     public void addVideoFile(String file) {
-        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
-        MultiMedia multiMedia = new MultiMedia(file, 1);
-        multiMedias.add(multiMedia);
-        mViewHolder.alfMedia.addVideoData(multiMedias, true, false);
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
+        MultiMediaView multiMediaView = new MultiMediaView(file, MultimediaTypes.VIDEO);
+        multiMediaViews.add(multiMediaView);
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, true, false);
     }
 
     /**
      * 添加音频数据
      *
-     * @param multiMedia 数据
+     * @param multiMediaView 数据
      */
-    public void addAudioData(MultiMedia multiMedia) {
+    public void addAudioData(MultiMediaView multiMediaView) {
         if (this.audioList == null) {
             this.audioList = new ArrayList<>();
         }
-        this.audioList.add(multiMedia);
+        this.audioList.add(multiMediaView);
         if (audioList != null && audioList.size() > 0) {
             // 显示音频的进度条
-            this.listener.onItemStartUploading(multiMedia);
+            this.listener.onItemStartUploading(multiMediaView);
         }
     }
 
@@ -351,21 +349,21 @@ public class MaskProgressLayout extends FrameLayout {
     /**
      * @return 返回当前包含url的图片数据
      */
-    public List<MultiMedia> getImages() {
+    public List<MultiMediaView> getImages() {
         return mViewHolder.alfMedia.imageList;
     }
 
     /**
      * @return 返回当前包含url的视频数据
      */
-    public List<MultiMedia> getVideos() {
+    public List<MultiMediaView> getVideos() {
         return mViewHolder.alfMedia.videoList;
     }
 
     /**
      * @return 返回当前包含url的音频数据
      */
-    public List<MultiMedia> getAudios() {
+    public List<MultiMediaView> getAudios() {
         return this.audioList;
     }
 

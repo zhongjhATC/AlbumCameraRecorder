@@ -29,9 +29,10 @@ import android.widget.ImageView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.base.RecyclerViewCursorAdapter;
+import gaode.zhongjh.com.common.entity.IncapableCause;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
-import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.MediaGrid;
@@ -78,7 +79,7 @@ public class AlbumMediaAdapter extends
         // 相片的item
         MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
 
-        final Item item = Item.valueOf(cursor);
+        final MultiMedia item = MultiMedia.valueOf(cursor);
         // 传递相关的值
         mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
                 getImageResize(mediaViewHolder.mMediaGrid.getContext()),
@@ -97,7 +98,7 @@ public class AlbumMediaAdapter extends
      * @param item      数据
      * @param mediaGrid holder
      */
-    private void setCheckStatus(Item item, MediaGrid mediaGrid) {
+    private void setCheckStatus(MultiMedia item, MediaGrid mediaGrid) {
         // 是否多选时,显示数字
         if (mAlbumSpec.countable) {
             int checkedNum = mSelectedCollection.checkedNumOf(item);
@@ -145,7 +146,7 @@ public class AlbumMediaAdapter extends
      * @param holder    控件
      */
     @Override
-    public void onThumbnailClicked(ImageView thumbnail, Item item, RecyclerView.ViewHolder holder) {
+    public void onThumbnailClicked(ImageView thumbnail, MultiMedia item, RecyclerView.ViewHolder holder) {
         if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onMediaClick(null, item, holder.getAdapterPosition());
         }
@@ -159,7 +160,7 @@ public class AlbumMediaAdapter extends
      * @param holder    控件
      */
     @Override
-    public void onCheckViewClicked(CheckView checkView, Item item, RecyclerView.ViewHolder holder) {
+    public void onCheckViewClicked(CheckView checkView, MultiMedia item, RecyclerView.ViewHolder holder) {
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
             // 获取当前选择的第几个
@@ -222,7 +223,7 @@ public class AlbumMediaAdapter extends
      * @param context 上下文
      * @param item    数据源
      */
-    private boolean assertAddSelection(Context context, Item item) {
+    private boolean assertAddSelection(Context context, MultiMedia item) {
         IncapableCause cause = mSelectedCollection.isAcceptable(item);
         IncapableCause.handleCause(context, cause);
         return cause == null;
@@ -278,7 +279,7 @@ public class AlbumMediaAdapter extends
             RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(first);
             if (holder instanceof MediaViewHolder) {
                 if (cursor.moveToPosition(i)) {
-                    setCheckStatus(Item.valueOf(cursor), ((MediaViewHolder) holder).mMediaGrid);
+                    setCheckStatus(MultiMedia.valueOf(cursor), ((MediaViewHolder) holder).mMediaGrid);
                 }
             }
         }
@@ -310,7 +311,7 @@ public class AlbumMediaAdapter extends
     }
 
     public interface OnMediaClickListener {
-        void onMediaClick(Album album, Item item, int adapterPosition);
+        void onMediaClick(Album album, MultiMedia item, int adapterPosition);
     }
 
     private static class MediaViewHolder extends RecyclerView.ViewHolder {

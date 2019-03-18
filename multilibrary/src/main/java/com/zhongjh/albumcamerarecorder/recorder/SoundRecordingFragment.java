@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +25,7 @@ import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.recorder.service.RecordingService;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundrecordingLayout;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
-import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
+import gaode.zhongjh.com.common.entity.MultimediaTypes;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 import java.io.File;

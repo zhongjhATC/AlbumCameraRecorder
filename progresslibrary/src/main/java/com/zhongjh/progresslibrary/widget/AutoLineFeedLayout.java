@@ -23,6 +23,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import gaode.zhongjh.com.common.entity.MultimediaTypes;
+
 /**
  * 自动换行的layout,只包含方框等等view
  * Created by zhongjh on 2019/1/29.
@@ -117,7 +119,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     private void init() {
         // 默认➕号
-        MultiMediaView multiMediaView = new MultiMediaView(ADD, -1);
+        MultiMediaView multiMediaView = new MultiMediaView(ADD, MultimediaTypes.ADD);
         LayoutInflater inflater = LayoutInflater.from(getContext());
         viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
         viewHolderAdd.bind(multiMediaView);

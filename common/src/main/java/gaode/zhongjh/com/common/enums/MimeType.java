@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.enums;
+package gaode.zhongjh.com.common.enums;
 
 import android.content.ContentResolver;
 import android.net.Uri;
@@ -7,14 +7,17 @@ import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 
+import gaode.zhongjh.com.common.utils.BasePhotoMetadataUtils;
+
 public enum MimeType  {
+
+
 
     // ============== 图片 ==============
     JPEG("image/jpeg", arraySetOf(
@@ -32,6 +35,11 @@ public enum MimeType  {
     )),
     WEBP("image/webp", arraySetOf(
             "webp"
+    )),
+
+    // ============== 音频 ==============
+    MP3("video/mp3", arraySetOf(
+            "mp3"
     )),
 
     // ============== 视频 ==============
@@ -121,7 +129,7 @@ public enum MimeType  {
                 return true;
             }
             if (!pathParsed) {
-                path = PhotoMetadataUtils.getPath(resolver, uri);
+                path = BasePhotoMetadataUtils.getPath(resolver, uri);
                 if (!TextUtils.isEmpty(path)) {
                     path = path.toLowerCase(Locale.US);
                 }

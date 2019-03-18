@@ -21,15 +21,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
 
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import gaode.zhongjh.com.common.entity.MultiMedia;
+
 public class PreviewPagerAdapter extends FragmentPagerAdapter {
 
-    private ArrayList<Item> mItems = new ArrayList<>();
+    private ArrayList<MultiMedia> mItems = new ArrayList<>();
     private OnPrimaryItemSetListener mListener;
 
     public PreviewPagerAdapter(FragmentManager manager, OnPrimaryItemSetListener listener) {
@@ -55,11 +56,11 @@ public class PreviewPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    public Item getMediaItem(int position) {
+    public MultiMedia getMediaItem(int position) {
         return mItems.get(position);
     }
 
-    public void addAll(List<Item> items) {
+    public void addAll(List<MultiMedia> items) {
         mItems.addAll(items);
     }
 

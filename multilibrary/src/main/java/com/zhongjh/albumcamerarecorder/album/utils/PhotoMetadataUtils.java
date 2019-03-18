@@ -3,22 +3,24 @@ package com.zhongjh.albumcamerarecorder.album.utils;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
+import gaode.zhongjh.com.common.entity.IncapableCause;
+
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
+import gaode.zhongjh.com.common.utils.BasePhotoMetadataUtils;
+
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
 
@@ -29,10 +31,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-public final class PhotoMetadataUtils {
+public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
     private static final String TAG = PhotoMetadataUtils.class.getSimpleName();
     private static final int MAX_WIDTH = 1600;
-    private static final String SCHEME_CONTENT = "content";
+
 
     private PhotoMetadataUtils() {
         throw new AssertionError("oops! the utility class is about to be instantiated...");
@@ -104,35 +106,7 @@ public final class PhotoMetadataUtils {
         }
     }
 
-    /**
-     * 查询图片
-     *
-     * @param resolver ContentResolver共享数据库
-     * @param uri      图片的uri
-     * @return 图片路径
-     */
-    public static String getPath(ContentResolver resolver, Uri uri) {
-        if (uri == null) {
-            return null;
-        }
 
-        if (SCHEME_CONTENT.equals(uri.getScheme())) {
-            Cursor cursor = null;
-            try {
-                cursor = resolver.query(uri, new String[]{MediaStore.Images.ImageColumns.DATA},
-                        null, null, null);
-                if (cursor == null || !cursor.moveToFirst()) {
-                    return null;
-                }
-                return cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
-        return uri.getPath();
-    }
 
     /**
      * 过滤文件
@@ -141,7 +115,7 @@ public final class PhotoMetadataUtils {
      * @param item    数据源
      * @return 提示框
      */
-    public static IncapableCause isAcceptable(Context context, Item item) {
+    public static IncapableCause isAcceptable(Context context, MultiMedia item) {
         // 判断资源类型是否已设置可选
         if (!isSelectableType(context, item)) {
             return new IncapableCause(context.getString(R.string.error_file_type));
@@ -166,7 +140,7 @@ public final class PhotoMetadataUtils {
      * @param item    数据源
      * @return 是否
      */
-    private static boolean isSelectableType(Context context, Item item) {
+    private static boolean isSelectableType(Context context, MultiMedia item) {
         if (context == null) {
             return false;
         }
@@ -193,7 +167,7 @@ public final class PhotoMetadataUtils {
         // 获取 ExifInterface,实际上Exif格式就是在JPEG格式头部插入了数码照片的信息，包括拍摄时的光圈、快门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、色彩编码、拍摄时录制的声音以及GPS全球定位系统数据、缩略图等。
         ExifInterface exif;
         try {
-            exif = ExifInterfaceCompat.newInstance(getPath(resolver, uri));
+            exif = ExifInterfaceCompat.newInstance(BasePhotoMetadataUtils.getPath(resolver, uri));
         } catch (IOException e) {
             Log.e(TAG, "could not read exif info of the image: " + uri);
             return false;

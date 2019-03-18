@@ -15,7 +15,7 @@ import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 
 import java.lang.annotation.Retention;

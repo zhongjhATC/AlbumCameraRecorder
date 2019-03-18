@@ -6,11 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
+import gaode.zhongjh.com.common.entity.IncapableCause;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
 
@@ -46,7 +47,7 @@ public class SelectedItemCollection {
     private static final int COLLECTION_MIXED = COLLECTION_IMAGE | COLLECTION_VIDEO;
 
     private final Context mContext;
-    private Set<Item> mItems;       // 数据源
+    private Set<MultiMedia> mItems;       // 数据源
     private int mCollectionType = COLLECTION_UNDEFINED; // 类型
 
     public SelectedItemCollection(Context context) {
@@ -58,7 +59,7 @@ public class SelectedItemCollection {
             mItems = new LinkedHashSet<>();
         } else {
             // 获取缓存的数据
-            List<Item> saved = bundle.getParcelableArrayList(STATE_SELECTION);
+            List<MultiMedia> saved = bundle.getParcelableArrayList(STATE_SELECTION);
             mItems = new LinkedHashSet<>(saved);
             mCollectionType = bundle.getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
         }
@@ -91,7 +92,7 @@ public class SelectedItemCollection {
      *
      * @param item 数据
      */
-    public boolean add(Item item) {
+    public boolean add(MultiMedia item) {
         if (typeConflict(item)) {
             throw new IllegalArgumentException("Can't select images and videos at the same time.");
         }
@@ -132,7 +133,7 @@ public class SelectedItemCollection {
      * @param item 数据
      * @return 是否删除成功
      */
-    public boolean remove(Item item) {
+    public boolean remove(MultiMedia item) {
         boolean removed = mItems.remove(item);
         if (removed) {
             if (mItems.size() == 0) {
@@ -154,7 +155,7 @@ public class SelectedItemCollection {
      * @param items          数据源
      * @param collectionType 类型
      */
-    public void overwrite(ArrayList<Item> items, int collectionType) {
+    public void overwrite(ArrayList<MultiMedia> items, int collectionType) {
         if (items.size() == 0) {
             mCollectionType = COLLECTION_UNDEFINED;
         } else {
@@ -169,7 +170,7 @@ public class SelectedItemCollection {
      *
      * @return list<Item>
      */
-    public List<Item> asList() {
+    public List<MultiMedia> asList() {
         return new ArrayList<>(mItems);
     }
 
@@ -180,7 +181,7 @@ public class SelectedItemCollection {
      */
     public List<Uri> asListOfUri() {
         List<Uri> uris = new ArrayList<>();
-        for (Item item : mItems) {
+        for (MultiMedia item : mItems) {
             uris.add(item.getUri());
         }
         return uris;
@@ -193,7 +194,7 @@ public class SelectedItemCollection {
      */
     public List<String> asListOfString() {
         List<String> paths = new ArrayList<>();
-        for (Item item : mItems) {
+        for (MultiMedia item : mItems) {
             paths.add(PathUtils.getPath(mContext, item.getUri()));
         }
         return paths;
@@ -205,7 +206,7 @@ public class SelectedItemCollection {
      * @param item 数据源
      * @return 返回是否选择
      */
-    public boolean isSelected(Item item) {
+    public boolean isSelected(MultiMedia item) {
         return mItems.contains(item);
     }
 
@@ -215,7 +216,7 @@ public class SelectedItemCollection {
      * @param item 数据源
      * @return 弹窗
      */
-    public IncapableCause isAcceptable(Item item) {
+    public IncapableCause isAcceptable(MultiMedia item) {
         // 检查是否超过最大设置数量
         if (maxSelectableReached()) {
             int maxSelectable = currentMaxSelectable();
@@ -281,7 +282,7 @@ public class SelectedItemCollection {
      * Determine whether there will be conflict media types. A user can only select images and videos at the same time
      * while {@link AlbumSpec#mediaTypeExclusive} is set to false.
      */
-    private boolean typeConflict(Item item) {
+    private boolean typeConflict(MultiMedia item) {
         // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
         return AlbumSpec.getInstance().mediaTypeExclusive
                 && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_MIXED))
@@ -303,7 +304,7 @@ public class SelectedItemCollection {
      * @param item 数据
      * @return 选择的索引，最终返回的选择了第几个
      */
-    public int checkedNumOf(Item item) {
+    public int checkedNumOf(MultiMedia item) {
         // 获取选择的第几个
         int index = new ArrayList<>(mItems).indexOf(item);
         // 如果选择的为 -1 就是未选状态，否则选择基础数量+1

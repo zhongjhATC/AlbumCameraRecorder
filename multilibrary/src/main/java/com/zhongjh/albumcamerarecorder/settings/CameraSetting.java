@@ -2,7 +2,7 @@ package com.zhongjh.albumcamerarecorder.settings;
 
 import android.support.annotation.NonNull;
 
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MimeType;
 
 import java.util.Set;
 

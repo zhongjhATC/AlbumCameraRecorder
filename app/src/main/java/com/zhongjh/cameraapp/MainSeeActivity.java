@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
-import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -29,7 +28,7 @@ import com.zhongjh.albumcamerarecorder.settings.SaveStrategy;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
+import gaode.zhongjh.com.common.entity.MultimediaTypes;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;

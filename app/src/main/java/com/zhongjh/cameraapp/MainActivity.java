@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
@@ -28,9 +27,11 @@ import com.zhongjh.albumcamerarecorder.settings.SaveStrategy;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
+import gaode.zhongjh.com.common.entity.MultimediaTypes;
+import gaode.zhongjh.com.common.enums.MimeType;
+
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
-import com.zhongjh.progresslibrary.entity.MultiMedia;
+import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
 import java.util.ArrayList;
@@ -41,12 +42,13 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_CHOOSE = 23;
 
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
-    private HashMap<MultiMedia, MyTask> timers = new HashMap<>();
+    private HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
     ActivityMainBinding mBinding;
 
 
@@ -65,42 +67,37 @@ public class MainActivity extends AppCompatActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onItemAdd(View view, MultiMedia multiMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 getPermissions(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
-            public void onItemImage(View view, MultiMedia multiMedia) {
+            public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMedia.getType() == MultimediaTypes.PICTURE) {
+                if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    List<PreviewItem> previewItems = new ArrayList<>();
-                    for (MultiMedia item : mBinding.mplImageList.getImages()) {
-                        PreviewItem previewItem = new PreviewItem(item.getUri(), item.getUrl());
-                        previewItems.add(previewItem);
-                    }
-                    MultiMediaSetting.openPreviewImage(MainActivity.this, previewItems);
-                } else if (multiMedia.getType() == MultimediaTypes.VIDEO) {
+                    MultiMediaSetting.openPreviewImage2(MainActivity.this,  (ArrayList)mBinding.mplImageList.getImages(),multiMediaView.getPosition());
+                } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
                     List<Uri> uris = new ArrayList<>();
-                    uris.add(multiMedia.getUri());
+                    uris.add(multiMediaView.getUri());
                     MultiMediaSetting.openPreviewVideo(MainActivity.this, uris);
                 }
             }
 
             @Override
-            public void onItemStartUploading(MultiMedia multiMedia) {
+            public void onItemStartUploading(MultiMediaView multiMediaView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(multiMedia);
-                timers.put(multiMedia, timer);
+                MyTask timer = new MyTask(multiMediaView);
+                timers.put(multiMediaView, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(View view, MultiMedia multiMedia) {
+            public void onItemClose(View view, MultiMediaView multiMediaView) {
                 // 停止上传
-                timers.get(multiMedia).cancel();
+                timers.get(multiMediaView).cancel();
             }
 
             @Override
@@ -174,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<MultiMedia, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<MultiMediaView, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         super.onDestroy();
@@ -375,9 +372,9 @@ public class MainActivity extends AppCompatActivity {
     class MyTask extends Timer {
 
         int percentage = 0;// 百分比
-        MultiMedia multiMedia;
+        MultiMediaView multiMedia;
 
-        MyTask(MultiMedia multiMedia) {
+        MyTask(MultiMediaView multiMedia) {
             this.multiMedia = multiMedia;
         }
 

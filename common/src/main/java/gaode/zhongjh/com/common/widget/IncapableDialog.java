@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.albumcamerarecorder.widget;
+package gaode.zhongjh.com.common.widget;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -23,7 +23,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
-import com.zhongjh.albumcamerarecorder.R;
+import gaode.zhongjh.com.common.R;
 
 /**
  * 弹窗

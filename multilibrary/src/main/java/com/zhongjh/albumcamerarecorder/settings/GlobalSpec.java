@@ -4,7 +4,7 @@ import android.support.annotation.StyleRes;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
 

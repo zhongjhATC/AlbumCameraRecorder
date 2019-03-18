@@ -29,9 +29,13 @@ import android.widget.TextView;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
+import gaode.zhongjh.com.common.widget.IncapableDialog;
+
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
@@ -40,12 +44,10 @@ import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaSelectionFra
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
-import com.zhongjh.albumcamerarecorder.utils.constants.MultimediaTypes;
-import com.zhongjh.albumcamerarecorder.widget.IncapableDialog;
+import gaode.zhongjh.com.common.entity.MultimediaTypes;
 
 import java.util.ArrayList;
 
@@ -290,7 +292,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (requestCode == REQUEST_CODE_PREVIEW) {
             Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
             // 获取选择的数据
-            ArrayList<Item> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+            ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
             // 是否启用原图
             mOriginalEnable = data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
             int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
@@ -301,7 +303,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 ArrayList<Uri> selectedUris = new ArrayList<>();
                 ArrayList<String> selectedPaths = new ArrayList<>();
                 if (selected != null) {
-                    for (Item item : selected) {
+                    for (MultiMedia item : selected) {
                         // 添加uri和path
                         selectedUris.add(item.getUri());
                         selectedPaths.add(PathUtils.getPath(getContext(), item.getUri()));
@@ -398,7 +400,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         int count = 0;
         int selectedCount = mSelectedCollection.count();
         for (int i = 0; i < selectedCount; i++) {
-            Item item = mSelectedCollection.asList().get(i);
+            MultiMedia item = mSelectedCollection.asList().get(i);
 
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMB(item.size);
@@ -467,7 +469,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
-    public void onMediaClick(Album album, Item item, int adapterPosition) {
+    public void onMediaClick(Album album, MultiMedia item, int adapterPosition) {
         Intent intent = new Intent(mActivity, AlbumPreviewActivity.class);
         intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album);
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);

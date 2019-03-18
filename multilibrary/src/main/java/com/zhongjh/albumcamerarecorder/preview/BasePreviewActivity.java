@@ -15,19 +15,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
+import gaode.zhongjh.com.common.entity.IncapableCause;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.widget.IncapableDialog;
+
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
 import com.zhongjh.albumcamerarecorder.utils.VersionUtils;
-import com.zhongjh.albumcamerarecorder.widget.IncapableDialog;
 
 /**
  * 预览的基类
@@ -102,7 +103,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mViewHolder.pager.addOnPageChangeListener(this);
         // 右上角选择事件
         mViewHolder.check_view.setOnClickListener(v -> {
-            Item item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
                 mSelectedCollection.remove(item);
                 if (mAlbumSpec.countable) {
@@ -190,7 +191,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         if (mPreviousPos != -1 && mPreviousPos != position) {
             ((PreviewItemFragment) adapter.instantiateItem(mViewHolder.pager, mPreviousPos)).resetView();
 
-            Item item = adapter.getMediaItem(position);
+            MultiMedia item = adapter.getMediaItem(position);
             if (mAlbumSpec.countable) {
                 int checkedNum = mSelectedCollection.checkedNumOf(item);
                 mViewHolder.check_view.setCheckedNum(checkedNum);
@@ -283,7 +284,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         int count = 0;
         int selectedCount = mSelectedCollection.count();
         for (int i = 0; i < selectedCount; i++) {
-            Item item = mSelectedCollection.asList().get(i);
+            MultiMedia item = mSelectedCollection.asList().get(i);
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMB(item.size);
                 if (size > mAlbumSpec.originalMaxSize) {
@@ -300,7 +301,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param item 当前图片
      */
     @SuppressLint("SetTextI18n")
-    protected void updateSize(Item item) {
+    protected void updateSize(MultiMedia item) {
         if (item.isGif()) {
             mViewHolder.size.setVisibility(View.VISIBLE);
             mViewHolder.size.setText(PhotoMetadataUtils.getSizeInMB(item.size) + "M");
@@ -332,7 +333,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param item 当前图片
      * @return 为true则代表符合规则
      */
-    private boolean assertAddSelection(Item item) {
+    private boolean assertAddSelection(MultiMedia item) {
         IncapableCause cause = mSelectedCollection.isAcceptable(item);
         IncapableCause.handleCause(this, cause);
         return cause == null;

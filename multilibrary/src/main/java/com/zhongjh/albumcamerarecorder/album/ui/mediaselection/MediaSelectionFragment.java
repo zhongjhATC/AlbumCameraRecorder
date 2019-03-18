@@ -14,14 +14,16 @@ import android.view.ViewGroup;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
+
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
+import com.zhongjh.albumcamerarecorder.album.utils.UIUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
-import com.zhongjh.albumcamerarecorder.album.utils.UIUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.MediaGridInset;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
 
 /**
  * 相册 界面
@@ -167,7 +169,7 @@ public class MediaSelectionFragment extends Fragment implements
     }
 
     @Override
-    public void onMediaClick(Album album, Item item, int adapterPosition) {
+    public void onMediaClick(Album album, MultiMedia item, int adapterPosition) {
         if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onMediaClick(getArguments().getParcelable(EXTRA_ALBUM),
                     item, adapterPosition);

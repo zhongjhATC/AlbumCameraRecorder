@@ -17,9 +17,9 @@ package com.zhongjh.albumcamerarecorder.album.filter;
 
 import android.content.Context;
 
-import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import gaode.zhongjh.com.common.entity.IncapableCause;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
 
 import java.util.Set;
 
@@ -52,12 +52,12 @@ public abstract class Filter {
      * @return null if selectable, {@link IncapableCause} if not selectable.
      * 调用以过滤每个项。
      */
-    public abstract IncapableCause filter(Context context, Item item);
+    public abstract IncapableCause filter(Context context, MultiMedia item);
 
     /**
-     * Whether an {@link Item} need filtering.
+     * Whether an {@link MultiMedia} need filtering.
      */
-    protected boolean needFiltering(Context context, Item item) {
+    protected boolean needFiltering(Context context, MultiMedia item) {
         for (MimeType type : constraintTypes()) {
             if (type.checkType(context.getContentResolver(), item.getUri())) {
                 return true;

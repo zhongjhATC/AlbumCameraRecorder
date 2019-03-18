@@ -19,9 +19,9 @@ import android.content.Context;
 import android.graphics.Point;
 
 
-import com.zhongjh.albumcamerarecorder.album.entity.IncapableCause;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import gaode.zhongjh.com.common.entity.IncapableCause;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 
@@ -48,7 +48,7 @@ class GifSizeFilter extends Filter {
     }
 
     @Override
-    public IncapableCause filter(Context context, Item item) {
+    public IncapableCause filter(Context context, MultiMedia item) {
         if (!needFiltering(context, item))
             return null;
 

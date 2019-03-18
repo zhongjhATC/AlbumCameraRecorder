@@ -28,7 +28,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.Item;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
@@ -52,6 +51,8 @@ import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
 
 import static com.zhongjh.albumcamerarecorder.album.MatissFragment.REQUEST_CODE_PREVIEW;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
@@ -507,9 +508,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     public Bundle getDataWithBundle() {
         // 转换成items
-        ArrayList<Item> items = new ArrayList<>();
+        ArrayList<MultiMedia> items = new ArrayList<>();
         for (BitmapData value : mCaptureBitmaps.values()) {
-            Item item = new Item(value.getUri());
+            MultiMedia item = new MultiMedia(value.getUri());
             items.add(item);
         }
         Bundle bundle = new Bundle();

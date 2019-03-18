@@ -1,7 +1,7 @@
 package com.zhongjh.albumcamerarecorder.settings;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
 
 import java.util.Set;
