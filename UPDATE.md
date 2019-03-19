@@ -1,5 +1,5 @@
 # 历史更新
-## 1.0.2
+## 1.0.3
  - 为了让commonlibrary和progresslibrary两者更好搭配，添加common包调和两者。
 #### commonlibrary
  - 规范了路径配置，现在音频归音频文件，视频归视频文件，图片归图片文件。
