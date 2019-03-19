@@ -31,8 +31,8 @@
 #### Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.1'         // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.1' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.1'         // 核心lib，调用显示相册、录屏、录音等
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.2' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
 	}
 
 ## 快照
