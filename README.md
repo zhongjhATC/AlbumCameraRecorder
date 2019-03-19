@@ -90,11 +90,8 @@
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .forResult(REQUEST_CODE_CHOOSE);
 
-## 近期计划更新
-#### 1.0.1
- - 进一步完善代码加强注释，方便阅读理解
- - 完善Theme
-
+## 历史更新
+从1.0.1版本开始总结的[历史更新](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/UPDATE.md).
 
 ## apk直接体验下载
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/qrcode.png)
