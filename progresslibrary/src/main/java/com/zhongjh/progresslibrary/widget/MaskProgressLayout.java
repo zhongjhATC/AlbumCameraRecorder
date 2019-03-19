@@ -347,6 +347,14 @@ public class MaskProgressLayout extends FrameLayout {
     }
 
     /**
+     * 删除单个图片
+     * @param position 图片的索引，该索引列表不包含视频等
+     */
+    public void onRemoveItemImage(int position){
+        mViewHolder.alfMedia.onRemoveItemImage(position);
+    }
+
+    /**
      * @return 返回当前包含url的图片数据
      */
     public List<MultiMediaView> getImages() {

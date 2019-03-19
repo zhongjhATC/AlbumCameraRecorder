@@ -145,15 +145,17 @@ public class AutoLineFeedLayout extends ViewGroup {
                 // 减1是因为多了一个add按钮控制
                 int endingPostion = getChildCount() + videoList.size()  - 1 ;
                 addView(viewHolder.itemView, endingPostion);
-                // 判断multiMedia有没有path,有path没有uri就执行上传
-                if (TextUtils.isEmpty(multiMediaView.getUrl()) && !TextUtils.isEmpty(multiMediaView.getPath())) {
-                    this.listener.onItemStartUploading(multiMediaView);
-                }
             }
-            // 重新整理图片的索引
-
         }
+        // 重新整理Add是否显示，处理图片的索引
         checkLastImages();
+        // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
+        for (MultiMediaView multiMediaView : multiMediaViews) {
+            // 判断multiMedia有没有path,有path没有uri就执行上传
+            if (TextUtils.isEmpty(multiMediaView.getUrl()) && !TextUtils.isEmpty(multiMediaView.getPath())) {
+                this.listener.onItemStartUploading(multiMediaView);
+            }
+        }
 
     }
 
@@ -180,30 +182,36 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 addView(viewHolder.itemView, 0);
-                // 判断multiMedia有没有path,有path没有uri就执行上传
-                if (isUploading) {
-                    this.listener.onItemStartUploading(multiMediaView);
-                }
             }
         }
+        // 重新整理Add是否显示，处理图片的索引
         checkLastImages();
+        // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
+        for (MultiMediaView multiMediaView : multiMediaViews) {
+            // 判断multiMedia有没有path,有path没有uri就执行上传
+            if (isUploading) {
+                this.listener.onItemStartUploading(multiMediaView);
+            }
+        }
     }
 
     /**
-     * 删除数据
+     * 删除单个图片
+     * @param position 图片的索引，该索引列表不包含视频等
      */
-    public void removePosition(int position){
+    public void onRemoveItemImage(int position){
         MultiMediaView multiMediaView = imageList.get(position);
         if (listener != null)
             listener.onItemClose(multiMediaView.getMaskProgressView(), multiMediaView);
         // 判断类型
-        if (multiMediaView.getType() == 0) {
+        if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
             imageList.remove(multiMediaView);
-        } else if (multiMediaView.getType() == 1) {
+        } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
             videoList.remove(multiMediaView);
         }
-        ViewGroup parent = (ViewGroup) multiMediaView.getMaskProgressView().getParent();
-        parent.removeView(multiMediaView.getMaskProgressView());
+        ViewGroup parent = (ViewGroup) multiMediaView.getItemView().getParent();
+//        parent.removeViewAt( 1 + videoList.size() + position);// ADD和视频就占据2个位置了
+        parent.removeView(multiMediaView.getItemView());
         checkLastImages();
     }
 
@@ -363,8 +371,9 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         public void bind(MultiMediaView multiMediaView) {
             this.multiMediaView = multiMediaView;
-            if (multiMediaView.getType() == 0 || multiMediaView.getType() == 1) {
+            if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
                 this.multiMediaView.setMaskProgressView(mpvImage);
+                this.multiMediaView.setItemView(itemView);
             }
             //设置条目的点击事件
             itemView.setOnClickListener(this);
@@ -378,11 +387,11 @@ public class AutoLineFeedLayout extends ViewGroup {
                 imgPlay.setVisibility(View.GONE);
             } else {
                 // 根据类型做相关设置
-                if (multiMediaView.getType() == 1) {
+                if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断是否显示播放按钮
                     imgPlay.setVisibility(View.VISIBLE);
                     // 视频处理
-                } else if (multiMediaView.getType() == 0) {
+                } else if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     imgPlay.setVisibility(View.GONE);
                 }
 
@@ -395,9 +404,9 @@ public class AutoLineFeedLayout extends ViewGroup {
                         if (listener != null)
                             listener.onItemClose(v, multiMediaView);
                         // 判断类型
-                        if (multiMediaView.getType() == 0) {
+                        if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                             imageList.remove(multiMediaView);
-                        } else if (multiMediaView.getType() == 1) {
+                        } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                             videoList.remove(multiMediaView);
                         }
                         ViewGroup parent = (ViewGroup) this.itemView.getParent();
@@ -433,7 +442,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                     listener.onItemAdd(v, multiMediaView, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
                 } else {
                     // 点击
-                    if (multiMediaView.getType() == 0) {
+                    if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                         // 如果是图片，直接跳转详情
                         listener.onItemImage(v, multiMediaView);
                     } else {

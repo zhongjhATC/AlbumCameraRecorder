@@ -14,7 +14,7 @@ import gaode.zhongjh.com.common.enums.MimeType;
 public class MultiMedia implements Parcelable {
 
     private long id;
-    protected int position;       // 当前图片索引，不计算视频和录音
+    protected int position = -1;       // 当前图片索引，不计算视频和录音
     protected String path;        // 路径
     protected String url;         // 在线网址
     public Uri uri;
@@ -24,10 +24,10 @@ public class MultiMedia implements Parcelable {
     public long size;
     public long duration; // only for video, in ms
 
+
     public MultiMedia() {
 
     }
-
 
 
     public MultiMedia(Uri uri) {
@@ -64,11 +64,11 @@ public class MultiMedia implements Parcelable {
         this.duration = duration;
     }
 
-    public void setType( @MultimediaTypes int multiMediaState) {
+    public void setType(@MultimediaTypes int multiMediaState) {
         this.type = multiMediaState;
     }
 
-    public int getType(){
+    public int getType() {
         return this.type;
     }
 
@@ -123,13 +123,9 @@ public class MultiMedia implements Parcelable {
         }
 
         MultiMedia other = (MultiMedia) obj;
-        return id == other.id
-                && (mimeType != null && mimeType.equals(other.mimeType)
-                || (mimeType == null && other.mimeType == null))
-                && (uri != null && uri.equals(other.uri)
-                || (uri == null && other.uri == null))
-                && size == other.size
-                && duration == other.duration;
+        return id == other.id && (mimeType != null && mimeType.equals(other.mimeType)
+                || (mimeType == null && other.mimeType == null)) && (uri != null && uri.equals(other.uri)
+                || (uri == null && other.uri == null)) && size == other.size && duration == other.duration;
     }
 
     /**

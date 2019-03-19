@@ -1,5 +1,7 @@
 package com.zhongjh.progresslibrary.entity;
 
+import android.view.View;
+
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
 
@@ -12,8 +14,9 @@ import gaode.zhongjh.com.common.entity.MultimediaTypes;
  */
 public class MultiMediaView extends MultiMedia {
 
-    private MaskProgressView maskProgressView; // 绑定view
-    private MaskProgressLayout maskProgressLayout;// 绑定view
+    private MaskProgressLayout maskProgressLayout;// 绑定的父列表view
+    private View itemView;// 绑定子view,包含其他所有控件（显示view,删除view）
+    private MaskProgressView maskProgressView; // 绑定子view，用于显示图片、视频的view
 
     public MultiMediaView(@MultimediaTypes int  multiMediaState) {
         setType(multiMediaState);
@@ -24,6 +27,13 @@ public class MultiMediaView extends MultiMedia {
         this.type = multiMediaState;
     }
 
+    public void setItemView(View itemView) {
+        this.itemView = itemView;
+    }
+
+    public View getItemView() {
+        return itemView;
+    }
 
     public void setMaskProgressView(MaskProgressView maskProgressView) {
         this.maskProgressView = maskProgressView;
@@ -45,9 +55,9 @@ public class MultiMediaView extends MultiMedia {
      * 给予进度，根据类型设置相应进度动作
      */
     public void setPercentage(int percent) {
-        if (isImage() || isVideo()) {
+        if (type == MultimediaTypes.PICTURE || type == MultimediaTypes.VIDEO) {
             this.maskProgressView.setPercentage(percent);
-        } else if (isMp3()) {
+        } else if (type == MultimediaTypes.AUDIO) {
             // 隐藏显示音频的设置一系列动作
             this.maskProgressLayout.mViewHolder.numberProgressBar.setProgress(percent);
             if (percent == 100) {

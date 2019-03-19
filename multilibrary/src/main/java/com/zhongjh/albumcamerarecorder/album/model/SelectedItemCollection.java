@@ -54,13 +54,26 @@ public class SelectedItemCollection {
         mContext = context;
     }
 
-    public void onCreate(Bundle bundle) {
+    /**
+     *
+     * @param bundle 数据源
+     * @param isAllowRepeat 是否允许重复
+     */
+    public void onCreate(Bundle bundle,boolean isAllowRepeat) {
         if (bundle == null) {
             mItems = new LinkedHashSet<>();
         } else {
             // 获取缓存的数据
             List<MultiMedia> saved = bundle.getParcelableArrayList(STATE_SELECTION);
-            mItems = new LinkedHashSet<>(saved);
+            if (saved != null) {
+                if (isAllowRepeat){
+                    mItems = new LinkedHashSet<>();
+                    mItems.addAll(saved);
+                }else {
+                    mItems = new LinkedHashSet<>(saved);
+                }
+            }
+
             mCollectionType = bundle.getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
         }
     }

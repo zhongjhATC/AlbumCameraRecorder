@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zhongjh.albumcamerarecorder.R;
+
 import gaode.zhongjh.com.common.entity.IncapableCause;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.widget.IncapableDialog;
@@ -36,6 +37,7 @@ import com.zhongjh.albumcamerarecorder.utils.VersionUtils;
 public class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener {
 
+    public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
     public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
     public static final String EXTRA_RESULT_APPLY = "extra_result_apply";
@@ -71,14 +73,14 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         mGlobalSpec = GlobalSpec.getInstance();
         mAlbumSpec = AlbumSpec.getInstance();
-
+        boolean isAllowRepeat = getIntent().getBooleanExtra(EXTRA_IS_ALLOW_REPEAT, false);
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
-            mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE));
+            mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
             mOriginalEnable = getIntent().getBooleanExtra(EXTRA_RESULT_ORIGINAL_ENABLE, false);
         } else {
             // 初始化缓存的数据
-            mSelectedCollection.onCreate(savedInstanceState);
+            mSelectedCollection.onCreate(savedInstanceState, isAllowRepeat);
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
 
@@ -94,7 +96,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     /**
      * 所有事件
      */
-    private void initListener(){
+    private void initListener() {
         // 返回
         mViewHolder.button_back.setOnClickListener(this);
         // 确认
@@ -183,6 +185,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * 滑动事件
+     *
      * @param position 索引
      */
     @Override
@@ -278,6 +281,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * 获取当前超过限制原图大小的数量
+     *
      * @return 数量
      */
     private int countOverMaxSize() {
@@ -298,6 +302,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     /**
      * 如果当前item是gif就显示多少M的文本
      * 如果当前item是video就显示播放按钮
+     *
      * @param item 当前图片
      */
     @SuppressLint("SetTextI18n")
@@ -318,6 +323,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * 设置返回值
+     *
      * @param apply 是否同意
      */
     protected void sendBackResult(boolean apply) {
@@ -330,6 +336,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * 处理窗口
+     *
      * @param item 当前图片
      * @return 为true则代表符合规则
      */

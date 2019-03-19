@@ -92,7 +92,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage2(MainSeeActivity.this, (ArrayList)mBinding.mplImageList.getImages(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(MainSeeActivity.this, (ArrayList)mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
                     List<Uri> uris = new ArrayList<>();

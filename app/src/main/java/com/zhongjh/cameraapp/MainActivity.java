@@ -19,7 +19,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
-import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
+import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -27,6 +28,8 @@ import com.zhongjh.albumcamerarecorder.settings.SaveStrategy;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.entity.MultimediaTypes;
 import gaode.zhongjh.com.common.enums.MimeType;
 
@@ -42,10 +45,12 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.zhongjh.albumcamerarecorder.album.MatissFragment.REQUEST_CODE_PREVIEW;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE_CHOOSE = 23;
+    private static final int REQUEST_CODE_CHOOSE = 236;
 
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
     private HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
@@ -77,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage2(MainActivity.this,  (ArrayList)mBinding.mplImageList.getImages(),multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(MainActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
                     List<Uri> uris = new ArrayList<>();
@@ -141,30 +146,56 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            // 获取类型，根据类型设置不同的事情
-            switch (MultiMediaSetting.obtainMultimediaType(data)) {
-                case MultimediaTypes.PICTURE:
-                    // 图片
-                    List<String> path = MultiMediaSetting.obtainPathResult(data);
-                    mBinding.mplImageList.addImages(path);
-                    break;
-                case MultimediaTypes.VIDEO:
-                    // 录像
-                    List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                    mBinding.mplImageList.addVideo(videoPath);
-                    break;
-                case MultimediaTypes.AUDIO:
-                    // 语音
-                    RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    mBinding.mplImageList.addAudio(recordingItem.getFilePath(), recordingItem.getLength());
-                    break;
-                case MultimediaTypes.BLEND:
-                    // 混合类型，意思是图片可能跟录像在一起.
-                    mBinding.mplImageList.addImages(MultiMediaSetting.obtainPathResult(data));
-                    break;
-            }
-
+        if (resultCode != RESULT_OK)
+            return;
+        switch (requestCode) {
+            case REQUEST_CODE_PREVIEW:
+                // 如果在预览界面点击了确定
+                if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                    // 请求的预览界面
+                    Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+                    // 获取选择的数据
+                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                    if (selected == null)
+                        return;
+                    // 循环判断，如果不存在，则删除
+                    for (int i = mBinding.mplImageList.getImages().size() -1; i >= 0; i--) {
+                        int k = 0;
+                        for (MultiMedia multiMedia : selected){
+                            if (!mBinding.mplImageList.getImages().get(i).equals(multiMedia)){
+                                k++;
+                            }
+                        }
+                        if (k == selected.size()){
+                            // 所有都不符合，则删除
+                            mBinding.mplImageList.onRemoveItemImage(i);
+                        }
+                    }
+                }
+            case REQUEST_CODE_CHOOSE:
+                // 获取类型，根据类型设置不同的事情
+                switch (MultiMediaSetting.obtainMultimediaType(data)) {
+                    case MultimediaTypes.PICTURE:
+                        // 图片
+                        List<String> path = MultiMediaSetting.obtainPathResult(data);
+                        mBinding.mplImageList.addImages(path);
+                        break;
+                    case MultimediaTypes.VIDEO:
+                        // 录像
+                        List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
+                        mBinding.mplImageList.addVideo(videoPath);
+                        break;
+                    case MultimediaTypes.AUDIO:
+                        // 语音
+                        RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
+                        mBinding.mplImageList.addAudio(recordingItem.getFilePath(), recordingItem.getLength());
+                        break;
+                    case MultimediaTypes.BLEND:
+                        // 混合类型，意思是图片可能跟录像在一起.
+                        mBinding.mplImageList.addImages(MultiMediaSetting.obtainPathResult(data));
+                        break;
+                }
+                break;
         }
     }
 

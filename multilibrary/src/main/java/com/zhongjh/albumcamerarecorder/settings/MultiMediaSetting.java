@@ -148,7 +148,14 @@ public final class MultiMediaSetting {
         return mFragment != null ? mFragment.get() : null;
     }
 
-    public static void openPreviewImage2(Activity activity, ArrayList<MultiMedia> list, int position) {
+    /**
+     * 调用打开图片
+     *
+     * @param activity 窗体
+     * @param list     数据源
+     * @param position 当前数据的索引
+     */
+    public static void openPreviewImage(Activity activity, ArrayList<MultiMedia> list, int position) {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, list);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
@@ -157,6 +164,7 @@ public final class MultiMediaSetting {
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(position));
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
     }
 
@@ -188,6 +196,11 @@ public final class MultiMediaSetting {
 
     }
 
+    /**
+     *
+     */
+    public static void onResultPreview() {
 
+    }
 
 }

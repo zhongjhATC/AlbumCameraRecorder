@@ -138,7 +138,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (navigationIcon != null) {
             navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         }
-        mSelectedCollection.onCreate(savedInstanceState);
+        mSelectedCollection.onCreate(savedInstanceState,false);
         if (savedInstanceState != null) {
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
