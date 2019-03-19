@@ -1,6 +1,8 @@
 # 历史更新
 ## 1.0.2
  - 为了让commonlibrary和progresslibrary两者更好搭配，添加common包调和两者。使用commonlibrary或progresslibrary之前，必须引用common包
+#### commonlibrary
+ - 规范了路径配置，现在音频归音频文件，视频归视频文件，图片归图片文件。
 #### progresslibrary
  - 当选中几张图片后，在九宫格点击预览图片之后，现在大图预览已经以点击为准。
  - 在预览大图图中，已经可以根据右上角的圆圈删除图片。
