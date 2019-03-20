@@ -94,6 +94,7 @@
 从1.0.1版本开始总结的[历史更新](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/UPDATE.md).
 
 ## apk直接体验下载
+ - 1.0.0版本，跟当前最新代码版本可能会有稍许不同
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/qrcode.png)
 
  - 链接下载地址：https://fir.im/s9b6?release_id=5c84dcd3ca87a807f7ef5181&fir_source=%E7%89%88%E6%9C%AC1&fir_campaign=%E7%89%88%E6%9C%AC1

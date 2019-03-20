@@ -48,6 +48,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidSupportSdkVersion"
     compile project(path: ':multilibrary')
     compile project(path: ':progresslibrary')
+    compile project(':albumCameraRecorderCommon')
     implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.1'
 
     // 图片

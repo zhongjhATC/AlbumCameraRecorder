@@ -1,1 +1,3 @@
-include ':app', ':multilibrary', ':progresslibrary', ':common'
+include ':app', ':multilibrary', ':progresslibrary'
+include ':albumCameraRecorderCommon'
+project(':albumCameraRecorderCommon').projectDir = new File('common/');

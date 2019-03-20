@@ -28,6 +28,7 @@
                 app:maxCount="7" />
 
             <Button
+                android:visibility="gone"
                 android:id="@+id/btnOpenSee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -36,6 +37,7 @@
                 android:text="打开默认有数据的" />
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -475,7 +477,24 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="最长录制时间" />
+
+                    <EditText
+                        android:id="@+id/etCameraDuration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="20" />
+
+                </LinearLayout>
 
                 <CheckBox
                     android:id="@+id/cbRecorder"
@@ -484,8 +503,6 @@
                     android:layout_marginTop="10dp"
                     android:checked="true"
                     android:text="开启录音功能" />
-
-
 
 
             </LinearLayout>
