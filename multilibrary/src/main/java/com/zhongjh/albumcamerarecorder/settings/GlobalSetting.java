@@ -15,6 +15,8 @@ import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;
+
+import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 

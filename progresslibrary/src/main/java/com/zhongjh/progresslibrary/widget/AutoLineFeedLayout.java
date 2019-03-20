@@ -119,7 +119,8 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     private void init() {
         // 默认➕号
-        MultiMediaView multiMediaView = new MultiMediaView(ADD, MultimediaTypes.ADD);
+        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
+        multiMediaView.setPath(ADD);
         LayoutInflater inflater = LayoutInflater.from(getContext());
         viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
         viewHolderAdd.bind(multiMediaView);

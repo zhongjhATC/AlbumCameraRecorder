@@ -1,9 +1,11 @@
-package com.zhongjh.albumcamerarecorder.settings;
+package gaode.zhongjh.com.common.utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.support.v4.os.EnvironmentCompat;
 
 import java.io.File;
@@ -14,6 +16,8 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import gaode.zhongjh.com.common.entity.SaveStrategy;
 
 /**
  * 有关多媒体的文件操作
@@ -130,5 +134,11 @@ public class MediaStoreCompat {
         return file.getPath();
     }
 
+    /**
+     * 绑定路径
+     */
+    public Uri getUri(String path){
+        return FileProvider.getUriForFile(mContext.get(), mSaveStrategy.authority, new File(path));
+    }
 
 }

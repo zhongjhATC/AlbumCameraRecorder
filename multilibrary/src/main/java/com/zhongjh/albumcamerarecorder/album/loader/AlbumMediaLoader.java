@@ -27,7 +27,7 @@ import android.support.v4.content.CursorLoader;
 
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
-import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 /**
  * 将图像和视频加载到单个光标中

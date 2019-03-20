@@ -44,7 +44,7 @@ import com.zhongjh.albumcamerarecorder.camera.widget.AutoFitTextureView;
 import com.zhongjh.albumcamerarecorder.camera.widget.FoucsView;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 

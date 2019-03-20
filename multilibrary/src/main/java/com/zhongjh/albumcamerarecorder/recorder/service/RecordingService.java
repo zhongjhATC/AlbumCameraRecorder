@@ -3,15 +3,13 @@ package com.zhongjh.albumcamerarecorder.recorder.service;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.recorder.common.MySharedPreferences;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;

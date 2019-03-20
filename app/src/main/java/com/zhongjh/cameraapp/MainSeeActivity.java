@@ -24,7 +24,7 @@ import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.SaveStrategy;
+import gaode.zhongjh.com.common.entity.SaveStrategy;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;

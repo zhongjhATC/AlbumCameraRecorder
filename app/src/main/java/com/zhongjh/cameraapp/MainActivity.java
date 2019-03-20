@@ -24,7 +24,7 @@ import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.SaveStrategy;
+import gaode.zhongjh.com.common.entity.SaveStrategy;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
@@ -263,8 +263,8 @@ public class MainActivity extends AppCompatActivity {
             mimeTypeCameras = MimeType.ofImage();
             cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
         }
-        cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()) * 1000);// 最长录制时间
-        cameraSetting.minDuration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()) * 1000);// 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+        cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));// 最长录制时间
+        cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()) * 1000);// 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true);

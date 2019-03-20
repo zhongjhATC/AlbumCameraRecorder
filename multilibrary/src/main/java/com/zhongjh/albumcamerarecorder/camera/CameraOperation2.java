@@ -44,7 +44,7 @@
 //import com.zhongjh.albumcamerarecorder.camera.util.CompareSizeByArea;
 //import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 //import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-//import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
+//import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 //
 //import java.io.FileOutputStream;
 //import java.io.IOException;

@@ -29,9 +29,8 @@ import com.zhongjh.albumcamerarecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.PermissionUtil;
-import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.settings.MediaStoreCompat;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import java.io.IOException;
 import java.util.ArrayList;

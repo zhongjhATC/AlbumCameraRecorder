@@ -1,5 +1,7 @@
 package com.zhongjh.progresslibrary.entity;
 
+import android.content.Context;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -20,11 +22,6 @@ public class MultiMediaView extends MultiMedia {
 
     public MultiMediaView(@MultimediaTypes int  multiMediaState) {
         setType(multiMediaState);
-    }
-
-    public MultiMediaView(String path,  @MultimediaTypes int multiMediaState) {
-        setPath(path);
-        this.type = multiMediaState;
     }
 
     public void setItemView(View itemView) {
@@ -65,7 +62,5 @@ public class MultiMediaView extends MultiMedia {
             }
         }
     }
-
-
 
 }

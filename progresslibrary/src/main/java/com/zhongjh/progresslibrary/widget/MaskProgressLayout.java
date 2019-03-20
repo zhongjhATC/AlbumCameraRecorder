@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gaode.zhongjh.com.common.entity.MultimediaTypes;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 /**
  * 这是返回（图片、视频、录音）等文件后，显示的Layout
@@ -34,6 +35,7 @@ import gaode.zhongjh.com.common.entity.MultimediaTypes;
  */
 public class MaskProgressLayout extends FrameLayout {
 
+    private MediaStoreCompat mMediaStoreCompat; // 文件配置路径
     private boolean isOperation = true;            // 是否允许操作
 
     public ViewHolder mViewHolder;          // 控件集合
@@ -69,6 +71,8 @@ public class MaskProgressLayout extends FrameLayout {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
 
+        mMediaStoreCompat = new MediaStoreCompat(getContext());
+        mMediaStoreCompat.setCaptureStrategy(globalSpec.videoStrategy == null ? globalSpec.saveStrategy : globalSpec.videoStrategy);
         mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_mask_progress, this));
 
         // 获取系统颜色
@@ -180,7 +184,9 @@ public class MaskProgressLayout extends FrameLayout {
      * @
      */
     public void addAudio(String filePath, int length) {
-        MultiMediaView multiMediaView = new MultiMediaView(filePath, MultimediaTypes.AUDIO);
+        MultiMediaView multiMediaView = new MultiMediaView( MultimediaTypes.AUDIO);
+        multiMediaView.setPath(filePath);
+        multiMediaView.setUri();
         multiMediaView.setViewHolder(this);
         addAudioData(multiMediaView);
 

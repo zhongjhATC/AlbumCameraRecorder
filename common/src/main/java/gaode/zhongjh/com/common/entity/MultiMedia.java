@@ -89,8 +89,6 @@ public class MultiMedia implements Parcelable {
     }
 
     public void setPath(String path) {
-        if (uri == null && path != null)
-            uri = Uri.fromFile(new File(path));
         this.path = path;
     }
 
@@ -103,8 +101,6 @@ public class MultiMedia implements Parcelable {
     }
 
     public Uri getUri() {
-        if (uri == null && path != null)
-            uri = Uri.fromFile(new File(path));
         return uri;
     }
 
