@@ -143,7 +143,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 // 减1是因为多了一个add按钮控制
-                int endingPostion = getChildCount() + videoList.size()  - 1 ;
+                int endingPostion = getChildCount()  - 1 ;
                 addView(viewHolder.itemView, endingPostion);
             }
         }
