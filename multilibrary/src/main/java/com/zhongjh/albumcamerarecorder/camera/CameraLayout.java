@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -44,7 +45,9 @@ import com.zhongjh.albumcamerarecorder.camera.widget.AutoFitTextureView;
 import com.zhongjh.albumcamerarecorder.camera.widget.FoucsView;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
+
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
@@ -527,7 +530,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     private void showPicture(Bitmap bitmap, boolean isVertical) {
         // 初始化数据并且存储进file
-        BitmapData bitmapData = new BitmapData(bitmap, mPictureMediaStoreCompat.saveFileByBitmap(bitmap));
+        String path = mPictureMediaStoreCompat.saveFileByBitmap(bitmap);
+        Uri uri = mPictureMediaStoreCompat.getUri(path);
+        BitmapData bitmapData = new BitmapData(path, uri);
         // 回收bitmap
         if (bitmap != null && bitmap.isRecycled()) {
             // 回收并且置为null
