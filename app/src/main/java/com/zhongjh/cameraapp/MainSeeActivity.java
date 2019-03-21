@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,15 +19,20 @@ import android.view.View;
 import android.widget.Toast;
 
 import gaode.zhongjh.com.common.enums.MimeType;
+
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
+
 import gaode.zhongjh.com.common.entity.SaveStrategy;
+
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+
 import gaode.zhongjh.com.common.entity.MultimediaTypes;
+
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -92,12 +96,10 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainSeeActivity.this, (ArrayList)mBinding.mplImageList.getImages(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(MainSeeActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    List<Uri> uris = new ArrayList<>();
-                    uris.add(multiMediaView.getUri());
-                    MultiMediaSetting.openPreviewVideo(MainSeeActivity.this, uris);
+                    MultiMediaSetting.openPreviewVideo(MainSeeActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
                 }
             }
 
@@ -112,8 +114,10 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
             @Override
             public void onItemClose(View view, MultiMediaView multiMediaView) {
                 // 停止上传
-                if (timers.get(multiMediaView) != null)
+                if (timers.get(multiMediaView) != null) {
                     timers.get(multiMediaView).cancel();
+                    timers.remove(multiMediaView);
+                }
             }
 
             @Override
@@ -145,7 +149,9 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                         mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
                     } else {
                         // 直接赋值
-                        mBinding.mplImageList.addVideoFile(fileFullPath[0] + File.separator + fileFullPath[1]);
+                        List<String> videoPath = new ArrayList<>();
+                        videoPath.add(fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.mplImageList.addVideo(videoPath, true, false);
                         mBinding.mplImageList.onVideoClick();
                     }
                 }
@@ -197,7 +203,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 .recorderSetting(recorderSetting)
                 .setOnMainListener(errorMessage -> Toast.makeText(MainSeeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
-                .pictureStrategy( new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/picture")) // 如果设置这个，有关图片的优先权比allStrategy高
+                .pictureStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/picture")) // 如果设置这个，有关图片的优先权比allStrategy高
                 .audioStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/audio")) // 如果设置这个，有关音频的优先权比allStrategy高
                 .videoStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/video")) // 如果设置这个，有关视频的优先权比allStrategy高
                 //                                            .imageEngine(new GlideEngine())  // for glide-V3
@@ -256,7 +262,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 case MultimediaTypes.VIDEO:
                     // 录像
                     List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                    mBinding.mplImageList.addVideo(videoPath);
+                    mBinding.mplImageList.addVideo(videoPath,false,true);
                     break;
                 case MultimediaTypes.AUDIO:
                     // 语音
@@ -347,7 +353,9 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 mBinding.mplImageList.addAudioFile(file.getPath());
                 break;
             case "mp4":
-                mBinding.mplImageList.addVideoFile(file.getPath());
+                List<String> videoPath = new ArrayList<>();
+                videoPath.add(file.getPath());
+                mBinding.mplImageList.addVideo(videoPath, true, false);
                 break;
         }
         progressDialog.hide();

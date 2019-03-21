@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gaode.zhongjh.com.common.entity.MultimediaTypes;
+import gaode.zhongjh.com.common.enums.MimeType;
 
 /**
  * 自动换行的layout,只包含方框等等view
@@ -180,6 +181,8 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (videoList != null && videoList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             for (MultiMediaView multiMediaView : multiMediaViews) {
+                // 标记音频，为了后面识别是视频进行播放
+                multiMediaView.setMimeType(MimeType.MP4.toString());
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 addView(viewHolder.itemView, 0);
@@ -325,7 +328,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 更新索引
      */
-    public void updatePosition(){
+    private void updatePosition(){
         for (int i = 0;i< imageList.size();i++){
             imageList.get(i).setPosition(i);
         }

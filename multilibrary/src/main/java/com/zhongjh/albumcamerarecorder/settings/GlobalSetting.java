@@ -19,6 +19,7 @@ import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
+import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,10 +43,10 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
 
 /**
- * 用于构建媒体具体设置 API。
+ * 用于构建媒体具体公共设置 API。
  * Created by zhongjh on 2018/9/28.
  */
-public final class GlobalSetting {
+public final class GlobalSetting implements GlobalSettingApi {
 
     private final MultiMediaSetting mMultiMediaSetting;
     private final GlobalSpec mGlobalSpec;
@@ -87,45 +88,31 @@ public final class GlobalSetting {
 //        mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
+    @Override
     public GlobalSetting albumSetting(AlbumSetting albumSetting) {
         mGlobalSpec.albumSetting = albumSetting;
         return this;
     }
 
+    @Override
     public GlobalSetting cameraSetting(CameraSetting cameraSetting) {
         mGlobalSpec.cameraSetting = cameraSetting;
         return this;
     }
 
+    @Override
     public GlobalSetting recorderSetting(RecorderSetting recorderSetting) {
         mGlobalSpec.recorderSetting = recorderSetting;
         return this;
     }
 
-    /**
-     * 主题
-     * <p>
-     * 有两个内置主题：
-     * 1. R.style.AppTheme_Blue
-     * 2. R.style.AppTheme.Dracula
-     * 你可以定义从上述主题或其他主题派生的自定义主题。
-     *
-     * @param themeId 样式id. 默认为R.style.AppTheme_Blue
-     * @return {@link GlobalSetting} this
-     */
+    @Override
     public GlobalSetting theme(@StyleRes int themeId) {
         mGlobalSpec.themeId = themeId;
         return this;
     }
 
-    /**
-     * 仅当 {@link AlbumSpec#mediaTypeExclusive} 设置为true并且您希望为图像和视频媒体类型设置不同的最大可选文件时才有用。
-     *
-     * @param maxImageSelectable imga的最大可选计数.
-     * @param maxVideoSelectable video的最大可选计数.
-     * @param maxAudioSelectable audio的最大可选计数.
-     * @return {@link GlobalSetting} this
-     */
+    @Override
     public GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
         mGlobalSpec.maxImageSelectable = maxImageSelectable;
         mGlobalSpec.maxVideoSelectable = maxVideoSelectable;
@@ -133,89 +120,43 @@ public final class GlobalSetting {
         return this;
     }
 
-    /**
-     * 为保存内部和外部文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
-     *
-     * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
-     * @return {@link GlobalSetting} this
-     */
+    @Override
     public GlobalSetting allStrategy(SaveStrategy saveStrategy) {
         mGlobalSpec.saveStrategy = saveStrategy;
         return this;
     }
 
-    /**
-     * 如果设置这个，有关图片的优先权比allStrategy高
-     * 为保存内部和外部图片文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
-     *
-     * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
-     * @return {@link GlobalSetting} this
-     */
+    @Override
     public GlobalSetting pictureStrategy(SaveStrategy saveStrategy) {
         mGlobalSpec.pictureStrategy = saveStrategy;
         return this;
     }
 
-    /**
-     * 如果设置这个，有关视频的优先权比allStrategy高
-     * 为保存内部和外部视频文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
-     *
-     * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
-     * @return {@link GlobalSetting} this
-     */
+    @Override
     public GlobalSetting videoStrategy(SaveStrategy saveStrategy) {
         mGlobalSpec.videoStrategy = saveStrategy;
         return this;
     }
 
-    /**
-     * 如果设置这个，有关音频的优先权比allStrategy高
-     * 为保存内部和外部音频文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
-     *
-     * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
-     * @return {@link GlobalSetting} this
-     */
+    @Override
     public GlobalSetting audioStrategy(SaveStrategy saveStrategy) {
         mGlobalSpec.audioStrategy = saveStrategy;
         return this;
     }
 
-    /**
-     * 提供图像引擎。
-     * <p>
-     * 有两个内置图像引擎：
-     * 1. {@link GlideEngine}
-     * 2. {@link PicassoEngine}
-     * 你可以实现你自己的图像引擎。
-     *
-     * @param imageEngine {@link ImageEngine}
-     * @return {@link GlobalSetting} this
-     */
+    @Override
     public GlobalSetting imageEngine(ImageEngine imageEngine) {
         mGlobalSpec.imageEngine = imageEngine;
         return this;
     }
 
-    /**
-     * 有关首页的一些事件
-     * <p>
-     * 这是一个冗余的api {@link MultiMediaSetting#obtainResult(Intent)},
-     * 我们只建议您在需要立即执行某些操作时使用此API。
-     *
-     * @param listener {@link OnMainListener}
-     * @return {@link GlobalSetting} for fluent API.
-     */
-    @NonNull
+    @NonNull  @Override
     public GlobalSetting setOnMainListener(@Nullable OnMainListener listener) {
         mGlobalSpec.onMainListener = listener;
         return this;
     }
 
-    /**
-     * 开始进行多媒体操作并等待结果.
-     *
-     * @param requestCode 请求活动或片段的标识.
-     */
+    @Override
     public void forResult(int requestCode) {
         Activity activity = mMultiMediaSetting.getActivity();
         if (activity == null) {

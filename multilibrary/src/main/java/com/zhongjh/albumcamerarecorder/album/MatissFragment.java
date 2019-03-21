@@ -305,8 +305,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 if (selected != null) {
                     for (MultiMedia item : selected) {
                         // 添加uri和path
-                        selectedUris.add(item.getUri());
-                        selectedPaths.add(PathUtils.getPath(getContext(), item.getUri()));
+                        selectedUris.add(item.getMediaUri());
+                        selectedPaths.add(PathUtils.getPath(getContext(), item.getMediaUri()));
                     }
                 }
                 result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);

@@ -91,6 +91,16 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
+    public void loadUrlImage(Context context, ImageView imageView, Uri uri) {
+        Glide.with(context)
+                .load(uri)
+                .apply(new RequestOptions()
+                        .priority(Priority.HIGH)
+                        .fitCenter())
+                .into(imageView);
+    }
+
+    @Override
     public void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
         Glide.with(context)
                 .asGif()

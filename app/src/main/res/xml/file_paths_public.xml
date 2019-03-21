@@ -16,6 +16,8 @@
   -->
 <paths>
     <external-path
-        name="my_images"
-        path="CameraViewSourndRecorderPath"/>
+        name="app"
+        path="."/>
+
+
 </paths>

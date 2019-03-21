@@ -47,7 +47,7 @@ public class MediaStoreCompat {
     /**
      * 设置目录
      */
-    public void setCaptureStrategy(SaveStrategy strategy) {
+    public void setSaveStrategy(SaveStrategy strategy) {
         mSaveStrategy = strategy;
     }
 
@@ -69,7 +69,7 @@ public class MediaStoreCompat {
                 fileName = String.format("VIDEO_%s.mp4", timeStamp);
                 break;
             case 2:
-                fileName = String.format("AUDIO_%s.mp4", timeStamp);
+                fileName = String.format("AUDIO_%s.mp3", timeStamp);
                 break;
         }
         File storageDir;
@@ -140,5 +140,6 @@ public class MediaStoreCompat {
     public Uri getUri(String path){
         return FileProvider.getUriForFile(mContext.get(), mSaveStrategy.authority, new File(path));
     }
+
 
 }

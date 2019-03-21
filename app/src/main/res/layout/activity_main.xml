@@ -24,6 +24,7 @@
                 app:maskingColor="?attr/colorPrimary"
                 app:maskingTextColor="@color/black_eighty_percent"
                 app:maskingTextContent="上传中可自定义"
+                app:authority="com.zhongjh.cameraapp.fileprovider"
                 app:maskingTextSize="12"
                 app:maxCount="7" />
 

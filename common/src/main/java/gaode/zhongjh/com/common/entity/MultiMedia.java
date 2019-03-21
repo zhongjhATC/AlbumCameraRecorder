@@ -7,8 +7,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 
-import java.io.File;
-
 import gaode.zhongjh.com.common.enums.MimeType;
 
 public class MultiMedia implements Parcelable {
@@ -17,7 +15,8 @@ public class MultiMedia implements Parcelable {
     protected int position = -1;       // 当前图片索引，不计算视频和录音
     protected String path;        // 路径
     protected String url;         // 在线网址
-    public Uri uri;
+    public Uri mediaUri;        // 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
+    public Uri uri;             // 以路径转换成的uri，专用于提供给progresslibrary使用
     @MultimediaTypes
     public int type;           // 范围类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
     private String mimeType;        // 具体类型，jpg,png,mp3等等
@@ -29,19 +28,18 @@ public class MultiMedia implements Parcelable {
 
     }
 
-
-    public MultiMedia(Uri uri) {
+    public MultiMedia(Uri mediaUri) {
         this.id = -1;
         this.mimeType = MimeType.JPEG.toString();
-        this.uri = uri;
+        this.mediaUri = mediaUri;
         this.size = -1;
         this.duration = -1;
     }
 
-    public MultiMedia(Uri uri, String url) {
+    public MultiMedia(Uri mediaUri, String url) {
         this.id = -1;
         this.mimeType = MimeType.JPEG.toString();
-        this.uri = uri;
+        this.mediaUri = mediaUri;
         this.url = url;
         this.size = -1;
         this.duration = -1;
@@ -59,7 +57,7 @@ public class MultiMedia implements Parcelable {
             // ?
             contentUri = MediaStore.Files.getContentUri("external");
         }
-        this.uri = ContentUris.withAppendedId(contentUri, id);
+        this.mediaUri = ContentUris.withAppendedId(contentUri, id);
         this.size = size;
         this.duration = duration;
     }
@@ -100,6 +98,14 @@ public class MultiMedia implements Parcelable {
         this.url = url;
     }
 
+    public Uri getMediaUri() {
+        return mediaUri;
+    }
+
+    public void setMediaUri(Uri mediaUri) {
+        this.mediaUri = mediaUri;
+    }
+
     public Uri getUri() {
         return uri;
     }
@@ -107,7 +113,6 @@ public class MultiMedia implements Parcelable {
     public void setUri(Uri uri) {
         this.uri = uri;
     }
-
 
     /**
      * 重写equals
@@ -120,8 +125,11 @@ public class MultiMedia implements Parcelable {
 
         MultiMedia other = (MultiMedia) obj;
         return id == other.id && (mimeType != null && mimeType.equals(other.mimeType)
-                || (mimeType == null && other.mimeType == null)) && (uri != null && uri.equals(other.uri)
-                || (uri == null && other.uri == null)) && size == other.size && duration == other.duration;
+                || (mimeType == null && other.mimeType == null))
+                && (mediaUri != null && mediaUri.equals(other.mediaUri) || (mediaUri == null && other.mediaUri == null))
+                && (uri != null && uri.equals(other.uri) || (uri == null && other.uri == null))
+                && size == other.size && duration == other.duration;
+
     }
 
     /**
@@ -134,6 +142,8 @@ public class MultiMedia implements Parcelable {
         if (mimeType != null) {
             result = 31 * result + mimeType.hashCode();
         }
+        if (mediaUri != null)
+            result = 31 * result + mediaUri.hashCode();
         if (uri != null)
             result = 31 * result + uri.hashCode();
         result = 31 * result + Long.valueOf(size).hashCode();
@@ -191,7 +201,9 @@ public class MultiMedia implements Parcelable {
         dest.writeInt(this.position);
         dest.writeString(this.path);
         dest.writeString(this.url);
+        dest.writeParcelable(this.mediaUri, flags);
         dest.writeParcelable(this.uri, flags);
+        dest.writeInt(this.type);
         dest.writeString(this.mimeType);
         dest.writeLong(this.size);
         dest.writeLong(this.duration);
@@ -202,7 +214,9 @@ public class MultiMedia implements Parcelable {
         this.position = in.readInt();
         this.path = in.readString();
         this.url = in.readString();
+        this.mediaUri = in.readParcelable(Uri.class.getClassLoader());
         this.uri = in.readParcelable(Uri.class.getClassLoader());
+        this.type = in.readInt();
         this.mimeType = in.readString();
         this.size = in.readLong();
         this.duration = in.readLong();

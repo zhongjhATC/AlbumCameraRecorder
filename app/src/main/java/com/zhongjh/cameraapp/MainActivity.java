@@ -85,9 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     MultiMediaSetting.openPreviewImage(MainActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    List<Uri> uris = new ArrayList<>();
-                    uris.add(multiMediaView.getUri());
-                    MultiMediaSetting.openPreviewVideo(MainActivity.this, uris);
+                    MultiMediaSetting.openPreviewVideo(MainActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
                 }
             }
 
@@ -103,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClose(View view, MultiMediaView multiMediaView) {
                 // 停止上传
                 timers.get(multiMediaView).cancel();
+                timers.remove(multiMediaView);
             }
 
             @Override
@@ -183,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                     case MultimediaTypes.VIDEO:
                         // 录像
                         List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                        mBinding.mplImageList.addVideo(videoPath);
+                        mBinding.mplImageList.addVideo(videoPath,false,true);
                         break;
                     case MultimediaTypes.AUDIO:
                         // 语音

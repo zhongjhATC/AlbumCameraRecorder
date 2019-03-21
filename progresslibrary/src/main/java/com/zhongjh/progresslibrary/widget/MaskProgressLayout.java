@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gaode.zhongjh.com.common.entity.MultimediaTypes;
+import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 /**
@@ -72,7 +73,6 @@ public class MaskProgressLayout extends FrameLayout {
         setWillNotDraw(false);
 
         mMediaStoreCompat = new MediaStoreCompat(getContext());
-        mMediaStoreCompat.setCaptureStrategy(globalSpec.videoStrategy == null ? globalSpec.saveStrategy : globalSpec.videoStrategy);
         mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_mask_progress, this));
 
         // 获取系统颜色
@@ -91,6 +91,8 @@ public class MaskProgressLayout extends FrameLayout {
         Drawable imageAddDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_imageAddDrawable);
         // 获取显示图片的类
         String imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_imageEngine);
+        // provider的authorities,用于提供给外部的file
+        String authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_authority);
         // 获取最多显示多少个方框
         int imageCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_maxCount, 5);
         int imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_imageDeleteColor, colorPrimary);
@@ -128,6 +130,14 @@ public class MaskProgressLayout extends FrameLayout {
                 throw new RuntimeException("image_engine找不到相关类");
             }
         }
+
+        if (authority == null){
+            throw new RuntimeException("必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错");
+        }else {
+            SaveStrategy saveStrategy = new SaveStrategy(true,authority,"");
+            mMediaStoreCompat.setSaveStrategy(saveStrategy);
+        }
+
         if (drawable == null) {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
@@ -159,7 +169,24 @@ public class MaskProgressLayout extends FrameLayout {
     public void addImages(List<String> imagePaths) {
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : imagePaths) {
-            MultiMediaView multiMediaView = new MultiMediaView(string, MultimediaTypes.PICTURE);
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
+            multiMediaView.setPath(string);
+            multiMediaView.setUri(mMediaStoreCompat.getUri(string));
+            multiMediaViews.add(multiMediaView);
+        }
+        mViewHolder.alfMedia.addImageData(multiMediaViews);
+    }
+
+    /**
+     * 添加图片网址数据
+     *
+     * @param imagesUrls 图片网址
+     */
+    public void addImageUrls(List<String> imagesUrls) {
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
+        for (String string : imagesUrls) {
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
+            multiMediaView.setUrl(string);
             multiMediaViews.add(multiMediaView);
         }
         mViewHolder.alfMedia.addImageData(multiMediaViews);
@@ -168,25 +195,39 @@ public class MaskProgressLayout extends FrameLayout {
     /**
      * 设置视频地址
      */
-    public void addVideo(List<String> videoPath) {
+    public void addVideo(List<String> videoPath,boolean icClean,boolean isUploading) {
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : videoPath) {
-            MultiMediaView multiMediaView = new MultiMediaView(string, MultimediaTypes.VIDEO);
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
+            multiMediaView.setPath(string);
+            multiMediaView.setUri(mMediaStoreCompat.getUri(string));
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addVideoData(multiMediaViews, false, true);
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, icClean, isUploading);
+    }
+
+    /**
+     * 添加视频网址数据
+     *
+     * @param videoUrl 视频网址
+     */
+    public void addVideoUrl(String videoUrl) {
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
+        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
+        multiMediaView.setUrl(videoUrl);
+        multiMediaViews.add(multiMediaView);
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, false, false);
     }
 
     /**
      * 设置音频数据
      *
      * @param filePath 音频文件地址
-     * @
      */
     public void addAudio(String filePath, int length) {
         MultiMediaView multiMediaView = new MultiMediaView( MultimediaTypes.AUDIO);
         multiMediaView.setPath(filePath);
-        multiMediaView.setUri();
+        multiMediaView.setUri(mMediaStoreCompat.getUri(filePath));
         multiMediaView.setViewHolder(this);
         addAudioData(multiMediaView);
 
@@ -242,43 +283,9 @@ public class MaskProgressLayout extends FrameLayout {
     }
 
     /**
-     * 添加图片网址数据
-     *
-     * @param imagesUrls 图片网址
-     */
-    public void addImageUrls(List<String> imagesUrls) {
-        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
-        for (String string : imagesUrls) {
-            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
-            multiMediaView.setUrl(string);
-            multiMediaViews.add(multiMediaView);
-        }
-        mViewHolder.alfMedia.addImageData(multiMediaViews);
-    }
-
-    /**
-     * 添加视频网址数据
-     *
-     * @param videoUrl 视频网址
-     */
-    public void addVideoUrl(String videoUrl) {
-        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
-        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
-        multiMediaView.setUrl(videoUrl);
-        multiMediaViews.add(multiMediaView);
-        mViewHolder.alfMedia.addVideoData(multiMediaViews, false, false);
-    }
-
-    /**
      * 直接添加音频实际的文件
      *
      * @param file 文件路径
-     *             String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-     *             String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-     *             String mime = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
-     *             String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-     *             String bitrate = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE); // bit/s api >= 14
-     *             String date = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);
      */
     public void addAudioFile(String file) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
@@ -300,17 +307,6 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.playView.setData(recordingItem, audioProgressColor);
     }
 
-    /**
-     * 直接添加视频实际的文件
-     *
-     * @param file 文件路径
-     */
-    public void addVideoFile(String file) {
-        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
-        MultiMediaView multiMediaView = new MultiMediaView(file, MultimediaTypes.VIDEO);
-        multiMediaViews.add(multiMediaView);
-        mViewHolder.alfMedia.addVideoData(multiMediaViews, true, false);
-    }
 
     /**
      * 添加音频数据

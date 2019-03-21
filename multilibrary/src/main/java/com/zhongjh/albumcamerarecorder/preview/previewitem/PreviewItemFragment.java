@@ -18,10 +18,13 @@ package com.zhongjh.albumcamerarecorder.preview.previewitem;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Point;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +35,8 @@ import com.zhongjh.albumcamerarecorder.R;
 
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+
+import java.io.File;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
@@ -67,7 +72,16 @@ public class PreviewItemFragment extends Fragment {
             videoPlayButton.setVisibility(View.VISIBLE);
             videoPlayButton.setOnClickListener(v -> {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(item.uri, "video/*");
+                Uri uri = null;
+                if (item.getMediaUri() != null) {
+                    uri = item.getMediaUri();
+                }else if(item.getUri() != null) {
+                    uri = item.getUri();
+                    // 下面两个不启用会播放不了
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+                intent.setDataAndType(uri, "video/*");
                 try {
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
@@ -81,17 +95,20 @@ public class PreviewItemFragment extends Fragment {
         ImageViewTouch image = view.findViewById(R.id.image_view);
         image.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
 
-        if (item.getUri() != null) {
-            Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), getActivity());
+        if (item.getMediaUri() != null) {
+            Point size = PhotoMetadataUtils.getBitmapSize(item.getMediaUri(), getActivity());
             if (item.isGif()) {
                 GlobalSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y, image,
-                        item.getUri());
+                        item.getMediaUri());
             } else {
                 GlobalSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y, image,
-                        item.getUri());
+                        item.getMediaUri());
 
             }
-        } else if (item.getUrl() != null) {
+        } else if (item.getUri() != null) {
+            GlobalSpec.getInstance().imageEngine.loadUrlImage(getContext(), image,
+                    item.getUri());
+        }else if (item.getUrl() != null) {
             GlobalSpec.getInstance().imageEngine.loadUrlImage(getContext(), image,
                     item.getUrl());
         }

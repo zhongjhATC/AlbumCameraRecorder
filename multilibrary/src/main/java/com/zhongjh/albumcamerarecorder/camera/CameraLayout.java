@@ -177,13 +177,13 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat.setCaptureStrategy(mGlobalSpec.pictureStrategy);
+            mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.pictureStrategy);
         } else {
             // 否则使用全局的
             if (mGlobalSpec.saveStrategy == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat.setCaptureStrategy(mGlobalSpec.saveStrategy);
+                mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.saveStrategy);
             }
         }
 

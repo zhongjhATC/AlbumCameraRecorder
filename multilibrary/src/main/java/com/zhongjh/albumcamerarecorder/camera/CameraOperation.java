@@ -97,7 +97,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         mTakePictureCallback = takePictureCallback;
         GlobalSpec globalSpec = GlobalSpec.getInstance();
         mVideoMediaStoreCompat = new MediaStoreCompat(context);
-        mVideoMediaStoreCompat.setCaptureStrategy(globalSpec.videoStrategy == null ? globalSpec.saveStrategy : globalSpec.videoStrategy);
+        mVideoMediaStoreCompat.setSaveStrategy(globalSpec.videoStrategy == null ? globalSpec.saveStrategy : globalSpec.videoStrategy);
         findAvailableCameras();
         mSelectedCamera = CAMERA_POST_POSITION; // 默认前摄像头
     }

@@ -66,6 +66,8 @@ public interface ImageEngine {
 
     void loadUrlImage(Context context, ImageView imageView, String url);
 
+    void loadUrlImage(Context context, ImageView imageView, Uri uri);
+
     /**
      * Load a gif image resource.
      *

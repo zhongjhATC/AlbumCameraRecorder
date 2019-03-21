@@ -67,7 +67,7 @@ public class RecordingService extends Service {
         // 根据配置创建文件配置
         GlobalSpec globalSpec = GlobalSpec.getInstance();
         mAudioMediaStoreCompat = new MediaStoreCompat(getApplicationContext());
-        mAudioMediaStoreCompat.setCaptureStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
+        mAudioMediaStoreCompat.setSaveStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
 
         setFileNameAndPath();
 

@@ -59,7 +59,7 @@ public abstract class Filter {
      */
     protected boolean needFiltering(Context context, MultiMedia item) {
         for (MimeType type : constraintTypes()) {
-            if (type.checkType(context.getContentResolver(), item.getUri())) {
+            if (type.checkType(context.getContentResolver(), item.getMediaUri())) {
                 return true;
             }
         }
