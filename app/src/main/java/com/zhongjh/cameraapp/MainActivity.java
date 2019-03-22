@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
+                break;
             case REQUEST_CODE_CHOOSE:
                 // 获取类型，根据类型设置不同的事情
                 switch (MultiMediaSetting.obtainMultimediaType(data)) {
