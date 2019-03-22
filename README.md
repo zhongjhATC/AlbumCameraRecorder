@@ -144,6 +144,7 @@
 
 #### 获取相关返回的数据
 
+  // ssss
    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -151,7 +152,7 @@
             return;
         switch (requestCode) {
             case REQUEST_CODE_PREVIEW:
-                ```````````
+                break;
             case REQUEST_CODE_CHOOSE:
                 // 获取类型，根据类型设置不同的事情
                 switch (MultiMediaSetting.obtainMultimediaType(data)) {
