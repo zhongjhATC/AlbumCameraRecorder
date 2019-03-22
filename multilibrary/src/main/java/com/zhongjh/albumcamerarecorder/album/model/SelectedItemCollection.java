@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.zhongjh.albumcamerarecorder.R;
+
 import gaode.zhongjh.com.common.entity.IncapableCause;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
@@ -55,21 +56,20 @@ public class SelectedItemCollection {
     }
 
     /**
-     *
-     * @param bundle 数据源
+     * @param bundle        数据源
      * @param isAllowRepeat 是否允许重复
      */
-    public void onCreate(Bundle bundle,boolean isAllowRepeat) {
+    public void onCreate(Bundle bundle, boolean isAllowRepeat) {
         if (bundle == null) {
             mItems = new LinkedHashSet<>();
         } else {
             // 获取缓存的数据
             List<MultiMedia> saved = bundle.getParcelableArrayList(STATE_SELECTION);
             if (saved != null) {
-                if (isAllowRepeat){
+                if (isAllowRepeat) {
                     mItems = new LinkedHashSet<>();
                     mItems.addAll(saved);
-                }else {
+                } else {
                     mItems = new LinkedHashSet<>(saved);
                 }
             }
@@ -195,7 +195,10 @@ public class SelectedItemCollection {
     public List<Uri> asListOfUri() {
         List<Uri> uris = new ArrayList<>();
         for (MultiMedia item : mItems) {
-            uris.add(item.getMediaUri());
+            if (item.getMediaUri() != null)
+                uris.add(item.getMediaUri());
+            else
+                uris.add(item.getUri());
         }
         return uris;
     }
@@ -208,7 +211,11 @@ public class SelectedItemCollection {
     public List<String> asListOfString() {
         List<String> paths = new ArrayList<>();
         for (MultiMedia item : mItems) {
-            paths.add(PathUtils.getPath(mContext, item.getMediaUri()));
+            if (item.getMediaUri() != null)
+                paths.add(PathUtils.getPath(mContext, item.getMediaUri()));
+            else
+                paths.add(PathUtils.getPath(mContext, item.getUri()));
+
         }
         return paths;
     }
