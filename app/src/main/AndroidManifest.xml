@@ -49,8 +49,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- 视频权限 -->
+    <!-- 视频权限 begin -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <!-- 视频权限 end -->
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
@@ -61,7 +65,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
 
 
         <activity

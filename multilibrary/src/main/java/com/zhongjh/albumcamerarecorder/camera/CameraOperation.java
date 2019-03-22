@@ -697,17 +697,10 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
      * @param cameraOpenOverCallback 回调事件
      */
     public void doOpenCamera(CameraCallback.CameraOpenOverCallback cameraOpenOverCallback) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (!PermissionUtil.isCameraUseable(mSelectedCamera) && this.mErrorLisenter != null) {
-                this.mErrorLisenter.onError();
-                return;
-            }
-        }
         if (mCamera == null) {
             openCamera(mSelectedCamera);
         }
         cameraOpenOverCallback.cameraHasOpened();
-
     }
 
     /**

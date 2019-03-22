@@ -15,7 +15,5 @@
   limitations under the License.
   -->
 <paths>
-    <external-path name="app" path="."/>
-
-
+    <root-path name="app" path=""/>
 </paths>
