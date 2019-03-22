@@ -151,28 +151,7 @@
             return;
         switch (requestCode) {
             case REQUEST_CODE_PREVIEW:
-                // 如果在预览界面点击了确定
-                if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                    // 请求的预览界面
-                    Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
-                    // 获取选择的数据
-                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                    if (selected == null)
-                        return;
-                    // 循环判断，如果不存在，则删除
-                    for (int i = mBinding.mplImageList.getImages().size() -1; i >= 0; i--) {
-                        int k = 0;
-                        for (MultiMedia multiMedia : selected){
-                            if (!mBinding.mplImageList.getImages().get(i).equals(multiMedia)){
-                                k++;
-                            }
-                        }
-                        if (k == selected.size()){
-                            // 所有都不符合，则删除
-                            mBinding.mplImageList.onRemoveItemImage(i);
-                        }
-                    }
-                }
+                ```
             case REQUEST_CODE_CHOOSE:
                 // 获取类型，根据类型设置不同的事情
                 switch (MultiMediaSetting.obtainMultimediaType(data)) {
