@@ -43,6 +43,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String EXTRA_RESULT_APPLY = "extra_result_apply";
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     public static final String CHECK_STATE = "checkState";
+    public static final String ENABLE_OPERATION = "enable_operation";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected GlobalSpec mGlobalSpec;
@@ -53,6 +54,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected boolean mOriginalEnable;      // 是否原图
 
     protected int mPreviousPos = -1;    // 当前预览的图片的索引
+
+    protected boolean mEnableOperation = true; // 启用操作，默认true
 
     protected ViewHolder mViewHolder;
 
@@ -74,6 +77,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mGlobalSpec = GlobalSpec.getInstance();
         mAlbumSpec = AlbumSpec.getInstance();
         boolean isAllowRepeat = getIntent().getBooleanExtra(EXTRA_IS_ALLOW_REPEAT, false);
+        mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
@@ -250,6 +254,15 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         } else {
             // 隐藏
             mViewHolder.originalLayout.setVisibility(View.GONE);
+        }
+
+        // 判断是否启动操作
+        if (!mEnableOperation){
+            mViewHolder.button_apply.setVisibility(View.GONE);
+            mViewHolder.check_view.setVisibility(View.GONE);
+        }else{
+            mViewHolder.button_apply.setVisibility(View.VISIBLE);
+            mViewHolder.check_view.setVisibility(View.VISIBLE);
         }
     }
 

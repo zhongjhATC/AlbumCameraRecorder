@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -177,21 +176,21 @@ public class MainActivity extends AppCompatActivity {
                     case MultimediaTypes.PICTURE:
                         // 图片
                         List<String> path = MultiMediaSetting.obtainPathResult(data);
-                        mBinding.mplImageList.addImages(path);
+                        mBinding.mplImageList.addImagesStartUpload(path);
                         break;
                     case MultimediaTypes.VIDEO:
                         // 录像
                         List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                        mBinding.mplImageList.addVideo(videoPath,false,true);
+                        mBinding.mplImageList.addVideoStartUpload(videoPath);
                         break;
                     case MultimediaTypes.AUDIO:
                         // 语音
                         RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                        mBinding.mplImageList.addAudio(recordingItem.getFilePath(), recordingItem.getLength());
+                        mBinding.mplImageList.addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
                         break;
                     case MultimediaTypes.BLEND:
                         // 混合类型，意思是图片可能跟录像在一起.
-                        mBinding.mplImageList.addImages(MultiMediaSetting.obtainPathResult(data));
+                        mBinding.mplImageList.addImagesStartUpload(MultiMediaSetting.obtainPathResult(data));
                         break;
                 }
                 break;

@@ -181,9 +181,10 @@ public final class MultiMediaSetting {
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_VIDEO);
 
         Intent intent = new Intent(activity, AlbumPreviewActivity.class);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM,  list.get(0));
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(0));
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
 
     }

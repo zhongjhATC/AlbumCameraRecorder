@@ -132,7 +132,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                         mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
                     } else {
                         // 直接赋值
-                        mBinding.mplImageList.addAudioFile(fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.mplImageList.addAudioCover(fileFullPath[0] + File.separator + fileFullPath[1]);
                         mBinding.mplImageList.onAudioClick();
                     }
                 }
@@ -151,7 +151,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                         // 直接赋值
                         List<String> videoPath = new ArrayList<>();
                         videoPath.add(fileFullPath[0] + File.separator + fileFullPath[1]);
-                        mBinding.mplImageList.addVideo(videoPath, true, false);
+                        mBinding.mplImageList.addVideoCover(videoPath);
                         mBinding.mplImageList.onVideoClick();
                     }
                 }
@@ -257,21 +257,21 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
                 case MultimediaTypes.PICTURE:
                     // 图片
                     List<String> path = MultiMediaSetting.obtainPathResult(data);
-                    mBinding.mplImageList.addImages(path);
+                    mBinding.mplImageList.addImagesStartUpload(path);
                     break;
                 case MultimediaTypes.VIDEO:
                     // 录像
                     List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                    mBinding.mplImageList.addVideo(videoPath,false,true);
+                    mBinding.mplImageList.addVideoStartUpload(videoPath);
                     break;
                 case MultimediaTypes.AUDIO:
                     // 语音
                     RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    mBinding.mplImageList.addAudio(recordingItem.getFilePath(), recordingItem.getLength());
+                    mBinding.mplImageList.addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
                     break;
                 case MultimediaTypes.BLEND:
                     // 混合类型，意思是图片可能跟录像在一起.
-                    mBinding.mplImageList.addImages(MultiMediaSetting.obtainPathResult(data));
+                    mBinding.mplImageList.addImagesStartUpload(MultiMediaSetting.obtainPathResult(data));
                     break;
             }
 
@@ -350,12 +350,12 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         String suffix = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
         switch (suffix) {
             case "mp3":
-                mBinding.mplImageList.addAudioFile(file.getPath());
+                mBinding.mplImageList.addAudioCover(file.getPath());
                 break;
             case "mp4":
                 List<String> videoPath = new ArrayList<>();
                 videoPath.add(file.getPath());
-                mBinding.mplImageList.addVideo(videoPath, true, false);
+                mBinding.mplImageList.addVideoCover(videoPath);
                 break;
         }
         progressDialog.hide();

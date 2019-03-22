@@ -12,7 +12,7 @@ import gaode.zhongjh.com.common.enums.MimeType;
 public class MultiMedia implements Parcelable {
 
     private long id;
-    protected int position = -1;       // 当前图片索引，不计算视频和录音
+    protected int position = -1;   // 当前图片索引，不计算视频和录音
     protected String path;        // 路径
     protected String url;         // 在线网址
     private Uri mediaUri;        // 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息

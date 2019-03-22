@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.zhongjh.progresslibrary.R;
+import com.zhongjh.progresslibrary.api.MaskProgressApi;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.entity.RecordingItem;
@@ -34,7 +35,7 @@ import gaode.zhongjh.com.common.utils.MediaStoreCompat;
  * Created by zhongjh on 2018/10/17.
  * https://www.jianshu.com/p/191c41f63dc7
  */
-public class MaskProgressLayout extends FrameLayout {
+public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     private MediaStoreCompat mMediaStoreCompat; // 文件配置路径
     private boolean isOperation = true;            // 是否允许操作
@@ -161,12 +162,8 @@ public class MaskProgressLayout extends FrameLayout {
         initListener();
     }
 
-    /**
-     * 设置图片同时更新表格
-     *
-     * @param imagePaths 图片数据源
-     */
-    public void addImages(List<String> imagePaths) {
+    @Override
+    public void addImagesStartUpload(List<String> imagePaths) {
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : imagePaths) {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
@@ -177,11 +174,7 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.alfMedia.addImageData(multiMediaViews);
     }
 
-    /**
-     * 添加图片网址数据
-     *
-     * @param imagesUrls 图片网址
-     */
+    @Override
     public void addImageUrls(List<String> imagesUrls) {
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : imagesUrls) {
@@ -192,25 +185,17 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.alfMedia.addImageData(multiMediaViews);
     }
 
-    /**
-     * 设置视频地址
-     */
-    public void addVideo(List<String> videoPath,boolean icClean,boolean isUploading) {
-        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
-        for (String string : videoPath) {
-            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
-            multiMediaView.setPath(string);
-            multiMediaView.setUri(mMediaStoreCompat.getUri(string));
-            multiMediaViews.add(multiMediaView);
-        }
-        mViewHolder.alfMedia.addVideoData(multiMediaViews, icClean, isUploading);
+    @Override
+    public void addVideoStartUpload(List<String> videoPath){
+        addVideo(videoPath,false,true);
     }
 
-    /**
-     * 添加视频网址数据
-     *
-     * @param videoUrl 视频网址
-     */
+    @Override
+    public void addVideoCover(List<String> videoPath){
+        addVideo(videoPath,true,false);
+    }
+
+    @Override
     public void addVideoUrl(String videoUrl) {
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
@@ -219,12 +204,8 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.alfMedia.addVideoData(multiMediaViews, false, false);
     }
 
-    /**
-     * 设置音频数据
-     *
-     * @param filePath 音频文件地址
-     */
-    public void addAudio(String filePath, int length) {
+    @Override
+    public void addAudioStartUpload(String filePath, int length) {
         MultiMediaView multiMediaView = new MultiMediaView( MultimediaTypes.AUDIO);
         multiMediaView.setPath(filePath);
         multiMediaView.setUri(mMediaStoreCompat.getUri(filePath));
@@ -246,11 +227,7 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.alfMedia.checkLastImages();
     }
 
-    /**
-     * 添加音频网址数据
-     *
-     * @param audioUrl 音频网址
-     */
+    @Override
     public void addAudioUrl(String audioUrl) {
         MediaPlayer mediaPlayer = new MediaPlayer();
         try {
@@ -282,12 +259,8 @@ public class MaskProgressLayout extends FrameLayout {
         }
     }
 
-    /**
-     * 直接添加音频实际的文件
-     *
-     * @param file 文件路径
-     */
-    public void addAudioFile(String file) {
+    @Override
+    public void addAudioCover(String file) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(file);
 
@@ -307,21 +280,46 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.playView.setData(recordingItem, audioProgressColor);
     }
 
+    @Override
+    public List<MultiMediaView> getImages() {
+        return mViewHolder.alfMedia.imageList;
+    }
 
-    /**
-     * 添加音频数据
-     *
-     * @param multiMediaView 数据
-     */
-    public void addAudioData(MultiMediaView multiMediaView) {
-        if (this.audioList == null) {
-            this.audioList = new ArrayList<>();
-        }
-        this.audioList.add(multiMediaView);
-        if (audioList != null && audioList.size() > 0) {
-            // 显示音频的进度条
-            this.listener.onItemStartUploading(multiMediaView);
-        }
+    @Override
+    public List<MultiMediaView> getVideos() {
+        return mViewHolder.alfMedia.videoList;
+    }
+
+    @Override
+    public List<MultiMediaView> getAudios() {
+        return this.audioList;
+    }
+
+    @Override
+    public void onAudioClick() {
+        mViewHolder.playView.mViewHolder.imgPlay.performClick();
+    }
+
+    @Override
+    public void onVideoClick() {
+        mViewHolder.alfMedia.getChildAt(0).performClick();
+    }
+
+    @Override
+    public void onRemoveItemImage(int position){
+        mViewHolder.alfMedia.onRemoveItemImage(position);
+    }
+
+    @Override
+    public void setOperation(boolean isOperation) {
+        this.isOperation = isOperation;
+        mViewHolder.alfMedia.setOperation(isOperation);
+        isShowRemovceRecorder();
+    }
+
+    @Override
+    public void destroy() {
+        mViewHolder.playView.deStory();
     }
 
     /**
@@ -332,67 +330,6 @@ public class MaskProgressLayout extends FrameLayout {
         mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
         mViewHolder.playView.setVisibility(View.VISIBLE);
         isShowRemovceRecorder();
-    }
-
-    /**
-     * 语音点击
-     */
-    public void onAudioClick() {
-        mViewHolder.playView.mViewHolder.imgPlay.performClick();
-    }
-
-    /**
-     * 视频点击
-     */
-    public void onVideoClick() {
-        mViewHolder.alfMedia.getChildAt(0).performClick();
-    }
-
-    /**
-     * 删除单个图片
-     * @param position 图片的索引，该索引列表不包含视频等
-     */
-    public void onRemoveItemImage(int position){
-        mViewHolder.alfMedia.onRemoveItemImage(position);
-    }
-
-    /**
-     * @return 返回当前包含url的图片数据
-     */
-    public List<MultiMediaView> getImages() {
-        return mViewHolder.alfMedia.imageList;
-    }
-
-    /**
-     * @return 返回当前包含url的视频数据
-     */
-    public List<MultiMediaView> getVideos() {
-        return mViewHolder.alfMedia.videoList;
-    }
-
-    /**
-     * @return 返回当前包含url的音频数据
-     */
-    public List<MultiMediaView> getAudios() {
-        return this.audioList;
-    }
-
-    /**
-     * 设置是否操作
-     *
-     * @param isOperation
-     */
-    public void setOperation(boolean isOperation) {
-        this.isOperation = isOperation;
-        mViewHolder.alfMedia.setOperation(isOperation);
-        isShowRemovceRecorder();
-    }
-
-    /**
-     * 销毁所有相关正在执行的东西
-     */
-    public void destroy() {
-        mViewHolder.playView.deStory();
     }
 
     /**
@@ -413,6 +350,39 @@ public class MaskProgressLayout extends FrameLayout {
             isShowRemovceRecorder();
             mViewHolder.playView.reset();
         });
+    }
+
+    /**
+     * 设置视频地址
+     * @param videoPath 视频列表
+     * @param icClean 是否清除
+     * @param isUploading 是否触发上传事件
+     */
+    private void addVideo(List<String> videoPath,boolean icClean,boolean isUploading) {
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
+        for (String string : videoPath) {
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
+            multiMediaView.setPath(string);
+            multiMediaView.setUri(mMediaStoreCompat.getUri(string));
+            multiMediaViews.add(multiMediaView);
+        }
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, icClean, isUploading);
+    }
+
+    /**
+     * 添加音频数据
+     *
+     * @param multiMediaView 数据
+     */
+    private void addAudioData(MultiMediaView multiMediaView) {
+        if (this.audioList == null) {
+            this.audioList = new ArrayList<>();
+        }
+        this.audioList.add(multiMediaView);
+        if (audioList != null && audioList.size() > 0) {
+            // 显示音频的进度条
+            this.listener.onItemStartUploading(multiMediaView);
+        }
     }
 
     /**

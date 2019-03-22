@@ -11,11 +11,11 @@ import java.util.List;
 public interface MaskProgressApi {
 
     /**
-     * 设置图片本地地址
+     * 设置图片并且启动上传(一般用于刚确认了哪些数据后)
      *
      * @param imagePaths 图片数据源
      */
-    void addImages(List<String> imagePaths);
+    void addImagesStartUpload(List<String> imagePaths);
 
     /**
      * 添加图片网址数据
@@ -25,9 +25,14 @@ public interface MaskProgressApi {
     void addImageUrls(List<String> imagesUrls);
 
     /**
-     * 设置视频本地地址
+     * 设置视频地址并且启动上传(一般用于刚确认了哪些数据后)
      */
-    void addVideo(List<String> videoPath);
+    void addVideoStartUpload(List<String> videoPath);
+
+    /**
+     * 设置视频地址直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
+     */
+    void addVideoCover(List<String> videoPath);
 
     /**
      * 添加视频网址数据
@@ -37,18 +42,11 @@ public interface MaskProgressApi {
     void addVideoUrl(String videoUrl);
 
     /**
-     * 添加视频实际的文件
-     *
-     * @param file 文件路径
-     */
-    void addVideoFile(String file);
-
-    /**
-     * 设置音频本地地址
+     * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)
      *
      * @param filePath 音频文件地址
      */
-    void addAudio(String filePath, int length);
+    void addAudioStartUpload(String filePath, int length);
 
     /**
      * 添加音频网址数据
@@ -58,17 +56,53 @@ public interface MaskProgressApi {
     void addAudioUrl(String audioUrl);
 
     /**
-     * 直接添加音频实际的文件
+     * 设置音频文件直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
      *
      * @param file 文件路径
      */
-    void addAudioFile(String file);
+    void addAudioCover(String file);
 
     /**
-     * 添加音频数据
-     *
-     * @param multiMediaView 数据
+     * @return 返回当前包含url的图片数据
      */
-    void addAudioData(MultiMediaView multiMediaView);
+    List<MultiMediaView> getImages();
+
+    /**
+     * @return 返回当前包含url的视频数据
+     */
+    List<MultiMediaView> getVideos();
+
+    /**
+     * @return 返回当前包含url的音频数据
+     */
+    List<MultiMediaView> getAudios();
+
+    /**
+     * 语音点击
+     */
+    void onAudioClick();
+
+    /**
+     * 视频点击
+     */
+    void onVideoClick();
+
+    /**
+     * 删除单个图片
+     * @param position 图片的索引，该索引列表不包含视频等
+     */
+    void onRemoveItemImage(int position);
+
+    /**
+     * 设置是否可操作(一般只用于展览作用)
+     *
+     * @param isOperation 是否操作
+     */
+    void setOperation(boolean isOperation);
+
+    /**
+     * 销毁所有相关正在执行的东西
+     */
+    void destroy();
 
 }
