@@ -222,7 +222,7 @@ public class CameraFragment extends BaseFragment {
                         Map.Entry<Integer, BitmapData> entry = i.previous();
                         int k = 0;
                         for (MultiMedia multiMedia : selected) {
-                            if (entry.getValue().getUri().toString().equals(multiMedia.getUri().toString())) {
+                            if (!entry.getValue().getUri().toString().equals(multiMedia.getUri().toString())) {
                                 k++;
                             }
                         }

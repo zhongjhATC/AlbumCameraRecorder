@@ -450,9 +450,10 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     /**
      * 进行删除
+     *
      * @param position 索引
      */
-    public void removePosition(int position){
+    public void removePosition(int position) {
         // 删除
         mCaptureBitmaps.remove(position);
         mViewHolder.llPhoto.removeView(mCaptureViews.get(position));
@@ -594,7 +595,13 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
                 Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
-                intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, items.get(Integer.parseInt(String.valueOf(v.getTag()))));
+
+                // 获取目前点击的这个item
+                MultiMedia item = new MultiMedia();
+                item.setUri(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag()))).getUri());
+                items.add(item);
+                intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+
                 intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
                 intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
                 intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
