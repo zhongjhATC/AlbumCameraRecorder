@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
@@ -22,23 +23,32 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.entity.MultimediaTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
 /**
  * 拍摄视频
  * Created by zhongjh on 2018/8/22.
  */
 public class CameraFragment extends BaseFragment {
+
 
     private Activity mActivity;
 
@@ -76,6 +86,7 @@ public class CameraFragment extends BaseFragment {
 
         mCameraLayout = view.findViewById(R.id.cameraLayout);
         mCameraLayout.setMediaQuality(MEDIA_QUALITY_MIDDLE); // 录制视频比特率
+        mCameraLayout.setFragment(this);
         mCameraLayout.setErrorLisenter(new ErrorListener() {
             @Override
             public void onError() {
@@ -190,6 +201,40 @@ public class CameraFragment extends BaseFragment {
         return view;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK)
+            return;
+        switch (requestCode) {
+            case REQUEST_CODE_PREVIEW_CAMRRA:
+                // 如果在预览界面点击了确定
+                if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                    // 请求的预览界面
+                    Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+                    // 获取选择的数据
+                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                    if (selected == null)
+                        return;
+                    // 循环判断，如果不存在，则删除
+                    ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCameraLayout.mCaptureBitmaps.entrySet()).listIterator(mCameraLayout.mCaptureBitmaps.size());
+                    while (i.hasPrevious()) {
+                        Map.Entry<Integer, BitmapData> entry = i.previous();
+                        int k = 0;
+                        for (MultiMedia multiMedia : selected) {
+                            if (entry.getValue().getUri().toString().equals(multiMedia.getUri().toString())) {
+                                k++;
+                            }
+                        }
+                        if (k == selected.size()) {
+                            // 所有都不符合，则删除
+                            mCameraLayout.removePosition(entry.getKey());
+                        }
+                    }
+                }
+                break;
+        }
+    }
 
     @Override
     public boolean onBackPressed() {

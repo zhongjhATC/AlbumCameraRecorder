@@ -55,6 +55,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW;
 
 /**
  * 相册
@@ -66,8 +67,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
 
     private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
-    public static final int REQUEST_CODE_PREVIEW = 23;     // 预览
-    private static final int REQUEST_CODE_CAPTURE = 24;     // 拍照
+
 
     private static final String CHECK_STATE = "checkState";
 

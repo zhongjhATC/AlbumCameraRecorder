@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.zhongjh.albumcamerarecorder.album.MatissFragment.REQUEST_CODE_PREVIEW;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_VIDEO;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
@@ -29,6 +28,7 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MUL
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW;
 
 /**
  * 多媒体的设置 - Matisse

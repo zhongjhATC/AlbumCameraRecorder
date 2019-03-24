@@ -15,6 +15,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
@@ -54,10 +56,10 @@ import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
-import static com.zhongjh.albumcamerarecorder.album.MatissFragment.REQUEST_CODE_PREVIEW;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
@@ -68,6 +70,7 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_DEFAU
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_SHORT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
 /**
  * 一个全局界面，包含了 右上角的闪光灯、前/后置摄像头的切换、底部按钮功能、对焦框等、显示当前拍照和摄像的界面
@@ -98,10 +101,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private MediaPlayer mMediaPlayer; // 播放器
 
     private Drawable mPlaceholder; // 默认图片
-    @SuppressLint("UseSparseArrays")
-    private HashMap<Integer, BitmapData> mCaptureBitmaps = new HashMap<>();  // 拍照的图片-集合
-    @SuppressLint("UseSparseArrays")
-    private HashMap<Integer, View> mCaptureViews = new HashMap<>();      // 拍照的图片控件-集合
+    public LinkedHashMap<Integer, BitmapData> mCaptureBitmaps = new LinkedHashMap<>();  // 拍照的图片-集合
+    private LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();      // 拍照的图片控件-集合
     private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
     private String mVideoUrl;         // 视频URL
 
@@ -111,6 +112,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private ClickOrLongListener mClickOrLongListener; // 按钮的监听
     private OperaeCameraListener mOperaeCameraListener;         // 确认跟返回的监听
     private CaptureListener mCaptureListener;       // 拍摄后操作图片的事件
+    private Fragment fragment;
 
 
     // 赋值Camera错误回调
@@ -340,9 +342,11 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                     // 图片模式的取消
                     mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp); // 重新启动录像
                     resetState(TYPE_PICTURE);   // 针对图片模式进行的重置
+                    mViewHolder.pvLayout.reset();
                     setState(Constants.STATE_PREVIEW); // 设置空闲状态
                 } else if (getState() == Constants.STATE_VIDEO) {
                     resetState(TYPE_VIDEO);     // 针对视频模式进行的重置
+                    mViewHolder.pvLayout.reset();
                     setState(Constants.STATE_PREVIEW); // 设置空闲状态
                 }
                 if (mOperaeCameraListener != null)
@@ -445,6 +449,39 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     }
 
     /**
+     * 进行删除
+     * @param position 索引
+     */
+    public void removePosition(int position){
+        // 删除
+        mCaptureBitmaps.remove(position);
+        mViewHolder.llPhoto.removeView(mCaptureViews.get(position));
+
+        // 回调接口：删除图片后剩下的相关数据
+        mCaptureListener.remove(mCaptureBitmaps);
+
+        // 当列表全部删掉的话，就隐藏
+        if (mCaptureBitmaps.size() <= 0) {
+            // 隐藏横版列表
+            mViewHolder.hsvPhoto.setVisibility(View.GONE);
+
+            // 隐藏横版列表的线条空间
+            mViewHolder.vLine1.setVisibility(View.GONE);
+            mViewHolder.vLine2.setVisibility(View.GONE);
+
+            // 隐藏右侧按钮
+            mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
+
+            // 恢复长按事件，即重新启用录像
+            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
+
+            // 图片模式的取消
+            mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp); // 重新启动录像
+            setState(Constants.STATE_PREVIEW); // 设置空闲状态
+        }
+    }
+
+    /**
      * 针对当前状态重新设置状态
      *
      * @param type 类型
@@ -470,7 +507,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         }
         mViewHolder.imgSwitch.setVisibility(VISIBLE);
         mViewHolder.imgFlash.setVisibility(VISIBLE);
-        mViewHolder.pvLayout.reset();
     }
 
     /**
@@ -502,24 +538,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 break;
         }
         mViewHolder.pvLayout.reset();
-    }
-
-    /**
-     * 将数据保存进Bundle并且返回
-     *
-     * @return Bundle
-     */
-    public Bundle getDataWithBundle() {
-        // 转换成items
-        ArrayList<MultiMedia> items = new ArrayList<>();
-        for (BitmapData value : mCaptureBitmaps.values()) {
-            MultiMedia item = new MultiMedia(value.getUri());
-            items.add(item);
-        }
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, items);
-        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
-        return bundle;
     }
 
     /**
@@ -559,40 +577,29 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             // 删除事件
             viewHolderImageView.imgCancel.setTag(mPosition);
             viewHolderImageView.imgCancel.setOnClickListener(v -> {
-                // 删除
-                mCaptureBitmaps.remove(Integer.parseInt(v.getTag().toString()));
-                mViewHolder.llPhoto.removeView(mCaptureViews.get(Integer.parseInt(v.getTag().toString())));
-
-                // 回调接口：删除图片后剩下的相关数据
-                mCaptureListener.remove(mCaptureBitmaps);
-
-                // 当列表全部删掉的话，就隐藏
-                if (mCaptureBitmaps.size() <= 0) {
-                    // 隐藏横版列表
-                    mViewHolder.hsvPhoto.setVisibility(View.GONE);
-
-                    // 隐藏横版列表的线条空间
-                    mViewHolder.vLine1.setVisibility(View.GONE);
-                    mViewHolder.vLine2.setVisibility(View.GONE);
-
-                    // 隐藏右侧按钮
-                    mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
-
-                    // 恢复长按事件，即重新启用录像
-                    mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
-
-                    // 图片模式的取消
-                    mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp); // 重新启动录像
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                }
+                removePosition(Integer.parseInt(v.getTag().toString()));
             });
 
             // 打开显示大图
+            viewHolderImageView.imgPhoto.setTag(String.valueOf(mPosition));
             viewHolderImageView.imgPhoto.setOnClickListener(v -> {
-                Intent intent = new Intent(mContext, SelectedPreviewActivity.class);
-                intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, getDataWithBundle());
+                ArrayList<MultiMedia> items = new ArrayList<>();
+                for (BitmapData value : mCaptureBitmaps.values()) {
+                    MultiMedia item = new MultiMedia();
+                    item.setUri(value.getUri());
+                    items.add(item);
+                }
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList(STATE_SELECTION, items);
+                bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+
+                Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
+                intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, items.get(Integer.parseInt(String.valueOf(v.getTag()))));
+                intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
                 intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-                ((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+                intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+                intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
+                fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
             });
 
 
@@ -850,6 +857,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             if (isShort) {
                 // 如果视频过短就是录制不成功
                 resetState(TYPE_SHORT);
+                mViewHolder.pvLayout.reset();
             } else {
                 // 设置成视频播放状态
                 setState(Constants.STATE_VIDEO);
@@ -857,6 +865,10 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 playVideo(url);
             }
         });
+    }
+
+    public void setFragment(CameraFragment fragment) {
+        this.fragment = fragment;
     }
 
 

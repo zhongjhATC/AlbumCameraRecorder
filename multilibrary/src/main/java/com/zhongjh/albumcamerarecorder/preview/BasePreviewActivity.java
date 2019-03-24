@@ -44,6 +44,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     public static final String CHECK_STATE = "checkState";
     public static final String ENABLE_OPERATION = "enable_operation";
+    public static final String IS_SELECTED_LISTENER = "is_selected_listener";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected GlobalSpec mGlobalSpec;
@@ -55,7 +56,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     protected int mPreviousPos = -1;    // 当前预览的图片的索引
 
-    protected boolean mEnableOperation = true; // 启用操作，默认true
+    protected boolean mEnableOperation = true; // 启用操作，默认true,也不启动右上角的选择框自定义触发事件
+    protected boolean mIsSelectedListener = true; // 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
 
     protected ViewHolder mViewHolder;
 
@@ -78,6 +80,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mAlbumSpec = AlbumSpec.getInstance();
         boolean isAllowRepeat = getIntent().getBooleanExtra(EXTRA_IS_ALLOW_REPEAT, false);
         mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
+        mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER,true);
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
@@ -129,7 +132,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             }
             updateApplyButton();
 
-            if (mAlbumSpec.onSelectedListener != null) {
+            if (mAlbumSpec.onSelectedListener != null && mIsSelectedListener) {
                 // 触发选择的接口事件
                 mAlbumSpec.onSelectedListener.onSelected(
                         mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());

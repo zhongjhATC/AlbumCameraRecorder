@@ -44,7 +44,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.zhongjh.albumcamerarecorder.album.MatissFragment.REQUEST_CODE_PREVIEW;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW;
 
 
 public class MainActivity extends AppCompatActivity {
