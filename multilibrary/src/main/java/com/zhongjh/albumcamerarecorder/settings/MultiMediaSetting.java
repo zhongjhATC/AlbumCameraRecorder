@@ -165,6 +165,7 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK,false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
     }
 
@@ -185,6 +186,7 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK,false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
 
     }

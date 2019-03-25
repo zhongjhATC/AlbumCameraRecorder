@@ -80,9 +80,17 @@ public class MediaStoreCompat {
         if (mSaveStrategy.isPublic) {
             storageDir = Environment.getExternalStoragePublicDirectory(
                     mSaveStrategy.directory);
-            if (!storageDir.exists()) storageDir.mkdirs();
+            assert storageDir != null;
+            if (!storageDir.exists()) {
+                storageDir.mkdirs();
+            }
         } else {
             storageDir = mContext.get().getExternalFilesDir(mSaveStrategy.directory);
+        }
+
+        if (mSaveStrategy.directory != null) {
+            storageDir = new File(storageDir, mSaveStrategy.directory);
+            if (!storageDir.exists()) storageDir.mkdirs();
         }
 
         // Avoid joining path components manually

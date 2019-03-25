@@ -12,6 +12,7 @@ import android.util.Log;
 
 
 import com.zhongjh.albumcamerarecorder.R;
+
 import gaode.zhongjh.com.common.entity.IncapableCause;
 
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -105,7 +106,6 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
             }
         }
     }
-
 
 
     /**

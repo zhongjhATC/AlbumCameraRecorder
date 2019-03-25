@@ -48,6 +48,7 @@ import com.zhongjh.albumcamerarecorder.camera.widget.FoucsView;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
+import gaode.zhongjh.com.common.entity.MultimediaTypes;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
@@ -589,6 +590,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 for (BitmapData value : mCaptureBitmaps.values()) {
                     MultiMedia item = new MultiMedia();
                     item.setUri(value.getUri());
+                    item.setType(MultimediaTypes.PICTURE);
                     items.add(item);
                 }
                 Bundle bundle = new Bundle();
@@ -600,12 +602,14 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 // 获取目前点击的这个item
                 MultiMedia item = new MultiMedia();
                 item.setUri(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag()))).getUri());
+                item.setType(MultimediaTypes.PICTURE);
                 intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
                 intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
                 intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
                 intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
                 intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
+                intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
                 fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
             });
 

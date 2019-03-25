@@ -45,6 +45,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String CHECK_STATE = "checkState";
     public static final String ENABLE_OPERATION = "enable_operation";
     public static final String IS_SELECTED_LISTENER = "is_selected_listener";
+    public static final String IS_SELECTED_CHECK = "is_selected_check";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected GlobalSpec mGlobalSpec;
@@ -58,6 +59,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     protected boolean mEnableOperation = true; // 启用操作，默认true,也不启动右上角的选择框自定义触发事件
     protected boolean mIsSelectedListener = true; // 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
+    protected boolean mIsSelectedCheck = true;  // 设置右上角是否检测类型
 
     protected ViewHolder mViewHolder;
 
@@ -81,6 +83,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         boolean isAllowRepeat = getIntent().getBooleanExtra(EXTRA_IS_ALLOW_REPEAT, false);
         mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
         mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER,true);
+        mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK,true);
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
@@ -121,7 +124,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     mViewHolder.check_view.setChecked(false);
                 }
             } else {
-                if (assertAddSelection(item)) {
+                boolean isTrue = true;
+                if (mIsSelectedCheck)
+                    isTrue = assertAddSelection(item);
+                if (isTrue) {
                     mSelectedCollection.add(item);
                     if (mAlbumSpec.countable) {
                         mViewHolder.check_view.setCheckedNum(mSelectedCollection.checkedNumOf(item));
