@@ -33,6 +33,10 @@ public class MediaStoreCompat {
         mContext = new WeakReference<>(context);
     }
 
+    public SaveStrategy getSaveStrategy() {
+        return mSaveStrategy;
+    }
+
     /**
      * 检查设备是否具有相机特性。
      *

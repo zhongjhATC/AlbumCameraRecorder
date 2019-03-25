@@ -11,6 +11,12 @@ import java.util.List;
 public interface MaskProgressApi {
 
     /**
+     * 设置authority
+     * @param authority provider的authorities属性
+     */
+    void setAuthority(String authority);
+
+    /**
      * 设置图片并且启动上传(一般用于刚确认了哪些数据后)
      *
      * @param imagePaths 图片数据源

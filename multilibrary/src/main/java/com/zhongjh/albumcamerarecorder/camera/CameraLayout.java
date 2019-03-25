@@ -48,6 +48,7 @@ import com.zhongjh.albumcamerarecorder.camera.widget.FoucsView;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
+import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
@@ -599,7 +600,6 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 // 获取目前点击的这个item
                 MultiMedia item = new MultiMedia();
                 item.setUri(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag()))).getUri());
-                items.add(item);
                 intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
                 intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);

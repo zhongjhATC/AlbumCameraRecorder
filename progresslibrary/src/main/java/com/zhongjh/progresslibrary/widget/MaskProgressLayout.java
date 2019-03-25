@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.Group;
@@ -132,12 +133,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             }
         }
 
-        if (authority == null){
-            throw new RuntimeException("必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错");
-        }else {
-            SaveStrategy saveStrategy = new SaveStrategy(true,authority,"");
-            mMediaStoreCompat.setSaveStrategy(saveStrategy);
-        }
+        SaveStrategy saveStrategy = new SaveStrategy(true, authority, "");
+        mMediaStoreCompat.setSaveStrategy(saveStrategy);
 
         if (drawable == null) {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
@@ -163,7 +160,14 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
+    public void setAuthority(String authority) {
+        SaveStrategy saveStrategy = new SaveStrategy(true, authority, "");
+        mMediaStoreCompat.setSaveStrategy(saveStrategy);
+    }
+
+    @Override
     public void addImagesStartUpload(List<String> imagePaths) {
+        isAuthority();
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : imagePaths) {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
@@ -186,13 +190,13 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void addVideoStartUpload(List<String> videoPath){
-        addVideo(videoPath,false,true);
+    public void addVideoStartUpload(List<String> videoPath) {
+        addVideo(videoPath, false, true);
     }
 
     @Override
-    public void addVideoCover(List<String> videoPath){
-        addVideo(videoPath,true,false);
+    public void addVideoCover(List<String> videoPath) {
+        addVideo(videoPath, true, false);
     }
 
     @Override
@@ -206,7 +210,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void addAudioStartUpload(String filePath, int length) {
-        MultiMediaView multiMediaView = new MultiMediaView( MultimediaTypes.AUDIO);
+        isAuthority();
+        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
         multiMediaView.setPath(filePath);
         multiMediaView.setUri(mMediaStoreCompat.getUri(filePath));
         multiMediaView.setViewHolder(this);
@@ -306,7 +311,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void onRemoveItemImage(int position){
+    public void onRemoveItemImage(int position) {
         mViewHolder.alfMedia.onRemoveItemImage(position);
     }
 
@@ -354,11 +359,13 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     /**
      * 设置视频地址
-     * @param videoPath 视频列表
-     * @param icClean 是否清除
+     *
+     * @param videoPath   视频列表
+     * @param icClean     是否清除
      * @param isUploading 是否触发上传事件
      */
-    private void addVideo(List<String> videoPath,boolean icClean,boolean isUploading) {
+    private void addVideo(List<String> videoPath, boolean icClean, boolean isUploading) {
+        isAuthority();
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : videoPath) {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
@@ -397,6 +404,15 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
                 mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
         } else {
             mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 检测属性
+     */
+    private void isAuthority() {
+        if (mMediaStoreCompat.getSaveStrategy() == null) {
+            throw new RuntimeException("必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错。也可以代码设置setAuthority");
         }
     }
 

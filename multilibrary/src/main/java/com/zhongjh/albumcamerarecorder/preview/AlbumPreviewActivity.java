@@ -58,7 +58,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
             mCollection.load(album);
         } else {
             Bundle bundle = getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE);
-            List<MultiMedia> items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+            ArrayList<MultiMedia> items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
             initItems(items);
         }
 
