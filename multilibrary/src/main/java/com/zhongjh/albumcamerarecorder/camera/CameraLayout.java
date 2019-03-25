@@ -52,6 +52,7 @@ import gaode.zhongjh.com.common.entity.MultimediaTypes;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
+import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
@@ -213,9 +214,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         View view = LayoutInflater.from(mContext).inflate(R.layout.main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
         setFlashLamp(); // 设置闪光灯模式
+        mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
         mViewHolder.pvLayout.setDuration(mCameraSpec.duration * 1000);// 设置录制时间
         mViewHolder.pvLayout.setMinDuration(mCameraSpec.minDuration);// 最短录制时间
-        mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
 
         // 判断点击和长按的权限
         if (mCameraSpec.onlySupportImages()) {
@@ -277,7 +278,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 // 判断数量
                 if (mViewHolder.llPhoto.getChildCount() < currentMaxSelectable()) {
                     // 拍照  隐藏 闪光灯、右上角的切换摄像头
-                    mViewHolder.imgSwitch.setVisibility(INVISIBLE);
+                    setSwitchVisibility(INVISIBLE);
                     mViewHolder.imgFlash.setVisibility(INVISIBLE);
                     // 设置不能点击，防止多次点击报错
                     mViewHolder.rlMain.setChildClickable(false);
@@ -292,7 +293,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             @Override
             public void onLongClickShort(final long time) {
                 mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));
-                mViewHolder.imgSwitch.setVisibility(VISIBLE);
+                setSwitchVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
                 postDelayed(() -> stopRecord(true), 1500 - time);
                 if (mClickOrLongListener != null)
@@ -302,7 +303,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             @Override
             public void onLongClick() {
                 // 开始录像
-                mViewHolder.imgSwitch.setVisibility(INVISIBLE);
+                setSwitchVisibility(INVISIBLE);
                 mViewHolder.imgFlash.setVisibility(INVISIBLE);
                 mCameraOperation.startRecord(mViewHolder.vvPreview.getHolder().getSurface(), mScreenProp);
                 //                mCameraOperation2.recordStart();
@@ -508,7 +509,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 break;
         }
-        mViewHolder.imgSwitch.setVisibility(VISIBLE);
+        setSwitchVisibility(VISIBLE);
         mViewHolder.imgFlash.setVisibility(VISIBLE);
     }
 
@@ -624,7 +625,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             // 重置按钮，因为每次点击，都会自动关闭
             mViewHolder.pvLayout.getViewHolder().btnClickOrLong.resetState();
             // 显示右上角
-            mViewHolder.imgSwitch.setVisibility(View.VISIBLE);
+            setSwitchVisibility(View.VISIBLE);
             mViewHolder.imgFlash.setVisibility(View.VISIBLE);
 
             // 设置当前模式是图片休闲并存模式
@@ -823,15 +824,15 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         switch (mFlashType) {
             case Constants.TYPE_FLASH_AUTO:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashAuto);
-                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO,getContext());
                 break;
             case Constants.TYPE_FLASH_ON:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOn);
-                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_ON,getContext());
                 break;
             case Constants.TYPE_FLASH_OFF:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOff);
-                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_OFF,getContext());
                 break;
         }
     }
@@ -878,6 +879,20 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         });
     }
 
+    /**
+     * 设置闪光灯是否显示，如果不支持，是一直不会显示
+     */
+    private void setSwitchVisibility(int viewVisibility){
+        if (!PackageManagerUtils.isSupportCameraLedFlash(mContext.getPackageManager())){
+            mViewHolder.imgSwitch.setVisibility(View.GONE);
+        }else{
+            mViewHolder.imgSwitch.setVisibility(viewVisibility);
+        }
+    }
+
+    /**
+     * 设置fragment
+     */
     public void setFragment(CameraFragment fragment) {
         this.fragment = fragment;
     }

@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
@@ -30,6 +31,8 @@ import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.PermissionUtil;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
+
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import java.io.IOException;
@@ -419,22 +422,22 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     }
 
-    /**
-     * 切换摄像头
-     *
-     * @param surfaceHolder surfaceHolder 显示一个surface的抽象接口，使你能够控制surface的大小和格式， 以及在surface上编辑像素，和监视surace的改变。
-     * @param screenProp    @@ 补充注释
-     */
-    public synchronized void switchCamera(SurfaceHolder surfaceHolder, float screenProp) {
-        if (mSelectedCamera == CAMERA_POST_POSITION) {
-            mSelectedCamera = CAMERA_FRONT_POSITION;
-        } else {
-            mSelectedCamera = CAMERA_POST_POSITION;
-        }
-        doDestroyCamera();
-        openCamera(mSelectedCamera);
-        doStartPreview(surfaceHolder, screenProp);
-    }
+//    /**
+//     * 切换摄像头
+//     *
+//     * @param surfaceHolder surfaceHolder 显示一个surface的抽象接口，使你能够控制surface的大小和格式， 以及在surface上编辑像素，和监视surace的改变。
+//     * @param screenProp    @@ 补充注释
+//     */
+//    public synchronized void switchCamera(SurfaceHolder surfaceHolder, float screenProp) {
+//        if (mSelectedCamera == CAMERA_POST_POSITION) {
+//            mSelectedCamera = CAMERA_FRONT_POSITION;
+//        } else {
+//            mSelectedCamera = CAMERA_POST_POSITION;
+//        }
+//        doDestroyCamera();
+//        openCamera(mSelectedCamera);
+//        doStartPreview(surfaceHolder, screenProp);
+//    }
 
     /**
      * 开始录像
@@ -798,9 +801,14 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
      *
      * @param flashMode 模式
      */
-    public void setFlashMode(String flashMode) {
+    public void setFlashMode(String flashMode,Context context) {
         if (mCamera == null)
             return;
+        if (mCamera.getParameters().getSupportedFlashModes() == null) {
+            // 没有闪光灯，直接返回
+            Toast.makeText(context, "该手机没有闪光灯，不支持闪光灯方面功能", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Camera.Parameters params = mCamera.getParameters();
         params.setFlashMode(flashMode);
         mCamera.setParameters(params);
