@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < mTabLayout.getTabCount(); i++) {
             View view = getTabView(mTabLayout, i);
             if (view == null) continue;
-            view.setTag(i);
+            view.setTag(R.id.tagid,i);
             view.setOnTouchListener((v, event) -> isTouch);
         }
     }

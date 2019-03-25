@@ -11,8 +11,8 @@ import gaode.zhongjh.com.common.enums.MimeType;
 
 public class MultiMedia implements Parcelable {
 
-    private long id;
-    protected int position = -1;   // 当前图片索引，不计算视频和录音
+    private  long id;
+    protected int position = -1;   // 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算
     protected String path;        // 路径
     protected String url;         // 在线网址
     private Uri mediaUri;        // 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
@@ -115,7 +115,7 @@ public class MultiMedia implements Parcelable {
     }
 
     /**
-     * 重写equals
+     * 重写equals，所以如果修改以下这些值，那么将会导致不相等
      */
     @Override
     public boolean equals(Object obj) {
@@ -124,16 +124,17 @@ public class MultiMedia implements Parcelable {
         }
 
         MultiMedia other = (MultiMedia) obj;
-        return id == other.id && (mimeType != null && mimeType.equals(other.mimeType)
-                || (mimeType == null && other.mimeType == null))
+        return id == other.id && (mimeType != null && mimeType.equals(other.mimeType) || (mimeType == null && other.mimeType == null))
                 && (mediaUri != null && mediaUri.equals(other.mediaUri) || (mediaUri == null && other.mediaUri == null))
                 && (uri != null && uri.equals(other.uri) || (uri == null && other.uri == null))
-                && size == other.size && duration == other.duration;
+                && size == other.size
+                && duration == other.duration
+                && position == other.position;
 
     }
 
     /**
-     * 重写hashCode
+     * 重写hashCode，所以如果修改以下这些值，那么将会它存于的hashmap找不到它
      */
     @Override
     public int hashCode() {

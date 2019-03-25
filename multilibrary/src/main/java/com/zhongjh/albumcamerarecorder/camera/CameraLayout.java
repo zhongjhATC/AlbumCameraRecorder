@@ -579,13 +579,11 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             mGlobalSpec.imageEngine.loadThumbnail(getContext(), viewHolderImageView.imgPhoto.getWidth(), mPlaceholder,
                     viewHolderImageView.imgPhoto, bitmapData.getUri());
             // 删除事件
-            viewHolderImageView.imgCancel.setTag(mPosition);
-            viewHolderImageView.imgCancel.setOnClickListener(v -> {
-                removePosition(Integer.parseInt(v.getTag().toString()));
-            });
+            viewHolderImageView.imgCancel.setTag(R.id.tagid,mPosition);
+            viewHolderImageView.imgCancel.setOnClickListener(v -> removePosition(Integer.parseInt(v.getTag(R.id.tagid).toString())));
 
             // 打开显示大图
-            viewHolderImageView.imgPhoto.setTag(String.valueOf(mPosition));
+            viewHolderImageView.imgPhoto.setTag(R.id.tagid,String.valueOf(mPosition));
             viewHolderImageView.imgPhoto.setOnClickListener(v -> {
                 ArrayList<MultiMedia> items = new ArrayList<>();
                 for (BitmapData value : mCaptureBitmaps.values()) {
@@ -602,7 +600,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
                 // 获取目前点击的这个item
                 MultiMedia item = new MultiMedia();
-                item.setUri(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag()))).getUri());
+                item.setUri(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid)))).getUri());
                 item.setType(MultimediaTypes.PICTURE);
                 intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
