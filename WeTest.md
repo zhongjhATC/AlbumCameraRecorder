@@ -6,8 +6,12 @@
 
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/1.png)
 
+
+
 可以发现这个异常图片，其实并没有任何异常问题，单纯是图片本身问题导致显示不了
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/2.png)
+
+
 
 
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/3.png)
