@@ -43,8 +43,10 @@
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/Demonstration.gif)
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/DemonstrationShowImg.png)
 
+
+
 ## 市场上常用手机兼容测试
-100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/UPDATE.md).
+100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/WeTest.md).
 
 ## 使用   
 #### 启动多媒体相关功能
