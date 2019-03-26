@@ -105,7 +105,7 @@ public class PreviewItemFragment extends Fragment {
             GlobalSpec.getInstance().imageEngine.loadUriImage(getContext(), image,
                     item.getUri());
         }else if (item.getUrl() != null) {
-            GlobalSpec.getInstance().imageEngine.loadUriImage(getContext(), image,
+            GlobalSpec.getInstance().imageEngine.loadUrlImage(getContext(), image,
                     item.getUrl());
         }
 

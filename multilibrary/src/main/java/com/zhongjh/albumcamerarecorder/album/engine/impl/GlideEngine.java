@@ -76,7 +76,7 @@ public class GlideEngine implements ImageEngine {
     }
 
     @Override
-    public void loadUriImage(Context context, ImageView imageView, String url) {
+    public void loadUrlImage(Context context, ImageView imageView, String url) {
         Glide.with(context)
                 .load(url)
                 .priority(Priority.HIGH)
