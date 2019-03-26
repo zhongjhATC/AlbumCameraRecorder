@@ -8,11 +8,9 @@
 
 
 
-可以发现这个异常图片，其实并没有任何异常问题，单纯是图片本身问题导致显示不了
+### 可以发现这个异常图片，其实并没有任何异常问题，单纯是图片本身问题导致显示不了 ### 
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/2.png)
-
-
-
-
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/3.png)
+
+### 然后我云调试了该手机，发现它本身相册的图片都是无效图片 ### 
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/4.png)
