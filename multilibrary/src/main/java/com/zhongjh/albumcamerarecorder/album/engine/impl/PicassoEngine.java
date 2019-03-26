@@ -59,13 +59,13 @@ public class PicassoEngine implements ImageEngine {
     }
 
     @Override
-    public void loadUrlImage(Context context, ImageView imageView, String url) {
+    public void loadUriImage(Context context, ImageView imageView, String url) {
         Picasso.with(context).load(url).priority(Picasso.Priority.HIGH)
                 .centerInside().into(imageView);
     }
 
     @Override
-    public void loadUrlImage(Context context, ImageView imageView, Uri uri) {
+    public void loadUriImage(Context context, ImageView imageView, Uri uri) {
         Picasso.with(context).load(uri).priority(Picasso.Priority.HIGH)
                 .centerInside().into(imageView);
     }

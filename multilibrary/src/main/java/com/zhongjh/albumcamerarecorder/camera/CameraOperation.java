@@ -809,9 +809,14 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
             Toast.makeText(context, "该手机没有闪光灯，不支持闪光灯方面功能", Toast.LENGTH_SHORT).show();
             return;
         }
-        Camera.Parameters params = mCamera.getParameters();
-        params.setFlashMode(flashMode);
-        mCamera.setParameters(params);
+        try{
+            Camera.Parameters params = mCamera.getParameters();
+            params.setFlashMode(flashMode);
+            mCamera.setParameters(params);
+        } catch (Exception e) {
+            Toast.makeText(context, "该手机没有闪光灯，不支持闪光灯方面功能", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 

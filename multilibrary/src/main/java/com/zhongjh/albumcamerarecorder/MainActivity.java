@@ -90,58 +90,11 @@ public class MainActivity extends AppCompatActivity {
             // 设置可以滑动
             mVpPager.setScroll(true);
             mTabLayout.setVisibility(View.VISIBLE);
-//            setTablayoutTouch(false);
         } else {
             // 禁滑viewPager
             mVpPager.setScroll(false);
             mTabLayout.setVisibility(View.GONE);
-//            setTablayoutTouch(true);
         }
-    }
-
-    /**
-     * 设置是否拦截
-     *
-     * @param isTouch 是否拦截
-     */
-    @SuppressLint("ClickableViewAccessibility")
-    private void setTablayoutTouch(boolean isTouch) {
-        for (int i = 0; i < mTabLayout.getTabCount(); i++) {
-            View view = getTabView(mTabLayout, i);
-            if (view == null) continue;
-            view.setTag(R.id.tagid,i);
-            view.setOnTouchListener((v, event) -> isTouch);
-        }
-    }
-
-    /**
-     * 反射获取tabview
-     *
-     * @param tabLayout tabLayout
-     * @param index     索引
-     * @return view
-     */
-    private View getTabView(TabLayout tabLayout, int index) {
-        TabLayout.Tab tab = tabLayout.getTabAt(index);
-        if (tab == null) return null;
-        View tabView = null;
-        Field view = null;
-        try {
-            view = TabLayout.Tab.class.getDeclaredField("mView");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        if (view != null) {
-            view.setAccessible(true);
-        }
-        try {
-            if (view != null) {
-                tabView = (View) view.get(tab);
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return tabView;
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {

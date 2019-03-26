@@ -19,12 +19,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +33,6 @@ import com.zhongjh.albumcamerarecorder.R;
 
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-
-import java.io.File;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
@@ -106,10 +102,10 @@ public class PreviewItemFragment extends Fragment {
 
             }
         } else if (item.getUri() != null) {
-            GlobalSpec.getInstance().imageEngine.loadUrlImage(getContext(), image,
+            GlobalSpec.getInstance().imageEngine.loadUriImage(getContext(), image,
                     item.getUri());
         }else if (item.getUrl() != null) {
-            GlobalSpec.getInstance().imageEngine.loadUrlImage(getContext(), image,
+            GlobalSpec.getInstance().imageEngine.loadUriImage(getContext(), image,
                     item.getUrl());
         }
 

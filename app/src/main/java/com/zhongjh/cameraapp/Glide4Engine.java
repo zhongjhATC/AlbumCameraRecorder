@@ -76,26 +76,29 @@ public class Glide4Engine implements ImageEngine {
                 .apply(new RequestOptions()
                         .override(resizeX, resizeY)
                         .priority(Priority.HIGH)
+                        .error(R.drawable.image_failed)
                         .fitCenter())
                 .into(imageView);
     }
 
     @Override
-    public void loadUrlImage(Context context, ImageView imageView, String url) {
+    public void loadUriImage(Context context, ImageView imageView, String url) {
         Glide.with(context)
                 .load(url)
                 .apply(new RequestOptions()
                         .priority(Priority.HIGH)
+                        .error(R.drawable.image_failed)
                         .fitCenter())
                 .into(imageView);
     }
 
     @Override
-    public void loadUrlImage(Context context, ImageView imageView, Uri uri) {
+    public void loadUriImage(Context context, ImageView imageView, Uri uri) {
         Glide.with(context)
                 .load(uri)
                 .apply(new RequestOptions()
                         .priority(Priority.HIGH)
+                        .error(R.drawable.image_failed)
                         .fitCenter())
                 .into(imageView);
     }
