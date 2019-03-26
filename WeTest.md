@@ -2,7 +2,7 @@
 
 ### 100%通过 ###
 
-有个别不通过是因为手机有错误的图片（因为当前设计是整个黑屏，如果图片加载不出，所以依然是全部黑屏，WeTest就误判未UI异常）
+有个别不通过是因为手机有 `` 错误的图片 ``  （因为当前设计是整个黑屏，如果图片加载不出，所以依然是全部黑屏，WeTest就误判未UI异常）
 
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/1.png)
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/2.png)
