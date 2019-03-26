@@ -47,7 +47,7 @@
 
 ## 市场上常用手机兼容测试
 100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/WeTest.md).
-![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/2.png)
+![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/5.png)
 
 ## 使用   
 #### 启动多媒体相关功能
