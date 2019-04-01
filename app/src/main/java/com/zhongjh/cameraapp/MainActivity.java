@@ -29,7 +29,7 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.entity.MultimediaTypes;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.enums.MimeType;
 
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;

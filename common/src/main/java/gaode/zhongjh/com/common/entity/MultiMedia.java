@@ -8,6 +8,7 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 
 import gaode.zhongjh.com.common.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 public class MultiMedia implements Parcelable {
 

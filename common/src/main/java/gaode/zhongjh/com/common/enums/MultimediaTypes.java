@@ -1,4 +1,4 @@
-package gaode.zhongjh.com.common.entity;
+package gaode.zhongjh.com.common.enums;
 
 import android.support.annotation.IntDef;
 

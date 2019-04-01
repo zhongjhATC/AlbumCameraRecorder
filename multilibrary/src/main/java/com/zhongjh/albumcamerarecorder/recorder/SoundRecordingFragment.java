@@ -25,7 +25,7 @@ import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.recorder.service.RecordingService;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundrecordingLayout;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
-import gaode.zhongjh.com.common.entity.MultimediaTypes;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 import java.io.File;

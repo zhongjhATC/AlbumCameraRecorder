@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.Group;
@@ -27,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.entity.MultimediaTypes;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
@@ -411,7 +410,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
      * 检测属性
      */
     private void isAuthority() {
-        if (mMediaStoreCompat.getSaveStrategy() == null) {
+        if (mMediaStoreCompat.getSaveStrategy() == null || mMediaStoreCompat.getSaveStrategy().authority == null) {
             throw new RuntimeException("必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错。也可以代码设置setAuthority");
         }
     }

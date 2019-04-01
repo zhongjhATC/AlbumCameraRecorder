@@ -34,7 +34,10 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
+import java.io.File;
+
 import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.utils.FileUtil;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
@@ -72,10 +75,8 @@ public class PreviewItemFragment extends Fragment {
                 if (item.getMediaUri() != null) {
                     uri = item.getMediaUri();
                 }else if(item.getUri() != null) {
-                    uri = item.getUri();
-                    // 下面两个不启用会播放不了
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    item.setMediaUri(FileUtil.getFileUri(getContext(),item.getType(),new File(item.getPath())));
+                    uri = item.getMediaUri();
                 }
                 intent.setDataAndType(uri, "video/*");
                 try {

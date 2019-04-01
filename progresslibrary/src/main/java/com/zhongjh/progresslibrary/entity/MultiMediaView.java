@@ -1,14 +1,12 @@
 package com.zhongjh.progresslibrary.entity;
 
-import android.content.Context;
-import android.support.v4.content.FileProvider;
 import android.view.View;
 
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.entity.MultimediaTypes;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
  * 多媒体实体类

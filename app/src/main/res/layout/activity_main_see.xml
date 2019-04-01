@@ -20,6 +20,7 @@
             app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
             app:maskingColor="?attr/colorPrimary"
             app:maskingTextColor="@color/black_eighty_percent"
+            app:authority="com.zhongjh.cameraapp.fileprovider"
             app:maskingTextContent="上传中可自定义"
             app:maskingTextSize="12"
             app:maxCount="7" />
