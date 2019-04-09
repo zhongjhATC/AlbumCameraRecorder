@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/LICENSE)
 
 ## 目前已经投入到正式项目中使用。
-## 有开了兼容云测试包月的小伙伴们，可以麻烦私聊下我吗谢谢！
+## 有任何建议或者想添加的功能，都可提在Issues
 
 ## 中文
 一个高效的多媒体支持操作库，可多方面的简单配置操作拍照、相册、录制、录音等功能。
