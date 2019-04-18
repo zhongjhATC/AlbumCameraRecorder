@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     // viewPager
     private NoScrollViewPager mVpPager;
+    private int mDefaultPosition;// 默认索引
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), mSpec);
         mVpPager.setAdapter(adapterViewPager);
         mVpPager.setOffscreenPageLimit(3);
+        mVpPager.setCurrentItem(mDefaultPosition);// 根据配置默认选第几个
 
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
@@ -106,25 +108,43 @@ public class MainActivity extends AppCompatActivity {
         public MyPagerAdapter(FragmentManager fragmentManager, GlobalSpec mSpec) {
             super(fragmentManager);
 
+            int defaultPositionType = 0;// 默认选择谁的类型
+
+            if (mSpec.defaultPosition == 2){
+                // 默认语音
+                defaultPositionType = 2;
+            }else if(mSpec.defaultPosition == 1){
+                // 默认录制
+                defaultPositionType = 1;
+            }
+
             // 根据相关配置做相应的初始化
             if (mSpec.albumSetting != null) {
                 if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
                     numItems++;
                     mTitles.add("相册");
+
                 }
             }
             if (mSpec.cameraSetting != null) {
                 if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
+                    if (defaultPositionType == 1){
+                        mDefaultPosition = numItems;
+                    }
                     numItems++;
                     mTitles.add("拍照");
                 }
             }
             if (mSpec.recorderSetting != null) {
                 if (mSpec.maxAudioSelectable > 0) {
+                    if (defaultPositionType == 2){
+                        mDefaultPosition = numItems;
+                    }
                     numItems++;
                     mTitles.add("录音");
                 }
             }
+
         }
 
         // Returns total number of pages

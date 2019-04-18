@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable-v24\\record_progress_bar.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable-v24\\record_progress_bar.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable-v24\\photo_capture_item.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable-v24\\photo_capture_item.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable-v24\\ic_launcher_foreground.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable-v24\\ic_launcher_foreground.xml"
+    }
+]

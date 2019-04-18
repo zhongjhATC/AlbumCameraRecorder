@@ -58,6 +58,13 @@ public interface GlobalSettingApi {
     GlobalSetting theme(@StyleRes int themeId);
 
     /**
+     * 设置默认第几个开始
+     * @param position
+     * @return
+     */
+    GlobalSetting defaultPosition(int position);
+
+    /**
      * 仅当 {@link AlbumSpec#mediaTypeExclusive} 设置为true并且您希望为图像和视频媒体类型设置不同的最大可选文件时才有用。
      *
      * @param maxImageSelectable imga的最大可选计数.

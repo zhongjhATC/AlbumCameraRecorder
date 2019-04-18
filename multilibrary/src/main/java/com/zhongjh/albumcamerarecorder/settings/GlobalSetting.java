@@ -113,6 +113,13 @@ public final class GlobalSetting implements GlobalSettingApi {
     }
 
     @Override
+    public GlobalSetting defaultPosition(int defaultPosition) {
+        mGlobalSpec.defaultPosition = defaultPosition;
+        return null;
+    }
+
+
+    @Override
     public GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
         mGlobalSpec.maxImageSelectable = maxImageSelectable;
         mGlobalSpec.maxVideoSelectable = maxVideoSelectable;

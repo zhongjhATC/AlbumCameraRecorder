@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\layout-v21\\notification_template_icon_group.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\6020f7dbb83e8f395e188bbbc5772327\\res\\layout-v21\\notification_template_icon_group.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\layout-v21\\notification_action_tombstone.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\6020f7dbb83e8f395e188bbbc5772327\\res\\layout-v21\\notification_action_tombstone.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\layout-v21\\notification_action.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\6020f7dbb83e8f395e188bbbc5772327\\res\\layout-v21\\notification_action.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\layout-v21\\notification_template_custom_big.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\6020f7dbb83e8f395e188bbbc5772327\\res\\layout-v21\\notification_template_custom_big.xml"
+    }
+]

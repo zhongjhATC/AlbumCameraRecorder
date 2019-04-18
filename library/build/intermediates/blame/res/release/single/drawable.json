@@ -1,0 +1,282 @@
+[
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_background_transition_holo_light.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_list_selector_background_transition_holo_light.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_photo.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_photo.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_item_background_holo_light.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_item_background_holo_light.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\vector_square.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\vector_square.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\animated_vector_square_to_circle.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\animated_vector_square_to_circle.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_arrow_drop_down_white_24dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_arrow_drop_down_white_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\notification_bg.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\6020f7dbb83e8f395e188bbbc5772327\\res\\drawable\\notification_bg.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_edit_text_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_edit_text_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_tab_indicator_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_tab_indicator_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ic_arrow_drop_right_black_24dp.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ic_arrow_drop_right_black_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_close_white_24dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_close_white_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\shape_ring_white.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\shape_ring_white.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ic_menu_overflow_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ic_menu_overflow_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_flash_on.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_flash_on.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_holo_dark.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_list_selector_holo_dark.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_borderless_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_btn_borderless_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\notification_tile_bg.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\6020f7dbb83e8f395e188bbbc5772327\\res\\drawable\\notification_tile_bg.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_seekbar_track_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_seekbar_track_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_background_transition_holo_dark.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_list_selector_background_transition_holo_dark.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_check_white_18dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_check_white_18dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_perm_media_white_24dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_perm_media_white_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_default_mtrl_shape.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_btn_default_mtrl_shape.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_pause_white_24dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_pause_white_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_seekbar_tick_mark_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_seekbar_tick_mark_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\design_password_eye.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\93197931837765f0a70fdda65ccb36b5\\res\\drawable\\design_password_eye.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_play_circle_outline_black_48dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_play_circle_outline_black_48dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_launcher_background.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\design_fab_background.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\93197931837765f0a70fdda65ccb36b5\\res\\drawable\\design_fab_background.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\vector_circle.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\vector_circle.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\tooltip_frame_light.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\tooltip_frame_light.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_colored_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_btn_colored_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_twotone_cancel_24px.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_twotone_cancel_24px.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\shape_ring_red.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\shape_ring_red.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_camera.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_camera.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_cab_background_top_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_cab_background_top_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\design_snackbar_background.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\93197931837765f0a70fdda65ccb36b5\\res\\drawable\\design_snackbar_background.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\notification_icon_background.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\6020f7dbb83e8f395e188bbbc5772327\\res\\drawable\\notification_icon_background.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\navigation_empty_icon.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\93197931837765f0a70fdda65ccb36b5\\res\\drawable\\navigation_empty_icon.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_radio_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_btn_radio_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_radio_button_checked_white_24dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_radio_button_checked_white_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_textfield_search_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_textfield_search_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_spinner_textfield_background_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_spinner_textfield_background_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_check_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_btn_check_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_switch_thumb_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_switch_thumb_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_flash_auto.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_flash_auto.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ic_ab_back_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ic_ab_back_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\tooltip_frame_dark.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\tooltip_frame_dark.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ic_go_search_api_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ic_go_search_api_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_item_background_holo_dark.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_item_background_holo_dark.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ratingbar_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ratingbar_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\notification_bg_low.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\6020f7dbb83e8f395e188bbbc5772327\\res\\drawable\\notification_bg_low.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ratingbar_indicator_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ratingbar_indicator_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ratingbar_small_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ratingbar_small_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\animated_vector_circle_to_square.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\animated_vector_circle_to_square.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ic_clear_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ic_clear_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_dialog_material_background.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_dialog_material_background.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_cab_background_internal_bg.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_cab_background_internal_bg.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_radio_button_unchecked_white_24dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_radio_button_unchecked_white_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_flash_off.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_flash_off.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_holo_light.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_list_selector_holo_light.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\animated_selector_shape.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\animated_selector_shape.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_play_arrow_white_24dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_play_arrow_white_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ic_search_api_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ic_search_api_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_vector_test.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_vector_test.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_text_cursor_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_text_cursor_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_seekbar_thumb_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_seekbar_thumb_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ic_voice_search_api_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\drawable\\abc_ic_voice_search_api_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_back.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_back.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\ic_stop_white_24dp.xml",
+        "source": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\src\\main\\res\\drawable\\ic_stop_white_24dp.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\drawable\\design_bottom_navigation_item_background.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\93197931837765f0a70fdda65ccb36b5\\res\\drawable\\design_bottom_navigation_item_background.xml"
+    }
+]

@@ -23,6 +23,7 @@ public class GlobalSpec {
     public RecorderSetting recorderSetting;// 录音的设置
     private Set<MimeType> mimeTypeSet; // 选择 mime 的类型，MimeType.allOf()
     public boolean hasInited; // 是否通过正规方式进来
+    public int defaultPosition;    // 默认从第几个开始
     @StyleRes
     public int themeId;         // 样式
     public int maxImageSelectable = -1;  // 最大图片选择数量
@@ -56,6 +57,7 @@ public class GlobalSpec {
         cameraSetting = null;
         recorderSetting = null;
         mimeTypeSet = null;
+        defaultPosition = 0;
         themeId = R.style.AppTheme_Blue;
         maxImageSelectable = -1;
         maxVideoSelectable = -1;

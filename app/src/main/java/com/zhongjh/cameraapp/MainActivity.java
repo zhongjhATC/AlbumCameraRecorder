@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
             mimeTypes = MimeType.ofImage();
 
         GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
-
+        globalSetting.defaultPosition(1);// 默认从第二个开始
         if (mBinding.cbAlbum.isChecked())
             // 开启相册功能
             globalSetting.albumSetting(albumSetting);

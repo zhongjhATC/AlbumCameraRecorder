@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_tint_edittext.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_tint_edittext.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_tint_seek_thumb.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_tint_seek_thumb.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_btn_colored_borderless_text_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_btn_colored_borderless_text_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_tint_switch_track.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_tint_switch_track.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_tint_spinner.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_tint_spinner.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_tint_btn_checkable.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_tint_btn_checkable.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_tint_default.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_tint_default.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_color_highlight_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_color_highlight_material.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\design_tint_password_toggle.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\93197931837765f0a70fdda65ccb36b5\\res\\color-v23\\design_tint_password_toggle.xml"
+    },
+    {
+        "merged": "E:\\Study\\Work\\Android\\Common\\AlbumCameraRecorder\\library\\build\\intermediates\\res\\merged\\release\\color-v23\\abc_btn_colored_text_material.xml",
+        "source": "E:\\Study\\Android\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\28a2dead11a5bbf702dbbf34dea52d1e\\res\\color-v23\\abc_btn_colored_text_material.xml"
+    }
+]
