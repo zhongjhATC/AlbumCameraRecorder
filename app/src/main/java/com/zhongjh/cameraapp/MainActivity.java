@@ -270,13 +270,13 @@ public class MainActivity extends AppCompatActivity {
         Set<MimeType> mimeTypeAlbum;
         if (mBinding.cbAlbumImage.isChecked() && mBinding.cbAlbumVideo.isChecked()) {
             mimeTypeAlbum = MimeType.ofAll();
-            cameraSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
+            albumSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
         } else if (mBinding.cbAlbumImage.isChecked()) {
             mimeTypeAlbum = MimeType.ofVideo();
-            cameraSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
+            albumSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
         } else if (mBinding.cbAlbumVideo.isChecked()) {
             mimeTypeAlbum = MimeType.ofImage();
-            cameraSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
+            albumSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
         }
 
         albumSetting
