@@ -7,17 +7,17 @@
     <com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/tableLayout" />
+        android:layout_height="match_parent" />
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tableLayout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        app:tabTextColor="#666666"
-        app:tabSelectedTextColor="?attr/colorPrimary"
         android:layout_alignParentBottom="true"
-        app:tabIndicatorHeight="1dp" />
+        android:background="#CCFFFFFF"
+        app:tabIndicatorHeight="1dp"
+        app:tabSelectedTextColor="?attr/colorPrimary"
+        app:tabTextColor="#666666" />
 
 </RelativeLayout>
 

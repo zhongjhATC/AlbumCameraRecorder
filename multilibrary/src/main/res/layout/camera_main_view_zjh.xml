@@ -132,6 +132,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
         android:background="#20000000"
         android:contentDescription="底部功能按钮"
         tools:ignore="HardcodedText" />

@@ -20,15 +20,15 @@ public class  ViewBusinessUtils {
         if (isScroll){
             // 母窗体启动滑动
             mainActivity.setTablayoutScroll(true);
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) pvLayout.getLayoutParams();
-            layoutParams.bottomMargin = 0;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
-            pvLayout.setLayoutParams(layoutParams);
+//            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) pvLayout.getLayoutParams();
+//            layoutParams.bottomMargin = 0;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
+//            pvLayout.setLayoutParams(layoutParams);
         }else{
             // 母窗体禁止滑动
             mainActivity.setTablayoutScroll(false);
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) pvLayout.getLayoutParams();
-            layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(50);//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
-            pvLayout.setLayoutParams(layoutParams);
+//            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) pvLayout.getLayoutParams();
+//            layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(50);//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
+//            pvLayout.setLayoutParams(layoutParams);
         }
     }
 

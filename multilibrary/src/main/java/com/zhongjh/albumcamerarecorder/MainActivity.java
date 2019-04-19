@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         GlobalSpec mSpec = GlobalSpec.getInstance();
         setTheme(mSpec.themeId);
         // 隐藏状态栏
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         // @@确认是否进行了配置
@@ -65,6 +68,13 @@ public class MainActivity extends AppCompatActivity {
         if (!HandleBackUtil.handleBackPress(this)) {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        //关闭窗体动画显示
+        this.overridePendingTransition(0, R.anim.activity_close);
     }
 
     /**
@@ -110,10 +120,10 @@ public class MainActivity extends AppCompatActivity {
 
             int defaultPositionType = 0;// 默认选择谁的类型
 
-            if (mSpec.defaultPosition == 2){
+            if (mSpec.defaultPosition == 2) {
                 // 默认语音
                 defaultPositionType = 2;
-            }else if(mSpec.defaultPosition == 1){
+            } else if (mSpec.defaultPosition == 1) {
                 // 默认录制
                 defaultPositionType = 1;
             }
@@ -128,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (mSpec.cameraSetting != null) {
                 if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
-                    if (defaultPositionType == 1){
+                    if (defaultPositionType == 1) {
                         mDefaultPosition = numItems;
                     }
                     numItems++;
@@ -137,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (mSpec.recorderSetting != null) {
                 if (mSpec.maxAudioSelectable > 0) {
-                    if (defaultPositionType == 2){
+                    if (defaultPositionType == 2) {
                         mDefaultPosition = numItems;
                     }
                     numItems++;

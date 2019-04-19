@@ -207,7 +207,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private void initView() {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
-        View view = LayoutInflater.from(mContext).inflate(R.layout.main_view_zjh, this);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
         setFlashLamp(); // 设置闪光灯模式
         mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
