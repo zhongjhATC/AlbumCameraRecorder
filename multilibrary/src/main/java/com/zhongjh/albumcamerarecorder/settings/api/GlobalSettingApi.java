@@ -123,6 +123,13 @@ public interface GlobalSettingApi {
     GlobalSetting imageEngine(ImageEngine imageEngine);
 
     /**
+     * 设置是否启动过场动画 ，只包括开始打开界面和关闭界面的过场动画
+     * @param isCutscenes 是否启动
+     * @return
+     */
+    GlobalSetting isCutscenes(boolean isCutscenes);
+
+    /**
      * 有关首页的一些事件
      * <p>
      * 这是一个冗余的api {@link MultiMediaSetting#obtainResult(Intent)},

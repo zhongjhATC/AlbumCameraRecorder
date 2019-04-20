@@ -19,6 +19,7 @@ import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;
 
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
+
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 
@@ -158,7 +159,13 @@ public final class GlobalSetting implements GlobalSettingApi {
         return this;
     }
 
-    @NonNull  @Override
+    @Override
+    public GlobalSetting isCutscenes(boolean isCutscenes) {
+        return null;
+    }
+
+    @NonNull
+    @Override
     public GlobalSetting setOnMainListener(@Nullable OnMainListener listener) {
         mGlobalSpec.onMainListener = listener;
         return this;
@@ -183,9 +190,9 @@ public final class GlobalSetting implements GlobalSettingApi {
             if (mGlobalSpec.maxAudioSelectable > 0) {
                 numItems++;
             } else {
-                if (mGlobalSpec.onMainListener != null){
+                if (mGlobalSpec.onMainListener != null) {
                     mGlobalSpec.onMainListener.onOpenFail("录音已经达到上限");
-                }else{
+                } else {
                     Toast.makeText(activity.getApplicationContext(), "录音已经达到上限", Toast.LENGTH_LONG).show();
                 }
             }
@@ -201,7 +208,8 @@ public final class GlobalSetting implements GlobalSettingApi {
             fragment.startActivityForResult(intent, requestCode);
         } else {
             activity.startActivityForResult(intent, requestCode);
-//            activity.overridePendingTransition(R.anim.activity_open,0);
+            if (mGlobalSpec.isCutscenes)
+                activity.overridePendingTransition(R.anim.activity_open, 0);
         }
 
     }
