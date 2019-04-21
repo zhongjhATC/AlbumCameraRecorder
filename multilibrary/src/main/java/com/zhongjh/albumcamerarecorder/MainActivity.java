@@ -36,9 +36,11 @@ public class MainActivity extends AppCompatActivity {
     private NoScrollViewPager mVpPager;
     private int mDefaultPosition;// 默认索引
 
+    GlobalSpec mSpec;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        GlobalSpec mSpec = GlobalSpec.getInstance();
+        mSpec = GlobalSpec.getInstance();
         setTheme(mSpec.themeId);
         // 隐藏状态栏
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -60,7 +62,14 @@ public class MainActivity extends AppCompatActivity {
 
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
-        mTabLayout.setupWithViewPager(mVpPager);
+        // 判断只有一个的时候
+        if (adapterViewPager.getCount() <= 1){
+            // 则隐藏底部
+            mTabLayout.setVisibility(View.GONE);
+        }else{
+            mTabLayout.setVisibility(View.VISIBLE);
+            mTabLayout.setupWithViewPager(mVpPager);
+        }
     }
 
     @Override
@@ -73,8 +82,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        //关闭窗体动画显示
-        this.overridePendingTransition(0, R.anim.activity_close);
+        if (mSpec.isCutscenes)
+            //关闭窗体动画显示
+            this.overridePendingTransition(0, R.anim.activity_close);
     }
 
     /**
@@ -111,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
-        private int numItems;// 数量
+        int numItems;// 数量
 
         ArrayList<String> mTitles = new ArrayList<>(); // 标题
 
