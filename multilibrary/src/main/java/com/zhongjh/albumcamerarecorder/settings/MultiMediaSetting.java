@@ -24,6 +24,7 @@ import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_VIDEO;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
@@ -74,6 +75,17 @@ public final class MultiMediaSetting {
      */
     public static MultiMediaSetting from(Fragment fragment) {
         return new MultiMediaSetting(fragment);
+    }
+
+    /**
+     * 获取用户确认后的是否选择标记
+     * @param data 通过以下方法获取
+     *             {@link Activity#onActivityResult(int, int, Intent)} 或者
+     *             {@link Fragment#onActivityResult(int, int, Intent)}.
+     * @return 用户确认后的是否选择标记
+     */
+    public static boolean obtainMultimediaChoice(Intent data){
+        return data.getBooleanExtra(EXTRA_MULTIMEDIA_CHOICE, false);
     }
 
     /**
