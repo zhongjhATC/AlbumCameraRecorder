@@ -52,6 +52,7 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
@@ -198,6 +199,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
             result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
             result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(selectedUris));
+            result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
             result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);// 是否启用原图
             mActivity.setResult(RESULT_OK, result);
             mActivity.finish();
@@ -254,7 +256,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
         // 判断是纯图片还是纯视频
         if (selectedUris.size() == isImageSize){
-             return MultimediaTypes.PICTURE;
+             return MultimediaTypes.PICTURE ;
         }
         if (selectedUris.size() == isVideoSize){
             return MultimediaTypes.VIDEO;
@@ -312,6 +314,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(selectedUris));
+                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
                 result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable); // 是否启用原图
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();

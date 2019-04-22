@@ -34,6 +34,7 @@ import java.io.IOException;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONGCLICK;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
 import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
@@ -176,6 +177,7 @@ public class SoundRecordingFragment extends BaseFragment {
                 initAudio();
                 result.putExtra(EXTRA_RESULT_RECORDING_ITEM, recordingItem);
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.AUDIO);
+                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
             }

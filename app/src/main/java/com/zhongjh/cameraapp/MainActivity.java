@@ -323,20 +323,20 @@ public class MainActivity extends AppCompatActivity {
 
         // 自定义失败信息
         globalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show());
-
+        
         // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
         if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString()))
             globalSetting.allStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAllFile.getText().toString()));// 设置路径和7.0保护路径等等
+                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAllFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
         if (!TextUtils.isEmpty(mBinding.etPictureFile.getText().toString()))
             globalSetting.pictureStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etPictureFile.getText().toString()));// 设置路径和7.0保护路径等等
+                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etPictureFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
         if (!TextUtils.isEmpty(mBinding.etAudioFile.getText().toString()))
             globalSetting.audioStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAudioFile.getText().toString()));// 设置路径和7.0保护路径等等
+                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAudioFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
         if (!TextUtils.isEmpty(mBinding.etVideoFile.getText().toString()))
             globalSetting.videoStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));// 设置路径和7.0保护路径等等
+                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
 
         //                                            .imageEngine(new GlideEngine())  // for glide-V3
         globalSetting.imageEngine(new Glide4Engine())    // for glide-V4

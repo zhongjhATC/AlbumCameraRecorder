@@ -40,4 +40,5 @@ public @interface MultimediaTypes {
      * 添加的一个标记
      */
     int ADD = -1;
+
 }

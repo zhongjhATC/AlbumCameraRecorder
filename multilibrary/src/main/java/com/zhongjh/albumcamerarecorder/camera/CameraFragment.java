@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
@@ -153,6 +154,7 @@ public class CameraFragment extends BaseFragment {
                 Intent result = new Intent();
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
+                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
             }
@@ -165,6 +167,7 @@ public class CameraFragment extends BaseFragment {
                 Intent result = new Intent();
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
+                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
             }
