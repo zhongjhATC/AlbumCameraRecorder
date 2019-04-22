@@ -64,9 +64,6 @@
 
     </android.support.v7.widget.Toolbar>
 
-
-    <!-- TODO 改变布局 -->
-
     <FrameLayout
         android:id="@+id/bottom_toolbar"
         android:layout_width="match_parent"
