@@ -16,6 +16,7 @@ public class MultiMedia implements Parcelable {
     protected int position = -1;   // 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算
     protected String path;        // 路径
     protected String url;         // 在线网址
+    protected int drawableId = -1;     // 图片资源id
     private Uri mediaUri;        // 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
     public Uri uri;             // 以路径转换成的uri，专用于提供给progresslibrary使用
     @MultimediaTypes
@@ -115,6 +116,14 @@ public class MultiMedia implements Parcelable {
         this.uri = uri;
     }
 
+    public int getDrawableId() {
+        return drawableId;
+    }
+
+    public void setDrawableId(int drawableId) {
+        this.drawableId = drawableId;
+    }
+
     /**
      * 重写equals，所以如果修改以下这些值，那么将会导致不相等
      */
@@ -130,7 +139,8 @@ public class MultiMedia implements Parcelable {
                 && (uri != null && uri.equals(other.uri) || (uri == null && other.uri == null))
                 && size == other.size
                 && duration == other.duration
-                && position == other.position;
+                && position == other.position
+                && drawableId == other.drawableId;
 
     }
 
@@ -150,6 +160,7 @@ public class MultiMedia implements Parcelable {
             result = 31 * result + uri.hashCode();
         result = 31 * result + Long.valueOf(size).hashCode();
         result = 31 * result + Long.valueOf(duration).hashCode();
+        result = 31 * result + Long.valueOf(drawableId).hashCode();
         return result;
     }
 
@@ -203,6 +214,7 @@ public class MultiMedia implements Parcelable {
         dest.writeInt(this.position);
         dest.writeString(this.path);
         dest.writeString(this.url);
+        dest.writeInt(this.drawableId);
         dest.writeParcelable(this.mediaUri, flags);
         dest.writeParcelable(this.uri, flags);
         dest.writeInt(this.type);
@@ -216,6 +228,7 @@ public class MultiMedia implements Parcelable {
         this.position = in.readInt();
         this.path = in.readString();
         this.url = in.readString();
+        this.drawableId = in.readInt();
         this.mediaUri = in.readParcelable(Uri.class.getClassLoader());
         this.uri = in.readParcelable(Uri.class.getClassLoader());
         this.type = in.readInt();

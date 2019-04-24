@@ -105,9 +105,12 @@ public class PreviewItemFragment extends Fragment {
         } else if (item.getUri() != null) {
             GlobalSpec.getInstance().imageEngine.loadUriImage(getContext(), image,
                     item.getUri());
-        }else if (item.getUrl() != null) {
+        } else if (item.getUrl() != null) {
             GlobalSpec.getInstance().imageEngine.loadUrlImage(getContext(), image,
                     item.getUrl());
+        } else if (item.getDrawableId() != -1) {
+            GlobalSpec.getInstance().imageEngine.loadDrawableImage(getContext(), image,
+                    item.getDrawableId());
         }
 
 

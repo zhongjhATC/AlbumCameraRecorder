@@ -12,7 +12,6 @@ import gaode.zhongjh.com.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.entity.PreviewItem;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 
 import java.lang.ref.WeakReference;

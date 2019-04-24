@@ -29,61 +29,87 @@ import android.widget.ImageView;
 public interface ImageEngine {
 
     /**
-     * Load thumbnail of a static image resource.
+     * 加载静态图像资源的缩略图
+     * 大部分场景用于相册
      *
-     * @param context     Context
-     * @param resize      Desired size of the origin image
-     * @param placeholder Placeholder drawable when image is not loaded yet
-     * @param imageView   ImageView widget
-     * @param uri         Uri of the loaded image
+     * @param context     上下文
+     * @param resize      原始图像的所需大小
+     * @param placeholder 尚未加载图像时可绘制的占位符
+     * @param imageView   ImageView控件
+     * @param uri         加载图像的URI
      */
     void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri);
 
-    void loadUrlThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, String url);
-
     /**
-     * Load thumbnail of a gif image resource. You don't have to load an animated gif when it's only
-     * a thumbnail tile.
+     * 加载GIF图像资源的缩略图。如果只是一个缩略图，你不必加载动画gif
+     * 场景仅用于相册
      *
-     * @param context     Context
-     * @param resize      Desired size of the origin image
-     * @param placeholder Placeholder drawable when image is not loaded yet
-     * @param imageView   ImageView widget
-     * @param uri         Uri of the loaded image
+     * @param context     上下文
+     * @param resize      原始图像的所需大小
+     * @param placeholder 尚未加载图像时可绘制的占位符
+     * @param imageView   ImageView控件
+     * @param uri         加载图像的URI
      */
     void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri);
 
     /**
-     * Load a static image resource.
+     * 加载静态图像资源
+     * 场景仅用于预览图片，用于高清大图
      *
-     * @param context   Context
-     * @param resizeX   Desired x-size of the origin image
-     * @param resizeY   Desired y-size of the origin image
-     * @param imageView ImageView widget
-     * @param uri       Uri of the loaded image
+     * @param context   上下文
+     * @param resizeX   原始图像所需的X尺寸
+     * @param resizeY   原始图像的所需Y尺寸
+     * @param imageView ImageView控件
+     * @param uri       加载图像的URI
      */
     void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri);
 
+    /**
+     * 加载静态图像资源
+     * 场景仅用于预览界面的网络图片
+     *
+     * @param context   上下文
+     * @param imageView ImageView控件
+     * @param url       加载图像的url
+     */
     void loadUrlImage(Context context, ImageView imageView, String url);
 
+    /**
+     * 加载静态图像资源
+     * 场景仅用于预览界面的图片
+     *
+     * @param context   上下文
+     * @param imageView ImageView控件
+     * @param uri       加载图像的uri
+     */
     void loadUriImage(Context context, ImageView imageView, Uri uri);
 
     /**
-     * Load a gif image resource.
+     * 加载静态图像资源
+     * 场景仅用于预览界面的资源id图片
      *
-     * @param context   Context
-     * @param resizeX   Desired x-size of the origin image
-     * @param resizeY   Desired y-size of the origin image
-     * @param imageView ImageView widget
-     * @param uri       Uri of the loaded image
+     * @param context    上下文
+     * @param imageView  ImageView控件
+     * @param drawableId 资源id图片
+     */
+    void loadDrawableImage(Context context, ImageView imageView, int drawableId);
+
+    /**
+     * 加载GIF图像资源。
+     *
+     * @param context   Context 上下文
+     * @param resizeX   原始图像所需的X尺寸
+     * @param resizeY   原始图像的所需Y尺寸
+     * @param imageView ImageView控件
+     * @param uri       加载图像的uri
      */
     void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri);
 
     /**
-     * Whether this implementation supports animated gif.
-     * Just knowledge of it, convenient for users.
+     * 此实现是否支持动态GIF
+     * 只需了解它，方便用户使用
      *
-     * @return true support animated gif, false do not support animated gif.
+     * @return true支持动画gif，false不支持动画gif。
      */
     boolean supportAnimatedGif();
 }

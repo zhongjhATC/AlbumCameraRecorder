@@ -39,14 +39,6 @@ public class PicassoEngine implements ImageEngine {
     }
 
     @Override
-    public void loadUrlThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, String url) {
-        Picasso.with(context).load(url).placeholder(placeholder)
-                .resize(resize, resize)
-                .centerCrop()
-                .into(imageView);
-    }
-
-    @Override
     public void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView,
                                  Uri uri) {
         loadThumbnail(context, resize, placeholder, imageView, uri);
@@ -71,6 +63,12 @@ public class PicassoEngine implements ImageEngine {
     }
 
     @Override
+    public void loadDrawableImage(Context context, ImageView imageView, int drawableId) {
+        Picasso.with(context).load(drawableId).priority(Picasso.Priority.HIGH)
+                .centerInside().into(imageView);
+    }
+
+    @Override
     public void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
         loadImage(context, resizeX, resizeY, imageView, uri);
     }
@@ -79,4 +77,5 @@ public class PicassoEngine implements ImageEngine {
     public boolean supportAnimatedGif() {
         return false;
     }
+
 }

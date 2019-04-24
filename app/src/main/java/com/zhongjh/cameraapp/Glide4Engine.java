@@ -45,18 +45,6 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadUrlThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, String url) {
-        Glide.with(context)
-                .asBitmap() // some .jpeg files are actually gif
-                .load(url)
-                .apply(new RequestOptions()
-                        .override(resize, resize)
-                        .placeholder(placeholder)
-                        .centerCrop())
-                .into(imageView);
-    }
-
-    @Override
     public void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView,
                                  Uri uri) {
         Glide.with(context)
@@ -96,6 +84,17 @@ public class Glide4Engine implements ImageEngine {
     public void loadUriImage(Context context, ImageView imageView, Uri uri) {
         Glide.with(context)
                 .load(uri)
+                .apply(new RequestOptions()
+                        .priority(Priority.HIGH)
+                        .error(R.drawable.image_failed)
+                        .fitCenter())
+                .into(imageView);
+    }
+
+    @Override
+    public void loadDrawableImage(Context context, ImageView imageView, int drawableId) {
+        Glide.with(context)
+                .load(drawableId)
                 .apply(new RequestOptions()
                         .priority(Priority.HIGH)
                         .error(R.drawable.image_failed)
