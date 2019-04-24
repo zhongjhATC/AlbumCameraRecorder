@@ -29,7 +29,7 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
  * 相册 界面
  * Created by zhongjh on 2018/8/30.
  */
-public class MediaSelectionFragment extends Fragment implements
+public class    MediaSelectionFragment extends Fragment implements
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
     private static final String EXTRA_ALBUM = "extra_album";     // 专辑数据

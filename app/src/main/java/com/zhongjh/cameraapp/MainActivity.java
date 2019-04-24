@@ -115,6 +115,14 @@ public class MainActivity extends AppCompatActivity {
 
         });
         mBinding.btnOpenSee.setOnClickListener(v -> MainSeeActivity.newInstance(MainActivity.this));
+
+        mBinding.btnPreview.setOnClickListener(v -> {
+            ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+            MultiMedia multiMedia = new MultiMedia();
+            multiMedia.setDrawableId(R.drawable.vector_circle);
+            multiMedias.add(multiMedia);
+            MultiMediaSetting.openPreviewImage(MainActivity.this, multiMedias, 0);
+        });
     }
 
     /**

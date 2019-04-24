@@ -47,11 +47,6 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!GlobalSpec.getInstance().hasInited) {
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
         mCollection.onCreate(this, this);
         Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);
         if (album != null) {

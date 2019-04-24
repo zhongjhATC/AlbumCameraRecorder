@@ -28,14 +28,6 @@
                 app:maskingTextSize="12"
                 app:maxCount="7" />
 
-            <Button
-                android:id="@+id/btnOpenSee"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:text="打开默认有数据的" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -524,6 +516,31 @@
 
 
             </LinearLayout>
+
+            <TextView
+                android:text="以下为其他额外功能"
+                android:textSize="18sp"
+                android:layout_marginLeft="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:layout_marginTop="16dp"
+                android:id="@+id/btnOpenSee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:text="打开默认有数据的" />
+
+            <Button
+                android:layout_marginTop="16dp"
+                android:id="@+id/btnPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:text="预览资源图" />
 
         </LinearLayout>
 
