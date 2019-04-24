@@ -67,11 +67,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(GlobalSpec.getInstance().themeId);  // 获取样式
         super.onCreate(savedInstanceState);
-        if (!GlobalSpec.getInstance().hasInited) {
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
         setContentView(R.layout.activity_media_preview_zjh);
         if (VersionUtils.hasKitKat()) {
             // 使用沉倾状态栏

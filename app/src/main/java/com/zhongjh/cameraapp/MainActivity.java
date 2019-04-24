@@ -17,13 +17,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
+
 import gaode.zhongjh.com.common.entity.SaveStrategy;
+
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
@@ -68,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+
+        // 以下为点击时间
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
@@ -117,9 +123,11 @@ public class MainActivity extends AppCompatActivity {
         mBinding.btnOpenSee.setOnClickListener(v -> MainSeeActivity.newInstance(MainActivity.this));
 
         mBinding.btnPreview.setOnClickListener(v -> {
+            MultiMediaSetting.from(MainActivity.this).choose(MimeType.ofAll()).imageEngine(new Glide4Engine());
+
             ArrayList<MultiMedia> multiMedias = new ArrayList<>();
             MultiMedia multiMedia = new MultiMedia();
-            multiMedia.setDrawableId(R.drawable.vector_circle);
+            multiMedia.setDrawableId(R.drawable.ic_add_gray);
             multiMedias.add(multiMedia);
             MultiMediaSetting.openPreviewImage(MainActivity.this, multiMedias, 0);
         });
@@ -165,14 +173,14 @@ public class MainActivity extends AppCompatActivity {
                     if (selected == null)
                         return;
                     // 循环判断，如果不存在，则删除
-                    for (int i = mBinding.mplImageList.getImages().size() -1; i >= 0; i--) {
+                    for (int i = mBinding.mplImageList.getImages().size() - 1; i >= 0; i--) {
                         int k = 0;
-                        for (MultiMedia multiMedia : selected){
-                            if (!mBinding.mplImageList.getImages().get(i).equals(multiMedia)){
+                        for (MultiMedia multiMedia : selected) {
+                            if (!mBinding.mplImageList.getImages().get(i).equals(multiMedia)) {
                                 k++;
                             }
                         }
-                        if (k == selected.size()){
+                        if (k == selected.size()) {
                             // 所有都不符合，则删除
                             mBinding.mplImageList.onRemoveItemImage(i);
                         }
@@ -331,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 自定义失败信息
         globalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show());
-        
+
         // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
         if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString()))
             globalSetting.allStrategy(

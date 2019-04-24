@@ -63,8 +63,8 @@ public class PicassoEngine implements ImageEngine {
     }
 
     @Override
-    public void loadDrawableImage(Context context, ImageView imageView, int drawableId) {
-        Picasso.with(context).load(drawableId).priority(Picasso.Priority.HIGH)
+    public void loadDrawableImage(Context context, ImageView imageView, Integer resourceId) {
+        Picasso.with(context).load(resourceId).priority(Picasso.Priority.HIGH)
                 .centerInside().into(imageView);
     }
 

@@ -83,9 +83,9 @@ public class GlideEngine implements ImageEngine {
     }
 
     @Override
-    public void loadDrawableImage(Context context, ImageView imageView, int drawableId) {
+    public void loadDrawableImage(Context context, ImageView imageView,Integer resourceId) {
         Glide.with(context)
-                .load(drawableId)
+                .load(resourceId)
                 .priority(Priority.HIGH)
                 .fitCenter()
                 .into(imageView);

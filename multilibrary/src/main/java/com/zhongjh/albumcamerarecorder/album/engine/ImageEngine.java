@@ -90,9 +90,9 @@ public interface ImageEngine {
      *
      * @param context    上下文
      * @param imageView  ImageView控件
-     * @param drawableId 资源id图片
+     * @param resourceId 资源id图片
      */
-    void loadDrawableImage(Context context, ImageView imageView, int drawableId);
+    void loadDrawableImage(Context context, ImageView imageView ,Integer resourceId);
 
     /**
      * 加载GIF图像资源。

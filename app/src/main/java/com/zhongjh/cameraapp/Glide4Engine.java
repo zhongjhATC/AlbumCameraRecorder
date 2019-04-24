@@ -92,9 +92,9 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadDrawableImage(Context context, ImageView imageView, int drawableId) {
+    public void loadDrawableImage(Context context, ImageView imageView, Integer resourceId) {
         Glide.with(context)
-                .load(drawableId)
+                .load(resourceId)
                 .apply(new RequestOptions()
                         .priority(Priority.HIGH)
                         .error(R.drawable.image_failed)
