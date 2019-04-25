@@ -36,8 +36,14 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_C
  */
 public final class MultiMediaSetting {
 
-    private final WeakReference<Activity> mContext;
-    private final WeakReference<Fragment> mFragment;
+    private WeakReference<Activity> mContext;
+    private WeakReference<Fragment> mFragment;
+
+    private MultiMediaSetting() {
+
+    }
+
+    ;
 
     private MultiMediaSetting(Activity activity) {
         this(activity, null);
@@ -50,6 +56,10 @@ public final class MultiMediaSetting {
     private MultiMediaSetting(Activity activity, Fragment fragment) {
         mContext = new WeakReference<>(activity);
         mFragment = new WeakReference<>(fragment);
+    }
+
+    public static MultiMediaSetting init() {
+        return new MultiMediaSetting();
     }
 
     /**
@@ -78,12 +88,13 @@ public final class MultiMediaSetting {
 
     /**
      * 获取用户确认后的是否选择标记
+     *
      * @param data 通过以下方法获取
      *             {@link Activity#onActivityResult(int, int, Intent)} 或者
      *             {@link Fragment#onActivityResult(int, int, Intent)}.
      * @return 用户确认后的是否选择标记
      */
-    public static boolean obtainMultimediaChoice(Intent data){
+    public static boolean obtainMultimediaChoice(Intent data) {
         return data.getBooleanExtra(EXTRA_MULTIMEDIA_CHOICE, false);
     }
 
@@ -160,7 +171,7 @@ public final class MultiMediaSetting {
     }
 
     /**
-     * 调用打开图片
+     * 调用打开图片预览
      *
      * @param activity 窗体
      * @param list     数据源
@@ -176,7 +187,34 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK,false);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+        activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+    }
+
+    /**
+     * 调用打开图片预览
+     * @param activity 窗体
+     * @param list 资源id数据源
+     * @param position 当前数据的索引
+     */
+    public static void openPreviewResourceId(Activity activity, ArrayList<Integer> list, int position) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        for (Integer item : list) {
+            MultiMedia multiMedia = new MultiMedia();
+            multiMedia.setDrawableId(item);
+            multiMedias.add(multiMedia);
+        }
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, multiMedias);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+
+        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, multiMedias.get(position));
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
     }
 
@@ -197,11 +235,10 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK,false);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
 
     }
-
 
 
 }

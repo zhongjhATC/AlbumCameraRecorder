@@ -40,12 +40,12 @@ public class MainListActivity extends AppCompatActivity {
 
         // 独立预览相片功能
         mBinding.btnPreview.setOnClickListener(v -> {
-            MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll()).imageEngine(new Glide4Engine());
-            ArrayList<MultiMedia> multiMedias = new ArrayList<>();
-            MultiMedia multiMedia = new MultiMedia();
-            multiMedia.setDrawableId(R.drawable.ic_add_gray);
-            multiMedias.add(multiMedia);
-            MultiMediaSetting.openPreviewImage(MainListActivity.this, multiMedias, 0);
+            // 这个可以放在Application初始化类型、解析图片类，也可以不需要，但是如果你要单独使用预览图功能，必须提前设置这个
+            MultiMediaSetting.init().choose(MimeType.ofAll()).imageEngine(new Glide4Engine());
+            ArrayList<Integer> list = new ArrayList<>();
+            list.add(R.drawable.ic_camera_enhance_black_24dp);
+            list.add(R.drawable.ic_play_arrow_white_24dp);
+            MultiMediaSetting.openPreviewResourceId(MainListActivity.this, list, 0);
         });
     }
 
