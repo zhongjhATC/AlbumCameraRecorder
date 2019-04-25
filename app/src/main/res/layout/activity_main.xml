@@ -18,15 +18,23 @@
                 app:audioDeleteColor="@color/blue_primary"
                 app:audioPlayColor="@color/blue_primary"
                 app:audioProgressColor="@color/blue_primary"
+                app:authority="com.zhongjh.cameraapp.fileprovider"
                 app:imageAddDrawable="@drawable/ic_add_gray"
                 app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
                 app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
                 app:maskingColor="?attr/colorPrimary"
                 app:maskingTextColor="@color/black_eighty_percent"
                 app:maskingTextContent="上传中可自定义"
-                app:authority="com.zhongjh.cameraapp.fileprovider"
                 app:maskingTextSize="12"
                 app:maxCount="7" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/blue_album_dropdown_count_text"
+                android:gravity="center"
+                android:text="全局配置"
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,7 +63,7 @@
                             android:layout_height="match_parent"
                             android:checked="true"
                             android:gravity="center"
-                            android:text="全部" />
+                            android:text="支持全部" />
 
                         <RadioButton
                             android:id="@+id/rbAllImage"
@@ -178,10 +186,10 @@
                         android:text="最多可以设置几个视频(添加可以设置多个，呈现的功能暂不考虑1个以上)：" />
 
                     <EditText
-                        android:enabled="false"
                         android:id="@+id/etVideoCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:enabled="false"
                         android:inputType="number"
                         android:text="1" />
 
@@ -198,23 +206,37 @@
                         android:text="最多可以设置几个音频(添加可以设置多个，呈现的功能暂不考虑1个以上)：：" />
 
                     <EditText
-                        android:enabled="false"
                         android:id="@+id/etAudioCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:enabled="false"
                         android:inputType="number"
                         android:text="1" />
 
 
                 </LinearLayout>
 
+            </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/blue_album_dropdown_count_text"
+                android:gravity="center"
+                android:text="相册配置"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <CheckBox
                     android:id="@+id/cbAlbum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="16dp"
                     android:checked="true"
                     android:text="开启相册功能" />
 
@@ -259,9 +281,9 @@
                     <CheckBox
                         android:id="@+id/cbShowSingleMediaTypeTrue"
                         android:layout_width="wrap_content"
-                        android:checked="true"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
+                        android:checked="true"
                         android:text="true" />
 
                 </LinearLayout>
@@ -435,7 +457,21 @@
 
                 </LinearLayout>
 
+            </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/blue_album_dropdown_count_text"
+                android:gravity="center"
+                android:text="录制配置"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <CheckBox
                     android:id="@+id/cbCamera"
@@ -506,6 +542,23 @@
 
                 </LinearLayout>
 
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/blue_album_dropdown_count_text"
+                android:gravity="center"
+                android:text="录音配置"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
                 <CheckBox
                     android:id="@+id/cbRecorder"
                     android:layout_width="wrap_content"
@@ -514,33 +567,7 @@
                     android:checked="true"
                     android:text="开启录音功能" />
 
-
             </LinearLayout>
-
-            <TextView
-                android:text="以下为其他额外功能"
-                android:textSize="18sp"
-                android:layout_marginLeft="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:layout_marginTop="16dp"
-                android:id="@+id/btnOpenSee"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:text="打开默认有数据的" />
-
-            <Button
-                android:layout_marginTop="16dp"
-                android:id="@+id/btnPreview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:text="预览资源图" />
 
         </LinearLayout>
 

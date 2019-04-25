@@ -202,11 +202,6 @@ public final class MultiMediaSetting {
 
     }
 
-    /**
-     *
-     */
-    public static void onResultPreview() {
 
-    }
 
 }
