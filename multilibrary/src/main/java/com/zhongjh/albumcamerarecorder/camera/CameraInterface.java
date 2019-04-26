@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.camera;
 
 import android.graphics.Rect;
 
+import com.zhongjh.albumcamerarecorder.camera.listener.CameraOperationListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 
 /**
@@ -39,5 +40,10 @@ interface CameraInterface {
      * 赋值异常事件
      */
     void setErrorLinsenter(ErrorListener errorLisenter);
+
+    /**
+     * 有关该类的回调事件
+     */
+    void setCameraOperationListener(CameraOperationListener cameraOperationListener);
 
 }

@@ -5,7 +5,6 @@
     android:id="@+id/rlMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:orientation="vertical">
 
     <RelativeLayout
@@ -25,10 +24,10 @@
         android:layout_height="match_parent">
 
         <VideoView
-            android:background="#000000"
             android:id="@+id/vvPreview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#000000"
             android:contentDescription="显示当前摄像的"
             tools:ignore="HardcodedText" />
 

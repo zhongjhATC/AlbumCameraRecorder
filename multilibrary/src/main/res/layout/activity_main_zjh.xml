@@ -4,6 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:text="出现空白异常，请重新打开"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"

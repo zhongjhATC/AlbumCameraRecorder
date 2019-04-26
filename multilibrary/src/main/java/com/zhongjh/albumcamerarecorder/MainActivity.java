@@ -52,7 +52,13 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+
         setContentView(R.layout.activity_main_zjh);
+
+        if (mSpec.isCutscenes)
+            // 设置透明
+
 
         mVpPager = findViewById(R.id.viewPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), mSpec);

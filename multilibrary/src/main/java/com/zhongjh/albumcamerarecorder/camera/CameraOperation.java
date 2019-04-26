@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
+import com.zhongjh.albumcamerarecorder.camera.listener.CameraOperationListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.util.AngleUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.CameraParamUtil;
@@ -78,6 +80,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 //    private SensorManager mSensorManager = null;
 
     private ErrorListener mErrorLisenter; // 异常事件
+    private CameraOperationListener mCameraOperationListener; // 有关该类的回调事件
 
     private ImageView mImgSwitch;
     private ImageView mImgFlash;
@@ -353,6 +356,11 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
     @Override
     public void setErrorLinsenter(ErrorListener errorLisenter) {
         this.mErrorLisenter = errorLisenter;
+    }
+
+    @Override
+    public void setCameraOperationListener(CameraOperationListener cameraOperationListener) {
+        this.mCameraOperationListener = cameraOperationListener;
     }
 
     /**
