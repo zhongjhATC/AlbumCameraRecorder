@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.media.AudioManager;
@@ -14,6 +15,8 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -209,6 +212,8 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         setWillNotDraw(false);
         View view = LayoutInflater.from(mContext).inflate(R.layout.camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
+
+
         setFlashLamp(); // 设置闪光灯模式
         mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
         mViewHolder.pvLayout.setDuration(mCameraSpec.duration * 1000);// 设置录制时间
@@ -414,6 +419,11 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             @Override
             public void run() {
                 mCameraOperation.doOpenCamera(() -> mCameraOperation.doStartPreview(getSurfaceHolder(), getScreenProp()));
+//                //耗时操作
+//                mHandler.sendEmptyMessage(0);
+//                Message msg =new Message();
+//                msg.obj = "数据";//可以是基本类型，可以是对象，可以是List、map等
+//                mHandler.sendMessage(msg);
             }
         }.start();
     }
@@ -883,6 +893,20 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             mViewHolder.imgSwitch.setVisibility(viewVisibility);
         }
     }
+
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 0:
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     /**
      * 设置fragment
