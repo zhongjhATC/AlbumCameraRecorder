@@ -32,6 +32,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.listener.CameraOperationListener;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
@@ -57,6 +58,7 @@ import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -107,6 +109,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();      // 拍照的图片控件-集合
     private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
     private String mVideoUrl;         // 视频URL
+    VideoViewInitHandler mVideoViewInitHandler = new VideoViewInitHandler(CameraLayout.this);
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -249,6 +252,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      * 初始化有关事件
      */
     private void initLisenter() {
+        // 当预览界面启动后
+        mCameraOperation.setCameraOperationListener(() -> mVideoViewInitHandler.sendEmptyMessage(0));
+
         // 切换闪光灯模式
         mViewHolder.imgFlash.setOnClickListener(v -> {
             mFlashType++;
@@ -420,6 +426,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             public void run() {
                 mCameraOperation.doOpenCamera(() -> mCameraOperation.doStartPreview(getSurfaceHolder(), getScreenProp()));
 //                //耗时操作
+//                mVideoViewInitHandler.sendEmptyMessage(0);
 //                mHandler.sendEmptyMessage(0);
 //                Message msg =new Message();
 //                msg.obj = "数据";//可以是基本类型，可以是对象，可以是List、map等
@@ -616,6 +623,11 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
                 intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
                 fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
+                if (mGlobalSpec.isCutscenes){
+                    if (fragment.getActivity() != null)
+                        fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+                }
+
             });
 
 
@@ -894,19 +906,22 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         }
     }
 
-    Handler mHandler = new Handler() {
+    /**
+     * 用于VideoView初始化完成后，设置回背景透明，不然无法看到
+     */
+    static class VideoViewInitHandler extends Handler{
+        WeakReference<CameraLayout> mCameraLayout;
+
+        public VideoViewInitHandler(CameraLayout cameraLayout){
+            mCameraLayout = new WeakReference<>(cameraLayout);
+        }
+
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
-                case 0:
-
-                    break;
-                default:
-                    break;
-            }
+            mCameraLayout.get().mViewHolder.vvPreview.setBackgroundColor(Color.TRANSPARENT);
         }
-    };
+    }
 
     /**
      * 设置fragment

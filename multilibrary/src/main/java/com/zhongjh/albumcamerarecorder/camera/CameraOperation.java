@@ -81,6 +81,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     private ErrorListener mErrorLisenter; // 异常事件
     private CameraOperationListener mCameraOperationListener; // 有关该类的回调事件
+    private boolean isStartPreview;// 配合上面使用，是否已经启动预览，只有第一次有效
 
     private ImageView mImgSwitch;
     private ImageView mImgFlash;
@@ -110,7 +111,10 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-
+        if (!isStartPreview) {
+            mCameraOperationListener.onStartPreview();
+            isStartPreview = true;
+        }
     }
 
     /**
@@ -396,7 +400,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
             mPreviewHeight = previewSize.height;
             mPreviewWidth = previewSize.width;
-            Log.e("设置的所有的高宽 预览时候的高宽",mPreviewHeight + " " + mPreviewWidth);
+            Log.e("设置的所有的高宽 预览时候的高宽", mPreviewHeight + " " + mPreviewWidth);
             // 设置图片的宽度和高度
             parameters.setPictureSize(pictureSize.width, pictureSize.height);
 
@@ -809,7 +813,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
      *
      * @param flashMode 模式
      */
-    public void setFlashMode(String flashMode,Context context) {
+    public void setFlashMode(String flashMode, Context context) {
         if (mCamera == null)
             return;
         if (mCamera.getParameters().getSupportedFlashModes() == null) {
@@ -817,7 +821,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
             Toast.makeText(context, "该手机没有闪光灯，不支持闪光灯方面功能", Toast.LENGTH_SHORT).show();
             return;
         }
-        try{
+        try {
             Camera.Parameters params = mCamera.getParameters();
             params.setFlashMode(flashMode);
             mCamera.setParameters(params);

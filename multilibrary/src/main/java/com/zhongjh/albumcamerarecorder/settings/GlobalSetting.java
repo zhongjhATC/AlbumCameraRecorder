@@ -161,7 +161,8 @@ public final class GlobalSetting implements GlobalSettingApi {
 
     @Override
     public GlobalSetting isCutscenes(boolean isCutscenes) {
-        return null;
+        mGlobalSpec.isCutscenes = isCutscenes;
+        return this;
     }
 
     @NonNull

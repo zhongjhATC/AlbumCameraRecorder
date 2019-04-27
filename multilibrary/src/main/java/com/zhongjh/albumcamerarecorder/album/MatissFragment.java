@@ -46,6 +46,7 @@ import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
@@ -69,11 +70,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
 
-
     private static final String CHECK_STATE = "checkState";
 
     private Activity mActivity;
     private Context mContext;
+
+    private GlobalSpec mGlobalSpec;// 公共配置
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection;
@@ -109,6 +111,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     @Override
     public void onCreate(Bundle savedInstanceState) {
         mAlbumSpec = AlbumSpec.getInstance();
+        mGlobalSpec = GlobalSpec.getInstance();
         super.onCreate(savedInstanceState);
     }
 
@@ -188,6 +191,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+            if (mGlobalSpec.isCutscenes)
+                mActivity.overridePendingTransition(R.anim.activity_open, 0);
         });
 
         // 确认当前选择的图片
@@ -479,6 +484,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+        if (mGlobalSpec.isCutscenes){
+                mActivity.overridePendingTransition(R.anim.activity_open, 0);
+        }
     }
 
     @Override

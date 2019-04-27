@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
 
         GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
         globalSetting.defaultPosition(1);// 默认从第二个开始
-        globalSetting.isCutscenes(true);// 启动过场动画，从下往上动画
+        globalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());// 启动过场动画，从下往上动画
         if (mBinding.cbAlbum.isChecked())
             // 开启相册功能
             globalSetting.albumSetting(albumSetting);

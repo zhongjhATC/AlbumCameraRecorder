@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
 
+import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
@@ -189,6 +190,13 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        if (globalSpec != null ){
+            if (globalSpec.isCutscenes)
+                activity.overridePendingTransition(R.anim.activity_open, 0);
+        }else{
+            activity.overridePendingTransition(R.anim.activity_open, 0);
+        }
     }
 
     /**
@@ -216,6 +224,13 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        if (globalSpec != null ){
+            if (globalSpec.isCutscenes)
+                activity.overridePendingTransition(R.anim.activity_open, 0);
+        }else{
+            activity.overridePendingTransition(R.anim.activity_open, 0);
+        }
     }
 
     /**
@@ -237,7 +252,13 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
-
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        if (globalSpec != null ){
+            if (globalSpec.isCutscenes)
+                activity.overridePendingTransition(R.anim.activity_open, 0);
+        }else{
+            activity.overridePendingTransition(R.anim.activity_open, 0);
+        }
     }
 
 

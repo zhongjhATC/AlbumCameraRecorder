@@ -177,6 +177,14 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        if (mGlobalSpec.isCutscenes)
+            //关闭窗体动画显示
+            this.overridePendingTransition(0, R.anim.activity_close);
+    }
+
+    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.button_back) {
             onBackPressed();
