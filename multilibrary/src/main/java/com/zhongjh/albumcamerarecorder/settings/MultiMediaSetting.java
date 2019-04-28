@@ -172,7 +172,7 @@ public final class MultiMediaSetting {
     }
 
     /**
-     * 调用打开图片预览
+     * 调用打开图片预览 - 主要用于配合九宫图
      *
      * @param activity 窗体
      * @param list     数据源
@@ -188,6 +188,35 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+        activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        if (globalSpec != null ){
+            if (globalSpec.isCutscenes)
+                activity.overridePendingTransition(R.anim.activity_open, 0);
+        }else{
+            activity.overridePendingTransition(R.anim.activity_open, 0);
+        }
+    }
+
+
+    /**
+     * 调用打开单个视频 - 主要用于配合九宫图
+     *
+     * @param activity 窗体
+     * @param list     需要显示的大图
+     */
+    public static void openPreviewVideo(Activity activity, ArrayList<MultiMedia> list) {
+        // 转换成items
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, list);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_VIDEO);
+
+        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(0));
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
@@ -223,34 +252,7 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
-        GlobalSpec globalSpec = GlobalSpec.getInstance();
-        if (globalSpec != null ){
-            if (globalSpec.isCutscenes)
-                activity.overridePendingTransition(R.anim.activity_open, 0);
-        }else{
-            activity.overridePendingTransition(R.anim.activity_open, 0);
-        }
-    }
-
-    /**
-     * 调用打开单个视频
-     *
-     * @param activity 窗体
-     * @param list     需要显示的大图
-     */
-    public static void openPreviewVideo(Activity activity, ArrayList<MultiMedia> list) {
-        // 转换成items
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, list);
-        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_VIDEO);
-
-        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(0));
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
         if (globalSpec != null ){
@@ -260,6 +262,5 @@ public final class MultiMediaSetting {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
-
 
 }
