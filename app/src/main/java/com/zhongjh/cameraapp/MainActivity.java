@@ -50,7 +50,9 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                getPermissions(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                boolean isOk = getPermissions();
+                if (isOk)
+                    openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
@@ -95,7 +97,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected MaskProgressLayout getMaskProgressLayout() {
-        return null;
+        return mBinding.mplImageList;
     }
 
     /**

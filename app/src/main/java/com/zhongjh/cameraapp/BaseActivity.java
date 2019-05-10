@@ -85,6 +85,14 @@ public abstract class BaseActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                 }
+
+                // 看下see为什么这么弄
+//                if (size == 0) {
+//                    Toast.makeText(this, "你可以重新打开相关功能", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
+//                }
+
             }
         }
     }
@@ -92,7 +100,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 获取权限
      */
-    protected void getPermissions(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+    protected boolean getPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
                     .PERMISSION_GRANTED &&
@@ -100,16 +108,17 @@ public abstract class BaseActivity extends AppCompatActivity {
                             .PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
                             .PERMISSION_GRANTED) {
-                openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                return true;
             } else {
                 //不具有获取权限，需要进行权限申请
                 ActivityCompat.requestPermissions(BaseActivity.this, new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
+                return false;
             }
         } else {
-            openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+            return true;
         }
     }
 
@@ -176,6 +185,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         for (Map.Entry<MultiMediaView, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
+        getMaskProgressLayout().destroy();
         super.onDestroy();
     }
 

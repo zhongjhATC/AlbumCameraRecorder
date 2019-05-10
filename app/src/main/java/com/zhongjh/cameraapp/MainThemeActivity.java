@@ -28,6 +28,7 @@ import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainThemeBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
+import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +45,8 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW;
 
 
-public class MainThemeActivity extends AppCompatActivity {
+public class MainThemeActivity extends BaseActivity {
 
-    private static final int REQUEST_CODE_CHOOSE = 236;
-    private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
-    private HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
     ActivityMainThemeBinding mBinding;
 
     /**
@@ -237,6 +235,12 @@ public class MainThemeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected MaskProgressLayout getMaskProgressLayout() {
+        return null;
+    }
+
+    @Override
     private void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();

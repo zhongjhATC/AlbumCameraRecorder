@@ -7,12 +7,9 @@ import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
 import java.util.ArrayList;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
 
 /**
