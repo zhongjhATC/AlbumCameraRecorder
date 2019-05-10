@@ -12,8 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,8 +24,8 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
+import com.zhongjh.cameraapp.databinding.ActivityMainThemeBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
@@ -35,7 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,27 +44,27 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW;
 
 
-public class MainSimpleActivity extends AppCompatActivity {
+public class MainThemeActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_CHOOSE = 236;
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
     private HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
-    ActivityMainSimpleBinding mBinding;
+    ActivityMainThemeBinding mBinding;
 
     /**
      * @param activity 要跳转的activity
      */
     public static void newInstance(Activity activity) {
-        activity.startActivity(new Intent(activity, MainSimpleActivity.class));
+        activity.startActivity(new Intent(activity, MainThemeActivity.class));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_simple);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_simple);
+        setContentView(R.layout.activity_main_theme);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_theme);
 
-        // 以下为点击时间
+        // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
@@ -81,10 +78,10 @@ public class MainSimpleActivity extends AppCompatActivity {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainSimpleActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(MainThemeActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainSimpleActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
+                    MultiMediaSetting.openPreviewVideo(MainThemeActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
                 }
             }
 
@@ -130,7 +127,7 @@ public class MainSimpleActivity extends AppCompatActivity {
                 openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             } else {
                 //不具有获取权限，需要进行权限申请
-                ActivityCompat.requestPermissions(MainSimpleActivity.this, new String[]{
+                ActivityCompat.requestPermissions(MainThemeActivity.this, new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
@@ -232,7 +229,7 @@ public class MainSimpleActivity extends AppCompatActivity {
                     size++;
                 }
                 if (size == 0) {
-                    startActivityForResult(new Intent(MainSimpleActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
+                    startActivityForResult(new Intent(MainThemeActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                 }
@@ -244,7 +241,6 @@ public class MainSimpleActivity extends AppCompatActivity {
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
         cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
-
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
                 .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
@@ -255,22 +251,13 @@ public class MainSimpleActivity extends AppCompatActivity {
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
-
         // 全局
-        GlobalSetting globalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
-
-        if (mBinding.cbAlbum.isChecked())
-            // 开启相册功能
-            globalSetting.albumSetting(albumSetting);
-        if (mBinding.cbCamera.isChecked())
-            // 开启拍摄功能
-            globalSetting.cameraSetting(cameraSetting);
-        if (mBinding.cbRecorder.isChecked())
-            // 开启录音功能
-            globalSetting.recorderSetting(recorderSetting);
-
+        GlobalSetting globalSetting = MultiMediaSetting.from(MainThemeActivity.this).choose(MimeType.ofAll());
+        globalSetting.albumSetting(albumSetting);
+        globalSetting.cameraSetting(cameraSetting);
+        globalSetting.recorderSetting(recorderSetting);
         globalSetting
-                .setOnMainListener(errorMessage -> Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
+                .setOnMainListener(errorMessage -> Toast.makeText(MainThemeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
                 .imageEngine(new Glide4Engine())    // for glide-V4
                 .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频

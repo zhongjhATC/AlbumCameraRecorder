@@ -82,6 +82,10 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".MainThemeActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
 

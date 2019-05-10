@@ -35,6 +35,14 @@ public class MainListActivity extends AppCompatActivity {
         // 配置版
         mBinding.btnConfigure.setOnClickListener(v -> MainActivity.newInstance(MainListActivity.this));
 
+        // 多种样式版
+        mBinding.btnTheme.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         // 默认有数据的
         mBinding.btnOpenSee.setOnClickListener(v -> MainSeeActivity.newInstance(MainListActivity.this));
 
