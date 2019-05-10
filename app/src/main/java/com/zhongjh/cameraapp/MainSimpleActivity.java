@@ -248,21 +248,10 @@ public class MainSimpleActivity extends AppCompatActivity {
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
                 .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
-                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
                 .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
-                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
-                .thumbnailScale(0.85f)// 图片缩放比例
-                .setOnSelectedListener((uriList, pathList) -> {
-                    // 每次选择的事件
-                    Log.e("onSelected", "onSelected: pathList=" + pathList);
-                })
                 .originalEnable(true)// 开启原图
-                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
-                .setOnCheckedListener(isChecked -> {
-                    // DO SOMETHING IMMEDIATELY HERE
-                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
-                });
+                .maxOriginalSize(10); // 最大原图size,仅当originalEnable为true的时候才有效
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
