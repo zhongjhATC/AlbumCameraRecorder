@@ -32,7 +32,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.listener.CameraOperationListener;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
@@ -213,7 +212,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private void initView() {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
-        View view = LayoutInflater.from(mContext).inflate(R.layout.camera_main_view_zjh, this);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
 
 

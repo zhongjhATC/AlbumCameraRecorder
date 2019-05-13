@@ -121,8 +121,6 @@ public class MainThemeActivity extends BaseActivity {
             globalSetting.theme(R.style.AppTheme_Blue);
         if (mBinding.rbBlack.isChecked())
             globalSetting.theme(R.style.AppTheme_Dracula);
-        if (mBinding.rbBlue.isChecked())
-            globalSetting.theme(R.style.AppTheme_Blue);
 
 
         globalSetting.albumSetting(albumSetting);

@@ -19,7 +19,11 @@
     <attr name="item.checkCircle.backgroundColor" format="reference|color" />
     <attr name="item.checkCircle.borderColor" format="reference|color" />
     <attr name="capture.textColor" format="reference|color" />
-
+    <!-- region 点击或者长按的按钮样式，用于拍照、录像 -->
+    <attr name="click.long.button.round.border" format="reference|color" /> <!-- 外圆的颜色 -->
+    <attr name="click.long.button.inner.circle.no.operation" format="reference|color" /> <!-- 内圆的未录制时颜色 -->
+    <attr name="click.long.button.inner.circle.in.operation" format="reference|color" /> <!-- 内圆的录制中时颜色 -->
+    <!-- endregion -->
 
     <!-- region 拍照录像相关属性 -->
 

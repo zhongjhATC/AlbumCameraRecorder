@@ -48,13 +48,6 @@
                     android:gravity="center"
                     android:text="黑色样式" />
 
-                <RadioButton
-                    android:id="@+id/rbRecorder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="随便来样式" />
-
             </RadioGroup>
 
         </LinearLayout>

@@ -2,12 +2,14 @@ package com.zhongjh.albumcamerarecorder.widget.clickorlongbutton;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.os.Looper;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -48,7 +50,7 @@ public class ClickOrLongButton extends View {
     private RectF outMostCircleRect; // 外圈的画布
     private float outBlackCircleRadius;
     private float outMostBlackCircleRadius;
-    private int colorWhite;
+    private int colorRoundBorder;
     private int colorRecord;
     private int colorWhiteP60;
     //top
@@ -103,7 +105,7 @@ public class ClickOrLongButton extends View {
                 }
                 if (!recordable) return;
                 centerCirclePaint.setColor(colorRecord);
-                outMostWhiteCirclePaint.setColor(colorWhite);
+                outMostWhiteCirclePaint.setColor(colorRoundBorder);
                 percentInDegree = (360.0F * percent);
                 if (percent <= 1.0F) {
                     if (percent <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
@@ -147,12 +149,28 @@ public class ClickOrLongButton extends View {
         OUT_CIRCLE_WIDTH = DisplayMetricsUtils.dip2px(2.3F);// 外线宽度
         OUTER_CIRCLE_WIDTH_INC = DisplayMetricsUtils.dip2px(4.3F);
         INNER_CIRCLE_RADIUS = DisplayMetricsUtils.dip2px(32.0F);
-        colorRecord = getResources().getColor(R.color.app_color);
-        colorWhite = getResources().getColor(R.color.white);
-        colorWhiteP60 = getResources().getColor(R.color.white_sixty_percent);
+
+        // 调取样式中的颜色
+        TypedArray arrayRoundBorder = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_round_border});
+        int defaultRoundBorderColor = ResourcesCompat.getColor(
+                getResources(), R.color.click_long_button_round_border,
+                getContext().getTheme());
+        TypedArray arrayInnerCircleInOperation = getContext().getTheme().obtainStyledAttributes(new int[]{ R.attr.click_long_button_inner_circle_in_operation });
+        int defaultInnerCircleInOperationColor = ResourcesCompat.getColor(
+                getResources(), R.color.click_long_button_inner_circle_in_operation,
+                getContext().getTheme());
+        TypedArray arrayInnerCircleNoOperation = getContext().getTheme().obtainStyledAttributes(new int[]{ R.attr.click_long_button_inner_circle_no_operation });
+        int defaultInnerCircleNoOperationColor = ResourcesCompat.getColor(
+                getResources(), R.color.click_long_button_inner_circle_no_operation,
+                getContext().getTheme());
+
+        colorRecord = arrayInnerCircleInOperation.getColor(0, defaultInnerCircleInOperationColor);
+        colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor);
+        colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor);
         int colorBlackP40 = getResources().getColor(R.color.black_forty_percent);
         int colorBlackP80 = getResources().getColor(R.color.black_eighty_percent);
         int colorTranslucent = getResources().getColor(R.color.circle_shallow_translucent_bg);
+        // 内圈操作中样式
         processBarPaint = new Paint();
         processBarPaint.setColor(colorRecord);
         processBarPaint.setAntiAlias(true);
@@ -161,11 +179,11 @@ public class ClickOrLongButton extends View {
         processBarPaint.setStrokeCap(Cap.ROUND);
         // 外圈样式
         outMostWhiteCirclePaint = new Paint();
-        outMostWhiteCirclePaint.setColor(colorWhite);
+        outMostWhiteCirclePaint.setColor(colorRoundBorder);
         outMostWhiteCirclePaint.setAntiAlias(true);
         outMostWhiteCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
         outMostWhiteCirclePaint.setStyle(Style.STROKE);
-        // 内圈样式
+        // 内圈未操作中样式
         centerCirclePaint = new Paint();
         centerCirclePaint.setColor(colorWhiteP60);
         centerCirclePaint.setAntiAlias(true);
@@ -279,7 +297,7 @@ public class ClickOrLongButton extends View {
         touchTimeHandler.clearMsg();
         percentInDegree = 0.0F;
         centerCirclePaint.setColor(colorWhiteP60);
-        outMostWhiteCirclePaint.setColor(colorWhite);
+        outMostWhiteCirclePaint.setColor(colorRoundBorder);
         innerCircleRadiusToDraw = INNER_CIRCLE_RADIUS;
         outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
         translucentCircleRadius = 0;
