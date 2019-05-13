@@ -68,7 +68,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                boolean isOk = getPermissions();
+                boolean isOk = getPermissions(false);
                 if (isOk)
                     openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
@@ -104,7 +104,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
             @Override
             public void onItemAudioStartDownload(String url) {
-                boolean isOk = getPermissions();
+                boolean isOk = getPermissions(true);
                 if (isOk) {
                     // 判断是否存在文件
                     String[] fileFullPath = getFileFullPath(url, 0);
@@ -122,7 +122,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
             @Override
             public void onItemVideoStartDownload(String url) {
-                boolean isOk = getPermissions();
+                boolean isOk = getPermissions(true);
                 if (isOk) {
                     String[] fileFullPath = getFileFullPath(url, 1);
                     boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);

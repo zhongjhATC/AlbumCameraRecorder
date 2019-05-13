@@ -299,7 +299,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
             @Override
             public void onLongClickShort(final long time) {
-                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));
+                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
                 setSwitchVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
                 postDelayed(() -> stopRecord(true), 1500 - time);

@@ -50,7 +50,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                boolean isOk = getPermissions();
+                boolean isOk = getPermissions(false);
                 if (isOk)
                     openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }

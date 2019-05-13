@@ -48,7 +48,7 @@ public class MainThemeActivity extends BaseActivity {
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                boolean isOk = getPermissions();
+                boolean isOk = getPermissions(false);
                 if (isOk)
                     openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
@@ -115,6 +115,16 @@ public class MainThemeActivity extends BaseActivity {
         RecorderSetting recorderSetting = new RecorderSetting();
         // 全局
         GlobalSetting globalSetting = MultiMediaSetting.from(MainThemeActivity.this).choose(MimeType.ofAll());
+
+        // 样式选择
+        if (mBinding.rbBlue.isChecked())
+            globalSetting.theme(R.style.AppTheme_Blue);
+        if (mBinding.rbBlack.isChecked())
+            globalSetting.theme(R.style.AppTheme_Dracula);
+        if (mBinding.rbBlue.isChecked())
+            globalSetting.theme(R.style.AppTheme_Blue);
+
+
         globalSetting.albumSetting(albumSetting);
         globalSetting.cameraSetting(cameraSetting);
         globalSetting.recorderSetting(recorderSetting);

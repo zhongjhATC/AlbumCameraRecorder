@@ -47,13 +47,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract MaskProgressLayout getMaskProgressLayout();
 
+    protected boolean isBrowse = false; // 是否浏览
+
     /**
      * 公共的打开多媒体事件
+     *
      * @param alreadyImageCount 已经存在的图片
      * @param alreadyVideoCount 已经存在的语音
      * @param alreadyAudioCount 已经存在的视频
      */
-    protected abstract void openMain(int alreadyImageCount,int alreadyVideoCount,int alreadyAudioCount);
+    protected abstract void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount);
 
     @TargetApi(23)
     @Override
@@ -80,27 +83,25 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (!cameraPermissionGranted) {
                     size++;
                 }
+
                 if (size == 0) {
-                    startActivityForResult(new Intent(BaseActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
+                    if (isBrowse)
+                        Toast.makeText(this, "你可以重新打开相关功能", Toast.LENGTH_SHORT).show();
+                    else
+                        startActivityForResult(new Intent(BaseActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                 }
-
-                // 看下see为什么这么弄
-//                if (size == 0) {
-//                    Toast.makeText(this, "你可以重新打开相关功能", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
-//                }
-
             }
         }
     }
 
     /**
      * 获取权限
+     * @param isBrowse 是否浏览
      */
-    protected boolean getPermissions() {
+    protected boolean getPermissions(boolean isBrowse) {
+        this.isBrowse = isBrowse;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
                     .PERMISSION_GRANTED &&

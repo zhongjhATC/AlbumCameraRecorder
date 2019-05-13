@@ -1,7 +1,9 @@
 package com.zhongjh.albumcamerarecorder.settings;
 
 import com.zhongjh.albumcamerarecorder.R;
+
 import gaode.zhongjh.com.common.enums.MimeType;
+
 import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
 
 import java.util.Set;
@@ -30,6 +32,12 @@ public class CameraSpec {
      */
     private void reset() {
         mimeTypeSet = null;
+        imageSwitch = R.drawable.ic_camera;    // 切换前置/后置摄像头图标资源
+        imageFlashOn = R.drawable.ic_flash_on;      // 闪光灯开启状态图标
+        imageFlashOff = R.drawable.ic_flash_off;       // 闪光灯关闭状态图标
+        imageFlashAuto = R.drawable.ic_flash_auto;      // 闪光灯自动状态图标
+        duration = 10;    // 最长录制时间
+        minDuration = 1500;// 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
     }
 
 
