@@ -82,6 +82,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
     private ErrorListener mErrorLisenter; // 异常事件
     private CameraOperationListener mCameraOperationListener; // 有关该类的回调事件
     private boolean isStartPreview;// 配合上面使用，是否已经启动预览，只有第一次有效
+    private int isStartPreviewCount = 0;// 配合上面使用，因为延迟方面原因获取5次之后再调用
 
     private ImageView mImgSwitch;
     private ImageView mImgFlash;
@@ -111,8 +112,12 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        if (!isStartPreview) {
+        if  (isStartPreviewCount < 5){
+            isStartPreviewCount++;
+        }else{
             mCameraOperationListener.onStartPreview();
+        }
+        if (!isStartPreview) {
             isStartPreview = true;
         }
     }
