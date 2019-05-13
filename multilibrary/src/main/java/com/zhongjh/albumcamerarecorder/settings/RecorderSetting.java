@@ -10,7 +10,7 @@ public final class RecorderSetting implements RecorderSettingApi {
     private final RecordeSpec mRecordeSpec;
 
     public RecorderSetting() {
-        mRecordeSpec = RecordeSpec.getInstance();
+        mRecordeSpec = RecordeSpec.getCleanInstance();
     }
 
 

@@ -17,7 +17,7 @@ public final class CameraSetting implements CameraSettingApi {
     private final CameraSpec mCameraSpec;
 
     public CameraSetting() {
-        mCameraSpec = CameraSpec.getInstance();
+        mCameraSpec = CameraSpec.getCleanInstance();
     }
 
     @Override

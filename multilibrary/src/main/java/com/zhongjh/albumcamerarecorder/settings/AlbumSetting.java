@@ -25,7 +25,7 @@ public class AlbumSetting implements AlbumSettingApi {
      * @param mediaTypeExclusive 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
      */
     public AlbumSetting(boolean mediaTypeExclusive) {
-        mAlbumSpec = AlbumSpec.getInstance();
+        mAlbumSpec = AlbumSpec.getCleanInstance();
 
         mAlbumSpec.mediaTypeExclusive = mediaTypeExclusive;
     }
