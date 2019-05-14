@@ -10,8 +10,19 @@ public final class RecorderSetting implements RecorderSettingApi {
     private final RecordeSpec mRecordeSpec;
 
     public RecorderSetting() {
-        mRecordeSpec = RecordeSpec.getInstance();
+        mRecordeSpec = RecordeSpec.getCleanInstance();
     }
 
+    @Override
+    public RecorderSetting duration(int duration) {
+        mRecordeSpec.duration = duration;
+        return this;
+    }
+
+    @Override
+    public RecorderSetting minDuration(int minDuration) {
+        mRecordeSpec.minDuration = minDuration;
+        return this;
+    }
 
 }

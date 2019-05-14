@@ -7,12 +7,9 @@ import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
 import java.util.ArrayList;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
 
 /**
@@ -34,6 +31,9 @@ public class MainListActivity extends AppCompatActivity {
 
         // 配置版
         mBinding.btnConfigure.setOnClickListener(v -> MainActivity.newInstance(MainListActivity.this));
+
+        // 多种样式版
+        mBinding.btnTheme.setOnClickListener(v -> MainThemeActivity.newInstance(MainListActivity.this));
 
         // 默认有数据的
         mBinding.btnOpenSee.setOnClickListener(v -> MainSeeActivity.newInstance(MainListActivity.this));

@@ -1,51 +1,35 @@
 package com.zhongjh.cameraapp;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import gaode.zhongjh.com.common.enums.MimeType;
-
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
-import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-
-import gaode.zhongjh.com.common.entity.SaveStrategy;
-
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
-
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
+import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
 import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import gaode.zhongjh.com.common.entity.SaveStrategy;
+import gaode.zhongjh.com.common.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
  * 这是用于设置加载数据的
@@ -53,12 +37,8 @@ import java.util.TimerTask;
  * 大体逻辑是先下载文件到指定目录，然后再赋值，播放。
  * Created by zhongjh on 2019/2/21.
  */
-public class MainSeeActivity extends AppCompatActivity implements DownloadListener {
+public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
-    private static final int REQUEST_CODE_CHOOSE = 23;
-
-    private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
-    private HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
     ActivityMainSeeBinding mBinding;
 
     // 初始化
@@ -81,12 +61,14 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         setContentView(R.layout.activity_main_see);
         progressDialog = new ProgressDialog(MainSeeActivity.this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_see);
+
+
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                boolean isOk = getPermissions();
+                boolean isOk = getPermissions(false);
                 if (isOk)
                     openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
@@ -122,7 +104,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
 
             @Override
             public void onItemAudioStartDownload(String url) {
-                boolean isOk = getPermissions();
+                boolean isOk = getPermissions(true);
                 if (isOk) {
                     // 判断是否存在文件
                     String[] fileFullPath = getFileFullPath(url, 0);
@@ -140,7 +122,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
 
             @Override
             public void onItemVideoStartDownload(String url) {
-                boolean isOk = getPermissions();
+                boolean isOk = getPermissions(true);
                 if (isOk) {
                     String[] fileFullPath = getFileFullPath(url, 1);
                     boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
@@ -223,103 +205,9 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         mBinding.mplImageList.addVideoUrl("http://img.huoyunji.com/video_20190221105749_Android_31228");
     }
 
-    /**
-     * 获取权限
-     */
-    private boolean getPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
-                    .PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager
-                            .PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
-                            .PERMISSION_GRANTED) {
-                return true;
-            } else {
-                //不具有获取权限，需要进行权限申请
-                ActivityCompat.requestPermissions(MainSeeActivity.this, new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            // 获取类型，根据类型设置不同的事情
-            switch (MultiMediaSetting.obtainMultimediaType(data)) {
-                case MultimediaTypes.PICTURE:
-                    // 图片
-                    List<String> path = MultiMediaSetting.obtainPathResult(data);
-                    mBinding.mplImageList.addImagesStartUpload(path);
-                    break;
-                case MultimediaTypes.VIDEO:
-                    // 录像
-                    List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                    mBinding.mplImageList.addVideoStartUpload(videoPath);
-                    break;
-                case MultimediaTypes.AUDIO:
-                    // 语音
-                    RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    mBinding.mplImageList.addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
-                    break;
-                case MultimediaTypes.BLEND:
-                    // 混合类型，意思是图片可能跟录像在一起.
-                    mBinding.mplImageList.addImagesStartUpload(MultiMediaSetting.obtainPathResult(data));
-                    break;
-            }
-
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        // 停止所有的上传
-        for (Map.Entry<MultiMediaView, MyTask> entry : timers.entrySet()) {
-            entry.getValue().cancel();
-        }
-        mBinding.mplImageList.destroy();
-        super.onDestroy();
-    }
-
-    @TargetApi(23)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == GET_PERMISSION_REQUEST) {
-            int size = 0;
-            if (grantResults.length >= 1) {
-                int writeResult = grantResults[0];
-                //读写内存权限
-                boolean writeGranted = writeResult == PackageManager.PERMISSION_GRANTED;//读写内存权限
-                if (!writeGranted) {
-                    size++;
-                }
-                //录音权限
-                int recordPermissionResult = grantResults[1];
-                boolean recordPermissionGranted = recordPermissionResult == PackageManager.PERMISSION_GRANTED;
-                if (!recordPermissionGranted) {
-                    size++;
-                }
-                //相机权限
-                int cameraPermissionResult = grantResults[2];
-                boolean cameraPermissionGranted = cameraPermissionResult == PackageManager.PERMISSION_GRANTED;
-                if (!cameraPermissionGranted) {
-                    size++;
-                }
-                if (size == 0) {
-                    Toast.makeText(this, "你可以重新打开相关功能", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
+    protected MaskProgressLayout getMaskProgressLayout() {
+        return mBinding.mplImageList;
     }
 
     /**
@@ -328,7 +216,7 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
      * @param alreadyAudioCount 已经存在显示的几个音频
      *                          打开窗体
      */
-    private void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+    protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         mGlobalSetting.maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);
     }
@@ -409,26 +297,8 @@ public class MainSeeActivity extends AppCompatActivity implements DownloadListen
         return true;
     }
 
-    class MyTask extends Timer {
-
-        int percentage = 0;// 百分比
-        MultiMediaView multiMediaView;
-
-        MyTask(MultiMediaView multiMediaView) {
-            this.multiMediaView = multiMediaView;
-        }
-
-        void schedule() {
-            this.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    runOnUiThread(() -> {
-                        percentage++;
-                        multiMediaView.setPercentage(percentage);
-                    });
-                }
-            }, 1000, 100);
-        }
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
 

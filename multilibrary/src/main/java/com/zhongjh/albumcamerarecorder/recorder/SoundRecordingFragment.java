@@ -24,8 +24,11 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.recorder.service.RecordingService;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundrecordingLayout;
+import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
+
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
+
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 import java.io.File;
@@ -46,6 +49,9 @@ import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
 public class SoundRecordingFragment extends BaseFragment {
 
     protected Activity mActivity;
+
+    RecordeSpec mRecordeSpec;
+
     // 是否正在播放中
     private boolean isPlaying = false;
     private ViewHolder mViewHolder;
@@ -73,10 +79,12 @@ public class SoundRecordingFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
 
-        // 设置录音最长录制时间30秒
-        mViewHolder.pvLayout.setDuration(30000);
-        // 设置只能长按
-        mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONGCLICK);
+        mRecordeSpec = RecordeSpec.getInstance();   // 初始化设置
+
+        mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_sound_recording)); // 提示文本
+        mViewHolder.pvLayout.setDuration(mRecordeSpec.duration * 1000);// 设置录制时间
+        mViewHolder.pvLayout.setMinDuration(mRecordeSpec.minDuration);// 最短录制时间
+        mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONGCLICK); // 设置只能长按
         initListener();
         return mViewHolder.rootView;
     }
@@ -119,6 +127,7 @@ public class SoundRecordingFragment extends BaseFragment {
 
             @Override
             public void onLongClickShort(long time) {
+                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
                 // 停止录音
                 onRecord(false);
                 mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());

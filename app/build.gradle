@@ -46,9 +46,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidSupportSdkVersion"
-    compile project(path: ':multilibrary')
-    compile project(path: ':progresslibrary')
-    compile project(':albumCameraRecorderCommon')
+    implementation project(path: ':multilibrary')
+    implementation project(path: ':progresslibrary')
+    implementation project(':albumCameraRecorderCommon')
     implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.1'
 
     // 图片

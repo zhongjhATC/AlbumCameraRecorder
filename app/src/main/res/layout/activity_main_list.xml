@@ -26,6 +26,15 @@
             android:text="配置版" />
 
         <Button
+            android:id="@+id/btnTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="样式版" />
+
+        <Button
             android:id="@+id/btnOpenSee"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

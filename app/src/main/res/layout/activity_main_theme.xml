@@ -28,40 +28,29 @@
                 app:maskingTextSize="12"
                 app:maxCount="7" />
 
-            <CheckBox
-                android:id="@+id/cbAlbum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:checked="true"
-                android:text="开启相册功能" />
-
-            <CheckBox
-                android:id="@+id/cbCamera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:checked="true"
-                android:text="开启拍摄功能" />
-
-            <CheckBox
-                android:id="@+id/cbRecorder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:checked="true"
-                android:text="开启录音功能" />
-
-            <LinearLayout
+            <RadioGroup
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            </LinearLayout>
+                <RadioButton
+                    android:id="@+id/rbBlue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:text="蓝色样式" />
+
+                <RadioButton
+                    android:id="@+id/rbBlack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="黑色样式" />
+
+            </RadioGroup>
 
         </LinearLayout>
-
 
     </ScrollView>
 
