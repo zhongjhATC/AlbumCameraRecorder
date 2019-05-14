@@ -24,6 +24,9 @@
         <item name="capture.textColor">@color/blue_capture</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="click_long_button_round_border">#ffffffff</item>
+        <item name="click_long_button_inner_circle_in_operation">@color/blue_primary</item>
+        <item name="click_long_button_inner_circle_no_operation">#99ffffff</item>
     </style>
 
     <style name="Toolbar.Blue" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -62,6 +65,10 @@
         <item name="capture.textColor">@color/dracula_capture</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
+        <!-- 录制的按钮样式 -->
+        <item name="click_long_button_round_border">#ffffffff</item> <!-- 按钮外圈颜色 -->
+        <item name="click_long_button_inner_circle_in_operation">@color/dracula_primary</item> <!-- 按钮内圈长按中的颜色 -->
+        <item name="click_long_button_inner_circle_no_operation">#99ffffff</item> <!-- 按钮内圈默认的颜色 -->
     </style>
 
     <style name="Toolbar.Dracula" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
