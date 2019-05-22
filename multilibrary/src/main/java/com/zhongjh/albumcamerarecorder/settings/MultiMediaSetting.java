@@ -191,10 +191,10 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        if (globalSpec != null ){
+        if (globalSpec != null) {
             if (globalSpec.isCutscenes)
                 activity.overridePendingTransition(R.anim.activity_open, 0);
-        }else{
+        } else {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
@@ -220,18 +220,19 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        if (globalSpec != null ){
+        if (globalSpec != null) {
             if (globalSpec.isCutscenes)
                 activity.overridePendingTransition(R.anim.activity_open, 0);
-        }else{
+        } else {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
 
     /**
-     * 调用打开图片预览
+     * 调用打开图片预览 - 纯浏览不可操作
+     *
      * @param activity 窗体
-     * @param list 资源id数据源
+     * @param list     资源id数据源
      * @param position 当前数据的索引
      */
     public static void openPreviewResourceId(Activity activity, ArrayList<Integer> list, int position) {
@@ -241,7 +242,34 @@ public final class MultiMediaSetting {
             multiMedia.setDrawableId(item);
             multiMedias.add(multiMedia);
         }
+        openPreview(activity, multiMedias, position);
+    }
 
+    /**
+     * 调用打开图片预览 - 纯浏览不可操作
+     *
+     * @param activity 窗体
+     * @param list     文件地址的数据源
+     * @param position 当前数据的索引
+     */
+    public static void openPreviewPath(Activity activity, ArrayList<String> list, int position) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        for (String item : list) {
+            MultiMedia multiMedia = new MultiMedia();
+            multiMedia.setUrl(item);
+            multiMedias.add(multiMedia);
+        }
+        openPreview(activity, multiMedias, position);
+    }
+
+    /**
+     * 提供给 {@link #openPreviewResourceId} 和 {@link #openPreviewPath} 共用的方法
+     *
+     * @param activity    窗体
+     * @param multiMedias 数据源
+     * @param position    当前数据的索引
+     */
+    private static void openPreview(Activity activity, ArrayList<MultiMedia> multiMedias, int position) {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, multiMedias);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
@@ -255,10 +283,10 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        if (globalSpec != null ){
+        if (globalSpec != null) {
             if (globalSpec.isCutscenes)
                 activity.overridePendingTransition(R.anim.activity_open, 0);
-        }else{
+        } else {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
