@@ -13,15 +13,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        CrashReport.initCrashReport(getApplicationContext(), "daa7c064ac", false);
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-
-        // 腾讯提交bug
-        MultiDex.install(base);
+        CrashReport.initCrashReport(this, "daa7c064ac", false);
 
         // 检测内存泄漏
         if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -30,6 +22,14 @@ public class MyApplication extends Application {
             return;
         }
         LeakCanary.install(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        // 腾讯提交bug
+        MultiDex.install(base);
     }
 
 }
