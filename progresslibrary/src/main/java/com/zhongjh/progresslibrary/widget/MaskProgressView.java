@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,7 +17,7 @@ import com.zhongjh.progresslibrary.utils.DisplayMetricsUtils;
  * 可以考虑这个：https://github.com/dudu90/FreshDownloadView
  * Created by zhongjh on 2018/10/16.
  */
-public class MaskProgressView extends android.support.v7.widget.AppCompatImageView {
+public class MaskProgressView extends androidx.appcompat.widget.AppCompatImageView {
 
     private static final String TAG = "MaskProgressView";
 

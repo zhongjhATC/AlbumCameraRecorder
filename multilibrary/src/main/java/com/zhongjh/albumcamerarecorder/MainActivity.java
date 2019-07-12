@@ -1,16 +1,14 @@
 package com.zhongjh.albumcamerarecorder;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -19,7 +17,6 @@ import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**

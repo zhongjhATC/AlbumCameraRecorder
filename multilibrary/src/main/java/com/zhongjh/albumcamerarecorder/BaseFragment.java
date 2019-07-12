@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.zhongjh.albumcamerarecorder.listener.HandleBackInterface;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;

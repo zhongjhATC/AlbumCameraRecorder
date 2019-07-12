@@ -3,13 +3,12 @@ package com.zhongjh.albumcamerarecorder.camera;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.BaseFragment;
@@ -24,7 +23,6 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;

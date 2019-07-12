@@ -1,6 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;

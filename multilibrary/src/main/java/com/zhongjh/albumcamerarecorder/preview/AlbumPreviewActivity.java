@@ -17,14 +17,13 @@ package com.zhongjh.albumcamerarecorder.preview;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
 import java.util.ArrayList;
 import java.util.List;

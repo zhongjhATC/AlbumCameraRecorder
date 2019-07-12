@@ -1,5 +1,5 @@
 package com.zhongjh.albumcamerarecorder.settings;
-import android.support.annotation.StyleRes;
+import androidx.annotation.StyleRes;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;

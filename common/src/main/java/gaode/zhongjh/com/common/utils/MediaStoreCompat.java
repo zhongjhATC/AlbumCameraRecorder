@@ -5,8 +5,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
-import android.support.v4.os.EnvironmentCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.os.EnvironmentCompat;
 
 import java.io.File;
 import java.io.FileNotFoundException;

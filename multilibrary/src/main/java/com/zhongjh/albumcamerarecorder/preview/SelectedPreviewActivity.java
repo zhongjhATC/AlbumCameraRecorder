@@ -1,7 +1,7 @@
 package com.zhongjh.albumcamerarecorder.preview;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;

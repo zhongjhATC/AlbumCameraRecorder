@@ -1,8 +1,8 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.support.annotation.StyleRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
 
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
@@ -75,7 +75,7 @@ public interface GlobalSettingApi {
     GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable);
 
     /**
-     * 为保存内部和外部文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     * 为保存内部和外部文件的位置提供的捕获策略{@link androidx.core.content.FileProvider}.
      *
      * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
      * @return {@link GlobalSetting} this
@@ -84,7 +84,7 @@ public interface GlobalSettingApi {
 
     /**
      * 如果设置这个，有关图片的优先权比allStrategy高
-     * 为保存内部和外部图片文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     * 为保存内部和外部图片文件的位置提供的捕获策略{@link androidx.core.content.FileProvider}.
      *
      * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
      * @return {@link GlobalSetting} this
@@ -93,7 +93,7 @@ public interface GlobalSettingApi {
 
     /**
      * 如果设置这个，有关视频的优先权比allStrategy高
-     * 为保存内部和外部视频文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     * 为保存内部和外部视频文件的位置提供的捕获策略{@link androidx.core.content.FileProvider}.
      *
      * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
      * @return {@link GlobalSetting} this
@@ -102,7 +102,7 @@ public interface GlobalSettingApi {
 
     /**
      * 如果设置这个，有关音频的优先权比allStrategy高
-     * 为保存内部和外部音频文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     * 为保存内部和外部音频文件的位置提供的捕获策略{@link androidx.core.content.FileProvider}.
      *
      * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
      * @return {@link GlobalSetting} this

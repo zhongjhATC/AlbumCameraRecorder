@@ -1,7 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.config;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.IntRange;
+import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 
 import java.io.Serializable;
 import java.lang.annotation.Retention;
