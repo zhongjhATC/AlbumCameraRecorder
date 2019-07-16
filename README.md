@@ -20,6 +20,9 @@
  - 支持自定义样式.支持更换里面的相关按钮.
  - 支持相册、录制、录音等多个嵌套功能，并且也可以通过配置只设置显示一个.
  - 丰富的回调接口和调试信息,可利用现有API实现丰富的效果.
+
+## X版本分支
+ - [AndroidX库版本](https://github.com/zhongjhATC/AlbumCameraRecorder/tree/androidx).
  
 ## 引入
 
