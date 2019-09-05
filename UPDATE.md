@@ -1,5 +1,8 @@
 # 历史更新
 
+## 1.0.17
+ - 修复ids的tagId的问题，兼容androidx库
+
 ## 1.0.15
  - 纯浏览图片功能增加了支持path方式。
  - 这方面浏览功能考虑以后增加共享过渡动画(这个动画其实另外一个demo已经做了很久了，但是前段时间发现了内存泄漏，即使翻墙查询相关解决方法也解决不了，希望有研究过的大牛帮忙解答下：https://github.com/googlesamples/android-unsplash/issues/12)。
