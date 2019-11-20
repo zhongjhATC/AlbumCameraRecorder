@@ -95,7 +95,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         // provider的authorities,用于提供给外部的file
         String authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_authority);
         // 获取最多显示多少个方框
-        int imageCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_maxCount, 5);
+        int maxCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_maxCount, 5);
         int imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_imageDeleteColor, colorPrimary);
         Drawable imageDeleteDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_imageDeleteDrawable);
 
@@ -139,7 +139,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
-        mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable, imageCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
+        mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable, maxCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
         // 设置上传音频等属性
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
         isShowRemovceRecorder();
