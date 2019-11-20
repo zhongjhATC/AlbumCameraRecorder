@@ -47,7 +47,9 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW;
 
-
+/**
+ * 简单版
+ */
 public class MainSimpleActivity extends BaseActivity {
 
     ActivityMainSimpleBinding mBinding;
