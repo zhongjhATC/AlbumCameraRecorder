@@ -24,7 +24,9 @@ import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
-
+/**
+ * 多种样式版
+ */
 public class MainThemeActivity extends BaseActivity {
 
     ActivityMainThemeBinding mBinding;
