@@ -22,7 +22,7 @@
         <item name="preview.bottomToolbar.apply.textColor">@color/blue_preview_bottom_toolbar_apply</item>
         <item name="listPopupWindowStyle">@style/Popup.Blue</item>
         <item name="capture.textColor">@color/blue_capture</item>
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
         <item name="android:windowNoTitle">true</item>
         <item name="click.long.button.round.border">#ffffffff</item>
         <item name="click.long.button.inner.circle.in.operation">@color/blue_primary</item>
@@ -63,7 +63,7 @@
         <item name="android:listPopupWindowStyle">@style/Popup.Dracula</item>
         <item name="listPopupWindowStyle">@style/Popup.Dracula</item>
         <item name="capture.textColor">@color/dracula_capture</item>
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
         <item name="android:windowNoTitle">true</item>
         <!-- 录制的按钮样式 -->
         <item name="click.long.button.round.border">#ffffffff</item> <!-- 按钮外圈颜色 -->
