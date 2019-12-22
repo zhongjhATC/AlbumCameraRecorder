@@ -85,7 +85,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     private Context mContext;
     private MediaStoreCompat mPictureMediaStoreCompat;  // 图片
-    private GlobalSpec mGlobalSpec;          // 公共配置
+    private GlobalSpec mGlobalSpec; // 公共配置
     private CameraSpec mCameraSpec; // 拍摄配置
     //    private CameraInterface mCameraInterface;// 拍摄操作类
     private CameraOperation mCameraOperation;// 拍摄操作类

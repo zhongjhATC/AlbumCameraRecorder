@@ -58,7 +58,7 @@ public interface GlobalSettingApi {
     GlobalSetting theme(@StyleRes int themeId);
 
     /**
-     * 设置默认第几个开始
+     * 设置界面默认显示 相册、录制、录音 三个其中之一
      * @param position
      * @return
      */
@@ -75,7 +75,7 @@ public interface GlobalSettingApi {
     GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable);
 
     /**
-     * 为保存内部和外部文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
+     * 保存文件的位置{@link android.support.v4.content.FileProvider}.
      *
      * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
      * @return {@link GlobalSetting} this
@@ -83,8 +83,8 @@ public interface GlobalSettingApi {
     GlobalSetting allStrategy(SaveStrategy saveStrategy);
 
     /**
+     * 保存图片文件的位置{@link android.support.v4.content.FileProvider}.
      * 如果设置这个，有关图片的优先权比allStrategy高
-     * 为保存内部和外部图片文件的位置提供的捕获策略{@link android.support.v4.content.FileProvider}.
      *
      * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
      * @return {@link GlobalSetting} this
