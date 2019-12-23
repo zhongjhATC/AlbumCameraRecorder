@@ -37,6 +37,7 @@ import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
     private static final String TAG = "CameraOperation";
     private CameraLayout mCameraLayout;
     private MediaStoreCompat mVideoMediaStoreCompat; // 录像文件配置路径
-    private String mVideoFileAbsPath;           // 文件路径
+    private File mVideoFileAbsPath;           // 文件路径
 
     private Camera mCamera;
     private boolean mIsPreviewing = false; // 目前是否处于录像状态
@@ -112,9 +113,9 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        if  (isStartPreviewCount < 5){
+        if (isStartPreviewCount < 5) {
             isStartPreviewCount++;
-        }else{
+        } else {
             mCameraOperationListener.onStartPreview();
         }
         if (!isStartPreview) {
@@ -545,7 +546,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         mMediaRecorder.setPreviewDisplay(surface);
         // 输出最终路径
         mVideoFileAbsPath = mVideoMediaStoreCompat.getFilePath(1);
-        mMediaRecorder.setOutputFile(mVideoFileAbsPath);
+        mMediaRecorder.setOutputFile(mVideoFileAbsPath.getPath());
         try {
             mMediaRecorder.prepare();
             mMediaRecorder.start();
@@ -600,7 +601,7 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
 
             if (isShort) {
                 // 如果是短视频则删除文件，并且直接回调返回
-                if (FileUtil.deleteFile(mVideoFileAbsPath)) {
+                if (FileUtil.deleteFile(mVideoFileAbsPath.getPath())) {
                     // 回调
                     callback.recordResult(null);
                 }

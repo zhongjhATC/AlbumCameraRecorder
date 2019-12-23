@@ -17,7 +17,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+
 import androidx.fragment.app.Fragment;
+
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -52,10 +54,12 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
+import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -85,7 +89,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
 
     private Context mContext;
     private MediaStoreCompat mPictureMediaStoreCompat;  // 图片
-    private GlobalSpec mGlobalSpec;          // 公共配置
+    private GlobalSpec mGlobalSpec; // 公共配置
     private CameraSpec mCameraSpec; // 拍摄配置
     //    private CameraInterface mCameraInterface;// 拍摄操作类
     private CameraOperation mCameraOperation;// 拍摄操作类
@@ -107,7 +111,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public LinkedHashMap<Integer, BitmapData> mCaptureBitmaps = new LinkedHashMap<>();  // 拍照的图片-集合
     private LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();      // 拍照的图片控件-集合
     private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
-    private String mVideoUrl;         // 视频URL
+    private File mVideoFile;         // 视频URL
     VideoViewInitHandler mVideoViewInitHandler = new VideoViewInitHandler(CameraLayout.this);
 
     // region 回调监听属性
@@ -506,7 +510,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         switch (type) {
             case TYPE_VIDEO:
                 stopVideo();    //停止播放
-                FileUtil.deleteFile(mVideoUrl); // 删除文件
+                FileUtil.deleteFile(mVideoFile.getPath()); // 删除文件
                 mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));     //初始化VideoView
                 mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
                 break;
@@ -538,14 +542,20 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
                 if (mOperaeCameraListener != null) {
-                    mOperaeCameraListener.recordSuccess(mVideoUrl);
+                    mOperaeCameraListener.recordSuccess(mVideoFile.getPath());
                 }
+                // 加入视频到android系统库里面
+                BitmapUtils.displayToGallery(getContext(), mVideoFile);
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
                 if (mOperaeCameraListener != null) {
                     mOperaeCameraListener.captureSuccess(getPaths());
+                    // 加入图片到android系统库里面
+                    for (BitmapData value : mCaptureBitmaps.values()) {
+                        BitmapUtils.displayToGallery(getContext(), value.getFile());
+                    }
                 }
                 break;
             case TYPE_SHORT:
@@ -564,9 +574,9 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
      */
     private void showPicture(Bitmap bitmap, boolean isVertical) {
         // 初始化数据并且存储进file
-        String path = mPictureMediaStoreCompat.saveFileByBitmap(bitmap);
-        Uri uri = mPictureMediaStoreCompat.getUri(path);
-        BitmapData bitmapData = new BitmapData(path, uri);
+        File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap);
+        Uri uri = mPictureMediaStoreCompat.getUri(file.getPath());
+        BitmapData bitmapData = new BitmapData(file, uri);
         // 回收bitmap
         if (bitmap != null && bitmap.isRecycled()) {
             // 回收并且置为null
@@ -591,11 +601,11 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
             mGlobalSpec.imageEngine.loadThumbnail(getContext(), viewHolderImageView.imgPhoto.getWidth(), mPlaceholder,
                     viewHolderImageView.imgPhoto, bitmapData.getUri());
             // 删除事件
-            viewHolderImageView.imgCancel.setTag(R.id.tagid,mPosition);
+            viewHolderImageView.imgCancel.setTag(R.id.tagid, mPosition);
             viewHolderImageView.imgCancel.setOnClickListener(v -> removePosition(Integer.parseInt(v.getTag(R.id.tagid).toString())));
 
             // 打开显示大图
-            viewHolderImageView.imgPhoto.setTag(R.id.tagid,String.valueOf(mPosition));
+            viewHolderImageView.imgPhoto.setTag(R.id.tagid, String.valueOf(mPosition));
             viewHolderImageView.imgPhoto.setOnClickListener(v -> {
                 ArrayList<MultiMedia> items = new ArrayList<>();
                 for (BitmapData value : mCaptureBitmaps.values()) {
@@ -622,7 +632,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
                 intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
                 fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
-                if (mGlobalSpec.isCutscenes){
+                if (mGlobalSpec.isCutscenes) {
                     if (fragment.getActivity() != null)
                         fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
                 }
@@ -672,10 +682,10 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     /**
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      *
-     * @param url 路径
+     * @param file 视频的file
      */
-    private void playVideo(String url) {
-        mVideoUrl = url;
+    private void playVideo(File file) {
+        mVideoFile = file;
         new Thread(() -> {
             if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer();
@@ -684,7 +694,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
                 mMediaPlayer.reset();
             }
             try {
-                mMediaPlayer.setDataSource(mVideoUrl);
+                mMediaPlayer.setDataSource(mVideoFile.getPath());
                 // 进行关联播放控件
                 mMediaPlayer.setSurface(mViewHolder.vvPreview.getHolder().getSurface());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -731,16 +741,16 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         }
         // 显示焦点框
         mViewHolder.fouce_view.setVisibility(VISIBLE);
-        if (x < mViewHolder.fouce_view.getWidth() / 2)
+        if (x < mViewHolder.fouce_view.getWidth() / 2f)
             x = mViewHolder.fouce_view.getWidth() / 2;
-        if (x > mLayoutWidth - mViewHolder.fouce_view.getWidth() / 2)
+        if (x > mLayoutWidth - mViewHolder.fouce_view.getWidth() / 2f)
             x = mLayoutWidth - mViewHolder.fouce_view.getWidth() / 2;
-        if (y < mViewHolder.fouce_view.getWidth() / 2)
+        if (y < mViewHolder.fouce_view.getWidth() / 2f)
             y = mViewHolder.fouce_view.getWidth() / 2;
-        if (y > mViewHolder.pvLayout.getTop() - mViewHolder.fouce_view.getWidth() / 2)
+        if (y > mViewHolder.pvLayout.getTop() - mViewHolder.fouce_view.getWidth() / 2f)
             y = mViewHolder.pvLayout.getTop() - mViewHolder.fouce_view.getWidth() / 2;
-        mViewHolder.fouce_view.setX(x - mViewHolder.fouce_view.getWidth() / 2);
-        mViewHolder.fouce_view.setY(y - mViewHolder.fouce_view.getHeight() / 2);
+        mViewHolder.fouce_view.setX(x - mViewHolder.fouce_view.getWidth() / 2f);
+        mViewHolder.fouce_view.setY(y - mViewHolder.fouce_view.getHeight() / 2f);
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(mViewHolder.fouce_view, "scaleX", 1, 0.6f);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(mViewHolder.fouce_view, "scaleY", 1, 0.6f);
         ObjectAnimator alpha = ObjectAnimator.ofFloat(mViewHolder.fouce_view, "alpha", 1f, 0.4f, 1f, 0.4f, 1f, 0.4f, 1f);
@@ -839,15 +849,15 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
         switch (mFlashType) {
             case Constants.TYPE_FLASH_AUTO:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashAuto);
-                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO,getContext());
+                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO, getContext());
                 break;
             case Constants.TYPE_FLASH_ON:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOn);
-                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_ON,getContext());
+                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_ON, getContext());
                 break;
             case Constants.TYPE_FLASH_OFF:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOff);
-                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_OFF,getContext());
+                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_OFF, getContext());
                 break;
         }
     }
@@ -869,7 +879,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     private ArrayList<String> getPaths() {
         ArrayList<String> paths = new ArrayList<>();
         for (BitmapData value : mCaptureBitmaps.values()) {
-            paths.add(value.getPath());
+            paths.add(value.getFile().getPath());
         }
         return paths;
     }
@@ -897,10 +907,10 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     /**
      * 设置闪光灯是否显示，如果不支持，是一直不会显示
      */
-    private void setSwitchVisibility(int viewVisibility){
-        if (!PackageManagerUtils.isSupportCameraLedFlash(mContext.getPackageManager())){
+    private void setSwitchVisibility(int viewVisibility) {
+        if (!PackageManagerUtils.isSupportCameraLedFlash(mContext.getPackageManager())) {
             mViewHolder.imgSwitch.setVisibility(View.GONE);
-        }else{
+        } else {
             mViewHolder.imgSwitch.setVisibility(viewVisibility);
         }
     }
@@ -908,10 +918,10 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     /**
      * 用于VideoView初始化完成后，设置回背景透明，不然无法看到
      */
-    static class VideoViewInitHandler extends Handler{
+    static class VideoViewInitHandler extends Handler {
         WeakReference<CameraLayout> mCameraLayout;
 
-        public VideoViewInitHandler(CameraLayout cameraLayout){
+        VideoViewInitHandler(CameraLayout cameraLayout) {
             mCameraLayout = new WeakReference<>(cameraLayout);
         }
 

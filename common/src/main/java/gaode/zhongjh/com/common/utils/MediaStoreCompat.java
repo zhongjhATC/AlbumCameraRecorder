@@ -88,11 +88,6 @@ public class MediaStoreCompat {
             storageDir = mContext.get().getExternalFilesDir(mSaveStrategy.directory);
         }
 
-        if (mSaveStrategy.directory != null) {
-            storageDir = new File(storageDir, mSaveStrategy.directory);
-            if (!storageDir.exists()) storageDir.mkdirs();
-        }
-
         // Avoid joining path components manually
         assert fileName != null;
         File tempFile = new File(storageDir, fileName);
@@ -108,12 +103,13 @@ public class MediaStoreCompat {
 
     /**
      * 返回创建文件的路径
+     *
      * @param type 0是图片 1是视频 2是音频
-     * @return 路径
+     * @return File
      */
-    public String getFilePath(int type) {
+    public File getFilePath(int type) {
         try {
-            return createFile(type).getPath();
+            return createFile(type);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -125,7 +121,7 @@ public class MediaStoreCompat {
      *
      * @return 返回file的路径
      */
-    public String saveFileByBitmap(Bitmap bitmap) {
+    public File saveFileByBitmap(Bitmap bitmap) {
         File file = null;
         try {
             file = createFile(0);
@@ -143,14 +139,18 @@ public class MediaStoreCompat {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return file.getPath();
+        return file;
     }
 
     /**
      * 绑定路径
      */
-    public Uri getUri(String path){
+    public Uri getUri(String path) {
         return FileProvider.getUriForFile(mContext.get(), mSaveStrategy.authority, new File(path));
+    }
+
+    public Uri getUri() {
+        return FileProvider.getUriForFile(mContext.get(), mSaveStrategy.authority, new File(mSaveStrategy.directory));
     }
 
 

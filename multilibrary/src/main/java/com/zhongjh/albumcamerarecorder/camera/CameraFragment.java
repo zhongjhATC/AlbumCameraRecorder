@@ -2,6 +2,8 @@ package com.zhongjh.albumcamerarecorder.camera;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import android.util.Log;
@@ -23,15 +25,23 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
+import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
@@ -53,6 +63,10 @@ public class CameraFragment extends BaseFragment {
 
     //声明一个long类型变量：用于存放上一点击“返回键”的时刻
     private long mExitTime;
+    private GlobalSpec mGlobalSpec; // 公共配置
+    private CameraSpec mCameraSpec; // 拍摄配置
+    private RecordeSpec mRecordeSpec; // 录音配置
+    private MediaStoreCompat mMediaStoreCompat;
 
     public static CameraFragment newInstance() {
         CameraFragment cameraFragment = new CameraFragment();
@@ -72,6 +86,9 @@ public class CameraFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
 
+        // 初始化设置
+        mCameraSpec = CameraSpec.getInstance();
+        mGlobalSpec = GlobalSpec.getInstance();
 
         view.setOnKeyListener((v, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -155,6 +172,24 @@ public class CameraFragment extends BaseFragment {
                 result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
+//                // 发送广播，通知媒体库更新文件
+//                Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//                MediaStoreCompat mediaStoreCompat = new MediaStoreCompat(getContext());
+//                // 设置图片路径
+//                if (mGlobalSpec.pictureStrategy != null) {
+//                    // 如果设置了视频的文件夹路径，就使用它的
+//                    mediaStoreCompat.setSaveStrategy(mGlobalSpec.pictureStrategy);
+//                    scanIntent.setData(mediaStoreCompat.getUri());
+//                } else {
+//                    // 否则使用全局的
+//                    if (mGlobalSpec.saveStrategy == null) {
+//                        throw new RuntimeException("Don't forget to set SaveStrategy.");
+//                    } else {
+//                        mediaStoreCompat.setSaveStrategy(mGlobalSpec.saveStrategy);
+//                        scanIntent.setData(mediaStoreCompat.getUri());
+//                    }
+//                }
+//                Objects.requireNonNull(getContext()).sendBroadcast(scanIntent);
             }
 
             @Override

@@ -2,6 +2,8 @@ package com.zhongjh.albumcamerarecorder.camera;
 
 import android.graphics.Bitmap;
 
+import java.io.File;
+
 /**
  * 有关 Camera 的回调
  */
@@ -26,9 +28,9 @@ interface CameraCallback {
         /**
          * 停止录像的回调
          *
-         * @param url 视频地址
+         * @param file 视频的file
          */
-        void recordResult(String url);
+        void recordResult(File file);
     }
 
     interface FocusCallback {

@@ -10,6 +10,7 @@ import com.zhongjh.albumcamerarecorder.recorder.common.MySharedPreferences;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -23,7 +24,7 @@ public class RecordingService extends Service {
 
     private static final String LOG_TAG = "RecordingService";
 
-    private String mFilePath = null;
+    private File mFile= null;
 
     private MediaRecorder mRecorder = null;
 
@@ -74,7 +75,7 @@ public class RecordingService extends Service {
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mRecorder.setOutputFile(mFilePath);
+        mRecorder.setOutputFile(mFile.getPath());
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
         if (MySharedPreferences.getPrefHighQuality(this)) {
@@ -96,7 +97,7 @@ public class RecordingService extends Service {
     }
 
     private void setFileNameAndPath(){
-        mFilePath = mAudioMediaStoreCompat.getFilePath(2);
+        mFile = mAudioMediaStoreCompat.getFilePath(2);
     }
 
     private void stopRecording() {
@@ -107,7 +108,7 @@ public class RecordingService extends Service {
         // 存储到缓存的文件地址
         getSharedPreferences("sp_name_audio", MODE_PRIVATE)
                 .edit()
-                .putString("audio_path", mFilePath)
+                .putString("audio_path", mFile.getPath())
                 .putLong("elpased", mElapsedMillis)
                 .apply();
 
