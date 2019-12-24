@@ -71,7 +71,7 @@ public interface AlbumSettingApi {
      *
      * 设置时将忽略 {@link #gridExpectedSize(int)} 此项.
      *
-     * @param spanCount 请求的范围计数
+     * @param spanCount 请求的范围计数,默认为3列
      * @return {@link AlbumSetting} this
      */
     AlbumSetting spanCount(int spanCount);

@@ -157,7 +157,8 @@ public class MainSimpleActivity extends BaseActivity {
                 .countable(true)// 是否显示多选图片的数字
                 .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
                 .originalEnable(true)// 开启原图
-                .maxOriginalSize(10); // 最大原图size,仅当originalEnable为true的时候才有效
+                .maxOriginalSize(10) // 最大原图size,仅当originalEnable为true的时候才有效
+                .spanCount(4); // 设置列数
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
