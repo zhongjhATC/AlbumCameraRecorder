@@ -36,24 +36,16 @@ public class BitmapUtils {
     }
 
     /**
-     * 显示图片到相册
+     * 显示图片、视频到图库
      *
-     * @param context
-     * @param photoFile 要保存的图片文件
+     * @param context 上下文
+     * @param photoFile 要保存的文件
      */
     public static void displayToGallery(Context context, File photoFile) {
         if (photoFile == null || !photoFile.exists()) {
             return;
         }
         String photoPath = photoFile.getAbsolutePath();
-        String photoName = photoFile.getName();
-        // 其次把文件插入到系统图库
-        try {
-            ContentResolver contentResolver = context.getContentResolver();
-            MediaStore.Images.Media.insertImage(contentResolver, photoPath, photoName, null);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         // 最后通知图库更新
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + photoPath)));
     }

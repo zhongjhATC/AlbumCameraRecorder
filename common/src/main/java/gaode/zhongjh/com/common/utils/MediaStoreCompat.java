@@ -107,9 +107,9 @@ public class MediaStoreCompat {
      * @param type 0是图片 1是视频 2是音频
      * @return 路径
      */
-    public String getFilePath(int type) {
+    public File getFilePath(int type) {
         try {
-            return createFile(type).getPath();
+            return createFile(type);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,7 +121,7 @@ public class MediaStoreCompat {
      *
      * @return 返回file的路径
      */
-    public String saveFileByBitmap(Bitmap bitmap) {
+    public File saveFileByBitmap(Bitmap bitmap) {
         File file = null;
         try {
             file = createFile(0);
@@ -139,7 +139,7 @@ public class MediaStoreCompat {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return file.getPath();
+        return file;
     }
 
     /**
