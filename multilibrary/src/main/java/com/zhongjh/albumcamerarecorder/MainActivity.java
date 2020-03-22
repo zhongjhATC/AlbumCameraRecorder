@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), mSpec);
         mVpPager.setAdapter(adapterViewPager);
         mVpPager.setOffscreenPageLimit(3);
-//        mVpPager.setCurrentItem(mDefaultPosition);// 根据配置默认选第几个
+        mVpPager.setCurrentItem(mDefaultPosition);// 根据配置默认选第几个
 
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
