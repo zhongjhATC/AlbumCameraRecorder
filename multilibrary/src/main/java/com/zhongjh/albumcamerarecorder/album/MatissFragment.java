@@ -251,11 +251,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             for (MimeType type : MimeType.ofImage()) {
                 if (type.checkType(resolver, uri)) {
                     isImageSize++;
+                    break;
                 }
             }
             for (MimeType type : MimeType.ofVideo()) {
                 if (type.checkType(resolver, uri)) {
                     isVideoSize++;
+                    break;
                 }
             }
         }
