@@ -37,10 +37,10 @@ public class BitmapUtils {
     }
 
     /**
-     * 显示图片到相册
+     * 显示图片、视频到图库
      *
      * @param context 上下文
-     * @param photoFile 要保存的图片文件
+     * @param photoFile 要保存的文件
      */
     public static void displayToGallery(Context context, File photoFile) {
         if (photoFile == null || !photoFile.exists()) {

@@ -111,7 +111,7 @@ public class CameraLayout extends FrameLayout implements SurfaceHolder
     public LinkedHashMap<Integer, BitmapData> mCaptureBitmaps = new LinkedHashMap<>();  // 拍照的图片-集合
     private LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();      // 拍照的图片控件-集合
     private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
-    private File mVideoFile;         // 视频URL
+    private File mVideoFile;         // 视频File
     VideoViewInitHandler mVideoViewInitHandler = new VideoViewInitHandler(CameraLayout.this);
 
     // region 回调监听属性
