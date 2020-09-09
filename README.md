@@ -35,9 +35,9 @@
 #### Step 2. Add the dependency
 
 	dependencies {
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.18X'        // 公共库，必须使用此库
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.18X'      // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.18X' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.19X'        // 公共库，必须使用此库
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.19X'      // 核心lib，调用显示相册、录屏、录音等
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.19X' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
 	}
 
 ## 快照
@@ -142,7 +142,7 @@
 
 
 ## 历史更新
-从1.0.1版本开始总结的[历史更新](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/UPDATE.md).
+从1.0.1版本开始总结的[历史更新](https://github.com/zhongjhATC/AlbumCameraRecorder/releases).
 
 ## apk直接体验下载
  - 1.0.0版本，跟当前最新代码版本可能会有稍许不同
