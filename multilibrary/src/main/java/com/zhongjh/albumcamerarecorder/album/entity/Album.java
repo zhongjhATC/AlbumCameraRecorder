@@ -18,6 +18,7 @@ package com.zhongjh.albumcamerarecorder.album.entity;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -46,20 +47,20 @@ public class Album implements Parcelable {
     public static final String ALBUM_NAME_ALL = "All";
 
     private final String mId;
-    private final String mCoverPath;
+    private final Uri mCoverUri;
     private final String mDisplayName;
     private long mCount;
 
-    Album(String id, String coverPath, String albumName, long count) {
+    Album(String id, Uri coverUri, String albumName, long count) {
         mId = id;
-        mCoverPath = coverPath;
+        mCoverUri = coverUri;
         mDisplayName = albumName;
         mCount = count;
     }
 
     Album(Parcel source) {
         mId = source.readString();
-        mCoverPath = source.readString();
+        mCoverUri = source.readParcelable(Uri.class.getClassLoader());
         mDisplayName = source.readString();
         mCount = source.readLong();
     }
@@ -69,9 +70,10 @@ public class Album implements Parcelable {
      * 此方法不负责管理光标资源，如关闭、迭代等。
      */
     public static Album valueOf(Cursor cursor) {
+        String clumn = cursor.getString(cursor.getColumnIndex(AlbumLoader.COLUMN_URI));
         return new Album(
                 cursor.getString(cursor.getColumnIndex("bucket_id")),
-                cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA)),
+                Uri.parse(clumn != null ? clumn : ""),
                 cursor.getString(cursor.getColumnIndex("bucket_display_name")),
                 cursor.getLong(cursor.getColumnIndex(AlbumLoader.COLUMN_COUNT)));
     }
@@ -84,7 +86,7 @@ public class Album implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mId);
-        dest.writeString(mCoverPath);
+        dest.writeParcelable(mCoverUri, 0);
         dest.writeString(mDisplayName);
         dest.writeLong(mCount);
     }
@@ -93,8 +95,8 @@ public class Album implements Parcelable {
         return mId;
     }
 
-    public String getCoverPath() {
-        return mCoverPath;
+    public Uri getCoverUri() {
+        return mCoverUri;
     }
 
     public long getCount() {

@@ -10,3 +10,4 @@
 /.idea/caches/*.ser
 /.idea/codeStyles/*.xml
 /.idea/*.xml
+/app/release
