@@ -24,6 +24,9 @@
 ## X版本分支
  - [AndroidX库版本](https://github.com/zhongjhATC/AlbumCameraRecorder/tree/androidx).
  
+## 该分支已经完全弃用，以后只维护X版本了
+ - 该分支不支持Android Q版本后的选择图片，如果您的项目SDK版本是28那是完全够用的.
+ 
 ## 引入
 
 #### Step 1. Add the JitPack repository to your build file
