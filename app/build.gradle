@@ -1,6 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('android.keystore')
+            storePassword '123456'
+            keyPassword '123456'
+            keyAlias = 'android.keystore'
+        }
+        debug {
+            storeFile file('android.keystore')
+            storePassword '123456'
+            keyPassword '123456'
+            keyAlias = 'android.keystore'
+        }
+    }
+
     compileSdkVersion rootProject.ext.androidCompileSdkVersion
     defaultConfig {
         applicationId "com.zhongjh.cameraviewsoundrecorder"
@@ -26,6 +41,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
