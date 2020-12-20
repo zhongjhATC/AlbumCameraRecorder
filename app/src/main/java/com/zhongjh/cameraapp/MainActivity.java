@@ -47,7 +47,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        // 以下为点击时间
+        // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override

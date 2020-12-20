@@ -49,7 +49,7 @@
         android:focusable="true"
         android:id="@+id/btnClickOrLong"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/guideline60"
         app:layout_constraintStart_toStartOf="@+id/guideline40"
         app:layout_constraintTop_toBottomOf="@+id/tvTip"/>

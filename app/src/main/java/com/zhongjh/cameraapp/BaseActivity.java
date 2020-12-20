@@ -4,12 +4,15 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
@@ -98,6 +101,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 获取权限
+     *
      * @param isBrowse 是否浏览
      */
     protected boolean getPermissions(boolean isBrowse) {
@@ -157,9 +161,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                 // 获取类型，根据类型设置不同的事情
                 switch (MultiMediaSetting.obtainMultimediaType(data)) {
                     case MultimediaTypes.PICTURE:
-                        // 图片
-                        List<String> path = MultiMediaSetting.obtainPathResult(data);
-                        getMaskProgressLayout().addImagesStartUpload(path);
+                        // 图片，自动AndroidQ版本以后，使用除了本身app的文件，最好是用uri方式控制
+                        List<Uri> path = MultiMediaSetting.obtainResult(data);
+                        getMaskProgressLayout().addUrisStartUpload(path);
+//                        //这是path方式
+//                        List<String> path = MultiMediaSetting.obtainPathResult(data);
+//                        getMaskProgressLayout().addImagesStartUpload(path);
+
                         break;
                     case MultimediaTypes.VIDEO:
                         // 录像

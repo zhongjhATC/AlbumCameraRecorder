@@ -5,9 +5,12 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
+
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -162,6 +165,18 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     public void setAuthority(String authority) {
         SaveStrategy saveStrategy = new SaveStrategy(true, authority, "");
         mMediaStoreCompat.setSaveStrategy(saveStrategy);
+    }
+
+    @Override
+    public void addUrisStartUpload(List<Uri> uris) {
+        isAuthority();
+        ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
+        for (Uri uri : uris) {
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
+            multiMediaView.setUri(uri);
+            multiMediaViews.add(multiMediaView);
+        }
+        mViewHolder.alfMedia.addImageData(multiMediaViews);
     }
 
     @Override

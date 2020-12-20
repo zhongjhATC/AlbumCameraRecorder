@@ -1,5 +1,7 @@
 package com.zhongjh.progresslibrary.api;
 
+import android.net.Uri;
+
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 
 import java.util.List;
@@ -15,6 +17,13 @@ public interface MaskProgressApi {
      * @param authority provider的authorities属性
      */
     void setAuthority(String authority);
+
+    /**
+     * 设置图片Uri并且启动上传(一般用于刚确认了哪些数据后)
+     *
+     * @param uris 图片数据源
+     */
+    void addUrisStartUpload(List<Uri> uris);
 
     /**
      * 设置图片并且启动上传(一般用于刚确认了哪些数据后)

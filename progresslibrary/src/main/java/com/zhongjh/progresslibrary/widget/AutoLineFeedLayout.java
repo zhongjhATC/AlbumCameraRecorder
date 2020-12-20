@@ -3,7 +3,9 @@ package com.zhongjh.progresslibrary.widget;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -145,7 +147,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 // 减1是因为多了一个add按钮控制
-                int endingPostion = getChildCount()  - 1 ;
+                int endingPostion = getChildCount() - 1;
                 addView(viewHolder.itemView, endingPostion);
             }
         }
@@ -153,8 +155,9 @@ public class AutoLineFeedLayout extends ViewGroup {
         checkLastImages();
         // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
         for (MultiMediaView multiMediaView : multiMediaViews) {
-            // 判断multiMedia有没有path,有path没有uri就执行上传
-            if (TextUtils.isEmpty(multiMediaView.getUrl()) && !TextUtils.isEmpty(multiMediaView.getPath())) {
+            // 判断multiMedia有没有path,有path没有url就执行上传
+            if (TextUtils.isEmpty(multiMediaView.getUrl()) &&
+                    (!TextUtils.isEmpty(multiMediaView.getPath()) || multiMediaView.getUri() != null)) {
                 this.listener.onItemStartUploading(multiMediaView);
             }
         }
@@ -165,8 +168,8 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 添加视频数据
      *
      * @param multiMediaViews 数据集合
-     * @param isClean     添加前是否清空
-     * @param isUploading 是否执行相关上传动作
+     * @param isClean         添加前是否清空
+     * @param isUploading     是否执行相关上传动作
      */
     public void addVideoData(List<MultiMediaView> multiMediaViews, boolean isClean, boolean isUploading) {
         if (this.videoList == null) {
@@ -201,9 +204,10 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     /**
      * 删除单个图片
+     *
      * @param position 图片的索引，该索引列表不包含视频等
      */
-    public void onRemoveItemImage(int position){
+    public void onRemoveItemImage(int position) {
         MultiMediaView multiMediaView = imageList.get(position);
         if (listener != null)
             listener.onItemClose(multiMediaView.getMaskProgressView(), multiMediaView);
@@ -328,8 +332,8 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 更新索引
      */
-    private void updatePosition(){
-        for (int i = 0;i< imageList.size();i++){
+    private void updatePosition() {
+        for (int i = 0; i < imageList.size(); i++) {
             imageList.get(i).setPosition(i);
         }
     }
@@ -379,9 +383,9 @@ public class AutoLineFeedLayout extends ViewGroup {
                 this.multiMediaView.setMaskProgressView(mpvImage);
                 this.multiMediaView.setItemView(itemView);
             }
-            //设置条目的点击事件
+            // 设置条目的点击事件
             itemView.setOnClickListener(this);
-            //设置图片
+            // 设置图片
             if (!TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getPath().equals(ADD)) {
                 // 加载➕图
                 mpvImage.setImageResource(R.drawable.selector_image_add);
@@ -435,6 +439,9 @@ public class AutoLineFeedLayout extends ViewGroup {
             } else if (!TextUtils.isEmpty(multiMediaView.getUrl())) {
                 imageEngine.loadUrlThumbnail(getContext(), mpvImage.getWidth(), placeholder,
                         mpvImage, multiMediaView.getUrl());
+            } else if (multiMediaView.getUri() != null) {
+                imageEngine.loadThumbnail(getContext(), mpvImage.getWidth(), placeholder,
+                        mpvImage, multiMediaView.getUri());
             }
         }
 
