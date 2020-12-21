@@ -140,11 +140,6 @@ public class CameraFragment extends BaseFragment {
             }
 
             @Override
-            public void onLongClickZoom(float zoom) {
-
-            }
-
-            @Override
             public void onLongClickError() {
 
             }
@@ -275,6 +270,12 @@ public class CameraFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
         mCameraLayout.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCameraLayout.onDestroy();
     }
 
     @Override

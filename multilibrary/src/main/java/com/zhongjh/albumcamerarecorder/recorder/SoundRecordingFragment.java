@@ -149,11 +149,6 @@ public class SoundRecordingFragment extends BaseFragment {
             }
 
             @Override
-            public void onLongClickZoom(float zoom) {
-
-            }
-
-            @Override
             public void onLongClickError() {
 
             }

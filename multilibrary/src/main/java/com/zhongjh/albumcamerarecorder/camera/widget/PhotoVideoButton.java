@@ -167,14 +167,6 @@ public class PhotoVideoButton extends View {
                 if ((mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH))
                     postDelayed(mLongPressRunnable, 500);    //同时延长500启动长按后处理的逻辑Runnable
                 break;
-            case MotionEvent.ACTION_MOVE:
-                if (mClickOrLongListener != null
-                        && mState == STATE_RECORDERING
-                        && (mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH)) {
-                    // 记录当前Y值与按下时候Y值的差值，调用缩放回调接口
-                    mClickOrLongListener.onLongClickZoom(event_Y - event.getY());
-                }
-                break;
             case MotionEvent.ACTION_UP:
                 // 根据当前按钮的状态进行相应的处理
                 handlerUnpressByState();

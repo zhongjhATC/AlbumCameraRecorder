@@ -34,12 +34,6 @@ public interface ClickOrLongListener {
     void onLongClickShort(long time);
 
     /**
-     * 长按中途中滑动变焦
-     * @param zoom 变焦
-     */
-    void onLongClickZoom(float zoom);
-
-    /**
      * 长按中途出现异常
      */
     void onLongClickError();

@@ -254,15 +254,6 @@ public class ClickOrLongButton extends View {
                     startTicking();
                 }
                 break;
-            case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, "onTouchEvent: move");
-                if (mClickOrLongListener != null
-                        && recordState == RECORD_STARTED
-                        && (mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH)) {
-                    // 记录当前Y值与按下时候Y值的差值，调用缩放回调接口
-                    mClickOrLongListener.onLongClickZoom(event_Y - event.getY());
-                }
-                break;
             case MotionEvent.ACTION_UP:
                 Log.d(TAG, "onTouchEvent: up");
                 reset();

@@ -136,13 +136,6 @@ public abstract class OperationLayout extends FrameLayout {
             }
 
             @Override
-            public void onLongClickZoom(float zoom) {
-                if (mClickOrLongListener != null) {
-                    mClickOrLongListener.onLongClickZoom(zoom);
-                }
-            }
-
-            @Override
             public void onLongClickError() {
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickError();

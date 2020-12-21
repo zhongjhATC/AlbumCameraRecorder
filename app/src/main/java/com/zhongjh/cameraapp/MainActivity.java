@@ -209,15 +209,12 @@ public class MainActivity extends BaseActivity {
 
         //                                            .imageEngine(new GlideEngine())  // for glide-V3
         globalSetting.imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectablePerMediaType(Integer.valueOf(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
-                        Integer.valueOf(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
-                        Integer.valueOf(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)// 最大10张图片或者最大1个视频
+                .maxSelectablePerMediaType(Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
+                        Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
+                        Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);
 
 
     }
-
-
-
 
 }
