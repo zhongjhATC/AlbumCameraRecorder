@@ -466,7 +466,7 @@ public class CameraLayout extends FrameLayout {
     private void resetState(int type) {
         switch (type) {
             case TYPE_VIDEO:
-                stopVideo();    //停止播放
+                stopVideo(); // 停止播放重新播放
                 FileUtil.deleteFile(mVideoFile.getPath()); // 删除文件
                 mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));     //初始化VideoView
                 mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
@@ -885,6 +885,7 @@ public class CameraLayout extends FrameLayout {
             this.vLine3 = rootView.findViewById(R.id.vLine3);
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
+            this.vvPreview = rootView.findViewById(R.id.vvPreview);
         }
 
     }

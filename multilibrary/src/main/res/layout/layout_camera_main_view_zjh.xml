@@ -42,6 +42,15 @@
         app:cameraMode="picture"
         app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"/>
 
+    <VideoView
+        android:visibility="gone"
+        android:id="@+id/vvPreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:contentDescription="显示当前摄像的"
+        tools:ignore="HardcodedText" />
+
     <ImageView
         android:id="@+id/imgClose"
         android:layout_width="wrap_content"
