@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rlMain"
@@ -137,4 +137,4 @@
         android:contentDescription="底部功能按钮"
         tools:ignore="HardcodedText" />
 
-</com.zhongjh.albumcamerarecorder.widget.ChildClickableRelativeLayout>
+</com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout>

@@ -306,7 +306,8 @@ public class CameraOperation implements CameraInterface, Camera.PreviewCallback 
         }
         doDestroyCamera();
         openCamera(mSelectedCamera);
-        doStartPreview(mCameraLayout.getSurfaceHolder(), mCameraLayout.getScreenProp());
+        // TODO 作废，更换第三方拍摄录制库
+//        doStartPreview(mCameraLayout.getSurfaceHolder(), mCameraLayout.getScreenProp());
     }
 
     @Override

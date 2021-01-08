@@ -3,25 +3,26 @@ package com.zhongjh.albumcamerarecorder.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 /**
  * Created by zhongjh on 2018/12/27.
  */
-public class ChildClickableRelativeLayout extends RelativeLayout {
+public class ChildClickableFrameLayout extends RelativeLayout {
 
     //子控件是否可以接受点击事件
     private boolean childClickable = true;
 
-    public ChildClickableRelativeLayout(Context context) {
+    public ChildClickableFrameLayout(Context context) {
         super(context);
     }
 
-    public ChildClickableRelativeLayout(Context context, AttributeSet attrs) {
+    public ChildClickableFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ChildClickableRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ChildClickableFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
