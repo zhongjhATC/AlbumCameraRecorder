@@ -94,7 +94,8 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_C
  * 该类类似MVP的View，主要包含有关 除了Camera的其他所有ui操作
  * Created by zhongjh on 2018/7/23.
  */
-public class CameraLayout extends RelativeLayout {
+public class CameraLayout extends RelativeLayout implements SurfaceHolder
+        .Callback {
 
     private String TAG = CameraLayout.class.getSimpleName();
 
@@ -854,6 +855,21 @@ public class CameraLayout extends RelativeLayout {
         } else {
             mViewHolder.imgSwitch.setVisibility(viewVisibility);
         }
+    }
+
+    @Override
+    public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
+
+    }
+
+    @Override
+    public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
+
     }
 
     /**
