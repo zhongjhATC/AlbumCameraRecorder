@@ -120,10 +120,10 @@ public class MainActivity extends BaseActivity {
             mimeTypeCameras = MimeType.ofAll();
             cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
         } else if (mBinding.cbCameraImage.isChecked()) {
-            mimeTypeCameras = MimeType.ofVideo();
+            mimeTypeCameras = MimeType.ofImage();
             cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
         } else if (mBinding.cbCameraVideo.isChecked()) {
-            mimeTypeCameras = MimeType.ofImage();
+            mimeTypeCameras = MimeType.ofVideo();
             cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
         }
         cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));// 最长录制时间
