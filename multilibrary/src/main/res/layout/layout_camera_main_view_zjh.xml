@@ -3,21 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rlMain"
+    android:background="@color/black_eighty_percent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.zhongjh.albumcamerarecorder.camera.widget.AutoFitTextureView
-            android:id="@+id/texture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
-
-    </RelativeLayout>
 
     <!-- 拍摄 -->
     <com.otaliastudios.cameraview.CameraView
@@ -26,29 +15,38 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:keepScreenOn="true"
-        app:cameraExperimental="true"
-        app:cameraEngine="camera2"
-        app:cameraPreview="glSurface"
-        app:cameraPlaySounds="true"
-        app:cameraGrid="off"
-        app:cameraFlash="auto"
         app:cameraAudio="on"
+        app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"
+        app:cameraEngine="camera2"
+        app:cameraExperimental="true"
         app:cameraFacing="back"
-        app:cameraGestureTap="autoFocus"
+        app:cameraFlash="auto"
         app:cameraGestureLongTap="none"
         app:cameraGesturePinch="zoom"
         app:cameraGestureScrollHorizontal="filterControl1"
         app:cameraGestureScrollVertical="exposureCorrection"
+        app:cameraGestureTap="autoFocus"
+        app:cameraGrid="off"
         app:cameraMode="picture"
-        app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"/>
+        app:cameraPlaySounds="true"
+        app:cameraPreview="glSurface" />
 
     <VideoView
-        android:visibility="gone"
         android:id="@+id/vvPreview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#000000"
         android:contentDescription="显示当前摄像的"
+        android:visibility="gone"
+        tools:ignore="HardcodedText" />
+
+    <ImageView
+        android:id="@+id/imgPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000"
+        android:contentDescription="如果是当张照片便显示当前拍照的"
+        android:visibility="gone"
         tools:ignore="HardcodedText" />
 
     <ImageView

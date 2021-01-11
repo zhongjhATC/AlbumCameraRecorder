@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.camera;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -9,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -22,25 +25,23 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.MEDIA_QUALITY_MIDDLE;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
@@ -57,10 +58,6 @@ public class CameraFragment extends BaseFragment {
 
     //声明一个long类型变量：用于存放上一点击“返回键”的时刻
     private long mExitTime;
-    private GlobalSpec mGlobalSpec; // 公共配置
-    private CameraSpec mCameraSpec; // 拍摄配置
-    private RecordeSpec mRecordeSpec; // 录音配置
-    private MediaStoreCompat mMediaStoreCompat;
 
     public static CameraFragment newInstance() {
         CameraFragment cameraFragment = new CameraFragment();
@@ -70,7 +67,7 @@ public class CameraFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(@NotNull Activity activity) {
         super.onAttach(activity);
         this.mActivity = activity;
     }
@@ -79,10 +76,6 @@ public class CameraFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
-
-        // 初始化设置
-        mCameraSpec = CameraSpec.getInstance();
-        mGlobalSpec = GlobalSpec.getInstance();
 
         view.setOnKeyListener((v, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -154,9 +147,10 @@ public class CameraFragment extends BaseFragment {
             }
 
             @Override
-            public void captureSuccess(ArrayList<String> paths) {
+            public void captureSuccess(ArrayList<String> paths, ArrayList<Uri> uris) {
                 Intent result = new Intent();
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
                 result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);
@@ -211,33 +205,30 @@ public class CameraFragment extends BaseFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK)
             return;
-        switch (requestCode) {
-            case REQUEST_CODE_PREVIEW_CAMRRA:
-                // 如果在预览界面点击了确定
-                if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                    // 请求的预览界面
-                    Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
-                    // 获取选择的数据
-                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                    if (selected == null)
-                        return;
-                    // 循环判断，如果不存在，则删除
-                    ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCameraLayout.mCaptureBitmaps.entrySet()).listIterator(mCameraLayout.mCaptureBitmaps.size());
-                    while (i.hasPrevious()) {
-                        Map.Entry<Integer, BitmapData> entry = i.previous();
-                        int k = 0;
-                        for (MultiMedia multiMedia : selected) {
-                            if (!entry.getValue().getUri().toString().equals(multiMedia.getUri().toString())) {
-                                k++;
-                            }
-                        }
-                        if (k == selected.size()) {
-                            // 所有都不符合，则删除
-                            mCameraLayout.removePosition(entry.getKey());
+        if (requestCode == REQUEST_CODE_PREVIEW_CAMRRA) {// 如果在预览界面点击了确定
+            if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                // 请求的预览界面
+                Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+                // 获取选择的数据
+                ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                if (selected == null)
+                    return;
+                // 循环判断，如果不存在，则删除
+                ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCameraLayout.mCaptureBitmaps.entrySet()).listIterator(mCameraLayout.mCaptureBitmaps.size());
+                while (i.hasPrevious()) {
+                    Map.Entry<Integer, BitmapData> entry = i.previous();
+                    int k = 0;
+                    for (MultiMedia multiMedia : selected) {
+                        if (!entry.getValue().getUri().toString().equals(multiMedia.getUri().toString())) {
+                            k++;
                         }
                     }
+                    if (k == selected.size()) {
+                        // 所有都不符合，则删除
+                        mCameraLayout.removePosition(entry.getKey());
+                    }
                 }
-                break;
+            }
         }
     }
 
@@ -277,18 +268,5 @@ public class CameraFragment extends BaseFragment {
         super.onDestroy();
         mCameraLayout.onDestroy();
     }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (mCameraLayout != null)
-            if (isVisibleToUser)
-                //相当于Fragment的onResume
-                mCameraLayout.onResume();
-            else
-                //相当于Fragment的onPause
-                mCameraLayout.onPause();
-    }
-
 
 }

@@ -4,18 +4,23 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
 import androidx.databinding.DataBindingUtil;
+
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
@@ -38,6 +43,7 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 public class MainSimpleActivity extends BaseActivity {
 
     ActivityMainSimpleBinding mBinding;
+    private final String TAG = MainSimpleActivity.this.getClass().getSimpleName();
 
     /**
      * @param activity 要跳转的activity
@@ -161,7 +167,13 @@ public class MainSimpleActivity extends BaseActivity {
             globalSetting.recorderSetting(recorderSetting);
 
         globalSetting
-                .setOnMainListener(errorMessage -> Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
+                .setOnMainListener(new OnMainListener() {
+                    @Override
+                    public void onOpenFail(String errorMessage) {
+                        Log.d(TAG, errorMessage);
+                        Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show();
+                    }
+                })
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))// 设置路径和7.0保护路径等等
                 .imageEngine(new Glide4Engine())    // for glide-V4
                 .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
