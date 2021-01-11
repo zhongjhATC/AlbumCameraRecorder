@@ -49,17 +49,13 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-
-
         setContentView(R.layout.activity_main_zjh);
-
 
         mVpPager = findViewById(R.id.viewPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), mSpec);
         mVpPager.setAdapter(adapterViewPager);
         mVpPager.setOffscreenPageLimit(3);
-        mVpPager.setCurrentItem(mDefaultPosition);// 根据配置默认选第几个
-
+        mVpPager.setCurrentItem(mDefaultPosition); // 根据配置默认选第几个
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
         // 判断只有一个的时候

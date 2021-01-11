@@ -68,10 +68,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         setTheme(GlobalSpec.getInstance().themeId);  // 获取样式
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_preview_zjh);
-        if (VersionUtils.hasKitKat()) {
-            // 使用沉倾状态栏
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
+//        if (VersionUtils.hasKitKat()) {
+//            // 使用沉倾状态栏
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        }
 
         mGlobalSpec = GlobalSpec.getInstance();
         mAlbumSpec = AlbumSpec.getInstance();

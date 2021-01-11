@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -346,9 +347,11 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void onCameraError(@NonNull CameraException exception) {
-                Log.d(TAG, exception.getMessage());
                 super.onCameraError(exception);
-                mErrorLisenter.onError();
+                if (!TextUtils.isEmpty(exception.getMessage())) {
+                    Log.d(TAG, exception.getMessage());
+                    mErrorLisenter.onError();
+                }
             }
 
         });
