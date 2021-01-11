@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -94,8 +95,7 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_C
  * 该类类似MVP的View，主要包含有关 除了Camera的其他所有ui操作
  * Created by zhongjh on 2018/7/23.
  */
-public class CameraLayout extends RelativeLayout implements SurfaceHolder
-        .Callback {
+public class CameraLayout extends RelativeLayout {
 
     private String TAG = CameraLayout.class.getSimpleName();
 
@@ -117,8 +117,6 @@ public class CameraLayout extends RelativeLayout implements SurfaceHolder
     private int mLayoutWidth; // 整体宽度
 
     public ViewHolder mViewHolder; // 当前界面的所有控件
-
-    private MediaPlayer mMediaPlayer; // 播放器
 
     private Drawable mPlaceholder; // 默认图片
     public LinkedHashMap<Integer, BitmapData> mCaptureBitmaps = new LinkedHashMap<>();  // 拍照的图片-集合
@@ -671,37 +669,43 @@ public class CameraLayout extends RelativeLayout implements SurfaceHolder
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      */
     private void playVideo() {
-        new Thread(() -> {
-            if (mMediaPlayer == null) {
-                mMediaPlayer = new MediaPlayer();
-            } else {
-                // 重置
-                mMediaPlayer.reset();
-            }
-            try {
-                mMediaPlayer.setDataSource(mVideoFile.getPath());
-                // 进行关联播放控件
-                mMediaPlayer.setSurface(mViewHolder.vvPreview.getHolder().getSurface());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    // 填充模式
-                    mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-                }
-                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); // 指定流媒体的类型
-                // 视频尺寸监听
-                mMediaPlayer.setOnVideoSizeChangedListener((mp, width, height) -> updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
-                        .getVideoHeight()));
-                mMediaPlayer.setOnPreparedListener(mp -> {
-                    // 播放视频
-                    mMediaPlayer.start();
-                    // 显示视频控件
-                    mViewHolder.vvPreview.setVisibility(View.VISIBLE);
-                });
-                mMediaPlayer.setLooping(true); // 循环播放
-                mMediaPlayer.prepare(); // 准备(同步)
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        MediaController mediaController = new MediaController(mContext);
+        mediaController.setAnchorView(mViewHolder.vvPreview);
+        mediaController.setMediaPlayer(mViewHolder.vvPreview);
+        mViewHolder.vvPreview.setMediaController(mediaController);
+        mViewHolder.vvPreview.setVideoURI(Uri.fromFile(mVideoFile));
+//        mViewHolder.vvPreview.setOnPreparedListener();
+//        new Thread(() -> {
+//            if (mMediaPlayer == null) {
+//                mMediaPlayer = new MediaPlayer();
+//            } else {
+//                // 重置
+//                mMediaPlayer.reset();
+//            }
+//            try {
+//                mMediaPlayer.setDataSource(mVideoFile.getPath());
+//                // 进行关联播放控件
+//                mMediaPlayer.setSurface(mViewHolder.vvPreview.getHolder().getSurface());
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//                    // 填充模式
+//                    mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+//                }
+//                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); // 指定流媒体的类型
+//                // 视频尺寸监听
+//                mMediaPlayer.setOnVideoSizeChangedListener((mp, width, height) -> updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
+//                        .getVideoHeight()));
+//                mMediaPlayer.setOnPreparedListener(mp -> {
+//                    // 播放视频
+//                    mMediaPlayer.start();
+//                    // 显示视频控件
+//                    mViewHolder.vvPreview.setVisibility(View.VISIBLE);
+//                });
+//                mMediaPlayer.setLooping(true); // 循环播放
+//                mMediaPlayer.prepare(); // 准备(同步)
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
     }
 
     /**
@@ -855,21 +859,6 @@ public class CameraLayout extends RelativeLayout implements SurfaceHolder
         } else {
             mViewHolder.imgSwitch.setVisibility(viewVisibility);
         }
-    }
-
-    @Override
-    public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-
-    }
-
-    @Override
-    public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
-
     }
 
     /**
