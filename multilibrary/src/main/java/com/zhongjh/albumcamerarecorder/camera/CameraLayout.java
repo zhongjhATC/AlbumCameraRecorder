@@ -5,27 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,19 +20,18 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.otaliastudios.cameraview.BitmapCallback;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
-import com.otaliastudios.cameraview.CameraUtils;
 import com.otaliastudios.cameraview.CameraView;
-import com.otaliastudios.cameraview.FileCallback;
 import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.VideoResult;
 import com.otaliastudios.cameraview.controls.Engine;
+import com.otaliastudios.cameraview.controls.Flash;
 import com.otaliastudios.cameraview.controls.Preview;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
@@ -54,16 +39,12 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.CloseListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
-import com.zhongjh.albumcamerarecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
-import com.zhongjh.albumcamerarecorder.camera.widget.AutoFitTextureView;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.utils.MediaStoreCompat;
-
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
@@ -71,12 +52,12 @@ import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
@@ -97,33 +78,26 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_C
  */
 public class CameraLayout extends RelativeLayout {
 
-    private String TAG = CameraLayout.class.getSimpleName();
+    private final String TAG = CameraLayout.class.getSimpleName();
 
-    private Context mContext;
+    private final Context mContext;
     private MediaStoreCompat mPictureMediaStoreCompat;  // 图片
     private MediaStoreCompat mVideoMediaStoreCompat; // 录像文件配置路径
     private GlobalSpec mGlobalSpec; // 公共配置
     private CameraSpec mCameraSpec; // 拍摄配置
     private RecordeSpec mRecordeSpec; // 录像配置
-    //    //    private CameraInterface mCameraInterface;// 拍摄操作类
-    private CameraOperation mCameraOperation;// 拍摄操作类
-////    private CameraOperation2 mCameraOperation2;// 拍摄操作类2
-
 
     public int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
 
     private int mFlashType = Constants.TYPE_FLASH_OFF;  // 闪关灯状态 默认关闭
 
-    private int mLayoutWidth; // 整体宽度
-
     public ViewHolder mViewHolder; // 当前界面的所有控件
 
     private Drawable mPlaceholder; // 默认图片
     public LinkedHashMap<Integer, BitmapData> mCaptureBitmaps = new LinkedHashMap<>();  // 拍照的图片-集合
-    private LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();      // 拍照的图片控件-集合
-    private int mPosition = -1;                                          // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
-    private File mVideoFile;         // 视频File
-    VideoViewInitHandler mVideoViewInitHandler = new VideoViewInitHandler(CameraLayout.this);
+    private final LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();   // 拍照的图片控件-集合
+    private int mPosition = -1; // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
+    private File mVideoFile;    // 视频File
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -202,8 +176,6 @@ public class CameraLayout extends RelativeLayout {
                 mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.saveStrategy);
             }
         }
-
-        mLayoutWidth = DisplayMetricsSPUtils.getScreenWidth(mContext);
     }
 
     /**
@@ -215,6 +187,7 @@ public class CameraLayout extends RelativeLayout {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
 
+        // 初始化cameraView
         mViewHolder.cameraView.setEngine(Engine.CAMERA2);
         mViewHolder.cameraView.setPreview(Preview.GL_SURFACE);
 
@@ -253,10 +226,6 @@ public class CameraLayout extends RelativeLayout {
      * 初始化有关事件
      */
     private void initLisenter() {
-        // TODO 用于VideoView初始化完成后，设置回背景透明，不然无法看到
-//        // 当预览界面启动后
-//        mCameraOperation.setCameraOperationListener(() -> mVideoViewInitHandler.sendEmptyMessage(0));
-
         // 切换闪光灯模式
         mViewHolder.imgFlash.setOnClickListener(v -> {
             mFlashType++;
@@ -371,6 +340,8 @@ public class CameraLayout extends RelativeLayout {
             public void onVideoRecordingEnd() {
                 Log.d(TAG, "onVideoRecordingEnd");
                 super.onVideoRecordingEnd();
+                // 如果录制结束，播放该视频
+                playVideo();
             }
 
             @Override
@@ -388,8 +359,6 @@ public class CameraLayout extends RelativeLayout {
             public void cancel() {
                 // 根据不同状态处理相应的事件,多图不需要取消事件（关闭所有图片就自动恢复了）。
                 if (getState() == Constants.STATE_PICTURE) {
-//                    // 图片模式的取消 TODO
-//                    mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp); // 重新启动录像
                     resetState(TYPE_PICTURE);   // 针对图片模式进行的重置
                     mViewHolder.pvLayout.reset();
                     setState(Constants.STATE_PREVIEW); // 设置空闲状态
@@ -484,8 +453,6 @@ public class CameraLayout extends RelativeLayout {
             // 恢复长按事件，即重新启用录像
             mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
 
-//            // 图片模式的取消 TODO
-//            mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp); // 重新启动录像
             setState(Constants.STATE_PREVIEW); // 设置空闲状态
         }
     }
@@ -500,8 +467,8 @@ public class CameraLayout extends RelativeLayout {
             case TYPE_VIDEO:
                 stopVideo(); // 停止播放重新播放
                 FileUtil.deleteFile(mVideoFile.getPath()); // 删除文件
-                mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));     //初始化VideoView
-//                mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
+                // 隐藏video
+                mViewHolder.vvPreview.setVisibility(INVISIBLE);
                 break;
             case TYPE_PICTURE:
                 // 隐藏图片
@@ -528,8 +495,6 @@ public class CameraLayout extends RelativeLayout {
             case TYPE_VIDEO:
                 // 录视频完成
                 stopVideo();    //停止播放
-                mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-//                mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
                 if (mOperaeCameraListener != null) {
                     mOperaeCameraListener.recordSuccess(mVideoFile.getPath());
                 }
@@ -629,14 +594,11 @@ public class CameraLayout extends RelativeLayout {
 
             });
 
-
             mCaptureViews.put(mPosition, viewHolderImageView.rootView);
             mViewHolder.llPhoto.addView(viewHolderImageView.rootView);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startOperaeBtnAnimatorMulti();
 
-            // 因为拍照后会自动停止预览，所以要重新启动预览
-//            mCameraOperation.doStartPreview(mViewHolder.vvPreview.getHolder(), mScreenProp);
             // 重置按钮，因为每次点击，都会自动关闭
             mViewHolder.pvLayout.getViewHolder().btnClickOrLong.resetState();
             // 显示右上角
@@ -669,54 +631,31 @@ public class CameraLayout extends RelativeLayout {
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      */
     private void playVideo() {
+        mViewHolder.vvPreview.setVisibility(View.VISIBLE);
+        // mediaController 是底部控制条
         MediaController mediaController = new MediaController(mContext);
         mediaController.setAnchorView(mViewHolder.vvPreview);
         mediaController.setMediaPlayer(mViewHolder.vvPreview);
+        mediaController.setVisibility(View.GONE);
         mViewHolder.vvPreview.setMediaController(mediaController);
         mViewHolder.vvPreview.setVideoURI(Uri.fromFile(mVideoFile));
-//        mViewHolder.vvPreview.setOnPreparedListener();
-//        new Thread(() -> {
-//            if (mMediaPlayer == null) {
-//                mMediaPlayer = new MediaPlayer();
-//            } else {
-//                // 重置
-//                mMediaPlayer.reset();
-//            }
-//            try {
-//                mMediaPlayer.setDataSource(mVideoFile.getPath());
-//                // 进行关联播放控件
-//                mMediaPlayer.setSurface(mViewHolder.vvPreview.getHolder().getSurface());
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//                    // 填充模式
-//                    mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-//                }
-//                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); // 指定流媒体的类型
-//                // 视频尺寸监听
-//                mMediaPlayer.setOnVideoSizeChangedListener((mp, width, height) -> updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
-//                        .getVideoHeight()));
-//                mMediaPlayer.setOnPreparedListener(mp -> {
-//                    // 播放视频
-//                    mMediaPlayer.start();
-//                    // 显示视频控件
-//                    mViewHolder.vvPreview.setVisibility(View.VISIBLE);
-//                });
-//                mMediaPlayer.setLooping(true); // 循环播放
-//                mMediaPlayer.prepare(); // 准备(同步)
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }).start();
+        if (!mViewHolder.vvPreview.isPlaying()) {
+            mViewHolder.vvPreview.start();
+        }
+        mViewHolder.vvPreview.setOnCompletionListener(mediaPlayer -> {
+            // 循环播放
+            if (!mViewHolder.vvPreview.isPlaying()) {
+                mViewHolder.vvPreview.start();
+            }
+        });
     }
 
     /**
      * 停止播放视频
      */
     private void stopVideo() {
-        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
+        if (mViewHolder.vvPreview.isPlaying())
+            mViewHolder.vvPreview.stopPlayback();
     }
 
     /**
@@ -738,62 +677,21 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 返回 SurfaceHolder
-     *
-     * @return SurfaceHolder
-     */
-    public SurfaceHolder getSurfaceHolder() {
-        return mViewHolder.vvPreview.getHolder();
-    }
-
-    /**
-     * 录制视频比特率
-     *
-     * @param mediaQualityMiddle 比特率
-     *                           {@link com.zhongjh.albumcamerarecorder.camera.common.Constants#MEDIA_QUALITY_HIGH
-     * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#MEDIA_QUALITY_MIDDLE
-     * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#MEDIA_QUALITY_LOW
-     * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#MEDIA_QUALITY_POOR
-     * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#MEDIA_QUALITY_FUNNY
-     * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#MEDIA_QUALITY_DESPAIR
-     * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#MEDIA_QUALITY_SORRY
-     * }
-     */
-    public void setMediaQuality(int mediaQualityMiddle) {
-//        mCameraOperation.setMediaQuality(mediaQualityMiddle);
-    }
-
-    /**
-     * 更新当前视频播放控件的宽高
-     *
-     * @param videoWidth  宽度
-     * @param videoHeight 高度
-     */
-    private void updateVideoViewSize(float videoWidth, float videoHeight) {
-        if (videoWidth > videoHeight) {
-            LayoutParams videoViewParam;
-            int height = (int) ((videoHeight / videoWidth) * getWidth());
-            videoViewParam = new LayoutParams(LayoutParams.MATCH_PARENT, height);
-            mViewHolder.vvPreview.setLayoutParams(videoViewParam);
-        }
-    }
-
-    /**
      * 设置闪关灯
      */
     private void setFlashLamp() {
         switch (mFlashType) {
             case Constants.TYPE_FLASH_AUTO:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashAuto);
-//                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO, getContext());
+                mViewHolder.cameraView.setFlash(Flash.AUTO);
                 break;
             case Constants.TYPE_FLASH_ON:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOn);
-//                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_ON, getContext());
+                mViewHolder.cameraView.setFlash(Flash.TORCH);
                 break;
             case Constants.TYPE_FLASH_OFF:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOff);
-//                mCameraOperation.setFlashMode(Camera.Parameters.FLASH_MODE_OFF, getContext());
+                mViewHolder.cameraView.setFlash(Flash.OFF);
                 break;
         }
     }
@@ -845,8 +743,6 @@ public class CameraLayout extends RelativeLayout {
             mViewHolder.cameraView.stopVideo();
             // 设置成视频播放状态
             setState(Constants.STATE_VIDEO);
-            // 如果录制结束，播放该视频
-            playVideo();
         }
     }
 
@@ -858,23 +754,6 @@ public class CameraLayout extends RelativeLayout {
             mViewHolder.imgSwitch.setVisibility(View.GONE);
         } else {
             mViewHolder.imgSwitch.setVisibility(viewVisibility);
-        }
-    }
-
-    /**
-     * 用于VideoView初始化完成后，设置回背景透明，不然无法看到
-     */
-    static class VideoViewInitHandler extends Handler {
-        WeakReference<CameraLayout> mCameraLayout;
-
-        VideoViewInitHandler(CameraLayout cameraLayout) {
-            mCameraLayout = new WeakReference<>(cameraLayout);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            mCameraLayout.get().mViewHolder.vvPreview.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 

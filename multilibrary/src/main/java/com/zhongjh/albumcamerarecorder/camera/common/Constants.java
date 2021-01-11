@@ -26,15 +26,6 @@ public class Constants {
     public static final int BUTTON_STATE_ONLY_LONGCLICK = 0x202;     //按钮只能长按
     public static final int BUTTON_STATE_BOTH = 0x203;              //按钮点击或者长按两者都可以
 
-    // 录制视频比特率
-    public static final int MEDIA_QUALITY_HIGH = 20 * 100000;
-    public static final int MEDIA_QUALITY_MIDDLE = 16 * 100000;
-    public static final int MEDIA_QUALITY_LOW = 12 * 100000;
-    public static final int MEDIA_QUALITY_POOR = 8 * 100000;
-    public static final int MEDIA_QUALITY_FUNNY = 4 * 100000;
-    public static final int MEDIA_QUALITY_DESPAIR = 2 * 100000;
-    public static final int MEDIA_QUALITY_SORRY = 80000;
-
     // 拍照浏览时候的类型
     public static final int TYPE_PICTURE = 0x001;   // 图片
     public static final int TYPE_VIDEO = 0x002;     // 视频
