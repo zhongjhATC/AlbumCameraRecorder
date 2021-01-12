@@ -75,9 +75,9 @@ dependencies {
     implementation 'com.tencent.bugly:crashreport:latest.release' //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
     implementation 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
 
-    // 检测内存泄漏 http://www.liaohuqiu.net/cn/posts/leak-canary-read-me/ https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+//    // 检测内存泄漏 http://www.liaohuqiu.net/cn/posts/leak-canary-read-me/ https://github.com/square/leakcanary
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
     implementation 'androidx.multidex:multidex:2.0.1'
 

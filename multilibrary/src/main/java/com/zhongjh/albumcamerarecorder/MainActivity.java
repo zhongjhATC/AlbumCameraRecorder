@@ -89,12 +89,18 @@ public class MainActivity extends AppCompatActivity {
      * @param isShow 是否显示
      */
     public void showHideTableLayout(boolean isShow) {
-        if (isShow) {
-            mTabLayout.setVisibility(View.VISIBLE);
-            setTablayoutScroll(true);
-        } else {
+        // 判断只有一个的时候
+        if (adapterViewPager.getCount() <= 1){
+            // 则隐藏底部
             mTabLayout.setVisibility(View.GONE);
-            setTablayoutScroll(false);
+        }else{
+            if (isShow) {
+                mTabLayout.setVisibility(View.VISIBLE);
+                setTablayoutScroll(true);
+            } else {
+                mTabLayout.setVisibility(View.GONE);
+                setTablayoutScroll(false);
+            }
         }
     }
 
@@ -104,14 +110,20 @@ public class MainActivity extends AppCompatActivity {
      * @param isScroll 是否滑动
      */
     public void setTablayoutScroll(boolean isScroll) {
-        if (isScroll) {
-            // 设置可以滑动
-            mVpPager.setScroll(true);
-            mTabLayout.setVisibility(View.VISIBLE);
-        } else {
-            // 禁滑viewPager
-            mVpPager.setScroll(false);
+        // 判断只有一个的时候
+        if (adapterViewPager.getCount() <= 1){
+            // 则隐藏底部
             mTabLayout.setVisibility(View.GONE);
+        }else{
+            if (isScroll) {
+                // 设置可以滑动
+                mVpPager.setScroll(true);
+                mTabLayout.setVisibility(View.VISIBLE);
+            } else {
+                // 禁滑viewPager
+                mVpPager.setScroll(false);
+                mTabLayout.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -174,7 +186,10 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (mTitles.get(position)) {
                 case "相册":
-                    return MatissFragment.newInstance();
+                    if (adapterViewPager.getCount() <= 1){
+                        return MatissFragment.newInstance(0);
+                    }
+                    return MatissFragment.newInstance(50);
                 case "拍照":
                     return CameraFragment.newInstance();
                 case "录音":

@@ -3,14 +3,17 @@ package com.zhongjh.albumcamerarecorder.album.ui.mediaselection;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
@@ -22,6 +25,7 @@ import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.widget.MediaGridInset;
+import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
@@ -29,13 +33,14 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
  * 相册 界面
  * Created by zhongjh on 2018/8/30.
  */
-public class    MediaSelectionFragment extends Fragment implements
+public class MediaSelectionFragment extends Fragment implements
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
     private static final String EXTRA_ALBUM = "extra_album";     // 专辑数据
 
     private final AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
     private RecyclerView mRecyclerView;
+    private FrameLayout mFlMain;
     private AlbumMediaAdapter mAdapter;
     private SelectionProvider mSelectionProvider; // 选择接口事件
     private AlbumMediaAdapter.CheckStateListener mCheckStateListener;       // 单选事件
@@ -46,10 +51,11 @@ public class    MediaSelectionFragment extends Fragment implements
      *
      * @param album 专辑
      */
-    public static MediaSelectionFragment newInstance(Album album) {
+    public static MediaSelectionFragment newInstance(Album album, int marginBottom) {
         MediaSelectionFragment fragment = new MediaSelectionFragment();
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_ALBUM, album);
+        args.putInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM, marginBottom);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,12 +94,18 @@ public class    MediaSelectionFragment extends Fragment implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = view.findViewById(R.id.recyclerview);
+        mFlMain = view.findViewById(R.id.flMain);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Album album = getArguments().getParcelable(EXTRA_ALBUM);
+
+        // 初始化底部间距
+        int marginBottom = getArguments().getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mFlMain.getLayoutParams();
+        layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(marginBottom);
 
         // 实例化适配器并且传递数据源
         mAdapter = new AlbumMediaAdapter(getContext(),

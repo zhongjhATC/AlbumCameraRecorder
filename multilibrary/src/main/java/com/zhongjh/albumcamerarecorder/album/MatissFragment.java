@@ -13,9 +13,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +50,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
+
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 import java.util.ArrayList;
@@ -69,13 +72,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
 
     private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
+    public static final String ARGUMENTS_MARGIN_BOTTOM = "arguments_margin_bottom";
 
     private static final String CHECK_STATE = "checkState";
 
     private Activity mActivity;
     private Context mContext;
 
-    private GlobalSpec mGlobalSpec;// 公共配置
+    private GlobalSpec mGlobalSpec; // 公共配置
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection;
@@ -84,14 +88,18 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private AlbumsSpinner mAlbumsSpinner;
     private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;   // 左上角的下拉框适配器
 
-    private boolean mOriginalEnable;        // 是否原图
+    private boolean mOriginalEnable;    // 是否原图
 
     private ViewHolder mViewHolder;
 
-    public static MatissFragment newInstance() {
+    /**
+     * @param marginBottom 底部间距
+     */
+    public static MatissFragment newInstance(int marginBottom) {
         MatissFragment matissFragment = new MatissFragment();
         Bundle args = new Bundle();
         matissFragment.setArguments(args);
+        args.putInt(ARGUMENTS_MARGIN_BOTTOM, marginBottom);
         return matissFragment;
     }
 
@@ -142,7 +150,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (navigationIcon != null) {
             navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         }
-        mSelectedCollection.onCreate(savedInstanceState,false);
+        mSelectedCollection.onCreate(savedInstanceState, false);
         if (savedInstanceState != null) {
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
@@ -239,15 +247,16 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     /**
      * 根据uri列表返回当前全部的类型
+     *
      * @param selectedUris uri列表
      * @return 返回当前全部的类型
      */
-    private int getMultimediaType(ArrayList<Uri> selectedUris){
+    private int getMultimediaType(ArrayList<Uri> selectedUris) {
         // 循环判断类型
         int isImageSize = 0;// 图片类型的数量
         int isVideoSize = 0;// 视频的数量
         ContentResolver resolver = mContext.getContentResolver();
-        for (Uri uri : selectedUris){
+        for (Uri uri : selectedUris) {
             for (MimeType type : MimeType.ofImage()) {
                 if (type.checkType(resolver, uri)) {
                     isImageSize++;
@@ -262,10 +271,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             }
         }
         // 判断是纯图片还是纯视频
-        if (selectedUris.size() == isImageSize){
-             return MultimediaTypes.PICTURE ;
+        if (selectedUris.size() == isImageSize) {
+            return MultimediaTypes.PICTURE;
         }
-        if (selectedUris.size() == isVideoSize){
+        if (selectedUris.size() == isVideoSize) {
             return MultimediaTypes.VIDEO;
         }
         return MultimediaTypes.BLEND;
@@ -458,7 +467,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 如果有数据，则内嵌新的fragment，并且相应相关照片
             mViewHolder.container.setVisibility(View.VISIBLE);
             mViewHolder.empty_view.setVisibility(View.GONE);
-            Fragment fragment = MediaSelectionFragment.newInstance(album);
+            Fragment fragment = MediaSelectionFragment.newInstance(album,getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
             if (getFragmentManager() != null)
                 getFragmentManager()
                         .beginTransaction()
@@ -486,8 +495,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         startActivityForResult(intent, REQUEST_CODE_PREVIEW);
-        if (mGlobalSpec.isCutscenes){
-                mActivity.overridePendingTransition(R.anim.activity_open, 0);
+        if (mGlobalSpec.isCutscenes) {
+            mActivity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
 
