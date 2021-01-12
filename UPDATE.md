@@ -1,4 +1,12 @@
 # 历史更新
+## 1.0.21X
+ - 兼容Android 30版本
+ - 修改Android 29以上的版本文件配置都是私有的，公有或者私有配置无效
+ - 修复demo部分代码演示错误的问题
+ - 现在返回的数据源同时支持uri和path了
+ - prodgresslibrary增加addUrisStartUpload方法。主要是修复Android Q以后,有关progresslibrary不能显示的问题，因为progresslibrary以前只支持path形式，现在也支持uri形式了
+ - 修复只有一个模式的时候，底部依然显示间距的问题
+
 
 ## 1.0.18X
  - 现在拍摄图片和录制视频确认后，会更新Android图库。
