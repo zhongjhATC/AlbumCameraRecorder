@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import androidx.core.content.FileProvider;
 import androidx.core.os.EnvironmentCompat;
@@ -77,15 +78,20 @@ public class MediaStoreCompat {
                 break;
         }
         File storageDir;
-        if (mSaveStrategy.isPublic) {
-            storageDir = Environment.getExternalStoragePublicDirectory(
-                    mSaveStrategy.directory);
-            assert storageDir != null;
-            if (!storageDir.exists()) {
-                storageDir.mkdirs();
-            }
-        } else {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // 29以上的版本都必须是私有的
             storageDir = mContext.get().getExternalFilesDir(mSaveStrategy.directory);
+        } else {
+            if (mSaveStrategy.isPublic) {
+                storageDir = Environment.getExternalStoragePublicDirectory(
+                        mSaveStrategy.directory);
+                assert storageDir != null;
+                if (!storageDir.exists()) {
+                    storageDir.mkdirs();
+                }
+            } else {
+                storageDir = mContext.get().getExternalFilesDir(mSaveStrategy.directory);
+            }
         }
 
         // Avoid joining path components manually
