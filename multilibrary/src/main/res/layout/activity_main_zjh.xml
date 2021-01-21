@@ -6,9 +6,11 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:text="出现空白异常，请重新打开"
+        android:textSize="18sp"
         tools:ignore="HardcodedText" />
 
     <com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.zhongjh.imageedit.view.IMGView
+        android:id="@+id/image_canvas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000" />
+
+    <ViewSwitcher
+        android:id="@+id/vs_op"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inAnimation="@anim/image_fade_in"
+        android:outAnimation="@anim/image_fade_out">
+
+        <include layout="@layout/image_edit_opt_layout" />
+
+        <include layout="@layout/image_edit_clip_layout" />
+
+    </ViewSwitcher>
+
+</FrameLayout>

@@ -1,19 +1,24 @@
 package com.zhongjh.albumcamerarecorder;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+
+import com.google.android.material.tabs.TabLayout;
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 
@@ -39,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mSpec = GlobalSpec.getInstance();
         setTheme(mSpec.themeId);
-        // 隐藏状态栏
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        initStatusBar();
+
         super.onCreate(savedInstanceState);
         // @@确认是否进行了配置
         if (!mSpec.hasInited) {
@@ -59,10 +64,10 @@ public class MainActivity extends AppCompatActivity {
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
         // 判断只有一个的时候
-        if (adapterViewPager.getCount() <= 1){
+        if (adapterViewPager.getCount() <= 1) {
             // 则隐藏底部
             mTabLayout.setVisibility(View.GONE);
-        }else{
+        } else {
             mTabLayout.setVisibility(View.VISIBLE);
             mTabLayout.setupWithViewPager(mVpPager);
         }
@@ -90,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
      */
     public void showHideTableLayout(boolean isShow) {
         // 判断只有一个的时候
-        if (adapterViewPager.getCount() <= 1){
+        if (adapterViewPager.getCount() <= 1) {
             // 则隐藏底部
             mTabLayout.setVisibility(View.GONE);
-        }else{
+        } else {
             if (isShow) {
                 mTabLayout.setVisibility(View.VISIBLE);
                 setTablayoutScroll(true);
@@ -111,10 +116,10 @@ public class MainActivity extends AppCompatActivity {
      */
     public void setTablayoutScroll(boolean isScroll) {
         // 判断只有一个的时候
-        if (adapterViewPager.getCount() <= 1){
+        if (adapterViewPager.getCount() <= 1) {
             // 则隐藏底部
             mTabLayout.setVisibility(View.GONE);
-        }else{
+        } else {
             if (isScroll) {
                 // 设置可以滑动
                 mVpPager.setScroll(true);
@@ -186,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (mTitles.get(position)) {
                 case "相册":
-                    if (adapterViewPager.getCount() <= 1){
+                    if (adapterViewPager.getCount() <= 1) {
                         return MatissFragment.newInstance(0);
                     }
                     return MatissFragment.newInstance(50);
@@ -205,6 +210,29 @@ public class MainActivity extends AppCompatActivity {
             return mTitles.get(position);
         }
 
+    }
+
+    private void initStatusBar() {
+        // http为空的才启用全屏，因为外链是没有title返回的
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // 设置状态栏为透明并且为全屏模式
+            int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = getWindow();
+                WindowManager.LayoutParams attributes = window.getAttributes();
+                window.setAttributes(attributes);
+                getWindow().setStatusBarColor(Color.TRANSPARENT);
+            } else {
+                Window window = getWindow();
+                WindowManager.LayoutParams attributes = window.getAttributes();
+                attributes.flags |= flagTranslucentStatus;
+                window.setAttributes(attributes);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            MainActivity.this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
     }
 
 }
