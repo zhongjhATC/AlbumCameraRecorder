@@ -163,6 +163,12 @@ public final class GlobalSetting implements GlobalSettingApi {
         return this;
     }
 
+    @Override
+    public GlobalSetting isImageEdit(boolean isImageEdit) {
+        mGlobalSpec.isImageEdit = isImageEdit;
+        return this;
+    }
+
     @NonNull
     @Override
     public GlobalSetting setOnMainListener(@Nullable OnMainListener listener) {

@@ -59,8 +59,7 @@ public interface GlobalSettingApi {
 
     /**
      * 设置界面默认显示 相册、录制、录音 三个其中之一
-     * @param position
-     * @return
+     * @param position 0：相册，录制：1，录音：2
      */
     GlobalSetting defaultPosition(int position);
 
@@ -124,9 +123,14 @@ public interface GlobalSettingApi {
     /**
      * 设置是否启动过场动画 ，只包括开始打开界面和关闭界面的过场动画
      * @param isCutscenes 是否启动
-     * @return
      */
     GlobalSetting isCutscenes(boolean isCutscenes);
+
+    /**
+     * 设置图片是否开启编辑功能，涉及功能：预览、拍照
+     * @param isImageEdit 图片是否编辑
+     */
+    GlobalSetting isImageEdit(boolean isImageEdit);
 
     /**
      * 有关首页的一些事件

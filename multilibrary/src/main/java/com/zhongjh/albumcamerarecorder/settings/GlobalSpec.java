@@ -34,7 +34,8 @@ public class GlobalSpec {
     public SaveStrategy videoStrategy; // 视频保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
     public SaveStrategy audioStrategy; // 音频保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
     public ImageEngine imageEngine;
-    public boolean isCutscenes;// 是否启动过场动画，只包括开始打开界面和关闭界面的过场动画
+    public boolean isCutscenes; // 是否启动过场动画，只包括开始打开界面和关闭界面的过场动画
+    public boolean isImageEdit; // 图片是否开启编辑功能，涉及功能：预览、拍照
     public OnMainListener onMainListener;// 主界面的有关事件
 
 
@@ -71,6 +72,7 @@ public class GlobalSpec {
         hasInited = true;
         imageEngine = new GlideEngine();
         isCutscenes = true;
+        isImageEdit = true;
     }
 
     private static final class InstanceHolder {
