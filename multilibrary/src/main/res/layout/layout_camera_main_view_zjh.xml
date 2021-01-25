@@ -16,21 +16,21 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:keepScreenOn="true"
-        app:cameraAudio="on"
-        app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"
-        app:cameraEngine="camera2"
         app:cameraExperimental="true"
-        app:cameraFacing="back"
+        app:cameraEngine="camera2"
+        app:cameraPreview="glSurface"
+        app:cameraPlaySounds="true"
+        app:cameraGrid="off"
         app:cameraFlash="auto"
+        app:cameraAudio="on"
+        app:cameraFacing="back"
+        app:cameraGestureTap="autoFocus"
         app:cameraGestureLongTap="none"
         app:cameraGesturePinch="zoom"
         app:cameraGestureScrollHorizontal="filterControl1"
         app:cameraGestureScrollVertical="exposureCorrection"
-        app:cameraGestureTap="autoFocus"
-        app:cameraGrid="off"
-        app:cameraMode="picture"
-        app:cameraPlaySounds="true"
-        app:cameraPreview="glSurface" />
+        app:cameraMode="video"
+        app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"/>
 
     <com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView
         android:id="@+id/vvPreview"
@@ -57,6 +57,7 @@
         tools:ignore="ContentDescription" />
 
     <LinearLayout
+        android:id="@+id/llMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

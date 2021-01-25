@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +31,6 @@ import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.VideoResult;
-import com.otaliastudios.cameraview.controls.Engine;
 import com.otaliastudios.cameraview.controls.Flash;
 import com.otaliastudios.cameraview.controls.Preview;
 import com.zhongjh.albumcamerarecorder.R;
@@ -43,7 +43,6 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
-import com.zhongjh.albumcamerarecorder.camera.util.StatusBarUtil;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
@@ -51,6 +50,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
+import com.zhongjh.albumcamerarecorder.utils.StatusBarUtils;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
@@ -190,14 +190,13 @@ public class CameraLayout extends RelativeLayout {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
 
-//        // 判断如果是4.4以上，就设置顶部间距
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            mViewHolder.rlMain.setPadding(0, StatusBarUtil.getStatusBarHeight(getContext()), 0, 0);
-//        }
+        // 兼容沉倾状态栏
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mViewHolder.imgClose.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()),0,0);
+            mViewHolder.llMenu.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()),0,0);
+        }
 
         // 初始化cameraView
-        mViewHolder.cameraView.setEngine(Engine.CAMERA2);
-        mViewHolder.cameraView.setPreview(Preview.GL_SURFACE);
 
         setFlashLamp(); // 设置闪光灯模式
         mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
@@ -533,7 +532,7 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 显示图片
+     * 显示图片 单个或者多个
      *
      * @param bitmap bitmap
      */
@@ -790,6 +789,7 @@ public class CameraLayout extends RelativeLayout {
         View vLine3;
         ImageView imgClose;
         CameraView cameraView;
+        LinearLayout llMenu;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -806,6 +806,7 @@ public class CameraLayout extends RelativeLayout {
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.vvPreview = rootView.findViewById(R.id.vvPreview);
+            this.llMenu = rootView.findViewById(R.id.llMenu);
         }
 
     }

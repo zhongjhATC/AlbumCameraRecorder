@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
@@ -25,6 +26,7 @@ import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.recorder.service.RecordingService;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundrecordingLayout;
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
+import com.zhongjh.albumcamerarecorder.utils.StatusBarUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
@@ -78,6 +80,11 @@ public class SoundRecordingFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
+
+        // 兼容沉倾状态栏
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mViewHolder.chronometer.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()),0,0);
+        }
 
         mRecordeSpec = RecordeSpec.getInstance();   // 初始化设置
 

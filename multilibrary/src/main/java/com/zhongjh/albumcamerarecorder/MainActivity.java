@@ -17,9 +17,11 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
+import com.zhongjh.albumcamerarecorder.utils.StatusBarUtils;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         mSpec = GlobalSpec.getInstance();
         setTheme(mSpec.themeId);
 
-        initStatusBar();
+        StatusBarUtils.initStatusBar(MainActivity.this);
 
         super.onCreate(savedInstanceState);
         // @@确认是否进行了配置
@@ -210,29 +212,6 @@ public class MainActivity extends AppCompatActivity {
             return mTitles.get(position);
         }
 
-    }
-
-    private void initStatusBar() {
-        // http为空的才启用全屏，因为外链是没有title返回的
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // 设置状态栏为透明并且为全屏模式
-            int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = getWindow();
-                WindowManager.LayoutParams attributes = window.getAttributes();
-                window.setAttributes(attributes);
-                getWindow().setStatusBarColor(Color.TRANSPARENT);
-            } else {
-                Window window = getWindow();
-                WindowManager.LayoutParams attributes = window.getAttributes();
-                attributes.flags |= flagTranslucentStatus;
-                window.setAttributes(attributes);
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            MainActivity.this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
     }
 
 }

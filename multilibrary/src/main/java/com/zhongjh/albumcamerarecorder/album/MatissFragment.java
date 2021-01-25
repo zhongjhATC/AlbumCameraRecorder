@@ -10,11 +10,13 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.Toolbar;
 
@@ -50,6 +52,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
+import com.zhongjh.albumcamerarecorder.utils.StatusBarUtils;
 
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
@@ -138,10 +141,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 初始化view
      */
     private void initView(Bundle savedInstanceState) {
-//        setSupportActionBar(toolbar);
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayShowTitleEnabled(false);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
+        // 兼容沉倾状态栏
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mViewHolder.toolbar.setPadding(0, StatusBarUtils.getStatusBarHeight(getActivity()),0,0);
+            ViewGroup.LayoutParams layoutParams = mViewHolder.toolbar.getLayoutParams();
+            layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(getActivity());
+        }
 
         Drawable navigationIcon = mViewHolder.toolbar.getNavigationIcon();
         TypedArray ta = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});

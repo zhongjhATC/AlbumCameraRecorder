@@ -27,6 +27,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?colorPrimary"
         android:elevation="4dp"
+        android:paddingTop="12dp"
         android:theme="?toolbar"
         tools:targetApi="lollipop">
 
@@ -107,8 +108,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:enabled="true"
-                android:paddingLeft="4dp"
                 android:paddingStart="4dp"
+                android:paddingLeft="4dp"
                 android:text="@string/button_original"
                 android:textColor="?attr/bottomToolbar.preview.textColor"
                 android:textSize="14sp"
@@ -147,8 +148,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:drawablePadding="8dp"
             android:drawableTop="?attr/album.emptyView"
+            android:drawablePadding="8dp"
             android:gravity="center"
             android:text="@string/empty_text"
             android:textColor="?attr/album.emptyView.textColor"

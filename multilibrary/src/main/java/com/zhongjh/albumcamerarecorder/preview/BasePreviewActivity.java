@@ -4,16 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 
 import gaode.zhongjh.com.common.entity.IncapableCause;
@@ -29,6 +32,7 @@ import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
+import com.zhongjh.albumcamerarecorder.utils.StatusBarUtils;
 import com.zhongjh.albumcamerarecorder.utils.VersionUtils;
 
 /**
@@ -67,11 +71,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(GlobalSpec.getInstance().themeId);  // 获取样式
         super.onCreate(savedInstanceState);
+        StatusBarUtils.initStatusBar(BasePreviewActivity.this);
         setContentView(R.layout.activity_media_preview_zjh);
-//        if (VersionUtils.hasKitKat()) {
-//            // 使用沉倾状态栏
-//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//        }
 
         mGlobalSpec = GlobalSpec.getInstance();
         mAlbumSpec = AlbumSpec.getInstance();
@@ -370,6 +371,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         IncapableCause.handleCause(this, cause);
         return cause == null;
     }
+
+
 
     public static class ViewHolder {
         public Activity activity;
