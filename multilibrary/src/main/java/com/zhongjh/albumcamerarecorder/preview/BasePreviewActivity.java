@@ -4,15 +4,20 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,6 +26,7 @@ import com.zhongjh.albumcamerarecorder.R;
 
 import gaode.zhongjh.com.common.entity.IncapableCause;
 import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.widget.IncapableDialog;
 
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
@@ -32,8 +38,14 @@ import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
+import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.StatusBarUtils;
 import com.zhongjh.albumcamerarecorder.utils.VersionUtils;
+import com.zhongjh.imageedit.IMGEditActivity;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * 预览的基类
@@ -41,6 +53,7 @@ import com.zhongjh.albumcamerarecorder.utils.VersionUtils;
 public class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener {
 
+    public static final int REQ_IMAGE_EDIT = 1;
     public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
     public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
@@ -65,6 +78,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected boolean mIsSelectedListener = true; // 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
     protected boolean mIsSelectedCheck = true;  // 设置右上角是否检测类型
 
+    private MediaStoreCompat mPictureMediaStoreCompat;  // 图片存储器
+    private File mEditImageFile; // 当前编辑完的图片文件
+
     protected ViewHolder mViewHolder;
 
     @Override
@@ -78,8 +94,23 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mAlbumSpec = AlbumSpec.getInstance();
         boolean isAllowRepeat = getIntent().getBooleanExtra(EXTRA_IS_ALLOW_REPEAT, false);
         mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
-        mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER,true);
-        mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK,true);
+        mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER, true);
+        mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK, true);
+
+        mPictureMediaStoreCompat = new MediaStoreCompat(this);
+        // 设置图片路径
+        if (mGlobalSpec.pictureStrategy != null) {
+            // 如果设置了视频的文件夹路径，就使用它的
+            mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.pictureStrategy);
+        } else {
+            // 否则使用全局的
+            if (mGlobalSpec.saveStrategy == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
+            } else {
+                mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.saveStrategy);
+            }
+        }
+
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
@@ -99,12 +130,32 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         initListener();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQ_IMAGE_EDIT) {
+                // 更新库
+                BitmapUtils.displayToGallery(this, mEditImageFile);
+
+                // 更新当前fragment
+                MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+                Uri uri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
+                item.setMediaUri(uri);
+                mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
+                ((PreviewItemFragment)mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
+            }
+        }
+    }
+
     /**
      * 所有事件
      */
     private void initListener() {
+        // 编辑
+        mViewHolder.btnEdit.setOnClickListener(this);
         // 返回
-        mViewHolder.button_back.setOnClickListener(this);
+        mViewHolder.ibtnBack.setOnClickListener(this);
         // 确认
         mViewHolder.button_apply.setOnClickListener(this);
         // 多图时滑动事件
@@ -187,11 +238,28 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.button_back) {
+        if (v.getId() == R.id.ibtnBack) {
             onBackPressed();
         } else if (v.getId() == R.id.button_apply) {
             sendBackResult(true);
             finish();
+        } else if (v.getId() == R.id.btnEdit) {
+            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+
+            File file;
+
+            try {
+                file = mPictureMediaStoreCompat.createFile(0);
+                mEditImageFile = file;
+            } catch (IOException e) {
+                return;
+            }
+
+            Intent intent = new Intent();
+            intent.setClass(BasePreviewActivity.this, IMGEditActivity.class);
+            intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
+            intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
+            startActivityForResult(intent, REQ_IMAGE_EDIT);
         }
     }
 
@@ -270,10 +338,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         }
 
         // 判断是否启动操作
-        if (!mEnableOperation){
+        if (!mEnableOperation) {
             mViewHolder.button_apply.setVisibility(View.GONE);
             mViewHolder.check_view.setVisibility(View.GONE);
-        }else{
+        } else {
             mViewHolder.button_apply.setVisibility(View.VISIBLE);
             mViewHolder.check_view.setVisibility(View.VISIBLE);
         }
@@ -345,6 +413,12 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         } else if (mAlbumSpec.originalable) {
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
         }
+
+        if (item.isImage() && mGlobalSpec.isImageEdit) {
+            mViewHolder.btnEdit.setVisibility(View.VISIBLE);
+        } else {
+            mViewHolder.btnEdit.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -372,12 +446,11 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         return cause == null;
     }
 
-
-
     public static class ViewHolder {
         public Activity activity;
         public PreviewViewPager pager;
-        TextView button_back;
+        ImageButton ibtnBack;
+        TextView btnEdit;
         public CheckRadioView original;
         public LinearLayout originalLayout;
         public TextView size;
@@ -388,7 +461,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         ViewHolder(Activity activity) {
             this.activity = activity;
             this.pager = activity.findViewById(R.id.pager);
-            this.button_back = activity.findViewById(R.id.button_back);
+            this.ibtnBack = activity.findViewById(R.id.ibtnBack);
+            this.btnEdit = activity.findViewById(R.id.btnEdit);
             this.original = activity.findViewById(R.id.original);
             this.originalLayout = activity.findViewById(R.id.originalLayout);
             this.size = activity.findViewById(R.id.size);

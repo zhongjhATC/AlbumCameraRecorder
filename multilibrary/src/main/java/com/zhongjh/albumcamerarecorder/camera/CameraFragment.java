@@ -252,19 +252,22 @@ public class CameraFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        mCameraLayout.onResume();
+        if (mCameraLayout != null)
+            mCameraLayout.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mCameraLayout.onPause();
+        if (mCameraLayout != null)
+            mCameraLayout.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mCameraLayout.onDestroy();
+        if (mCameraLayout != null)
+            mCameraLayout.onDestroy();
     }
 
 }

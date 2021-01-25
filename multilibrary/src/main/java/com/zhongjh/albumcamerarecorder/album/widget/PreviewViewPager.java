@@ -16,6 +16,8 @@
 package com.zhongjh.albumcamerarecorder.album.widget;
 
 import android.content.Context;
+
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;

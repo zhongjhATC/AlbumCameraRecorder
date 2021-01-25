@@ -14,7 +14,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +23,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.otaliastudios.cameraview.CameraException;
@@ -189,12 +189,6 @@ public class CameraLayout extends RelativeLayout {
         setWillNotDraw(false);
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
-
-        // 兼容沉倾状态栏
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mViewHolder.imgClose.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()),0,0);
-            mViewHolder.llMenu.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()),0,0);
-        }
 
         // 初始化cameraView
 
@@ -789,7 +783,7 @@ public class CameraLayout extends RelativeLayout {
         View vLine3;
         ImageView imgClose;
         CameraView cameraView;
-        LinearLayout llMenu;
+        ConstraintLayout clMenu;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -806,7 +800,7 @@ public class CameraLayout extends RelativeLayout {
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.vvPreview = rootView.findViewById(R.id.vvPreview);
-            this.llMenu = rootView.findViewById(R.id.llMenu);
+            this.clMenu = rootView.findViewById(R.id.clMenu);
         }
 
     }

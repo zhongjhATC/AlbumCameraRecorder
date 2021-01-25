@@ -9,6 +9,7 @@
     tools:context="com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment">
 
     <Chronometer
+        android:fitsSystemWindows="true"
         android:id="@+id/chronometer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

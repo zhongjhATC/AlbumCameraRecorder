@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rlMain"
-    android:paddingTop="1dp"
-    android:background="@color/black_eighty_percent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/black_eighty_percent"
+    android:orientation="vertical"
+    android:paddingTop="1dp">
 
     <!-- 拍摄 -->
     <com.otaliastudios.cameraview.CameraView
@@ -16,21 +16,21 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:keepScreenOn="true"
-        app:cameraExperimental="true"
-        app:cameraEngine="camera2"
-        app:cameraPreview="glSurface"
-        app:cameraPlaySounds="true"
-        app:cameraGrid="off"
-        app:cameraFlash="auto"
         app:cameraAudio="on"
+        app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"
+        app:cameraEngine="camera2"
+        app:cameraExperimental="true"
         app:cameraFacing="back"
-        app:cameraGestureTap="autoFocus"
+        app:cameraFlash="auto"
         app:cameraGestureLongTap="none"
         app:cameraGesturePinch="zoom"
         app:cameraGestureScrollHorizontal="filterControl1"
         app:cameraGestureScrollVertical="exposureCorrection"
+        app:cameraGestureTap="autoFocus"
+        app:cameraGrid="off"
         app:cameraMode="video"
-        app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"/>
+        app:cameraPlaySounds="true"
+        app:cameraPreview="glSurface" />
 
     <com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView
         android:id="@+id/vvPreview"
@@ -48,27 +48,35 @@
         android:visibility="invisible"
         tools:ignore="HardcodedText" />
 
-    <ImageView
-        android:id="@+id/imgClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:srcCompat="@drawable/ic_close_white_24dp"
-        tools:ignore="ContentDescription" />
 
-    <LinearLayout
-        android:id="@+id/llMenu"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clMenu"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:fitsSystemWindows="true"
         android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imgClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_close_white_24dp"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/imgFlash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgSwitch"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_flash_on"
             tools:ignore="ContentDescription" />
 
@@ -77,10 +85,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_camera"
             tools:ignore="ContentDescription" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <HorizontalScrollView
         android:id="@+id/hsvPhoto"

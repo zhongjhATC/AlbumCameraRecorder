@@ -45,6 +45,10 @@ public class PreviewItemFragment extends Fragment {
 
     private static final String ARGS_ITEM = "args_item";
 
+
+    View videoPlayButton;
+    ImageViewTouch image;
+
     public static PreviewItemFragment newInstance(MultiMedia item) {
         PreviewItemFragment fragment = new PreviewItemFragment();
         Bundle bundle = new Bundle();
@@ -61,12 +65,19 @@ public class PreviewItemFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        videoPlayButton = view.findViewById(R.id.video_play_button);
+        image = view.findViewById(R.id.image_view);
+        init();
+    }
+
+    /**
+     * 初始化，也可用于编辑图片后重新刷新当前界面
+     */
+    public void init() {
         final MultiMedia item = getArguments().getParcelable(ARGS_ITEM);
         if (item == null) {
             return;
         }
-
-        View videoPlayButton = view.findViewById(R.id.video_play_button);
         if (item.isVideo()) {
             videoPlayButton.setVisibility(View.VISIBLE);
             videoPlayButton.setOnClickListener(v -> {
@@ -89,7 +100,6 @@ public class PreviewItemFragment extends Fragment {
             videoPlayButton.setVisibility(View.GONE);
         }
 
-        ImageViewTouch image = view.findViewById(R.id.image_view);
         image.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
 
         if (item.getMediaUri() != null) {
@@ -112,8 +122,6 @@ public class PreviewItemFragment extends Fragment {
             GlobalSpec.getInstance().imageEngine.loadDrawableImage(getContext(), image,
                     item.getDrawableId());
         }
-
-
     }
 
     public void resetView() {

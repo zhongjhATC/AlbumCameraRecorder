@@ -62,7 +62,7 @@ public class MediaStoreCompat {
      * @param type 0是图片 1是视频 2是音频
      * @return 临时文件
      */
-    private File createFile(int type) throws IOException {
+    public File createFile(int type) throws IOException {
         String timeStamp =
                 new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String fileName = null;

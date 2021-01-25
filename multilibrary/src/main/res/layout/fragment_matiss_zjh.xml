@@ -27,7 +27,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?colorPrimary"
         android:elevation="4dp"
-        android:paddingTop="12dp"
+        android:fitsSystemWindows="true"
         android:theme="?toolbar"
         tools:targetApi="lollipop">
 

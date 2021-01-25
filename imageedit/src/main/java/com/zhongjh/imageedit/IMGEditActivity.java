@@ -9,8 +9,10 @@ import android.text.TextUtils;
 import com.zhongjh.imageedit.core.IMGMode;
 import com.zhongjh.imageedit.core.IMGText;
 import com.zhongjh.imageedit.core.file.IMGAssetFileDecoder;
+import com.zhongjh.imageedit.core.file.IMGContentDecoder;
 import com.zhongjh.imageedit.core.file.IMGDecoder;
 import com.zhongjh.imageedit.core.file.IMGFileDecoder;
+import com.zhongjh.imageedit.core.util.FileUtils;
 import com.zhongjh.imageedit.core.util.IMGUtils;
 
 import java.io.FileNotFoundException;
@@ -50,7 +52,10 @@ public class IMGEditActivity extends IMGEditBaseActivity {
 
         IMGDecoder decoder = null;
 
-        String path = uri.getPath();
+        String path = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            path = FileUtils.getRealPathFromUriAboveApi19(this, uri);
+        }
         if (!TextUtils.isEmpty(path)) {
             switch (uri.getScheme()) {
                 case "asset":
@@ -58,6 +63,9 @@ public class IMGEditActivity extends IMGEditBaseActivity {
                     break;
                 case "file":
                     decoder = new IMGFileDecoder(uri);
+                    break;
+                case "content":
+                    decoder = new IMGContentDecoder(this, uri);
                     break;
             }
         }

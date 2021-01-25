@@ -41,4 +41,5 @@ dependencies {
     api 'com.otaliastudios:cameraview:2.6.4'
 
     compileOnly project(':albumCameraRecorderCommon')
+    compileOnly project(':imageedit')
 }

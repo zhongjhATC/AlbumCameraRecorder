@@ -81,11 +81,6 @@ public class SoundRecordingFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
 
-        // 兼容沉倾状态栏
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mViewHolder.chronometer.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()),0,0);
-        }
-
         mRecordeSpec = RecordeSpec.getInstance();   // 初始化设置
 
         mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_sound_recording)); // 提示文本
