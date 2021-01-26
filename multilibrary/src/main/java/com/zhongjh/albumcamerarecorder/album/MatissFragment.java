@@ -51,7 +51,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
-import com.zhongjh.albumcamerarecorder.utils.StatusBarUtils;
+import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 

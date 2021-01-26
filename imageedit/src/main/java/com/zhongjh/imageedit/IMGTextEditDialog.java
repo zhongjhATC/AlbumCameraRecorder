@@ -49,8 +49,8 @@ public class IMGTextEditDialog extends Dialog implements View.OnClickListener,
         mColorGroup.setOnCheckedChangeListener(this);
         mEditText = findViewById(R.id.et_text);
 
-        findViewById(R.id.tv_cancel).setOnClickListener(this);
-        findViewById(R.id.tv_done).setOnClickListener(this);
+        findViewById(R.id.ibtnBack).setOnClickListener(this);
+        findViewById(R.id.ibtnDone).setOnClickListener(this);
     }
 
     @Override

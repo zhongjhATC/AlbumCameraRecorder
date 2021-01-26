@@ -13,6 +13,8 @@ import com.zhongjh.imageedit.core.IMGText;
 import com.zhongjh.imageedit.view.IMGColorGroup;
 import com.zhongjh.imageedit.view.IMGView;
 
+import gaode.zhongjh.com.common.utils.StatusBarUtils;
+
 /**
  * Created by felix on 2017/12/5 下午3:08.
  */
@@ -45,6 +47,7 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StatusBarUtils.initStatusBar(IMGEditBaseActivity.this);
         super.onCreate(savedInstanceState);
         Bitmap bitmap = getBitmap();
         if (bitmap != null) {
@@ -92,9 +95,9 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             onModeClick(IMGMode.CLIP);
         } else if (vid == R.id.btn_undo) {
             onUndoClick();
-        } else if (vid == R.id.tv_done) {
+        } else if (vid == R.id.ibtnDone) {
             onDoneClick();
-        } else if (vid == R.id.tv_cancel) {
+        } else if (vid == R.id.ibtnBack) {
             onCancelClick();
         } else if (vid == R.id.ib_clip_cancel) {
             onCancelClipClick();

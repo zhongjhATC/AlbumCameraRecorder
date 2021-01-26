@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -13,15 +12,11 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 
 import gaode.zhongjh.com.common.entity.IncapableCause;
@@ -41,13 +36,12 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
-import com.zhongjh.albumcamerarecorder.utils.StatusBarUtils;
-import com.zhongjh.albumcamerarecorder.utils.VersionUtils;
+import gaode.zhongjh.com.common.utils.StatusBarUtils;
+
 import com.zhongjh.imageedit.IMGEditActivity;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * 预览的基类

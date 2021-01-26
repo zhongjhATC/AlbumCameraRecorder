@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.utils;
+package gaode.zhongjh.com.common.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 
 public class StatusBarUtils {
 

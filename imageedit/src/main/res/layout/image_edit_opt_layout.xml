@@ -7,39 +7,38 @@
     android:layout_gravity="bottom"
     android:orientation="vertical">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/image_bg_top"
-        android:padding="12dp">
+        android:fitsSystemWindows="true">
 
-        <TextView
-            android:id="@+id/tv_cancel"
+        <ImageButton
+            android:id="@+id/ibtnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="onClick"
-            android:text="@string/image_cancel"
-            android:textColor="@color/image_color_primary"
-            android:textSize="16sp" />
+            android:background="@null"
+            android:contentDescription="关闭按钮"
+            android:padding="10dp"
+            android:src="@drawable/image_ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
 
-        <TextView
-            android:id="@+id/tv_done"
+        <ImageButton
+            android:id="@+id/ibtnDone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="onClick"
-            android:text="@string/image_done"
-            android:textColor="@color/image_color_accent"
-            android:textSize="16sp" />
+            android:background="@null"
+            android:contentDescription="完成"
+            android:padding="10dp"
+            android:src="@drawable/image_ic_baseline_done_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Space
         android:layout_width="match_parent"
