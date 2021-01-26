@@ -166,6 +166,14 @@ public class MediaSelectionFragment extends Fragment implements
     }
 
     /**
+     * 重新获取数据源
+     */
+    public void restartLoaderMediaGrid() {
+        Album album = getArguments().getParcelable(EXTRA_ALBUM);
+        mAlbumMediaCollection.restartLoader(album);
+    }
+
+    /**
      * 刷新所能看到的选择
      */
     public void refreshSelection() {

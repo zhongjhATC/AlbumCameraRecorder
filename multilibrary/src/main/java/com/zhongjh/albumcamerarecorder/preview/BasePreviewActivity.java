@@ -26,6 +26,8 @@ import com.zhongjh.albumcamerarecorder.R;
 
 import gaode.zhongjh.com.common.entity.IncapableCause;
 import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import gaode.zhongjh.com.common.utils.FileUtil;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.widget.IncapableDialog;
 
@@ -58,6 +60,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
     public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
     public static final String EXTRA_RESULT_APPLY = "extra_result_apply";
+    public static final String EXTRA_RESULT_IS_EDIT = "extra_result_is_edit";
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     public static final String CHECK_STATE = "checkState";
     public static final String ENABLE_OPERATION = "enable_operation";
@@ -71,6 +74,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected PreviewPagerAdapter mAdapter;
 
     protected boolean mOriginalEnable;      // 是否原图
+    private boolean mIsEdit; // 是否编辑了图片
 
     protected int mPreviousPos = -1;    // 当前预览的图片的索引
 
@@ -135,15 +139,20 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQ_IMAGE_EDIT) {
-                // 更新库
+                mIsEdit = true;
+
+                // 更新相册库
                 BitmapUtils.displayToGallery(this, mEditImageFile);
+
+                // 更新相册的实体
+                Uri mediaUri = FileUtil.getFileUri(getApplicationContext(), MultimediaTypes.PICTURE, mEditImageFile);
 
                 // 更新当前fragment
                 MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-                Uri uri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
-                item.setMediaUri(uri);
+//                Uri uri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
+                item.setMediaUri(mediaUri);
                 mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
-                ((PreviewItemFragment)mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
+                ((PreviewItemFragment) mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
             }
         }
     }
@@ -430,6 +439,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         Intent intent = new Intent();
         intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(EXTRA_RESULT_APPLY, apply);
+        intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
         intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         setResult(Activity.RESULT_OK, intent);
     }

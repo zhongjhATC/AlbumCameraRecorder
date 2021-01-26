@@ -23,6 +23,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import gaode.zhongjh.com.common.utils.FileUtil;
+
 /**
  * Bitmap操作常用工具类
  * Created by Clock on 2015/12/31.
@@ -39,7 +42,7 @@ public class BitmapUtils {
     /**
      * 显示图片、视频到图库
      *
-     * @param context 上下文
+     * @param context   上下文
      * @param photoFile 要保存的文件
      */
     public static void displayToGallery(Context context, File photoFile) {
@@ -47,7 +50,6 @@ public class BitmapUtils {
             return;
         }
         String photoPath = photoFile.getAbsolutePath();
-        // 通知图库更新
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + photoPath)));
     }
 

@@ -25,7 +25,7 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     private LoaderManager mLoaderManager;   // 加载器的管理器
     private AlbumCallbacks mCallbacks;      // 回调
     private int mCurrentSelection;
-    private boolean mLoadFinished;
+    public boolean mLoadFinished;
 
     @NonNull
     @Override
@@ -106,6 +106,13 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
      */
     public void loadAlbums() {
         mLoaderManager.initLoader(LOADER_ID, null, this);
+    }
+
+    /**
+     * 获取所有专辑
+     */
+    public void restartLoadAlbums() {
+        mLoaderManager.restartLoader(LOADER_ID, null, this);
     }
 
     public int getCurrentSelection() {

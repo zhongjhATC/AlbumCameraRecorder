@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
 
@@ -147,7 +148,13 @@ public class SelectedItemCollection {
      * @return 是否删除成功
      */
     public boolean remove(MultiMedia item) {
-        boolean removed = mItems.remove(item);
+        boolean removed = false;
+        for (MultiMedia multiMedia : mItems) {
+            if (multiMedia.getMediaUri().equals(item.getMediaUri())) {
+                removed = mItems.remove(multiMedia);
+                break;
+            }
+        }
         if (removed) {
             if (mItems.size() == 0) {
                 // 如果删除后没有数据，设置当前类型为空
@@ -326,7 +333,24 @@ public class SelectedItemCollection {
      */
     public int checkedNumOf(MultiMedia item) {
         // 获取选择的第几个
-        int index = new ArrayList<>(mItems).indexOf(item);
+        ArrayList<MultiMedia> arrayList = new ArrayList<>(mItems);
+        int index = -1;
+        if (item.getMediaUri() != null)
+            for (int i = 0; i < arrayList.size(); i++) {
+                if (arrayList.get(i).getMediaUri().equals(item.getMediaUri())) {
+                    index = i;
+                    break;
+                }
+            }
+        else
+            for (int i = 0; i < arrayList.size(); i++) {
+                if (arrayList.get(i).getUri().equals(item.getUri())) {
+                    index = i;
+                    break;
+                }
+            }
+//        if (mItems.toArray().length > 0)
+//            Log.d(SelectedItemCollection.class.getSimpleName(), "item" + item.getUri() + " / mItems" + ((MultiMedia) mItems.toArray()[0]).getUri());
         // 如果选择的为 -1 就是未选状态，否则选择基础数量+1
         return index == -1 ? CheckView.UNCHECKED : index + 1;
     }

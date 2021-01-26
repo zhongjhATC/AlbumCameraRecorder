@@ -16,7 +16,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.Toolbar;
 
@@ -73,7 +72,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         MediaSelectionFragment.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
-
     private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     public static final String ARGUMENTS_MARGIN_BOTTOM = "arguments_margin_bottom";
 
@@ -84,14 +82,15 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private GlobalSpec mGlobalSpec; // 公共配置
 
-    private final AlbumCollection mAlbumCollection = new AlbumCollection();
+    private final AlbumCollection mAlbumCollection = new AlbumCollection(); // 专辑下拉数据源
     private SelectedItemCollection mSelectedCollection;
     private AlbumSpec mAlbumSpec;
 
-    private AlbumsSpinner mAlbumsSpinner;
+    private AlbumsSpinner mAlbumsSpinner; // 专辑下拉框控件
     private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;   // 左上角的下拉框适配器
 
     private boolean mOriginalEnable;    // 是否原图
+    private boolean mIsRefresh; // 是否刷新
 
     private ViewHolder mViewHolder;
 
@@ -143,7 +142,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private void initView(Bundle savedInstanceState) {
         // 兼容沉倾状态栏
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mViewHolder.toolbar.setPadding(0, StatusBarUtils.getStatusBarHeight(getActivity()),0,0);
+            mViewHolder.toolbar.setPadding(0, StatusBarUtils.getStatusBarHeight(getActivity()), 0, 0);
             ViewGroup.LayoutParams layoutParams = mViewHolder.toolbar.getLayoutParams();
             layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(getActivity());
         }
@@ -346,8 +345,15 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     Fragment mediaSelectionFragment = getFragmentManager().findFragmentByTag(
                             MediaSelectionFragment.class.getSimpleName());
                     if (mediaSelectionFragment instanceof MediaSelectionFragment) {
-                        // 刷新数据源
-                        ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
+                        if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_IS_EDIT, false)) {
+                            mIsRefresh = true;
+                            albumsSpinnerNotifyData();
+                            // 重新读取数据源
+                            ((MediaSelectionFragment) mediaSelectionFragment).restartLoaderMediaGrid();
+                        } else {
+                            // 刷新数据源
+                            ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
+                        }
                     }
                     // 刷新底部
                     updateBottomToolbar();
@@ -458,6 +464,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumsSpinnerAdapter.swapCursor(null);
     }
 
+    public void albumsSpinnerNotifyData() {
+        mAlbumCollection.mLoadFinished = false;
+        mAlbumCollection.restartLoadAlbums();
+    }
+
     /**
      * 选择某个专辑的时候
      *
@@ -472,12 +483,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 如果有数据，则内嵌新的fragment，并且相应相关照片
             mViewHolder.container.setVisibility(View.VISIBLE);
             mViewHolder.empty_view.setVisibility(View.GONE);
-            Fragment fragment = MediaSelectionFragment.newInstance(album,getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
-            if (getFragmentManager() != null)
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
-                        .commitAllowingStateLoss();
+            if (!mIsRefresh) {
+                Fragment fragment = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
+                if (getFragmentManager() != null)
+                    getFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
+                            .commitAllowingStateLoss();
+            }
         }
     }
 

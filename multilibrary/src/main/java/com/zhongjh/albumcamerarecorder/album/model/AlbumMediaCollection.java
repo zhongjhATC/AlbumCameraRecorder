@@ -100,6 +100,16 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
         mLoaderManager.initLoader(LOADER_ID, args, this);
     }
 
+    /**
+     * 重新加载图片
+     * @param target 专辑
+     */
+    public void restartLoader(@Nullable Album target) {
+        Bundle args = new Bundle();
+        args.putParcelable(ARGS_ALBUM, target);
+        mLoaderManager.restartLoader(LOADER_ID, args, this);
+    }
+
     public interface AlbumMediaCallbacks {
 
         void onAlbumMediaLoad(Cursor cursor);

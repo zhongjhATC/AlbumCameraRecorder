@@ -23,7 +23,7 @@ public class IMGContentDecoder extends IMGDecoder {
             ParcelFileDescriptor parcelFileDescriptor =
                     mContext.getContentResolver().openFileDescriptor(getUri(), "r");
             FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-            Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
             parcelFileDescriptor.close();
             return image;
         } catch (Exception e) {
