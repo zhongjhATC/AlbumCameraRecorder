@@ -149,12 +149,20 @@ public class SelectedItemCollection {
      */
     public boolean remove(MultiMedia item) {
         boolean removed = false;
-        for (MultiMedia multiMedia : mItems) {
-            if (multiMedia.getMediaUri().equals(item.getMediaUri())) {
-                removed = mItems.remove(multiMedia);
-                break;
+        if (item.getMediaUri() != null)
+            for (MultiMedia multiMedia : mItems) {
+                if (multiMedia.getMediaUri().equals(item.getMediaUri())) {
+                    removed = mItems.remove(multiMedia);
+                    break;
+                }
             }
-        }
+        else
+            for (MultiMedia multiMedia : mItems) {
+                if (multiMedia.getUri().equals(item.getUri())) {
+                    removed = mItems.remove(multiMedia);
+                    break;
+                }
+            }
         if (removed) {
             if (mItems.size() == 0) {
                 // 如果删除后没有数据，设置当前类型为空
@@ -166,6 +174,26 @@ public class SelectedItemCollection {
             }
         }
         return removed;
+    }
+
+    /**
+     * 更新数据源的指定item的uri
+     */
+    public void updateUri(MultiMedia item, Uri uri) {
+        if (item.getMediaUri() != null)
+            for (MultiMedia multiMedia : mItems) {
+                if (multiMedia.getMediaUri().equals(item.getMediaUri())) {
+                    multiMedia.setMediaUri(uri);
+                    break;
+                }
+            }
+        else
+            for (MultiMedia multiMedia : mItems) {
+                if (multiMedia.getUri().equals(item.getUri())) {
+                    multiMedia.setUri(uri);
+                    break;
+                }
+            }
     }
 
 

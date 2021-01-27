@@ -464,14 +464,16 @@ public class CameraLayout extends RelativeLayout {
     /**
      * 刷新多个图片
      */
-    public void refreshMultiPhoto() {
+    public void refreshMultiPhoto(ArrayList<MultiMedia> multiMediaArrayList) {
         ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCaptureBitmaps.entrySet()).listIterator(mCaptureBitmaps.size());
+        int position = 0;
         while (i.hasPrevious()) {
             Map.Entry<Integer, BitmapData> entry = i.previous();
             ImageView imgPhoto = mCaptureViews.get(entry.getKey()).findViewById(R.id.imgPhoto);
+            mCaptureBitmaps.get(entry.getKey()).setUri(multiMediaArrayList.get(position).getUri());
             mGlobalSpec.imageEngine.loadThumbnail(getContext(), imgPhoto.getWidth(), mPlaceholder,
                     imgPhoto, mCaptureBitmaps.get(entry.getKey()).getUri());
-
+            position++;
         }
     }
 

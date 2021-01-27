@@ -10,7 +10,7 @@ public class BitmapData {
     private File file;
     private Uri uri;
 
-    public BitmapData(File file,Uri uri) {
+    public BitmapData(File file, Uri uri) {
         this.file = file;
         this.uri = uri;
     }
@@ -25,6 +25,10 @@ public class BitmapData {
 
     public Uri getUri() {
         return uri;
+    }
+
+    public void setUri(Uri uri) {
+        this.uri = uri;
     }
 
 }

@@ -12,16 +12,16 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 public class MultiMedia implements Parcelable {
 
-    private  long id;
+    protected  long id;
     protected int position = -1;   // 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算
     protected String path;        // 路径
     protected String url;         // 在线网址
     protected int drawableId = -1;     // 图片资源id
-    private Uri mediaUri;        // 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
-    public Uri uri;             // 以路径转换成的uri，专用于提供给progresslibrary使用
+    protected Uri mediaUri;        // 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
+    protected Uri uri;             // 以路径转换成的uri，专用于提供给progresslibrary使用
     @MultimediaTypes
-    public int type;           // 范围类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
-    private String mimeType;        // 具体类型，jpg,png,mp3等等
+    protected int type;           // 范围类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
+    protected String mimeType;        // 具体类型，jpg,png,mp3等等
     public long size;
     public long duration; // only for video, in ms
 

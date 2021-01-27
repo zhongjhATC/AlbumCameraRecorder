@@ -228,7 +228,7 @@ public class CameraFragment extends BaseFragment {
                 }
 
                 // 刷新多个图片
-                mCameraLayout.refreshMultiPhoto();
+                mCameraLayout.refreshMultiPhoto(selected);
             }
         }
     }

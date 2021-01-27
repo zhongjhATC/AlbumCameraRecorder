@@ -40,6 +40,7 @@ import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
 import com.zhongjh.imageedit.IMGEditActivity;
+import com.zhongjh.imageedit.core.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,6 +71,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     protected boolean mOriginalEnable;      // 是否原图
     private boolean mIsEdit; // 是否编辑了图片
+    private Uri mCurrentOldUri; // 当前编辑前的URI
 
     protected int mPreviousPos = -1;    // 当前预览的图片的索引,默认第一个
 
@@ -135,20 +137,49 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         if (resultCode == RESULT_OK) {
             if (requestCode == REQ_IMAGE_EDIT) {
                 mIsEdit = true;
-
-                // 更新相册库
-                BitmapUtils.displayToGallery(this, mEditImageFile);
-
-                // 更新相册的实体
-                Uri mediaUri = FileUtil.getFileUri(getApplicationContext(), MultimediaTypes.PICTURE, mEditImageFile);
-
-                // 更新当前fragment
-                MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-                item.setMediaUri(mediaUri);
-                mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
-                ((PreviewItemFragment) mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
+                refreshAlbumItem();
             }
         }
+    }
+
+    /**
+     * 根据相册，来刷新
+     */
+    private void refreshAlbumItem() {
+        // 未加入相册时候的uri
+        Uri editUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
+        // 获取当前查看的multimedia
+        MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+        mCurrentOldUri = item.getMediaUri();
+        // 更新当前fragment
+        item.setMediaUri(null);
+        item.setUri(editUri);
+        mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
+        ((PreviewItemFragment) mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
+    }
+
+    /**
+     * 根据确定取消 来 确定是否更新数据源
+     *
+     * @param apply 是否同意
+     */
+    private void refreshMultiMediaItem(boolean apply) {
+        if (mIsEdit)
+            if (apply) {
+                // 加入相册库
+                BitmapUtils.displayToGallery(this, mEditImageFile);
+                // 更新相册后的uri
+                Uri editMediaUri = FileUtil.getFileUri(getApplicationContext(), MultimediaTypes.PICTURE, mEditImageFile);
+                MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+                item.setUri(null);
+                item.setMediaUri(editMediaUri);
+//            // 更新当前选择的数据
+//            mSelectedCollection.updateUri(item,editUri);
+            } else {
+                MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+                item.setUri(null);
+                item.setMediaUri(mCurrentOldUri);
+            }
     }
 
     /**
@@ -433,6 +464,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param apply 是否同意
      */
     protected void sendBackResult(boolean apply) {
+        refreshMultiMediaItem(apply);
         Intent intent = new Intent();
         intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(EXTRA_RESULT_APPLY, apply);
