@@ -349,8 +349,6 @@ public class SelectedItemCollection {
                     break;
                 }
             }
-//        if (mItems.toArray().length > 0)
-//            Log.d(SelectedItemCollection.class.getSimpleName(), "item" + item.getUri() + " / mItems" + ((MultiMedia) mItems.toArray()[0]).getUri());
         // 如果选择的为 -1 就是未选状态，否则选择基础数量+1
         return index == -1 ? CheckView.UNCHECKED : index + 1;
     }

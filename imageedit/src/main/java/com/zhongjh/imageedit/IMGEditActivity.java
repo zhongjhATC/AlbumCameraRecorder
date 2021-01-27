@@ -51,23 +51,16 @@ public class IMGEditActivity extends IMGEditBaseActivity {
         }
 
         IMGDecoder decoder = null;
-
-        String path = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            path = FileUtils.getRealPathFromUriAboveApi19(this, uri);
-        }
-        if (!TextUtils.isEmpty(path)) {
-            switch (uri.getScheme()) {
-                case "asset":
-                    decoder = new IMGAssetFileDecoder(this, uri);
-                    break;
-                case "file":
-                    decoder = new IMGFileDecoder(uri);
-                    break;
-                case "content":
-                    decoder = new IMGContentDecoder(this, uri);
-                    break;
-            }
+        switch (uri.getScheme()) {
+            case "asset":
+                decoder = new IMGAssetFileDecoder(this, uri);
+                break;
+            case "file":
+                decoder = new IMGFileDecoder(uri);
+                break;
+            case "content":
+                decoder = new IMGContentDecoder(this, uri);
+                break;
         }
 
         if (decoder == null) {

@@ -55,8 +55,11 @@ import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.ListIterator;
+import java.util.Map;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
@@ -459,6 +462,20 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
+     * 刷新多个图片
+     */
+    public void refreshMultiPhoto() {
+        ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCaptureBitmaps.entrySet()).listIterator(mCaptureBitmaps.size());
+        while (i.hasPrevious()) {
+            Map.Entry<Integer, BitmapData> entry = i.previous();
+            ImageView imgPhoto = mCaptureViews.get(entry.getKey()).findViewById(R.id.imgPhoto);
+            mGlobalSpec.imageEngine.loadThumbnail(getContext(), imgPhoto.getWidth(), mPlaceholder,
+                    imgPhoto, mCaptureBitmaps.get(entry.getKey()).getUri());
+
+        }
+    }
+
+    /**
      * 针对当前状态重新设置状态
      *
      * @param type 类型
@@ -580,6 +597,7 @@ public class CameraLayout extends RelativeLayout {
                 MultiMedia item = new MultiMedia();
                 item.setUri(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid)))).getUri());
                 item.setType(MultimediaTypes.PICTURE);
+                item.setMimeType(MimeType.JPEG.toString());
                 intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
                 intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);

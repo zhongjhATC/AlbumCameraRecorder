@@ -226,6 +226,9 @@ public class CameraFragment extends BaseFragment {
                         mCameraLayout.removePosition(entry.getKey());
                     }
                 }
+
+                // 刷新多个图片
+                mCameraLayout.refreshMultiPhoto();
             }
         }
     }

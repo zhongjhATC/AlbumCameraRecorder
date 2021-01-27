@@ -36,6 +36,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
+
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
 import com.zhongjh.imageedit.IMGEditActivity;
@@ -70,7 +71,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected boolean mOriginalEnable;      // 是否原图
     private boolean mIsEdit; // 是否编辑了图片
 
-    protected int mPreviousPos = -1;    // 当前预览的图片的索引
+    protected int mPreviousPos = -1;    // 当前预览的图片的索引,默认第一个
 
     protected boolean mEnableOperation = true; // 启用操作，默认true,也不启动右上角的选择框自定义触发事件
     protected boolean mIsSelectedListener = true; // 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
@@ -143,7 +144,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
                 // 更新当前fragment
                 MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-//                Uri uri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
                 item.setMediaUri(mediaUri);
                 mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
                 ((PreviewItemFragment) mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
@@ -260,7 +260,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
             Intent intent = new Intent();
             intent.setClass(BasePreviewActivity.this, IMGEditActivity.class);
-            intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
+            if (item.getMediaUri() != null)
+                intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
+            else
+                intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, item.getUri());
             intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
             startActivityForResult(intent, REQ_IMAGE_EDIT);
         }

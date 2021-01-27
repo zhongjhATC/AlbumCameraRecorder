@@ -17,12 +17,14 @@ package com.zhongjh.albumcamerarecorder.preview;
 
 import android.database.Cursor;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
 
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 
 import java.util.ArrayList;
@@ -93,10 +95,36 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
             //onAlbumMediaLoad is called many times..
             mIsAlreadySetPosition = true;
             MultiMedia selected = getIntent().getParcelableExtra(EXTRA_ITEM);
-            int selectedIndex = items.indexOf(selected);
+            int selectedIndex = checkedNumOf(items, selected);
             mViewHolder.pager.setCurrentItem(selectedIndex, false);
             mPreviousPos = selectedIndex;
         }
+    }
+
+    /**
+     * 获取相同数据的索引
+     * @param items 数据列表
+     * @param item 当前数据
+     * @return 索引
+     */
+    public int checkedNumOf(List<MultiMedia> items, MultiMedia item) {
+        int index = -1;
+        if (item.getMediaUri() != null)
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).getMediaUri().equals(item.getMediaUri())) {
+                    index = i;
+                    break;
+                }
+            }
+        else
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).getUri().equals(item.getUri())) {
+                    index = i;
+                    break;
+                }
+            }
+        // 如果选择的为 -1 就是未选状态，否则选择基础数量+1
+        return index == -1 ? CheckView.UNCHECKED : index;
     }
 
     @Override
