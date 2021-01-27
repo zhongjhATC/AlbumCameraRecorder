@@ -10,7 +10,7 @@
     android:orientation="horizontal"
     android:padding="4dp">
 
-    com.zhongjh.imageedit.view.IMGColorRadio
+    <com.zhongjh.imageedit.view.IMGColorRadio
         android:id="@+id/cr_white"
         android:layout_width="@dimen/image_color"
         android:layout_height="@dimen/image_color"

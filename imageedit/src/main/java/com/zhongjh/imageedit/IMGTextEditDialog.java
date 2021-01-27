@@ -78,9 +78,9 @@ public class IMGTextEditDialog extends Dialog implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         int vid = v.getId();
-        if (vid == R.id.tv_done) {
+        if (vid == R.id.ibtnDone) {
             onDone();
-        } else if (vid == R.id.tv_cancel) {
+        } else if (vid == R.id.ibtnBack) {
             dismiss();
         }
     }

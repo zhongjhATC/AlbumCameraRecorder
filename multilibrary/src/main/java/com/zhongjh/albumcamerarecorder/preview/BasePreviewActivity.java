@@ -156,7 +156,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      */
     private void initListener() {
         // 编辑
-        mViewHolder.btnEdit.setOnClickListener(this);
+        mViewHolder.tvEdit.setOnClickListener(this);
         // 返回
         mViewHolder.ibtnBack.setOnClickListener(this);
         // 确认
@@ -246,7 +246,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         } else if (v.getId() == R.id.button_apply) {
             sendBackResult(true);
             finish();
-        } else if (v.getId() == R.id.btnEdit) {
+        } else if (v.getId() == R.id.tvEdit) {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
 
             File file;
@@ -418,9 +418,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         }
 
         if (item.isImage() && mGlobalSpec.isImageEdit) {
-            mViewHolder.btnEdit.setVisibility(View.VISIBLE);
+            mViewHolder.tvEdit.setVisibility(View.VISIBLE);
         } else {
-            mViewHolder.btnEdit.setVisibility(View.GONE);
+            mViewHolder.tvEdit.setVisibility(View.GONE);
         }
     }
 
@@ -454,7 +454,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         public Activity activity;
         public PreviewViewPager pager;
         ImageButton ibtnBack;
-        TextView btnEdit;
+        TextView tvEdit;
         public CheckRadioView original;
         public LinearLayout originalLayout;
         public TextView size;
@@ -466,7 +466,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             this.activity = activity;
             this.pager = activity.findViewById(R.id.pager);
             this.ibtnBack = activity.findViewById(R.id.ibtnBack);
-            this.btnEdit = activity.findViewById(R.id.btnEdit);
+            this.tvEdit = activity.findViewById(R.id.tvEdit);
             this.original = activity.findViewById(R.id.original);
             this.originalLayout = activity.findViewById(R.id.originalLayout);
             this.size = activity.findViewById(R.id.size);
