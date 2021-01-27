@@ -151,4 +151,10 @@
 
  - 链接下载地址：https://fir.im/s9b6?release_id=5c84dcd3ca87a807f7ef5181&fir_source=%E7%89%88%E6%9C%AC1&fir_campaign=%E7%89%88%E6%9C%AC1
 
-## 喜欢的麻烦在顶部点个star
+# 写在最后
+
+1. 觉得好用的欢迎给个Star（[GitHub](https://github.com/zhongjhATC/AlbumCameraRecorder)）
+
+2. 发现任何BUG欢迎留言或者留个Issues（[Issues](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)）
+
+3. 任何转载请注明出处
