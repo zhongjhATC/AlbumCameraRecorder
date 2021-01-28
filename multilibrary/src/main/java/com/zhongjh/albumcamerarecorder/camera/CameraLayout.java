@@ -100,6 +100,7 @@ public class CameraLayout extends RelativeLayout {
     private final LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();   // 拍照的图片控件-集合
     private int mPosition = -1; // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
     private File mVideoFile;    // 视频File
+    private boolean mIsShort; // 是否短时间录制
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -339,8 +340,15 @@ public class CameraLayout extends RelativeLayout {
             public void onVideoRecordingEnd() {
                 Log.d(TAG, "onVideoRecordingEnd");
                 super.onVideoRecordingEnd();
-                // 如果录制结束，播放该视频
-                playVideo();
+                // 判断是否短时间结束
+                if (!mIsShort) {
+                    // 如果录制结束，播放该视频
+                    playVideo();
+                } else {
+                    if (mVideoFile.exists())
+                        mVideoFile.delete();
+                    mIsShort = false;
+                }
             }
 
             @Override
@@ -491,7 +499,9 @@ public class CameraLayout extends RelativeLayout {
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
                 break;
             case TYPE_SHORT:
-                // 短视屏不处理任何事情
+                // 短视屏停止录像并删除文件
+                mIsShort = true;
+                mViewHolder.cameraView.stopVideo();
                 break;
             case TYPE_DEFAULT:
                 mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));

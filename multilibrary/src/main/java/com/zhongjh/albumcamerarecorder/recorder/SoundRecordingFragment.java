@@ -48,6 +48,7 @@ import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
  */
 public class SoundRecordingFragment extends BaseFragment {
 
+    private static final String TAG = SoundRecordingFragment.class.getSimpleName();
     protected Activity mActivity;
 
     RecordeSpec mRecordeSpec;
@@ -127,22 +128,25 @@ public class SoundRecordingFragment extends BaseFragment {
 
             @Override
             public void onLongClickShort(long time) {
-                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
-                // 停止录音
-                onRecord(false);
-                mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
-                // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
+//                Log.d(TAG,"onLongClickShort" + time);
+//                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
+//                // 停止录音
+//                mViewHolder.pvLayout.postDelayed(() -> onRecord(false), 1500 - time);
+//                mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
+//                // 母窗体启动滑动
+//                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
             }
 
             @Override
             public void onLongClick() {
+                Log.d(TAG,"onLongClick");
                 // 录音开启
                 onRecord(true);
             }
 
             @Override
             public void onLongClickEnd(long time) {
+                Log.d(TAG,"onLongClickEnd");
                 // 录音结束
                 onRecord(false);
                 showRecordEndView();

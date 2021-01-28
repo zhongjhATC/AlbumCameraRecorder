@@ -189,7 +189,7 @@ public abstract class OperationLayout extends FrameLayout {
                 mViewHolder.btnCancel.setClickable(true);
             }
         });
-        set.setDuration(200);
+        set.setDuration(300);
         set.start();
     }
 
