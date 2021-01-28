@@ -225,23 +225,23 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        //为所有的标签childView计算宽和高
+        // 为所有的标签childView计算宽和高
         measureChildren(widthMeasureSpec, heightMeasureSpec);
 
-        //获取高的模式
+        // 获取高的模式
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        //建议的高度
+        // 建议的高度
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        //布局的宽度采用建议宽度（match_parent或者size），如果设置wrap_content也是match_parent的效果
+        // 布局的宽度采用建议宽度（match_parent或者size），如果设置wrap_content也是match_parent的效果
         int width = MeasureSpec.getSize(widthMeasureSpec);
 
         int height;
         if (heightMode == MeasureSpec.EXACTLY) {
-            //如果高度模式为EXACTLY（match_perent或者size），则使用建议高度
+            // 如果高度模式为EXACTLY（match_perent或者size），则使用建议高度
             height = heightSize;
         } else {
             int childCount = 0;
-            //其他情况下（AT_MOST、UNSPECIFIED）需要计算计算高度
+            // 其他情况下（AT_MOST、UNSPECIFIED）需要计算计算高度
             for (int i = 0; i < getChildCount(); i++) {
                 View childView = getChildAt(i);
                 if (childView.getVisibility() != GONE) {
@@ -258,30 +258,30 @@ public class AutoLineFeedLayout extends ViewGroup {
                     if (view.getVisibility() == GONE) {
                         break;
                     }
-                    //获取标签宽度
+                    // 获取标签宽度
                     int childW = view.getMeasuredWidth();
                     Log.v(TAG, "标签宽度:" + childW + " 行数：" + row + "  剩余宽度：" + widthSpace);
+                    // 减去标签左右间距
+                    widthSpace -= LEFT_RIGHT_SPACE;
                     if (widthSpace >= childW) {
-                        //如果剩余的宽度大于此标签的宽度，那就将此标签放到本行
+                        // 如果剩余的宽度大于此标签的宽度，那就将此标签放到本行
                         widthSpace -= childW;
                     } else {
-                        row++;    //增加一行
-                        //如果剩余的宽度不能摆放此标签，那就将此标签放入一行
+                        row++;    // 增加一行
+                        // 如果剩余的宽度不能摆放此标签，那就将此标签放入一行
                         widthSpace = width - childW;
                     }
-                    //减去标签左右间距
-                    widthSpace -= LEFT_RIGHT_SPACE;
                 }
-                //由于每个标签的高度是相同的，所以直接获取第一个标签的高度即可
+                // 由于每个标签的高度是相同的，所以直接获取第一个标签的高度即可
                 int childH = getChildAt(0).getMeasuredHeight();
-                //最终布局的高度=标签高度*行数+行距*(行数-1)
+                // 最终布局的高度=标签高度*行数+行距*(行数-1)
                 height = (childH * row) + ROW_SPACE * (row - 1);
 
                 Log.v(TAG, "总高度:" + height + " 行数：" + row + "  标签高度：" + childH);
             }
         }
 
-        //设置测量宽度和测量高度
+        // 设置测量宽度和测量高度
         setMeasuredDimension(width, height);
     }
 
