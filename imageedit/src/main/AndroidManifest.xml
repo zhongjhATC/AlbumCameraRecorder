@@ -6,6 +6,7 @@
 
         <activity
             android:name=".IMGEditActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/ImageEditTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />

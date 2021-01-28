@@ -200,6 +200,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 预览
         mViewHolder.button_preview.setOnClickListener(view -> {
             Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
+            intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, true);
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             startActivityForResult(intent, REQUEST_CODE_PREVIEW);
@@ -512,6 +513,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+        intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, true);
         startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         if (mGlobalSpec.isCutscenes) {
             mActivity.overridePendingTransition(R.anim.activity_open, 0);

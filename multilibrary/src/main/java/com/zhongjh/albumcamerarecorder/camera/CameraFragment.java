@@ -55,7 +55,7 @@ public class CameraFragment extends BaseFragment {
 
     private CameraLayout mCameraLayout;
 
-    //声明一个long类型变量：用于存放上一点击“返回键”的时刻
+    // 声明一个long类型变量：用于存放上一点击“返回键”的时刻
     private long mExitTime;
 
     public static CameraFragment newInstance() {
@@ -217,7 +217,8 @@ public class CameraFragment extends BaseFragment {
                     Map.Entry<Integer, BitmapData> entry = i.previous();
                     int k = 0;
                     for (MultiMedia multiMedia : selected) {
-                        if (!entry.getValue().getUri().toString().equals(multiMedia.getUri().toString())) {
+                        // 根据索引判断是否相同
+                        if (!entry.getKey().equals(multiMedia.getPosition())) {
                             k++;
                         }
                     }

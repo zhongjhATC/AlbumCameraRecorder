@@ -13,7 +13,8 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 public class MultiMedia implements Parcelable {
 
     protected  long id;
-    protected int position = -1;   // 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算
+    // 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算,也可以用作CameraLayout的索引
+    protected int position = -1;
     protected String path;        // 路径
     protected String url;         // 在线网址
     protected int drawableId = -1;     // 图片资源id

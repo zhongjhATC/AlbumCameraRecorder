@@ -46,7 +46,6 @@ import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
@@ -55,8 +54,8 @@ import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.ListIterator;
 import java.util.Map;
+import java.util.Objects;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
@@ -89,7 +88,6 @@ public class CameraLayout extends RelativeLayout {
     private MediaStoreCompat mVideoMediaStoreCompat; // 录像文件配置路径
     private GlobalSpec mGlobalSpec; // 公共配置
     private CameraSpec mCameraSpec; // 拍摄配置
-    private RecordeSpec mRecordeSpec; // 录像配置
 
     public int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
 
@@ -156,7 +154,6 @@ public class CameraLayout extends RelativeLayout {
      */
     private void initData() {
         // 初始化设置
-        mRecordeSpec = RecordeSpec.getInstance();
         mCameraSpec = CameraSpec.getInstance();
         mGlobalSpec = GlobalSpec.getInstance();
         mPictureMediaStoreCompat = new MediaStoreCompat(getContext());
@@ -465,14 +462,13 @@ public class CameraLayout extends RelativeLayout {
      * 刷新多个图片
      */
     public void refreshMultiPhoto(ArrayList<MultiMedia> multiMediaArrayList) {
-        ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCaptureBitmaps.entrySet()).listIterator(mCaptureBitmaps.size());
         int position = 0;
-        while (i.hasPrevious()) {
-            Map.Entry<Integer, BitmapData> entry = i.previous();
-            ImageView imgPhoto = mCaptureViews.get(entry.getKey()).findViewById(R.id.imgPhoto);
-            mCaptureBitmaps.get(entry.getKey()).setUri(multiMediaArrayList.get(position).getUri());
+        for (Map.Entry<Integer, BitmapData> entry : mCaptureBitmaps.entrySet()) {
+            ImageView imgPhoto = Objects.requireNonNull(mCaptureViews.get(entry.getKey())).findViewById(R.id.imgPhoto);
+            Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).setUri(multiMediaArrayList.get(position).getUri());
+            Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).setPath(new File(multiMediaArrayList.get(position).getPath()));
             mGlobalSpec.imageEngine.loadThumbnail(getContext(), imgPhoto.getWidth(), mPlaceholder,
-                    imgPhoto, mCaptureBitmaps.get(entry.getKey()).getUri());
+                    imgPhoto, Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).getUri());
             position++;
         }
     }
@@ -535,7 +531,6 @@ public class CameraLayout extends RelativeLayout {
                 }
                 break;
             case TYPE_SHORT:
-                break;
             case TYPE_DEFAULT:
                 break;
         }
@@ -583,10 +578,11 @@ public class CameraLayout extends RelativeLayout {
             viewHolderImageView.imgPhoto.setTag(R.id.tagid, String.valueOf(mPosition));
             viewHolderImageView.imgPhoto.setOnClickListener(v -> {
                 ArrayList<MultiMedia> items = new ArrayList<>();
-                for (BitmapData value : mCaptureBitmaps.values()) {
+                for (Map.Entry<Integer, BitmapData> entry : mCaptureBitmaps.entrySet()) {
                     MultiMedia item = new MultiMedia();
-                    item.setUri(value.getUri());
+                    item.setUri(entry.getValue().getUri());
                     item.setType(MultimediaTypes.PICTURE);
+                    item.setPosition(entry.getKey());
                     items.add(item);
                 }
                 Bundle bundle = new Bundle();
@@ -597,9 +593,10 @@ public class CameraLayout extends RelativeLayout {
 
                 // 获取目前点击的这个item
                 MultiMedia item = new MultiMedia();
-                item.setUri(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid)))).getUri());
+                item.setUri(Objects.requireNonNull(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid))))).getUri());
                 item.setType(MultimediaTypes.PICTURE);
                 item.setMimeType(MimeType.JPEG.toString());
+                item.setPosition(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid))));
                 intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
                 intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
@@ -607,12 +604,12 @@ public class CameraLayout extends RelativeLayout {
                 intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
                 intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
                 intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+                intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, false);
                 fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
                 if (mGlobalSpec.isCutscenes) {
                     if (fragment.getActivity() != null)
                         fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
                 }
-
             });
 
             mCaptureViews.put(mPosition, viewHolderImageView.rootView);
