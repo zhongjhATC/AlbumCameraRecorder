@@ -7,20 +7,20 @@ import java.io.File;
 
 public class BitmapData {
 
-    private File file;
+    private String path;
     private Uri uri;
 
-    public BitmapData(File file, Uri uri) {
-        this.file = file;
+    public BitmapData(String path, Uri uri) {
+        this.path = path;
         this.uri = uri;
     }
 
-    public File getFile() {
-        return file;
+    public String getPath() {
+        return path;
     }
 
-    public void setPath(File file) {
-        this.file = file;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public Uri getUri() {

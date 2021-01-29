@@ -474,7 +474,7 @@ public class CameraLayout extends RelativeLayout {
         for (Map.Entry<Integer, BitmapData> entry : mCaptureBitmaps.entrySet()) {
             ImageView imgPhoto = Objects.requireNonNull(mCaptureViews.get(entry.getKey())).findViewById(R.id.imgPhoto);
             Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).setUri(multiMediaArrayList.get(position).getUri());
-            Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).setPath(new File(multiMediaArrayList.get(position).getPath()));
+            Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).setPath(multiMediaArrayList.get(position).getPath());
             mGlobalSpec.imageEngine.loadThumbnail(getContext(), imgPhoto.getWidth(), mPlaceholder,
                     imgPhoto, Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).getUri());
             position++;
@@ -525,7 +525,7 @@ public class CameraLayout extends RelativeLayout {
                     mOperaeCameraListener.recordSuccess(mVideoFile.getPath());
                 }
                 // 加入视频到android系统库里面
-                BitmapUtils.displayToGallery(getContext(), mVideoFile);
+                BitmapUtils.displayToGallery(getContext(), mVideoFile,TYPE_VIDEO);
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
@@ -536,7 +536,7 @@ public class CameraLayout extends RelativeLayout {
                     mOperaeCameraListener.captureSuccess(paths, uris);
                     // 加入图片到android系统库里面
                     for (BitmapData value : mCaptureBitmaps.values()) {
-                        BitmapUtils.displayToGallery(getContext(), value.getFile());
+                        BitmapUtils.displayToGallery(getContext(), new File(value.getPath()),TYPE_PICTURE);
                     }
                 }
                 break;
@@ -556,7 +556,7 @@ public class CameraLayout extends RelativeLayout {
         // 初始化数据并且存储进file
         File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap);
         Uri uri = mPictureMediaStoreCompat.getUri(file.getPath());
-        BitmapData bitmapData = new BitmapData(file, uri);
+        BitmapData bitmapData = new BitmapData(file.getPath(), uri);
         // 回收bitmap
         if (bitmap != null && bitmap.isRecycled()) {
             // 回收并且置为null
@@ -591,7 +591,9 @@ public class CameraLayout extends RelativeLayout {
                 for (Map.Entry<Integer, BitmapData> entry : mCaptureBitmaps.entrySet()) {
                     MultiMedia item = new MultiMedia();
                     item.setUri(entry.getValue().getUri());
+                    item.setPath(entry.getValue().getPath());
                     item.setType(MultimediaTypes.PICTURE);
+                    item.setMimeType(MimeType.JPEG.toString());
                     item.setPosition(entry.getKey());
                     items.add(item);
                 }
@@ -604,6 +606,7 @@ public class CameraLayout extends RelativeLayout {
                 // 获取目前点击的这个item
                 MultiMedia item = new MultiMedia();
                 item.setUri(Objects.requireNonNull(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid))))).getUri());
+                item.setPath(Objects.requireNonNull(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid))))).getPath());
                 item.setType(MultimediaTypes.PICTURE);
                 item.setMimeType(MimeType.JPEG.toString());
                 item.setPosition(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid))));
@@ -741,7 +744,7 @@ public class CameraLayout extends RelativeLayout {
     private ArrayList<String> getPaths() {
         ArrayList<String> paths = new ArrayList<>();
         for (BitmapData value : mCaptureBitmaps.values()) {
-            paths.add(value.getFile().getPath());
+            paths.add(value.getPath());
         }
         return paths;
     }

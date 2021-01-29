@@ -128,13 +128,13 @@ public class SoundRecordingFragment extends BaseFragment {
 
             @Override
             public void onLongClickShort(long time) {
-//                Log.d(TAG,"onLongClickShort" + time);
-//                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
-//                // 停止录音
-//                mViewHolder.pvLayout.postDelayed(() -> onRecord(false), 1500 - time);
-//                mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
-//                // 母窗体启动滑动
-//                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
+                Log.d(TAG,"onLongClickShort" + time);
+                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
+                // 停止录音
+                mViewHolder.pvLayout.postDelayed(() -> onRecord(false), 1500 - time);
+                mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
+                // 母窗体启动滑动
+                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
             }
 
             @Override

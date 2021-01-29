@@ -44,6 +44,9 @@ import com.zhongjh.imageedit.IMGEditActivity;
 import java.io.File;
 import java.io.IOException;
 
+import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
+
 /**
  * 预览的基类
  */
@@ -173,7 +176,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (mIsAlubmUri) {
                 if (apply) {
                     // 加入相册库
-                    BitmapUtils.displayToGallery(this, mEditImageFile);
+                    BitmapUtils.displayToGallery(this, mEditImageFile, TYPE_PICTURE);
                     // 更新相册后的uri
                     Uri editMediaUri = FileUtil.getFileUri(getApplicationContext(), MultimediaTypes.PICTURE, mEditImageFile);
                     MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());

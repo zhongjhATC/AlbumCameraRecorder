@@ -15,6 +15,8 @@
  */
 package gaode.zhongjh.com.common.entity;
 
+import java.io.File;
+
 /**
  * 设置保存目录的实体
  */
@@ -26,6 +28,9 @@ public class SaveStrategy {
     public String authority;
     // 参数3 子文件夹的具体路径
     public String directory;
+
+    // Android Q 以后插入图片需要公共目录
+    public static final String RELATIVE_PATH = "Pictures" + File.separator;
 
     public SaveStrategy(boolean isPublic, String authority, String directory) {
         this.isPublic = isPublic;

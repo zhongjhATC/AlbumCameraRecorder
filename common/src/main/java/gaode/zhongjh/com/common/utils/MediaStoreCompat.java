@@ -80,7 +80,7 @@ public class MediaStoreCompat {
         File storageDir;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // 29以上的版本都必须是私有的
-            storageDir = mContext.get().getExternalFilesDir(mSaveStrategy.directory);
+            storageDir = mContext.get().getExternalFilesDir(SaveStrategy.RELATIVE_PATH + mSaveStrategy.directory);
         } else {
             if (mSaveStrategy.isPublic) {
                 storageDir = Environment.getExternalStoragePublicDirectory(
