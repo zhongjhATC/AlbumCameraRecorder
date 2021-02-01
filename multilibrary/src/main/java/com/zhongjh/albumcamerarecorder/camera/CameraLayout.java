@@ -432,6 +432,8 @@ public class CameraLayout extends RelativeLayout {
     protected void onDestroy() {
         LogUtil.i("CameraLayout destroy");
         mViewHolder.cameraView.destroy();
+
+
     }
 
     /**
@@ -674,7 +676,7 @@ public class CameraLayout extends RelativeLayout {
         mediaController.setMediaPlayer(mViewHolder.vvPreview);
         mediaController.setVisibility(View.GONE);
         mViewHolder.vvPreview.setMediaController(mediaController);
-        mViewHolder.vvPreview.setVideoURI(Uri.fromFile(mVideoFile));
+        mViewHolder.vvPreview.setVideoPath(mVideoFile.getPath());
         if (!mViewHolder.vvPreview.isPlaying()) {
             mViewHolder.vvPreview.start();
         }
