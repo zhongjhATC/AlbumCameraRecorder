@@ -77,10 +77,20 @@ public class MediaStoreCompat {
                 fileName = String.format("AUDIO_%s.mp3", timeStamp);
                 break;
         }
-        File storageDir;
+        File storageDir = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // 29以上的版本都必须是私有的
-            storageDir = mContext.get().getExternalFilesDir(SaveStrategy.RELATIVE_PATH + mSaveStrategy.directory);
+            switch (type) {
+                case 0:
+                    storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_PICTURES + File.separator + mSaveStrategy.directory);
+                    break;
+                case 1:
+                    storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_MOVIES + File.separator + mSaveStrategy.directory);
+                    break;
+                case 2:
+                    storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_MUSIC + File.separator + mSaveStrategy.directory);
+                    break;
+            }
         } else {
             if (mSaveStrategy.isPublic) {
                 storageDir = Environment.getExternalStoragePublicDirectory(

@@ -54,7 +54,6 @@ public class BitmapUtils {
 
     /**
      * 插入图片、视频到图库
-     * Android Q需要用到线程来处理 https://blog.csdn.net/guanyingcao/article/details/103634339
      *
      * @param context 上下文
      * @param file    要保存的文件
@@ -71,14 +70,18 @@ public class BitmapUtils {
             values.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
             values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
             values.put(MediaStore.Images.Media.ORIENTATION, 0);
-            values.put(MediaStore.Images.Media.RELATIVE_PATH, SaveStrategy.RELATIVE_PATH + directory);
             values.put(MediaStore.Images.Media.SIZE, file.length());
+            Uri external = null;
             switch (type) {
                 case TYPE_VIDEO:
                     values.put(MediaStore.Images.Media.MIME_TYPE, "video/mp4");
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + File.separator + directory);
+                    external = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
                     break;
                 case TYPE_PICTURE:
                     values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + directory);
+                    external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                     break;
             }
 
@@ -92,14 +95,13 @@ public class BitmapUtils {
                 e.printStackTrace();
             }
 
-            Uri external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
             ContentResolver resolver = context.getContentResolver();
             Uri insertUri = resolver.insert(external, values);
 
             try {
                 OutputStream out = resolver.openOutputStream(insertUri);
                 FileInputStream fis = new FileInputStream(file);
-                FileUtils.copy(fis,out);
+                FileUtils.copy(fis, out);
                 fis.close();
                 out.close();
             } catch (IOException e) {

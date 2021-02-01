@@ -490,7 +490,7 @@ public class CameraLayout extends RelativeLayout {
         switch (type) {
             case TYPE_VIDEO:
                 stopVideo(); // 停止播放重新播放
-                FileUtil.deleteFile(mVideoFile.getPath()); // 删除文件
+                FileUtil.deleteFile(mVideoFile.getPath()); // 取消视频删除文件
                 // 隐藏video
                 mViewHolder.vvPreview.setVisibility(INVISIBLE);
                 break;
