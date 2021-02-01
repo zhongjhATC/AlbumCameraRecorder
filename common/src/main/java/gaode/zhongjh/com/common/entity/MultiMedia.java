@@ -15,7 +15,7 @@ public class MultiMedia implements Parcelable {
     protected  long id;
     // 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算,也可以用作CameraLayout的索引
     protected int position = -1;
-    protected String path;        // 路径
+    protected String path;        // 真实路径
     protected String url;         // 在线网址
     protected int drawableId = -1;     // 图片资源id
     protected Uri mediaUri;        // 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
@@ -25,6 +25,9 @@ public class MultiMedia implements Parcelable {
     protected String mimeType;        // 具体类型，jpg,png,mp3等等
     public long size;
     public long duration; // only for video, in ms
+    private String oldPath; // 编辑前的真实路径
+    private Uri oldMediaUri; // 编辑前的相册URI
+    private Uri oldUri; // 编辑前的URI
 
 
     public MultiMedia() {
@@ -123,6 +126,30 @@ public class MultiMedia implements Parcelable {
 
     public void setDrawableId(int drawableId) {
         this.drawableId = drawableId;
+    }
+
+    public String getOldPath() {
+        return oldPath;
+    }
+
+    public void setOldPath(String oldPath) {
+        this.oldPath = oldPath;
+    }
+
+    public Uri getOldMediaUri() {
+        return oldMediaUri;
+    }
+
+    public void setOldMediaUri(Uri oldMediaUri) {
+        this.oldMediaUri = oldMediaUri;
+    }
+
+    public Uri getOldUri() {
+        return oldUri;
+    }
+
+    public void setOldUri(Uri oldUri) {
+        this.oldUri = oldUri;
     }
 
     /**

@@ -31,7 +31,6 @@ import java.util.List;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
 public class PreviewPagerAdapter extends FragmentPagerAdapter {
-
     private ArrayList<MultiMedia> mItems = new ArrayList<>();
     private SparseArray<Fragment> fragments;
     private OnPrimaryItemSetListener mListener;
@@ -87,6 +86,14 @@ public class PreviewPagerAdapter extends FragmentPagerAdapter {
 
     public void addAll(List<MultiMedia> items) {
         mItems.addAll(items);
+    }
+
+    public ArrayList<MultiMedia> getmItems() {
+        return mItems;
+    }
+
+    public void setmItems(ArrayList<MultiMedia> mItems) {
+        this.mItems = mItems;
     }
 
     interface OnPrimaryItemSetListener {

@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
 
 /**
  * 预览的基类
@@ -75,8 +74,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected boolean mOriginalEnable;      // 是否原图
     private boolean mIsAlubmUri; // 是否返回相册的uri，否则是普通文件的uri
     private boolean mIsEdit; // 是否编辑了图片
-    private Uri mCurrentOldMediaUri; // 当前编辑前的URI
-    private Uri mCurrentOldUri; // 当前编辑前的URI
 
 
     protected int mPreviousPos = -1;    // 当前预览的图片的索引,默认第一个
@@ -150,18 +147,20 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     /**
-     * 刷新MultiMedia
+     * 刷新MultiMedia TODO
      */
     private void refreshMultiMediaItem() {
         // 未加入相册时候的uri
         Uri editUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
         // 获取当前查看的multimedia
         MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-        mCurrentOldMediaUri = item.getMediaUri();
-        mCurrentOldUri = item.getUri();
+        item.setOldMediaUri(item.getMediaUri());
+        item.setOldUri(item.getUri());
+        item.setOldPath(item.getPath());
         // 更新当前fragment
         item.setMediaUri(null);
         item.setUri(editUri);
+        item.setPath(mEditImageFile.getPath());
         mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
         ((PreviewItemFragment) mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
     }
@@ -169,37 +168,37 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     /**
      * 根据确定取消 来 确定是否更新数据源
      *
-     * @param apply 是否同意
+     * @param apply 是否同意 TODO
      */
     private void refreshMultiMediaItem(boolean apply) {
         if (mIsEdit)
-            if (mIsAlubmUri) {
-                if (apply) {
-                    // 加入相册库
-                    BitmapUtils.displayToGallery(this, mEditImageFile, TYPE_PICTURE);
-                    // 更新相册后的uri
-                    Uri editMediaUri = FileUtil.getFileUri(getApplicationContext(), MultimediaTypes.PICTURE, mEditImageFile);
-                    MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-                    item.setUri(null);
-                    item.setMediaUri(editMediaUri);
-                    item.setPath(mEditImageFile.getPath());
+            // 循环当前所有图片进行处理
+            for (MultiMedia multiMedia : mAdapter.getmItems()) {
+                if (mIsAlubmUri) {
+                    if (apply) {
+                        File file = new File(multiMedia.getPath());
+                        // 加入相册库
+                        BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory);
+                        // 更新相册后的uri
+                        Uri editMediaUri = FileUtil.getFileUri(getApplicationContext(), MultimediaTypes.PICTURE, file);
+                        multiMedia.setUri(null);
+                        multiMedia.setMediaUri(editMediaUri);
+                    } else {
+                        multiMedia.setUri(null);
+                        multiMedia.setMediaUri(multiMedia.getOldMediaUri());
+                        multiMedia.setPath(multiMedia.getOldPath());
+                    }
                 } else {
-                    MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-                    item.setUri(null);
-                    item.setMediaUri(mCurrentOldMediaUri);
-                }
-            } else {
-                MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-                if (!apply) {
-                    // 更新当前选择的数据
-                    item.setUri(mCurrentOldUri);
-                    item.setMediaUri(null);
-                } else {
-                    Uri editUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
-                    mSelectedCollection.updateUri(item, editUri);
-                    item.setPath(mEditImageFile.getPath());
+                    if (!apply) {
+                        // 更新回旧的数据
+                        multiMedia.setUri(multiMedia.getOldUri());
+                        multiMedia.setMediaUri(null);
+                        multiMedia.setPath(multiMedia.getOldPath());
+                    }
                 }
             }
+
+
     }
 
     /**

@@ -64,7 +64,7 @@ public class MediaStoreCompat {
      */
     public File createFile(int type) throws IOException {
         String timeStamp =
-                new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                new SimpleDateFormat("yyyyMMdd_HHmmssS", Locale.getDefault()).format(new Date());
         String fileName = null;
         switch (type) {
             case 0:

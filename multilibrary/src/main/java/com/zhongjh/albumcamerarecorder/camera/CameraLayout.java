@@ -525,7 +525,7 @@ public class CameraLayout extends RelativeLayout {
                     mOperaeCameraListener.recordSuccess(mVideoFile.getPath());
                 }
                 // 加入视频到android系统库里面
-                BitmapUtils.displayToGallery(getContext(), mVideoFile,TYPE_VIDEO);
+                BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mPictureMediaStoreCompat.getSaveStrategy().directory);
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
@@ -536,7 +536,7 @@ public class CameraLayout extends RelativeLayout {
                     mOperaeCameraListener.captureSuccess(paths, uris);
                     // 加入图片到android系统库里面
                     for (BitmapData value : mCaptureBitmaps.values()) {
-                        BitmapUtils.displayToGallery(getContext(), new File(value.getPath()),TYPE_PICTURE);
+                        BitmapUtils.displayToGallery(getContext(), new File(value.getPath()), TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory);
                     }
                 }
                 break;
