@@ -99,7 +99,8 @@ public class CameraLayout extends RelativeLayout {
     public LinkedHashMap<Integer, BitmapData> mCaptureBitmaps = new LinkedHashMap<>();  // 拍照的图片-集合
     private final LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();   // 拍照的图片控件-集合
     private int mPosition = -1; // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
-    private File mVideoFile;    // 视频File
+    private File mVideoFile;    // 视频File,用于后面能随时删除
+    private File mPhotoFile; // 照片File,用于后面能随时删除
     private boolean mIsShort; // 是否短时间录制
 
     // region 回调监听属性
@@ -345,8 +346,7 @@ public class CameraLayout extends RelativeLayout {
                     // 如果录制结束，播放该视频
                     playVideo();
                 } else {
-                    if (mVideoFile.exists())
-                        mVideoFile.delete();
+                    FileUtil.deleteFile(mVideoFile);
                     mIsShort = false;
                 }
             }
@@ -440,7 +440,10 @@ public class CameraLayout extends RelativeLayout {
      * @param position 索引
      */
     public void removePosition(int position) {
-        // 删除
+        // 删除文件
+        FileUtil.deleteFile(Objects.requireNonNull(mCaptureBitmaps.get(position)).getPath());
+
+        // 删除数据
         mCaptureBitmaps.remove(position);
         mViewHolder.llPhoto.removeView(mCaptureViews.get(position));
 
@@ -495,8 +498,9 @@ public class CameraLayout extends RelativeLayout {
                 mViewHolder.vvPreview.setVisibility(INVISIBLE);
                 break;
             case TYPE_PICTURE:
-                // 隐藏图片
-                mViewHolder.imgPhoto.setVisibility(INVISIBLE);
+                mViewHolder.imgPhoto.setVisibility(INVISIBLE); // 隐藏图片view
+                if (mPhotoFile != null)
+                    FileUtil.deleteFile(mPhotoFile.getPath());  // 删除图片
                 break;
             case TYPE_SHORT:
                 // 短视屏停止录像并删除文件
@@ -649,6 +653,7 @@ public class CameraLayout extends RelativeLayout {
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startOperaeBtnAnimator();
+            mPhotoFile = file;
 
             // 设置当前模式是图片模式
             setState(Constants.STATE_PICTURE);
