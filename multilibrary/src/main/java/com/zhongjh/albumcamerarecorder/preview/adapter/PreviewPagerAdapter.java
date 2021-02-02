@@ -92,10 +92,6 @@ public class PreviewPagerAdapter extends FragmentPagerAdapter {
         return mItems;
     }
 
-    public void setmItems(ArrayList<MultiMedia> mItems) {
-        this.mItems = mItems;
-    }
-
     interface OnPrimaryItemSetListener {
 
         void onPrimaryItemSet(int position);

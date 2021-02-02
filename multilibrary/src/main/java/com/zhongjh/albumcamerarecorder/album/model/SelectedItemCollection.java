@@ -15,6 +15,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
+import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
 
 import java.util.ArrayList;
@@ -148,21 +149,9 @@ public class SelectedItemCollection {
      * @return 是否删除成功
      */
     public boolean remove(MultiMedia item) {
-        boolean removed = false;
-        if (item.getMediaUri() != null)
-            for (MultiMedia multiMedia : mItems) {
-                if (multiMedia.getMediaUri().equals(item.getMediaUri())) {
-                    removed = mItems.remove(multiMedia);
-                    break;
-                }
-            }
-        else
-            for (MultiMedia multiMedia : mItems) {
-                if (multiMedia.getUri().equals(item.getUri())) {
-                    removed = mItems.remove(multiMedia);
-                    break;
-                }
-            }
+        boolean removed;
+        MultiMedia multiMedia = MultiMediaUtils.checkedMultiMediaOf(new ArrayList<>(mItems),item);
+        removed = mItems.remove(multiMedia);
         if (removed) {
             if (mItems.size() == 0) {
                 // 如果删除后没有数据，设置当前类型为空
@@ -175,27 +164,6 @@ public class SelectedItemCollection {
         }
         return removed;
     }
-
-    /**
-     * 更新数据源的指定item的uri
-     */
-    public void updateUri(MultiMedia item, Uri uri) {
-        if (item.getMediaUri() != null)
-            for (MultiMedia multiMedia : mItems) {
-                if (multiMedia.getMediaUri().equals(item.getMediaUri())) {
-                    multiMedia.setMediaUri(uri);
-                    break;
-                }
-            }
-        else
-            for (MultiMedia multiMedia : mItems) {
-                if (multiMedia.getUri().equals(item.getUri())) {
-                    multiMedia.setUri(uri);
-                    break;
-                }
-            }
-    }
-
 
     /**
      * 重置数据源
@@ -360,26 +328,7 @@ public class SelectedItemCollection {
      * @return 选择的索引，最终返回的选择了第几个
      */
     public int checkedNumOf(MultiMedia item) {
-        // 获取选择的第几个
-        ArrayList<MultiMedia> arrayList = new ArrayList<>(mItems);
-        int index = -1;
-        if (item.getMediaUri() != null)
-            for (int i = 0; i < arrayList.size(); i++) {
-                if (arrayList.get(i).getMediaUri().equals(item.getMediaUri())) {
-                    index = i;
-                    break;
-                }
-            }
-        else
-            for (int i = 0; i < arrayList.size(); i++) {
-                if (arrayList.get(i).getUri().equals(item.getUri())) {
-                    index = i;
-                    break;
-                }
-            }
-        // 如果选择的为 -1 就是未选状态，否则选择基础数量+1
-        return index == -1 ? CheckView.UNCHECKED : index + 1;
+        return MultiMediaUtils.checkedNumOf(new ArrayList<>(mItems),item);
     }
-
 
 }

@@ -26,6 +26,7 @@ import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
+import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,43 +96,10 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
             //onAlbumMediaLoad is called many times..
             mIsAlreadySetPosition = true;
             MultiMedia selected = getIntent().getParcelableExtra(EXTRA_ITEM);
-            int selectedIndex = checkedNumOf(items, selected);
+            int selectedIndex = MultiMediaUtils.checkedNumOf(items, selected);
             mViewHolder.pager.setCurrentItem(selectedIndex, false);
             mPreviousPos = selectedIndex;
         }
-    }
-
-    /**
-     * 获取相同数据的索引
-     * @param items 数据列表
-     * @param item 当前数据
-     * @return 索引
-     */
-    public int checkedNumOf(List<MultiMedia> items, MultiMedia item) {
-        int index = -1;
-        if (item.getMediaUri() != null)
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getMediaUri().equals(item.getMediaUri())) {
-                    index = i;
-                    break;
-                }
-            }
-        else if (item.getUri() != null)
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUri().equals(item.getUri())) {
-                    index = i;
-                    break;
-                }
-            }
-        else if (item.getDrawableId() != -1)
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getDrawableId() == item.getDrawableId()) {
-                    index = i;
-                    break;
-                }
-            }
-        // 如果选择的为 -1 就是未选状态，否则选择基础数量+1
-        return index == -1 ? CheckView.UNCHECKED : index;
     }
 
     @Override
