@@ -9,6 +9,7 @@ import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
 
 import java.util.ArrayList;
 
+import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
 
 /**
@@ -40,7 +41,9 @@ public class MainListActivity extends AppCompatActivity {
         // 独立预览相片功能
         mBinding.btnPreview.setOnClickListener(v -> {
             // 这个可以放在Application初始化类型、解析图片类，也可以不需要，但是如果你要单独使用预览图功能，必须提前设置这个
-            MultiMediaSetting.init().choose(MimeType.ofAll()).imageEngine(new Glide4Engine());
+            MultiMediaSetting.init().choose(MimeType.ofAll()).imageEngine(new Glide4Engine())
+            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
+            .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "preview"));
             ArrayList<Integer> list = new ArrayList<>();
             list.add(R.drawable.ic_camera_enhance_black_24dp);
             list.add(R.drawable.ic_play_arrow_white_24dp);

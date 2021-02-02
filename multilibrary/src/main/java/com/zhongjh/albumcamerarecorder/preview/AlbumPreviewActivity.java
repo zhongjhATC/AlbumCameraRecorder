@@ -116,9 +116,16 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
                     break;
                 }
             }
-        else
+        else if (item.getUri() != null)
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getUri().equals(item.getUri())) {
+                    index = i;
+                    break;
+                }
+            }
+        else if (item.getDrawableId() != -1)
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).getDrawableId() == item.getDrawableId()) {
                     index = i;
                     break;
                 }
