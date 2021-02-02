@@ -156,12 +156,15 @@ public class CameraFragment extends BaseFragment {
             }
 
             @Override
-            public void recordSuccess(String url) {
+            public void recordSuccess(String path,Uri uri) {
                 ArrayList<String> arrayList = new ArrayList<>();
-                arrayList.add(url);
-                //获取视频路径
+                arrayList.add(path);
+                ArrayList<Uri> arrayListUri = new ArrayList<>();
+                arrayListUri.add(uri);
+                // 获取视频路径
                 Intent result = new Intent();
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
+                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
                 result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);

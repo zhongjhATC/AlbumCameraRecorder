@@ -458,7 +458,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                         listener.onItemImage(v, multiMediaView);
                     } else {
                         // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
-                        if (TextUtils.isEmpty(multiMediaView.getPath())) {
+                        if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
                             // 执行下载事件
                             listener.onItemVideoStartDownload(multiMediaView.getUrl());
                         } else {

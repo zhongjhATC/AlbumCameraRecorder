@@ -59,10 +59,11 @@ public class BitmapUtils {
      * @param file    要保存的文件
      * @param type    mp4 jpeg
      */
-    public static void displayToGallery(Context context, File file, int type, String directory) {
+    public static Uri displayToGallery(Context context, File file, int type, String directory) {
         if (file == null || !file.exists()) {
-            return;
+            return null;
         }
+        Uri uri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // 插入file数据到相册
             ContentValues values = new ContentValues();
@@ -96,10 +97,10 @@ public class BitmapUtils {
             }
 
             ContentResolver resolver = context.getContentResolver();
-            Uri insertUri = resolver.insert(external, values);
+            uri = resolver.insert(external, values);
 
             try {
-                OutputStream out = resolver.openOutputStream(insertUri);
+                OutputStream out = resolver.openOutputStream(uri);
                 FileInputStream fis = new FileInputStream(file);
                 FileUtils.copy(fis, out);
                 fis.close();
@@ -107,9 +108,12 @@ public class BitmapUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return uri;
         } else {
             String photoPath = file.getAbsolutePath();
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + photoPath)));
+            uri = Uri.parse("file://" + photoPath);
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+            return uri;
         }
     }
 }

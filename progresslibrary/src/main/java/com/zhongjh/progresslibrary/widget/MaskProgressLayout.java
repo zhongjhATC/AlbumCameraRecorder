@@ -204,13 +204,13 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void addVideoStartUpload(List<String> videoPath) {
-        addVideo(videoPath, false, true);
+    public void addVideoStartUpload(List<Uri> videoUris) {
+        addVideo(videoUris, false, true);
     }
 
     @Override
     public void addVideoCover(List<String> videoPath) {
-        addVideo(videoPath, true, false);
+//        addVideo(videoPath, true, false);
     }
 
     @Override
@@ -374,17 +374,16 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     /**
      * 设置视频地址
      *
-     * @param videoPath   视频列表
+     * @param videoUris   视频列表
      * @param icClean     是否清除
      * @param isUploading 是否触发上传事件
      */
-    private void addVideo(List<String> videoPath, boolean icClean, boolean isUploading) {
+    private void addVideo(List<Uri> videoUris, boolean icClean, boolean isUploading) {
         isAuthority();
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
-        for (String string : videoPath) {
+        for (Uri uri : videoUris) {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
-            multiMediaView.setPath(string);
-            multiMediaView.setUri(mMediaStoreCompat.getUri(string));
+            multiMediaView.setUri(uri);
             multiMediaViews.add(multiMediaView);
         }
         mViewHolder.alfMedia.addVideoData(multiMediaViews, icClean, isUploading);

@@ -86,8 +86,7 @@ public class PreviewItemFragment extends Fragment {
                 if (item.getMediaUri() != null) {
                     uri = item.getMediaUri();
                 }else if(item.getUri() != null) {
-                    item.setMediaUri(FileUtil.getFileUri(getContext(),item.getType(),new File(item.getPath())));
-                    uri = item.getMediaUri();
+                    uri = item.getUri();
                 }
                 intent.setDataAndType(uri, "video/*");
                 try {

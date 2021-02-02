@@ -42,7 +42,7 @@ public interface MaskProgressApi {
     /**
      * 设置视频地址并且启动上传(一般用于刚确认了哪些数据后)
      */
-    void addVideoStartUpload(List<String> videoPath);
+    void addVideoStartUpload(List<Uri> videoUris);
 
     /**
      * 设置视频地址直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)

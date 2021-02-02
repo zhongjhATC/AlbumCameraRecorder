@@ -26,8 +26,9 @@ public interface OperaeCameraListener {
     /**
      * 录像成功后点击确认事件
      *
-     * @param url url
+     * @param path 文件地址
+     * @param uri  uri
      */
-    void recordSuccess(String url);
+    void recordSuccess(String path, Uri uri);
 
 }

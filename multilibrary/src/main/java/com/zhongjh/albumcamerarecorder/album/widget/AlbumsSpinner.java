@@ -20,8 +20,10 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.ListPopupWindow;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
@@ -99,16 +101,11 @@ public class AlbumsSpinner {
             mSelected.setText(displayName);
         } else {
             // 否则先显示出来再赋值
-            if (VersionUtils.hasICS()) {
-                mSelected.setAlpha(0.0f);
-                mSelected.setVisibility(View.VISIBLE);
-                mSelected.setText(displayName);
-                mSelected.animate().alpha(1.0f).setDuration(context.getResources().getInteger(
-                        android.R.integer.config_longAnimTime)).start();
-            } else {
-                mSelected.setVisibility(View.VISIBLE);
-                mSelected.setText(displayName);
-            }
+            mSelected.setAlpha(0.0f);
+            mSelected.setVisibility(View.VISIBLE);
+            mSelected.setText(displayName);
+            mSelected.animate().alpha(1.0f).setDuration(context.getResources().getInteger(
+                    android.R.integer.config_longAnimTime)).start();
 
         }
     }

@@ -171,8 +171,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                         break;
                     case MultimediaTypes.VIDEO:
                         // 录像
-                        List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
-                        getMaskProgressLayout().addVideoStartUpload(videoPath);
+                        List<Uri> videoUris = MultiMediaSetting.obtainResult(data);
+                        getMaskProgressLayout().addVideoStartUpload(videoUris);
                         break;
                     case MultimediaTypes.AUDIO:
                         // 语音

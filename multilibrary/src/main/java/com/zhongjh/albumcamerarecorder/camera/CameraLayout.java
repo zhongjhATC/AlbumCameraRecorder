@@ -329,26 +329,21 @@ public class CameraLayout extends RelativeLayout {
             @Override
             public void onVideoTaken(@NonNull VideoResult result) {
                 super.onVideoTaken(result);
+                super.onVideoRecordingEnd();
+                // 判断是否短时间结束
+                if (!mIsShort) {
+                    // 如果录制结束，播放该视频
+                    playVideo(result.getFile());
+                } else {
+                    FileUtil.deleteFile(mVideoFile);
+                    mIsShort = false;
+                }
             }
 
             @Override
             public void onVideoRecordingStart() {
                 Log.d(TAG, "onVideoRecordingStart");
                 super.onVideoRecordingStart();
-            }
-
-            @Override
-            public void onVideoRecordingEnd() {
-                Log.d(TAG, "onVideoRecordingEnd");
-                super.onVideoRecordingEnd();
-                // 判断是否短时间结束
-                if (!mIsShort) {
-                    // 如果录制结束，播放该视频
-                    playVideo();
-                } else {
-                    FileUtil.deleteFile(mVideoFile);
-                    mIsShort = false;
-                }
             }
 
             @Override
@@ -495,14 +490,14 @@ public class CameraLayout extends RelativeLayout {
         switch (type) {
             case TYPE_VIDEO:
                 stopVideo(); // 停止播放重新播放
-                FileUtil.deleteFile(mVideoFile.getPath()); // 取消视频删除文件
+                FileUtil.deleteFile(mVideoFile); // 取消视频删除文件
                 // 隐藏video
                 mViewHolder.vvPreview.setVisibility(INVISIBLE);
                 break;
             case TYPE_PICTURE:
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE); // 隐藏图片view
                 if (mPhotoFile != null)
-                    FileUtil.deleteFile(mPhotoFile.getPath());  // 删除图片
+                    FileUtil.deleteFile(mPhotoFile);  // 删除图片
                 break;
             case TYPE_SHORT:
                 // 短视屏停止录像并删除文件
@@ -527,11 +522,11 @@ public class CameraLayout extends RelativeLayout {
             case TYPE_VIDEO:
                 // 录视频完成
                 stopVideo();    //停止播放
-                if (mOperaeCameraListener != null) {
-                    mOperaeCameraListener.recordSuccess(mVideoFile.getPath());
-                }
                 // 加入视频到android系统库里面
-                BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mPictureMediaStoreCompat.getSaveStrategy().directory);
+                Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mPictureMediaStoreCompat.getSaveStrategy().directory);
+                if (mOperaeCameraListener != null) {
+                    mOperaeCameraListener.recordSuccess(mVideoFile.getPath(), mediaUri);
+                }
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
@@ -668,15 +663,18 @@ public class CameraLayout extends RelativeLayout {
     /**
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      */
-    private void playVideo() {
-        mViewHolder.vvPreview.setVisibility(View.VISIBLE);
+    private void playVideo(File file) {
+        mViewHolder.vvPreview.pause();
         // mediaController 是底部控制条
         MediaController mediaController = new MediaController(mContext);
         mediaController.setAnchorView(mViewHolder.vvPreview);
         mediaController.setMediaPlayer(mViewHolder.vvPreview);
         mediaController.setVisibility(View.GONE);
         mViewHolder.vvPreview.setMediaController(mediaController);
-        mViewHolder.vvPreview.setVideoPath(mVideoFile.getPath());
+        Uri uri = Uri.fromFile(file);
+        mViewHolder.vvPreview.setVideoURI(uri);
+        // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
+        mViewHolder.vvPreview.setVisibility(View.VISIBLE);
         if (!mViewHolder.vvPreview.isPlaying()) {
             mViewHolder.vvPreview.start();
         }
@@ -693,7 +691,7 @@ public class CameraLayout extends RelativeLayout {
      */
     private void stopVideo() {
         if (mViewHolder.vvPreview.isPlaying())
-            mViewHolder.vvPreview.stopPlayback();
+            mViewHolder.vvPreview.pause();
     }
 
     /**
