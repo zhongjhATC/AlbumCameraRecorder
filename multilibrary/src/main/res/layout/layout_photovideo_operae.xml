@@ -46,13 +46,13 @@
 
     <!-- 中间的操作按钮 -->
     <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
-        android:focusable="true"
         android:id="@+id/btnClickOrLong"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/guideline60"
-        app:layout_constraintStart_toStartOf="@+id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/tvTip"/>
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTip" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline12"
@@ -68,19 +68,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.28" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline40"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.35" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline60"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.65" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline72"
