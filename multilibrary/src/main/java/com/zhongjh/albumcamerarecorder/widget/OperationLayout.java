@@ -5,8 +5,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -30,6 +32,7 @@ public abstract class OperationLayout extends FrameLayout {
 
     private ClickOrLongListener mClickOrLongListener;   // 点击或长按监听
     private OperaeListener mOperaeListener; // 点击或长按监听结束后的 确认取消事件监控
+
     /**
      * 操作按钮的Listener
      */
@@ -270,7 +273,7 @@ public abstract class OperationLayout extends FrameLayout {
      *
      * @param duration 时间
      */
-    public void setMinDuration(int duration){
+    public void setMinDuration(int duration) {
         mViewHolder.btnClickOrLong.setMinDuration(duration);
     }
 
@@ -296,6 +299,13 @@ public abstract class OperationLayout extends FrameLayout {
      */
     public void setButtonFeatures(int buttonStateBoth) {
         mViewHolder.btnClickOrLong.setButtonFeatures(buttonStateBoth);
+    }
+
+    public void setEnabled(boolean enabled) {
+        if (!enabled)
+            mViewHolder.btnClickOrLong.setEnabled(false);
+        else
+            mViewHolder.btnClickOrLong.setEnabled(true);
     }
 
     public class ViewHolder {

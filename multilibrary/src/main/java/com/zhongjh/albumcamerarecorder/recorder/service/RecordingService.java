@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -22,7 +21,7 @@ import java.util.TimerTask;
  */
 public class RecordingService extends Service {
 
-    private static final String LOG_TAG = "RecordingService";
+    private static final String TAG = "RecordingService";
 
     private File mFile= null;
 
@@ -30,24 +29,12 @@ public class RecordingService extends Service {
 
     private MediaStoreCompat mAudioMediaStoreCompat; // 音频文件配置路径
 
-//    private DBHelper mDatabase;  @Deprecated
-
     private long mStartingTimeMillis = 0;
-    private int mElapsedSeconds = 0;
-    private OnTimerChangedListener onTimerChangedListener = null;
-    private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
-
-    private TimerTask mIncrementTimerTask = null;
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    public interface OnTimerChangedListener {
-        void onTimerChanged(int seconds);
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         startRecording();
@@ -57,20 +44,22 @@ public class RecordingService extends Service {
     @Override
     public void onDestroy() {
         if (mRecorder != null) {
-            stopRecording();
+            stopRecording(false);
         }
 
         super.onDestroy();
     }
 
+    /**
+     * 开始录音
+     */
     private void startRecording() {
-
         // 根据配置创建文件配置
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        mAudioMediaStoreCompat = new MediaStoreCompat(getApplicationContext());
+        mAudioMediaStoreCompat = new MediaStoreCompat(this);
         mAudioMediaStoreCompat.setSaveStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
 
-        setFileNameAndPath();
+        mFile = mAudioMediaStoreCompat.getFilePath(2);
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -87,74 +76,43 @@ public class RecordingService extends Service {
             mRecorder.prepare();
             mRecorder.start();
             mStartingTimeMillis = System.currentTimeMillis();
-
-            //startTimer();
-            //startForeground(1, createNotification());
-
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(TAG, "prepare() failed");
         }
     }
 
-    private void setFileNameAndPath(){
-        mFile = mAudioMediaStoreCompat.getFilePath(2);
-    }
-
-    private void stopRecording() {
-        mRecorder.stop();
-        long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
-        mRecorder.release();
-
-        // 存储到缓存的文件地址
-        getSharedPreferences("sp_name_audio", MODE_PRIVATE)
-                .edit()
-                .putString("audio_path", mFile.getPath())
-                .putLong("elpased", mElapsedMillis)
-                .apply();
-
-        //remove notification
-        if (mIncrementTimerTask != null) {
-            mIncrementTimerTask.cancel();
-            mIncrementTimerTask = null;
+    /**
+     * 停止录音
+     *
+     * @param isShort 短时结束不算
+     */
+    private void stopRecording(boolean isShort) {
+        if (isShort) {
+            // 如果是短时间的，删除该文件
+            if (mFile.exists())
+                mFile.delete();
+        } else {
+            long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+            // 存储到缓存的文件地址
+            getSharedPreferences("sp_name_audio", MODE_PRIVATE)
+                    .edit()
+                    .putString("audio_path", mFile.getPath())
+                    .putLong("elpased", mElapsedMillis)
+                    .apply();
         }
 
-        mRecorder = null;
 
-//        try {
-//            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
-//
-//        } catch (Exception e){
-//            Log.e(LOG_TAG, "exception", e);
-//        }
-    }
-
-    private void startTimer() {
-        Timer mTimer = new Timer();
-        mIncrementTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                mElapsedSeconds++;
-                if (onTimerChangedListener != null)
-                    onTimerChangedListener.onTimerChanged(mElapsedSeconds);
-//                NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//                mgr.notify(1, createNotification());
+        Log.d(TAG, "停止录音");
+        if (mRecorder != null) {
+            try {
+                mRecorder.stop();
+            } catch (RuntimeException ignored) {
+                // 防止立即录音完成
             }
-        };
-        mTimer.scheduleAtFixedRate(mIncrementTimerTask, 1000, 1000);
+            mRecorder.release();
+            mRecorder = null;
+        }
     }
 
-//    //TODO:
-//    private Notification createNotification() {
-//        NotificationCompat.Builder mBuilder =
-//                new NotificationCompat.Builder(getApplicationContext())
-//                        .setSmallIcon(R.drawable.ic_mic_white_36dp)
-//                        .setContentTitle(getString(R.string.notification_recording))
-//                        .setContentText(mTimerFormat.format(mElapsedSeconds * 1000))
-//                        .setOngoing(true);
-//
-//        mBuilder.setContentIntent(PendingIntent.getActivities(getApplicationContext(), 0,
-//                new Intent[]{new Intent(getApplicationContext(), MainActivity.class)}, 0));
-//
-//        return mBuilder.build();
-//    }
+
 }
