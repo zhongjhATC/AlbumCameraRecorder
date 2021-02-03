@@ -210,7 +210,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void addVideoCover(List<String> videoPath) {
-//        addVideo(videoPath, true, false);
+        List<Uri> uris = new ArrayList<>();
+        for (String item : videoPath) {
+            uris.add(mMediaStoreCompat.getUri(item));
+        }
+        addVideo(uris, true, false);
     }
 
     @Override

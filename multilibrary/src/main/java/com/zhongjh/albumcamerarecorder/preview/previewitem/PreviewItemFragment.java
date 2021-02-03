@@ -82,6 +82,8 @@ public class PreviewItemFragment extends Fragment {
             videoPlayButton.setVisibility(View.VISIBLE);
             videoPlayButton.setOnClickListener(v -> {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
+                // 申请权限
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 Uri uri = null;
                 if (item.getMediaUri() != null) {
                     uri = item.getMediaUri();
