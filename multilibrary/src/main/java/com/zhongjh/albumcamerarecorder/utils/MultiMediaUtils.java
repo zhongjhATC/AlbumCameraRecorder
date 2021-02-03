@@ -19,28 +19,28 @@ public class MultiMediaUtils {
         int index = -1;
         if (item.getMediaUri() != null)
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getMediaUri().equals(item.getMediaUri())) {
+                if (items.get(i).getMediaUri().equals(item.getMediaUri()) && items.get(i).getPosition() == item.getPosition()) {
                     index = i;
                     break;
                 }
             }
         else if (item.getUri() != null)
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUri().equals(item.getUri())) {
+                if (items.get(i).getUri().equals(item.getUri()) && items.get(i).getPosition() == item.getPosition()) {
                     index = i;
                     break;
                 }
             }
         else if (item.getDrawableId() != -1)
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getDrawableId() == item.getDrawableId()) {
+                if (items.get(i).getDrawableId() == item.getDrawableId() && items.get(i).getPosition() == item.getPosition()) {
                     index = i;
                     break;
                 }
             }
         else if (item.getUrl() != null)
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUrl().equals(item.getUrl())) {
+                if (items.get(i).getUrl().equals(item.getUrl()) && items.get(i).getPosition() == item.getPosition()) {
                     index = i;
                     break;
                 }

@@ -101,7 +101,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     }
 
     /**
-     * 设置当前选择的第级个
+     * 设置当前选择的第几个
      * @param checkedNum 数量
      */
     public void setCheckedNum(int checkedNum) {

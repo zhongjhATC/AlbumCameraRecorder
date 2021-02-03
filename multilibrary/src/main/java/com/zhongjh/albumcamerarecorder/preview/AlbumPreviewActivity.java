@@ -96,7 +96,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
             //onAlbumMediaLoad is called many times..
             mIsAlreadySetPosition = true;
             MultiMedia selected = getIntent().getParcelableExtra(EXTRA_ITEM);
-            int selectedIndex = MultiMediaUtils.checkedNumOf(items, selected);
+            int selectedIndex = MultiMediaUtils.checkedNumOf(items, selected) - 1; // -1是爲了拿到索引
             mViewHolder.pager.setCurrentItem(selectedIndex, false);
             mPreviousPos = selectedIndex;
         }
