@@ -180,6 +180,7 @@ public class MainActivity extends BaseActivity {
         GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
         globalSetting.defaultPosition(1);// 默认从第二个开始
         globalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());// 启动过场动画，从下往上动画
+        globalSetting.isImageEdit(mBinding.cbIsEdit.isChecked()); // 是否支持编辑图片，预览相册、拍照处拥有编辑功能
         if (mBinding.cbAlbum.isChecked())
             // 开启相册功能
             globalSetting.albumSetting(albumSetting);
