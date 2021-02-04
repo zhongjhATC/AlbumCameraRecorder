@@ -38,6 +38,7 @@ import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.CloseListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.EditListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
@@ -50,8 +51,10 @@ import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
+import com.zhongjh.imageedit.IMGEditActivity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -72,6 +75,7 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_DEFAU
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_SHORT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
+import static com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity.REQ_IMAGE_EDIT;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
 /**
@@ -101,14 +105,16 @@ public class CameraLayout extends RelativeLayout {
     private int mPosition = -1; // 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
     private File mVideoFile;    // 视频File,用于后面能随时删除
     private File mPhotoFile; // 照片File,用于后面能随时删除
+    private File mPhotoEditFile; // 编辑后的照片
     private boolean mIsShort; // 是否短时间录制
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
-    private CloseListener mCloseListener;           // 退出当前Activity的按钮监听
+    private CloseListener mCloseListener; // 退出当前Activity的按钮监听
+    private EditListener mEditListener; // 编辑当前图片的监听
     private ClickOrLongListener mClickOrLongListener; // 按钮的监听
-    private OperaeCameraListener mOperaeCameraListener;         // 确认跟返回的监听
-    private CaptureListener mCaptureListener;       // 拍摄后操作图片的事件
+    private OperaeCameraListener mOperaeCameraListener; // 确认跟返回的监听
+    private CaptureListener mCaptureListener; // 拍摄后操作图片的事件
     private Fragment fragment;
 
 
@@ -135,6 +141,11 @@ public class CameraLayout extends RelativeLayout {
     // 拍摄后操作图片的事件
     public void setCaptureListener(CaptureListener captureListener) {
         this.mCaptureListener = captureListener;
+    }
+
+    // 编辑图片的回调
+    public void setEditListener(EditListener editListener) {
+        this.mEditListener = editListener;
     }
 
     // endregion
@@ -373,6 +384,8 @@ public class CameraLayout extends RelativeLayout {
                 }
                 if (mOperaeCameraListener != null)
                     mOperaeCameraListener.cancel();
+
+                mViewHolder.rlEdit.setVisibility(View.GONE);
             }
 
             @Override
@@ -400,6 +413,18 @@ public class CameraLayout extends RelativeLayout {
                 mCloseListener.onClose();
         });
 
+        // 编辑图片事件
+        mViewHolder.rlEdit.setOnClickListener(view -> {
+            Uri uri = (Uri) view.getTag();
+            try {
+                mPhotoEditFile = mPictureMediaStoreCompat.createFile(0);
+            } catch (IOException e) {
+                return;
+            }
+            if (mEditListener != null)
+                mEditListener.onImageEdit(uri, mPhotoEditFile.getAbsolutePath());
+        });
+
     }
 
     /**
@@ -417,7 +442,6 @@ public class CameraLayout extends RelativeLayout {
     public void onPause() {
         LogUtil.i("CameraLayout onPause");
         stopVideo(); // 停止播放
-        resetState(TYPE_PICTURE);
         mViewHolder.cameraView.close();
     }
 
@@ -479,6 +503,26 @@ public class CameraLayout extends RelativeLayout {
                     imgPhoto, Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).getUri());
             position++;
         }
+    }
+
+    /**
+     * 刷新编辑后的图片
+     */
+    public void refreshEditPhoto() {
+        // 删除旧图
+        if (mPhotoFile.exists())
+            mPhotoFile.delete();
+        // 用编辑后的图作为新的图片
+        mPhotoFile = mPhotoEditFile;
+        Uri uri = mPictureMediaStoreCompat.getUri(mPhotoFile.getPath());
+
+        // 重置mCaptureBitmaps
+        mCaptureBitmaps.clear();
+        BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri);
+        mCaptureBitmaps.put(0, bitmapData);
+
+        mGlobalSpec.imageEngine.loadThumbnail(getContext(), mViewHolder.imgPhoto.getWidth(), mPlaceholder,
+                mViewHolder.imgPhoto, uri);
     }
 
     /**
@@ -646,7 +690,8 @@ public class CameraLayout extends RelativeLayout {
             // 如果只有单个图片，就显示相应的提示结果等等
             mViewHolder.imgPhoto.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mCaptureBitmaps.put(0, bitmapData);
-            mViewHolder.imgPhoto.setImageBitmap(bitmap);
+            mGlobalSpec.imageEngine.loadThumbnail(getContext(), mViewHolder.imgPhoto.getWidth(), mPlaceholder,
+                    mViewHolder.imgPhoto, bitmapData.getUri());
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startOperaeBtnAnimator();
@@ -654,6 +699,14 @@ public class CameraLayout extends RelativeLayout {
 
             // 设置当前模式是图片模式
             setState(Constants.STATE_PICTURE);
+
+            // 判断是否要编辑
+            if (mGlobalSpec.isImageEdit) {
+                mViewHolder.rlEdit.setVisibility(View.VISIBLE);
+                mViewHolder.rlEdit.setTag(uri);
+            } else {
+                mViewHolder.rlEdit.setVisibility(View.GONE);
+            }
         }
 
         // 回调接口：添加图片后剩下的相关数据
@@ -817,6 +870,7 @@ public class CameraLayout extends RelativeLayout {
         ImageView imgClose;
         CameraView cameraView;
         ConstraintLayout clMenu;
+        RelativeLayout rlEdit;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -834,6 +888,7 @@ public class CameraLayout extends RelativeLayout {
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.vvPreview = rootView.findViewById(R.id.vvPreview);
             this.clMenu = rootView.findViewById(R.id.clMenu);
+            this.rlEdit = rootView.findViewById(R.id.rlEdit);
         }
 
     }

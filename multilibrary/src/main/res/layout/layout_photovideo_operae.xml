@@ -54,6 +54,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTip" />
 
+    <RelativeLayout
+        android:id="@+id/rlEdit"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:contentDescription="拍照后显示的编辑按钮，只有一张的时候才会这样"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTip"
+        tools:ignore="HardcodedText">
+
+        <ImageView
+            android:id="@+id/iv_ring"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_margin="13dp"
+            android:contentDescription="外圈"
+            android:src="@drawable/shape_ring_white"
+            tools:ignore="HardcodedText" />
+
+        <ImageView
+            android:id="@+id/iv_edit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:contentDescription="内圈"
+            app:srcCompat="@drawable/ic_baseline_edit_24"
+            tools:ignore="HardcodedText" />
+
+    </RelativeLayout>
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline12"
         android:layout_width="wrap_content"

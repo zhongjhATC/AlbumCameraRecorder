@@ -62,7 +62,8 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTip">
+        app:layout_constraintTop_toBottomOf="@+id/tvTip"
+        tools:ignore="HardcodedText">
 
         <ImageView
             android:id="@+id/iv_ring"

@@ -21,14 +21,18 @@ import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.EditListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
+import com.zhongjh.imageedit.IMGEditActivity;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
@@ -38,6 +42,7 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity.REQ_IMAGE_EDIT;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
@@ -156,7 +161,7 @@ public class CameraFragment extends BaseFragment {
             }
 
             @Override
-            public void recordSuccess(String path,Uri uri) {
+            public void recordSuccess(String path, Uri uri) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 arrayList.add(path);
                 ArrayList<Uri> arrayListUri = new ArrayList<>();
@@ -197,7 +202,16 @@ public class CameraFragment extends BaseFragment {
                 }
             }
         });
-        Log.i("CJT", DeviceUtil.getDeviceModel());
+
+        // 编辑图片事件
+        mCameraLayout.setEditListener((uri, newPath) -> {
+            Intent intent = new Intent();
+            intent.setClass(getContext(), IMGEditActivity.class);
+            intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, uri);
+            intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
+            this.startActivityForResult(intent, REQ_IMAGE_EDIT);
+        });
+
         return view;
     }
 
@@ -206,34 +220,41 @@ public class CameraFragment extends BaseFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK)
             return;
-        if (requestCode == REQUEST_CODE_PREVIEW_CAMRRA) {// 如果在预览界面点击了确定
-            if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                // 请求的预览界面
-                Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
-                // 获取选择的数据
-                ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                if (selected == null)
-                    return;
-                // 循环判断，如果不存在，则删除
-                ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCameraLayout.mCaptureBitmaps.entrySet()).listIterator(mCameraLayout.mCaptureBitmaps.size());
-                while (i.hasPrevious()) {
-                    Map.Entry<Integer, BitmapData> entry = i.previous();
-                    int k = 0;
-                    for (MultiMedia multiMedia : selected) {
-                        // 根据索引判断是否相同
-                        if (!entry.getKey().equals(multiMedia.getPosition())) {
-                            k++;
+
+        switch (requestCode) {
+            case REQUEST_CODE_PREVIEW_CAMRRA:
+                // 如果在预览界面点击了确定
+                if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                    // 请求的预览界面
+                    Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+                    // 获取选择的数据
+                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                    if (selected == null)
+                        return;
+                    // 循环判断，如果不存在，则删除
+                    ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCameraLayout.mCaptureBitmaps.entrySet()).listIterator(mCameraLayout.mCaptureBitmaps.size());
+                    while (i.hasPrevious()) {
+                        Map.Entry<Integer, BitmapData> entry = i.previous();
+                        int k = 0;
+                        for (MultiMedia multiMedia : selected) {
+                            // 根据索引判断是否相同
+                            if (!entry.getKey().equals(multiMedia.getPosition())) {
+                                k++;
+                            }
+                        }
+                        if (k == selected.size()) {
+                            // 所有都不符合，则删除
+                            mCameraLayout.removePosition(entry.getKey());
                         }
                     }
-                    if (k == selected.size()) {
-                        // 所有都不符合，则删除
-                        mCameraLayout.removePosition(entry.getKey());
-                    }
-                }
 
-                // 刷新多个图片
-                mCameraLayout.refreshMultiPhoto(selected);
-            }
+                    // 刷新多个图片
+                    mCameraLayout.refreshMultiPhoto(selected);
+                }
+                break;
+            case REQ_IMAGE_EDIT:
+                mCameraLayout.refreshEditPhoto();
+                break;
         }
     }
 
