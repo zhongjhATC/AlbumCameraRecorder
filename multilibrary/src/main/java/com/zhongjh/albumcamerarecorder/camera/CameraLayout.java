@@ -173,6 +173,9 @@ public class CameraLayout extends RelativeLayout {
         mVideoMediaStoreCompat = new MediaStoreCompat(getContext());
         mVideoMediaStoreCompat.setSaveStrategy(mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 
+        // 用于播放的视频file
+        mVideoFile = mVideoMediaStoreCompat.getFilePath(1);
+
         // 默认图片
         TypedArray ta = mContext.getTheme().obtainStyledAttributes(
                 new int[]{R.attr.album_thumbnail_placeholder});
@@ -279,6 +282,7 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void onLongClickShort(final long time) {
+                Log.d(TAG, "onLongClickShort " + time);
                 mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
                 setSwitchVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
@@ -289,24 +293,17 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void onLongClick() {
-                if (mViewHolder.cameraView.isTakingVideo())
-                    Toast.makeText(mContext, "Already taking video.", Toast.LENGTH_SHORT).show();
-                if (mViewHolder.cameraView.getPreview() != Preview.GL_SURFACE)
-                    Toast.makeText(mContext, "Video snapshots are only allowed with the GL_SURFACE preview.", Toast.LENGTH_SHORT).show();
-
-
+                mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
                 // 开始录像
                 setSwitchVisibility(INVISIBLE);
                 mViewHolder.imgFlash.setVisibility(INVISIBLE);
-                // 用于播放的视频file
-                mVideoFile = mVideoMediaStoreCompat.getFilePath(1);
-                mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
                 if (mClickOrLongListener != null)
                     mClickOrLongListener.onLongClick();
             }
 
             @Override
             public void onLongClickEnd(long time) {
+                Log.d(TAG, "onLongClickEnd " + time);
                 // 录像结束
                 stopRecord(false);
                 if (mClickOrLongListener != null)
@@ -340,12 +337,13 @@ public class CameraLayout extends RelativeLayout {
             @Override
             public void onVideoTaken(@NonNull VideoResult result) {
                 super.onVideoTaken(result);
-                super.onVideoRecordingEnd();
                 // 判断是否短时间结束
                 if (!mIsShort) {
                     // 如果录制结束，播放该视频
                     playVideo(result.getFile());
+                    Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
                 } else {
+                    Log.d(TAG, "onVideoTaken delete " + mVideoFile.getPath());
                     FileUtil.deleteFile(mVideoFile);
                     mIsShort = false;
                 }
@@ -361,7 +359,7 @@ public class CameraLayout extends RelativeLayout {
             public void onCameraError(@NonNull CameraException exception) {
                 super.onCameraError(exception);
                 if (!TextUtils.isEmpty(exception.getMessage())) {
-                    Log.d(TAG, exception.getMessage());
+                    Log.d(TAG, exception.getMessage() + " " + exception.getReason());
                     mErrorLisenter.onError();
                 }
             }
@@ -824,12 +822,14 @@ public class CameraLayout extends RelativeLayout {
      * @param isShort 是否因为视频过短而停止
      */
     private void stopRecord(boolean isShort) {
+        Log.d(TAG,"stopRecord " + isShort);
+        mIsShort = isShort;
+        mViewHolder.cameraView.stopVideo();
         if (isShort) {
             // 如果视频过短就是录制不成功
             resetState(TYPE_SHORT);
             mViewHolder.pvLayout.reset();
         } else {
-            mViewHolder.cameraView.stopVideo();
             // 设置成视频播放状态
             setState(Constants.STATE_VIDEO);
         }

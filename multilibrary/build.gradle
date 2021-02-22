@@ -38,7 +38,7 @@ dependencies {
     compileOnly 'com.squareup.picasso:picasso:2.5.2'
 
     // 拍摄、录像核心类 https://github.com/natario1/CameraView
-    api 'com.otaliastudios:cameraview:2.6.4'
+    api 'com.otaliastudios:cameraview:2.7.0'
 
     compileOnly project(':albumCameraRecorderCommon')
     compileOnly project(':imageedit')
