@@ -32,7 +32,7 @@ public class CameraSpec {
      */
     private void reset() {
         mimeTypeSet = null;
-        imageSwitch = R.drawable.ic_camera;    // 切换前置/后置摄像头图标资源
+        imageSwitch = R.drawable.ic_camera_zjh;    // 切换前置/后置摄像头图标资源
         imageFlashOn = R.drawable.ic_flash_on;      // 闪光灯开启状态图标
         imageFlashOff = R.drawable.ic_flash_off;       // 闪光灯关闭状态图标
         imageFlashAuto = R.drawable.ic_flash_auto;      // 闪光灯自动状态图标
@@ -44,7 +44,7 @@ public class CameraSpec {
     // region 属性
 
     public Set<MimeType> mimeTypeSet; // 选择 视频图片 的类型，MimeType.allOf()
-    public int imageSwitch = R.drawable.ic_camera;    // 切换前置/后置摄像头图标资源
+    public int imageSwitch = R.drawable.ic_camera_zjh;    // 切换前置/后置摄像头图标资源
     public int imageFlashOn = R.drawable.ic_flash_on;      // 闪光灯开启状态图标
     public int imageFlashOff = R.drawable.ic_flash_off;       // 闪光灯关闭状态图标
     public int imageFlashAuto = R.drawable.ic_flash_auto;      // 闪光灯自动状态图标
