@@ -29,7 +29,7 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STA
 public class ClickOrLongButton extends View {
 
     private static final String TAG = "ClickOrLongButton";
-    private static final long TIME_TO_START_RECORD = 1000L; // 1秒后启动录制
+    private static final long TIME_TO_START_RECORD = 1000L; // 500毫秒后启动录制
     private float timeLimitInMils = 10000.0F;       // 录制时间
     private int mMinDuration = 1500;       // 最短录制时间限制
     private long mRecordedTime;             // 记录当前录制多长的时间秒
@@ -53,18 +53,21 @@ public class ClickOrLongButton extends View {
     private int colorRoundBorder;
     private int colorRecord;
     private int colorWhiteP60;
+    private int colorInterval;
     //top
     private float startAngle270;
     private float percentInDegree;
     private float centerX;
     private float centerY;
-    private Paint processBarPaint;
-    private Paint outMostWhiteCirclePaint;
+    private Paint processBarPaint; // 按下去显示的进度外圈
+    private Paint outMostWhiteCirclePaint; // 静止状态时的外圈
+    private Paint outProcessCirclePaint; // 静止状态时的进度外圈
+    private Paint outProcessIntervalCirclePaint; // 静止状态时的进度外圈
     private Paint translucentPaint;
     private int translucentCircleRadius = 0;
     private float outMostCircleRadius;
     private float innerCircleRadiusWhenRecord;
-    private long btnPressTime;
+    private long btnPressTime = 5000;
     private int outBlackCircleRadiusInc;
     private int recordState;                        // 当前状态
     private static final int RECORD_NOT_STARTED = 0; // 未启动状态
@@ -106,13 +109,22 @@ public class ClickOrLongButton extends View {
                 if (!recordable) return;
                 centerCirclePaint.setColor(colorRecord);
                 outMostWhiteCirclePaint.setColor(colorRoundBorder);
+//                percentInDegree = (360.0F * (percent + 0.5F));
                 percentInDegree = (360.0F * percent);
+
+                Log.d(TAG,"timeLapse:" + timeLapse);
+                Log.d(TAG, "percent:" + percent);
+                Log.d(TAG, "percentInDegree:" + percentInDegree);
+
+
                 if (percent <= 1.0F) {
-                    if (percent <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
+                    if (percent  <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
                         float calPercent = percent / PROGRESS_LIM_TO_FINISH_STARTING_ANIM;
                         float outIncDis = outBlackCircleRadiusInc * calPercent;
                         float curOutCircleWidth = OUT_CIRCLE_WIDTH + OUTER_CIRCLE_WIDTH_INC * calPercent;
                         processBarPaint.setStrokeWidth(curOutCircleWidth);
+                        outProcessCirclePaint.setStrokeWidth(curOutCircleWidth);
+                        outProcessIntervalCirclePaint.setStrokeWidth(curOutCircleWidth);
                         outMostWhiteCirclePaint.setStrokeWidth(curOutCircleWidth);
                         outBlackCircleRadius = (outMostCircleRadius + outIncDis - curOutCircleWidth / 2.0F);
                         outMostBlackCircleRadius = (curOutCircleWidth / 2.0F + (outMostCircleRadius + outIncDis));
@@ -164,9 +176,15 @@ public class ClickOrLongButton extends View {
                 getResources(), R.color.click_long_button_inner_circle_no_operation,
                 getContext().getTheme());
 
+        TypedArray arrayInnerCircleNoOperationInterval = getContext().getTheme().obtainStyledAttributes(new int[]{ R.attr.click_button_inner_circle_in_operation_interval });
+        int defaultInnerCircleNoOperationColorInterval = ResourcesCompat.getColor(
+                getResources(), R.color.click_button_inner_circle_no_operation_interval,
+                getContext().getTheme());
+
         colorRecord = arrayInnerCircleInOperation.getColor(0, defaultInnerCircleInOperationColor);
         colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor);
         colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor);
+        colorInterval = arrayInnerCircleNoOperationInterval.getColor(0, defaultInnerCircleNoOperationColorInterval);
         int colorBlackP40 = getResources().getColor(R.color.black_forty_percent);
         int colorBlackP80 = getResources().getColor(R.color.black_eighty_percent);
         int colorTranslucent = getResources().getColor(R.color.circle_shallow_translucent_bg);
@@ -183,6 +201,19 @@ public class ClickOrLongButton extends View {
         outMostWhiteCirclePaint.setAntiAlias(true);
         outMostWhiteCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
         outMostWhiteCirclePaint.setStyle(Style.STROKE);
+
+        outProcessCirclePaint = new Paint();
+        outProcessCirclePaint.setColor(colorRecord);
+        outProcessCirclePaint.setAntiAlias(true);
+        outProcessCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
+        outProcessCirclePaint.setStyle(Style.STROKE);
+
+        outProcessIntervalCirclePaint = new Paint();
+        outProcessIntervalCirclePaint.setColor(colorInterval);
+        outProcessIntervalCirclePaint.setAntiAlias(true);
+        outProcessIntervalCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
+        outProcessIntervalCirclePaint.setStyle(Style.STROKE);
+
         // 内圈未操作中样式
         centerCirclePaint = new Paint();
         centerCirclePaint.setColor(colorWhiteP60);
@@ -224,11 +255,26 @@ public class ClickOrLongButton extends View {
         //center white-p40 circle  中心点+半径32，所以直接64就是内圈的宽高度了
         canvas.drawCircle(centerX, centerY, innerCircleRadiusToDraw, centerCirclePaint);
 
-        //static out-most white circle
-        canvas.drawArc(outMostCircleRect, startAngle270, 360.0F, false, outMostWhiteCirclePaint);
+        // 静止状态时的外圈
+        canvas.drawArc(outMostCircleRect, startAngle270, 360F, false, outMostWhiteCirclePaint);
 
-        //progress bar
+        // 点击时的外圈进度
         canvas.drawArc(outMostCircleRect, startAngle270, percentInDegree, false, processBarPaint);
+
+        // 静止状态时的外圈进度
+        canvas.drawArc(outMostCircleRect, startAngle270, percentInDegree, false, outProcessCirclePaint);
+
+
+        // 从这个顺序来看，即是从270为开始
+        canvas.drawArc(outMostCircleRect, 270, 3, false, outProcessIntervalCirclePaint);
+
+        canvas.drawArc(outMostCircleRect, 360, 3, false, outProcessIntervalCirclePaint);
+
+        canvas.drawArc(outMostCircleRect, 5, 3, false, outProcessIntervalCirclePaint);
+
+        canvas.drawArc(outMostCircleRect, 90, 3, false, outProcessIntervalCirclePaint);
+
+        canvas.drawArc(outMostCircleRect, 95, 3, false, outProcessIntervalCirclePaint);
 
         canvas.drawCircle(centerX, centerY, outBlackCircleRadius, outBlackCirclePaint);
         canvas.drawCircle(centerX, centerY, outMostBlackCircleRadius, outMostBlackCirclePaint);
@@ -293,7 +339,9 @@ public class ClickOrLongButton extends View {
         outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
         translucentCircleRadius = 0;
         processBarPaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
+        outProcessCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
         outMostWhiteCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
+        outProcessIntervalCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
         outBlackCircleRadius = (outMostCircleRadius - OUT_CIRCLE_WIDTH / 2.0F);
         outMostBlackCircleRadius = (outMostCircleRadius + OUT_CIRCLE_WIDTH / 2.0F);
         invalidate();
@@ -373,6 +421,13 @@ public class ClickOrLongButton extends View {
      */
     public void resetState() {
         recordState = RECORD_NOT_STARTED;// 回到初始状态
+    }
+
+    /**
+     * 设置当前进度
+     */
+    public void setBtnPressTime() {
+        this.btnPressTime = 5000;
     }
 
     // endregion

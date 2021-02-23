@@ -98,6 +98,18 @@ public abstract class OperationLayout extends FrameLayout {
         setWillNotDraw(false);
 
         mViewHolder = newViewHolder();
+
+        // 默认隐藏
+        mViewHolder.btnCancel.setVisibility(GONE);
+        mViewHolder.btnConfirm.setVisibility(GONE);
+
+        initListener();
+    }
+
+    /**
+     * 初始化事件
+     */
+    protected void initListener() {
         mViewHolder.btnClickOrLong.setRecordingListener(new ClickOrLongListener() {
             @Override
             public void actionDown() {
@@ -159,10 +171,6 @@ public abstract class OperationLayout extends FrameLayout {
                 mOperaeListener.confirm();
             startTipAlphaAnimation();
         });
-
-        // 默认隐藏
-        mViewHolder.btnCancel.setVisibility(GONE);
-        mViewHolder.btnConfirm.setVisibility(GONE);
     }
 
     /**
@@ -314,6 +322,7 @@ public abstract class OperationLayout extends FrameLayout {
         public OperationButton btnConfirm;
         public ClickOrLongButton btnClickOrLong;
         TextView tvTip;
+        public TextView tvSectionRecord;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -321,6 +330,7 @@ public abstract class OperationLayout extends FrameLayout {
             this.btnConfirm = rootView.findViewById(R.id.btnConfirm);
             this.btnClickOrLong = rootView.findViewById(R.id.btnClickOrLong);
             this.tvTip = rootView.findViewById(R.id.tvTip);
+            this.tvSectionRecord = rootView.findViewById(R.id.tvSectionRecord);
         }
 
     }

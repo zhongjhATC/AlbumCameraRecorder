@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
 
 /**
@@ -14,6 +15,22 @@ import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
  * Created by zhongjh on 2018/10/16.
  */
 public class PhotoVideoLayout extends OperationLayout {
+
+
+    private RecordListener mRecordListener;
+
+    /**
+     * 操作按钮的Listener
+     */
+    public interface RecordListener {
+
+        void sectionRecord();
+
+    }
+
+    public void setRecordListener(RecordListener recordListener) {
+        this.mRecordListener = recordListener;
+    }
 
     public PhotoVideoLayout(@NonNull Context context) {
         super(context);
@@ -32,4 +49,9 @@ public class PhotoVideoLayout extends OperationLayout {
         return new ViewHolder(View.inflate(getContext(), R.layout.layout_photovideo_operae, this));
     }
 
+    @Override
+    protected void initListener() {
+        super.initListener();
+        mViewHolder.tvSectionRecord.setOnClickListener(v -> mRecordListener.sectionRecord());
+    }
 }

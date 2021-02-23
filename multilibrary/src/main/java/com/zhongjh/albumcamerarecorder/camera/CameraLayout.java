@@ -43,6 +43,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
+import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
@@ -107,6 +108,8 @@ public class CameraLayout extends RelativeLayout {
     private File mPhotoFile; // 照片File,用于后面能随时删除
     private File mPhotoEditFile; // 编辑后的照片
     private boolean mIsShort; // 是否短时间录制
+
+    private boolean mIsSectionRecord; // 是否分段录制
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -320,6 +323,53 @@ public class CameraLayout extends RelativeLayout {
             }
         });
 
+        // 确认和取消
+        mViewHolder.pvLayout.setOperaeListener(new OperationLayout.OperaeListener() {
+            @Override
+            public void cancel() {
+                // 根据不同状态处理相应的事件,多图不需要取消事件（关闭所有图片就自动恢复了）。
+                if (getState() == Constants.STATE_PICTURE) {
+                    resetState(TYPE_PICTURE);   // 针对图片模式进行的重置
+                    mViewHolder.pvLayout.reset();
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                } else if (getState() == Constants.STATE_VIDEO) {
+                    resetState(TYPE_VIDEO);     // 针对视频模式进行的重置
+                    mViewHolder.pvLayout.reset();
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                }
+                if (mOperaeCameraListener != null)
+                    mOperaeCameraListener.cancel();
+
+                mViewHolder.rlEdit.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void confirm() {
+                // 根据不同状态处理相应的事件
+                if (getState() == Constants.STATE_PICTURE) {
+                    // 图片模式的提交
+                    confirmState(TYPE_PICTURE);
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                } else if (getState() == Constants.STATE_VIDEO) {
+                    confirmState(TYPE_VIDEO);
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                } else if (getState() == Constants.STATE_PICTURE_PREVIEW) {
+                    // 图片模式的提交
+                    confirmState(TYPE_PICTURE);
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                }
+
+            }
+        });
+
+        // 录制事件监听，目前只有一个，点击分段录制
+        mViewHolder.pvLayout.setRecordListener(new PhotoVideoLayout.RecordListener() {
+            @Override
+            public void sectionRecord() {
+
+            }
+        });
+
         // 拍照监听
         mViewHolder.cameraView.addCameraListener(new CameraListener() {
 
@@ -366,44 +416,6 @@ public class CameraLayout extends RelativeLayout {
 
         });
 
-        // 确认和取消
-        mViewHolder.pvLayout.setOperaeListener(new OperationLayout.OperaeListener() {
-            @Override
-            public void cancel() {
-                // 根据不同状态处理相应的事件,多图不需要取消事件（关闭所有图片就自动恢复了）。
-                if (getState() == Constants.STATE_PICTURE) {
-                    resetState(TYPE_PICTURE);   // 针对图片模式进行的重置
-                    mViewHolder.pvLayout.reset();
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                } else if (getState() == Constants.STATE_VIDEO) {
-                    resetState(TYPE_VIDEO);     // 针对视频模式进行的重置
-                    mViewHolder.pvLayout.reset();
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                }
-                if (mOperaeCameraListener != null)
-                    mOperaeCameraListener.cancel();
-
-                mViewHolder.rlEdit.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void confirm() {
-                // 根据不同状态处理相应的事件
-                if (getState() == Constants.STATE_PICTURE) {
-                    // 图片模式的提交
-                    confirmState(TYPE_PICTURE);
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                } else if (getState() == Constants.STATE_VIDEO) {
-                    confirmState(TYPE_VIDEO);
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                } else if (getState() == Constants.STATE_PICTURE_PREVIEW) {
-                    // 图片模式的提交
-                    confirmState(TYPE_PICTURE);
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                }
-
-            }
-        });
 
         // 关闭事件
         mViewHolder.imgClose.setOnClickListener(v -> {
@@ -822,7 +834,7 @@ public class CameraLayout extends RelativeLayout {
      * @param isShort 是否因为视频过短而停止
      */
     private void stopRecord(boolean isShort) {
-        Log.d(TAG,"stopRecord " + isShort);
+        Log.d(TAG, "stopRecord " + isShort);
         mIsShort = isShort;
         mViewHolder.cameraView.stopVideo();
         if (isShort) {
@@ -861,7 +873,7 @@ public class CameraLayout extends RelativeLayout {
         ImageView imgPhoto;
         public ImageView imgFlash;
         public ImageView imgSwitch;
-        public OperationLayout pvLayout;
+        public PhotoVideoLayout pvLayout;
         public HorizontalScrollView hsvPhoto;
         LinearLayout llPhoto;
         View vLine1;

@@ -7,6 +7,7 @@
     <color name="click_long_button_round_border">#ffffffff</color>
     <color name="click_long_button_inner_circle_in_operation">#ff32dac3</color>
     <color name="click_long_button_inner_circle_no_operation">#99ffffff</color>
+    <color name="click_button_inner_circle_no_operation_interval">#ffff4444</color>
 
     <color name="white">#ffffffff</color>
     <color name="black_forty_percent">#66000000</color>
