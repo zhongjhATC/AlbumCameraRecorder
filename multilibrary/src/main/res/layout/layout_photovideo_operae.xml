@@ -44,6 +44,21 @@
         app:type="confirm"
         tools:visibility="visible" />
 
+    <!-- 右侧的分段录制 -->
+    <TextView
+        android:id="@+id/tvSectionRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/section_to_record"
+        android:textColor="@color/white"
+        android:textSize="8sp"
+        app:drawableTopCompat="@drawable/ic_baseline_power_input_24"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
+        app:layout_constraintEnd_toStartOf="@+id/guideline88"
+        app:layout_constraintStart_toStartOf="@+id/guideline72"
+        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
+        tools:ignore="SmallSp" />
+
     <!-- 中间的操作按钮 -->
     <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
         android:id="@+id/btnClickOrLong"
