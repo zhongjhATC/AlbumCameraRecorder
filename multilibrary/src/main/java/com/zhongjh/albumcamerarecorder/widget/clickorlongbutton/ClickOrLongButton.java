@@ -9,7 +9,9 @@ import android.graphics.Paint.Cap;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.os.Looper;
+
 import androidx.core.content.res.ResourcesCompat;
+
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -18,6 +20,8 @@ import android.view.View;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
+
+import java.util.ArrayList;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
@@ -31,6 +35,9 @@ public class ClickOrLongButton extends View {
     private static final String TAG = "ClickOrLongButton";
     private static final long TIME_TO_START_RECORD = 1000L; // 500毫秒后启动录制
     private float timeLimitInMils = 10000.0F;       // 录制时间
+    private final ArrayList<Float> mCurrentLocation = new ArrayList<>();// 当前录制位置集，计算时间后的百分比
+    private Float mCurrentSumNumberDegrees = 0F; // 当前录制的节点，以360度为单位
+    private Long mCurrentSumTime = 0L; // 当前录制的时间点
     private int mMinDuration = 1500;       // 最短录制时间限制
     private long mRecordedTime;             // 记录当前录制多长的时间秒
     private static final float PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1F;
@@ -67,7 +74,7 @@ public class ClickOrLongButton extends View {
     private int translucentCircleRadius = 0;
     private float outMostCircleRadius;
     private float innerCircleRadiusWhenRecord;
-    private long btnPressTime = 5000;
+    private long btnPressTime;
     private int outBlackCircleRadiusInc;
     private int recordState;                        // 当前状态
     private static final int RECORD_NOT_STARTED = 0; // 未启动状态
@@ -82,7 +89,10 @@ public class ClickOrLongButton extends View {
         public void run() {
             long timeLapse = System.currentTimeMillis() - btnPressTime;
             mRecordedTime = (timeLapse - TIME_TO_START_RECORD);
+            mRecordedTime = mRecordedTime + mCurrentSumTime;
             float percent = mRecordedTime / timeLimitInMils;
+            Log.d(TAG, "mCurrentSumTime " + mCurrentSumTime);
+            Log.d(TAG, "mRecordedTime " + mRecordedTime);
             if (!isActionDown && timeLapse >= 1) {
                 if (mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH)) {
                     // 如果禁止点击也不能触发该事件
@@ -109,16 +119,15 @@ public class ClickOrLongButton extends View {
                 if (!recordable) return;
                 centerCirclePaint.setColor(colorRecord);
                 outMostWhiteCirclePaint.setColor(colorRoundBorder);
-//                percentInDegree = (360.0F * (percent + 0.5F));
                 percentInDegree = (360.0F * percent);
 
-                Log.d(TAG,"timeLapse:" + timeLapse);
+                Log.d(TAG, "timeLapse:" + timeLapse);
                 Log.d(TAG, "percent:" + percent);
                 Log.d(TAG, "percentInDegree:" + percentInDegree);
 
 
                 if (percent <= 1.0F) {
-                    if (percent  <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
+                    if (percent <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
                         float calPercent = percent / PROGRESS_LIM_TO_FINISH_STARTING_ANIM;
                         float outIncDis = outBlackCircleRadiusInc * calPercent;
                         float curOutCircleWidth = OUT_CIRCLE_WIDTH + OUTER_CIRCLE_WIDTH_INC * calPercent;
@@ -167,16 +176,16 @@ public class ClickOrLongButton extends View {
         int defaultRoundBorderColor = ResourcesCompat.getColor(
                 getResources(), R.color.click_long_button_round_border,
                 getContext().getTheme());
-        TypedArray arrayInnerCircleInOperation = getContext().getTheme().obtainStyledAttributes(new int[]{ R.attr.click_long_button_inner_circle_in_operation });
+        TypedArray arrayInnerCircleInOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_in_operation});
         int defaultInnerCircleInOperationColor = ResourcesCompat.getColor(
                 getResources(), R.color.click_long_button_inner_circle_in_operation,
                 getContext().getTheme());
-        TypedArray arrayInnerCircleNoOperation = getContext().getTheme().obtainStyledAttributes(new int[]{ R.attr.click_long_button_inner_circle_no_operation });
+        TypedArray arrayInnerCircleNoOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_no_operation});
         int defaultInnerCircleNoOperationColor = ResourcesCompat.getColor(
                 getResources(), R.color.click_long_button_inner_circle_no_operation,
                 getContext().getTheme());
 
-        TypedArray arrayInnerCircleNoOperationInterval = getContext().getTheme().obtainStyledAttributes(new int[]{ R.attr.click_button_inner_circle_in_operation_interval });
+        TypedArray arrayInnerCircleNoOperationInterval = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_button_inner_circle_in_operation_interval});
         int defaultInnerCircleNoOperationColorInterval = ResourcesCompat.getColor(
                 getResources(), R.color.click_button_inner_circle_no_operation_interval,
                 getContext().getTheme());
@@ -262,19 +271,14 @@ public class ClickOrLongButton extends View {
         canvas.drawArc(outMostCircleRect, startAngle270, percentInDegree, false, processBarPaint);
 
         // 静止状态时的外圈进度
-        canvas.drawArc(outMostCircleRect, startAngle270, percentInDegree, false, outProcessCirclePaint);
-
+        canvas.drawArc(outMostCircleRect, startAngle270, mCurrentSumNumberDegrees, false, outProcessCirclePaint);
+        Log.d(TAG, "静止状态 " + mCurrentSumNumberDegrees);
 
         // 从这个顺序来看，即是从270为开始
-        canvas.drawArc(outMostCircleRect, 270, 3, false, outProcessIntervalCirclePaint);
-
-        canvas.drawArc(outMostCircleRect, 360, 3, false, outProcessIntervalCirclePaint);
-
-        canvas.drawArc(outMostCircleRect, 5, 3, false, outProcessIntervalCirclePaint);
-
-        canvas.drawArc(outMostCircleRect, 90, 3, false, outProcessIntervalCirclePaint);
-
-        canvas.drawArc(outMostCircleRect, 95, 3, false, outProcessIntervalCirclePaint);
+        for (Float item : mCurrentLocation) {
+            canvas.drawArc(outMostCircleRect, item, 3, false, outProcessIntervalCirclePaint);
+            Log.d(TAG, "canvas.drawArc " + item);
+        }
 
         canvas.drawCircle(centerX, centerY, outBlackCircleRadius, outBlackCirclePaint);
         canvas.drawCircle(centerX, centerY, outMostBlackCircleRadius, outMostBlackCirclePaint);
@@ -318,16 +322,16 @@ public class ClickOrLongButton extends View {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null) {
                     if (mRecordedTime < mMinDuration)
-                        mClickOrLongListener.onLongClickShort(mRecordedTime);//回调录制时间过短
+                        mClickOrLongListener.onLongClickShort(mRecordedTime); // 回调录制时间过短
                     else
-                        mClickOrLongListener.onLongClickEnd(mRecordedTime);  //回调录制结束
+                        mClickOrLongListener.onLongClickEnd(mRecordedTime); // 回调录制结束
                 }
                 recordState = RECORD_ENDED;
             } else if (recordState == RECORD_ENDED) {
-                recordState = RECORD_NOT_STARTED;// 回到初始状态
+                recordState = RECORD_NOT_STARTED; // 回到初始状态
             } else {
                 if (mClickOrLongListener != null)
-                    mClickOrLongListener.onClick();// 拍照
+                    mClickOrLongListener.onClick(); // 拍照
             }
         }
         isActionDown = false;
@@ -372,6 +376,24 @@ public class ClickOrLongButton extends View {
         touchTimeHandler.sendLoopMsg(0L, 16L);
     }
 
+    /**
+     * 数据设置成适合当前圆形
+     * <p>
+     * // 计算方式1：270至360是一个初始点，类似0-90
+     * // 计算方式2: 所以如果是小于90点，就直接+270
+     * // 计算方式3：如果大于等于90点，就直接-90
+     *
+     * @return numberDegrees
+     */
+    private float getNumberDegrees(float numberDegrees) {
+        if (numberDegrees >= 90) {
+            numberDegrees = numberDegrees - 90;
+        } else {
+            numberDegrees = numberDegrees + 270;
+        }
+        return numberDegrees;
+    }
+
     private ClickOrLongListener mClickOrLongListener;       // 按钮回调接口
     private boolean isActionDown;                           // 判断是否已经调用过isActionDwon,结束后重置此值
 
@@ -391,8 +413,34 @@ public class ClickOrLongButton extends View {
      *
      * @param duration 时间
      */
-    public void setMinDuration(int duration){
+    public void setMinDuration(int duration) {
         mMinDuration = duration;
+    }
+
+    /**
+     * 设置当前已录制的时间，用于分段录制
+     */
+    public void setCurrentTime(ArrayList<Long> currentTimes) {
+        mCurrentLocation.clear();
+        mCurrentSumNumberDegrees = 0F;
+        mCurrentSumTime = 0L;
+        // 当前录制时间集
+        // 计算百分比红点
+        for (int i = 0; i < currentTimes.size(); i++) {
+            // 获取当前时间占比
+            float percent = currentTimes.get(i) / timeLimitInMils;
+            // 根据360度，以这个占比计算是具体多少度
+            float numberDegrees = percent * 360;
+            // 数据设置规范,适合当前圆形
+            mCurrentLocation.add(getNumberDegrees(numberDegrees));
+            mCurrentSumNumberDegrees = numberDegrees;
+
+            mCurrentSumTime = currentTimes.get(i);
+            Log.d(TAG, "setCurrentTime mCurrentSumTime " + mCurrentSumTime);
+            Log.d(TAG, "setCurrentTime mCurrentSumNumberDegrees " + mCurrentSumNumberDegrees);
+        }
+
+        invalidate();
     }
 
     /**
@@ -421,13 +469,6 @@ public class ClickOrLongButton extends View {
      */
     public void resetState() {
         recordState = RECORD_NOT_STARTED;// 回到初始状态
-    }
-
-    /**
-     * 设置当前进度
-     */
-    public void setBtnPressTime() {
-        this.btnPressTime = 5000;
     }
 
     // endregion

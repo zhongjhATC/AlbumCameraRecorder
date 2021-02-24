@@ -20,6 +20,8 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton;
 
+import java.util.ArrayList;
+
 /**
  * 集成各个控件的布局
  * {@link com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton 点击或者长按的按钮 }
@@ -147,7 +149,6 @@ public abstract class OperationLayout extends FrameLayout {
                     mClickOrLongListener.onLongClickEnd(time);
                 }
                 startTipAlphaAnimation();
-                startOperaeBtnAnimator();
             }
 
             @Override
@@ -174,11 +175,17 @@ public abstract class OperationLayout extends FrameLayout {
     }
 
     /**
-     * 点击长按结果后的动画 - 单图片
+     * 隐藏中间的核心操作按钮
      */
-    public void startOperaeBtnAnimator() {
-        // 隐藏中间的按钮
+    public void hideBtnClickOrLong() {
         mViewHolder.btnClickOrLong.setVisibility(INVISIBLE);
+    }
+
+    /**
+     * 点击长按结果后的动画
+     * 显示左右两边的按钮
+     */
+    public void startShowLeftRightButtonsAnimator() {
         // 显示提交和取消按钮
         mViewHolder.btnConfirm.setVisibility(VISIBLE);
         mViewHolder.btnCancel.setVisibility(VISIBLE);
@@ -309,11 +316,21 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnClickOrLong.setButtonFeatures(buttonStateBoth);
     }
 
+    /**
+     * 设置是否可点击
+     */
     public void setEnabled(boolean enabled) {
         if (!enabled)
             mViewHolder.btnClickOrLong.setEnabled(false);
         else
             mViewHolder.btnClickOrLong.setEnabled(true);
+    }
+
+    /**
+     * 赋值时间长度，目前用于分段录制
+     */
+    public void setData(ArrayList<Long> videoTimes) {
+        mViewHolder.btnClickOrLong.setCurrentTime(videoTimes);
     }
 
     public class ViewHolder {

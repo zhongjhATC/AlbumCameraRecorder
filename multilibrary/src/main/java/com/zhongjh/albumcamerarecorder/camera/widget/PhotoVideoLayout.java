@@ -1,8 +1,10 @@
 package com.zhongjh.albumcamerarecorder.camera.widget;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -19,12 +21,17 @@ public class PhotoVideoLayout extends OperationLayout {
 
     private RecordListener mRecordListener;
 
+
     /**
      * 操作按钮的Listener
      */
     public interface RecordListener {
 
-        void sectionRecord();
+        /**
+         *
+         * @param tag 0代表当前是快拍默认录制模式，1代表当前是分段录制模式
+         */
+        void sectionRecord(String tag);
 
     }
 
@@ -52,6 +59,18 @@ public class PhotoVideoLayout extends OperationLayout {
     @Override
     protected void initListener() {
         super.initListener();
-        mViewHolder.tvSectionRecord.setOnClickListener(v -> mRecordListener.sectionRecord());
+        mViewHolder.tvSectionRecord.setOnClickListener(v -> {
+            // 判断当前类型，默认是默认录音模式
+            if (mViewHolder.tvSectionRecord.getTag() == null || mViewHolder.tvSectionRecord.getTag().equals("0")) {
+                // 切换分段录制模式
+                mViewHolder.tvSectionRecord.setTag("1");
+                mViewHolder.tvSectionRecord.setText(getResources().getString(R.string.section_to_record));
+            } else {
+                // 切换默认的快拍录制模式
+                mViewHolder.tvSectionRecord.setTag("0");
+                mViewHolder.tvSectionRecord.setText(getResources().getString(R.string.default_to_record));
+            }
+            mRecordListener.sectionRecord(mViewHolder.tvSectionRecord.getTag().toString());
+        });
     }
 }

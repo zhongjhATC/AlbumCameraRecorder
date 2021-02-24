@@ -13,6 +13,7 @@
     <string name="photo_grid_capture">拍一张</string>
     <string name="empty_text">还没有图片或视频</string>
     <string name="section_to_record">分段录制</string>
+    <string name="default_to_record">快拍录制</string>
 
 
     <string name="error_over_count_default">您已经达到最大选择数量</string>

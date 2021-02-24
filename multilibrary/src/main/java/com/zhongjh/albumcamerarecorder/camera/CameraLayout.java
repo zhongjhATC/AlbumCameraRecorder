@@ -31,7 +31,6 @@ import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.VideoResult;
 import com.otaliastudios.cameraview.controls.Flash;
-import com.otaliastudios.cameraview.controls.Preview;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
@@ -52,7 +51,6 @@ import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
-import com.zhongjh.imageedit.IMGEditActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +74,6 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_DEFAU
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_SHORT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
-import static com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity.REQ_IMAGE_EDIT;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
 /**
@@ -110,6 +107,8 @@ public class CameraLayout extends RelativeLayout {
     private boolean mIsShort; // 是否短时间录制
 
     private boolean mIsSectionRecord; // 是否分段录制
+    private ArrayList<String> mVideoPaths = new ArrayList<>(); // 处于分段录制模式下的视频的文件列表
+    private ArrayList<Long> mVideoTimes = new ArrayList<>(); // 处于分段录制模式下的视频的时间列表
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -309,6 +308,14 @@ public class CameraLayout extends RelativeLayout {
                 Log.d(TAG, "onLongClickEnd " + time);
                 // 录像结束
                 stopRecord(false);
+                // 判断模式
+                if (!mIsSectionRecord) {
+                    // 分段录制留着按钮可以继续录制视频
+                    mViewHolder.pvLayout.hideBtnClickOrLong();
+                } else {
+                    mVideoTimes.add(time);
+                }
+                mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
                 if (mClickOrLongListener != null)
                     mClickOrLongListener.onLongClickEnd(time);
             }
@@ -362,13 +369,8 @@ public class CameraLayout extends RelativeLayout {
             }
         });
 
-        // 录制事件监听，目前只有一个，点击分段录制
-        mViewHolder.pvLayout.setRecordListener(new PhotoVideoLayout.RecordListener() {
-            @Override
-            public void sectionRecord() {
-
-            }
-        });
+        // 录制界面按钮事件监听，目前只有一个，点击分段录制
+        mViewHolder.pvLayout.setRecordListener(tag -> mIsSectionRecord = tag.equals("1"));
 
         // 拍照监听
         mViewHolder.cameraView.addCameraListener(new CameraListener() {
@@ -389,9 +391,16 @@ public class CameraLayout extends RelativeLayout {
                 super.onVideoTaken(result);
                 // 判断是否短时间结束
                 if (!mIsShort) {
-                    // 如果录制结束，播放该视频
-                    playVideo(result.getFile());
-                    Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
+                    if (!mIsSectionRecord) {
+                        // 如果录制结束，播放该视频
+                        playVideo(result.getFile());
+                        Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
+                    } else {
+                        // 加入视频列表
+                        mVideoPaths.add(result.getFile().getPath());
+                        // 显示当前进度
+                        mViewHolder.pvLayout.setData(mVideoTimes);
+                    }
                 } else {
                     Log.d(TAG, "onVideoTaken delete " + mVideoFile.getPath());
                     FileUtil.deleteFile(mVideoFile);
@@ -415,7 +424,6 @@ public class CameraLayout extends RelativeLayout {
             }
 
         });
-
 
         // 关闭事件
         mViewHolder.imgClose.setOnClickListener(v -> {
@@ -704,7 +712,7 @@ public class CameraLayout extends RelativeLayout {
                     mViewHolder.imgPhoto, bitmapData.getUri());
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();
-            mViewHolder.pvLayout.startOperaeBtnAnimator();
+            mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
             mPhotoFile = file;
 
             // 设置当前模式是图片模式
