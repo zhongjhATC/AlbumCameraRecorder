@@ -65,6 +65,7 @@ dependencies {
     implementation project(path: ':multilibrary')
     implementation project(path: ':progresslibrary')
     implementation project(path: ':imageedit')
+    implementation project(path: ':videoedit')
     implementation project(':albumCameraRecorderCommon')
     implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.1'
 

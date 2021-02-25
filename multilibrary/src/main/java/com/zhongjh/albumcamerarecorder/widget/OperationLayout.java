@@ -67,6 +67,11 @@ public abstract class OperationLayout extends FrameLayout {
 
     private boolean mIsFirst = true; // 是否第一次
 
+    // 按钮左右分开移动动画
+    ObjectAnimator mAnimatorConfirm;
+    ObjectAnimator mAnimatorCancel;
+    AnimatorSet mAnimatorSet = new AnimatorSet();
+
     protected abstract ViewHolder newViewHolder();
 
     public OperationLayout(@NonNull Context context) {
@@ -100,6 +105,9 @@ public abstract class OperationLayout extends FrameLayout {
         setWillNotDraw(false);
 
         mViewHolder = newViewHolder();
+
+        mAnimatorConfirm = ObjectAnimator.ofFloat(mViewHolder.btnConfirm, "translationX", -mLayoutWidth / 4, 0);
+        mAnimatorCancel = ObjectAnimator.ofFloat(mViewHolder.btnCancel, "translationX", mLayoutWidth / 4, 0);
 
         // 默认隐藏
         mViewHolder.btnCancel.setVisibility(GONE);
@@ -194,11 +202,8 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnCancel.setClickable(false);
 
         // 显示动画
-        ObjectAnimator animatorConfirm = ObjectAnimator.ofFloat(mViewHolder.btnConfirm, "translationX", -mLayoutWidth / 4, 0);
-        ObjectAnimator animatorCancel = ObjectAnimator.ofFloat(mViewHolder.btnCancel, "translationX", mLayoutWidth / 4, 0);
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(animatorCancel, animatorConfirm);
-        set.addListener(new AnimatorListenerAdapter() {
+        mAnimatorSet.playTogether(mAnimatorCancel, mAnimatorConfirm);
+        mAnimatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
@@ -207,8 +212,8 @@ public abstract class OperationLayout extends FrameLayout {
                 mViewHolder.btnCancel.setClickable(true);
             }
         });
-        set.setDuration(300);
-        set.start();
+        mAnimatorSet.setDuration(300);
+        mAnimatorSet.start();
     }
 
     /**
@@ -331,6 +336,13 @@ public abstract class OperationLayout extends FrameLayout {
      */
     public void setData(ArrayList<Long> videoTimes) {
         mViewHolder.btnClickOrLong.setCurrentTime(videoTimes);
+    }
+
+    /**
+     * 刷新点击长按按钮
+     */
+    public void invalidateClickOrLongButton() {
+        mViewHolder.btnClickOrLong.invalidate();
     }
 
     public class ViewHolder {

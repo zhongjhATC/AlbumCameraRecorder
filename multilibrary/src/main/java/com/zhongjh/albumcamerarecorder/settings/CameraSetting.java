@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi;
 
+import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
 import gaode.zhongjh.com.common.enums.MimeType;
 
 import java.util.Set;
@@ -35,6 +36,12 @@ public final class CameraSetting implements CameraSettingApi {
     @Override
     public CameraSetting minDuration(int minDuration) {
         mCameraSpec.minDuration = minDuration;
+        return this;
+    }
+
+    @Override
+    public CameraSetting videoEdit(VideoEditCoordinator videoEditManager) {
+        mCameraSpec.videoEditCoordinator = videoEditManager;
         return this;
     }
 

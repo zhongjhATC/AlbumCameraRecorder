@@ -8,6 +8,7 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 
 import java.util.Set;
 
+import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
 import gaode.zhongjh.com.common.enums.MimeType;
 
 /**
@@ -40,6 +41,11 @@ public interface CameraSettingApi {
      * @return {@link GlobalSetting} for fluent API.
      */
     CameraSetting minDuration(int minDuration);
+
+    /**
+     * 启动视频编辑功能，目前只有视频分段录制，后续会增加
+     */
+    CameraSetting videoEdit(VideoEditCoordinator videoEditManager);
 
     /**
      * 更换 切换前置/后置摄像头图标资源

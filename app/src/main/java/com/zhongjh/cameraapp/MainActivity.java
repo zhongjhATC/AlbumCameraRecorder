@@ -19,10 +19,12 @@ import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
+import com.zhongjh.videoedit.VideoEditManager;
 
 import java.util.ArrayList;
 import java.util.Set;
 
+import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
@@ -129,6 +131,7 @@ public class MainActivity extends BaseActivity {
         cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));// 最长录制时间
         cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()));// 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
 
+        cameraSetting.videoEdit(new VideoEditManager()); // 启动这个即可开启视频编辑功能
         // endregion 拍摄有关设置
 
         //  region 相册

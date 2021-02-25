@@ -82,6 +82,7 @@ public class ClickOrLongButton extends View {
     private static final int RECORD_ENDED = 2;       // 结束状态
 
     private int mButtonState;        // 按钮可执行的功能状态（拍照,录制,两者）
+    private boolean mIsSectionMode; // 是否分段录制的模式
 
     private float event_Y;  // Touch_Event_Down时候记录的Y值
 
@@ -120,11 +121,13 @@ public class ClickOrLongButton extends View {
                 centerCirclePaint.setColor(colorRecord);
                 outMostWhiteCirclePaint.setColor(colorRoundBorder);
                 percentInDegree = (360.0F * percent);
+                if (mIsSectionMode)
+                    if (mCurrentLocation.size() > 0 || (timeLapse - TIME_TO_START_RECORD) >= mMinDuration)
+                        mCurrentSumNumberDegrees = percentInDegree;
 
                 Log.d(TAG, "timeLapse:" + timeLapse);
                 Log.d(TAG, "percent:" + percent);
                 Log.d(TAG, "percentInDegree:" + percentInDegree);
-
 
                 if (percent <= 1.0F) {
                     if (percent <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
@@ -272,7 +275,8 @@ public class ClickOrLongButton extends View {
 
         // 静止状态时的外圈进度
         canvas.drawArc(outMostCircleRect, startAngle270, mCurrentSumNumberDegrees, false, outProcessCirclePaint);
-        Log.d(TAG, "静止状态 " + mCurrentSumNumberDegrees);
+        Log.d(TAG, "onDraw percentInDegree" + percentInDegree);
+        Log.d(TAG, "onDraw mCurrentSumNumberDegrees" + mCurrentSumNumberDegrees);
 
         // 从这个顺序来看，即是从270为开始
         for (Float item : mCurrentLocation) {
@@ -439,8 +443,13 @@ public class ClickOrLongButton extends View {
             Log.d(TAG, "setCurrentTime mCurrentSumTime " + mCurrentSumTime);
             Log.d(TAG, "setCurrentTime mCurrentSumNumberDegrees " + mCurrentSumNumberDegrees);
         }
+    }
 
-        invalidate();
+    /**
+     * 设置是否分段模式，分段录制的动画稍微不一样
+     */
+    public void setSectionMode(boolean isSectionMode) {
+        this.mIsSectionMode = isSectionMode;
     }
 
     /**

@@ -1,3 +1,4 @@
+include ':videoedit'
 include ':imageedit'
 include ':app', ':multilibrary', ':progresslibrary'
 include ':albumCameraRecorderCommon'

@@ -371,7 +371,6 @@ public class PhotoVideoButton extends View {
         set.start();
     }
 
-
     // region 对外方法
 
     /**
