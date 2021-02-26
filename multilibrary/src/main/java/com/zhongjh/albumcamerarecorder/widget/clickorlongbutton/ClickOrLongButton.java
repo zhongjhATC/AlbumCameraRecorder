@@ -33,7 +33,6 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STA
 public class ClickOrLongButton extends View {
 
     private static final String TAG = "ClickOrLongButton";
-    private static final long TIME_TO_START_RECORD = 1000L; // 500毫秒后启动录制
     private float timeLimitInMils = 10000.0F;       // 录制时间
     private final ArrayList<Float> mCurrentLocation = new ArrayList<>();// 当前录制位置集，计算时间后的百分比
     private Float mCurrentSumNumberDegrees = 0F; // 当前录制的节点，以360度为单位
@@ -84,12 +83,15 @@ public class ClickOrLongButton extends View {
     private int mButtonState;        // 按钮可执行的功能状态（拍照,录制,两者）
     private boolean mIsSectionMode; // 是否分段录制的模式
 
-    private float event_Y;  // Touch_Event_Down时候记录的Y值
 
     private TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
         public void run() {
+            if (mIsSectionMode && mCurrentLocation.size() > 0) {
+                // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
+                mMinDuration = 0;
+            }
             long timeLapse = System.currentTimeMillis() - btnPressTime;
-            mRecordedTime = (timeLapse - TIME_TO_START_RECORD);
+            mRecordedTime = (timeLapse - mMinDuration);
             mRecordedTime = mRecordedTime + mCurrentSumTime;
             float percent = mRecordedTime / timeLimitInMils;
             Log.d(TAG, "mCurrentSumTime " + mCurrentSumTime);
@@ -102,7 +104,7 @@ public class ClickOrLongButton extends View {
                 }
             }
 
-            if (timeLapse >= TIME_TO_START_RECORD) {
+            if (timeLapse >= mMinDuration) {
                 synchronized (ClickOrLongButton.this) {
                     if (recordState == RECORD_NOT_STARTED) {
                         recordState = RECORD_STARTED;
@@ -122,7 +124,7 @@ public class ClickOrLongButton extends View {
                 outMostWhiteCirclePaint.setColor(colorRoundBorder);
                 percentInDegree = (360.0F * percent);
                 if (mIsSectionMode)
-                    if (mCurrentLocation.size() > 0 || (timeLapse - TIME_TO_START_RECORD) >= mMinDuration)
+                    if (mCurrentLocation.size() > 0 || (timeLapse - mMinDuration) >= mMinDuration)
                         mCurrentSumNumberDegrees = percentInDegree;
 
                 Log.d(TAG, "timeLapse:" + timeLapse);
@@ -299,8 +301,6 @@ public class ClickOrLongButton extends View {
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-
-                event_Y = event.getY(); // 记录Y值
                 Log.d(TAG, "onTouchEvent: down");
                 // 禁止长按方式
                 if (mClickOrLongListener != null
