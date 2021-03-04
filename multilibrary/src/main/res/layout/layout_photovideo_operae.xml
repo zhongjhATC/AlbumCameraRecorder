@@ -32,6 +32,19 @@
         tools:visibility="visible" />
 
     <!-- 右侧的确认按钮  -->
+<!--    <com.zhongjh.circularprogressview.CircularProgress-->
+<!--        android:id="@+id/btnConfirm"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/guideline88"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/guideline72"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"-->
+<!--        app:type="confirm"-->
+<!--        tools:visibility="visible" />-->
+
+
     <com.zhongjh.albumcamerarecorder.widget.OperationButton
         android:id="@+id/btnConfirm"
         android:layout_width="0dp"
