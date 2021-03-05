@@ -16,5 +16,9 @@
 
 
     <color name="operation_background">#EEDCDCDC</color>
+    <color name="operation_background_end">#99ffffff</color>
+    <color name="operation_background_pressed">#66000000</color>
+    <color name="operation_background_pressed_end">#cc000000</color>
+    <color name="operation_stroke">#ffffffff</color>
 
 </resources>

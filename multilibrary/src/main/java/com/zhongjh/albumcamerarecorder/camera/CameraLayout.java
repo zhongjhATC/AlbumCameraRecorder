@@ -410,6 +410,7 @@ public class CameraLayout extends RelativeLayout {
             @Override
             public void doneProgress() {
                 // 打开视频界面
+
             }
         });
 
