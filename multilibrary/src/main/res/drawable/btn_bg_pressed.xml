@@ -6,11 +6,11 @@
     <!-- 矩形的填充色 -->
     <solid android:color="@color/operation_background_pressed" />
 
-    <!-- 渐变颜色 -->
-    <gradient
-        android:startColor="@color/operation_background_pressed"
-        android:endColor="@color/operation_background_pressed_end"
-        android:type="linear" />
+<!--    &lt;!&ndash; 渐变颜色 &ndash;&gt;-->
+<!--    <gradient-->
+<!--        android:startColor="@color/operation_background_pressed"-->
+<!--        android:endColor="@color/operation_background_pressed_end"-->
+<!--        android:type="linear" />-->
 
     <!-- 矩形的边框的宽度,每段虚线的长度，和两段虚线之间的颜色和颜色
         android:dashGap="4dp" 虚线-->
