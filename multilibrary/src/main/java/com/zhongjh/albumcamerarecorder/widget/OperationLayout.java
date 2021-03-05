@@ -19,6 +19,8 @@ import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DisplayMetricsSPUtils;
 import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton;
+import com.zhongjh.circularprogressview.CircularProgress;
+import com.zhongjh.circularprogressview.CircularProgressListener;
 
 import java.util.ArrayList;
 
@@ -40,9 +42,30 @@ public abstract class OperationLayout extends FrameLayout {
      */
     public interface OperaeListener {
 
+        /**
+         * 取消
+         */
         void cancel();
 
+        /**
+         * 确认
+         */
         void confirm();
+
+        /**
+         * 开始进度操作，目前只用于分段录制
+         */
+        void startProgress();
+
+        /**
+         * 取消进度操作，目前只用于分段录制
+         */
+        void stopProgress();
+
+        /**
+         * 进度完成
+         */
+        void doneProgress();
 
     }
 
@@ -111,7 +134,14 @@ public abstract class OperationLayout extends FrameLayout {
 
         // 默认隐藏
         mViewHolder.btnCancel.setVisibility(GONE);
-        mViewHolder.btnConfirm.setVisibility(GONE);
+        mViewHolder.btnConfirm.setVisibility(INVISIBLE);
+
+        // 定制样式
+        mViewHolder.btnConfirm.setPrimaryColor(R.color.operation_background); // 修改主色调
+        mViewHolder.btnConfirm.setFullStyle(true); // 修改成铺满样式
+        mViewHolder.btnConfirm.setFunctionImage(R.drawable.ic_baseline_done,
+                R.drawable.avd_done_to_stop, R.drawable.avd_stop_to_done); // 修改图片
+        mViewHolder.btnConfirm.setFullProgressColor(R.color.click_button_inner_circle_no_operation_interval); // 修改进度颜色
 
         initListener();
     }
@@ -175,10 +205,31 @@ public abstract class OperationLayout extends FrameLayout {
         });
 
         // 提交事件
-        mViewHolder.btnConfirm.setOnClickListener(v -> {
-            if (mOperaeListener != null)
-                mOperaeListener.confirm();
-            startTipAlphaAnimation();
+        mViewHolder.btnConfirm.setCircularProgressListener(new CircularProgressListener() {
+            @Override
+            public void onStart() {
+                if (mOperaeListener != null)
+                    mOperaeListener.startProgress();
+            }
+
+            @Override
+            public void onDone() {
+                if (mOperaeListener != null)
+                    mOperaeListener.doneProgress();
+            }
+
+            @Override
+            public void onStop() {
+                if (mOperaeListener != null)
+                    mOperaeListener.stopProgress();
+            }
+
+            @Override
+            public void onClick() {
+                if (mOperaeListener != null)
+                    mOperaeListener.confirm();
+                startTipAlphaAnimation();
+            }
         });
     }
 
@@ -304,7 +355,7 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnClickOrLong.resetState();
         // 隐藏第二层的view
         mViewHolder.btnCancel.setVisibility(View.GONE);
-        mViewHolder.btnConfirm.setVisibility(View.GONE);
+        mViewHolder.btnConfirm.setVisibility(View.INVISIBLE);
         // 显示第一层的view
         mViewHolder.btnClickOrLong.setVisibility(View.VISIBLE);
     }
@@ -345,10 +396,17 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnClickOrLong.invalidate();
     }
 
+    /**
+     * 是否启用进度模式
+     */
+    public void setProgressMode(boolean isProgress) {
+        mViewHolder.btnConfirm.setProgressMode(isProgress);
+    }
+
     public class ViewHolder {
         View rootView;
         OperationButton btnCancel;
-        public OperationButton btnConfirm;
+        public CircularProgress btnConfirm;
         public ClickOrLongButton btnClickOrLong;
         TextView tvTip;
         public TextView tvSectionRecord;

@@ -44,6 +44,8 @@
     <!-- region 录像 -->
     <string name="path_square">M 35,43 v 34 A 8 8 0 0 0 43,85 h 34 A 8 8 0 0 0 85 77 v -34 A 8 8 0 0 0 77 35 h -34 A 8 8 0 0 0 35 43</string>
     <string name="path_circle">M 0 60 v 0 A 60 60 0 0 0 60 120 h 0 A 60 60 0 0 0 120 60 v 0 A 60 60 0 0 0 60 0 h 0 A 60 60 0 0 0 0 60</string>
+    <string name="ic_baseline_done">M 3.4 13.4 L 9 19 L 21 7 L 19.6 5.6 L 9 16.2 L 9 16.2 L 4.8 12 L 3.4 13.4</string> <!-- 第一个和完成都是用该图 -->
+    <string name="ic_baseline_stop">M 6 6 L 6 18 L 18 18 L 18 6 L 14.898 6 L 11.878 6 L 8.939 6 L 6 6</string><!-- 暂停图片 -->
     <string name="delete_button">删除按钮</string>
     <string name="play_button">播放按钮</string>
     <string name="choose_to_click_to_confirm_these">选择了才可以点击确认这些</string>

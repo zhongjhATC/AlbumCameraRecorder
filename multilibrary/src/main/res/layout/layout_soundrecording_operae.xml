@@ -32,11 +32,11 @@
         tools:visibility="visible" />
 
     <!-- 右侧的确认按钮  -->
-    <com.zhongjh.albumcamerarecorder.widget.OperationButton
+    <com.zhongjh.circularprogressview.CircularProgress
         android:id="@+id/btnConfirm"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_height="0dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
         app:layout_constraintEnd_toStartOf="@+id/guideline88"
         app:layout_constraintStart_toStartOf="@+id/guideline72"
@@ -91,15 +91,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.12" />
+        app:layout_constraintGuide_percent="0.10" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline28"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.28" />
-
+        app:layout_constraintGuide_percent="0.29" />
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -107,14 +106,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.72" />
+        app:layout_constraintGuide_percent="0.71" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline88"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.88" />
+        app:layout_constraintGuide_percent="0.90" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

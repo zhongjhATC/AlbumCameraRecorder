@@ -212,6 +212,16 @@ public class SoundRecordingFragment extends BaseFragment {
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
             }
+
+            @Override
+            public void startProgress() {
+
+            }
+
+            @Override
+            public void stopProgress() {
+
+            }
         });
     }
 

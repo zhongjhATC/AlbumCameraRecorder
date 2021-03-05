@@ -1,0 +1,30 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/ic_baseline_stop">
+
+    <!-- 旋转动画 -->
+    <target android:name="pathGroup">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="300"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="rotation"
+                android:valueFrom="-180"
+                android:valueTo="0" />
+        </aapt:attr>
+    </target>
+
+    <!-- 暂停到播放的动画 -->
+    <target android:name="path">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="250"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="pathData"
+                android:valueFrom="@string/ic_baseline_stop"
+                android:valueTo="@string/ic_baseline_done"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+
+</animated-vector>

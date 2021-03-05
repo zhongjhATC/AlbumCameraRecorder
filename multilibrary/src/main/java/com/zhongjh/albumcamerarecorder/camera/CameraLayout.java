@@ -108,8 +108,8 @@ public class CameraLayout extends RelativeLayout {
     private boolean mIsShort; // 是否短时间录制
 
     private boolean mIsSectionRecord; // 是否分段录制
-    private ArrayList<String> mVideoPaths = new ArrayList<>(); // 处于分段录制模式下的视频的文件列表
-    private ArrayList<Long> mVideoTimes = new ArrayList<>(); // 处于分段录制模式下的视频的时间列表
+    private final ArrayList<String> mVideoPaths = new ArrayList<>(); // 处于分段录制模式下的视频的文件列表
+    private final ArrayList<Long> mVideoTimes = new ArrayList<>(); // 处于分段录制模式下的视频的时间列表
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -208,8 +208,12 @@ public class CameraLayout extends RelativeLayout {
         mViewHolder = new ViewHolder(view);
 
         // 如果没启动视频编辑，隐藏分段录制功能
-        if (mCameraSpec.videoEditCoordinator == null)
+        if (mCameraSpec.videoEditCoordinator == null) {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+        }
+
+        // 默认是快拍录制模式
+        mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(false);
 
         // 初始化cameraView
 
@@ -374,42 +378,61 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void confirm() {
+                // 根据不同状态处理相应的事件
+                if (getState() == Constants.STATE_PICTURE) {
+                    // 图片模式的提交
+                    confirmState(TYPE_PICTURE);
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                } else if (getState() == Constants.STATE_VIDEO) {
+                    confirmState(TYPE_VIDEO);
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                } else if (getState() == Constants.STATE_PICTURE_PREVIEW) {
+                    // 图片模式的提交
+                    confirmState(TYPE_PICTURE);
+                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                }
+            }
+
+            @Override
+            public void startProgress() {
                 if (mIsSectionRecord) {
                     // 合并视频
                     mCameraSpec.videoEditCoordinator.merge(mVideoMediaStoreCompat.getFilePath(1).getPath(), mVideoPaths,
                             mContext.getCacheDir().getPath() + File.separator + "cam.txt");
-                } else {
-                    // 根据不同状态处理相应的事件
-                    if (getState() == Constants.STATE_PICTURE) {
-                        // 图片模式的提交
-                        confirmState(TYPE_PICTURE);
-                        setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                    } else if (getState() == Constants.STATE_VIDEO) {
-                        confirmState(TYPE_VIDEO);
-                        setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                    } else if (getState() == Constants.STATE_PICTURE_PREVIEW) {
-                        // 图片模式的提交
-                        confirmState(TYPE_PICTURE);
-                        setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                    }
                 }
+            }
+
+            @Override
+            public void stopProgress() {
+                mCameraSpec.videoEditCoordinator.onDestroy();
+            }
+
+            @Override
+            public void doneProgress() {
+                // 打开视频界面
             }
         });
 
         // 录制界面按钮事件监听，目前只有一个，点击分段录制
-        mViewHolder.pvLayout.setRecordListener(tag -> mIsSectionRecord = tag.equals("1"));
+        mViewHolder.pvLayout.setRecordListener(tag -> {
+            mIsSectionRecord = tag.equals("1");
+            mViewHolder.pvLayout.setProgressMode(mIsSectionRecord);
+        });
 
         // 视频编辑后的事件，目前只有分段录制后合并
         if (mCameraSpec.videoEditCoordinator != null)
             mCameraSpec.videoEditCoordinator.setVideoEditListener(new VideoEditListener() {
                 @Override
                 public void onFinish() {
-                    Log.d(TAG, "onFinish");
+                    mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(100);
                 }
 
                 @Override
                 public void onProgress(int progress, long progressTime) {
-                    Log.d(TAG, "onProgress " + progress + " " + progressTime);
+                    if (progress >= 100)
+                        mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(99);
+                    else
+                        mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(progress);
                 }
 
                 @Override
@@ -522,6 +545,8 @@ public class CameraLayout extends RelativeLayout {
     protected void onDestroy() {
         LogUtil.i("CameraLayout destroy");
         mViewHolder.cameraView.destroy();
+        mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
+        mCameraSpec.videoEditCoordinator.onDestroy();
     }
 
     /**
@@ -550,7 +575,7 @@ public class CameraLayout extends RelativeLayout {
             mViewHolder.vLine2.setVisibility(View.GONE);
 
             // 隐藏右侧按钮
-            mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
+            mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.INVISIBLE);
 
             // 恢复长按事件，即重新启用录像
             mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
