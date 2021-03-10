@@ -80,7 +80,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         mBtnConfirm.setOnClickListener(v -> {
             Intent intent = new Intent();
             // 加入视频到android系统库里面
-            Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), mFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory);
+            Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), mFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
             intent.putExtra("path", mPath);
             intent.putExtra("uri", mediaUri);
             setResult(RESULT_OK, intent);

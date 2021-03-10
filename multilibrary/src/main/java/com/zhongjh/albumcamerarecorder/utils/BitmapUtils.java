@@ -39,6 +39,7 @@ import java.util.Locale;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.FileUtil;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
@@ -59,7 +60,7 @@ public class BitmapUtils {
      * @param file    要保存的文件
      * @param type    mp4 jpeg
      */
-    public static Uri displayToGallery(Context context, File file, int type, String directory) {
+    public static Uri displayToGallery(Context context, File file, int type, String directory, MediaStoreCompat mediaStoreCompat) {
         if (file == null || !file.exists()) {
             return null;
         }
@@ -111,7 +112,7 @@ public class BitmapUtils {
             return uri;
         } else {
             String photoPath = file.getAbsolutePath();
-            uri = Uri.parse("file://" + photoPath);
+            uri = mediaStoreCompat.getUri(photoPath);
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
             return uri;
         }

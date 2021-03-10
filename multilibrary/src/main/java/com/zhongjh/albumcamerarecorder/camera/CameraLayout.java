@@ -676,7 +676,7 @@ public class CameraLayout extends RelativeLayout {
                 // 录视频完成
                 stopVideo();    // 停止播放
                 // 加入视频到android系统库里面
-                Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory);
+                Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory,mVideoMediaStoreCompat);
                 if (mOperaeCameraListener != null) {
                     mOperaeCameraListener.recordSuccess(mVideoFile.getPath(), mediaUri);
                 }
@@ -690,7 +690,7 @@ public class CameraLayout extends RelativeLayout {
                     mOperaeCameraListener.captureSuccess(paths, uris);
                     // 加入图片到android系统库里面
                     for (BitmapData value : mCaptureBitmaps.values()) {
-                        BitmapUtils.displayToGallery(getContext(), new File(value.getPath()), TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory);
+                        BitmapUtils.displayToGallery(getContext(), new File(value.getPath()), TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory,mPictureMediaStoreCompat);
                     }
                 }
                 break;
