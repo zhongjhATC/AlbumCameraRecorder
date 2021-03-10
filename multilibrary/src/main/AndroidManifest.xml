@@ -25,6 +25,10 @@
             android:name=".preview.AlbumPreviewActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".camera.PreviewVideoActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
 
         <service android:name=".recorder.service.RecordingService" />
 

@@ -1,8 +1,10 @@
 package com.zhongjh.albumcamerarecorder;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -39,9 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mSpec = GlobalSpec.getInstance();
         setTheme(mSpec.themeId);
-
         StatusBarUtils.initStatusBar(MainActivity.this);
-
         super.onCreate(savedInstanceState);
         // @@确认是否进行了配置
         if (!mSpec.hasInited) {

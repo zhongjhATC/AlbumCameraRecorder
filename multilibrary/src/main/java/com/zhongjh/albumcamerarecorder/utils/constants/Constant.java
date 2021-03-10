@@ -5,6 +5,7 @@ public class Constant {
     public static final int REQUEST_CODE_PREVIEW = 23;     // 相册的预览
     private static final int REQUEST_CODE_CAPTURE = 24;     // 相册的拍照（作废）
     public static final int REQUEST_CODE_PREVIEW_CAMRRA = 25;     // 录制的预览
+    public static final int REQUEST_CODE_PREVIEW_VIDEO = 26;     // 合成视频录制的预览
 
     public static final String EXTRA_MULTIMEDIA_TYPES = "extra_multimedia_types";               // 返回的多媒体类型
     public static final String EXTRA_MULTIMEDIA_CHOICE = "extra_multimedia_choice";             // 标记是否通过相册选择获取的

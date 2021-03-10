@@ -136,12 +136,19 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnCancel.setVisibility(GONE);
         mViewHolder.btnConfirm.setVisibility(INVISIBLE);
 
-        // 定制样式
+        // 定制样式 .确认按钮
         mViewHolder.btnConfirm.setPrimaryColor(R.color.operation_background); // 修改主色调
         mViewHolder.btnConfirm.setFullStyle(true); // 修改成铺满样式
         mViewHolder.btnConfirm.setFunctionImage(R.drawable.ic_baseline_done,
                 R.drawable.avd_done_to_stop, R.drawable.avd_stop_to_done); // 修改图片
         mViewHolder.btnConfirm.setFullProgressColor(R.color.click_button_inner_circle_no_operation_interval); // 修改进度颜色
+
+        // 定制样式 .取消按钮
+        mViewHolder.btnCancel.setPrimaryColor(R.color.operation_background); // 修改主色调
+        mViewHolder.btnCancel.setFullStyle(true); // 修改成铺满样式
+        mViewHolder.btnCancel.setFunctionImage(R.drawable.ic_baseline_undo_24,
+                R.drawable.avd_done_to_stop, R.drawable.avd_stop_to_done); // 修改图片
+        mViewHolder.btnCancel.setProgressMode(false); // 取消进度模式
 
         initListener();
     }
@@ -198,10 +205,29 @@ public abstract class OperationLayout extends FrameLayout {
         });
 
         // 返回事件
-        mViewHolder.btnCancel.setOnClickListener(v -> {
-            if (mOperaeListener != null)
-                mOperaeListener.cancel();
-            startTipAlphaAnimation();
+        mViewHolder.btnCancel.setCircularProgressListener(new CircularProgressListener() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onDone() {
+
+            }
+
+            @Override
+            public void onStop() {
+
+            }
+
+            @Override
+            public void onClick() {
+                if (mOperaeListener != null)
+                    mOperaeListener.cancel();
+                startTipAlphaAnimation();
+            }
         });
 
         // 提交事件
@@ -403,9 +429,23 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnConfirm.setProgressMode(isProgress);
     }
 
+    /**
+     * @return 获取当前是否进度模式
+     */
+    public boolean getProgressMode() {
+        return mViewHolder.btnConfirm.mIsProgress;
+    }
+
+    /**
+     * 重置btnConfirm
+     */
+    public void resetConfim () {
+        mViewHolder.btnConfirm.reset();
+    }
+
     public class ViewHolder {
         View rootView;
-        OperationButton btnCancel;
+        CircularProgress btnCancel;
         public CircularProgress btnConfirm;
         public ClickOrLongButton btnClickOrLong;
         TextView tvTip;

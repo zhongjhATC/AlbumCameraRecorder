@@ -48,6 +48,7 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MUL
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
+import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
 
 /**
  * 拍摄视频
@@ -251,6 +252,20 @@ public class CameraFragment extends BaseFragment {
                     // 刷新多个图片
                     mCameraLayout.refreshMultiPhoto(selected);
                 }
+                break;
+            case REQUEST_CODE_PREVIEW_VIDEO:
+                ArrayList<String> arrayList = new ArrayList<>();
+                arrayList.add(data.getStringExtra("path"));
+                ArrayList<Uri> arrayListUri = new ArrayList<>();
+                arrayListUri.add(data.getParcelableExtra("uri"));
+                // 获取视频路径
+                Intent result = new Intent();
+                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
+                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
+                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
+                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
+                mActivity.setResult(RESULT_OK, result);
+                mActivity.finish();
                 break;
             case REQ_IMAGE_EDIT:
                 mCameraLayout.refreshEditPhoto();

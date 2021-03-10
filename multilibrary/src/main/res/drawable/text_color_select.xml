@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:color="@color/white" android:state_focused="true" />    <!-- 聚焦 -->
+    <item android:color="@color/white" android:state_selected="true" />   <!-- 选择 -->
+    <item android:color="@color/white" android:state_pressed="true" />    <!-- 按下 -->
+    <item android:color="@color/black" />         <!-- 默认颜色 -->
+
+</selector>

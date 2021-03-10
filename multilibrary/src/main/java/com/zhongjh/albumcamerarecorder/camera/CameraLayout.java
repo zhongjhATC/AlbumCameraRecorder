@@ -42,6 +42,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
+import com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -110,6 +111,7 @@ public class CameraLayout extends RelativeLayout {
     private boolean mIsSectionRecord; // 是否分段录制
     private final ArrayList<String> mVideoPaths = new ArrayList<>(); // 处于分段录制模式下的视频的文件列表
     private final ArrayList<Long> mVideoTimes = new ArrayList<>(); // 处于分段录制模式下的视频的时间列表
+    private String mNewSectionVideoPath; // 处于分段录制模式下合成的新的视频
 
     // region 回调监听属性
     private ErrorListener mErrorLisenter;
@@ -378,18 +380,23 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void confirm() {
-                // 根据不同状态处理相应的事件
-                if (getState() == Constants.STATE_PICTURE) {
-                    // 图片模式的提交
-                    confirmState(TYPE_PICTURE);
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                } else if (getState() == Constants.STATE_VIDEO) {
-                    confirmState(TYPE_VIDEO);
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                } else if (getState() == Constants.STATE_PICTURE_PREVIEW) {
-                    // 图片模式的提交
-                    confirmState(TYPE_PICTURE);
-                    setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                if (mIsSectionRecord && mVideoPaths.size() >= 1) {
+                    // 打开新的界面预览视频
+                    PreviewVideoActivity.startActivity(fragment, mNewSectionVideoPath);
+                } else {
+                    // 根据不同状态处理相应的事件
+                    if (getState() == Constants.STATE_PICTURE) {
+                        // 图片模式的提交
+                        confirmState(TYPE_PICTURE);
+                        setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                    } else if (getState() == Constants.STATE_VIDEO) {
+                        confirmState(TYPE_VIDEO);
+                        setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                    } else if (getState() == Constants.STATE_PICTURE_PREVIEW) {
+                        // 图片模式的提交
+                        confirmState(TYPE_PICTURE);
+                        setState(Constants.STATE_PREVIEW); // 设置空闲状态
+                    }
                 }
             }
 
@@ -397,7 +404,8 @@ public class CameraLayout extends RelativeLayout {
             public void startProgress() {
                 if (mIsSectionRecord) {
                     // 合并视频
-                    mCameraSpec.videoEditCoordinator.merge(mVideoMediaStoreCompat.getFilePath(1).getPath(), mVideoPaths,
+                    mNewSectionVideoPath = mVideoMediaStoreCompat.getFilePath(1).getPath();
+                    mCameraSpec.videoEditCoordinator.merge(mNewSectionVideoPath, mVideoPaths,
                             mContext.getCacheDir().getPath() + File.separator + "cam.txt");
                 }
             }
@@ -409,8 +417,8 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void doneProgress() {
-                // 打开视频界面
-
+                // 取消进度模式
+                mViewHolder.pvLayout.setProgressMode(false);
             }
         });
 
@@ -477,6 +485,11 @@ public class CameraLayout extends RelativeLayout {
                         mViewHolder.pvLayout.setData(mVideoTimes);
                         // 创建新的file
                         mVideoFile = mVideoMediaStoreCompat.getFilePath(1);
+                        // 如果是在已经合成的情况下继续拍摄，那就重置状态
+                        if (!mViewHolder.pvLayout.getProgressMode()) {
+                            mViewHolder.pvLayout.setProgressMode(true);
+                            mViewHolder.pvLayout.resetConfim();
+                        }
                     }
                 } else {
                     Log.d(TAG, "onVideoTaken delete " + mVideoFile.getPath());
@@ -547,7 +560,8 @@ public class CameraLayout extends RelativeLayout {
         LogUtil.i("CameraLayout destroy");
         mViewHolder.cameraView.destroy();
         mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
-        mCameraSpec.videoEditCoordinator.onDestroy();
+        if (mCameraSpec.videoEditCoordinator != null)
+            mCameraSpec.videoEditCoordinator.onDestroy();
     }
 
     /**
@@ -662,7 +676,7 @@ public class CameraLayout extends RelativeLayout {
                 // 录视频完成
                 stopVideo();    // 停止播放
                 // 加入视频到android系统库里面
-                Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mPictureMediaStoreCompat.getSaveStrategy().directory);
+                Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory);
                 if (mOperaeCameraListener != null) {
                     mOperaeCameraListener.recordSuccess(mVideoFile.getPath(), mediaUri);
                 }
@@ -954,7 +968,7 @@ public class CameraLayout extends RelativeLayout {
 
         View rootView;
         ChildClickableFrameLayout rlMain;
-        VideoView vvPreview;
+        FullScreenVideoView vvPreview;
         ImageView imgPhoto;
         public ImageView imgFlash;
         public ImageView imgSwitch;

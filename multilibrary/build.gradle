@@ -41,7 +41,7 @@ dependencies {
     api 'com.otaliastudios:cameraview:2.7.0'
 
     // 自制按钮进度
-    api 'com.github.zhongjhATC:CircularProgressView:1.2'
+    api 'com.github.zhongjhATC:CircularProgressView:1.3'
 
     compileOnly project(':albumCameraRecorderCommon')
     compileOnly project(':imageedit')

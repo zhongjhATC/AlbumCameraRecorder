@@ -222,6 +222,11 @@ public class SoundRecordingFragment extends BaseFragment {
             public void stopProgress() {
 
             }
+
+            @Override
+            public void doneProgress() {
+
+            }
         });
     }
 

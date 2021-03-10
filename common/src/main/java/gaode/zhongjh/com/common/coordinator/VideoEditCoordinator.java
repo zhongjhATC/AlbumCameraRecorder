@@ -20,6 +20,10 @@ public class VideoEditCoordinator {
 
     /**
      * 合并视频
+     *
+     * @param newPath 合并后的新视频地址
+     * @param paths   多个视频的集合
+     * @param txtPath 多个视频的集合地址文本，用ffmpeg才能合并
      */
     public void merge(String newPath, ArrayList<String> paths, String txtPath) {
         mVideoEditManager.merge(newPath, paths, txtPath);
