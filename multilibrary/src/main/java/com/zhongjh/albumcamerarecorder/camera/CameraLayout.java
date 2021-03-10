@@ -351,30 +351,19 @@ public class CameraLayout extends RelativeLayout {
             public void cancel() {
                 // 判断是不是分段录制并且超过1个视频
                 if (mIsSectionRecord && mVideoPaths.size() >= 1) {
+                    // 每次删除，后面都要重新合成
+                    mViewHolder.pvLayout.setProgressMode(true);
+                    mViewHolder.pvLayout.resetConfim();
                     // 删除最后一个视频
                     mVideoPaths.remove(mVideoPaths.size() - 1);
                     mVideoTimes.remove(mVideoTimes.size() - 1);
                     // 显示当前进度
                     mViewHolder.pvLayout.setData(mVideoTimes);
                     mViewHolder.pvLayout.invalidateClickOrLongButton();
+                    if (mVideoPaths.size() == 0)
+                        btnCancelOn();
                 } else {
-                    if (mCameraSpec.videoEditCoordinator != null)
-                        mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
-
-                    // 根据不同状态处理相应的事件,多图不需要取消事件（关闭所有图片就自动恢复了）。
-                    if (getState() == Constants.STATE_PICTURE) {
-                        resetState(TYPE_PICTURE);   // 针对图片模式进行的重置
-                        mViewHolder.pvLayout.reset();
-                        setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                    } else if (getState() == Constants.STATE_VIDEO) {
-                        resetState(TYPE_VIDEO);     // 针对arm64-v8a视频模式进行的重置
-                        mViewHolder.pvLayout.reset();
-                        setState(Constants.STATE_PREVIEW); // 设置空闲状态
-                    }
-                    if (mOperaeCameraListener != null)
-                        mOperaeCameraListener.cancel();
-
-                    mViewHolder.rlEdit.setVisibility(View.GONE);
+                    btnCancelOn();
                 }
             }
 
@@ -632,6 +621,29 @@ public class CameraLayout extends RelativeLayout {
 
         mGlobalSpec.imageEngine.loadThumbnail(getContext(), mViewHolder.imgPhoto.getWidth(), mPlaceholder,
                 mViewHolder.imgPhoto, uri);
+    }
+
+    /**
+     * 触发取消按钮的事件
+     */
+    private void btnCancelOn() {
+        if (mCameraSpec.videoEditCoordinator != null)
+            mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
+
+        // 根据不同状态处理相应的事件,多图不需要取消事件（关闭所有图片就自动恢复了）。
+        if (getState() == Constants.STATE_PICTURE) {
+            resetState(TYPE_PICTURE);   // 针对图片模式进行的重置
+            mViewHolder.pvLayout.reset();
+            setState(Constants.STATE_PREVIEW); // 设置空闲状态
+        } else if (getState() == Constants.STATE_VIDEO) {
+            resetState(TYPE_VIDEO);     // 针对arm64-v8a视频模式进行的重置
+            mViewHolder.pvLayout.reset();
+            setState(Constants.STATE_PREVIEW); // 设置空闲状态
+        }
+        if (mOperaeCameraListener != null)
+            mOperaeCameraListener.cancel();
+
+        mViewHolder.rlEdit.setVisibility(View.GONE);
     }
 
     /**
