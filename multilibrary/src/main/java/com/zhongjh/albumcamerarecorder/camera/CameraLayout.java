@@ -590,7 +590,7 @@ public class CameraLayout extends RelativeLayout {
             mViewHolder.vLine2.setVisibility(View.GONE);
 
             // 隐藏右侧按钮
-            mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.INVISIBLE);
+            mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
 
             // 恢复长按事件，即重新启用录像
             mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);

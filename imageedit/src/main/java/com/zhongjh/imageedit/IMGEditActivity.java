@@ -12,7 +12,6 @@ import com.zhongjh.imageedit.core.file.IMGAssetFileDecoder;
 import com.zhongjh.imageedit.core.file.IMGContentDecoder;
 import com.zhongjh.imageedit.core.file.IMGDecoder;
 import com.zhongjh.imageedit.core.file.IMGFileDecoder;
-import com.zhongjh.imageedit.core.util.FileUtils;
 import com.zhongjh.imageedit.core.util.IMGUtils;
 
 import java.io.FileNotFoundException;

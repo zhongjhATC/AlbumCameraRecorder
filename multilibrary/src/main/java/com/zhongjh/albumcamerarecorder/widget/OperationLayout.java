@@ -134,7 +134,7 @@ public abstract class OperationLayout extends FrameLayout {
 
         // 默认隐藏
         mViewHolder.btnCancel.setVisibility(GONE);
-        mViewHolder.btnConfirm.setVisibility(INVISIBLE);
+        mViewHolder.btnConfirm.setVisibility(GONE);
 
         // 定制样式 .确认按钮
         mViewHolder.btnConfirm.setPrimaryColor(R.color.operation_background); // 修改主色调
@@ -294,7 +294,7 @@ public abstract class OperationLayout extends FrameLayout {
     }
 
     /**
-     * 拍点击长按结果后的动画 - 多图片
+     * 多图片拍照后显示的右侧按钮
      */
     public void startOperaeBtnAnimatorMulti() {
         // 如果本身隐藏的，就显示出来
@@ -381,7 +381,7 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnClickOrLong.resetState();
         // 隐藏第二层的view
         mViewHolder.btnCancel.setVisibility(View.GONE);
-        mViewHolder.btnConfirm.setVisibility(View.INVISIBLE);
+        mViewHolder.btnConfirm.setVisibility(View.GONE);
         // 显示第一层的view
         mViewHolder.btnClickOrLong.setVisibility(View.VISIBLE);
     }
