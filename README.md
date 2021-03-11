@@ -19,8 +19,21 @@
 
 ## 特性
  - 支持自定义样式.支持更换里面的相关按钮.
- - 支持相册、录制、录音等多个嵌套功能，并且也可以通过配置只独立出其中一个功能.
+ - 支持相册、录制、录音等三合一功能（类似抖音等），并且也可以通过配置只独立出其中一个功能.
  - 丰富的回调接口和调试信息,可利用现有API实现丰富的效果.
+ - 兼容性强，不管是低版本的4.1还是目前最新版本的Android 11,都进行了相关兼容处理
+ - 支持所有图片读取处理自定义，例如可自定义glide、Fresco等等都可以
+ - 支持从相册选择图片
+ - 支持相册按照手机文件区分不同的文件夹选择
+ - 自定义性强，支持各种自定义最多选多少张图片、视频等等，也支持只显示自定义文件大小
+ - 支持自定义相册的样式，颜色，大小等等
+ - 录制拍照时支持闪光灯、前后摄像头切换
+ - 录制拍照时支持双指触摸放大缩小，支持单指上下滑动控制亮度
+ - 录制拍照长按按钮等所有UI可自定义，全是svg图片可以很好的处理动画细节
+ - 录制支持分段录制，以后还会加入视频编辑
+ - 图片编辑支持颜色涂鸦、输入文字、马赛克处理、旋转、裁剪等处理
+ - 支持录音处理
+ - 所有录制拍照都经过了压缩处理
  - 1.0.19X以后的版本兼容Android Q版本,如果打算保留自己项目sdk28的，可以只保留1.0.18X
 
 ## 引入
@@ -36,10 +49,11 @@
 #### Step 2. Add the dependency
 
 	dependencies {
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.25X'        // 公共库，必须使用此库
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.25X'      // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.25X' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.0.25X'  // 配套编辑图片使用
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.26X'        // 公共库，必须使用此库
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.26X'      // 核心lib，调用显示相册、录屏、录音等
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.26X' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.0.26X'  // 配套编辑图片使用
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.0.26X'  // 配套编辑视频使用
 	}
 
 ## 快照
