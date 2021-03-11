@@ -1,4 +1,12 @@
 # 历史更新
+## 1.0.26X
+ - 修改录制界面出的《取消》、《提交》两个按钮的样式，如有需要，以后可增加提供修改图片颜色等样式的api
+ - 增加分段录制功能，需要引入该库
+   api 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.0.26X'
+   然后在代码上启动该配置cameraSetting.videoEdit(new VideoEditManager())
+   后续会增加有关视频编辑功能
+ - 修复低版本录制视频返回的uri兼容问题
+
 ## 1.0.25X
  - 优化所有界面的全屏显示UI
  - 添加编辑图片功能！可以通过配置来进行开关
