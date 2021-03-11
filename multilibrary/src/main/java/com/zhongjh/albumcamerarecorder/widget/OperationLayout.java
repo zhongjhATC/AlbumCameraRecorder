@@ -146,7 +146,7 @@ public abstract class OperationLayout extends FrameLayout {
         // 定制样式 .取消按钮
         mViewHolder.btnCancel.setPrimaryColor(R.color.operation_background); // 修改主色调
         mViewHolder.btnCancel.setFullStyle(true); // 修改成铺满样式
-        mViewHolder.btnCancel.setFunctionImage(R.drawable.ic_baseline_undo_24,
+        mViewHolder.btnCancel.setFunctionImage(R.drawable.ic_baseline_keyboard_arrow_left_24,
                 R.drawable.avd_done_to_stop, R.drawable.avd_stop_to_done); // 修改图片
         mViewHolder.btnCancel.setProgressMode(false); // 取消进度模式
 
