@@ -167,12 +167,9 @@ public class MainSimpleActivity extends BaseActivity {
             globalSetting.recorderSetting(recorderSetting);
 
         globalSetting
-                .setOnMainListener(new OnMainListener() {
-                    @Override
-                    public void onOpenFail(String errorMessage) {
-                        Log.d(TAG, errorMessage);
-                        Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show();
-                    }
+                .setOnMainListener(errorMessage -> {
+                    Log.d(TAG, errorMessage);
+                    Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show();
                 })
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))// 设置路径和7.0保护路径等等
                 .imageEngine(new Glide4Engine())    // for glide-V4

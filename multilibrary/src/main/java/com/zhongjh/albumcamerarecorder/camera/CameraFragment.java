@@ -63,6 +63,8 @@ public class CameraFragment extends BaseFragment {
 
     // 声明一个long类型变量：用于存放上一点击“返回键”的时刻
     private long mExitTime;
+    // 是否提交,如果不是提交则要删除冗余文件
+    private boolean mIsCommit = false;
 
     public static CameraFragment newInstance() {
         CameraFragment cameraFragment = new CameraFragment();
@@ -101,7 +103,6 @@ public class CameraFragment extends BaseFragment {
 
             @Override
             public void AudioPermissionError() {
-//                Toast.makeText(CameraActivity.this, "没有权限", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -158,7 +159,9 @@ public class CameraFragment extends BaseFragment {
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
                 result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);
+                mIsCommit = true;
                 mActivity.finish();
+
             }
 
             @Override
@@ -174,6 +177,7 @@ public class CameraFragment extends BaseFragment {
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
                 result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);
+                mIsCommit = true;
                 mActivity.finish();
             }
 
@@ -186,9 +190,6 @@ public class CameraFragment extends BaseFragment {
                 // 判断如果删除光图片的时候，母窗体启动滑动
                 if (captureBitmaps.size() <= 0) {
                     ((MainActivity) mActivity).setTablayoutScroll(true);
-//                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
-//                    layoutParams.bottomMargin = 0;//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
-//                    mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
                 }
             }
 
@@ -197,9 +198,6 @@ public class CameraFragment extends BaseFragment {
                 if (captureBitmaps.size() > 0) {
                     // 母窗体禁止滑动
                     ((MainActivity) mActivity).setTablayoutScroll(false);
-//                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mCameraLayout.mViewHolder.pvLayout.getLayoutParams();
-//                    layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(50);//将默认的距离底部20dp，改为0，这样底部区域全被listview填满。
-//                    mCameraLayout.mViewHolder.pvLayout.setLayoutParams(layoutParams);
                 }
             }
         });
@@ -265,6 +263,7 @@ public class CameraFragment extends BaseFragment {
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
                 result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                 mActivity.setResult(RESULT_OK, result);
+                mIsCommit = true;
                 mActivity.finish();
                 break;
             case REQ_IMAGE_EDIT:
@@ -308,9 +307,9 @@ public class CameraFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (mCameraLayout != null)
-            mCameraLayout.onDestroy();
+            mCameraLayout.onDestroy(mIsCommit);
+        super.onDestroy();
     }
 
 }
