@@ -18,6 +18,21 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="提示文本" />
 
+    <!-- 右侧的分段录制 -->
+    <TextView
+        android:id="@+id/tvSectionRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/default_to_record"
+        android:textColor="@color/white"
+        android:textSize="8sp"
+        app:drawableTopCompat="@drawable/ic_record_section_24"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
+        app:layout_constraintEnd_toStartOf="@+id/guideline88"
+        app:layout_constraintStart_toStartOf="@+id/guideline72"
+        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
+        tools:ignore="SmallSp" />
+
     <!-- 左侧的取消按钮  -->
     <com.zhongjh.circularprogressview.CircularProgress
         android:id="@+id/btnCancel"
@@ -44,20 +59,7 @@
         app:type="confirm"
         tools:visibility="visible" />
 
-    <!-- 右侧的分段录制 -->
-    <TextView
-        android:id="@+id/tvSectionRecord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/default_to_record"
-        android:textColor="@color/white"
-        android:textSize="8sp"
-        app:drawableTopCompat="@drawable/ic_record_section_24"
-        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
-        app:layout_constraintEnd_toStartOf="@+id/guideline88"
-        app:layout_constraintStart_toStartOf="@+id/guideline72"
-        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
-        tools:ignore="SmallSp" />
+
 
     <!-- 中间的操作按钮 -->
     <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
