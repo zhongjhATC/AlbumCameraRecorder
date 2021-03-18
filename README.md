@@ -18,7 +18,7 @@
 非常感谢知乎提供的这么棒的开源项目！    
 
 ## 非X版本分支
-非X库版本,已经停止维护(https://github.com/zhihu/Matisse)
+非X库版本,已经停止维护(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
 
 ## 特性
  - 支持自定义样式.支持更换里面的相关按钮.
