@@ -93,7 +93,6 @@ public abstract class OperationLayout extends FrameLayout {
     // 按钮左右分开移动动画
     ObjectAnimator mAnimatorConfirm;
     ObjectAnimator mAnimatorCancel;
-    AnimatorSet mAnimatorSet = new AnimatorSet();
 
     protected abstract ViewHolder newViewHolder();
 
@@ -224,8 +223,9 @@ public abstract class OperationLayout extends FrameLayout {
 
             @Override
             public void onClick() {
-                if (mOperaeListener != null)
+                if (mOperaeListener != null) {
                     mOperaeListener.cancel();
+                }
                 startTipAlphaAnimation();
             }
         });
@@ -234,26 +234,30 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnConfirm.setCircularProgressListener(new CircularProgressListener() {
             @Override
             public void onStart() {
-                if (mOperaeListener != null)
+                if (mOperaeListener != null) {
                     mOperaeListener.startProgress();
+                }
             }
 
             @Override
             public void onDone() {
-                if (mOperaeListener != null)
+                if (mOperaeListener != null) {
                     mOperaeListener.doneProgress();
+                }
             }
 
             @Override
             public void onStop() {
-                if (mOperaeListener != null)
+                if (mOperaeListener != null) {
                     mOperaeListener.stopProgress();
+                }
             }
 
             @Override
             public void onClick() {
-                if (mOperaeListener != null)
+                if (mOperaeListener != null) {
                     mOperaeListener.confirm();
+                }
                 startTipAlphaAnimation();
             }
         });
@@ -279,8 +283,9 @@ public abstract class OperationLayout extends FrameLayout {
         mViewHolder.btnCancel.setClickable(false);
 
         // 显示动画
-        mAnimatorSet.playTogether(mAnimatorCancel, mAnimatorConfirm);
-        mAnimatorSet.addListener(new AnimatorListenerAdapter() {
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(mAnimatorCancel, mAnimatorConfirm);
+        animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
@@ -289,8 +294,8 @@ public abstract class OperationLayout extends FrameLayout {
                 mViewHolder.btnCancel.setClickable(true);
             }
         });
-        mAnimatorSet.setDuration(300);
-        mAnimatorSet.start();
+        animatorSet.setDuration(300);
+        animatorSet.start();
     }
 
     /**
@@ -401,11 +406,13 @@ public abstract class OperationLayout extends FrameLayout {
     /**
      * 设置是否可点击
      */
+    @Override
     public void setEnabled(boolean enabled) {
-        if (!enabled)
+        if (!enabled) {
             mViewHolder.btnClickOrLong.setEnabled(false);
-        else
+        } else {
             mViewHolder.btnClickOrLong.setEnabled(true);
+        }
     }
 
     /**
@@ -439,7 +446,7 @@ public abstract class OperationLayout extends FrameLayout {
     /**
      * 重置btnConfirm
      */
-    public void resetConfim () {
+    public void resetConfim() {
         mViewHolder.btnConfirm.reset();
     }
 

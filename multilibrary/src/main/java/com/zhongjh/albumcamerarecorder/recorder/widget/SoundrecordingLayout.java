@@ -48,6 +48,7 @@ public class SoundrecordingLayout extends OperationLayout {
     /**
      * 重置本身
      */
+    @Override
     public void reset() {
         super.reset();
         // 隐藏播放的按钮
