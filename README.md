@@ -177,3 +177,5 @@
 2. 发现任何BUG欢迎留言或者留个Issues（[Issues](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)）
 
 3. 任何转载请注明出处
+
+# QQ群915053430 此群新建用于解决问题，确保当前库是可以兼容最新版本
