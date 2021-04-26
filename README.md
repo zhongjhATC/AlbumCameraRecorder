@@ -1,6 +1,6 @@
 # AlbumCameraRecorderX
 
-[![MinSdk](https://img.shields.io/badge/MinSdk-16-blue.svg)](https://developer.android.com/about/versions/android-4.1)
+[![MinSdk](https://img.shields.io/badge/MinSdk-21-blue.svg)](https://developer.android.com/about/versions/android-5.0)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/LICENSE)
 
 ## 该版本是基于AndroidX版本开发的分支。版本号后面带着X的都是属于基于AndroidX版本开发。
