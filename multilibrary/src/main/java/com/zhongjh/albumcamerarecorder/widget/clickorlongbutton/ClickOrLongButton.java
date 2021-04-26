@@ -10,6 +10,7 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.os.Looper;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.util.AttributeSet;
@@ -19,7 +20,7 @@ import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
-import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
+import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 
 import java.util.ArrayList;
 
@@ -85,6 +86,7 @@ public class ClickOrLongButton extends View {
 
 
     private TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
+        @Override
         public void run() {
             if (mIsSectionMode && mCurrentLocation.size() > 0) {
                 // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
@@ -119,13 +121,17 @@ public class ClickOrLongButton extends View {
                         }
                     }
                 }
-                if (!recordable) return;
+                if (!recordable) {
+                    return;
+                }
                 centerCirclePaint.setColor(colorRecord);
                 outMostWhiteCirclePaint.setColor(colorRoundBorder);
                 percentInDegree = (360.0F * percent);
-                if (mIsSectionMode)
-                    if (mCurrentLocation.size() > 0 || (timeLapse - mMinDuration) >= mMinDuration)
+                if (mIsSectionMode) {
+                    if (mCurrentLocation.size() > 0 || (timeLapse - mMinDuration) >= mMinDuration) {
                         mCurrentSumNumberDegrees = percentInDegree;
+                    }
+                }
 
                 Log.d(TAG, "timeLapse:" + timeLapse);
                 Log.d(TAG, "percent:" + percent);
@@ -199,9 +205,9 @@ public class ClickOrLongButton extends View {
         colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor);
         colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor);
         colorInterval = arrayInnerCircleNoOperationInterval.getColor(0, defaultInnerCircleNoOperationColorInterval);
-        int colorBlackP40 = getResources().getColor(R.color.black_forty_percent);
-        int colorBlackP80 = getResources().getColor(R.color.black_eighty_percent);
-        int colorTranslucent = getResources().getColor(R.color.circle_shallow_translucent_bg);
+        int colorBlackP40 = ContextCompat.getColor(getContext(), R.color.black_forty_percent);
+        int colorBlackP80 = ContextCompat.getColor(getContext(), R.color.black_eighty_percent);
+        int colorTranslucent = ContextCompat.getColor(getContext(), R.color.circle_shallow_translucent_bg);
         // 内圈操作中样式
         processBarPaint = new Paint();
         processBarPaint.setColor(colorRecord);
@@ -262,6 +268,7 @@ public class ClickOrLongButton extends View {
         mButtonState = BUTTON_STATE_BOTH;   // 状态为两者都可以
     }
 
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawCircle(centerX, centerY, translucentCircleRadius, translucentPaint);
@@ -290,10 +297,12 @@ public class ClickOrLongButton extends View {
         canvas.drawCircle(centerX, centerY, outMostBlackCircleRadius, outMostBlackCirclePaint);
     }
 
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(BOUNDING_BOX_SIZE, BOUNDING_BOX_SIZE);
     }
 
+    @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
         if (!touchable) {
@@ -325,17 +334,19 @@ public class ClickOrLongButton extends View {
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null) {
-                    if (mRecordedTime < mMinDuration)
+                    if (mRecordedTime < mMinDuration) {
                         mClickOrLongListener.onLongClickShort(mRecordedTime); // 回调录制时间过短
-                    else
+                    } else {
                         mClickOrLongListener.onLongClickEnd(mRecordedTime); // 回调录制结束
+                    }
                 }
                 recordState = RECORD_ENDED;
             } else if (recordState == RECORD_ENDED) {
                 recordState = RECORD_NOT_STARTED; // 回到初始状态
             } else {
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener != null) {
                     mClickOrLongListener.onClick(); // 拍照
+                }
             }
         }
         isActionDown = false;
@@ -373,8 +384,9 @@ public class ClickOrLongButton extends View {
 
     private void startTicking() {
         synchronized (ClickOrLongButton.this) {
-            if (recordState != RECORD_NOT_STARTED)
+            if (recordState != RECORD_NOT_STARTED) {
                 recordState = RECORD_NOT_STARTED;
+            }
         }
         btnPressTime = System.currentTimeMillis();
         touchTimeHandler.sendLoopMsg(0L, 16L);

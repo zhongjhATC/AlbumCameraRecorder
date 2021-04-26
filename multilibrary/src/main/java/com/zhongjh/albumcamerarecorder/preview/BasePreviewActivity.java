@@ -173,6 +173,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     private void refreshMultiMediaItem(boolean apply) {
         if (mIsEdit)
             // 循环当前所有图片进行处理
+        {
             for (MultiMedia multiMedia : mAdapter.getmItems()) {
                 if (mIsAlubmUri) {
                     if (apply) {
@@ -197,6 +198,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     }
                 }
             }
+        }
 
 
     }
@@ -225,8 +227,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 }
             } else {
                 boolean isTrue = true;
-                if (mIsSelectedCheck)
+                if (mIsSelectedCheck) {
                     isTrue = assertAddSelection(item);
+                }
                 if (isTrue) {
                     mSelectedCollection.add(item);
                     if (mAlbumSpec.countable) {
@@ -286,7 +289,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         super.finish();
         if (mGlobalSpec.isCutscenes)
             //关闭窗体动画显示
+        {
             this.overridePendingTransition(0, R.anim.activity_close);
+        }
     }
 
     @Override
@@ -310,10 +315,11 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
             Intent intent = new Intent();
             intent.setClass(BasePreviewActivity.this, IMGEditActivity.class);
-            if (item.getMediaUri() != null)
+            if (item.getMediaUri() != null) {
                 intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
-            else
+            } else {
                 intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, item.getUri());
+            }
             intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
             startActivityForResult(intent, REQ_IMAGE_EDIT);
         }

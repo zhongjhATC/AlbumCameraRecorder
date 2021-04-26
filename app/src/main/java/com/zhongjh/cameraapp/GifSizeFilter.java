@@ -49,8 +49,9 @@ class GifSizeFilter extends Filter {
 
     @Override
     public IncapableCause filter(Context context, MultiMedia item) {
-        if (!needFiltering(context, item))
+        if (!needFiltering(context, item)) {
             return null;
+        }
 
         Point size = PhotoMetadataUtils.getBitmapBound(context.getContentResolver(), item.getMediaUri());
         if (size.x < mMinWidth || size.y < mMinHeight || item.size > mMaxSize) {

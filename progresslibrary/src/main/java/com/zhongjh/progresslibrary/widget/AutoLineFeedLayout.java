@@ -86,8 +86,9 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     public void setOperation(boolean operation) {
         isOperation = operation;
-        if (!isOperation)
+        if (!isOperation) {
             viewHolderAdd.itemView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -109,11 +110,13 @@ public class AutoLineFeedLayout extends ViewGroup {
         this.deleteImage = deleteImage;
         this.addDrawable = addDrawable;
 
-        if (this.addDrawable != null)
+        if (this.addDrawable != null) {
             viewHolderAdd.mpvImage.setImageDrawable(this.addDrawable);
+        }
 
-        if (!isOperation)
+        if (!isOperation) {
             viewHolderAdd.itemView.setVisibility(View.GONE);
+        }
     }
 
 
@@ -209,8 +212,9 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     public void onRemoveItemImage(int position) {
         MultiMediaView multiMediaView = imageList.get(position);
-        if (listener != null)
+        if (listener != null) {
             listener.onItemClose(multiMediaView.getMaskProgressView(), multiMediaView);
+        }
         // 判断类型
         if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
             imageList.remove(multiMediaView);
@@ -409,8 +413,9 @@ public class AutoLineFeedLayout extends ViewGroup {
                 if (isOperation) {
                     vClose.setVisibility(View.VISIBLE);
                     vClose.setOnClickListener(v -> {
-                        if (listener != null)
+                        if (listener != null) {
                             listener.onItemClose(v, multiMediaView);
+                        }
                         // 判断类型
                         if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                             imageList.remove(multiMediaView);
@@ -447,7 +452,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         @Override
         public void onClick(View v) {
-            if (listener != null)
+            if (listener != null) {
                 if (!TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getPath().equals(ADD)) {
                     // 加载➕图
                     listener.onItemAdd(v, multiMediaView, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
@@ -467,6 +472,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                         }
                     }
                 }
+            }
         }
 
     }

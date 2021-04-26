@@ -63,7 +63,9 @@ public class IMGTextEditDialog extends Dialog implements View.OnClickListener,
                 mEditText.setSelection(mEditText.length());
             }
             mDefaultText = null;
-        } else mEditText.setText("");
+        } else {
+            mEditText.setText("");
+        }
         mColorGroup.setCheckColor(mEditText.getCurrentTextColor());
     }
 

@@ -61,7 +61,8 @@ public class PhotoVideoLayout extends OperationLayout {
         super.initListener();
         mViewHolder.tvSectionRecord.setOnClickListener(v -> {
             // 判断当前类型，默认是默认录音模式
-            if (mViewHolder.tvSectionRecord.getTag() == null || mViewHolder.tvSectionRecord.getTag().equals("0")) {
+            if (mViewHolder.tvSectionRecord.getTag() == null
+                    || "0".equals(mViewHolder.tvSectionRecord.getTag())) {
                 // 切换分段录制模式
                 mViewHolder.tvSectionRecord.setTag("1");
                 mViewHolder.tvSectionRecord.setText(getResources().getString(R.string.section_to_record));

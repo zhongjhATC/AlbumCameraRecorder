@@ -6,18 +6,16 @@ import android.media.MediaRecorder;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.zhongjh.albumcamerarecorder.recorder.common.MySharedPreferences;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.TimerTask;
+
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 /**
  * 录音的service
+ * @author zhongjh
  */
 public class RecordingService extends Service {
 
@@ -26,8 +24,6 @@ public class RecordingService extends Service {
     private File mFile= null;
 
     private MediaRecorder mRecorder = null;
-
-    private MediaStoreCompat mAudioMediaStoreCompat; // 音频文件配置路径
 
     private long mStartingTimeMillis = 0;
 
@@ -56,7 +52,8 @@ public class RecordingService extends Service {
     private void startRecording() {
         // 根据配置创建文件配置
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        mAudioMediaStoreCompat = new MediaStoreCompat(this);
+        // 音频文件配置路径
+        MediaStoreCompat mAudioMediaStoreCompat = new MediaStoreCompat(this);
         mAudioMediaStoreCompat.setSaveStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
 
         mFile = mAudioMediaStoreCompat.getFilePath(2);
@@ -67,10 +64,6 @@ public class RecordingService extends Service {
         mRecorder.setOutputFile(mFile.getPath());
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
-        if (MySharedPreferences.getPrefHighQuality(this)) {
-            mRecorder.setAudioSamplingRate(44100);
-            mRecorder.setAudioEncodingBitRate(192000);
-        }
 
         try {
             mRecorder.prepare();
@@ -89,8 +82,9 @@ public class RecordingService extends Service {
     private void stopRecording(boolean isShort) {
         if (isShort) {
             // 如果是短时间的，删除该文件
-            if (mFile.exists())
+            if (mFile.exists()) {
                 mFile.delete();
+            }
         } else {
             long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
             // 存储到缓存的文件地址

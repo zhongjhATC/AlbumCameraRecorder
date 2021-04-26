@@ -182,10 +182,12 @@ public class MultiMedia implements Parcelable {
         if (mimeType != null) {
             result = 31 * result + mimeType.hashCode();
         }
-        if (mediaUri != null)
+        if (mediaUri != null) {
             result = 31 * result + mediaUri.hashCode();
-        if (uri != null)
+        }
+        if (uri != null) {
             result = 31 * result + uri.hashCode();
+        }
         result = 31 * result + Long.valueOf(size).hashCode();
         result = 31 * result + Long.valueOf(duration).hashCode();
         result = 31 * result + Long.valueOf(drawableId).hashCode();
@@ -193,7 +195,9 @@ public class MultiMedia implements Parcelable {
     }
 
     public boolean isImage() {
-        if (mimeType == null) return false;
+        if (mimeType == null) {
+            return false;
+        }
         return mimeType.equals(MimeType.JPEG.toString())
                 || mimeType.equals(MimeType.PNG.toString())
                 || mimeType.equals(MimeType.GIF.toString())
@@ -202,17 +206,23 @@ public class MultiMedia implements Parcelable {
     }
 
     public boolean isGif() {
-        if (mimeType == null) return false;
+        if (mimeType == null) {
+            return false;
+        }
         return mimeType.equals(MimeType.GIF.toString());
     }
 
     public boolean isMp3() {
-        if (mimeType == null) return false;
+        if (mimeType == null) {
+            return false;
+        }
         return mimeType.equals(MimeType.MP3.toString());
     }
 
     public boolean isVideo() {
-        if (mimeType == null) return false;
+        if (mimeType == null) {
+            return false;
+        }
         return mimeType.equals(MimeType.MPEG.toString())
                 || mimeType.equals(MimeType.MP4.toString())
                 || mimeType.equals(MimeType.QUICKTIME.toString())

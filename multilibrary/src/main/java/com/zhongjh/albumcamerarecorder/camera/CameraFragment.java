@@ -73,6 +73,7 @@ public class CameraFragment extends BaseFragment {
         return cameraFragment;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onAttach(@NotNull Activity activity) {
         super.onAttach(activity);
@@ -217,8 +218,9 @@ public class CameraFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
+        if (resultCode != RESULT_OK) {
             return;
+        }
 
         switch (requestCode) {
             case REQUEST_CODE_PREVIEW_CAMRRA:
@@ -228,8 +230,9 @@ public class CameraFragment extends BaseFragment {
                     Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
                     // 获取选择的数据
                     ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                    if (selected == null)
+                    if (selected == null) {
                         return;
+                    }
                     // 循环判断，如果不存在，则删除
                     ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCameraLayout.mCaptureBitmaps.entrySet()).listIterator(mCameraLayout.mCaptureBitmaps.size());
                     while (i.hasPrevious()) {
@@ -294,21 +297,24 @@ public class CameraFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mCameraLayout != null)
+        if (mCameraLayout != null) {
             mCameraLayout.onResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mCameraLayout != null)
+        if (mCameraLayout != null) {
             mCameraLayout.onPause();
+        }
     }
 
     @Override
     public void onDestroy() {
-        if (mCameraLayout != null)
+        if (mCameraLayout != null) {
             mCameraLayout.onDestroy(mIsCommit);
+        }
         super.onDestroy();
     }
 

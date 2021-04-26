@@ -256,8 +256,9 @@ public class CameraLayout extends RelativeLayout {
         // 切换闪光灯模式
         mViewHolder.imgFlash.setOnClickListener(v -> {
             mFlashType++;
-            if (mFlashType > Constants.TYPE_FLASH_OFF)
+            if (mFlashType > Constants.TYPE_FLASH_OFF) {
                 mFlashType = Constants.TYPE_FLASH_AUTO;
+            }
             // 重新设置当前闪光灯模式
             setFlashLamp();
         });
@@ -270,8 +271,9 @@ public class CameraLayout extends RelativeLayout {
         mViewHolder.pvLayout.setPhotoVideoListener(new ClickOrLongListener() {
             @Override
             public void actionDown() {
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener != null) {
                     mClickOrLongListener.actionDown();
+                }
             }
 
             @SuppressLint("ClickableViewAccessibility")
@@ -285,8 +287,9 @@ public class CameraLayout extends RelativeLayout {
                     // 设置不能点击，防止多次点击报错
                     mViewHolder.rlMain.setChildClickable(false);
                     mViewHolder.cameraView.takePictureSnapshot();
-                    if (mClickOrLongListener != null)
+                    if (mClickOrLongListener != null) {
                         mClickOrLongListener.onClick();
+                    }
                 } else {
                     Toast.makeText(mContext, "已经达到拍照上限", Toast.LENGTH_SHORT).show();
                 }
@@ -299,8 +302,9 @@ public class CameraLayout extends RelativeLayout {
                 setSwitchVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
                 postDelayed(() -> stopRecord(true), mCameraSpec.minDuration - time);
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickShort(time);
+                }
             }
 
             @Override
@@ -309,8 +313,9 @@ public class CameraLayout extends RelativeLayout {
                 // 开始录像
                 setSwitchVisibility(INVISIBLE);
                 mViewHolder.imgFlash.setVisibility(INVISIBLE);
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClick();
+                }
             }
 
             @Override
@@ -330,8 +335,9 @@ public class CameraLayout extends RelativeLayout {
                     mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
                     mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
                 }
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickEnd(time);
+                }
             }
 
             @Override
@@ -339,8 +345,9 @@ public class CameraLayout extends RelativeLayout {
                 if (mErrorLisenter != null) {
                     mErrorLisenter.AudioPermissionError();
                 }
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickError();
+                }
             }
         });
 
@@ -380,12 +387,12 @@ public class CameraLayout extends RelativeLayout {
 
         // 录制界面按钮事件监听，目前只有一个，点击分段录制
         mViewHolder.pvLayout.setRecordListener(tag -> {
-            mIsSectionRecord = tag.equals("1");
+            mIsSectionRecord = "1".equals(tag);
             mViewHolder.pvLayout.setProgressMode(mIsSectionRecord);
         });
 
         // 视频编辑后的事件，目前只有分段录制后合并
-        if (mCameraSpec.videoEditCoordinator != null)
+        if (mCameraSpec.videoEditCoordinator != null) {
             mCameraSpec.videoEditCoordinator.setVideoEditListener(new VideoEditListener() {
                 @Override
                 public void onFinish() {
@@ -394,10 +401,11 @@ public class CameraLayout extends RelativeLayout {
 
                 @Override
                 public void onProgress(int progress, long progressTime) {
-                    if (progress >= 100)
+                    if (progress >= 100) {
                         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(99);
-                    else
+                    } else {
                         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(progress);
+                    }
                 }
 
                 @Override
@@ -410,6 +418,7 @@ public class CameraLayout extends RelativeLayout {
                     Log.d(TAG, "onError" + message);
                 }
             });
+        }
 
         // 拍照监听
         mViewHolder.cameraView.addCameraListener(new CameraListener() {
@@ -473,8 +482,9 @@ public class CameraLayout extends RelativeLayout {
 
         // 关闭事件
         mViewHolder.imgClose.setOnClickListener(v -> {
-            if (mCloseListener != null)
+            if (mCloseListener != null) {
                 mCloseListener.onClose();
+            }
         });
 
         // 编辑图片事件
@@ -485,8 +495,9 @@ public class CameraLayout extends RelativeLayout {
             } catch (IOException e) {
                 return;
             }
-            if (mEditListener != null)
+            if (mEditListener != null) {
                 mEditListener.onImageEdit(uri, mPhotoEditFile.getAbsolutePath());
+            }
         });
 
     }
@@ -517,34 +528,41 @@ public class CameraLayout extends RelativeLayout {
     protected void onDestroy(boolean isCommit) {
         LogUtil.i("CameraLayout destroy");
         if (!isCommit) {
-            if (mPhotoFile != null)
+            if (mPhotoFile != null) {
                 FileUtil.deleteFile(mPhotoFile);  // 删除图片
-            if (mVideoFile != null)
+            }
+            if (mVideoFile != null) {
                 FileUtil.deleteFile(mVideoFile);  // 删除视频
+            }
             // 删除多个视频
-            if (mVideoPaths != null)
+            if (mVideoPaths != null) {
                 for (String item : mVideoPaths) {
                     FileUtil.deleteFile(item);
                 }
+            }
             // 删除多个图片
-            if (mCaptureBitmaps != null)
+            if (mCaptureBitmaps != null) {
                 for (Map.Entry<Integer, BitmapData> entry : mCaptureBitmaps.entrySet()) {
                     FileUtil.deleteFile(Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).getPath());
                 }
+            }
             // 新合成视频删除
-            if (mNewSectionVideoPath != null)
+            if (mNewSectionVideoPath != null) {
                 FileUtil.deleteFile(mNewSectionVideoPath);
+            }
         } else {
             // 如果是提交的，删除合成前的视频
-            if (mVideoPaths != null)
+            if (mVideoPaths != null) {
                 for (String item : mVideoPaths) {
                     FileUtil.deleteFile(item);
                 }
+            }
         }
         mViewHolder.cameraView.destroy();
         mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
-        if (mCameraSpec.videoEditCoordinator != null)
+        if (mCameraSpec.videoEditCoordinator != null) {
             mCameraSpec.videoEditCoordinator.onDestroy();
+        }
     }
 
     /**
@@ -602,8 +620,9 @@ public class CameraLayout extends RelativeLayout {
      */
     public void refreshEditPhoto() {
         // 删除旧图
-        if (mPhotoFile.exists())
+        if (mPhotoFile.exists()) {
             mPhotoFile.delete();
+        }
         // 用编辑后的图作为新的图片
         mPhotoFile = mPhotoEditFile;
         Uri uri = mPictureMediaStoreCompat.getUri(mPhotoFile.getPath());
@@ -626,8 +645,9 @@ public class CameraLayout extends RelativeLayout {
             // 每次删除，后面都要重新合成,新合成的也删除
             mViewHolder.pvLayout.setProgressMode(true);
             mViewHolder.pvLayout.resetConfim();
-            if (mNewSectionVideoPath != null)
+            if (mNewSectionVideoPath != null) {
                 FileUtil.deleteFile(mNewSectionVideoPath);
+            }
             // 删除最后一个视频和视频文件
             FileUtil.deleteFile(mVideoPaths.get(mVideoPaths.size() - 1));
             mVideoPaths.remove(mVideoPaths.size() - 1);
@@ -636,8 +656,9 @@ public class CameraLayout extends RelativeLayout {
             // 显示当前进度
             mViewHolder.pvLayout.setData(mVideoTimes);
             mViewHolder.pvLayout.invalidateClickOrLongButton();
-            if (mVideoPaths.size() == 0)
+            if (mVideoPaths.size() == 0) {
                 cancelOnReset();
+            }
         } else {
             cancelOnReset();
         }
@@ -671,8 +692,9 @@ public class CameraLayout extends RelativeLayout {
      * 取消后的重置相关
      */
     private void cancelOnReset() {
-        if (mCameraSpec.videoEditCoordinator != null)
+        if (mCameraSpec.videoEditCoordinator != null) {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
+        }
 
         // 根据不同状态处理相应的事件,多图不需要取消事件（关闭所有图片就自动恢复了）。
         if (getState() == Constants.STATE_PICTURE) {
@@ -684,8 +706,9 @@ public class CameraLayout extends RelativeLayout {
             mViewHolder.pvLayout.reset();
             setState(Constants.STATE_PREVIEW); // 设置空闲状态
         }
-        if (mOperaeCameraListener != null)
+        if (mOperaeCameraListener != null) {
             mOperaeCameraListener.cancel();
+        }
 
         mViewHolder.rlEdit.setVisibility(View.GONE);
     }
@@ -705,8 +728,9 @@ public class CameraLayout extends RelativeLayout {
                 break;
             case TYPE_PICTURE:
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE); // 隐藏图片view
-                if (mPhotoFile != null)
+                if (mPhotoFile != null) {
                     FileUtil.deleteFile(mPhotoFile);  // 删除图片
+                }
                 break;
             case TYPE_SHORT:
                 // 短视屏停止录像并删除文件
@@ -830,8 +854,9 @@ public class CameraLayout extends RelativeLayout {
                 intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, false);
                 fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
                 if (mGlobalSpec.isCutscenes) {
-                    if (fragment.getActivity() != null)
+                    if (fragment.getActivity() != null) {
                         fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+                    }
                 }
             });
 
@@ -908,8 +933,9 @@ public class CameraLayout extends RelativeLayout {
      * 停止播放视频
      */
     private void stopVideo() {
-        if (mViewHolder.vvPreview.isPlaying())
+        if (mViewHolder.vvPreview.isPlaying()) {
             mViewHolder.vvPreview.pause();
+        }
     }
 
     /**

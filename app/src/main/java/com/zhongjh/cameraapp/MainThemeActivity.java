@@ -51,8 +51,9 @@ public class MainThemeActivity extends BaseActivity {
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
-                if (isOk)
+                if (isOk) {
                     openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                }
             }
 
             @Override
@@ -119,10 +120,12 @@ public class MainThemeActivity extends BaseActivity {
         GlobalSetting globalSetting = MultiMediaSetting.from(MainThemeActivity.this).choose(MimeType.ofAll());
 
         // 样式选择
-        if (mBinding.rbBlue.isChecked())
+        if (mBinding.rbBlue.isChecked()) {
             globalSetting.theme(R.style.AppTheme_Blue);
-        if (mBinding.rbBlack.isChecked())
+        }
+        if (mBinding.rbBlack.isChecked()) {
             globalSetting.theme(R.style.AppTheme_Dracula);
+        }
 
 
         globalSetting.albumSetting(albumSetting);

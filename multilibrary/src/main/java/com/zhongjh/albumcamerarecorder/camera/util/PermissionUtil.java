@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.util;
 
-import android.hardware.Camera;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -8,8 +7,11 @@ import android.util.Log;
 
 /**
  * 权限工具
+ *
+ * @author zhongjh
  */
 public class PermissionUtil {
+
     public static final int STATE_RECORDING = -1;
     public static final int STATE_NO_PERMISSION = -2;
     public static final int STATE_SUCCESS = 1;
@@ -30,20 +32,15 @@ public class PermissionUtil {
 
             audioRecord.startRecording();//检测是否可以进入初始化状态
         } catch (Exception e) {
-            if (audioRecord != null) {
-                audioRecord.release();
-                audioRecord = null;
-            }
+            audioRecord.release();
             return STATE_NO_PERMISSION;
         }
         if (audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
             //6.0以下机型都会返回此状态，故使用时需要判断bulid版本
             //检测是否在录音中
-            if (audioRecord != null) {
-                audioRecord.stop();
-                audioRecord.release();
-                Log.d("CheckAudioPermission", "录音机被占用");
-            }
+            audioRecord.stop();
+            audioRecord.release();
+            Log.d("CheckAudioPermission", "录音机被占用");
             return STATE_RECORDING;
         } else {
             //检测是否可以获取录音结果
@@ -52,44 +49,19 @@ public class PermissionUtil {
 
 
             if (readSize <= 0) {
-                if (audioRecord != null) {
-                    audioRecord.stop();
-                    audioRecord.release();
+                audioRecord.stop();
+                audioRecord.release();
 
-                }
                 Log.d("CheckAudioPermission", "录音的结果为空");
                 return STATE_NO_PERMISSION;
 
             } else {
-                if (audioRecord != null) {
-                    audioRecord.stop();
-                    audioRecord.release();
-
-                }
+                audioRecord.stop();
+                audioRecord.release();
 
                 return STATE_SUCCESS;
             }
         }
     }
 
-    public synchronized static boolean isCameraUseable(int cameraID) {
-        boolean canUse = true;
-        Camera mCamera = null;
-        try {
-            mCamera = Camera.open(cameraID);
-            // setParameters 是针对魅族MX5。MX5通过Camera.open()拿到的Camera对象不为null
-            Camera.Parameters mParameters = mCamera.getParameters();
-            mCamera.setParameters(mParameters);
-        } catch (Exception e) {
-            e.printStackTrace();
-            canUse = false;
-        } finally {
-            if (mCamera != null) {
-                mCamera.release();
-            } else {
-                canUse = false;
-            }
-        }
-        return canUse;
-    }
 }

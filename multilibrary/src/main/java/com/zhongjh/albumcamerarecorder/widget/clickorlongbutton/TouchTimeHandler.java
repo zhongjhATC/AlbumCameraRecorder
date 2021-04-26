@@ -42,6 +42,7 @@ public class TouchTimeHandler
         sendEmptyMessageDelayed(0, timeDelayed);
     }
 
+    @Override
     public void handleMessage(Message paramMessage) {
         if (task != null) {
             task.run();

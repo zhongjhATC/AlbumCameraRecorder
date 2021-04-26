@@ -213,8 +213,9 @@ public final class GlobalSetting implements GlobalSettingApi {
             fragment.startActivityForResult(intent, requestCode);
         } else {
             activity.startActivityForResult(intent, requestCode);
-            if (mGlobalSpec.isCutscenes)
+            if (mGlobalSpec.isCutscenes) {
                 activity.overridePendingTransition(R.anim.activity_open, 0);
+            }
         }
 
     }

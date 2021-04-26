@@ -105,14 +105,15 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         return matissFragment;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
         this.mActivity = activity;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.mContext = context;
         mSelectedCollection = new SelectedItemCollection(getContext());
@@ -204,8 +205,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             startActivityForResult(intent, REQUEST_CODE_PREVIEW);
-            if (mGlobalSpec.isCutscenes)
+            if (mGlobalSpec.isCutscenes) {
                 mActivity.overridePendingTransition(R.anim.activity_open, 0);
+            }
         });
 
         // 确认当前选择的图片
@@ -309,8 +311,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
+        if (resultCode != RESULT_OK) {
             return;
+        }
         // 请求的预览界面
         if (requestCode == REQUEST_CODE_PREVIEW) {
             Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
@@ -410,8 +413,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 // 弹出窗口提示大于xxmb
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.error_over_original_size, mAlbumSpec.originalMaxSize));
-                if (this.getFragmentManager() == null)
+                if (this.getFragmentManager() == null) {
                     return;
+                }
                 incapableDialog.show(this.getFragmentManager(),
                         IncapableDialog.class.getName());
 
@@ -486,11 +490,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.empty_view.setVisibility(View.GONE);
             if (!mIsRefresh) {
                 Fragment fragment = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
-                if (getFragmentManager() != null)
+                if (getFragmentManager() != null) {
                     getFragmentManager()
                             .beginTransaction()
                             .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
                             .commitAllowingStateLoss();
+                }
             }
         }
     }

@@ -55,7 +55,9 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             initViews();
             mImgView.setImageBitmap(bitmap);
             onCreated();
-        } else finish();
+        } else {
+            finish();
+        }
     }
 
     public void onCreated() {
@@ -139,8 +141,9 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
 
     @Override
     public final void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (checkedId != -1)
+        if (checkedId != -1) {
             onColorChanged(mColorGroup.getCheckColor());
+        }
     }
 
     public void setOpDisplay(int op) {

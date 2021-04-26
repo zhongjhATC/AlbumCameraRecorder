@@ -176,7 +176,7 @@ public class PlayView extends FrameLayout {
      * 播放
      */
     public void play() {
-        if (!TextUtils.isEmpty(mRecordingItem.getFilePath()))
+        if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
             try {
                 mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
                 //采用同步准备，使用prepare方法时，用户进入该界面需要等待几秒，如同死机一般，，，
@@ -184,6 +184,7 @@ public class PlayView extends FrameLayout {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
     }
 
     /**
@@ -322,16 +323,19 @@ public class PlayView extends FrameLayout {
     class MySeekbar implements SeekBar.OnSeekBarChangeListener {
 
         //当进度条变化时触发
+        @Override
         public void onProgressChanged(SeekBar seekBar, int progress,
                                       boolean fromUser) {
         }
 
         //开始拖拽进度条
+        @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
             isChanging = true;
         }
 
         //停止拖拽进度条
+        @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             mMediaPlayer.seekTo(mViewHolder.seekbar.getProgress());
             mViewHolder.tvCurrentProgress.setText(generateTime(mMediaPlayer.getCurrentPosition()) + "/");

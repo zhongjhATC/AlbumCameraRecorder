@@ -19,7 +19,9 @@ public class PackageManagerUtils {
             FeatureInfo[] features = pm.getSystemAvailableFeatures();
             if (features != null) {
                 for (FeatureInfo f : features) {
-                    if (f != null && PackageManager.FEATURE_CAMERA_FLASH.equals(f.name));
+                    if (f != null && PackageManager.FEATURE_CAMERA_FLASH.equals(f.name)) {
+                        ;
+                    }
                     return true;
                 }
             }

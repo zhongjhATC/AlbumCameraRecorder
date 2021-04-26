@@ -24,7 +24,9 @@ public class HandleBackUtil {
     public static boolean handleBackPress(FragmentManager fragmentManager) {
         List<Fragment> fragments = fragmentManager.getFragments();
 
-        if (fragments == null) return false;
+        if (fragments == null) {
+            return false;
+        }
 
         for (int i = fragments.size() - 1; i >= 0; i--) {
             Fragment child = fragments.get(i);
@@ -57,7 +59,7 @@ public class HandleBackUtil {
     public static boolean isFragmentBackHandled(Fragment fragment) {
         return fragment != null
                 && fragment.isVisible()
-                && fragment.getUserVisibleHint() //for ViewPager
+                && fragment.getUserVisibleHint() // for ViewPager
                 && fragment instanceof HandleBackInterface
                 && ((HandleBackInterface) fragment).onBackPressed();
     }

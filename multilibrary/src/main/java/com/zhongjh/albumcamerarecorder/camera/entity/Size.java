@@ -55,7 +55,9 @@ public class Size {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static List<Size> fromList2(List<android.util.Size> sizes) {
-        if (sizes == null) return null;
+        if (sizes == null) {
+            return null;
+        }
         List<Size> result = new ArrayList<>(sizes.size());
 
         for (android.util.Size size : sizes) {
@@ -67,7 +69,9 @@ public class Size {
 
     @SuppressWarnings("deprecation")
     public static List<Size> fromList(List<Camera.Size> sizes) {
-        if (sizes == null) return null;
+        if (sizes == null) {
+            return null;
+        }
         List<Size> result = new ArrayList<>(sizes.size());
 
         for (Camera.Size size : sizes) {
@@ -79,7 +83,9 @@ public class Size {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static Size[] fromArray2(android.util.Size[] sizes) {
-        if (sizes == null) return null;
+        if (sizes == null) {
+            return null;
+        }
         Size[] result = new Size[sizes.length];
 
         for (int i = 0; i < sizes.length; ++i) {
@@ -91,7 +97,9 @@ public class Size {
 
     @SuppressWarnings("deprecation")
     public static Size[] fromArray(Camera.Size[] sizes) {
-        if (sizes == null) return null;
+        if (sizes == null) {
+            return null;
+        }
         Size[] result = new Size[sizes.length];
 
         for (int i = 0; i < sizes.length; ++i) {

@@ -1,26 +1,19 @@
-package com.zhongjh.albumcamerarecorder.utils;
+package gaode.zhongjh.com.common.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Insets;
+import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.view.WindowMetrics;
 
 /**
  * 获取屏幕分辨率
+ * @author zhongjh
  */
 public class DisplayMetricsUtils {
-
-    /**
-     * @param context 上下文
-     * @return DisplayMetrics对象
-     */
-    public static DisplayMetrics getDisplayMetrics(Context context) {
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics metrics = new DisplayMetrics();
-        assert windowManager != null;
-        windowManager.getDefaultDisplay().getMetrics(metrics);
-        return metrics;
-    }
 
     /**
      * 获取屏幕分辨率-宽
@@ -29,8 +22,17 @@ public class DisplayMetricsUtils {
      * @return 宽
      */
     public static int getScreenWidth(Context context) {
-        DisplayMetrics metrics = getDisplayMetrics(context);
-        return metrics.widthPixels;
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
+            Insets insets = windowMetrics.getWindowInsets()
+                    .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
+            return windowMetrics.getBounds().width() - insets.left - insets.right;
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+            return displayMetrics.widthPixels;
+        }
     }
 
     /**
@@ -40,8 +42,17 @@ public class DisplayMetricsUtils {
      * @return 高
      */
     public static int getScreenHeight(Context context) {
-        DisplayMetrics metrics = getDisplayMetrics(context);
-        return metrics.heightPixels;
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
+            Insets insets = windowMetrics.getWindowInsets()
+                    .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
+            return windowMetrics.getBounds().height() - insets.bottom  - insets.top;
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+            return displayMetrics.heightPixels;
+        }
     }
 
     /**

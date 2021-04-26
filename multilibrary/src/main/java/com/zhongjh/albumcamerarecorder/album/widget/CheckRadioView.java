@@ -1,10 +1,14 @@
 package com.zhongjh.albumcamerarecorder.album.widget;
 
 import android.content.Context;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.appcompat.widget.AppCompatImageView;
+
+import android.os.Build;
 import android.util.AttributeSet;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -45,11 +49,19 @@ public class CheckRadioView extends AppCompatImageView {
         if (enable) {
             setImageResource(R.drawable.ic_radio_button_checked_white_24dp);
             mDrawable = getDrawable();
-            mDrawable.setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                mDrawable.setColorFilter(new BlendModeColorFilter(mSelectedColor, BlendMode.SRC_IN));
+            } else {
+                mDrawable.setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
+            }
         } else {
             setImageResource(R.drawable.ic_radio_button_unchecked_white_24dp);
             mDrawable = getDrawable();
-            mDrawable.setColorFilter(mUnSelectUdColor, PorterDuff.Mode.SRC_IN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                mDrawable.setColorFilter(new BlendModeColorFilter(mUnSelectUdColor, BlendMode.SRC_IN));
+            } else {
+                mDrawable.setColorFilter(mUnSelectUdColor, PorterDuff.Mode.SRC_IN);
+            }
         }
     }
 
@@ -58,6 +70,10 @@ public class CheckRadioView extends AppCompatImageView {
         if (mDrawable == null) {
             mDrawable = getDrawable();
         }
-        mDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mDrawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        } else {
+            mDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        }
     }
 }

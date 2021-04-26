@@ -1,10 +1,9 @@
 package com.zhongjh.albumcamerarecorder;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -13,28 +12,43 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 
 import java.util.ArrayList;
 
+import gaode.zhongjh.com.common.utils.StatusBarUtils;
+
+import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
+
 /**
  * 包含三大fragment
- * Created by zhongjh on 2018/8/22.
+ *
+ * @author zhongjh
+ * @date 2018/8/22
  */
 public class MainActivity extends AppCompatActivity {
 
     private FragmentPagerAdapter adapterViewPager;
 
-    // 底部控件
+    private final static int ALBUM = 0;
+    private final static int CAMERA = 1;
+    private final static int RECORDER = 2;
+
+    /**
+     * 底部控件
+     */
     private TabLayout mTabLayout;
-    // viewPager
+    /**
+     * viewPager
+     */
     private NoScrollViewPager mVpPager;
-    private int mDefaultPosition;// 默认索引
+    /**
+     * 默认索引
+     */
+    private int mDefaultPosition;
 
     GlobalSpec mSpec;
 
@@ -53,10 +67,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_zjh);
 
         mVpPager = findViewById(R.id.viewPager);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), mSpec);
+        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(),BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, mSpec);
         mVpPager.setAdapter(adapterViewPager);
         mVpPager.setOffscreenPageLimit(3);
-        mVpPager.setCurrentItem(mDefaultPosition); // 根据配置默认选第几个
+        // 根据配置默认选第几个
+        mVpPager.setCurrentItem(mDefaultPosition);
         // 底部
         mTabLayout = findViewById(R.id.tableLayout);
         // 判断只有一个的时候
@@ -80,8 +95,10 @@ public class MainActivity extends AppCompatActivity {
     public void finish() {
         super.finish();
         if (mSpec.isCutscenes)
-            //关闭窗体动画显示
+        //关闭窗体动画显示
+        {
             this.overridePendingTransition(0, R.anim.activity_close);
+        }
     }
 
     /**
@@ -134,17 +151,17 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> mTitles = new ArrayList<>(); // 标题
 
-        public MyPagerAdapter(FragmentManager fragmentManager, GlobalSpec mSpec) {
-            super(fragmentManager);
+        public MyPagerAdapter(@NonNull FragmentManager fm, int behavior, GlobalSpec mSpec) {
+            super(fm, behavior);
 
-            int defaultPositionType = 0;// 默认选择谁的类型
+            int defaultPositionType = ALBUM;// 默认选择谁的类型
 
-            if (mSpec.defaultPosition == 2) {
+            if (mSpec.defaultPosition == RECORDER) {
                 // 默认语音
-                defaultPositionType = 2;
-            } else if (mSpec.defaultPosition == 1) {
+                defaultPositionType = RECORDER;
+            } else if (mSpec.defaultPosition == CAMERA) {
                 // 默认录制
-                defaultPositionType = 1;
+                defaultPositionType = CAMERA;
             }
 
             // 根据相关配置做相应的初始化
@@ -157,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (mSpec.cameraSetting != null) {
                 if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
-                    if (defaultPositionType == 1) {
+                    if (defaultPositionType == CAMERA) {
                         mDefaultPosition = numItems;
                     }
                     numItems++;
@@ -166,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (mSpec.recorderSetting != null) {
                 if (mSpec.maxAudioSelectable > 0) {
-                    if (defaultPositionType == 2) {
+                    if (defaultPositionType == RECORDER) {
                         mDefaultPosition = numItems;
                     }
                     numItems++;
@@ -183,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Returns the fragment to display for that page
+        @NonNull
         @Override
         public Fragment getItem(int position) {
             switch (mTitles.get(position)) {
@@ -191,12 +209,11 @@ public class MainActivity extends AppCompatActivity {
                         return MatissFragment.newInstance(0);
                     }
                     return MatissFragment.newInstance(50);
-                case "拍照":
-                    return CameraFragment.newInstance();
                 case "录音":
                     return SoundRecordingFragment.newInstance();
+                case "拍照":
                 default:
-                    return null;
+                    return CameraFragment.newInstance();
             }
         }
 

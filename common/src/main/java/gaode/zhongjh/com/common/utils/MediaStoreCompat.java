@@ -6,11 +6,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+
 import androidx.core.content.FileProvider;
 import androidx.core.os.EnvironmentCompat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -22,13 +22,18 @@ import gaode.zhongjh.com.common.entity.SaveStrategy;
 
 /**
  * 有关多媒体的文件操作
- * Created by zhongjh on 2018/8/23.
+ *
+ * @author zhongjh
+ * @date 2018/8/23
  */
 public class MediaStoreCompat {
 
     private final WeakReference<Context> mContext;
 
-    private SaveStrategy mSaveStrategy;           // 设置目录
+    /**
+     * 设置目录
+     */
+    private SaveStrategy mSaveStrategy;
 
     public MediaStoreCompat(Context context) {
         mContext = new WeakReference<>(context);
@@ -62,10 +67,10 @@ public class MediaStoreCompat {
      * @param type 0是图片 1是视频 2是音频
      * @return 临时文件
      */
-    public File createFile(int type) throws IOException {
+    public File createFile(int type) {
         String timeStamp =
                 new SimpleDateFormat("yyyyMMdd_HHmmssS", Locale.getDefault()).format(new Date());
-        String fileName = null;
+        String fileName;
         switch (type) {
             case 0:
                 fileName = String.format("JPEG_%s.jpg", timeStamp);
@@ -74,6 +79,7 @@ public class MediaStoreCompat {
                 fileName = String.format("VIDEO_%s.mp4", timeStamp);
                 break;
             case 2:
+            default:
                 fileName = String.format("AUDIO_%s.mp3", timeStamp);
                 break;
         }
@@ -88,6 +94,7 @@ public class MediaStoreCompat {
                     storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_MOVIES + File.separator + mSaveStrategy.directory);
                     break;
                 case 2:
+                default:
                     storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_MUSIC + File.separator + mSaveStrategy.directory);
                     break;
             }
@@ -105,7 +112,6 @@ public class MediaStoreCompat {
         }
 
         // Avoid joining path components manually
-        assert fileName != null;
         File tempFile = new File(storageDir, fileName);
 
         // Handle the situation that user's external storage is not ready
@@ -124,12 +130,7 @@ public class MediaStoreCompat {
      * @return File
      */
     public File getFilePath(int type) {
-        try {
-            return createFile(type);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return createFile(type);
     }
 
     /**
@@ -138,20 +139,14 @@ public class MediaStoreCompat {
      * @return 返回file的路径
      */
     public File saveFileByBitmap(Bitmap bitmap) {
-        File file = null;
-        try {
-            file = createFile(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File file;
+        file = createFile(0);
         try {
             assert file != null;
             FileOutputStream out = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
             out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

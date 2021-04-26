@@ -433,8 +433,9 @@ public class SoundRecordingFragment extends BaseFragment {
         new Thread(() -> {
             if (isShort) {
                 // 如果是短时间的，删除该文件
-                if (mFile.exists())
+                if (mFile.exists()) {
                     mFile.delete();
+                }
             } else {
                 long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
                 // 存储到缓存的文件地址

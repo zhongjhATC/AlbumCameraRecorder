@@ -179,8 +179,9 @@ public class IMGEditActivity extends IMGEditBaseActivity {
 
     @Override
     public void onColorChanged(int checkedColor) {
-        if (mImgView.getMode() != IMGMode.DOODLE)
+        if (mImgView.getMode() != IMGMode.DOODLE) {
             onModeClick(IMGMode.DOODLE);
+        }
         mImgView.setPenColor(checkedColor);
     }
 }

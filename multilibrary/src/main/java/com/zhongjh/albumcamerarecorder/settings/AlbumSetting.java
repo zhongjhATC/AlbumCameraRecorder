@@ -71,7 +71,9 @@ public class AlbumSetting implements AlbumSettingApi {
 
     @Override
     public AlbumSetting spanCount(int spanCount) {
-        if (spanCount < 1) throw new IllegalArgumentException("spanCount cannot be less than 1");
+        if (spanCount < 1) {
+            throw new IllegalArgumentException("spanCount cannot be less than 1");
+        }
         mAlbumSpec.spanCount = spanCount;
         return this;
     }
@@ -84,8 +86,9 @@ public class AlbumSetting implements AlbumSettingApi {
 
     @Override
     public AlbumSetting thumbnailScale(float scale) {
-        if (scale <= 0f || scale > 1f)
+        if (scale <= 0f || scale > 1f) {
             throw new IllegalArgumentException("缩略图比例必须介于(0.0, 1.0]之间");
+        }
         mAlbumSpec.thumbnailScale = scale;
         return this;
     }

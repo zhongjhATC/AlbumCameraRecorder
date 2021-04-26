@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+/**
+ * @author zhongjh
+ */
 public class BasePhotoMetadataUtils {
 
     private static final String SCHEME_CONTENT = "content";
@@ -22,18 +25,12 @@ public class BasePhotoMetadataUtils {
         }
 
         if (SCHEME_CONTENT.equals(uri.getScheme())) {
-            Cursor cursor = null;
-            try {
-                cursor = resolver.query(uri, new String[]{MediaStore.Images.ImageColumns.DATA},
-                        null, null, null);
+            try (Cursor cursor = resolver.query(uri, new String[]{MediaStore.Images.ImageColumns.DATA},
+                    null, null, null)) {
                 if (cursor == null || !cursor.moveToFirst()) {
                     return null;
                 }
                 return cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
             }
         }
         return uri.getPath();

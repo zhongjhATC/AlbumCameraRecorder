@@ -25,7 +25,7 @@ import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.widget.MediaGridInset;
-import com.zhongjh.albumcamerarecorder.utils.DisplayMetricsUtils;
+import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
@@ -76,8 +76,9 @@ public class MediaSelectionFragment extends Fragment implements
                 matissFragment = fragment;
             }
         }
-        if (matissFragment == null)
+        if (matissFragment == null) {
             throw new IllegalStateException("matissFragment 不能为null");
+        }
         mSelectionProvider = (SelectionProvider) matissFragment;
         mCheckStateListener = (AlbumMediaAdapter.CheckStateListener) matissFragment;
         mOnMediaClickListener = (AlbumMediaAdapter.OnMediaClickListener) matissFragment;

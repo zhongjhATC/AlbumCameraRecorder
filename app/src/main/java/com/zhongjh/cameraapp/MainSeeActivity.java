@@ -35,7 +35,9 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
  * 这是用于设置加载数据的
  * 因为这不是重点开发加上时间因素，目前不做在线播放音频和视频。
  * 大体逻辑是先下载文件到指定目录，然后再赋值，播放。
- * Created by zhongjh on 2019/2/21.
+ *
+ * @author zhongjh
+ * @date 2019/2/21
  */
 public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
@@ -69,8 +71,9 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
-                if (isOk)
+                if (isOk) {
                     openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                }
             }
 
             @Override
@@ -224,6 +227,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * @param alreadyAudioCount 已经存在显示的几个音频
      *                          打开窗体
      */
+    @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         mGlobalSetting.maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
                 .forResult(REQUEST_CODE_CHOOSE);

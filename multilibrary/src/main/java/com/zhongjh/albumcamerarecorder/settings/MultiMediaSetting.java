@@ -192,8 +192,9 @@ public final class MultiMediaSetting {
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
         if (globalSpec != null) {
-            if (globalSpec.isCutscenes)
+            if (globalSpec.isCutscenes) {
                 activity.overridePendingTransition(R.anim.activity_open, 0);
+            }
         } else {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
@@ -221,8 +222,9 @@ public final class MultiMediaSetting {
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
         if (globalSpec != null) {
-            if (globalSpec.isCutscenes)
+            if (globalSpec.isCutscenes) {
                 activity.overridePendingTransition(R.anim.activity_open, 0);
+            }
         } else {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
@@ -284,8 +286,9 @@ public final class MultiMediaSetting {
         activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
         if (globalSpec != null) {
-            if (globalSpec.isCutscenes)
+            if (globalSpec.isCutscenes) {
                 activity.overridePendingTransition(R.anim.activity_open, 0);
+            }
         } else {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }

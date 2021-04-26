@@ -584,8 +584,9 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         Log.d(TAG, "onScale");
         if (mPointerCount > 1) {
             // 当图片本身大于20倍的时候并且缩放操作要放大的时候取消缩放。缩放大于20倍的时候，返回上一次的变形，防止裁剪因为高度不大于0而导致闪退
-            if (mImage.getScale() > 20 && detector.getScaleFactor() > 1)
+            if (mImage.getScale() > 20 && detector.getScaleFactor() > 1) {
                 return true;
+            }
             mImage.onScale(detector.getScaleFactor(),
                     getScrollX() + detector.getFocusX(),
                     getScrollY() + detector.getFocusY());

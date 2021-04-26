@@ -50,7 +50,9 @@ final class ExifInterfaceCompat {
      * @throws IOException something wrong with I/O.
      */
     public static ExifInterface newInstance(String filename) throws IOException {
-        if (filename == null) throw new NullPointerException("filename should not be null");
+        if (filename == null) {
+            throw new NullPointerException("filename should not be null");
+        }
         return new ExifInterface(filename);
     }
 

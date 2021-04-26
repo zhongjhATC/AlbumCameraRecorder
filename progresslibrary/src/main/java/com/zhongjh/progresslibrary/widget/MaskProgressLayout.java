@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
+import androidx.core.content.ContextCompat;
 
 import android.net.Uri;
 import android.util.AttributeSet;
@@ -115,7 +116,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
         int maskingColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_maskingColor, colorPrimary);
         int maskingTextSize = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_maskingTextSize, 12);
-        int maskingTextColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_maskingTextColor, getContext().getResources().getColor(R.color.thumbnail_placeholder));
+
+        int maskingTextColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_maskingTextColor, ContextCompat.getColor(getContext(), R.color.thumbnail_placeholder));
         String maskingTextContent = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_maskingTextContent);
 
         // endregion 遮罩层相关属性
@@ -139,7 +141,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         mMediaStoreCompat.setSaveStrategy(saveStrategy);
 
         if (drawable == null) {
-            drawable = getResources().getDrawable(R.color.thumbnail_placeholder);
+            drawable = ContextCompat.getDrawable(getContext(), R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
         mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable, maxCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
@@ -363,7 +365,9 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         this.mViewHolder.imgRemoveRecorder.setOnClickListener(v -> {
             if (audioList.size() > 0)
                 // 需要判断，防止是网址状态未提供实体数据的
+            {
                 listener.onItemClose(MaskProgressLayout.this, audioList.get(0));
+            }
             // 隐藏音频相关控件
             mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
             mViewHolder.playView.setVisibility(View.GONE);
@@ -415,10 +419,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     private void isShowRemovceRecorder() {
         if (isOperation) {
             // 如果是可操作的，就判断是否有音频数据
-            if (this.mViewHolder.playView.getVisibility() == View.VISIBLE || this.mViewHolder.groupRecorderProgress.getVisibility() == View.VISIBLE)
+            if (this.mViewHolder.playView.getVisibility() == View.VISIBLE || this.mViewHolder.groupRecorderProgress.getVisibility() == View.VISIBLE) {
                 mViewHolder.imgRemoveRecorder.setVisibility(View.VISIBLE);
-            else
+            } else {
                 mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
+            }
         } else {
             mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
         }

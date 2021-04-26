@@ -72,8 +72,9 @@ public class IncapableCause {
      * @param cause 本身
      */
     public static void handleCause(Context context, IncapableCause cause) {
-        if (cause == null)
+        if (cause == null) {
             return;
+        }
 
         switch (cause.mForm) {
             case NONE:

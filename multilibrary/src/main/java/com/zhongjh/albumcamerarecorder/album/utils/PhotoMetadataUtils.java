@@ -32,6 +32,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+/**
+ * @author zhongjh
+ */
 public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
     private static final String TAG = PhotoMetadataUtils.class.getSimpleName();
     private static final int MAX_WIDTH = 1600;
@@ -52,7 +55,8 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
      * @return xy
      */
     public static Point getBitmapSize(Uri uri, Activity activity) {
-        ContentResolver resolver = activity.getContentResolver(); // ContentResolver共享数据库
+        // ContentResolver共享数据库
+        ContentResolver resolver = activity.getContentResolver();
         Point imageSize = getBitmapBound(resolver, uri);
         int w = imageSize.x;
         int h = imageSize.y;
@@ -61,7 +65,9 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
             w = imageSize.y;
             h = imageSize.x;
         }
-        if (h == 0) return new Point(MAX_WIDTH, MAX_WIDTH);
+        if (h == 0) {
+            return new Point(MAX_WIDTH, MAX_WIDTH);
+        }
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         // 获取屏幕的宽度高度
@@ -70,10 +76,6 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
         // 屏幕宽度 / 图片宽度 = ？？
         float widthScale = screenWidth / w;
         float heightScale = screenHeight / h;
-//        if (widthScale > heightScale) {
-//            return new Point((int) (w * widthScale), (int) (h * heightScale));
-//        }
-        // ?? * 宽度
         return new Point((int) (w * widthScale), (int) (h * heightScale));
     }
 

@@ -93,8 +93,9 @@ public class PhotoVideoButton extends View {
 
 
     private void init(int size) {
-        if (this.mButtonSize != 0 && this.mButtonSize != -1)
+        if (this.mButtonSize != 0 && this.mButtonSize != -1) {
             return;
+        }
         this.mButtonSize = size;
         this.mButtonRadius = size / 2.0f; // 计算半径
         mButtonOutsideRadius = mButtonRadius; // 外圆半径
@@ -155,17 +156,20 @@ public class PhotoVideoButton extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mClickOrLongListener != null)
+                if (mClickOrLongListener != null) {
                     mClickOrLongListener.actionDown();
+                }
                 // 按下触发事件,必须当前状态是空闲状态
-                if (event.getPointerCount() > 1 || mState != STATE_IDLE)
+                if (event.getPointerCount() > 1 || mState != STATE_IDLE) {
                     break;
+                }
                 event_Y = event.getY(); // 记录Y值
                 mState = STATE_PRESS;        //修改当前状态为点击按下
 
                 // 判断按钮状态是否为可录制状态
-                if ((mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH))
+                if ((mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH)) {
                     postDelayed(mLongPressRunnable, 500);    //同时延长500启动长按后处理的逻辑Runnable
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 // 根据当前按钮的状态进行相应的处理
@@ -185,8 +189,9 @@ public class PhotoVideoButton extends View {
         @Override
         public void run() {
             // 判断如果当前是休闲状态则不做任何事
-            if (mState == STATE_IDLE)
+            if (mState == STATE_IDLE) {
                 return;
+            }
 
             mState = STATE_LONG_PRESS;
             //没有录制权限
@@ -281,10 +286,11 @@ public class PhotoVideoButton extends View {
      */
     private void recordEnd() {
         if (mClickOrLongListener != null) {
-            if (mRecordedTime < mMinDuration)
+            if (mRecordedTime < mMinDuration) {
                 mClickOrLongListener.onLongClickShort(mRecordedTime);//回调录制时间过短
-            else
+            } else {
                 mClickOrLongListener.onLongClickEnd(mRecordedTime);  //回调录制结束
+            }
         }
         resetRecordAnim();  //重置按钮状态
     }
@@ -359,8 +365,9 @@ public class PhotoVideoButton extends View {
                 super.onAnimationEnd(animation);
                 //设置为录制状态
                 if (mState == STATE_LONG_PRESS) {
-                    if (mClickOrLongListener != null)
+                    if (mClickOrLongListener != null) {
                         mClickOrLongListener.onLongClick();
+                    }
                     mState = STATE_RECORDERING;
                     mTimer.start();
                 }

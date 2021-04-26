@@ -58,8 +58,9 @@ public class MainActivity extends BaseActivity {
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
-                if (isOk)
+                if (isOk) {
                     openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                }
             }
 
             @Override
@@ -133,8 +134,9 @@ public class MainActivity extends BaseActivity {
         cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));// 最长录制时间
         cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()));// 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
 
-        if (mBinding.cbVideoEdit.isChecked())
+        if (mBinding.cbVideoEdit.isChecked()) {
             cameraSetting.videoEdit(new VideoEditManager()); // 启动这个即可开启视频编辑功能
+        }
         // endregion 拍摄有关设置
 
         //  region 相册
@@ -176,12 +178,13 @@ public class MainActivity extends BaseActivity {
 
         //  全局
         Set<MimeType> mimeTypes = null;
-        if (mBinding.rbAllAll.isChecked())
+        if (mBinding.rbAllAll.isChecked()) {
             mimeTypes = MimeType.ofAll();
-        else if (mBinding.rbAllVideo.isChecked())
+        } else if (mBinding.rbAllVideo.isChecked()) {
             mimeTypes = MimeType.ofVideo();
-        else if (mBinding.rbAllImage.isChecked())
+        } else if (mBinding.rbAllImage.isChecked()) {
             mimeTypes = MimeType.ofImage();
+        }
 
         GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
         globalSetting.defaultPosition(1);// 默认从第二个开始
@@ -189,30 +192,40 @@ public class MainActivity extends BaseActivity {
         globalSetting.isImageEdit(mBinding.cbIsEdit.isChecked()); // 是否支持编辑图片，预览相册、拍照处拥有编辑功能
         if (mBinding.cbAlbum.isChecked())
             // 开启相册功能
+        {
             globalSetting.albumSetting(albumSetting);
+        }
         if (mBinding.cbCamera.isChecked())
             // 开启拍摄功能
+        {
             globalSetting.cameraSetting(cameraSetting);
+        }
         if (mBinding.cbRecorder.isChecked())
             // 开启录音功能
+        {
             globalSetting.recorderSetting(recorderSetting);
+        }
 
         // 自定义失败信息
         globalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show());
 
         // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
-        if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString()))
+        if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString())) {
             globalSetting.allStrategy(
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAllFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-        if (!TextUtils.isEmpty(mBinding.etPictureFile.getText().toString()))
+        }
+        if (!TextUtils.isEmpty(mBinding.etPictureFile.getText().toString())) {
             globalSetting.pictureStrategy(
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etPictureFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-        if (!TextUtils.isEmpty(mBinding.etAudioFile.getText().toString()))
+        }
+        if (!TextUtils.isEmpty(mBinding.etAudioFile.getText().toString())) {
             globalSetting.audioStrategy(
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAudioFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-        if (!TextUtils.isEmpty(mBinding.etVideoFile.getText().toString()))
+        }
+        if (!TextUtils.isEmpty(mBinding.etVideoFile.getText().toString())) {
             globalSetting.videoStrategy(
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
+        }
 
         //                                            .imageEngine(new GlideEngine())  // for glide-V3
         globalSetting.imageEngine(new Glide4Engine())    // for glide-V4

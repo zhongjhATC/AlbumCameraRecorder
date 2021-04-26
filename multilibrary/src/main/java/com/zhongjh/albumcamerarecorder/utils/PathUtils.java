@@ -39,14 +39,15 @@ public class PathUtils {
                 }
 
                 // TODO handle non-primary volumes
-            } else if (isDownloadsDocument(uri)) { // DownloadsProvider
-
+            } else if (isDownloadsDocument(uri)) {
+                // DownloadsProvider
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 
                 return getDataColumn(context, contentUri, null, null);
-            } else if (isMediaDocument(uri)) { // MediaProvider
+            } else if (isMediaDocument(uri)) {
+                // MediaProvider
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
@@ -67,9 +68,11 @@ public class PathUtils {
 
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
-        } else if ("content".equalsIgnoreCase(uri.getScheme())) { // MediaStore (and general)
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            // MediaStore (and general)
             return getDataColumn(context, uri, null, null);
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) { // File
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            // File
             return uri.getPath();
         }
 
@@ -102,8 +105,9 @@ public class PathUtils {
                 return cursor.getString(columnIndex);
             }
         } finally {
-            if (cursor != null)
+            if (cursor != null) {
                 cursor.close();
+            }
         }
         return null;
     }

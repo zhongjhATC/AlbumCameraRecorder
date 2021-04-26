@@ -85,6 +85,8 @@ public class BitmapUtils {
                     values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + directory);
                     external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                     break;
+                default:
+                    break;
             }
 
             // 需要增加这个，不然AndroidQ识别不到TAG_DATETIME_ORIGINAL创建时间
@@ -109,12 +111,12 @@ public class BitmapUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return uri;
         } else {
             String photoPath = file.getAbsolutePath();
             uri = mediaStoreCompat.getUri(photoPath);
+            // 这个判断AndroidQ的就是用来解决ACTION_MEDIA_SCANNER_SCAN_FILE过时的方式
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-            return uri;
         }
+        return uri;
     }
 }

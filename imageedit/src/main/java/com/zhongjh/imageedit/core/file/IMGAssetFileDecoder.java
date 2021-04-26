@@ -22,6 +22,7 @@ public class IMGAssetFileDecoder extends IMGDecoder {
         mContext = context;
     }
 
+    @Override
     public Bitmap decode(BitmapFactory.Options options) {
         Uri uri = getUri();
         if (uri == null) {

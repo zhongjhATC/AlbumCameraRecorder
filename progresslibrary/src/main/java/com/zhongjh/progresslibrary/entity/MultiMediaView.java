@@ -10,13 +10,24 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
  * 多媒体实体类
- * Created by zhongjh on 2019/1/22.
+ *
+ * @author zhongjh
+ * @date 2019/1/22
  */
 public class MultiMediaView extends MultiMedia {
 
-    private MaskProgressLayout maskProgressLayout;// 绑定的父列表view
-    private View itemView;// 绑定子view,包含其他所有控件（显示view,删除view）
-    private MaskProgressView maskProgressView; // 绑定子view，用于显示图片、视频的view
+    /**
+     * 绑定的父列表view
+     */
+    private MaskProgressLayout maskProgressLayout;
+    /**
+     * 绑定子view,包含其他所有控件（显示view,删除view）
+     */
+    private View itemView;
+    /**
+     * 绑定子view，用于显示图片、视频的view
+     */
+    private MaskProgressView maskProgressView;
 
     public MultiMediaView(@MultimediaTypes int  multiMediaState) {
         setType(multiMediaState);
@@ -61,4 +72,15 @@ public class MultiMediaView extends MultiMedia {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        // 父类已重写
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        // 父类已重写
+        return super.hashCode();
+    }
 }

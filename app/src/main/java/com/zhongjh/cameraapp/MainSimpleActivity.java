@@ -158,13 +158,19 @@ public class MainSimpleActivity extends BaseActivity {
 
         if (mBinding.cbAlbum.isChecked())
             // 开启相册功能
+        {
             globalSetting.albumSetting(albumSetting);
+        }
         if (mBinding.cbCamera.isChecked())
             // 开启拍摄功能
+        {
             globalSetting.cameraSetting(cameraSetting);
+        }
         if (mBinding.cbRecorder.isChecked())
             // 开启录音功能
+        {
             globalSetting.recorderSetting(recorderSetting);
+        }
 
         globalSetting
                 .setOnMainListener(errorMessage -> {

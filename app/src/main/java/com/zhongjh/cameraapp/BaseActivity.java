@@ -45,12 +45,18 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected static final int REQUEST_CODE_CHOOSE = 236;
 
-    protected final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
+    /**
+     * 权限申请自定义码
+     */
+    protected final int GET_PERMISSION_REQUEST = 100;
     protected HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
 
     protected abstract MaskProgressLayout getMaskProgressLayout();
 
-    protected boolean isBrowse = false; // 是否浏览
+    /**
+     * 是否浏览
+     */
+    protected boolean isBrowse = false;
 
     /**
      * 公共的打开多媒体事件
@@ -88,10 +94,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                 }
 
                 if (size == 0) {
-                    if (isBrowse)
+                    if (isBrowse) {
                         Toast.makeText(this, "你可以重新打开相关功能", Toast.LENGTH_SHORT).show();
-                    else
+                    } else {
                         startActivityForResult(new Intent(BaseActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
+                    }
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                 }
@@ -130,8 +137,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
+        if (resultCode != RESULT_OK) {
             return;
+        }
         switch (requestCode) {
             case REQUEST_CODE_PREVIEW:
                 // 如果在预览界面点击了确定
@@ -140,8 +148,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                     Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
                     // 获取选择的数据
                     ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                    if (selected == null)
+                    if (selected == null) {
                         return;
+                    }
                     // 循环判断，如果不存在，则删除
                     for (int i = getMaskProgressLayout().getImages().size() - 1; i >= 0; i--) {
                         int k = 0;

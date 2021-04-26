@@ -86,15 +86,17 @@ public class GlobalSpec {
         // 优先取各自的类型，如果没设置则取公共的
         switch (moduleTypes) {
             case ModuleTypes.ALBUM:
-                if (AlbumSpec.getInstance().mimeTypeSet != null)
+                if (AlbumSpec.getInstance().mimeTypeSet != null) {
                     return AlbumSpec.getInstance().mimeTypeSet;
-                else
+                } else {
                     return GlobalSpec.getInstance().mimeTypeSet;
+                }
             case ModuleTypes.CAMERA:
-                if (CameraSpec.getInstance().mimeTypeSet != null)
+                if (CameraSpec.getInstance().mimeTypeSet != null) {
                     return CameraSpec.getInstance().mimeTypeSet;
-                else
+                } else {
                     return GlobalSpec.getInstance().mimeTypeSet;
+                }
 
         }
         return mimeTypeSet;

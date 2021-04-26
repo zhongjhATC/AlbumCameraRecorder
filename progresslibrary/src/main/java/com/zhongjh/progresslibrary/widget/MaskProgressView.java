@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.zhongjh.progresslibrary.utils.DisplayMetricsUtils;
+import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 
 /**
  * 用于图片、视频的加载进度的view
@@ -56,13 +56,15 @@ public class MaskProgressView extends androidx.appcompat.widget.AppCompatImageVi
 
     public void setTextColor(int textColor) {
         this.textColor = textColor;
-        if (textPaint != null)
+        if (textPaint != null) {
             textPaint.setColor(textColor);
+        }
     }
 
     public void setTextString(String textString) {
-        if (!TextUtils.isEmpty(textString))
+        if (!TextUtils.isEmpty(textString)) {
             this.textString = textString;
+        }
     }
 
     // endregion 属性

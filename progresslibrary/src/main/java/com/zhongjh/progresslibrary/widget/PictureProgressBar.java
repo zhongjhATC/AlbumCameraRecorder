@@ -19,15 +19,16 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 
+import androidx.core.content.ContextCompat;
+
 import com.zhongjh.progresslibrary.R;
 
 import java.util.ArrayList;
 
 /**
  * @author yanzhikai_yjk@qq.com
- *         一个在当前进度中心带图片和动画的ProgressBar
+ * 一个在当前进度中心带图片和动画的ProgressBar
  */
-
 public class PictureProgressBar extends View {
     private final String TAG = "PictureProgressBar";
     //画笔
@@ -58,20 +59,21 @@ public class PictureProgressBar extends View {
     private int progressWidth = 100, progressHeight = 30;
     //进度条高度偏移量
     private int progressHeightOffset = 0;
-//    //进度条开始结束位置padding
+    //    //进度条开始结束位置padding
 //    private int paddingStart = 10,paddingEnd = 0;
     //进度条刷新时间
     private int refreshTime = 50;
 
-    private RectF rectFBG = new RectF(), rectFPB = new RectF();
+    private final RectF rectFBG = new RectF();
+    private final RectF rectFPB = new RectF();
 
     //是否使用颜色渐变器
     private boolean isGradient = false;
     //颜色渐变器
     private LinearGradient linearGradient;
     //背景图片和进度条图片
-    private BitmapDrawable barDrawable,backgroundDrawable;
-    private int barDrawableId = 0,backgroundDrawableId = 0;
+    private BitmapDrawable barDrawable, backgroundDrawable;
+    private int barDrawableId = 0, backgroundDrawableId = 0;
 
     private boolean isAnimRun = true;
     //动画模式
@@ -90,8 +92,8 @@ public class PictureProgressBar extends View {
     private boolean isScaleIncrease = true;
 
     //帧动画图片
-    private int drawableIds[];
-    private ArrayList<Drawable> drawableList = new ArrayList<>();
+    private int[] drawableIds;
+    private final ArrayList<Drawable> drawableList = new ArrayList<>();
 
     private int frameIndex = 0;
     private int gradientStartColor = Color.RED, gradientEndColor = Color.YELLOW;
@@ -131,8 +133,8 @@ public class PictureProgressBar extends View {
         gradientStartColor = typedArray.getColor(R.styleable.PictureProgressBar_gradientStartColor, Color.RED);
         gradientEndColor = typedArray.getColor(R.styleable.PictureProgressBar_gradientEndColor, Color.YELLOW);
         isGradient = typedArray.getBoolean(R.styleable.PictureProgressBar_isGradient, false);
-        backgroundDrawableId = typedArray.getResourceId(R.styleable.PictureProgressBar_backgroundDrawable,0);
-        barDrawableId = typedArray.getResourceId(R.styleable.PictureProgressBar_barDrawable,0);
+        backgroundDrawableId = typedArray.getResourceId(R.styleable.PictureProgressBar_backgroundDrawable, 0);
+        barDrawableId = typedArray.getResourceId(R.styleable.PictureProgressBar_barDrawable, 0);
         typedArray.recycle();
         init();
     }
@@ -151,30 +153,30 @@ public class PictureProgressBar extends View {
         paintBar = new Paint();
         paintBar.setColor(barColor);
 
-            //在PreDraw时获取View属性,因为在初始化的时候View还没进行Measure
-            getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    getViewTreeObserver().removeOnPreDrawListener(this);
-                    if (barDrawableId != 0 && backgroundDrawableId != 0)
+        //在PreDraw时获取View属性,因为在初始化的时候View还没进行Measure
+        getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                getViewTreeObserver().removeOnPreDrawListener(this);
+                if (barDrawableId != 0 && backgroundDrawableId != 0) {
                     try {
                         setBarDrawableId(barDrawableId);
                         setBarBackgroundDrawableId(backgroundDrawableId);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                    //是否需要渐变器
-                    if (isGradient) {
-                        if (barDrawable == null) {
-                            linearGradient = new LinearGradient(0, progressHeight / 2, progressWidth, progressHeight / 2, gradientStartColor, gradientEndColor, Shader.TileMode.CLAMP);
-                            paintBar.setShader(linearGradient);
-                        }
-                    }
-                    return false;
                 }
-            });
 
+                //是否需要渐变器
+                if (isGradient) {
+                    if (barDrawable == null) {
+                        linearGradient = new LinearGradient(0, progressHeight / 2, progressWidth, progressHeight / 2, gradientStartColor, gradientEndColor, Shader.TileMode.CLAMP);
+                        paintBar.setShader(linearGradient);
+                    }
+                }
+                return false;
+            }
+        });
 
 
     }
@@ -183,7 +185,7 @@ public class PictureProgressBar extends View {
     protected synchronized void onDraw(Canvas canvas) {
 //        getHandler().removeCallbacksAndMessages(null);
         //获取进度条当前进度的中心点坐标
-        x = (int) ((progressWidth - halfDrawableWidth ) * progressPercentage + halfDrawableWidth);
+        x = (int) ((progressWidth - halfDrawableWidth) * progressPercentage + halfDrawableWidth);
         y = getHeight() / 2;
 
         drawBar(canvas);
@@ -192,7 +194,7 @@ public class PictureProgressBar extends View {
         postInvalidateDelayed(refreshTime);
     }
 
-    //画动画
+    // 画动画
     private void drawAnimPicture(Canvas canvas) {
         if (isAnimRun) {
             switch (animMode) {
@@ -215,7 +217,7 @@ public class PictureProgressBar extends View {
                 case ANIM_FRAME:
                     drawable = drawableList.get(frameIndex);
                     if (drawable == null) {
-                        drawable = getResources().getDrawable(drawableIds[frameIndex]);
+                        drawable = ContextCompat.getDrawable(getContext(), drawableIds[frameIndex]);
                     }
                     drawPicture(canvas);
                     if (frameIndex >= drawableIds.length - 1) {
@@ -241,7 +243,7 @@ public class PictureProgressBar extends View {
             int barIntrinsicWidth = barDrawable.getIntrinsicWidth();
             int barIntrinsicHeight = barDrawable.getIntrinsicHeight();
             final float bgIntrinsicAspect = (float) intrinsicWidth / intrinsicHeight;
-            final float barIntrinsicAspect = (float) barIntrinsicWidth/barIntrinsicHeight;
+            final float barIntrinsicAspect = (float) barIntrinsicWidth / barIntrinsicHeight;
 
             bgWidth = (int) (h * bgIntrinsicAspect);
             barWidth = (int) (h * barIntrinsicAspect);
@@ -279,12 +281,12 @@ public class PictureProgressBar extends View {
             canvas.save();
             canvas.translate(halfDrawableWidth, y - progressHeight / 2 + progressHeightOffset);
             rectFBG.set(0, 0,
-                    progressWidth - halfDrawableWidth , progressHeight);
+                    progressWidth - halfDrawableWidth, progressHeight);
             rectFPB.set(0, 0,
                     x - halfDrawableWidth, progressHeight);
 //            rectFBG.set(0, 0, getWidth(), getHeight());
             canvas.drawRect(rectFBG, paintBackGround);
-            canvas.drawRect(rectFPB,paintBar);
+            canvas.drawRect(rectFPB, paintBar);
             canvas.restore();
         } else {
             //非图片背景处理
@@ -331,6 +333,7 @@ public class PictureProgressBar extends View {
             Log.e(TAG, "drawable is null");
             return;
         }
+        assert drawable != null;
         drawable.setBounds(x - halfDrawableWidth,
                 getHeight() / 2 - halfDrawableHeight + drawableHeightOffset,
                 x + halfDrawableWidth,
@@ -371,7 +374,7 @@ public class PictureProgressBar extends View {
     }
 
 
-    //设置进度
+    // 设置进度
     public synchronized void setProgress(int progress) {
         if (progress <= max) {
             this.progress = progress;
@@ -395,75 +398,56 @@ public class PictureProgressBar extends View {
     }
 
 
-    //设置动画开关
+    // 设置动画开关
     public void setAnimRun(boolean isAnimRun) {
         this.isAnimRun = isAnimRun;
     }
 
-    //设置帧动画时要传入的图片ID数组
+    // 设置帧动画时要传入的图片ID数组
     public void setDrawableIds(int[] drawableIds) {
         this.drawableIds = drawableIds;
         drawableList.clear();
         for (int id : drawableIds) {
-            drawableList.add(getResources().getDrawable(id));
+            drawableList.add(ContextCompat.getDrawable(getContext(), id));
         }
     }
 
-    //设置图片
+    // 设置图片
     public void setPicture(int id) {
-        drawable = getResources().getDrawable(id);
+        drawable = ContextCompat.getDrawable(getContext(), id);
     }
 
-    //设置颜色渐变器
+    // 设置颜色渐变器
     public void setLinearGradient(LinearGradient linearGradient) {
         this.linearGradient = linearGradient;
     }
 
     // 设置进度条图片
     public void setBarBackgroundDrawableId(int id) throws Exception {
-        Drawable drawable = getResources().getDrawable(id);
+        Drawable drawable = ContextCompat.getDrawable(getContext(), id);
         if (drawable instanceof BitmapDrawable) {
             backgroundDrawable = (BitmapDrawable) drawable;
             updateDrawableBounds(progressHeight);
-        }else {
+        } else {
             throw new Exception("输入的id不是BitmapDrawable的id");
         }
     }
 
-//    public void setBarBackgroundDrawable(Drawable backgroundDrawable) throws Exception {
-//        if (drawable instanceof BitmapDrawable) {
-//            this.backgroundDrawable = (BitmapDrawable) backgroundDrawable;
-//            updateDrawableBounds(600, progressHeight);
-//        }else {
-//            throw new Exception("输入的id不是BitmapDrawable的id");
-//        }
-//    }
-
-
     /**
      * 设置进度条背景图片
+     *
      * @param id 图片id
      * @throws Exception 异常
      */
     public void setBarDrawableId(int id) throws Exception {
-        Drawable drawable = getResources().getDrawable(id);
+        Drawable drawable = ContextCompat.getDrawable(getContext(), id);
         if (drawable instanceof BitmapDrawable) {
             barDrawable = (BitmapDrawable) drawable;
             updateDrawableBounds(progressHeight);
-        }else {
+        } else {
             throw new Exception("输入的id不是BitmapDrawable的id");
         }
     }
-
-//    public void setBarDrawable(Drawable drawable) throws Exception {
-////        if (drawable instanceof BitmapDrawable) {
-//            barDrawable = (BitmapDrawable) drawable;
-//            updateDrawableBounds(600, progressHeight);
-////        }else {
-////            throw new Exception("输入的id不是BitmapDrawable的id");
-////        }
-//    }
-
 
     public LinearGradient getLinearGradient() {
         return linearGradient;

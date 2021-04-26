@@ -198,10 +198,11 @@ public class SelectedItemCollection {
     public List<Uri> asListOfUri() {
         List<Uri> uris = new ArrayList<>();
         for (MultiMedia item : mItems) {
-            if (item.getMediaUri() != null)
+            if (item.getMediaUri() != null) {
                 uris.add(item.getMediaUri());
-            else
+            } else {
                 uris.add(item.getUri());
+            }
         }
         return uris;
     }
@@ -214,10 +215,11 @@ public class SelectedItemCollection {
     public List<String> asListOfString() {
         List<String> paths = new ArrayList<>();
         for (MultiMedia item : mItems) {
-            if (item.getMediaUri() != null)
+            if (item.getMediaUri() != null) {
                 paths.add(PathUtils.getPath(mContext, item.getMediaUri()));
-            else
+            } else {
                 paths.add(PathUtils.getPath(mContext, item.getUri()));
+            }
 
         }
         return paths;

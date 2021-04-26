@@ -18,12 +18,15 @@ package com.zhongjh.albumcamerarecorder.album.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.ListPopupWindow;
 
+import android.os.Build;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
@@ -136,7 +139,11 @@ public class AlbumsSpinner {
         int color = ta.getColor(0, 0);
         ta.recycle();
         // 使用设置的主题颜色对目标Drawable(这里是一个小箭头)进行SRC_IN模式合成 达到改变Drawable颜色的效果
-        right.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            right.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        } else {
+            right.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        }
 
         mSelected.setVisibility(View.GONE);
         mSelected.setOnClickListener(v -> {

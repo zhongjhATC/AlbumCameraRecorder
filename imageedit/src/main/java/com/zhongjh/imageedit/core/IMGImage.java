@@ -24,7 +24,6 @@ import java.util.List;
 /**
  * Created by felix on 2017/11/21 下午10:03.
  */
-
 public class IMGImage {
 
     private static final String TAG = "IMGImage";
@@ -34,19 +33,19 @@ public class IMGImage {
     /**
      * 完整图片边框
      */
-    private RectF mFrame = new RectF();
+    private final RectF mFrame = new RectF();
 
     /**
      * 裁剪图片边框（显示的图片区域）
      */
-    private RectF mClipFrame = new RectF();
+    private final RectF mClipFrame = new RectF();
 
-    private RectF mTempClipFrame = new RectF();
+    private final RectF mTempClipFrame = new RectF();
 
     /**
      * 裁剪模式前状态备份
      */
-    private RectF mBackupClipFrame = new RectF();
+    private final RectF mBackupClipFrame = new RectF();
 
     private float mBackupClipRotate = 0;
 
@@ -63,12 +62,12 @@ public class IMGImage {
 
     private boolean isSteady = true;
 
-    private Path mShade = new Path();
+    private final Path mShade = new Path();
 
     /**
      * 裁剪窗口
      */
-    private IMGClipWindow mClipWin = new IMGClipWindow();
+    private final IMGClipWindow mClipWin = new IMGClipWindow();
 
     private boolean isDrawClip = false;
 
@@ -85,7 +84,7 @@ public class IMGImage {
     /**
      * 可视区域，无Scroll 偏移区域
      */
-    private RectF mWindow = new RectF();
+    private final RectF mWindow = new RectF();
 
     /**
      * 是否初始位置
@@ -100,25 +99,27 @@ public class IMGImage {
     /**
      * 为被选中贴片
      */
-    private List<IMGSticker> mBackStickers = new ArrayList<>();
+    private final List<IMGSticker> mBackStickers = new ArrayList<>();
 
     /**
      * 涂鸦路径
      */
-    private List<IMGPath> mDoodles = new ArrayList<>();
+    private final List<IMGPath> mDoodles = new ArrayList<>();
 
     /**
      * 马赛克路径
      */
-    private List<IMGPath> mMosaics = new ArrayList<>();
+    private final List<IMGPath> mMosaics = new ArrayList<>();
 
     private static final int MIN_SIZE = 500;
 
     private static final int MAX_SIZE = 10000;
 
-    private Paint mPaint, mMosaicPaint, mShadePaint;
+    private final Paint mPaint;
+    private Paint mMosaicPaint;
+    private Paint mShadePaint;
 
-    private Matrix M = new Matrix();
+    private final Matrix mMatrix = new Matrix();
 
     private static final boolean DEBUG = false;
 
@@ -179,7 +180,9 @@ public class IMGImage {
     public void setMode(IMGMode mode) {
         Log.d(TAG, "setMode");
 
-        if (this.mMode == mode) return;
+        if (this.mMode == mode) {
+            return;
+        }
 
         moveToBackground(mForeSticker);
 
@@ -199,9 +202,9 @@ public class IMGImage {
             mBackupClipFrame.set(mClipFrame);
 
             float scale = 1 / getScale();
-            M.setTranslate(-mFrame.left, -mFrame.top);
-            M.postScale(scale, scale);
-            M.mapRect(mBackupClipFrame);
+            mMatrix.setTranslate(-mFrame.left, -mFrame.top);
+            mMatrix.postScale(scale, scale);
+            mMatrix.mapRect(mBackupClipFrame);
 
             // 重置裁剪区域
             mClipWin.reset(mClipFrame, getTargetRotate());
@@ -218,9 +221,9 @@ public class IMGImage {
     // TODO
     private void rotateStickers(float rotate) {
         Log.d(TAG, "rotateStickers");
-        M.setRotate(rotate, mClipFrame.centerX(), mClipFrame.centerY());
+        mMatrix.setRotate(rotate, mClipFrame.centerX(), mClipFrame.centerY());
         for (IMGSticker sticker : mBackStickers) {
-            M.mapRect(sticker.getFrame());
+            mMatrix.mapRect(sticker.getFrame());
             sticker.setRotation(sticker.getRotation() + rotate);
             sticker.setX(sticker.getFrame().centerX() - sticker.getPivotX());
             sticker.setY(sticker.getFrame().centerY() - sticker.getPivotY());
@@ -273,8 +276,8 @@ public class IMGImage {
         Log.d(TAG, "clip");
         RectF frame = mClipWin.getOffsetFrame(scrollX, scrollY);
 
-        M.setRotate(-getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
-        M.mapRect(mClipFrame, frame);
+        mMatrix.setRotate(-getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
+        mMatrix.mapRect(mClipFrame, frame);
 
         return new IMGHoming(
                 scrollX + (mClipFrame.centerX() - frame.centerX()),
@@ -285,9 +288,9 @@ public class IMGImage {
 
     public void toBackupClip() {
         Log.d(TAG, "toBackupClip");
-        M.setScale(getScale(), getScale());
-        M.postTranslate(mFrame.left, mFrame.top);
-        M.mapRect(mClipFrame, mBackupClipFrame);
+        mMatrix.setScale(getScale(), getScale());
+        mMatrix.postTranslate(mFrame.left, mFrame.top);
+        mMatrix.mapRect(mClipFrame, mBackupClipFrame);
         setTargetRotate(mBackupClipRotate);
         isRequestToBaseFitting = true;
     }
@@ -364,8 +367,8 @@ public class IMGImage {
             if (mClipWin.isResetting()) {
 
                 RectF clipFrame = new RectF();
-                M.setRotate(getTargetRotate(), mClipFrame.centerX(), mClipFrame.centerY());
-                M.mapRect(clipFrame, mClipFrame);
+                mMatrix.setRotate(getTargetRotate(), mClipFrame.centerX(), mClipFrame.centerY());
+                mMatrix.mapRect(clipFrame, mClipFrame);
 
                 homing.rConcat(IMGUtils.fill(frame, clipFrame));
             } else {
@@ -379,23 +382,23 @@ public class IMGImage {
 //                    mClipWin
                     // TODO 偏移中心
 
-                    M.setRotate(getTargetRotate() - getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
-                    M.mapRect(cFrame, mClipWin.getOffsetFrame(scrollX, scrollY));
+                    mMatrix.setRotate(getTargetRotate() - getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
+                    mMatrix.mapRect(cFrame, mClipWin.getOffsetFrame(scrollX, scrollY));
 
                     homing.rConcat(IMGUtils.fitHoming(frame, cFrame, mClipFrame.centerX(), mClipFrame.centerY()));
 
 
                 } else {
-                    M.setRotate(getTargetRotate(), mClipFrame.centerX(), mClipFrame.centerY());
-                    M.mapRect(cFrame, mFrame);
+                    mMatrix.setRotate(getTargetRotate(), mClipFrame.centerX(), mClipFrame.centerY());
+                    mMatrix.mapRect(cFrame, mFrame);
                     homing.rConcat(IMGUtils.fillHoming(frame, cFrame, mClipFrame.centerX(), mClipFrame.centerY()));
                 }
 
             }
         } else {
             RectF clipFrame = new RectF();
-            M.setRotate(getTargetRotate(), mClipFrame.centerX(), mClipFrame.centerY());
-            M.mapRect(clipFrame, mClipFrame);
+            mMatrix.setRotate(getTargetRotate(), mClipFrame.centerX(), mClipFrame.centerY());
+            mMatrix.mapRect(clipFrame, mClipFrame);
 
             RectF win = new RectF(mWindow);
             win.offset(scrollX, scrollY);
@@ -423,25 +426,27 @@ public class IMGImage {
      * 如果按照getScrollX()直接绘制进手机屏幕上是会出格的，因为view能缩放到比手机屏幕还要大，那么就需要减掉mFrame的x和y，剩下的就是手机绘制的正确的点
      */
     public void addPath(IMGPath path, float sx, float sy) {
-        if (path == null) return;
+        if (path == null) {
+            return;
+        }
 
         float scale = 1f / getScale();
         Log.d(TAG, "addPath getScale()" + getScale());
         Log.d(TAG, "addPath scale" + scale);
-        M.setTranslate(sx, sy);
+        mMatrix.setTranslate(sx, sy);
         Log.d(TAG, "addPath sx" + sx);
         Log.d(TAG, "addPath sy" + sy);
-        M.postRotate(-getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
+        mMatrix.postRotate(-getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
         Log.d(TAG, "addPath -getRotate()" + -getRotate());
         Log.d(TAG, "addPath mClipFrame.centerX()" + mClipFrame.centerX());
         Log.d(TAG, "addPath mClipFrame.centerY()" + mClipFrame.centerY());
-        M.postTranslate(-mFrame.left, -mFrame.top);
+        mMatrix.postTranslate(-mFrame.left, -mFrame.top);
         Log.d(TAG, "addPath -mFrame.left" + -mFrame.left);
         Log.d(TAG, "addPath -mFrame.top" + -mFrame.top);
-        M.postScale(scale, scale);
+        mMatrix.postScale(scale, scale);
         Log.d(TAG, "addPath scale" + scale);
         // 矩阵变换
-        path.transform(M);
+        path.transform(mMatrix);
 
         switch (path.getMode()) {
             case DOODLE:
@@ -456,7 +461,9 @@ public class IMGImage {
 
     private void moveToForeground(IMGSticker sticker) {
         Log.d(TAG, "moveToForeground");
-        if (sticker == null) return;
+        if (sticker == null) {
+            return;
+        }
 
         moveToBackground(mForeSticker);
 
@@ -464,12 +471,16 @@ public class IMGImage {
             mForeSticker = sticker;
             // 从BackStickers中移除
             mBackStickers.remove(sticker);
-        } else sticker.show();
+        } else {
+            sticker.show();
+        }
     }
 
     private void moveToBackground(IMGSticker sticker) {
         Log.d(TAG, "moveToBackground");
-        if (sticker == null) return;
+        if (sticker == null) {
+            return;
+        }
 
         if (!sticker.isShowing()) {
             // 加入BackStickers中
@@ -480,7 +491,9 @@ public class IMGImage {
             if (mForeSticker == sticker) {
                 mForeSticker = null;
             }
-        } else sticker.dismiss();
+        } else {
+            sticker.dismiss();
+        }
     }
 
     public void stickAll() {
@@ -522,9 +535,9 @@ public class IMGImage {
         } else {
 
             // Pivot to fit window.
-            M.setTranslate(mWindow.centerX() - mClipFrame.centerX(), mWindow.centerY() - mClipFrame.centerY());
-            M.mapRect(mFrame);
-            M.mapRect(mClipFrame);
+            mMatrix.setTranslate(mWindow.centerX() - mClipFrame.centerX(), mWindow.centerY() - mClipFrame.centerY());
+            mMatrix.mapRect(mFrame);
+            mMatrix.mapRect(mClipFrame);
         }
 
         mClipWin.setClipWinSize(width, height);
@@ -559,10 +572,10 @@ public class IMGImage {
         );
 
         // Scale to fit window.
-        M.setScale(scale, scale, mClipFrame.centerX(), mClipFrame.centerY());
-        M.postTranslate(mWindow.centerX() - mClipFrame.centerX(), mWindow.centerY() - mClipFrame.centerY());
-        M.mapRect(mFrame);
-        M.mapRect(mClipFrame);
+        mMatrix.setScale(scale, scale, mClipFrame.centerX(), mClipFrame.centerY());
+        mMatrix.postTranslate(mWindow.centerX() - mClipFrame.centerX(), mWindow.centerY() - mClipFrame.centerY());
+        mMatrix.mapRect(mFrame);
+        mMatrix.mapRect(mClipFrame);
     }
 
     private void onInitialHomingDone() {
@@ -595,7 +608,7 @@ public class IMGImage {
      */
     public int onDrawMosaicsPath(Canvas canvas) {
         Log.d(TAG, "onDrawMosaicsPath");
-        int layerCount = canvas.saveLayer(mFrame, null, Canvas.ALL_SAVE_FLAG);
+        int layerCount = canvas.saveLayer(mFrame, null);
 
         if (!isMosaicEmpty()) {
             canvas.save();
@@ -636,14 +649,16 @@ public class IMGImage {
 
     public void onDrawStickerClip(Canvas canvas) {
         Log.d(TAG, "onDrawStickerClip");
-        M.setRotate(getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
-        M.mapRect(mTempClipFrame, mClipWin.isClipping() ? mFrame : mClipFrame);
+        mMatrix.setRotate(getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
+        mMatrix.mapRect(mTempClipFrame, mClipWin.isClipping() ? mFrame : mClipFrame);
         canvas.clipRect(mTempClipFrame);
     }
 
     public void onDrawStickers(Canvas canvas) {
         Log.d(TAG, "onDrawStickers");
-        if (mBackStickers.isEmpty()) return;
+        if (mBackStickers.isEmpty()) {
+            return;
+        }
         canvas.save();
         for (IMGSticker sticker : mBackStickers) {
             if (!sticker.isShowing()) {
@@ -651,11 +666,11 @@ public class IMGImage {
                 float tPivotY = sticker.getY() + sticker.getPivotY();
 
                 canvas.save();
-                M.setTranslate(sticker.getX(), sticker.getY());
-                M.postScale(sticker.getScale(), sticker.getScale(), tPivotX, tPivotY);
-                M.postRotate(sticker.getRotation(), tPivotX, tPivotY);
+                mMatrix.setTranslate(sticker.getX(), sticker.getY());
+                mMatrix.postScale(sticker.getScale(), sticker.getScale(), tPivotX, tPivotY);
+                mMatrix.postRotate(sticker.getRotation(), tPivotX, tPivotY);
 
-                canvas.concat(M);
+                canvas.concat(mMatrix);
                 sticker.onSticker(canvas);
                 canvas.restore();
             }
@@ -715,8 +730,8 @@ public class IMGImage {
                 mClipWin.onScroll(mAnchor, dx, dy);
 
                 RectF clipFrame = new RectF();
-                M.setRotate(getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
-                M.mapRect(clipFrame, mFrame);
+                mMatrix.setRotate(getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
+                mMatrix.mapRect(clipFrame, mFrame);
 
                 RectF frame = mClipWin.getOffsetFrame(scrollX, scrollY);
                 IMGHoming homing = new IMGHoming(scrollX, scrollY, getScale(), getTargetRotate());
@@ -777,16 +792,18 @@ public class IMGImage {
     public void onScale(float factor, float focusX, float focusY) {
         Log.d(TAG, "onScale");
 
-        if (factor == 1f) return;
+        if (factor == 1f) {
+            return;
+        }
 
         if (Math.max(mClipFrame.width(), mClipFrame.height()) >= MAX_SIZE
                 || Math.min(mClipFrame.width(), mClipFrame.height()) <= MIN_SIZE) {
             factor += (1 - factor) / 2;
         }
 
-        M.setScale(factor, factor, focusX, focusY);
-        M.mapRect(mFrame);
-        M.mapRect(mClipFrame);
+        mMatrix.setScale(factor, factor, focusX, focusY);
+        mMatrix.mapRect(mFrame);
+        mMatrix.mapRect(mClipFrame);
 
         // 修正clip 窗口
         if (!mFrame.contains(mClipFrame)) {
@@ -795,7 +812,7 @@ public class IMGImage {
         }
 
         for (IMGSticker sticker : mBackStickers) {
-            M.mapRect(sticker.getFrame());
+            mMatrix.mapRect(sticker.getFrame());
             float tPivotX = sticker.getX() + sticker.getPivotX();
             float tPivotY = sticker.getY() + sticker.getPivotY();
             sticker.addScale(factor);
