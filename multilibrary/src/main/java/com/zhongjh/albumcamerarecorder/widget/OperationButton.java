@@ -117,6 +117,8 @@ public class OperationButton extends View {
                 mPath.close();
                 canvas.drawPath(mPath, mPaint);
                 break;
+            default:
+                break;
         }
     }
 

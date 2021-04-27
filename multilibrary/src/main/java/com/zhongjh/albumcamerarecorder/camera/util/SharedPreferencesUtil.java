@@ -18,8 +18,8 @@ class SharedPreferencesUtil {
      */private SharedPreferences.Editor editor;
 
     @SuppressLint("CommitPrefEdits")
-    SharedPreferencesUtil(Context context, String FILE_NAME) {
-        sharedPreferences = context.getSharedPreferences(FILE_NAME,
+    SharedPreferencesUtil(Context context, String fileName) {
+        sharedPreferences = context.getSharedPreferences(fileName,
                 Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
     }

@@ -67,7 +67,7 @@
         tools:ignore="HardcodedText">
 
         <ImageView
-            android:id="@+id/iv_ring"
+            android:id="@+id/ivRing"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
@@ -77,7 +77,7 @@
             tools:ignore="HardcodedText" />
 
         <ImageView
-            android:id="@+id/iv_record"
+            android:id="@+id/ivRecord"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_centerInParent="true"

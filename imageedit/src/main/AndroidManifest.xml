@@ -5,7 +5,7 @@
     <application>
 
         <activity
-            android:name=".IMGEditActivity"
+            android:name=".ImageEditActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/ImageEditTheme"

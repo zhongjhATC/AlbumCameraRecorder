@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:measureAllChildren="true">
 
-            <com.zhongjh.imageedit.view.IMGColorGroup
+            <com.zhongjh.imageedit.view.ImageColorGroup
                 android:id="@+id/cg_colors"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <com.zhongjh.imageedit.view.IMGColorRadio
+                <com.zhongjh.imageedit.view.ImageColorRadio
                     android:id="@+id/cr_red"
                     android:layout_width="@dimen/image_color"
                     android:layout_height="@dimen/image_color"
@@ -79,38 +79,38 @@
                     android:button="@null"
                     app:image_color="@color/image_color_red" />
 
-                <com.zhongjh.imageedit.view.IMGColorRadio
+                <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/image_color"
                     android:layout_height="@dimen/image_color"
                     android:layout_margin="@dimen/image_color_margin"
                     app:image_color="@color/image_color_black" />
 
-                <com.zhongjh.imageedit.view.IMGColorRadio
+                <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/image_color"
                     android:layout_height="@dimen/image_color"
                     android:layout_margin="@dimen/image_color_margin"
 
                     app:image_color="@color/image_color_white" />
 
-                <com.zhongjh.imageedit.view.IMGColorRadio
+                <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/image_color"
                     android:layout_height="@dimen/image_color"
                     android:layout_margin="@dimen/image_color_margin"
                     app:image_color="@color/image_color_cyan" />
 
-                <com.zhongjh.imageedit.view.IMGColorRadio
+                <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/image_color"
                     android:layout_height="@dimen/image_color"
                     android:layout_margin="@dimen/image_color_margin"
                     app:image_color="@color/image_color_yellow" />
 
-                <com.zhongjh.imageedit.view.IMGColorRadio
+                <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/image_color"
                     android:layout_height="@dimen/image_color"
                     android:layout_margin="@dimen/image_color_margin"
                     app:image_color="@color/image_color_blue" />
 
-            </com.zhongjh.imageedit.view.IMGColorGroup>
+            </com.zhongjh.imageedit.view.ImageColorGroup>
 
             <TextView
                 android:layout_width="wrap_content"

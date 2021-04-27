@@ -48,7 +48,7 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/selected_album"
+                    android:id="@+id/selectedAlbum"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"
@@ -66,7 +66,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <FrameLayout
-        android:id="@+id/bottom_toolbar"
+        android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -75,7 +75,7 @@
         tools:targetApi="lollipop">
 
         <TextView
-            android:id="@+id/button_preview"
+            android:id="@+id/buttonPreview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
@@ -119,7 +119,7 @@
 
 
         <TextView
-            android:id="@+id/button_apply"
+            android:id="@+id/buttonApply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -137,14 +137,14 @@
         android:visibility="gone" />
 
     <FrameLayout
-        android:id="@+id/empty_view"
+        android:id="@+id/emptyView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar"
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/empty_view_content"
+            android:id="@+id/emptyViewContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

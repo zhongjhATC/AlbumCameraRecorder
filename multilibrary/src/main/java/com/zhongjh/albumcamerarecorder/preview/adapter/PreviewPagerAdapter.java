@@ -15,6 +15,7 @@
  */
 package com.zhongjh.albumcamerarecorder.preview.adapter;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -30,13 +31,16 @@ import java.util.List;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
+/**
+ * @author zhongjh
+ */
 public class PreviewPagerAdapter extends FragmentPagerAdapter {
     private ArrayList<MultiMedia> mItems = new ArrayList<>();
     private SparseArray<Fragment> fragments;
     private OnPrimaryItemSetListener mListener;
 
-    public PreviewPagerAdapter(FragmentManager manager, OnPrimaryItemSetListener listener) {
-        super(manager);
+    public PreviewPagerAdapter(@NonNull FragmentManager fm, int behavior, OnPrimaryItemSetListener listener) {
+        super(fm, behavior);
         mListener = listener;
         fragments = new SparseArray<>(getCount());
     }

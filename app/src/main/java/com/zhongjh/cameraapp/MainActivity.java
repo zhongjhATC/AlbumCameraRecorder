@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
@@ -26,7 +26,6 @@ import com.zhongjh.videoedit.VideoEditManager;
 import java.util.ArrayList;
 import java.util.Set;
 
-import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
@@ -156,7 +155,7 @@ public class MainActivity extends BaseActivity {
         albumSetting
                 .showSingleMediaType(mBinding.cbShowSingleMediaTypeTrue.isChecked()) // 仅仅显示一个多媒体类型
                 .countable(mBinding.cbCountableTrue.isChecked())// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(Integer.parseInt(mBinding.etAddFilterMinWidth.getText().toString()), Integer.parseInt(mBinding.etAddFilterMinHeight.getText().toString()), Integer.parseInt(mBinding.etMaxSizeInBytes.getText().toString()) * Filter.K * Filter.K))// 自定义过滤器
+                .addFilter(new GifSizeFilter(Integer.parseInt(mBinding.etAddFilterMinWidth.getText().toString()), Integer.parseInt(mBinding.etAddFilterMinHeight.getText().toString()), Integer.parseInt(mBinding.etMaxSizeInBytes.getText().toString()) * BaseFilter.K * BaseFilter.K))// 自定义过滤器
                 .gridExpectedSize(dip2px(Integer.parseInt(mBinding.etGridExpectedSize.getText().toString())))// 九宫格大小 ,建议这样使用getResources().getDimensionPixelSize(R.dimen.grid_expected_size)
                 .thumbnailScale(0.85f)// 图片缩放比例
                 .setOnSelectedListener((uriList, pathList) -> {

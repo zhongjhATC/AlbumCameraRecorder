@@ -24,7 +24,6 @@ import androidx.annotation.Nullable;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 
@@ -61,9 +60,9 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
 
         MultiMedia item = getIntent().getParcelableExtra(EXTRA_ITEM);
         if (mAlbumSpec.countable) {
-            mViewHolder.check_view.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+            mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
         } else {
-            mViewHolder.check_view.setChecked(mSelectedCollection.isSelected(item));
+            mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
         }
         updateSize(item);
     }

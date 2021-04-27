@@ -12,7 +12,7 @@
         android:background="@android:color/black" />
 
     <FrameLayout
-        android:id="@+id/bottom_toolbar"
+        android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -82,7 +82,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/button_apply"
+            android:id="@+id/buttonApply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -113,7 +113,7 @@
             tools:ignore="HardcodedText" />
 
         <com.zhongjh.albumcamerarecorder.album.widget.CheckView
-            android:id="@+id/check_view"
+            android:id="@+id/checkView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/choose_to_click_to_confirm_these"

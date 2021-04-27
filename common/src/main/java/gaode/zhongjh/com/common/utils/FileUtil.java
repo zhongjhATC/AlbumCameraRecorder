@@ -77,6 +77,8 @@ public class FileUtil {
                     break;
                 case MultimediaTypes.ADD:
                     break;
+                default:
+                    break;
             }
         }
 

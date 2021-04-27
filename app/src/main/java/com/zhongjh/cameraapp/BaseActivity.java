@@ -192,7 +192,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                         // 混合类型，意思是图片可能跟录像在一起.
                         getMaskProgressLayout().addImagesStartUpload(MultiMediaSetting.obtainPathResult(data));
                         break;
+                    default:
+                        break;
                 }
+                break;
+            default:
                 break;
         }
     }

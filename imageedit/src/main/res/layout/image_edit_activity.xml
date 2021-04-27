@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.zhongjh.imageedit.view.IMGView
+    <com.zhongjh.imageedit.view.ImageViewCustom
         android:id="@+id/image_canvas"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

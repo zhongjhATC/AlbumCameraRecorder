@@ -22,13 +22,14 @@ import android.graphics.Point;
 import gaode.zhongjh.com.common.entity.IncapableCause;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+
+import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 
-class GifSizeFilter extends Filter {
+class GifSizeFilter extends BaseFilter {
 
     private int mMinWidth;
     private int mMinHeight;
@@ -56,7 +57,7 @@ class GifSizeFilter extends Filter {
         Point size = PhotoMetadataUtils.getBitmapBound(context.getContentResolver(), item.getMediaUri());
         if (size.x < mMinWidth || size.y < mMinHeight || item.size > mMaxSize) {
             return new IncapableCause(IncapableCause.DIALOG, context.getString(R.string.error_gif, mMinWidth,
-                    String.valueOf(PhotoMetadataUtils.getSizeInMB(mMaxSize))));
+                    String.valueOf(PhotoMetadataUtils.getSizeInMb(mMaxSize))));
         }
         return null;
     }

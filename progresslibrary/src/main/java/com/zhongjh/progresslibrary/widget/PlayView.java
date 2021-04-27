@@ -6,9 +6,12 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -23,29 +26,37 @@ import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Locale;
-import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 一个播放的view
- * Created by zhongjh on 2019/2/1.
+ *
+ * @author zhongjh
+ * @date 2019/2/1
  */
 public class PlayView extends FrameLayout {
 
-    private static final String LOG_TAG = "PlayView";
-    private static final String ARG_ITEM = "recording_item";
-    private RecordingItem mRecordingItem;   // 当前音频数据
+    /**
+     * 当前音频数据
+     */
+    private RecordingItem mRecordingItem;
+    /**
+     * 控件集合
+     */
+    public ViewHolder mViewHolder;
+    /**
+     * 标记当前播放状态
+     */
+    private boolean mIsPlaying = false;
 
-    public ViewHolder mViewHolder;          // 控件集合
-
-    private boolean isPlaying = false;      // 标记当前播放状态
-
-    private String mFileLength;// 该音频文件的总时
-
-    private MaskProgressLayoutListener listener;   // 相关事件
-    private boolean operation;
+    /**
+     * 相关事件
+     */
+    private MaskProgressLayoutListener listener;
 
     public void setListener(MaskProgressLayoutListener listener) {
         this.listener = listener;
@@ -53,14 +64,20 @@ public class PlayView extends FrameLayout {
 
     // region 有关音频
 
-    private MediaPlayer mMediaPlayer = new MediaPlayer();
-    //定时器  由于功能中有付费播放功能，需要定时器来判断
-    private Timer mTimer = null;
+    private final MediaPlayer mMediaPlayer = new MediaPlayer();
+    /**
+     * 代替Timer
+     * 定时器  由于功能中有付费播放功能，需要定时器来判断
+     */
+    ScheduledExecutorService mExecutorService;
     private TimerTask mTimerTask = null;
-    private boolean isChanging = false;  //互斥变量，防止定时器与SeekBar拖动时进度冲突
+    /**
+     * 互斥变量，防止定时器与SeekBar拖动时进度冲突
+     */
+    private boolean isChanging = false;
 
 
-    private Handler mHandler = new MyHandler(PlayView.this);
+    private final Handler mHandler = new MyHandler(getContext().getMainLooper(),PlayView.this);
 
     // endregion 有关音频
 
@@ -74,13 +91,13 @@ public class PlayView extends FrameLayout {
 
     public PlayView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initView(attrs);
+        initView();
     }
 
     /**
      * 初始化view
      */
-    private void initView(AttributeSet attrs) {
+    private void initView() {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
 
@@ -104,11 +121,7 @@ public class PlayView extends FrameLayout {
         mViewHolder.seekbar.getProgressDrawable().setColorFilter(filter);
         mViewHolder.seekbar.getThumb().setColorFilter(filter);
 
-        if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
-            mViewHolder.seekbar.setEnabled(true);
-        } else {
-            mViewHolder.seekbar.setEnabled(false);
-        }
+        mViewHolder.seekbar.setEnabled(!TextUtils.isEmpty(mRecordingItem.getFilePath()));
 
         initData();
     }
@@ -117,12 +130,6 @@ public class PlayView extends FrameLayout {
      * 根据当前文件初始化一些相关数据
      */
     private void initData() {
-        long itemDuration = mRecordingItem.getLength();
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
-                - TimeUnit.MINUTES.toSeconds(minutes);
-        mFileLength = String.format(Locale.CANADA, "%02d:%02d", minutes, seconds);
-
         // 准备播放
         play();
     }
@@ -130,9 +137,10 @@ public class PlayView extends FrameLayout {
     /**
      * 所有事件
      */
+    @SuppressLint("SetTextI18n")
     private void initListener() {
         // 进度条
-        mViewHolder.seekbar.setOnSeekBarChangeListener(new MySeekbar());
+        mViewHolder.seekbar.setOnSeekBarChangeListener(new MySeekBar());
 
         // 播放按钮
         mViewHolder.imgPlay.setOnClickListener(v -> {
@@ -150,8 +158,8 @@ public class PlayView extends FrameLayout {
             mViewHolder.seekbar.setProgress(0);
             mViewHolder.imgPlay.setEnabled(true);
             mViewHolder.tvCurrentProgress.setText("00:00/");// 当前时间
-            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration() )); // 总计时间
-            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration() );//设置进度条
+            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration())); // 总计时间
+            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());//设置进度条
         });
 
         // 播放完成事件
@@ -162,7 +170,7 @@ public class PlayView extends FrameLayout {
             mViewHolder.seekbar.setProgress(0);
             //控制栏中的播放按钮显示暂停状态
             mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
-            isPlaying = false;
+            mIsPlaying = false;
             //重置并准备重新播放
             mMediaPlayer.reset();
             play();
@@ -191,7 +199,7 @@ public class PlayView extends FrameLayout {
      * 播放或者暂停
      */
     private void onPlay() {
-        if (isPlaying) {
+        if (mIsPlaying) {
             //如果当前正在播放  停止播放 更改控制栏播放状态
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
@@ -203,34 +211,35 @@ public class PlayView extends FrameLayout {
                 mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
                 mMediaPlayer.start();
                 //定时器 更新进度
-                if (mTimer == null) {
-                    mTimer = new Timer();
+                if (mExecutorService == null) {
+                    mExecutorService = new ScheduledThreadPoolExecutor(1, (ThreadFactory) Thread::new);
                     mTimerTask = new TimerTask() {
                         @Override
                         public void run() {
                             if (isChanging) {
                                 return;
                             }
-                            if (isPlaying) {
+                            if (mIsPlaying) {
                                 mHandler.sendEmptyMessage(0);
                                 mViewHolder.seekbar.setProgress(mMediaPlayer.getCurrentPosition());
                             }
                         }
                     };
-                    mTimer.schedule(mTimerTask, 0, 1000);
+                    mExecutorService.scheduleAtFixedRate(mTimerTask, 0, 1000, TimeUnit.MILLISECONDS);
                 }
             }
         }
-        isPlaying = !isPlaying;
+        mIsPlaying = !mIsPlaying;
     }
 
     /**
      * 重置播放器
      */
-    public void reset(){
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer = null;
+    public void reset() {
+        if (mExecutorService != null) {
+            // 试图停止所有正在执行的活动任务
+            mExecutorService.shutdownNow();
+            mExecutorService = null;
             mTimerTask = null;
         }
         if (mMediaPlayer != null) {
@@ -245,9 +254,10 @@ public class PlayView extends FrameLayout {
      * 销毁播放器
      */
     public void deStory() {
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer = null;
+        if (mExecutorService != null) {
+            // 试图停止所有正在执行的活动任务
+            mExecutorService.shutdownNow();
+            mExecutorService = null;
             mTimerTask = null;
         }
         if (mMediaPlayer != null) {
@@ -275,9 +285,11 @@ public class PlayView extends FrameLayout {
      * 操作ui
      */
     private static class MyHandler extends Handler {
+
         private final WeakReference<PlayView> mPlayView;
 
-        public MyHandler(PlayView playView) {
+        public MyHandler(@NonNull Looper looper,PlayView playView) {
+            super(looper);
             mPlayView = new WeakReference<>(playView);
         }
 
@@ -287,11 +299,9 @@ public class PlayView extends FrameLayout {
             PlayView playView = mPlayView.get();
             if (playView != null) {
                 super.handleMessage(msg);
-                switch (msg.what) {
-                    case 0:
-                        //设置当前播放进度
-                        playView.mViewHolder.tvCurrentProgress.setText(playView.generateTime(playView.mMediaPlayer.getCurrentPosition()) + "/");
-                        break;
+                if (msg.what == 0) {
+                    //设置当前播放进度
+                    playView.mViewHolder.tvCurrentProgress.setText(playView.generateTime(playView.mMediaPlayer.getCurrentPosition()) + "/");
                 }
             }
         }
@@ -320,7 +330,7 @@ public class PlayView extends FrameLayout {
     /**
      * 进度条的进度变化事件
      */
-    class MySeekbar implements SeekBar.OnSeekBarChangeListener {
+    class MySeekBar implements SeekBar.OnSeekBarChangeListener {
 
         //当进度条变化时触发
         @Override
@@ -335,6 +345,7 @@ public class PlayView extends FrameLayout {
         }
 
         //停止拖拽进度条
+        @SuppressLint("SetTextI18n")
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             mMediaPlayer.seekTo(mViewHolder.seekbar.getProgress());

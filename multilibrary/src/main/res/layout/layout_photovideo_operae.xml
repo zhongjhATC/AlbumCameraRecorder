@@ -83,7 +83,7 @@
         tools:ignore="HardcodedText">
 
         <ImageView
-            android:id="@+id/iv_ring"
+            android:id="@+id/ivRing"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"

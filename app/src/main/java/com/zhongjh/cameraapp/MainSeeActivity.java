@@ -5,12 +5,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
@@ -163,7 +162,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
+                .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))// 自定义过滤器
                 .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
                 .thumbnailScale(0.85f)// 图片缩放比例
                 .setOnSelectedListener((uriList, pathList) -> {
@@ -257,6 +256,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 videoPath.add(file.getPath());
                 mBinding.mplImageList.addVideoCover(videoPath);
                 break;
+            default:
+                break;
         }
         progressDialog.hide();
     }
@@ -283,6 +284,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             case 1:
                 // 获取后缀名
                 suffixName = ".mp4";
+                break;
+            default:
                 break;
         }
         // 获取文件名

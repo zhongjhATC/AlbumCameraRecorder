@@ -4,7 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import gaode.zhongjh.com.common.enums.MimeType;
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+
+import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
 import com.zhongjh.albumcamerarecorder.settings.api.AlbumSettingApi;
@@ -19,6 +20,9 @@ import java.util.Set;
 public class AlbumSetting implements AlbumSettingApi {
 
     private final AlbumSpec mAlbumSpec;
+
+    private final static float SCALE_ZERO = 0f;
+    private final static float SCALE_ONE = 1f;
 
     /**
      *
@@ -49,11 +53,11 @@ public class AlbumSetting implements AlbumSettingApi {
     }
 
     @Override
-    public AlbumSetting addFilter(@NonNull Filter filter) {
-        if (mAlbumSpec.filters == null) {
-            mAlbumSpec.filters = new ArrayList<>();
+    public AlbumSetting addFilter(@NonNull BaseFilter baseFilter) {
+        if (mAlbumSpec.baseFilters == null) {
+            mAlbumSpec.baseFilters = new ArrayList<>();
         }
-        mAlbumSpec.filters.add(filter);
+        mAlbumSpec.baseFilters.add(baseFilter);
         return this;
     }
 
@@ -86,7 +90,7 @@ public class AlbumSetting implements AlbumSettingApi {
 
     @Override
     public AlbumSetting thumbnailScale(float scale) {
-        if (scale <= 0f || scale > 1f) {
+        if (scale <= SCALE_ZERO || scale > SCALE_ONE) {
             throw new IllegalArgumentException("缩略图比例必须介于(0.0, 1.0]之间");
         }
         mAlbumSpec.thumbnailScale = scale;

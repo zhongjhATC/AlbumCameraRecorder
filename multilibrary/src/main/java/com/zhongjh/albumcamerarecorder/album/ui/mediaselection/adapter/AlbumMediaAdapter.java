@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.base.RecyclerViewCursorAdapter;
+import com.zhongjh.albumcamerarecorder.album.base.BaseRecyclerViewCursorAdapter;
 import gaode.zhongjh.com.common.entity.IncapableCause;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
@@ -42,7 +42,7 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
  * 相册适配器
  */
 public class AlbumMediaAdapter extends
-        RecyclerViewCursorAdapter<RecyclerView.ViewHolder> implements
+        BaseRecyclerViewCursorAdapter<RecyclerView.ViewHolder> implements
         MediaGrid.OnMediaGridClickListener {
 
     private static final int VIEW_TYPE_MEDIA = 0x02;

@@ -3,7 +3,7 @@ package com.zhongjh.albumcamerarecorder.settings.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -45,10 +45,10 @@ public interface AlbumSettingApi {
     /**
      * 添加筛选器以筛选每个文件。
      *
-     * @param filter {@link Filter}
+     * @param baseFilter {@link BaseFilter}
      * @return {@link AlbumSetting} this
      */
-    AlbumSetting addFilter(@NonNull Filter filter);
+    AlbumSetting addFilter(@NonNull BaseFilter baseFilter);
 
     /**
      * 显示原始照片检查选项。让用户在选择后决定是否使用原始照片

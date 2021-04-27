@@ -92,8 +92,8 @@ public class BitmapUtils {
             // 需要增加这个，不然AndroidQ识别不到TAG_DATETIME_ORIGINAL创建时间
             try {
                 ExifInterface exif = new ExifInterface(file.getPath());
-                SimpleDateFormat fmt_Exif = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
-                exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, fmt_Exif.format(System.currentTimeMillis()));
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
+                exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(System.currentTimeMillis()));
                 exif.saveAttributes();
             } catch (IOException e) {
                 e.printStackTrace();

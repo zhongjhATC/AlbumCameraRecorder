@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONGCLICK;
+import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONG_CLICK;
 
 /**
  * 点击或者长按的按钮
@@ -34,17 +34,35 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STA
 public class ClickOrLongButton extends View {
 
     private static final String TAG = "ClickOrLongButton";
-    private float timeLimitInMils = 10000.0F;       // 录制时间
-    private final ArrayList<Float> mCurrentLocation = new ArrayList<>();// 当前录制位置集，计算时间后的百分比
-    private Float mCurrentSumNumberDegrees = 0F; // 当前录制的节点，以360度为单位
-    private Long mCurrentSumTime = 0L; // 当前录制的时间点
-    private int mMinDuration = 1500;       // 最短录制时间限制
-    private long mRecordedTime;             // 记录当前录制多长的时间秒
+    /**
+     * 录制时间
+     */
+    private float timeLimitInMils = 10000.0F;
+    /**
+     * 当前录制位置集，计算时间后的百分比
+     */
+    private final ArrayList<Float> mCurrentLocation = new ArrayList<>();
+    /**
+     * 当前录制的节点，以360度为单位
+     */
+    private Float mCurrentSumNumberDegrees = 0F;
+    /**
+     * 当前录制的时间点
+     */
+    private Long mCurrentSumTime = 0L;
+    /**
+     * 最短录制时间限制
+     */
+    private int mMinDuration = 1500;
+    /**
+     * 记录当前录制多长的时间秒
+     */
+    private long mRecordedTime;
     private static final float PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1F;
-    private int BOUNDING_BOX_SIZE;
-    private int OUT_CIRCLE_WIDTH;
-    private int OUTER_CIRCLE_WIDTH_INC;
-    private float INNER_CIRCLE_RADIUS;
+    private int mBoundingBoxSize;
+    private int mOutCircleWidth;
+    private int mOuterCircleWidthInc;
+    private float mInnerCircleRadius;
 
     private TouchTimeHandler touchTimeHandler;
     private boolean touchable;
@@ -54,38 +72,69 @@ public class ClickOrLongButton extends View {
     private Paint outBlackCirclePaint;
     private Paint outMostBlackCirclePaint;
     private float innerCircleRadiusToDraw;
-    private RectF outMostCircleRect; // 外圈的画布
+    /**
+     * 外圈的画布
+     */
+    private RectF outMostCircleRect;
     private float outBlackCircleRadius;
     private float outMostBlackCircleRadius;
     private int colorRoundBorder;
     private int colorRecord;
     private int colorWhiteP60;
-    private int colorInterval;
-    //top
     private float startAngle270;
     private float percentInDegree;
     private float centerX;
     private float centerY;
-    private Paint processBarPaint; // 按下去显示的进度外圈
-    private Paint outMostWhiteCirclePaint; // 静止状态时的外圈
-    private Paint outProcessCirclePaint; // 静止状态时的进度外圈
-    private Paint outProcessIntervalCirclePaint; // 静止状态时的进度外圈
+    /**
+     * 按下去显示的进度外圈
+     */
+    private Paint processBarPaint;
+    /**
+     * 静止状态时的外圈
+     */
+    private Paint outMostWhiteCirclePaint;
+    /**
+     * 静止状态时的进度外圈
+     */
+    private Paint outProcessCirclePaint;
+    /**
+     * 静止状态时的进度外圈
+     */
+    private Paint outProcessIntervalCirclePaint;
     private Paint translucentPaint;
     private int translucentCircleRadius = 0;
     private float outMostCircleRadius;
     private float innerCircleRadiusWhenRecord;
     private long btnPressTime;
     private int outBlackCircleRadiusInc;
-    private int recordState;                        // 当前状态
-    private static final int RECORD_NOT_STARTED = 0; // 未启动状态
-    private static final int RECORD_STARTED = 1;     // 启动状态
-    private static final int RECORD_ENDED = 2;       // 结束状态
+    /**
+     * 当前状态
+     */
+    private int recordState;
+    /**
+     * 未启动状态
+     */
+    private static final int RECORD_NOT_STARTED = 0;
+    /**
+     * 启动状态
+     */
+    private static final int RECORD_STARTED = 1;
+    /**
+     * 结束状态
+     */
+    private static final int RECORD_ENDED = 2;
 
-    private int mButtonState;        // 按钮可执行的功能状态（拍照,录制,两者）
-    private boolean mIsSectionMode; // 是否分段录制的模式
+    /**
+     * 按钮可执行的功能状态（拍照,录制,两者）
+     */
+    private int mButtonState;
+    /**
+     * 是否分段录制的模式
+     */
+    private boolean mIsSectionMode;
 
 
-    private TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
+    private final TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
         @Override
         public void run() {
             if (mIsSectionMode && mCurrentLocation.size() > 0) {
@@ -113,7 +162,7 @@ public class ClickOrLongButton extends View {
                         if (mClickOrLongListener != null) {
                             mClickOrLongListener.onLongClick();
                             // 如果禁止点击，那么就轮到长按触发actionDown
-                            if (!isActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONGCLICK) {
+                            if (!isActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONG_CLICK) {
                                 // 如果禁止点击也不能触发该事件
                                 mClickOrLongListener.actionDown();
                                 isActionDown = true;
@@ -137,11 +186,11 @@ public class ClickOrLongButton extends View {
                 Log.d(TAG, "percent:" + percent);
                 Log.d(TAG, "percentInDegree:" + percentInDegree);
 
-                if (percent <= 1.0F) {
+                if (percent <= 1F) {
                     if (percent <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
                         float calPercent = percent / PROGRESS_LIM_TO_FINISH_STARTING_ANIM;
                         float outIncDis = outBlackCircleRadiusInc * calPercent;
-                        float curOutCircleWidth = OUT_CIRCLE_WIDTH + OUTER_CIRCLE_WIDTH_INC * calPercent;
+                        float curOutCircleWidth = mOutCircleWidth + mOuterCircleWidthInc * calPercent;
                         processBarPaint.setStrokeWidth(curOutCircleWidth);
                         outProcessCirclePaint.setStrokeWidth(curOutCircleWidth);
                         outProcessIntervalCirclePaint.setStrokeWidth(curOutCircleWidth);
@@ -177,10 +226,10 @@ public class ClickOrLongButton extends View {
 
     private void init() {
         touchable = recordable = true;
-        BOUNDING_BOX_SIZE = DisplayMetricsUtils.dip2px(100.0F); // 整块
-        OUT_CIRCLE_WIDTH = DisplayMetricsUtils.dip2px(2.3F);// 外线宽度
-        OUTER_CIRCLE_WIDTH_INC = DisplayMetricsUtils.dip2px(4.3F);
-        INNER_CIRCLE_RADIUS = DisplayMetricsUtils.dip2px(32.0F);
+        mBoundingBoxSize = DisplayMetricsUtils.dip2px(100.0F); // 整块
+        mOutCircleWidth = DisplayMetricsUtils.dip2px(2.3F);// 外线宽度
+        mOuterCircleWidthInc = DisplayMetricsUtils.dip2px(4.3F);
+        mInnerCircleRadius = DisplayMetricsUtils.dip2px(32.0F);
 
         // 调取样式中的颜色
         TypedArray arrayRoundBorder = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_round_border});
@@ -204,7 +253,7 @@ public class ClickOrLongButton extends View {
         colorRecord = arrayInnerCircleInOperation.getColor(0, defaultInnerCircleInOperationColor);
         colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor);
         colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor);
-        colorInterval = arrayInnerCircleNoOperationInterval.getColor(0, defaultInnerCircleNoOperationColorInterval);
+        int colorInterval = arrayInnerCircleNoOperationInterval.getColor(0, defaultInnerCircleNoOperationColorInterval);
         int colorBlackP40 = ContextCompat.getColor(getContext(), R.color.black_forty_percent);
         int colorBlackP80 = ContextCompat.getColor(getContext(), R.color.black_eighty_percent);
         int colorTranslucent = ContextCompat.getColor(getContext(), R.color.circle_shallow_translucent_bg);
@@ -212,26 +261,26 @@ public class ClickOrLongButton extends View {
         processBarPaint = new Paint();
         processBarPaint.setColor(colorRecord);
         processBarPaint.setAntiAlias(true);
-        processBarPaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
+        processBarPaint.setStrokeWidth(mOutCircleWidth);
         processBarPaint.setStyle(Style.STROKE);
         processBarPaint.setStrokeCap(Cap.ROUND);
         // 外圈样式
         outMostWhiteCirclePaint = new Paint();
         outMostWhiteCirclePaint.setColor(colorRoundBorder);
         outMostWhiteCirclePaint.setAntiAlias(true);
-        outMostWhiteCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
+        outMostWhiteCirclePaint.setStrokeWidth(mOutCircleWidth);
         outMostWhiteCirclePaint.setStyle(Style.STROKE);
 
         outProcessCirclePaint = new Paint();
         outProcessCirclePaint.setColor(colorRecord);
         outProcessCirclePaint.setAntiAlias(true);
-        outProcessCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
+        outProcessCirclePaint.setStrokeWidth(mOutCircleWidth);
         outProcessCirclePaint.setStyle(Style.STROKE);
 
         outProcessIntervalCirclePaint = new Paint();
         outProcessIntervalCirclePaint.setColor(colorInterval);
         outProcessIntervalCirclePaint.setAntiAlias(true);
-        outProcessIntervalCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
+        outProcessIntervalCirclePaint.setStrokeWidth(mOutCircleWidth);
         outProcessIntervalCirclePaint.setStyle(Style.STROKE);
 
         // 内圈未操作中样式
@@ -253,14 +302,14 @@ public class ClickOrLongButton extends View {
         translucentPaint.setColor(colorTranslucent);
         translucentPaint.setAntiAlias(true);
         translucentPaint.setStyle(Style.FILL_AND_STROKE);
-        centerX = (BOUNDING_BOX_SIZE / 2);
-        centerY = (BOUNDING_BOX_SIZE / 2);
+        centerX = (mBoundingBoxSize / 2);
+        centerY = (mBoundingBoxSize / 2);
         outMostCircleRadius = DisplayMetricsUtils.dip2px(37.0F);
         outBlackCircleRadiusInc = DisplayMetricsUtils.dip2px(7.0F);
         innerCircleRadiusWhenRecord = DisplayMetricsUtils.dip2px(35.0F);
-        innerCircleRadiusToDraw = INNER_CIRCLE_RADIUS;
-        outBlackCircleRadius = (outMostCircleRadius - OUT_CIRCLE_WIDTH / 2.0F);
-        outMostBlackCircleRadius = (outMostCircleRadius + OUT_CIRCLE_WIDTH / 2.0F);
+        innerCircleRadiusToDraw = mInnerCircleRadius;
+        outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
+        outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);
         startAngle270 = 270.0F;
         percentInDegree = 0.0F;
         outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
@@ -299,7 +348,7 @@ public class ClickOrLongButton extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(BOUNDING_BOX_SIZE, BOUNDING_BOX_SIZE);
+        setMeasuredDimension(mBoundingBoxSize, mBoundingBoxSize);
     }
 
     @Override
@@ -313,7 +362,7 @@ public class ClickOrLongButton extends View {
                 Log.d(TAG, "onTouchEvent: down");
                 // 禁止长按方式
                 if (mClickOrLongListener != null
-                        && (mButtonState == BUTTON_STATE_ONLY_LONGCLICK || mButtonState == BUTTON_STATE_BOTH)) {
+                        && (mButtonState == BUTTON_STATE_ONLY_LONG_CLICK || mButtonState == BUTTON_STATE_BOTH)) {
                     startTicking();
                 }
                 break;
@@ -321,7 +370,8 @@ public class ClickOrLongButton extends View {
                 Log.d(TAG, "onTouchEvent: up");
                 reset();
                 break;
-
+            default:
+                break;
         }
         return true;
     }
@@ -354,15 +404,15 @@ public class ClickOrLongButton extends View {
         percentInDegree = 0.0F;
         centerCirclePaint.setColor(colorWhiteP60);
         outMostWhiteCirclePaint.setColor(colorRoundBorder);
-        innerCircleRadiusToDraw = INNER_CIRCLE_RADIUS;
+        innerCircleRadiusToDraw = mInnerCircleRadius;
         outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
         translucentCircleRadius = 0;
-        processBarPaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
-        outProcessCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
-        outMostWhiteCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
-        outProcessIntervalCirclePaint.setStrokeWidth(OUT_CIRCLE_WIDTH);
-        outBlackCircleRadius = (outMostCircleRadius - OUT_CIRCLE_WIDTH / 2.0F);
-        outMostBlackCircleRadius = (outMostCircleRadius + OUT_CIRCLE_WIDTH / 2.0F);
+        processBarPaint.setStrokeWidth(mOutCircleWidth);
+        outProcessCirclePaint.setStrokeWidth(mOutCircleWidth);
+        outMostWhiteCirclePaint.setStrokeWidth(mOutCircleWidth);
+        outProcessIntervalCirclePaint.setStrokeWidth(mOutCircleWidth);
+        outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
+        outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);
         invalidate();
     }
 
@@ -477,7 +527,7 @@ public class ClickOrLongButton extends View {
      * 设置按钮功能（点击和长按）
      *
      * @param buttonStateBoth {@link com.zhongjh.albumcamerarecorder.camera.common.Constants#BUTTON_STATE_ONLY_CLICK 只能点击
-     * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#BUTTON_STATE_ONLY_LONGCLICK 只能长按
+     * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#BUTTON_STATE_ONLY_LONG_CLICK 只能长按
      * @link com.zhongjh.albumcamerarecorder.camera.common.Constants#BUTTON_STATE_BOTH 两者皆可
      * }
      */

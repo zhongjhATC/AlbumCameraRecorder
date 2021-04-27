@@ -23,7 +23,7 @@
         android:contentDescription="@string/show_thumbnails" />
 
     <com.zhongjh.albumcamerarecorder.album.widget.CheckView
-        android:id="@+id/check_view"
+        android:id="@+id/checkView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"

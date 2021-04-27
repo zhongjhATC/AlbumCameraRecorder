@@ -6,48 +6,47 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
+import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
+import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
+import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
+import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
+import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
+import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
+import com.zhongjh.imageedit.ImageEditActivity;
+
+import java.io.File;
 
 import gaode.zhongjh.com.common.entity.IncapableCause;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.FileUtil;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
+import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import gaode.zhongjh.com.common.widget.IncapableDialog;
 
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
-import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
-import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
-import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
-import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
-import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
-
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
-
-import com.zhongjh.imageedit.IMGEditActivity;
-
-import java.io.File;
-import java.io.IOException;
-
+import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 
 /**
  * 预览的基类
+ *
+ * @author zhongjh
  */
 public class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener {
@@ -72,7 +71,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected PreviewPagerAdapter mAdapter;
 
     protected boolean mOriginalEnable;      // 是否原图
-    private boolean mIsAlubmUri; // 是否返回相册的uri，否则是普通文件的uri
+    private boolean mIsAlbumUri; // 是否返回相册的uri，否则是普通文件的uri
     private boolean mIsEdit; // 是否编辑了图片
 
 
@@ -100,7 +99,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
         mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER, true);
         mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK, true);
-        mIsAlubmUri = getIntent().getBooleanExtra(IS_ALBUM_URI, false);
+        mIsAlbumUri = getIntent().getBooleanExtra(IS_ALBUM_URI, false);
 
         mPictureMediaStoreCompat = new MediaStoreCompat(this);
         // 设置图片路径
@@ -128,9 +127,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         mViewHolder = new ViewHolder(this);
 
-        mAdapter = new PreviewPagerAdapter(getSupportFragmentManager(), null);
+        mAdapter = new PreviewPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, null);
         mViewHolder.pager.setAdapter(mAdapter);
-        mViewHolder.check_view.setCountable(mAlbumSpec.countable);
+        mViewHolder.checkView.setCountable(mAlbumSpec.countable);
 
         initListener();
     }
@@ -172,14 +171,14 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      */
     private void refreshMultiMediaItem(boolean apply) {
         if (mIsEdit)
-            // 循环当前所有图片进行处理
+        // 循环当前所有图片进行处理
         {
             for (MultiMedia multiMedia : mAdapter.getmItems()) {
-                if (mIsAlubmUri) {
+                if (mIsAlbumUri) {
                     if (apply) {
                         File file = new File(multiMedia.getPath());
                         // 加入相册库
-                        BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory,mPictureMediaStoreCompat);
+                        BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
                         // 更新相册后的uri
                         Uri editMediaUri = FileUtil.getFileUri(getApplicationContext(), MultimediaTypes.PICTURE, file);
                         multiMedia.setUri(null);
@@ -212,18 +211,18 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 返回
         mViewHolder.ibtnBack.setOnClickListener(this);
         // 确认
-        mViewHolder.button_apply.setOnClickListener(this);
+        mViewHolder.buttonApply.setOnClickListener(this);
         // 多图时滑动事件
         mViewHolder.pager.addOnPageChangeListener(this);
         // 右上角选择事件
-        mViewHolder.check_view.setOnClickListener(v -> {
+        mViewHolder.checkView.setOnClickListener(v -> {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
                 mSelectedCollection.remove(item);
                 if (mAlbumSpec.countable) {
-                    mViewHolder.check_view.setCheckedNum(CheckView.UNCHECKED);
+                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED);
                 } else {
-                    mViewHolder.check_view.setChecked(false);
+                    mViewHolder.checkView.setChecked(false);
                 }
             } else {
                 boolean isTrue = true;
@@ -233,9 +232,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 if (isTrue) {
                     mSelectedCollection.add(item);
                     if (mAlbumSpec.countable) {
-                        mViewHolder.check_view.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+                        mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
                     } else {
-                        mViewHolder.check_view.setChecked(true);
+                        mViewHolder.checkView.setChecked(true);
                     }
                 }
             }
@@ -272,7 +271,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         mSelectedCollection.onSaveInstanceState(outState);
         outState.putBoolean("checkState", mOriginalEnable);
         super.onSaveInstanceState(outState);
@@ -288,7 +287,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public void finish() {
         super.finish();
         if (mGlobalSpec.isCutscenes)
-            //关闭窗体动画显示
+        //关闭窗体动画显示
         {
             this.overridePendingTransition(0, R.anim.activity_close);
         }
@@ -298,7 +297,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         if (v.getId() == R.id.ibtnBack) {
             onBackPressed();
-        } else if (v.getId() == R.id.button_apply) {
+        } else if (v.getId() == R.id.buttonApply) {
             sendBackResult(true);
             finish();
         } else if (v.getId() == R.id.tvEdit) {
@@ -306,21 +305,17 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
             File file;
 
-            try {
-                file = mPictureMediaStoreCompat.createFile(0);
-                mEditImageFile = file;
-            } catch (IOException e) {
-                return;
-            }
+            file = mPictureMediaStoreCompat.createFile(0);
+            mEditImageFile = file;
 
             Intent intent = new Intent();
-            intent.setClass(BasePreviewActivity.this, IMGEditActivity.class);
+            intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
             if (item.getMediaUri() != null) {
-                intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
+                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
             } else {
-                intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, item.getUri());
+                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
             }
-            intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
             startActivityForResult(intent, REQ_IMAGE_EDIT);
         }
     }
@@ -344,19 +339,19 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             MultiMedia item = adapter.getMediaItem(position);
             if (mAlbumSpec.countable) {
                 int checkedNum = mSelectedCollection.checkedNumOf(item);
-                mViewHolder.check_view.setCheckedNum(checkedNum);
+                mViewHolder.checkView.setCheckedNum(checkedNum);
                 if (checkedNum > 0) {
-                    mViewHolder.check_view.setEnabled(true);
+                    mViewHolder.checkView.setEnabled(true);
                 } else {
-                    mViewHolder.check_view.setEnabled(!mSelectedCollection.maxSelectableReached());
+                    mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
                 }
             } else {
                 boolean checked = mSelectedCollection.isSelected(item);
-                mViewHolder.check_view.setChecked(checked);
+                mViewHolder.checkView.setChecked(checked);
                 if (checked) {
-                    mViewHolder.check_view.setEnabled(true);
+                    mViewHolder.checkView.setEnabled(true);
                 } else {
-                    mViewHolder.check_view.setEnabled(!mSelectedCollection.maxSelectableReached());
+                    mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
                 }
             }
             updateSize(item);
@@ -377,16 +372,16 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         int selectedCount = mSelectedCollection.count();
         if (selectedCount == 0) {
             // 禁用
-            mViewHolder.button_apply.setText(R.string.button_sure_default);
-            mViewHolder.button_apply.setEnabled(false);
+            mViewHolder.buttonApply.setText(R.string.button_sure_default);
+            mViewHolder.buttonApply.setEnabled(false);
         } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
             // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
-            mViewHolder.button_apply.setText(R.string.button_sure_default);
-            mViewHolder.button_apply.setEnabled(true);
+            mViewHolder.buttonApply.setText(R.string.button_sure_default);
+            mViewHolder.buttonApply.setEnabled(true);
         } else {
             // 启用，显示数字
-            mViewHolder.button_apply.setEnabled(true);
-            mViewHolder.button_apply.setText(getString(R.string.button_sure, selectedCount));
+            mViewHolder.buttonApply.setEnabled(true);
+            mViewHolder.buttonApply.setText(getString(R.string.button_sure, selectedCount));
         }
 
         // 判断是否开启原图
@@ -401,11 +396,11 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         // 判断是否启动操作
         if (!mEnableOperation) {
-            mViewHolder.button_apply.setVisibility(View.GONE);
-            mViewHolder.check_view.setVisibility(View.GONE);
+            mViewHolder.buttonApply.setVisibility(View.GONE);
+            mViewHolder.checkView.setVisibility(View.GONE);
         } else {
-            mViewHolder.button_apply.setVisibility(View.VISIBLE);
-            mViewHolder.check_view.setVisibility(View.VISIBLE);
+            mViewHolder.buttonApply.setVisibility(View.VISIBLE);
+            mViewHolder.checkView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -446,7 +441,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         for (int i = 0; i < selectedCount; i++) {
             MultiMedia item = mSelectedCollection.asList().get(i);
             if (item.isImage()) {
-                float size = PhotoMetadataUtils.getSizeInMB(item.size);
+                float size = PhotoMetadataUtils.getSizeInMb(item.size);
                 if (size > mAlbumSpec.originalMaxSize) {
                     count++;
                 }
@@ -465,7 +460,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected void updateSize(MultiMedia item) {
         if (item.isGif()) {
             mViewHolder.size.setVisibility(View.VISIBLE);
-            mViewHolder.size.setText(PhotoMetadataUtils.getSizeInMB(item.size) + "M");
+            mViewHolder.size.setText(PhotoMetadataUtils.getSizeInMb(item.size) + "M");
         } else {
             mViewHolder.size.setVisibility(View.GONE);
         }
@@ -518,9 +513,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         public CheckRadioView original;
         public LinearLayout originalLayout;
         public TextView size;
-        public TextView button_apply;
-        public FrameLayout bottom_toolbar;
-        public CheckView check_view;
+        public TextView buttonApply;
+        public FrameLayout bottomToolbar;
+        public CheckView checkView;
 
         ViewHolder(Activity activity) {
             this.activity = activity;
@@ -530,9 +525,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             this.original = activity.findViewById(R.id.original);
             this.originalLayout = activity.findViewById(R.id.originalLayout);
             this.size = activity.findViewById(R.id.size);
-            this.button_apply = activity.findViewById(R.id.button_apply);
-            this.bottom_toolbar = activity.findViewById(R.id.bottom_toolbar);
-            this.check_view = activity.findViewById(R.id.check_view);
+            this.buttonApply = activity.findViewById(R.id.buttonApply);
+            this.bottomToolbar = activity.findViewById(R.id.bottomToolbar);
+            this.checkView = activity.findViewById(R.id.checkView);
         }
 
     }

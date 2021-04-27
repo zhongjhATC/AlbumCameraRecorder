@@ -194,7 +194,10 @@ public class PictureProgressBar extends View {
         postInvalidateDelayed(refreshTime);
     }
 
-    // 画动画
+    /**
+     * 画动画
+     * @param canvas canvas
+     */
     private void drawAnimPicture(Canvas canvas) {
         if (isAnimRun) {
             switch (animMode) {
@@ -225,6 +228,8 @@ public class PictureProgressBar extends View {
                     } else {
                         frameIndex++;
                     }
+                    break;
+                default:
                     break;
             }
         } else {

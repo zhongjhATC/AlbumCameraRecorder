@@ -135,7 +135,7 @@
         android:layout_above="@+id/pvLayout"
         android:background="#20000000" />
 
-    <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout
+    <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayoutBase
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

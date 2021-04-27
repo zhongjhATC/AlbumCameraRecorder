@@ -30,7 +30,9 @@ import gaode.zhongjh.com.common.enums.MimeType;
 
 /**
  * 自动换行的layout,只包含方框等等view
- * Created by zhongjh on 2019/1/29.
+ *
+ * @author zhongjh
+ * @date 2019/1/29
  */
 public class AutoLineFeedLayout extends ViewGroup {
 
@@ -39,24 +41,66 @@ public class AutoLineFeedLayout extends ViewGroup {
 
 
     // region 相关属性
-    public List<MultiMediaView> imageList = new ArrayList<>();     // 图片数据
-    public List<MultiMediaView> videoList = new ArrayList<>();     // 视频数据
 
-    private boolean isOperation;// 是否操作
-    private int maxMediaCount;  // 设置最多显示多少个图片/视频/语音
-    private ImageEngine imageEngine;   // 图片加载方式
-    private Drawable placeholder; // 默认图片
-    private int maskingColor; // 有关遮罩层
-    private int maskingTextSize;// 有关遮罩层
-    private int maskingTextColor;// 有关遮罩层
-    private String maskingTextContent;// 有关遮罩层
-    private int deleteColor = -1;// 删除图片的内圆颜色
-    private Drawable deleteImage = null;// 删除图片的资源,优先权比deleteColor高
-    private Drawable addDrawable = null;// 添加图片的资源
-    private MaskProgressLayoutListener listener;   // 相关事件
-    private int LEFT_RIGHT_SPACE = 10; //dip
-    private int ROW_SPACE = 10;
-    private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";     // 用于判断最后一个添加符号标签图片
+    /**
+     * 图片数据
+     */
+    public List<MultiMediaView> imageList = new ArrayList<>();
+    /**
+     * 视频数据
+     */
+    public List<MultiMediaView> videoList = new ArrayList<>();
+
+    /**
+     * 是否操作
+     */
+    private boolean isOperation;
+    /**
+     * 设置最多显示多少个图片/视频/语音
+     */
+    private int maxMediaCount;
+    /**
+     * 图片加载方式
+     */
+    private ImageEngine imageEngine;
+    /**
+     * 默认图片
+     */
+    private Drawable placeholder;
+    /**
+     * 有关遮罩层
+     */
+    private int maskingColor;
+    /**
+     * 有关遮罩层
+     */
+    private int maskingTextSize;
+    /**
+     * 有关遮罩层
+     */
+    private int maskingTextColor;
+    /**
+     * 有关遮罩层
+     */
+    private String maskingTextContent;
+    /**
+     * 删除图片的内圆颜色
+     */
+    private int deleteColor = -1;
+    /**
+     * 删除图片的资源,优先权比deleteColor高
+     */
+    private Drawable deleteImage = null;
+    /**
+     * 相关事件
+     */
+    private MaskProgressLayoutListener listener;
+    private final static int LEFT_RIGHT_SPACE = 10;
+    private final static int ROW_SPACE = 10;
+    /**
+     * 用于判断最后一个添加符号标签图片
+     */
+    private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";
     private ViewHolder viewHolderAdd;
 
     public void setListener(MaskProgressLayoutListener listener) {
@@ -108,10 +152,10 @@ public class AutoLineFeedLayout extends ViewGroup {
         this.maskingTextContent = maskingTextContent;
         this.deleteColor = deleteColor;
         this.deleteImage = deleteImage;
-        this.addDrawable = addDrawable;
 
-        if (this.addDrawable != null) {
-            viewHolderAdd.mpvImage.setImageDrawable(this.addDrawable);
+        // 添加图片的资源
+        if (addDrawable != null) {
+            viewHolderAdd.mpvImage.setImageDrawable(addDrawable);
         }
 
         if (!isOperation) {
@@ -159,8 +203,9 @@ public class AutoLineFeedLayout extends ViewGroup {
         // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
         for (MultiMediaView multiMediaView : multiMediaViews) {
             // 判断multiMedia有没有path,有path没有url就执行上传
-            if (TextUtils.isEmpty(multiMediaView.getUrl()) &&
-                    (!TextUtils.isEmpty(multiMediaView.getPath()) || multiMediaView.getUri() != null)) {
+            boolean pathNotNull = TextUtils.isEmpty(multiMediaView.getUrl()) &&
+                    (!TextUtils.isEmpty(multiMediaView.getPath()) || multiMediaView.getUri() != null);
+            if (pathNotNull) {
                 this.listener.onItemStartUploading(multiMediaView);
             }
         }
@@ -253,10 +298,13 @@ public class AutoLineFeedLayout extends ViewGroup {
                 }
             }
             if (childCount <= 0) {
-                height = 0;   //没有标签时，高度为0
+                // 没有标签时，高度为0
+                height = 0;
             } else {
-                int row = 1;  // 标签行数
-                int widthSpace = width;// 当前行右侧剩余的宽度
+                // 标签行数
+                int row = 1;
+                // 当前行右侧剩余的宽度
+                int widthSpace = width;
                 for (int i = 0; i < getChildCount(); i++) {
                     View view = getChildAt(i);
                     if (view.getVisibility() == GONE) {
@@ -292,8 +340,10 @@ public class AutoLineFeedLayout extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int row = 0;
-        int right = 0;   // 标签相对于布局的右侧位置
-        int botom;       // 标签相对于布局的底部位置
+        // 标签相对于布局的右侧位置
+        int right = 0;
+        // 标签相对于布局的底部位置
+        int botom;
         for (int i = 0; i < getChildCount(); i++) {
             View childView = getChildAt(i);
             if (childView.getVisibility() != GONE) {
@@ -323,9 +373,9 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 检查最后一个是否是添加
      */
     public void checkLastImages() {
-        if ((imageList.size() + videoList.size() +
-                (this.maskProgressLayout.mViewHolder.playView.getVisibility() == View.VISIBLE || this.maskProgressLayout.mViewHolder.groupRecorderProgress.getVisibility() == View.VISIBLE ? 1 : 0)) < maxMediaCount
-                && isOperation) {
+        int mediaCount = (imageList.size() + videoList.size() +
+                (this.maskProgressLayout.mViewHolder.playView.getVisibility() == View.VISIBLE || this.maskProgressLayout.mViewHolder.groupRecorderProgress.getVisibility() == View.VISIBLE ? 1 : 0));
+        if (mediaCount < maxMediaCount && isOperation) {
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
             viewHolderAdd.itemView.setVisibility(View.GONE);
@@ -345,19 +395,17 @@ public class AutoLineFeedLayout extends ViewGroup {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public MaskProgressView mpvImage;
-        private ImageView imgPlay;
+        private final ImageView imgPlay;
         private MultiMediaView multiMediaView;
 
-        private View vClose;
-        private VectorMasterView vmvClose;
-        private ImageView imgClose;
+        private final View vClose;
 
 
         public ViewHolder(View itemView) {
             super(itemView);
             mpvImage = itemView.findViewById(R.id.mpvImage);
-            vmvClose = itemView.findViewById(R.id.vmvClose);
-            imgClose = itemView.findViewById(R.id.imgClose);
+            VectorMasterView vmvClose = itemView.findViewById(R.id.vmvClose);
+            ImageView imgClose = itemView.findViewById(R.id.imgClose);
             // 判断有没有自定义图片
             if (deleteImage != null) {
                 // 使用自定义图片

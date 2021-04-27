@@ -1,7 +1,7 @@
 package com.zhongjh.albumcamerarecorder.utils;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
-import com.zhongjh.albumcamerarecorder.widget.OperationLayout;
+import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 /**
  * 界面的业务逻辑
@@ -14,7 +14,7 @@ public class ViewBusinessUtils {
      *
      * @param isScroll 是否滑动
      */
-    public static void setTablayoutScroll(boolean isScroll, MainActivity mainActivity, OperationLayout pvLayout) {
+    public static void setTablayoutScroll(boolean isScroll, MainActivity mainActivity, BaseOperationLayout pvLayout) {
         if (isScroll) {
             // 母窗体启动滑动
             mainActivity.setTablayoutScroll(true);

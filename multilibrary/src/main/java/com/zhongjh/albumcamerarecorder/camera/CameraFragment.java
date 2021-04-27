@@ -21,18 +21,14 @@ import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
-import com.zhongjh.albumcamerarecorder.camera.listener.EditListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
-import com.zhongjh.albumcamerarecorder.camera.util.DeviceUtil;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
-import com.zhongjh.imageedit.IMGEditActivity;
+import com.zhongjh.imageedit.ImageEditActivity;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
@@ -52,18 +48,24 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_C
 
 /**
  * 拍摄视频
- * Created by zhongjh on 2018/8/22.
+ *
+ * @author zhongjh
+ * @date 2018/8/22
  */
 public class CameraFragment extends BaseFragment {
-
 
     private Activity mActivity;
 
     private CameraLayout mCameraLayout;
+    private final static int MILLISECOND = 2000;
 
-    // 声明一个long类型变量：用于存放上一点击“返回键”的时刻
+    /**
+     * 声明一个long类型变量：用于存放上一点击“返回键”的时刻
+     */
     private long mExitTime;
-    // 是否提交,如果不是提交则要删除冗余文件
+    /**
+     * 是否提交,如果不是提交则要删除冗余文件
+     */
     private boolean mIsCommit = false;
 
     public static CameraFragment newInstance() {
@@ -103,114 +105,15 @@ public class CameraFragment extends BaseFragment {
             }
 
             @Override
-            public void AudioPermissionError() {
+            public void onAudioPermissionError() {
             }
         });
 
-        // 关闭
-        mCameraLayout.setCloseListener(() -> mActivity.finish());
-
-        // 拍摄按钮事件
-        mCameraLayout.setPhotoVideoListener(new ClickOrLongListener() {
-            @Override
-            public void actionDown() {
-                // 母窗体禁止滑动
-                ViewBusinessUtils.setTablayoutScroll(false, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
-            }
-
-            @Override
-            public void onClick() {
-
-            }
-
-            @Override
-            public void onLongClickShort(long time) {
-                // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
-            }
-
-            @Override
-            public void onLongClick() {
-            }
-
-            @Override
-            public void onLongClickEnd(long time) {
-
-            }
-
-            @Override
-            public void onLongClickError() {
-
-            }
-        });
-
-        // 确认取消事件
-        mCameraLayout.setOperaeCameraListener(new OperaeCameraListener() {
-            @Override
-            public void cancel() {
-                // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
-            }
-
-            @Override
-            public void captureSuccess(ArrayList<String> paths, ArrayList<Uri> uris) {
-                Intent result = new Intent();
-                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
-                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
-                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
-                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
-                mActivity.setResult(RESULT_OK, result);
-                mIsCommit = true;
-                mActivity.finish();
-
-            }
-
-            @Override
-            public void recordSuccess(String path, Uri uri) {
-                ArrayList<String> arrayList = new ArrayList<>();
-                arrayList.add(path);
-                ArrayList<Uri> arrayListUri = new ArrayList<>();
-                arrayListUri.add(uri);
-                // 获取视频路径
-                Intent result = new Intent();
-                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
-                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
-                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
-                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
-                mActivity.setResult(RESULT_OK, result);
-                mIsCommit = true;
-                mActivity.finish();
-            }
-
-        });
-
-        // 拍摄后操作图片的事件
-        mCameraLayout.setCaptureListener(new CaptureListener() {
-            @Override
-            public void remove(HashMap<Integer, BitmapData> captureBitmaps) {
-                // 判断如果删除光图片的时候，母窗体启动滑动
-                if (captureBitmaps.size() <= 0) {
-                    ((MainActivity) mActivity).setTablayoutScroll(true);
-                }
-            }
-
-            @Override
-            public void add(HashMap<Integer, BitmapData> captureBitmaps) {
-                if (captureBitmaps.size() > 0) {
-                    // 母窗体禁止滑动
-                    ((MainActivity) mActivity).setTablayoutScroll(false);
-                }
-            }
-        });
-
-        // 编辑图片事件
-        mCameraLayout.setEditListener((uri, newPath) -> {
-            Intent intent = new Intent();
-            intent.setClass(getContext(), IMGEditActivity.class);
-            intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, uri);
-            intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
-            this.startActivityForResult(intent, REQ_IMAGE_EDIT);
-        });
+        initCameraLayoutCloseListener();
+        initCameraLayoutPhotoVideoListener();
+        initCameraLayoutOperaeCameraListener();
+        initCameraLayoutCaptureListener();
+        initCameraLayoutEditListener();
 
         return view;
     }
@@ -272,6 +175,8 @@ public class CameraFragment extends BaseFragment {
             case REQ_IMAGE_EDIT:
                 mCameraLayout.refreshEditPhoto();
                 break;
+            default:
+                break;
         }
     }
 
@@ -281,11 +186,11 @@ public class CameraFragment extends BaseFragment {
         if (mCameraLayout.mState == Constants.STATE_PREVIEW) {
             return false;
         } else {
-            //与上次点击返回键时刻作差
-            if ((System.currentTimeMillis() - mExitTime) > 2000) {
-                //大于2000ms则认为是误操作，使用Toast进行提示
+            // 与上次点击返回键时刻作差
+            if ((System.currentTimeMillis() - mExitTime) > MILLISECOND) {
+                // 大于2000ms则认为是误操作，使用Toast进行提示
                 Toast.makeText(mActivity.getApplicationContext(), "再按一次确认关闭", Toast.LENGTH_SHORT).show();
-                //并记录下本次点击“返回键”的时刻，以便下次进行判断
+                // 并记录下本次点击“返回键”的时刻，以便下次进行判断
                 mExitTime = System.currentTimeMillis();
                 return true;
             } else {
@@ -316,6 +221,131 @@ public class CameraFragment extends BaseFragment {
             mCameraLayout.onDestroy(mIsCommit);
         }
         super.onDestroy();
+    }
+
+    /**
+     * 关闭事件
+     */
+    private void initCameraLayoutCloseListener() {
+        mCameraLayout.setCloseListener(() -> mActivity.finish());
+    }
+
+    /**
+     * 拍摄按钮事件
+     */
+    private void initCameraLayoutPhotoVideoListener() {
+        mCameraLayout.setPhotoVideoListener(new ClickOrLongListener() {
+            @Override
+            public void actionDown() {
+                // 母窗体禁止滑动
+                ViewBusinessUtils.setTablayoutScroll(false, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
+            }
+
+            @Override
+            public void onClick() {
+
+            }
+
+            @Override
+            public void onLongClickShort(long time) {
+                // 母窗体启动滑动
+                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
+            }
+
+            @Override
+            public void onLongClick() {
+            }
+
+            @Override
+            public void onLongClickEnd(long time) {
+
+            }
+
+            @Override
+            public void onLongClickError() {
+
+            }
+        });
+    }
+
+    /**
+     * 确认取消事件
+     */
+    private void initCameraLayoutOperaeCameraListener() {
+        mCameraLayout.setOperaeCameraListener(new OperaeCameraListener() {
+            @Override
+            public void cancel() {
+                // 母窗体启动滑动
+                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
+            }
+
+            @Override
+            public void captureSuccess(ArrayList<String> paths, ArrayList<Uri> uris) {
+                Intent result = new Intent();
+                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
+                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
+                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
+                mActivity.setResult(RESULT_OK, result);
+                mIsCommit = true;
+                mActivity.finish();
+
+            }
+
+            @Override
+            public void recordSuccess(String path, Uri uri) {
+                ArrayList<String> arrayList = new ArrayList<>();
+                arrayList.add(path);
+                ArrayList<Uri> arrayListUri = new ArrayList<>();
+                arrayListUri.add(uri);
+                // 获取视频路径
+                Intent result = new Intent();
+                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
+                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
+                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
+                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
+                mActivity.setResult(RESULT_OK, result);
+                mIsCommit = true;
+                mActivity.finish();
+            }
+
+        });
+    }
+
+    /**
+     * 拍摄后操作图片的事件
+     */
+    private void initCameraLayoutCaptureListener() {
+        mCameraLayout.setCaptureListener(new CaptureListener() {
+            @Override
+            public void remove(HashMap<Integer, BitmapData> captureBitmaps) {
+                // 判断如果删除光图片的时候，母窗体启动滑动
+                if (captureBitmaps.size() <= 0) {
+                    ((MainActivity) mActivity).setTablayoutScroll(true);
+                }
+            }
+
+            @Override
+            public void add(HashMap<Integer, BitmapData> captureBitmaps) {
+                if (captureBitmaps.size() > 0) {
+                    // 母窗体禁止滑动
+                    ((MainActivity) mActivity).setTablayoutScroll(false);
+                }
+            }
+        });
+    }
+
+    /**
+     * 编辑图片事件
+     */
+    private void initCameraLayoutEditListener() {
+        mCameraLayout.setEditListener((uri, newPath) -> {
+            Intent intent = new Intent();
+            intent.setClass(getContext(), ImageEditActivity.class);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
+            this.startActivityForResult(intent, REQ_IMAGE_EDIT);
+        });
     }
 
 }

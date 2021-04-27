@@ -15,6 +15,7 @@ import com.zhongjh.albumcamerarecorder.R;
 
 import gaode.zhongjh.com.common.entity.IncapableCause;
 
+import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
@@ -22,7 +23,6 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.utils.BasePhotoMetadataUtils;
 
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
 import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
 
 import java.io.FileNotFoundException;
@@ -124,9 +124,9 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
         }
 
         // 过滤不符合用户设定的资源 Filter提供抽象方法，由用户自行设置过滤规则
-        if (AlbumSpec.getInstance().filters != null) {
-            for (Filter filter : AlbumSpec.getInstance().filters) {
-                IncapableCause incapableCause = filter.filter(context, item);
+        if (AlbumSpec.getInstance().baseFilters != null) {
+            for (BaseFilter baseFilter : AlbumSpec.getInstance().baseFilters) {
+                IncapableCause incapableCause = baseFilter.filter(context, item);
                 if (incapableCause != null) {
                     return incapableCause;
                 }
@@ -186,12 +186,13 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
      * @param sizeInBytes 容量大小
      * @return mb
      */
-    public static float getSizeInMB(long sizeInBytes) {
+    public static float getSizeInMb(long sizeInBytes) {
         DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
         df.applyPattern("0.0");
         String result = df.format((float) sizeInBytes / 1024 / 1024);
         Log.e(TAG, "getSizeInMB: " + result);
-        result = result.replaceAll(",", "."); // in some case , 0.0 will be 0,0
-        return Float.valueOf(result);
+        // in some case , 0.0 will be 0,0
+        result = result.replaceAll(",", ".");
+        return Float.parseFloat(result);
     }
 }

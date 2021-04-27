@@ -97,7 +97,8 @@ public class GlobalSpec {
                 } else {
                     return GlobalSpec.getInstance().mimeTypeSet;
                 }
-
+            default:
+                break;
         }
         return mimeTypeSet;
     }

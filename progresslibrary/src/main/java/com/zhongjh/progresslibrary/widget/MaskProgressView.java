@@ -175,12 +175,12 @@ public class MaskProgressView extends androidx.appcompat.widget.AppCompatImageVi
     /**
      * 测量宽高模式
      *
-     * @param MeasureSpecSize 宽高度
+     * @param measureSpecSize 宽高度
      * @return 返回大小
      */
-    private int measureSize(int MeasureSpecSize) {
+    private int measureSize(int measureSpecSize) {
         int size;
-        int[] ints = measureSpec(MeasureSpecSize);
+        int[] ints = measureSpec(measureSpecSize);
         // 判断模式
         if (ints[0] == MeasureSpec.EXACTLY) {
             // 如果当前模式是 当前的尺寸就是当前View应该取的尺寸

@@ -1,7 +1,8 @@
 package com.zhongjh.albumcamerarecorder.settings;
 
 import gaode.zhongjh.com.common.enums.MimeType;
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+
+import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
 import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
@@ -36,7 +37,7 @@ public class AlbumSpec {
         mediaTypeExclusive = true;
         showSingleMediaType = false;
         countable = false;
-        filters = null;
+        baseFilters = null;
         spanCount = 3;
         thumbnailScale = 0.5f;
         originalable = false;
@@ -56,7 +57,7 @@ public class AlbumSpec {
     public boolean originalable;    // 是否原图
     public int originalMaxSize;     // 最大原图size,仅当originalEnable为true的时候才有效
     public OnCheckedListener onCheckedListener;
-    public List<Filter> filters;
+    public List<BaseFilter> baseFilters;
 
     // endregion
 

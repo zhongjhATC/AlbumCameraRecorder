@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -153,7 +155,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         int color = ta.getColor(0, 0);
         ta.recycle();
         if (navigationIcon != null) {
-            navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                navigationIcon.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+            } else {
+                navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            }
         }
         mSelectedCollection.onCreate(savedInstanceState, false);
         if (savedInstanceState != null) {
@@ -163,7 +169,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(mContext, null, false);
         mAlbumsSpinner = new AlbumsSpinner(mContext);
-        mAlbumsSpinner.setSelectedTextView(mViewHolder.selected_album);
+        mAlbumsSpinner.setSelectedTextView(mViewHolder.selectedAlbum);
         mAlbumsSpinner.setPopupAnchorView(mViewHolder.toolbar);
         mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
         mAlbumCollection.onCreate(this, this);
@@ -199,7 +205,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         });
 
         // 预览
-        mViewHolder.button_preview.setOnClickListener(view -> {
+        mViewHolder.buttonPreview.setOnClickListener(view -> {
             Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
             intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, true);
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
@@ -211,7 +217,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         });
 
         // 确认当前选择的图片
-        mViewHolder.button_apply.setOnClickListener(view -> {
+        mViewHolder.buttonApply.setOnClickListener(view -> {
             Intent result = new Intent();
             // 获取选择的图片的url集合
             ArrayList<Uri> selectedUris = (ArrayList<Uri>) mSelectedCollection.asListOfUri();
@@ -375,19 +381,19 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         if (selectedCount == 0) {
             // 如果没有数据，则设置不可点击
-            mViewHolder.button_preview.setEnabled(false);
-            mViewHolder.button_apply.setEnabled(false);
-            mViewHolder.button_apply.setText(getString(R.string.button_sure_default));
+            mViewHolder.buttonPreview.setEnabled(false);
+            mViewHolder.buttonApply.setEnabled(false);
+            mViewHolder.buttonApply.setText(getString(R.string.button_sure_default));
         } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
             // 不显示选择的数字
-            mViewHolder.button_preview.setEnabled(true);
-            mViewHolder.button_apply.setText(R.string.button_sure_default);
-            mViewHolder.button_apply.setEnabled(true);
+            mViewHolder.buttonPreview.setEnabled(true);
+            mViewHolder.buttonApply.setText(R.string.button_sure_default);
+            mViewHolder.buttonApply.setEnabled(true);
         } else {
             // 显示选择的数字
-            mViewHolder.button_preview.setEnabled(true);
-            mViewHolder.button_apply.setEnabled(true);
-            mViewHolder.button_apply.setText(getString(R.string.button_sure, selectedCount));
+            mViewHolder.buttonPreview.setEnabled(true);
+            mViewHolder.buttonApply.setEnabled(true);
+            mViewHolder.buttonApply.setText(getString(R.string.button_sure, selectedCount));
         }
 
         // 是否显示原图控件
@@ -438,7 +444,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             MultiMedia item = mSelectedCollection.asList().get(i);
 
             if (item.isImage()) {
-                float size = PhotoMetadataUtils.getSizeInMB(item.size);
+                float size = PhotoMetadataUtils.getSizeInMb(item.size);
 
                 if (size > mAlbumSpec.originalMaxSize) {
                     count++;
@@ -483,11 +489,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (album.isAll() && album.isEmpty()) {
             // 如果是选择全部并且没有数据的话，显示空的view
             mViewHolder.container.setVisibility(View.GONE);
-            mViewHolder.empty_view.setVisibility(View.VISIBLE);
+            mViewHolder.emptyView.setVisibility(View.VISIBLE);
         } else {
             // 如果有数据，则内嵌新的fragment，并且相应相关照片
             mViewHolder.container.setVisibility(View.VISIBLE);
-            mViewHolder.empty_view.setVisibility(View.GONE);
+            mViewHolder.emptyView.setVisibility(View.GONE);
             if (!mIsRefresh) {
                 Fragment fragment = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
                 if (getFragmentManager() != null) {
@@ -540,12 +546,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private void showBottomView(int count) {
         if (count > 0) {
             // 显示底部
-            mViewHolder.bottom_toolbar.setVisibility(View.VISIBLE);
+            mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
             // 隐藏母窗体的table
             ((MainActivity) mActivity).showHideTableLayout(false);
         } else {
             // 显示底部
-            mViewHolder.bottom_toolbar.setVisibility(View.GONE);
+            mViewHolder.bottomToolbar.setVisibility(View.GONE);
             // 隐藏母窗体的table
             ((MainActivity) mActivity).showHideTableLayout(true);
         }
@@ -553,31 +559,31 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     public static class ViewHolder {
         public View rootView;
-        public TextView selected_album;
+        public TextView selectedAlbum;
         public Toolbar toolbar;
-        public TextView button_preview;
+        public TextView buttonPreview;
         public CheckRadioView original;
         public LinearLayout originalLayout;
-        public TextView button_apply;
-        public FrameLayout bottom_toolbar;
+        public TextView buttonApply;
+        public FrameLayout bottomToolbar;
         public FrameLayout container;
-        public TextView empty_view_content;
-        public FrameLayout empty_view;
+        public TextView emptyViewContent;
+        public FrameLayout emptyView;
         public RelativeLayout root;
         public ImageView imgClose;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
-            this.selected_album = rootView.findViewById(R.id.selected_album);
+            this.selectedAlbum = rootView.findViewById(R.id.selectedAlbum);
             this.toolbar = rootView.findViewById(R.id.toolbar);
-            this.button_preview = rootView.findViewById(R.id.button_preview);
+            this.buttonPreview = rootView.findViewById(R.id.buttonPreview);
             this.original = rootView.findViewById(R.id.original);
             this.originalLayout = rootView.findViewById(R.id.originalLayout);
-            this.button_apply = rootView.findViewById(R.id.button_apply);
-            this.bottom_toolbar = rootView.findViewById(R.id.bottom_toolbar);
+            this.buttonApply = rootView.findViewById(R.id.buttonApply);
+            this.bottomToolbar = rootView.findViewById(R.id.bottomToolbar);
             this.container = rootView.findViewById(R.id.container);
-            this.empty_view_content = rootView.findViewById(R.id.empty_view_content);
-            this.empty_view = rootView.findViewById(R.id.empty_view);
+            this.emptyViewContent = rootView.findViewById(R.id.emptyViewContent);
+            this.emptyView = rootView.findViewById(R.id.emptyView);
             this.root = rootView.findViewById(R.id.root);
             this.imgClose = rootView.findViewById(R.id.imgClose);
         }

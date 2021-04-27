@@ -1,9 +1,6 @@
 package com.zhongjh.videoedit;
 
-import android.os.Environment;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -16,25 +13,14 @@ import io.microshow.rxffmpeg.RxFFmpegSubscriber;
 
 /**
  * 视频编辑管理
+ * @author zhongjh
  */
 public class VideoEditManager extends VideoEditCoordinator {
 
-    MyRxFFmpegSubscriber myRxFFmpegSubscriber;
+    MyRxFfmpegSubscriber mMyRxFfmpegSubscriber;
 
     @Override
     public void merge(String newPath, ArrayList<String> paths,String txtPath) {
-        StringBuilder stringBuilder = new StringBuilder();
-//        stringBuilder.append("ffmpeg ");
-//        stringBuilder.append("-i ");
-//        stringBuilder.append("\"concat:");
-//        for (String path : paths) {
-//            stringBuilder.append(path).append("|");
-//        }
-//        stringBuilder.append("\" ");
-//        stringBuilder.append("-c ");
-//        stringBuilder.append("copy ");
-//        stringBuilder.append(newPath);
-
         // 创建文本文件
         File file = new File(txtPath);
         if (!file.exists()) {
@@ -63,26 +49,26 @@ public class VideoEditManager extends VideoEditCoordinator {
 
         String commands = "ffmpeg -y -f concat -safe 0 -i " + file.getPath() + " -c copy " + newPath;
 
-        myRxFFmpegSubscriber = new MyRxFFmpegSubscriber(mVideoEditListener);
+        mMyRxFfmpegSubscriber = new MyRxFfmpegSubscriber(mVideoEditListener);
 
         //开始执行FFmpeg命令
         RxFFmpegInvoke.getInstance()
                 .runCommandRxJava(commands.split(" "))
-                .subscribe(myRxFFmpegSubscriber);
+                .subscribe(mMyRxFfmpegSubscriber);
     }
 
     @Override
     public void onDestroy() {
-        if (myRxFFmpegSubscriber != null) {
-            myRxFFmpegSubscriber.dispose();
+        if (mMyRxFfmpegSubscriber != null) {
+            mMyRxFfmpegSubscriber.dispose();
         }
     }
 
-    public static class MyRxFFmpegSubscriber extends RxFFmpegSubscriber {
+    public static class MyRxFfmpegSubscriber extends RxFFmpegSubscriber {
 
         private WeakReference<VideoEditListener> mWeakReference;
 
-        public MyRxFFmpegSubscriber(VideoEditListener videoEditListener) {
+        public MyRxFfmpegSubscriber(VideoEditListener videoEditListener) {
             mWeakReference = new WeakReference<>(videoEditListener);
         }
 

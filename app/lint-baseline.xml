@@ -1,0 +1,1458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 4.1.1">
+
+    <issue
+        id="ScopedStorage"
+        message="WRITE_EXTERNAL_STORAGE no longer provides write access when targeting Android 10+">
+        <location
+            file="src\main\AndroidManifest.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="ScopedStorage"
+        message="WRITE_EXTERNAL_STORAGE no longer provides write access when targeting Android 10+">
+        <location
+            file="src\main\AndroidManifest.xml"
+            line="46"/>
+    </issue>
+
+    <issue
+        id="CanvasSize"
+        message="Calling `Canvas.getWidth()` is usually wrong; you should be calling `getWidth()` instead">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\widget\CheckView.java"
+            line="152"/>
+    </issue>
+
+    <issue
+        id="CanvasSize"
+        message="Calling `Canvas.getHeight()` is usually wrong; you should be calling `getHeight()` instead">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\widget\CheckView.java"
+            line="153"/>
+    </issue>
+
+    <issue
+        id="CustomViewStyleable"
+        message="By convention, the custom view (`MaskProgressLayout`) and the declare-styleable (`MaskProgressLayoutStyle`) should have the same name (various editor features rely on this convention)">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\MaskProgressLayout.java"
+            line="89"/>
+    </issue>
+
+    <issue
+        id="ExifInterface"
+        message="Avoid using `android.media.ExifInterface`; use `android.support.media.ExifInterface` from the support library instead">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\utils\BitmapUtils.java"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="ExifInterface"
+        message="Avoid using `android.media.ExifInterface`; use `android.support.media.ExifInterface` from the support library instead">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\utils\ExifInterfaceCompat.java"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="ExifInterface"
+        message="Avoid using `android.media.ExifInterface`; use `android.support.media.ExifInterface` from the support library instead">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\utils\PhotoMetadataUtils.java"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 29 (current min is 21): `android.provider.MediaStore.MediaColumns#DATE_TAKEN`">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\loader\AlbumMediaLoader.java"
+            line="40"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 29 (current min is 21): `android.provider.MediaStore.MediaColumns#DATE_TAKEN`">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\loader\AlbumMediaLoader.java"
+            line="98"/>
+    </issue>
+
+    <issue
+        id="MissingConstraints"
+        message="This view is not constrained. It only has designtime positions, so it will jump to (0,0) at runtime unless you add the constraints">
+        <location
+            file="src\main\res\layout\layout_mask_progress.xml"
+            line="35"/>
+    </issue>
+
+    <issue
+        id="MissingConstraints"
+        message="This view is not constrained vertically: at runtime it will jump to the top unless you add a vertical constraint">
+        <location
+            file="src\main\res\layout\layout_mask_progress.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="MissingConstraints"
+        message="This view is not constrained vertically: at runtime it will jump to the top unless you add a vertical constraint">
+        <location
+            file="src\main\res\layout\layout_play.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="SimpleDateFormat"
+        message="To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates.">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\utils\ExifInterfaceCompat.java"
+            line="74"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `android:foreground` has no effect on API levels lower than 23 (current min is 21)">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="56"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `android:foreground` has no effect on API levels lower than 23 (current min is 21)">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="82"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `android:foreground` has no effect on API levels lower than 23 (current min is 21)">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="93"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `android:foreground` has no effect on API levels lower than 23 (current min is 21)">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="126"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: CameraConfig.MEDIA_QUALITY_AUTO, CameraConfig.MEDIA_QUALITY_LOWEST, CameraConfig.MEDIA_QUALITY_LOW, CameraConfig.MEDIA_QUALITY_MEDIUM, CameraConfig.MEDIA_QUALITY_HIGH, CameraConfig.MEDIA_QUALITY_HIGHEST">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\camera\config\CameraConfig.java"
+            line="101"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: CameraConfig.MEDIA_QUALITY_AUTO, CameraConfig.MEDIA_QUALITY_LOWEST, CameraConfig.MEDIA_QUALITY_LOW, CameraConfig.MEDIA_QUALITY_MEDIUM, CameraConfig.MEDIA_QUALITY_HIGH, CameraConfig.MEDIA_QUALITY_HIGHEST">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\camera\config\CameraConfig.java"
+            line="132"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: CameraConfig.MEDIA_QUALITY_AUTO, CameraConfig.MEDIA_QUALITY_LOWEST, CameraConfig.MEDIA_QUALITY_LOW, CameraConfig.MEDIA_QUALITY_MEDIUM, CameraConfig.MEDIA_QUALITY_HIGH, CameraConfig.MEDIA_QUALITY_HIGHEST">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\camera\config\CameraConfig.java"
+            line="175"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: CameraConfig.MEDIA_QUALITY_AUTO, CameraConfig.MEDIA_QUALITY_LOWEST, CameraConfig.MEDIA_QUALITY_LOW, CameraConfig.MEDIA_QUALITY_MEDIUM, CameraConfig.MEDIA_QUALITY_HIGH, CameraConfig.MEDIA_QUALITY_HIGHEST">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\camera\config\CameraConfig.java"
+            line="190"/>
+    </issue>
+
+    <issue
+        id="InflateParams"
+        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\AutoLineFeedLayout.java"
+            line="128"/>
+    </issue>
+
+    <issue
+        id="InflateParams"
+        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\AutoLineFeedLayout.java"
+            line="147"/>
+    </issue>
+
+    <issue
+        id="InflateParams"
+        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\AutoLineFeedLayout.java"
+            line="189"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.constraintlayout:constraintlayout than 2.0.1 is available: 2.0.4">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.constraintlayout:constraintlayout than 2.0.1 is available: 2.0.4">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.test.espresso:espresso-core than 3.2.0 is available: 3.3.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.test:runner than 1.2.0 is available: 1.3.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.android.tools.build:gradle than 3.4.1 is available: 4.1.3. (There is also a newer version of 3.4.𝑥 available, if upgrading to 4.1.3 is difficult: 3.4.3)">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.github.bumptech.glide:compiler than 4.8.0 is available: 4.11.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.github.bumptech.glide:glide than 3.7.0 is available: 4.11.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.github.bumptech.glide:glide than 3.7.0 is available: 4.11.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.github.bumptech.glide:glide than 4.8.0 is available: 4.11.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.2.1 is available: 1.3.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.2.1 is available: 1.3.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.2.1 is available: 1.3.0">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.tencent.bugly:crashreport than latest.release is available: 3.3.92">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.tencent.bugly:nativecrashreport than latest.release is available: 3.9.1">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of junit:junit than 4.12 is available: 4.13.2">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="Old buildToolsVersion 30.0.1; recommended version is 30.0.3 or later">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="GradleDynamicVersion"
+        message="Avoid using + in version numbers; can lead to unpredictable and unrepeatable builds (junit:junit:4.+)">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="SwitchIntDef"
+        message="Switch statement on an `int` with known associated constant missing case `ModuleTypes.RECORDER`">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\settings\GlobalSpec.java"
+            line="87"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `ResourcesCompat.getDrawable()`">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\MaskProgressLayout.java"
+            line="142"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `ResourcesCompat.getDrawable()`">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            line="218"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `ResourcesCompat.getDrawable()`">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            line="408"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `ResourcesCompat.getDrawable()`">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            line="414"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `ResourcesCompat.getDrawable()`">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            line="424"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `ResourcesCompat.getDrawable()`">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            line="449"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableEndCompat` instead of `android:drawableEnd`">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="54"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableRightCompat` instead of `android:drawableRight`">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="55"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="151"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="src\main\res\layout\item_photo_capture.xml"
+            line="30"/>
+    </issue>
+
+    <issue
+        id="AllowBackup"
+        message="On SDK version 23 and up, your app data will be automatically backed up and restored on app install. Consider adding the attribute `android:fullBackupContent` to specify an `@xml` resource which configures which files to backup. More info: https://developer.android.com/training/backup/autosyncapi.html">
+        <location
+            file="src\main\AndroidManifest.xml"
+            line="60"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 21">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\MatissFragment.java"
+            line="144"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 21">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\utils\VersionUtils.java"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="UselessLeaf"
+        message="This `LinearLayout` view is useless (no children, no `background`, no `id`, no `style`)">
+        <location
+            file="src\main\res\layout\activity_main_simple.xml"
+            line="55"/>
+    </issue>
+
+    <issue
+        id="UselessParent"
+        message="This `RadioGroup` layout or its `LinearLayout` parent is useless">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="55"/>
+    </issue>
+
+    <issue
+        id="TooManyViews"
+        message="`activity_main.xml` has more than 80 views, bad for performance">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="532"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="136"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="154"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="172"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="190"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="136"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="154"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="172"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="190"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="208"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="228"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="248"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="361"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="394"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="413"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="432"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="451"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="491"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="565"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="584"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``TextView`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="src\main\java\com\zhongjh\albumcamerarecorder\album\widget\AlbumsSpinner.java"
+            line="151"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="136"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="154"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="172"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="190"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="208"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="228"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="248"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="361"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="394"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="413"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="432"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="451"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="491"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="565"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="584"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead.">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\PlayView.java"
+            line="152"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="src\main\java\com\zhongjh\progresslibrary\widget\PlayView.java"
+            line="337"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;全局配置&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="36"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;全局功能&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="48"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;支持全部&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="66"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;支持图片&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="73"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;支持视频&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="80"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;启动动画&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="94"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;true&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="102"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;支持编辑图片&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="114"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;true&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="122"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;保存所有文件路径&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="134"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;AA/test&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="140"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;保存图片路径&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="152"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;AA/picture&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="158"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;保存视频文件路径&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="170"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;AA/video&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="176"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;保存音频文件路径&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="188"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;AA/audio&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="194"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;最多可以设置几个图片：&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="206"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;5&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="213"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;最多可以设置几个视频(添加可以设置多个，呈现的功能暂不考虑1个以上)：&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="226"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;1&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="234"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;最多可以设置几个音频(添加可以设置多个，呈现的功能暂不考虑1个以上)：：&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="246"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;1&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="254"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;相册配置&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="266"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;开启相册功能&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="281"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;如果勾选这些,那么相册功能则以如下这些为标准：&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="286"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;支持图片&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="299"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;支持视频&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="307"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;是否只能选择一种类型&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="319"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;true&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="327"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;是否显示多选图片的数字&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="339"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;true&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="347"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;九宫格大小(dp)&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="359"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;120&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="366"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;自定义过滤器：&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="378"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;过滤宽度不少于(px)&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="392"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;320&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="399"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;过滤高度不少于(px)&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="411"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;320&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="418"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;过滤文件不能大于(m)&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="430"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;5&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="437"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;过滤图片缩放比例(最大为1)&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="449"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;0.85&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="456"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;是否开启原图选项&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="468"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;true&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="476"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;最大原图size,仅当originalEnable为true的时候才有效(M)&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="489"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;1&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="496"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;录制配置&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="507"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;开启拍摄功能&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="522"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;开启分段录制功能&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="530"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;支持图片&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="543"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;支持视频&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="551"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;最长录制时间&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="563"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;20&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="570"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;最短录制时间(毫秒)&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="582"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;1000&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="589"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;录音配置&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="600"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;开启录音功能&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main.xml"
+            line="615"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;简单版&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;配置版&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="26"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;样式版&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="35"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;打开默认有数据的&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="44"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;直接预览&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="53"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;开启相册功能&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_simple.xml"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;开启拍摄功能&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_simple.xml"
+            line="45"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;开启录音功能&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_simple.xml"
+            line="53"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;蓝色样式&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_theme.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;黑色样式&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_main_theme.xml"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;确定&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\activity_preview_video.xml"
+            line="47"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;倒计时&quot;, should use `@string` resource">
+        <location
+            file="src\main\res\layout\fragment_soundrecording_zjh.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginLeft`; already defining `layout_marginStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginLeft`; already defining `layout_marginStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginLeft`; already defining `layout_marginStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="32"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginLeft`; already defining `layout_marginStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="41"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginLeft`; already defining `layout_marginStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\activity_main_list.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `paddingLeft`; already defining `paddingStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\activity_media_preview_zjh.xml"
+            line="65"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_alignParentRight`; already defining `layout_alignParentEnd` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\activity_media_preview_zjh.xml"
+            line="99"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `drawableRight`; already defining `drawableEnd` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="55"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `paddingLeft`; already defining `paddingStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\fragment_matiss_zjh.xml"
+            line="112"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginLeft`; already defining `layout_marginStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\item_horizontal_image_zjh.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginLeft`; already defining `layout_marginStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\item_matiss_spinner_zjh.xml"
+            line="27"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginLeft`; already defining `layout_marginStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\item_matiss_spinner_zjh.xml"
+            line="40"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_toRightOf`; already defining `layout_toEndOf` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\item_matiss_spinner_zjh.xml"
+            line="41"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_alignLeft`; already defining `layout_alignStart` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\item_matiss_spinner_zjh.xml"
+            line="55"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_toRightOf`; already defining `layout_toEndOf` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\item_matiss_spinner_zjh.xml"
+            line="56"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginRight`; already defining `layout_marginEnd` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\media_grid_content.xml"
+            line="39"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Redundant attribute `layout_marginRight`; already defining `layout_marginEnd` with `targetSdkVersion` 30">
+        <location
+            file="src\main\res\layout\media_grid_content.xml"
+            line="51"/>
+    </issue>
+
+    <issue
+        id="RtlEnabled"
+        message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
+        <location
+            file="src\main\AndroidManifest.xml"/>
+    </issue>
+
+</issues>

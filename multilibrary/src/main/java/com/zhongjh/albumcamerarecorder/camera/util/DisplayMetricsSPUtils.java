@@ -1,9 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.util;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.util.DisplayMetrics;
-import android.view.WindowManager;
 
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 
@@ -25,14 +23,14 @@ public class DisplayMetricsSPUtils {
      */
     public static int getScreenWidth(Context context) {
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(context, CAMERAVIEWSOUNDRECORDERSHAREDPREFERENCES);
-        if (sharedPreferencesUtil.getInt(Constants.ScreenWidth, 0) == 0) {
+        if (sharedPreferencesUtil.getInt(Constants.SCREEN_WIDTH, 0) == 0) {
             DisplayMetrics dm = context.getResources().getDisplayMetrics();
             int screenWidth = dm.widthPixels;
             int screenHeight = dm.heightPixels;
-            sharedPreferencesUtil.putInt(Constants.ScreenHeight, screenHeight);
-            sharedPreferencesUtil.putInt(Constants.ScreenWidth, screenWidth);
+            sharedPreferencesUtil.putInt(Constants.SCREEN_HEIGHT, screenHeight);
+            sharedPreferencesUtil.putInt(Constants.SCREEN_WIDTH, screenWidth);
         }
-        return sharedPreferencesUtil.getInt(Constants.ScreenWidth, 0);
+        return sharedPreferencesUtil.getInt(Constants.SCREEN_WIDTH, 0);
     }
 
 }

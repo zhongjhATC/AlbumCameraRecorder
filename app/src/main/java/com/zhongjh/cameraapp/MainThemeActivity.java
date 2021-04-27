@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.zhongjh.albumcamerarecorder.album.filter.Filter;
+import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
@@ -110,7 +110,7 @@ public class MainThemeActivity extends BaseActivity {
         AlbumSetting albumSetting = new AlbumSetting(true)
                 .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
                 .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
+                .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))// 自定义过滤器
                 .originalEnable(true)// 开启原图
                 .maxOriginalSize(10); // 最大原图size,仅当originalEnable为true的时候才有效
 

@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
@@ -33,7 +31,7 @@ import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_C
  */
 public class PreviewVideoActivity extends AppCompatActivity {
 
-    FullScreenVideoView mVVPreview;
+    FullScreenVideoView mVideoViewPreview;
     ImageView mImgClose;
     Button mBtnConfirm;
     String mPath;
@@ -71,7 +69,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 初始化View
      */
     private void initView() {
-        mVVPreview = findViewById(R.id.vvPreview);
+        mVideoViewPreview = findViewById(R.id.vvPreview);
         mImgClose = findViewById(R.id.imgClose);
         mBtnConfirm = findViewById(R.id.btnConfirm);
     }
@@ -107,24 +105,24 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      */
     private void playVideo(File file) {
-        mVVPreview.pause();
+        mVideoViewPreview.pause();
         // mediaController 是底部控制条
         MediaController mediaController = new MediaController(PreviewVideoActivity.this);
-        mediaController.setAnchorView(mVVPreview);
-        mediaController.setMediaPlayer(mVVPreview);
+        mediaController.setAnchorView(mVideoViewPreview);
+        mediaController.setMediaPlayer(mVideoViewPreview);
         mediaController.setVisibility(View.GONE);
-        mVVPreview.setMediaController(mediaController);
+        mVideoViewPreview.setMediaController(mediaController);
         Uri uri = Uri.fromFile(file);
-        mVVPreview.setVideoURI(uri);
+        mVideoViewPreview.setVideoURI(uri);
         // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
-        mVVPreview.setVisibility(View.VISIBLE);
-        if (!mVVPreview.isPlaying()) {
-            mVVPreview.start();
+        mVideoViewPreview.setVisibility(View.VISIBLE);
+        if (!mVideoViewPreview.isPlaying()) {
+            mVideoViewPreview.start();
         }
-        mVVPreview.setOnCompletionListener(mediaPlayer -> {
+        mVideoViewPreview.setOnCompletionListener(mediaPlayer -> {
             // 循环播放
-            if (!mVVPreview.isPlaying()) {
-                mVVPreview.start();
+            if (!mVideoViewPreview.isPlaying()) {
+                mVideoViewPreview.start();
             }
         });
     }
