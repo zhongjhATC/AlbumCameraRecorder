@@ -22,7 +22,7 @@ import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
-import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
@@ -111,7 +111,7 @@ public class CameraFragment extends BaseFragment {
 
         initCameraLayoutCloseListener();
         initCameraLayoutPhotoVideoListener();
-        initCameraLayoutOperaeCameraListener();
+        initCameraLayoutOperateCameraListener();
         initCameraLayoutCaptureListener();
         initCameraLayoutEditListener();
 
@@ -271,8 +271,8 @@ public class CameraFragment extends BaseFragment {
     /**
      * 确认取消事件
      */
-    private void initCameraLayoutOperaeCameraListener() {
-        mCameraLayout.setOperaeCameraListener(new OperaeCameraListener() {
+    private void initCameraLayoutOperateCameraListener() {
+        mCameraLayout.setOperateCameraListener(new OperateCameraListener() {
             @Override
             public void cancel() {
                 // 母窗体启动滑动

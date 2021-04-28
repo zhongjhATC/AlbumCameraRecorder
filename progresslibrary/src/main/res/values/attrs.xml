@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="MaskProgressLayoutStyle">
+    <declare-styleable name="MaskProgressLayout">
 
         <attr name="isOperation" format="boolean"/><!-- 是否允许操作 -->
         <attr name="authority" format="string" /><!-- provider的authorities,用于提供给外部的file -->

@@ -34,7 +34,7 @@ public class SoundrecordingLayoutBase extends BaseOperationLayout {
 
     @Override
     public ViewHolder newViewHolder() {
-        return new ViewHolder(View.inflate(getContext(), R.layout.layout_soundrecording_operae, this));
+        return new ViewHolder(View.inflate(getContext(), R.layout.layout_soundrecording_operate, this));
     }
 
     @Override

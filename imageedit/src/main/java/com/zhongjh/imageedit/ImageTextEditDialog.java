@@ -19,7 +19,6 @@ import com.zhongjh.imageedit.view.ImageColorGroup;
  * @author felix
  * @date 2017/12/1 上午11:21
  */
-
 public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
         RadioGroup.OnCheckedChangeListener {
 
@@ -104,6 +103,10 @@ public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
 
     public interface Callback {
 
+        /**
+         * 点击完成后执行的该事件
+         * @param text dialog的text
+         */
         void onText(ImageText text);
     }
 }

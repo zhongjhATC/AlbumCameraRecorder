@@ -104,6 +104,11 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
         mMoveHelper = new ImageStickerMoveHelper(this);
     }
 
+    /**
+     * 创建view
+     * @param context 上下文
+     * @return view
+     */
     public abstract View onCreateContentView(Context context);
 
     @Override

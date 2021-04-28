@@ -29,6 +29,11 @@ public abstract class BaseImageDecoder {
         return decode(null);
     }
 
+    /**
+     * 解码
+     * @param options 配置
+     * @return bitmap
+     */
     public abstract Bitmap decode(BitmapFactory.Options options);
 
 }

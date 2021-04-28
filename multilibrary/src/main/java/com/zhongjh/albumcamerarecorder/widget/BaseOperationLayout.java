@@ -43,12 +43,12 @@ public abstract class BaseOperationLayout extends FrameLayout {
     /**
      * 点击或长按监听结束后的 确认取消事件监控
      */
-    private OperaeListener mOperaeListener;
+    private OperateListener mOperateListener;
 
     /**
      * 操作按钮的Listener
      */
-    public interface OperaeListener {
+    public interface OperateListener {
 
         /**
          * 取消
@@ -81,8 +81,8 @@ public abstract class BaseOperationLayout extends FrameLayout {
         this.mClickOrLongListener = clickOrLongListener;
     }
 
-    public void setOperaeListener(OperaeListener mOperaeListener) {
-        this.mOperaeListener = mOperaeListener;
+    public void setOperateListener(OperateListener mOperateListener) {
+        this.mOperateListener = mOperateListener;
     }
 
     // endregion
@@ -269,8 +269,8 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
             @Override
             public void onClick() {
-                if (mOperaeListener != null) {
-                    mOperaeListener.cancel();
+                if (mOperateListener != null) {
+                    mOperateListener.cancel();
                 }
                 startTipAlphaAnimation();
             }
@@ -284,29 +284,29 @@ public abstract class BaseOperationLayout extends FrameLayout {
         viewHolder.btnConfirm.setCircularProgressListener(new CircularProgressListener() {
             @Override
             public void onStart() {
-                if (mOperaeListener != null) {
-                    mOperaeListener.startProgress();
+                if (mOperateListener != null) {
+                    mOperateListener.startProgress();
                 }
             }
 
             @Override
             public void onDone() {
-                if (mOperaeListener != null) {
-                    mOperaeListener.doneProgress();
+                if (mOperateListener != null) {
+                    mOperateListener.doneProgress();
                 }
             }
 
             @Override
             public void onStop() {
-                if (mOperaeListener != null) {
-                    mOperaeListener.stopProgress();
+                if (mOperateListener != null) {
+                    mOperateListener.stopProgress();
                 }
             }
 
             @Override
             public void onClick() {
-                if (mOperaeListener != null) {
-                    mOperaeListener.confirm();
+                if (mOperateListener != null) {
+                    mOperateListener.confirm();
                 }
                 startTipAlphaAnimation();
             }

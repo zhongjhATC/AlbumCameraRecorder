@@ -61,7 +61,7 @@ public class SoundRecordingFragment extends BaseFragment {
     private final static int AGAIN_TIME = 2000;
     protected Activity mActivity;
 
-    RecordeSpec mRecordeSpec;
+    RecordeSpec mRecordSpec;
 
     /**
      * 是否正在播放中
@@ -91,11 +91,6 @@ public class SoundRecordingFragment extends BaseFragment {
 
     private MediaRecorder mRecorder = null;
 
-    /**
-     * 音频文件配置路径
-     */
-    private MediaStoreCompat mAudioMediaStoreCompat;
-
     private long mStartingTimeMillis = 0;
     // endregion
 
@@ -115,13 +110,13 @@ public class SoundRecordingFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
         // 初始化设置
-        mRecordeSpec = RecordeSpec.getInstance();
+        mRecordSpec = RecordeSpec.getInstance();
         // 提示文本
         mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_sound_recording));
         // 设置录制时间
-        mViewHolder.pvLayout.setDuration(mRecordeSpec.duration * 1000);
+        mViewHolder.pvLayout.setDuration(mRecordSpec.duration * 1000);
         // 最短录制时间
-        mViewHolder.pvLayout.setMinDuration(mRecordeSpec.minDuration);
+        mViewHolder.pvLayout.setMinDuration(mRecordSpec.minDuration);
         // 设置只能长按
         mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
         initListener();
@@ -152,6 +147,18 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void initListener() {
         // 录音等事件
+        initPvLayoutPhotoVideoListener();
+        // 播放事件
+        initRlSoundRecordingClickListener();
+
+        // 确认和取消
+        initPvLayoutOperateListener();
+    }
+
+    /**
+     * 录音等事件
+     */
+    private void initPvLayoutPhotoVideoListener() {
         mViewHolder.pvLayout.setPhotoVideoListener(new ClickOrLongListener() {
             @Override
             public void actionDown() {
@@ -169,7 +176,7 @@ public class SoundRecordingFragment extends BaseFragment {
                 Log.d(TAG, "onLongClickShort" + time);
                 mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
                 // 停止录音
-                new Handler(Looper.getMainLooper()).postDelayed(() -> onRecord(false, true), mRecordeSpec.minDuration - time);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> onRecord(false, true), mRecordSpec.minDuration - time);
                 mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
                 // 母窗体启动滑动
                 ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
@@ -197,17 +204,25 @@ public class SoundRecordingFragment extends BaseFragment {
 
             }
         });
+    }
 
-        // 播放事件
+    /**
+     * 播放事件
+     */
+    private void initRlSoundRecordingClickListener() {
         ((SoundrecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).rlSoundRecording.setOnClickListener(view -> {
             initAudio();
             // 播放
             onPlay(isPlaying);
             isPlaying = !isPlaying;
         });
+    }
 
-        // 确认和取消
-        mViewHolder.pvLayout.setOperaeListener(new BaseOperationLayout.OperaeListener() {
+    /**
+     * 确认和取消
+     */
+    private void initPvLayoutOperateListener() {
+        mViewHolder.pvLayout.setOperateListener(new BaseOperationLayout.OperateListener() {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
@@ -255,9 +270,9 @@ public class SoundRecordingFragment extends BaseFragment {
         recordingItem = new RecordingItem();
         SharedPreferences sharePreferences = mActivity.getSharedPreferences("sp_name_audio", MODE_PRIVATE);
         final String filePath = sharePreferences.getString("audio_path", "");
-        long elpased = sharePreferences.getLong("elpased", 0);
+        long elapsed = sharePreferences.getLong("elapsed", 0);
         recordingItem.setFilePath(filePath);
-        recordingItem.setLength((int) elpased);
+        recordingItem.setLength((int) elapsed);
     }
 
     @Override
@@ -287,10 +302,13 @@ public class SoundRecordingFragment extends BaseFragment {
     private void onRecord(boolean start, boolean isShort) {
         if (start) {
             // 创建文件
-            File folder = new File(getActivity().getExternalFilesDir(null) + "/SoundRecorder");
+            File folder = new File(mActivity.getExternalFilesDir(null) + "/SoundRecorder");
             if (!folder.exists()) {
-                //folder /SoundRecorder doesn't exist, create the folder
-                folder.mkdir();
+                // folder /SoundRecorder doesn't exist, create the folder
+                boolean wasSuccessful = folder.mkdir();
+                if (!wasSuccessful) {
+                    System.out.println("was not successful.");
+                }
             }
             // 开始计时,从1秒开始算起
             mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime() - 1000);
@@ -408,7 +426,8 @@ public class SoundRecordingFragment extends BaseFragment {
 
         // 根据配置创建文件配置
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        mAudioMediaStoreCompat = new MediaStoreCompat(getContext());
+        // 音频文件配置路径
+        MediaStoreCompat mAudioMediaStoreCompat = new MediaStoreCompat(getContext());
         mAudioMediaStoreCompat.setSaveStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
 
         mFile = mAudioMediaStoreCompat.getFilePath(2);
@@ -447,15 +466,18 @@ public class SoundRecordingFragment extends BaseFragment {
                 if (isShort) {
                     // 如果是短时间的，删除该文件
                     if (mFile.exists()) {
-                        mFile.delete();
+                        boolean delete = mFile.delete();
+                        if (!delete) {
+                            System.out.println("file not delete.");
+                        }
                     }
                 } else {
                     long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
                     // 存储到缓存的文件地址
-                    getActivity().getSharedPreferences("sp_name_audio", MODE_PRIVATE)
+                    mActivity.getSharedPreferences("sp_name_audio", MODE_PRIVATE)
                             .edit()
                             .putString("audio_path", mFile.getPath())
-                            .putLong("elpased", mElapsedMillis)
+                            .putLong("elapsed", mElapsedMillis)
                             .apply();
                 }
 

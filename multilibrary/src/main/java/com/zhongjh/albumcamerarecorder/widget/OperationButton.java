@@ -43,9 +43,9 @@ public class OperationButton extends View {
     public OperationButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         // 获取属性
-        TypedArray operaeButtonArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.OperationButton, defStyleAttr, 0);
+        TypedArray operateButtonArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.OperationButton, defStyleAttr, 0);
         // 获取类型
-        mType = operaeButtonArray.getInt(R.styleable.OperationButton_type,0);
+        mType = operateButtonArray.getInt(R.styleable.OperationButton_type,0);
     }
 
     @Override

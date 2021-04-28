@@ -18,7 +18,6 @@ import gaode.zhongjh.com.common.utils.StatusBarUtils;
 /**
  * Created by felix on 2017/12/5 下午3:08.
  */
-
 abstract class BaseImageEditActivity extends Activity implements View.OnClickListener,
         ImageTextEditDialog.Callback, RadioGroup.OnCheckedChangeListener,
         DialogInterface.OnShowListener, DialogInterface.OnDismissListener {
@@ -76,12 +75,7 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
 
         mLayoutOpSub = findViewById(R.id.layout_op_sub);
 
-        mImageViewCustom.addListener(new ImageViewCustom.Listener() {
-            @Override
-            public void resetModel() {
-                mColorGroup.clearCheck();
-            }
-        });
+        mImageViewCustom.addListener(() -> mColorGroup.clearCheck());
     }
 
     @Override
@@ -173,26 +167,63 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
         mOpSwitcher.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * 获取数据源
+     * @return 返回数据源
+     */
     public abstract Bitmap getBitmap();
 
+    /**
+     * 点击了模式事件
+     * @param mode 模式
+     */
     public abstract void onModeClick(ImageMode mode);
 
+    /**
+     * 点击了撤销事件
+     */
     public abstract void onUndoClick();
 
+    /**
+     * 点击了取消事件
+     */
     public abstract void onCancelClick();
 
+    /**
+     * 点击了完成事件
+     */
     public abstract void onDoneClick();
 
+    /**
+     * 裁剪：点击了取消事件
+     */
     public abstract void onCancelClipClick();
 
+    /**
+     * 裁剪：点击了完成事件
+     */
     public abstract void onDoneClipClick();
 
+    /**
+     * 裁剪：点击了重置事件
+     */
     public abstract void onResetClipClick();
 
+    /**
+     * 裁剪：点击了旋转事件
+     */
     public abstract void onRotateClipClick();
 
+    /**
+     * 改变颜色事件
+     * @param checkedColor 选择的颜色
+     */
     public abstract void onColorChanged(int checkedColor);
 
+    /**
+     * 添加文本
+     * @param text 文本
+     */
     @Override
     public abstract void onText(ImageText text);
 }

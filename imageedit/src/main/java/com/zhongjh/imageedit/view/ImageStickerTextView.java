@@ -17,8 +17,6 @@ import com.zhongjh.imageedit.core.ImageText;
  */
 public class ImageStickerTextView extends BaseImageStickerView implements ImageTextEditDialog.Callback {
 
-    private static final String TAG = "IMGStickerTextView";
-
     private TextView mTextView;
 
     private ImageText mText;

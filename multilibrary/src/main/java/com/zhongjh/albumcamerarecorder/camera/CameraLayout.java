@@ -38,7 +38,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.CloseListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.EditListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
-import com.zhongjh.albumcamerarecorder.camera.listener.OperaeCameraListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView;
@@ -188,7 +188,7 @@ public class CameraLayout extends RelativeLayout {
     /**
      * 确认跟返回的监听
      */
-    private OperaeCameraListener mOperaeCameraListener;
+    private OperateCameraListener mOperateCameraListener;
     /**
      * 拍摄后操作图片的事件
      */
@@ -223,10 +223,10 @@ public class CameraLayout extends RelativeLayout {
     /**
      * 确认跟返回的监听
      *
-     * @param operaeCameraListener 事件
+     * @param operateCameraListener 事件
      */
-    public void setOperaeCameraListener(OperaeCameraListener operaeCameraListener) {
-        this.mOperaeCameraListener = operaeCameraListener;
+    public void setOperateCameraListener(OperateCameraListener operateCameraListener) {
+        this.mOperateCameraListener = operateCameraListener;
     }
 
     /**
@@ -360,7 +360,7 @@ public class CameraLayout extends RelativeLayout {
         initPvLayoutPhotoVideoListener();
 
         // 左右确认和取消
-        initPvLayoutOperaeListener();
+        initPvLayoutOperateListener();
 
         // 录制界面按钮事件监听，目前只有一个，点击分段录制
         initPvLayoutRecordListener();
@@ -558,8 +558,8 @@ public class CameraLayout extends RelativeLayout {
     /**
      * 左右确认和取消
      */
-    private void initPvLayoutOperaeListener() {
-        mViewHolder.pvLayout.setOperaeListener(new BaseOperationLayout.OperaeListener() {
+    private void initPvLayoutOperateListener() {
+        mViewHolder.pvLayout.setOperateListener(new BaseOperationLayout.OperateListener() {
             @Override
             public void cancel() {
                 pvLayoutCancel();
@@ -876,8 +876,8 @@ public class CameraLayout extends RelativeLayout {
             // 设置空闲状态
             setState(Constants.STATE_PREVIEW);
         }
-        if (mOperaeCameraListener != null) {
-            mOperaeCameraListener.cancel();
+        if (mOperateCameraListener != null) {
+            mOperateCameraListener.cancel();
         }
 
         mViewHolder.rlEdit.setVisibility(View.GONE);
@@ -932,17 +932,17 @@ public class CameraLayout extends RelativeLayout {
                 stopVideo();    // 停止播放
                 // 加入视频到android系统库里面
                 Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
-                if (mOperaeCameraListener != null) {
-                    mOperaeCameraListener.recordSuccess(mVideoFile.getPath(), mediaUri);
+                if (mOperateCameraListener != null) {
+                    mOperateCameraListener.recordSuccess(mVideoFile.getPath(), mediaUri);
                 }
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
-                if (mOperaeCameraListener != null) {
+                if (mOperateCameraListener != null) {
                     ArrayList<String> paths = getPaths();
                     ArrayList<Uri> uris = getUris(paths);
-                    mOperaeCameraListener.captureSuccess(paths, uris);
+                    mOperateCameraListener.captureSuccess(paths, uris);
                     // 加入图片到android系统库里面
                     for (BitmapData value : mCaptureBitmaps.values()) {
                         BitmapUtils.displayToGallery(getContext(), new File(value.getPath()), TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);

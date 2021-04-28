@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * 处理fragment的回退事件
+ * @author zhongjh
  */
 public class HandleBackUtil {
 

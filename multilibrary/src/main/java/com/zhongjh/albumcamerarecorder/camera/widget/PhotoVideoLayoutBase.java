@@ -52,7 +52,7 @@ public class PhotoVideoLayoutBase extends BaseOperationLayout {
 
     @Override
     public ViewHolder newViewHolder() {
-        return new ViewHolder(View.inflate(getContext(), R.layout.layout_photovideo_operae, this));
+        return new ViewHolder(View.inflate(getContext(), R.layout.layout_photovideo_operate, this));
     }
 
     @Override

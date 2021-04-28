@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * 拍照录像
  * 操作按钮的Listener
  */
-public interface OperaeCameraListener {
+public interface OperateCameraListener {
 
     /**
      * 取消事件

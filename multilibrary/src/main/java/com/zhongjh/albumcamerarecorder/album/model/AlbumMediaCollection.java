@@ -112,8 +112,16 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
 
     public interface AlbumMediaCallbacks {
 
+        /**
+         * 加载数据完毕
+         *
+         * @param cursor 光标数据
+         */
         void onAlbumMediaLoad(Cursor cursor);
 
+        /**
+         * 当一个已创建的加载器被重置从而使其数据无效时，此方法被调用
+         */
         void onAlbumMediaReset();
     }
 }

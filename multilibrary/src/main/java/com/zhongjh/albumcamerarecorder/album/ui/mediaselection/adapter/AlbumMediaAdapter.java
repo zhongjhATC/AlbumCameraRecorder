@@ -40,6 +40,7 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 
 /**
  * 相册适配器
+ * @author zhongjh
  */
 public class AlbumMediaAdapter extends
         BaseRecyclerViewCursorAdapter<RecyclerView.ViewHolder> implements
@@ -48,10 +49,10 @@ public class AlbumMediaAdapter extends
     private static final int VIEW_TYPE_MEDIA = 0x02;
     private final SelectedItemCollection mSelectedCollection;
     private final Drawable mPlaceholder;
-    private AlbumSpec mAlbumSpec;
+    private final AlbumSpec mAlbumSpec;
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
-    private RecyclerView mRecyclerView;
+    private final RecyclerView mRecyclerView;
     private int mImageResize;
 
     public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, RecyclerView recyclerView) {
@@ -267,8 +268,14 @@ public class AlbumMediaAdapter extends
     public void refreshSelection() {
         GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
         // 获取当前能看到的第一个，和最后一个
-        int first = layoutManager.findFirstVisibleItemPosition();
-        int last = layoutManager.findLastVisibleItemPosition();
+        int first = 0;
+        if (layoutManager != null) {
+            first = layoutManager.findFirstVisibleItemPosition();
+        }
+        int last = 0;
+        if (layoutManager != null) {
+            last = layoutManager.findLastVisibleItemPosition();
+        }
         if (first == -1 || last == -1) {
             // 如果是-1就直接返回
             return;
@@ -294,7 +301,10 @@ public class AlbumMediaAdapter extends
     private int getImageResize(Context context) {
         if (mImageResize == 0) {
             RecyclerView.LayoutManager lm = mRecyclerView.getLayoutManager();
-            int spanCount = ((GridLayoutManager) lm).getSpanCount();
+            int spanCount = 0;
+            if (lm != null) {
+                spanCount = ((GridLayoutManager) lm).getSpanCount();
+            }
             int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
             int availableWidth = screenWidth - context.getResources().getDimensionPixelSize(
                     R.dimen.media_grid_spacing) * (spanCount - 1);
@@ -307,16 +317,25 @@ public class AlbumMediaAdapter extends
     }
 
     public interface CheckStateListener {
+        /**
+         * 选择选项后更新事件
+         */
         void onUpdate();
     }
 
     public interface OnMediaClickListener {
+        /**
+         * 点击事件
+         * @param album 相册集合
+         * @param item 选项
+         * @param adapterPosition 索引
+         */
         void onMediaClick(Album album, MultiMedia item, int adapterPosition);
     }
 
     private static class MediaViewHolder extends RecyclerView.ViewHolder {
 
-        private MediaGrid mMediaGrid;
+        private final MediaGrid mMediaGrid;
 
         MediaViewHolder(View itemView) {
             super(itemView);

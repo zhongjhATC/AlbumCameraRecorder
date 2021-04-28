@@ -2,7 +2,9 @@ package com.zhongjh.albumcamerarecorder.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+
 import androidx.viewpager.widget.ViewPager;
+
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -11,8 +13,6 @@ import android.view.MotionEvent;
  * Created by zhongjh on 2018/10/10.
  */
 public class NoScrollViewPager extends ViewPager {
-
-    private boolean isScroll = true;
 
     public NoScrollViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -29,7 +29,6 @@ public class NoScrollViewPager extends ViewPager {
      */
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-//        return isScroll && super.onInterceptTouchEvent(ev);
         return false;
     }
 
@@ -41,21 +40,14 @@ public class NoScrollViewPager extends ViewPager {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-//        if (isScroll){
-//            return super.onTouchEvent(ev);
-//        }else {
-        // 禁止滑动
         return true;
-//        }
     }
 
     /**
      * 设置是否能滑动
      *
-     * @param scroll 是否滑动
      */
-    public void setScroll(boolean scroll) {
-        isScroll = scroll;
+    public void setScroll() {
     }
 
 

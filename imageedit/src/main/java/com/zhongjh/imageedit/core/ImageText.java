@@ -1,6 +1,5 @@
 package com.zhongjh.imageedit.core;
 
-import android.graphics.Color;
 import android.text.TextUtils;
 
 /**
@@ -13,7 +12,7 @@ public class ImageText {
 
     private String text;
 
-    private int color = Color.WHITE;
+    private int color;
 
     public ImageText(String text, int color) {
         this.text = text;

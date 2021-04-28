@@ -191,10 +191,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
                 // 获取该位置的专辑
                 Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
-//                // 如果有拍照就+1 作废
-//                if (album.isAll() && GlobalSpec.getInstance().capture) {
-//                    album.addCaptureCount();
-//                }
                 onAlbumSelected(album);
             }
 
@@ -204,7 +200,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             }
         });
 
-        // 预览
+        // 预览事件
         mViewHolder.buttonPreview.setOnClickListener(view -> {
             Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
             intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, true);

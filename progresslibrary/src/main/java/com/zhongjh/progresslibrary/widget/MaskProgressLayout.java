@@ -109,38 +109,38 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         int colorPrimary = typedArray.getColor(0, defaultColor);
 
         // 获取自定义属性。
-        TypedArray maskProgressLayoutStyle = getContext().obtainStyledAttributes(attrs, R.styleable.MaskProgressLayoutStyle);
+        TypedArray maskProgressLayoutStyle = getContext().obtainStyledAttributes(attrs, R.styleable.MaskProgressLayout);
         // 是否允许操作
-        isOperation = maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayoutStyle_isOperation, true);
+        isOperation = maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayout_isOperation, true);
         // 获取默认图片
-        Drawable drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_album_thumbnail_placeholder);
+        Drawable drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_album_thumbnail_placeholder);
         // 获取添加图片
-        Drawable imageAddDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_imageAddDrawable);
+        Drawable imageAddDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_imageAddDrawable);
         // 获取显示图片的类
-        String imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_imageEngine);
+        String imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_imageEngine);
         // provider的authorities,用于提供给外部的file
-        String authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_authority);
+        String authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_authority);
         // 获取最多显示多少个方框
-        int maxCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_maxCount, 5);
-        int imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_imageDeleteColor, colorPrimary);
-        Drawable imageDeleteDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutStyle_imageDeleteDrawable);
+        int maxCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_maxCount, 5);
+        int imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_imageDeleteColor, colorPrimary);
+        Drawable imageDeleteDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_imageDeleteDrawable);
 
         // region 音频
         // 音频，删除按钮的颜色
-        int audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioDeleteColor, colorPrimary);
+        int audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioDeleteColor, colorPrimary);
         // 音频 文件的进度条颜色
-        audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioProgressColor, colorPrimary);
+        audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioProgressColor, colorPrimary);
         // 音频 播放按钮的颜色
-        int audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_audioPlayColor, colorPrimary);
+        int audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioPlayColor, colorPrimary);
         // endregion 音频
 
         // region 遮罩层相关属性
 
-        int maskingColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_maskingColor, colorPrimary);
-        int maskingTextSize = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutStyle_maskingTextSize, 12);
+        int maskingColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_maskingColor, colorPrimary);
+        int maskingTextSize = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_maskingTextSize, 12);
 
-        int maskingTextColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutStyle_maskingTextColor, ContextCompat.getColor(getContext(), R.color.thumbnail_placeholder));
-        String maskingTextContent = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutStyle_maskingTextContent);
+        int maskingTextColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_maskingTextColor, ContextCompat.getColor(getContext(), R.color.thumbnail_placeholder));
+        String maskingTextContent = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_maskingTextContent);
 
         // endregion 遮罩层相关属性
 
@@ -169,7 +169,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable, maxCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
         // 设置上传音频等属性
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
-        isShowRemovceRecorder();
+        isShowRemoveRecorder();
         mViewHolder.numberProgressBar.setProgressTextColor(audioProgressColor);
         mViewHolder.numberProgressBar.setReachedBarColor(audioProgressColor);
         mViewHolder.tvRecorderTip.setTextColor(audioProgressColor);
@@ -262,7 +262,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         // 显示上传中的音频
         mViewHolder.groupRecorderProgress.setVisibility(View.VISIBLE);
         mViewHolder.playView.setVisibility(View.GONE);
-        isShowRemovceRecorder();
+        isShowRemoveRecorder();
 
         // 初始化播放控件
         RecordingItem recordingItem = new RecordingItem();
@@ -293,7 +293,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 mViewHolder.playView.setVisibility(View.VISIBLE);
-                isShowRemovceRecorder();
+                isShowRemoveRecorder();
                 RecordingItem recordingItem = new RecordingItem();
                 recordingItem.setUrl(audioUrl);
                 recordingItem.setLength(duration);
@@ -321,7 +321,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         mViewHolder.playView.setVisibility(View.VISIBLE);
-        isShowRemovceRecorder();
+        isShowRemoveRecorder();
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(file);
         recordingItem.setLength(Integer.parseInt(duration));
@@ -362,7 +362,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     public void setOperation(boolean isOperation) {
         this.isOperation = isOperation;
         mViewHolder.alfMedia.setOperation(isOperation);
-        isShowRemovceRecorder();
+        isShowRemoveRecorder();
     }
 
     @Override
@@ -377,7 +377,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         // 显示完成后的音频
         mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
         mViewHolder.playView.setVisibility(View.VISIBLE);
-        isShowRemovceRecorder();
+        isShowRemoveRecorder();
     }
 
     /**
@@ -397,7 +397,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             audioList.clear();
             mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
             mViewHolder.alfMedia.checkLastImages();
-            isShowRemovceRecorder();
+            isShowRemoveRecorder();
             mViewHolder.playView.reset();
         });
     }
@@ -439,7 +439,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     /**
      * 设置是否显示删除音频按钮
      */
-    private void isShowRemovceRecorder() {
+    private void isShowRemoveRecorder() {
         if (isOperation) {
             // 如果是可操作的，就判断是否有音频数据
             if (this.mViewHolder.playView.getVisibility() == View.VISIBLE || this.mViewHolder.groupRecorderProgress.getVisibility() == View.VISIBLE) {

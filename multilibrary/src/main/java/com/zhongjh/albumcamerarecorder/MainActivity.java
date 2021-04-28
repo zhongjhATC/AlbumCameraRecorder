@@ -135,11 +135,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (isScroll) {
                 // 设置可以滑动
-                mVpPager.setScroll(true);
+                mVpPager.setScroll();
                 mTabLayout.setVisibility(View.VISIBLE);
             } else {
                 // 禁滑viewPager
-                mVpPager.setScroll(false);
+                mVpPager.setScroll();
                 mTabLayout.setVisibility(View.GONE);
             }
         }

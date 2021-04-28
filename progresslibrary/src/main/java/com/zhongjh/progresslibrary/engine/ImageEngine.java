@@ -39,6 +39,15 @@ public interface ImageEngine {
      */
     void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri);
 
+    /**
+     * Load thumbnail of a static image resource.
+     *
+     * @param context     Context
+     * @param resize      原产地图像的期望尺寸
+     * @param placeholder Placeholder drawable when image is not loaded yet
+     * @param imageView   ImageView widget
+     * @param url         url of the loaded image
+     */
     void loadUrlThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, String url);
 
     /**

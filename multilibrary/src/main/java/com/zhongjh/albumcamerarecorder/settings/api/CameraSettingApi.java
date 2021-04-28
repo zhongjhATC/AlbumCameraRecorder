@@ -44,6 +44,8 @@ public interface CameraSettingApi {
 
     /**
      * 启动视频编辑功能，目前只有视频分段录制，后续会增加
+     * @param videoEditManager 视频编辑协调者
+     * @return 视频编辑的设置
      */
     CameraSetting videoEdit(VideoEditCoordinator videoEditManager);
 
