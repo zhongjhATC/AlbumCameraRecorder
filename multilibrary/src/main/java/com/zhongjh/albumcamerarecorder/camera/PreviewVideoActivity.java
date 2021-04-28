@@ -24,7 +24,7 @@ import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
-import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
 
 /**
  * 一个预览合成分段录制的视频

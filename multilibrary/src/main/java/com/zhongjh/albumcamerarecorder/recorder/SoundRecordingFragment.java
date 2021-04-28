@@ -41,9 +41,9 @@ import gaode.zhongjh.com.common.utils.ThreadUtils;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONG_CLICK;
-import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
-import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
-import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
 import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
 
 /**
@@ -55,6 +55,10 @@ import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
 public class SoundRecordingFragment extends BaseFragment {
 
     private static final String TAG = SoundRecordingFragment.class.getSimpleName();
+    /**
+     * 再次确定的2秒时间
+     */
+    private final static int AGAIN_TIME = 2000;
     protected Activity mActivity;
 
     RecordeSpec mRecordeSpec;
@@ -130,11 +134,11 @@ public class SoundRecordingFragment extends BaseFragment {
         if (mViewHolder.pvLayout.mState == Constants.STATE_PREVIEW) {
             return false;
         } else {
-            //与上次点击返回键时刻作差
-            if ((System.currentTimeMillis() - mExitTime) > 2000) {
-                //大于2000ms则认为是误操作，使用Toast进行提示
+            // 与上次点击返回键时刻作差
+            if ((System.currentTimeMillis() - mExitTime) > AGAIN_TIME) {
+                // 大于2000ms则认为是误操作，使用Toast进行提示
                 Toast.makeText(mActivity.getApplicationContext(), "再按一次确认关闭", Toast.LENGTH_SHORT).show();
-                //并记录下本次点击“返回键”的时刻，以便下次进行判断
+                // 并记录下本次点击“返回键”的时刻，以便下次进行判断
                 mExitTime = System.currentTimeMillis();
                 return true;
             } else {

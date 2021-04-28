@@ -9,20 +9,20 @@ import android.graphics.Paint.Cap;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.os.Looper;
-
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
-import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 
 import java.util.ArrayList;
+
+import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
@@ -30,10 +30,20 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STA
 
 /**
  * 点击或者长按的按钮
+ *
+ * @author zhongjh
  */
 public class ClickOrLongButton extends View {
 
     private static final String TAG = "ClickOrLongButton";
+    /**
+     * 满进度
+     */
+    private static final float FULL_PROGRESS = 1F;
+    /**
+     * 90度
+     */
+    private static final int NINETY_DEGREES = 90;
     /**
      * 录制时间
      */
@@ -147,11 +157,11 @@ public class ClickOrLongButton extends View {
             float percent = mRecordedTime / timeLimitInMils;
             Log.d(TAG, "mCurrentSumTime " + mCurrentSumTime);
             Log.d(TAG, "mRecordedTime " + mRecordedTime);
-            if (!isActionDown && timeLapse >= 1) {
-                if (mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH)) {
-                    // 如果禁止点击也不能触发该事件
+            if (!mActionDown && timeLapse >= 1) {
+                boolean actionDown = mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH);
+                if (actionDown) {
                     mClickOrLongListener.actionDown();
-                    isActionDown = true;
+                    mActionDown = true;
                 }
             }
 
@@ -162,10 +172,10 @@ public class ClickOrLongButton extends View {
                         if (mClickOrLongListener != null) {
                             mClickOrLongListener.onLongClick();
                             // 如果禁止点击，那么就轮到长按触发actionDown
-                            if (!isActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONG_CLICK) {
+                            if (!mActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONG_CLICK) {
                                 // 如果禁止点击也不能触发该事件
                                 mClickOrLongListener.actionDown();
-                                isActionDown = true;
+                                mActionDown = true;
                             }
                         }
                     }
@@ -186,7 +196,7 @@ public class ClickOrLongButton extends View {
                 Log.d(TAG, "percent:" + percent);
                 Log.d(TAG, "percentInDegree:" + percentInDegree);
 
-                if (percent <= 1F) {
+                if (percent <= FULL_PROGRESS) {
                     if (percent <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
                         float calPercent = percent / PROGRESS_LIM_TO_FINISH_STARTING_ANIM;
                         float outIncDis = outBlackCircleRadiusInc * calPercent;
@@ -226,8 +236,10 @@ public class ClickOrLongButton extends View {
 
     private void init() {
         touchable = recordable = true;
-        mBoundingBoxSize = DisplayMetricsUtils.dip2px(100.0F); // 整块
-        mOutCircleWidth = DisplayMetricsUtils.dip2px(2.3F);// 外线宽度
+        // 整块
+        mBoundingBoxSize = DisplayMetricsUtils.dip2px(100.0F);
+        // 外线宽度
+        mOutCircleWidth = DisplayMetricsUtils.dip2px(2.3F);
         mOuterCircleWidthInc = DisplayMetricsUtils.dip2px(4.3F);
         mInnerCircleRadius = DisplayMetricsUtils.dip2px(32.0F);
 
@@ -253,18 +265,34 @@ public class ClickOrLongButton extends View {
         colorRecord = arrayInnerCircleInOperation.getColor(0, defaultInnerCircleInOperationColor);
         colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor);
         colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor);
-        int colorInterval = arrayInnerCircleNoOperationInterval.getColor(0, defaultInnerCircleNoOperationColorInterval);
-        int colorBlackP40 = ContextCompat.getColor(getContext(), R.color.black_forty_percent);
-        int colorBlackP80 = ContextCompat.getColor(getContext(), R.color.black_eighty_percent);
-        int colorTranslucent = ContextCompat.getColor(getContext(), R.color.circle_shallow_translucent_bg);
-        // 内圈操作中样式
+
+        initProcessBarPaint();
+        initOutCircle(arrayInnerCircleNoOperationInterval, defaultInnerCircleNoOperationColorInterval);
+        initCenterCircle();
+
+
+        // 状态为两者都可以
+        mButtonState = BUTTON_STATE_BOTH;
+    }
+
+    /**
+     * 初始化内圈操作中样式
+     */
+    private void initProcessBarPaint() {
         processBarPaint = new Paint();
         processBarPaint.setColor(colorRecord);
         processBarPaint.setAntiAlias(true);
         processBarPaint.setStrokeWidth(mOutCircleWidth);
         processBarPaint.setStyle(Style.STROKE);
         processBarPaint.setStrokeCap(Cap.ROUND);
-        // 外圈样式
+    }
+
+    /**
+     * 初始化外圈样式
+     */
+    private void initOutCircle(TypedArray arrayInnerCircleNoOperationInterval, int defaultInnerCircleNoOperationColorInterval) {
+        int colorInterval = arrayInnerCircleNoOperationInterval.getColor(0, defaultInnerCircleNoOperationColorInterval);
+
         outMostWhiteCirclePaint = new Paint();
         outMostWhiteCirclePaint.setColor(colorRoundBorder);
         outMostWhiteCirclePaint.setAntiAlias(true);
@@ -282,8 +310,16 @@ public class ClickOrLongButton extends View {
         outProcessIntervalCirclePaint.setAntiAlias(true);
         outProcessIntervalCirclePaint.setStrokeWidth(mOutCircleWidth);
         outProcessIntervalCirclePaint.setStyle(Style.STROKE);
+    }
 
-        // 内圈未操作中样式
+    /**
+     * 初始化内圈未操作中样式
+     */
+    private void initCenterCircle() {
+        int colorBlackP40 = ContextCompat.getColor(getContext(), R.color.black_forty_percent);
+        int colorBlackP80 = ContextCompat.getColor(getContext(), R.color.black_eighty_percent);
+        int colorTranslucent = ContextCompat.getColor(getContext(), R.color.circle_shallow_translucent_bg);
+
         centerCirclePaint = new Paint();
         centerCirclePaint.setColor(colorWhiteP60);
         centerCirclePaint.setAntiAlias(true);
@@ -302,8 +338,8 @@ public class ClickOrLongButton extends View {
         translucentPaint.setColor(colorTranslucent);
         translucentPaint.setAntiAlias(true);
         translucentPaint.setStyle(Style.FILL_AND_STROKE);
-        centerX = (mBoundingBoxSize / 2);
-        centerY = (mBoundingBoxSize / 2);
+        centerX = (mBoundingBoxSize / 2f);
+        centerY = (mBoundingBoxSize / 2f);
         outMostCircleRadius = DisplayMetricsUtils.dip2px(37.0F);
         outBlackCircleRadiusInc = DisplayMetricsUtils.dip2px(7.0F);
         innerCircleRadiusWhenRecord = DisplayMetricsUtils.dip2px(35.0F);
@@ -314,7 +350,6 @@ public class ClickOrLongButton extends View {
         percentInDegree = 0.0F;
         outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
         touchTimeHandler = new TouchTimeHandler(Looper.getMainLooper(), updateUITask);
-        mButtonState = BUTTON_STATE_BOTH;   // 状态为两者都可以
     }
 
     @Override
@@ -360,9 +395,10 @@ public class ClickOrLongButton extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Log.d(TAG, "onTouchEvent: down");
-                // 禁止长按方式
-                if (mClickOrLongListener != null
-                        && (mButtonState == BUTTON_STATE_ONLY_LONG_CLICK || mButtonState == BUTTON_STATE_BOTH)) {
+                // 是否支持长按
+                boolean longClick = mClickOrLongListener != null
+                        && (mButtonState == BUTTON_STATE_ONLY_LONG_CLICK || mButtonState == BUTTON_STATE_BOTH);
+                if (longClick) {
                     startTicking();
                 }
                 break;
@@ -385,21 +421,25 @@ public class ClickOrLongButton extends View {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null) {
                     if (mRecordedTime < mMinDuration) {
-                        mClickOrLongListener.onLongClickShort(mRecordedTime); // 回调录制时间过短
+                        // 回调录制时间过短
+                        mClickOrLongListener.onLongClickShort(mRecordedTime);
                     } else {
-                        mClickOrLongListener.onLongClickEnd(mRecordedTime); // 回调录制结束
+                        // 回调录制结束
+                        mClickOrLongListener.onLongClickEnd(mRecordedTime);
                     }
                 }
                 recordState = RECORD_ENDED;
             } else if (recordState == RECORD_ENDED) {
-                recordState = RECORD_NOT_STARTED; // 回到初始状态
+                // 回到初始状态
+                recordState = RECORD_NOT_STARTED;
             } else {
                 if (mClickOrLongListener != null) {
-                    mClickOrLongListener.onClick(); // 拍照
+                    // 拍照
+                    mClickOrLongListener.onClick();
                 }
             }
         }
-        isActionDown = false;
+        mActionDown = false;
         touchTimeHandler.clearMsg();
         percentInDegree = 0.0F;
         centerCirclePaint.setColor(colorWhiteP60);
@@ -452,7 +492,7 @@ public class ClickOrLongButton extends View {
      * @return numberDegrees
      */
     private float getNumberDegrees(float numberDegrees) {
-        if (numberDegrees >= 90) {
+        if (numberDegrees >= NINETY_DEGREES) {
             numberDegrees = numberDegrees - 90;
         } else {
             numberDegrees = numberDegrees + 270;
@@ -460,8 +500,14 @@ public class ClickOrLongButton extends View {
         return numberDegrees;
     }
 
-    private ClickOrLongListener mClickOrLongListener;       // 按钮回调接口
-    private boolean isActionDown;                           // 判断是否已经调用过isActionDwon,结束后重置此值
+    /**
+     * 按钮回调接口
+     */
+    private ClickOrLongListener mClickOrLongListener;
+    /**
+     * 判断是否已经调用过isActionDwon,结束后重置此值
+     */
+    private boolean mActionDown;
 
     // region 对外方法
 
@@ -539,7 +585,8 @@ public class ClickOrLongButton extends View {
      * 重置状态
      */
     public void resetState() {
-        recordState = RECORD_NOT_STARTED;// 回到初始状态
+        // 回到初始状态
+        recordState = RECORD_NOT_STARTED;
     }
 
     // endregion

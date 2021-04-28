@@ -5,7 +5,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
 import gaode.zhongjh.com.common.enums.MimeType;
 
-import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 
 import java.util.Set;
 

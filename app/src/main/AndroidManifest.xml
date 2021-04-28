@@ -69,11 +69,11 @@
         <activity
             android:name=".MainListActivity"
             android:screenOrientation="portrait">
-            <intent-baseFilter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-baseFilter>
+            </intent-filter>
         </activity>
 
         <activity

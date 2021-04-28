@@ -5,18 +5,17 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.Group;
-import androidx.core.content.ContextCompat;
-
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.Group;
+import androidx.core.content.ContextCompat;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.zhongjh.progresslibrary.R;
@@ -30,26 +29,49 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 /**
  * 这是返回（图片、视频、录音）等文件后，显示的Layout
- * Created by zhongjh on 2018/10/17.
+ *
+ * @author zhongjh
+ * @date 2018/10/17
  * https://www.jianshu.com/p/191c41f63dc7
  */
 public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
-    private MediaStoreCompat mMediaStoreCompat; // 文件配置路径
-    private boolean isOperation = true;            // 是否允许操作
+    /**
+     * 文件配置路径
+     */
+    private MediaStoreCompat mMediaStoreCompat;
+    /**
+     * 是否允许操作
+     */
+    private boolean isOperation = true;
 
-    public ViewHolder mViewHolder;          // 控件集合
-    private ImageEngine mImageEngine;       // 图片加载方式
+    /**
+     * 控件集合
+     */
+    public ViewHolder mViewHolder;
+    /**
+     * 图片加载方式
+     */
+    private ImageEngine mImageEngine;
 
-    public List<MultiMediaView> audioList = new ArrayList<>();     // 音频数据
-    private int audioProgressColor;                 // 音频 文件的进度条颜色
-    private MaskProgressLayoutListener listener;   // 点击事件(这里只针对音频)
+    /**
+     * 音频数据
+     */
+    public ArrayList<MultiMediaView> audioList = new ArrayList<>();
+    /**
+     * 音频 文件的进度条颜色
+     */
+    private int audioProgressColor;
+    /**
+     * 点击事件(这里只针对音频)
+     */
+    private MaskProgressLayoutListener listener;
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
         mViewHolder.alfMedia.setListener(listener);
@@ -289,7 +311,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(file);
 
-        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); // ms,时长
+        // ms,时长
+        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
 
 
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
@@ -301,22 +324,22 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         isShowRemovceRecorder();
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(file);
-        recordingItem.setLength(Integer.valueOf(duration));
+        recordingItem.setLength(Integer.parseInt(duration));
         mViewHolder.playView.setData(recordingItem, audioProgressColor);
     }
 
     @Override
-    public List<MultiMediaView> getImages() {
+    public ArrayList<MultiMediaView> getImages() {
         return mViewHolder.alfMedia.imageList;
     }
 
     @Override
-    public List<MultiMediaView> getVideos() {
+    public ArrayList<MultiMediaView> getVideos() {
         return mViewHolder.alfMedia.videoList;
     }
 
     @Override
-    public List<MultiMediaView> getAudios() {
+    public ArrayList<MultiMediaView> getAudios() {
         return this.audioList;
     }
 
@@ -364,7 +387,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         // 音频删除事件
         this.mViewHolder.imgRemoveRecorder.setOnClickListener(v -> {
             if (audioList.size() > 0)
-                // 需要判断，防止是网址状态未提供实体数据的
+            // 需要判断，防止是网址状态未提供实体数据的
             {
                 listener.onItemClose(MaskProgressLayout.this, audioList.get(0));
             }

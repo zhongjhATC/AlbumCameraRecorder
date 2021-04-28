@@ -32,6 +32,8 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
  * 配置版
+ *
+ * @author zhongjh
  */
 public class MainActivity extends BaseActivity {
 
@@ -63,14 +65,15 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
+            @SuppressWarnings({"unchecked","rawtypes"})
             public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(MainActivity.this,  (ArrayList)mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
+                    MultiMediaSetting.openPreviewVideo(MainActivity.this, (ArrayList)mBinding.mplImageList.getVideos());
                 }
             }
 
@@ -85,8 +88,11 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClose(View view, MultiMediaView multiMediaView) {
                 // 停止上传
-                timers.get(multiMediaView).cancel();
-                timers.remove(multiMediaView);
+                MyTask myTask = timers.get(multiMediaView);
+                if (myTask != null) {
+                    myTask.cancel();
+                    timers.remove(multiMediaView);
+                }
             }
 
             @Override
@@ -116,64 +122,14 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
 
-        // region 拍摄有关设置
+        // 拍摄有关设置
+        CameraSetting cameraSetting = initCameraSetting();
 
-        CameraSetting cameraSetting = new CameraSetting();
-        Set<MimeType> mimeTypeCameras;
-        if (mBinding.cbCameraImage.isChecked() && mBinding.cbCameraVideo.isChecked()) {
-            mimeTypeCameras = MimeType.ofAll();
-            cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
-        } else if (mBinding.cbCameraImage.isChecked()) {
-            mimeTypeCameras = MimeType.ofImage();
-            cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
-        } else if (mBinding.cbCameraVideo.isChecked()) {
-            mimeTypeCameras = MimeType.ofVideo();
-            cameraSetting.mimeTypeSet(mimeTypeCameras);// 支持的类型：图片，视频
-        }
-        cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));// 最长录制时间
-        cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()));// 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+        // 相册设置
+        AlbumSetting albumSetting = initAlbumSetting();
 
-        if (mBinding.cbVideoEdit.isChecked()) {
-            cameraSetting.videoEdit(new VideoEditManager()); // 启动这个即可开启视频编辑功能
-        }
-        // endregion 拍摄有关设置
-
-        //  region 相册
-        AlbumSetting albumSetting = new AlbumSetting(true);
-        Set<MimeType> mimeTypeAlbum;
-        if (mBinding.cbAlbumImage.isChecked() && mBinding.cbAlbumVideo.isChecked()) {
-            mimeTypeAlbum = MimeType.ofAll();
-            albumSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
-        } else if (mBinding.cbAlbumImage.isChecked()) {
-            mimeTypeAlbum = MimeType.ofVideo();
-            albumSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
-        } else if (mBinding.cbAlbumVideo.isChecked()) {
-            mimeTypeAlbum = MimeType.ofImage();
-            albumSetting.mimeTypeSet(mimeTypeAlbum);// 支持的类型：图片，视频
-        }
-
-        albumSetting
-                .showSingleMediaType(mBinding.cbShowSingleMediaTypeTrue.isChecked()) // 仅仅显示一个多媒体类型
-                .countable(mBinding.cbCountableTrue.isChecked())// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(Integer.parseInt(mBinding.etAddFilterMinWidth.getText().toString()), Integer.parseInt(mBinding.etAddFilterMinHeight.getText().toString()), Integer.parseInt(mBinding.etMaxSizeInBytes.getText().toString()) * BaseFilter.K * BaseFilter.K))// 自定义过滤器
-                .gridExpectedSize(dip2px(Integer.parseInt(mBinding.etGridExpectedSize.getText().toString())))// 九宫格大小 ,建议这样使用getResources().getDimensionPixelSize(R.dimen.grid_expected_size)
-                .thumbnailScale(0.85f)// 图片缩放比例
-                .setOnSelectedListener((uriList, pathList) -> {
-                    // 每次选择的事件
-                    Log.e("onSelected", "onSelected: pathList=" + pathList);
-                })
-                .originalEnable(mBinding.cbOriginalEnableTrue.isChecked())// 开启原图
-                .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString())) // 最大原图size,仅当originalEnable为true的时候才有效
-                .setOnCheckedListener(isChecked -> {
-                    // DO SOMETHING IMMEDIATELY HERE
-                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
-                });
-
-        // endregion 相册
-
-        // region 录音机
+        // 录音机设置
         RecorderSetting recorderSetting = new RecorderSetting();
-        // endregion 录音机
 
         //  全局
         Set<MimeType> mimeTypes = null;
@@ -186,21 +142,24 @@ public class MainActivity extends BaseActivity {
         }
 
         GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
-        globalSetting.defaultPosition(1);// 默认从第二个开始
-        globalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());// 启动过场动画，从下往上动画
-        globalSetting.isImageEdit(mBinding.cbIsEdit.isChecked()); // 是否支持编辑图片，预览相册、拍照处拥有编辑功能
+        // 默认从第二个开始
+        globalSetting.defaultPosition(1);
+        // 启动过场动画，从下往上动画
+        globalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());
+        // 是否支持编辑图片，预览相册、拍照处拥有编辑功能
+        globalSetting.isImageEdit(mBinding.cbIsEdit.isChecked());
         if (mBinding.cbAlbum.isChecked())
-            // 开启相册功能
+        // 开启相册功能
         {
             globalSetting.albumSetting(albumSetting);
         }
         if (mBinding.cbCamera.isChecked())
-            // 开启拍摄功能
+        // 开启拍摄功能
         {
             globalSetting.cameraSetting(cameraSetting);
         }
         if (mBinding.cbRecorder.isChecked())
-            // 开启录音功能
+        // 开启录音功能
         {
             globalSetting.recorderSetting(recorderSetting);
         }
@@ -210,30 +169,109 @@ public class MainActivity extends BaseActivity {
 
         // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
         if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString())) {
+            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
             globalSetting.allStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAllFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
+                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAllFile.getText().toString()));
         }
         if (!TextUtils.isEmpty(mBinding.etPictureFile.getText().toString())) {
+            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
             globalSetting.pictureStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etPictureFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
+                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etPictureFile.getText().toString()));
         }
         if (!TextUtils.isEmpty(mBinding.etAudioFile.getText().toString())) {
+            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
             globalSetting.audioStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAudioFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
+                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAudioFile.getText().toString()));
         }
         if (!TextUtils.isEmpty(mBinding.etVideoFile.getText().toString())) {
+            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
             globalSetting.videoStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));// 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
+                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));
         }
 
-        //                                            .imageEngine(new GlideEngine())  // for glide-V3
-        globalSetting.imageEngine(new Glide4Engine())    // for glide-V4
+        // 加载图片框架
+        globalSetting.imageEngine(new Glide4Engine())
                 .maxSelectablePerMediaType(Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
                         Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
-                        Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)// 最大10张图片或者最大1个视频
+                        Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
+    }
 
+    /**
+     * @return 拍摄设置
+     */
+    private CameraSetting initCameraSetting() {
+        CameraSetting cameraSetting = new CameraSetting();
+        Set<MimeType> mimeTypeCameras;
+        if (mBinding.cbCameraImage.isChecked() && mBinding.cbCameraVideo.isChecked()) {
+            mimeTypeCameras = MimeType.ofAll();
+            // 支持的类型：图片，视频
+            cameraSetting.mimeTypeSet(mimeTypeCameras);
+        } else if (mBinding.cbCameraImage.isChecked()) {
+            mimeTypeCameras = MimeType.ofImage();
+            // 支持的类型：图片，视频
+            cameraSetting.mimeTypeSet(mimeTypeCameras);
+        } else if (mBinding.cbCameraVideo.isChecked()) {
+            mimeTypeCameras = MimeType.ofVideo();
+            // 支持的类型：图片，视频
+            cameraSetting.mimeTypeSet(mimeTypeCameras);
+        }
+        // 最长录制时间
+        cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));
+        // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+        cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()));
 
+        if (mBinding.cbVideoEdit.isChecked()) {
+            // 启动这个即可开启视频编辑功能
+            cameraSetting.videoEdit(new VideoEditManager());
+        }
+        return cameraSetting;
+    }
+
+    /**
+     * @return 相册设置
+     */
+    private AlbumSetting initAlbumSetting() {
+        AlbumSetting albumSetting = new AlbumSetting(true);
+        Set<MimeType> mimeTypeAlbum;
+        if (mBinding.cbAlbumImage.isChecked() && mBinding.cbAlbumVideo.isChecked()) {
+            mimeTypeAlbum = MimeType.ofAll();
+            // 支持的类型：图片，视频
+            albumSetting.mimeTypeSet(mimeTypeAlbum);
+        } else if (mBinding.cbAlbumImage.isChecked()) {
+            mimeTypeAlbum = MimeType.ofVideo();
+            // 支持的类型：图片，视频
+            albumSetting.mimeTypeSet(mimeTypeAlbum);
+        } else if (mBinding.cbAlbumVideo.isChecked()) {
+            mimeTypeAlbum = MimeType.ofImage();
+            // 支持的类型：图片，视频
+            albumSetting.mimeTypeSet(mimeTypeAlbum);
+        }
+
+        albumSetting
+                // 仅仅显示一个多媒体类型
+                .showSingleMediaType(mBinding.cbShowSingleMediaTypeTrue.isChecked())
+                // 是否显示多选图片的数字
+                .countable(mBinding.cbCountableTrue.isChecked())
+                // 自定义过滤器
+                .addFilter(new GifSizeFilter(Integer.parseInt(mBinding.etAddFilterMinWidth.getText().toString()), Integer.parseInt(mBinding.etAddFilterMinHeight.getText().toString()), Integer.parseInt(mBinding.etMaxSizeInBytes.getText().toString()) * BaseFilter.K * BaseFilter.K))
+                // 九宫格大小 ,建议这样使用getResources().getDimensionPixelSize(R.dimen.grid_expected_size)
+                .gridExpectedSize(dip2px(Integer.parseInt(mBinding.etGridExpectedSize.getText().toString())))
+                // 图片缩放比例
+                .thumbnailScale(0.85f)
+                .setOnSelectedListener((uriList, pathList) -> {
+                    // 每次选择的事件
+                    Log.e("onSelected", "onSelected: pathList=" + pathList);
+                })
+                // 开启原图
+                .originalEnable(mBinding.cbOriginalEnableTrue.isChecked())
+                // 最大原图size,仅当originalEnable为true的时候才有效
+                .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString()))
+                .setOnCheckedListener(isChecked -> {
+                    // DO SOMETHING IMMEDIATELY HERE
+                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
+                });
+        return albumSetting;
     }
 
 }

@@ -2,7 +2,9 @@ package com.zhongjh.albumcamerarecorder.camera.listener;
 
 /**
  * 点击或者长按事件回调
- * Created by zhongjh on 2018/7/23.
+ *
+ * @author zhongjh
+ * @date 2018/7/23
  */
 public interface ClickOrLongListener {
 

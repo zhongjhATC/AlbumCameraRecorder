@@ -10,24 +10,65 @@ import android.provider.MediaStore;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
+/**
+ * 多媒体实体类
+ *
+ * @author zhongjh
+ * @date 2019/1/22
+ */
 public class MultiMedia implements Parcelable {
 
     protected  long id;
-    // 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算,也可以用作CameraLayout的索引
+    /**
+     * 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算,也可以用作CameraLayout的索引
+     */
     protected int position = -1;
-    protected String path;        // 真实路径
-    protected String url;         // 在线网址
-    protected int drawableId = -1;     // 图片资源id
-    protected Uri mediaUri;        // 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
-    protected Uri uri;             // 以路径转换成的uri，专用于提供给progresslibrary使用
+    /**
+     * 真实路径
+     */
+    protected String path;
+    /**
+     * 在线网址
+     */
+    protected String url;
+    /**
+     * 图片资源id
+     */
+    protected int drawableId = -1;
+    /**
+     * 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
+     */
+    protected Uri mediaUri;
+    /**
+     * 以路径转换成的uri，专用于提供给progresslibrary使用
+     */
+    protected Uri uri;
+    /**
+     * 范围类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
+     */
     @MultimediaTypes
-    protected int type;           // 范围类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
-    protected String mimeType;        // 具体类型，jpg,png,mp3等等
+    protected int type;
+    /**
+     * 具体类型，jpg,png,mp3等等
+     */
+    protected String mimeType;
     public long size;
-    public long duration; // only for video, in ms
-    private String oldPath; // 编辑前的真实路径
-    private Uri oldMediaUri; // 编辑前的相册URI
-    private Uri oldUri; // 编辑前的URI
+    /**
+     * only for video, in ms
+     */
+    public long duration;
+    /**
+     * 编辑前的真实路径
+     */
+    private String oldPath;
+    /**
+     * 编辑前的相册URI
+     */
+    private Uri oldMediaUri;
+    /**
+     * 编辑前的URI
+     */
+    private Uri oldUri;
 
 
     public MultiMedia() {

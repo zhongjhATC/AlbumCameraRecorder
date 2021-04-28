@@ -5,7 +5,7 @@ import gaode.zhongjh.com.common.enums.MimeType;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
-import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 
 import java.util.List;
 import java.util.Set;

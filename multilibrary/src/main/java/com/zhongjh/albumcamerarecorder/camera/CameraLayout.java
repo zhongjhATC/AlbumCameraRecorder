@@ -74,7 +74,7 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_DEFAU
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_SHORT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
-import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
 /**
  * @author zhongjh

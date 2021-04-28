@@ -7,7 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * 多媒体类型，区分图片，视频，音频
- * Created by zhongjh on 2019/1/18.
+ *
+ * @author zhongjh
+ * @date 2019/1/18
  */
 // @IntDef 来限定常量不允许重复
 @IntDef({

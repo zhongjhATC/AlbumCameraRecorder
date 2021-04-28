@@ -15,6 +15,14 @@ import android.provider.MediaStore;
  */
 
 public class PathUtils {
+
+    private final static String PRIMARY = "primary";
+    private final static String IMAGE = "image";
+    private final static String VIDEO = "video";
+    private final static String AUDIO = "audio";
+    private final static String CONTENT = "content";
+    private final static String FILE = "file";
+
     /**
      * Get a file path from a Uri. This will get the the path for Storage Access
      * Framework Documents, as well as the _data field for the MediaStore and
@@ -34,7 +42,7 @@ public class PathUtils {
                 final String[] split = docId.split(":");
                 final String type = split[0];
 
-                if ("primary".equalsIgnoreCase(type)) {
+                if (PRIMARY.equalsIgnoreCase(type)) {
                     return Environment.getExternalStorageDirectory() + "/" + split[1];
                 }
 
@@ -53,11 +61,11 @@ public class PathUtils {
                 final String type = split[0];
 
                 Uri contentUri = null;
-                if ("image".equals(type)) {
+                if (IMAGE.equals(type)) {
                     contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
+                } else if (VIDEO.equals(type)) {
                     contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
+                } else if (AUDIO.equals(type)) {
                     contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
 
@@ -68,10 +76,10 @@ public class PathUtils {
 
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
-        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+        } else if (CONTENT.equalsIgnoreCase(uri.getScheme())) {
             // MediaStore (and general)
             return getDataColumn(context, uri, null, null);
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        } else if (FILE.equalsIgnoreCase(uri.getScheme())) {
             // File
             return uri.getPath();
         }

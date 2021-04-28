@@ -9,12 +9,15 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
- * 多媒体实体类
+ * 多媒体实体类,包含着view
  *
  * @author zhongjh
  * @date 2019/1/22
  */
 public class MultiMediaView extends MultiMedia {
+
+
+    private final static int FULL_PERCENT = 100;
 
     /**
      * 绑定的父列表view
@@ -29,7 +32,7 @@ public class MultiMediaView extends MultiMedia {
      */
     private MaskProgressView maskProgressView;
 
-    public MultiMediaView(@MultimediaTypes int  multiMediaState) {
+    public MultiMediaView(@MultimediaTypes int multiMediaState) {
         setType(multiMediaState);
     }
 
@@ -66,7 +69,7 @@ public class MultiMediaView extends MultiMedia {
         } else if (type == MultimediaTypes.AUDIO) {
             // 隐藏显示音频的设置一系列动作
             this.maskProgressLayout.mViewHolder.numberProgressBar.setProgress(percent);
-            if (percent == 100) {
+            if (percent == FULL_PERCENT) {
                 this.maskProgressLayout.audioUploadCompleted();
             }
         }

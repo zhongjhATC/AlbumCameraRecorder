@@ -23,7 +23,7 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.utils.BasePhotoMetadataUtils;
 
-import com.zhongjh.albumcamerarecorder.utils.constants.ModuleTypes;
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

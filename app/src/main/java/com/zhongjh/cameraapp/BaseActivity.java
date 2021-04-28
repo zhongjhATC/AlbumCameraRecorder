@@ -32,14 +32,16 @@ import java.util.TimerTask;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
-import static com.zhongjh.albumcamerarecorder.utils.constants.Constant.REQUEST_CODE_PREVIEW;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW;
 
 /**
  * 父类，包含下面几部分操作：
  * 1.权限控制
  * 2.打开多媒体操作
  * 3.多媒体返回数据有关操作
- * Created by zhongjh on 2019/5/10.
+ *
+ * @author zhongjh
+ * @date 2019/5/10
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -51,6 +53,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected final int GET_PERMISSION_REQUEST = 100;
     protected HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
 
+    /**
+     * 返回九宫格
+     * @return MaskProgressLayout
+     */
     protected abstract MaskProgressLayout getMaskProgressLayout();
 
     /**
@@ -75,8 +81,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             int size = 0;
             if (grantResults.length >= 1) {
                 int writeResult = grantResults[0];
-                //读写内存权限
-                boolean writeGranted = writeResult == PackageManager.PERMISSION_GRANTED;//读写内存权限
+                // 读写内存权限
+                boolean writeGranted = writeResult == PackageManager.PERMISSION_GRANTED;
                 if (!writeGranted) {
                     size++;
                 }
@@ -173,10 +179,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                         // 图片，自动AndroidQ版本以后，使用除了本身app的文件，最好是用uri方式控制
                         List<Uri> path = MultiMediaSetting.obtainResult(data);
                         getMaskProgressLayout().addUrisStartUpload(path);
-//                        //这是path方式
-//                        List<String> path = MultiMediaSetting.obtainPathResult(data);
-//                        getMaskProgressLayout().addImagesStartUpload(path);
-
                         break;
                     case MultimediaTypes.VIDEO:
                         // 录像

@@ -29,6 +29,7 @@ import java.util.List;
 public class ImageCustom {
 
     private static final String TAG = "IMGImage";
+    private final static float SCALE_MAX = 1f;
 
     private Bitmap mImage, mMosaicImage;
 
@@ -70,8 +71,6 @@ public class ImageCustom {
      * 裁剪窗口
      */
     private final ImageClipWindow mClipWin = new ImageClipWindow();
-
-    private boolean isDrawClip = false;
 
     /**
      * 编辑模式
@@ -220,7 +219,6 @@ public class ImageCustom {
         }
     }
 
-    // TODO
     private void rotateStickers(float rotate) {
         Log.d(TAG, "rotateStickers");
         mMatrix.setRotate(rotate, mClipFrame.centerX(), mClipFrame.centerY());
@@ -378,11 +376,6 @@ public class ImageCustom {
 
                 // cFrame要是一个暂时clipFrame
                 if (mClipWin.isHoming()) {
-//
-//                    M.mapRect(cFrame, mClipFrame);
-
-//                    mClipWin
-                    // TODO 偏移中心
 
                     mMatrix.setRotate(getTargetRotate() - getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
                     mMatrix.mapRect(cFrame, mClipWin.getOffsetFrame(scrollX, scrollY));
@@ -796,7 +789,7 @@ public class ImageCustom {
     public void onScale(float factor, float focusX, float focusY) {
         Log.d(TAG, "onScale");
 
-        if (factor == 1f) {
+        if (Math.abs(factor) == Math.abs(SCALE_MAX)) {
             return;
         }
 
@@ -808,12 +801,6 @@ public class ImageCustom {
         mMatrix.setScale(factor, factor, focusX, focusY);
         mMatrix.mapRect(mFrame);
         mMatrix.mapRect(mClipFrame);
-
-        // 修正clip 窗口
-        if (!mFrame.contains(mClipFrame)) {
-            // TODO
-//            mClipFrame.intersect(mFrame);
-        }
 
         for (ImageSticker sticker : mBackStickers) {
             mMatrix.mapRect(sticker.getFrame());
@@ -829,10 +816,9 @@ public class ImageCustom {
         Log.d(TAG, "onScaleEnd");
     }
 
-    public void onHomingStart(boolean isRotate) {
+    public void onHomingStart() {
         Log.d(TAG, "onHomingStart");
         isAnimCanceled = false;
-        isDrawClip = true;
     }
 
     public void onHoming(float fraction) {
@@ -842,7 +828,6 @@ public class ImageCustom {
 
     public boolean onHomingEnd(float scrollX, float scrollY, boolean isRotate) {
         Log.d(TAG, "onHomingEnd");
-        isDrawClip = true;
         if (mMode == ImageMode.CLIP) {
             // 开启裁剪模式
 

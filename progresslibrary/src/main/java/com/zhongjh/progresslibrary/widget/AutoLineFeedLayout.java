@@ -45,11 +45,11 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 图片数据
      */
-    public List<MultiMediaView> imageList = new ArrayList<>();
+    public ArrayList<MultiMediaView> imageList = new ArrayList<>();
     /**
      * 视频数据
      */
-    public List<MultiMediaView> videoList = new ArrayList<>();
+    public ArrayList<MultiMediaView> videoList = new ArrayList<>();
 
     /**
      * 是否操作

@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,11 +42,13 @@ public interface MaskProgressApi {
 
     /**
      * 设置视频地址并且启动上传(一般用于刚确认了哪些数据后)
+     * @param videoUris 视频地址列表
      */
     void addVideoStartUpload(List<Uri> videoUris);
 
     /**
      * 设置视频地址直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
+     * @param videoPath 视频地址列表
      */
     void addVideoCover(List<String> videoPath);
 
@@ -60,6 +63,7 @@ public interface MaskProgressApi {
      * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)
      *
      * @param filePath 音频文件地址
+     * @param length 音频文件长度
      */
     void addAudioStartUpload(String filePath, int length);
 
@@ -78,19 +82,22 @@ public interface MaskProgressApi {
     void addAudioCover(String file);
 
     /**
+     * 获取图片数据
      * @return 返回当前包含url的图片数据
      */
-    List<MultiMediaView> getImages();
+    ArrayList<MultiMediaView> getImages();
 
     /**
+     * 获取视频数据
      * @return 返回当前包含url的视频数据
      */
-    List<MultiMediaView> getVideos();
+    ArrayList<MultiMediaView> getVideos();
 
     /**
+     * 获取音频数据
      * @return 返回当前包含url的音频数据
      */
-    List<MultiMediaView> getAudios();
+    ArrayList<MultiMediaView> getAudios();
 
     /**
      * 语音点击
