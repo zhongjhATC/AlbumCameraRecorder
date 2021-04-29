@@ -31,6 +31,7 @@ import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 /**
  * 将图像和视频加载到单个光标中
+ * @author zhongjh
  */
 public class AlbumMediaLoader extends CursorLoader {
     private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");
@@ -44,6 +45,7 @@ public class AlbumMediaLoader extends CursorLoader {
             "duration"};
 
     // === params for album ALL && showSingleMediaType: false ===
+
     private static final String SELECTION_ALL =
             "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " OR "
@@ -52,10 +54,12 @@ public class AlbumMediaLoader extends CursorLoader {
     private static final String[] SELECTION_ALL_ARGS = {
             String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
             String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
+
     };
     // ===========================================================
 
     // === params for album ALL && showSingleMediaType: true ===
+
     private static final String SELECTION_ALL_FOR_SINGLE_MEDIA_TYPE =
             MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " AND " + MediaStore.MediaColumns.SIZE + ">0";
@@ -63,9 +67,11 @@ public class AlbumMediaLoader extends CursorLoader {
     private static String[] getSelectionArgsForSingleMediaType(int mediaType) {
         return new String[]{String.valueOf(mediaType)};
     }
+
     // =========================================================
 
     // === params for ordinary album && showSingleMediaType: false ===
+
     private static final String SELECTION_ALBUM =
             "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " OR "
@@ -81,9 +87,11 @@ public class AlbumMediaLoader extends CursorLoader {
                 albumId
         };
     }
+
     // ===============================================================
 
     // === params for ordinary album && showSingleMediaType: true ===
+
     private static final String SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE =
             MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " AND "
@@ -93,6 +101,7 @@ public class AlbumMediaLoader extends CursorLoader {
     private static String[] getSelectionAlbumArgsForSingleMediaType(int mediaType, String albumId) {
         return new String[]{String.valueOf(mediaType), albumId};
     }
+
     // ===============================================================
 
     private static final String ORDER_BY = MediaStore.Images.Media.DATE_TAKEN + " DESC";

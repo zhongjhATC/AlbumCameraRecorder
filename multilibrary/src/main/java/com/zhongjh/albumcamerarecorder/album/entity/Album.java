@@ -21,7 +21,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -29,6 +29,7 @@ import com.zhongjh.albumcamerarecorder.album.loader.AlbumLoader;
 
 /**
  * 专辑
+ * @author zhihu
  */
 public class Album implements Parcelable {
     public static final Creator<Album> CREATOR = new Creator<Album>() {
@@ -70,10 +71,10 @@ public class Album implements Parcelable {
      * 此方法不负责管理光标资源，如关闭、迭代等。
      */
     public static Album valueOf(Cursor cursor) {
-        String clumn = cursor.getString(cursor.getColumnIndex(AlbumLoader.COLUMN_URI));
+        String column = cursor.getString(cursor.getColumnIndex(AlbumLoader.COLUMN_URI));
         return new Album(
                 cursor.getString(cursor.getColumnIndex("bucket_id")),
-                Uri.parse(clumn != null ? clumn : ""),
+                Uri.parse(column != null ? column : ""),
                 cursor.getString(cursor.getColumnIndex("bucket_display_name")),
                 cursor.getLong(cursor.getColumnIndex(AlbumLoader.COLUMN_COUNT)));
     }

@@ -35,15 +35,36 @@ import android.view.View;
 import com.zhongjh.albumcamerarecorder.R;
 
 
+/**
+ * @author zhongjh
+ */
 public class CheckView extends View {
 
     public static final int UNCHECKED = Integer.MIN_VALUE;
-    private static final float STROKE_WIDTH = 3.0f; // dp
-    private static final float SHADOW_WIDTH = 6.0f; // dp
-    private static final int SIZE = 48; // dp
-    private static final float STROKE_RADIUS = 11.5f; // dp
-    private static final float BG_RADIUS = 11.0f; // dp
-    private static final int CONTENT_SIZE = 16; // dp
+    /**
+     * dp
+     */
+    private static final float STROKE_WIDTH = 3.0f;
+    /**
+     * dp
+     */
+    private static final float SHADOW_WIDTH = 6.0f;
+    /**
+     * dp
+     */
+    private static final int SIZE = 48;
+    /**
+     * dp
+     */
+    private static final float STROKE_RADIUS = 11.5f;
+    /**
+     * dp
+     */
+    private static final float BG_RADIUS = 11.0f;
+    /**
+     * dp
+     */
+    private static final int CONTENT_SIZE = 16;
     private boolean mCountable;
     private boolean mChecked;
     private int mCheckedNum;
@@ -150,8 +171,8 @@ public class CheckView extends View {
                         BG_RADIUS * mDensity, mBackgroundPaint);
                 initTextPaint();
                 String text = String.valueOf(mCheckedNum);
-                int baseX = (int) (canvas.getWidth() - mTextPaint.measureText(text)) / 2;
-                int baseY = (int) (canvas.getHeight() - mTextPaint.descent() - mTextPaint.ascent()) / 2;
+                int baseX = (int) (getWidth() - mTextPaint.measureText(text)) / 2;
+                int baseY = (int) (getHeight() - mTextPaint.descent() - mTextPaint.ascent()) / 2;
                 canvas.drawText(text, baseX, baseY, mTextPaint);
             }
         } else {
@@ -218,7 +239,10 @@ public class CheckView extends View {
         }
     }
 
-    // rect for drawing checked number or mark
+    /**
+     * rect for drawing checked number or mark
+     * @return rect
+     */
     private Rect getCheckRect() {
         if (mCheckRect == null) {
             int rectPadding = (int) (SIZE * mDensity / 2 - CONTENT_SIZE * mDensity / 2);

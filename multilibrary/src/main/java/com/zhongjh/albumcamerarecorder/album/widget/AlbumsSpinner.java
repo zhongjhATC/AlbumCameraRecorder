@@ -15,36 +15,34 @@
  */
 package com.zhongjh.albumcamerarecorder.album.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
-import android.graphics.BlendMode;
-import android.graphics.BlendModeColorFilter;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.ListPopupWindow;
-
-import android.os.Build;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.ListPopupWindow;
+
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
-import com.zhongjh.albumcamerarecorder.utils.VersionUtils;
+
+import gaode.zhongjh.com.common.utils.ColorFilterUtil;
 
 /**
  * 专辑下拉框控件
+ * @author zhongjh
  */
 public class AlbumsSpinner {
 
     private static final int MAX_SHOWN_COUNT = 6;
     private CursorAdapter mAdapter;
     private TextView mSelected;
-    private ListPopupWindow mListPopupWindow;
+    private final ListPopupWindow mListPopupWindow;
     private AdapterView.OnItemSelectedListener mOnItemSelectedListener;
 
     public AlbumsSpinner(@NonNull Context context) {
@@ -128,6 +126,7 @@ public class AlbumsSpinner {
      *
      * @param textView 文本框
      */
+    @SuppressLint("ClickableViewAccessibility")
     public void setSelectedTextView(TextView textView) {
         mSelected = textView;
 
@@ -139,11 +138,7 @@ public class AlbumsSpinner {
         int color = ta.getColor(0, 0);
         ta.recycle();
         // 使用设置的主题颜色对目标Drawable(这里是一个小箭头)进行SRC_IN模式合成 达到改变Drawable颜色的效果
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            right.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
-        } else {
-            right.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-        }
+        ColorFilterUtil.setColorFilterSrcIn(right,color);
 
         mSelected.setVisibility(View.GONE);
         mSelected.setOnClickListener(v -> {

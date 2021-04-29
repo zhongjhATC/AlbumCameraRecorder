@@ -4,41 +4,21 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.FileUtils;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.exifinterface.media.ExifInterface;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
-import gaode.zhongjh.com.common.entity.SaveStrategy;
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.utils.FileUtil;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
@@ -46,7 +26,9 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO
 
 /**
  * Bitmap操作常用工具类
- * Created by Clock on 2015/12/31.
+ *
+ * @author Clock
+ * @date 2015/12/31
  */
 public class BitmapUtils {
 

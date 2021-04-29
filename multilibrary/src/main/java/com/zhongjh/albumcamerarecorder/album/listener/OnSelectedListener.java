@@ -21,9 +21,14 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+/**
+ * 相册item事件
+ * @author zhihu
+ */
 public interface OnSelectedListener {
 
     /**
+     * 每次选择的事件
      * @param uriList 所选项目{@link Uri} 列表.
      * @param pathList 所选项目文件路径列表.
      */

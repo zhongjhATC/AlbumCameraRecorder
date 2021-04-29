@@ -15,7 +15,10 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:background="#CCFFFFFF"
+        app:tabGravity="fill"
         app:tabIndicatorHeight="1dp"
+        app:tabMaxWidth="0dp"
+        app:tabMode="fixed"
         app:tabSelectedTextColor="?attr/colorPrimary"
         app:tabTextColor="#666666" />
 

@@ -42,7 +42,9 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
     ActivityMainSeeBinding mBinding;
 
-    // 初始化
+    /**
+     * 初始化下载
+     */
     private DownloadHelper mDownloadHelper = new DownloadHelper("http://www.baseurl.com", this);
 
     ProgressDialog progressDialog;
@@ -155,11 +157,13 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     private void initConfig() {
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
+        // 支持的类型：图片，视频
+        cameraSetting.mimeTypeSet(MimeType.ofAll());
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
-                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
+                // 支持的类型：图片，视频
+                .mimeTypeSet(MimeType.ofAll())
                 .showSingleMediaType(true) // 仅仅显示一个多媒体类型
                 .countable(true)// 是否显示多选图片的数字
                 .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))// 自定义过滤器
@@ -172,7 +176,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .originalEnable(true)// 开启原图
                 .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
                 .setOnCheckedListener(isChecked -> {
-                    // DO SOMETHING IMMEDIATELY HERE
+                    // 是否勾选了原图
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);
                 });
 
@@ -186,12 +190,16 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
                 .setOnMainListener(errorMessage -> Toast.makeText(MainSeeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
-                .pictureStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/picture")) // 如果设置这个，有关图片的优先权比allStrategy高
-                .audioStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/audio")) // 如果设置这个，有关音频的优先权比allStrategy高
-                .videoStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/video")) // 如果设置这个，有关视频的优先权比allStrategy高
-                //                                            .imageEngine(new GlideEngine())  // for glide-V3
-                .imageEngine(new Glide4Engine());    // for glide-V4
+                // 设置路径和7.0保护路径等等
+                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))
+                // 如果设置这个，有关图片的优先权比allStrategy高
+                .pictureStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/picture"))
+                // 如果设置这个，有关音频的优先权比allStrategy高
+                .audioStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/audio"))
+                // 如果设置这个，有关视频的优先权比allStrategy高
+                .videoStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/video"))
+                //  .imageEngine(new GlideEngine())  // for glide-V3     // for glide-V4
+                .imageEngine(new Glide4Engine());
     }
 
     /**
@@ -228,7 +236,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      */
     @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-        mGlobalSetting.maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+        // 最大10张图片或者最大1个视频
+        mGlobalSetting.maxSelectablePerMediaType(10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

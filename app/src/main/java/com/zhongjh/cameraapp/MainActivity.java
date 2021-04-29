@@ -268,7 +268,7 @@ public class MainActivity extends BaseActivity {
                 // 最大原图size,仅当originalEnable为true的时候才有效
                 .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString()))
                 .setOnCheckedListener(isChecked -> {
-                    // DO SOMETHING IMMEDIATELY HERE
+                    // 是否勾选了原图
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);
                 });
         return albumSetting;

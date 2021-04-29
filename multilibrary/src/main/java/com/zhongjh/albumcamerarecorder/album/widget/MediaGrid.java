@@ -15,17 +15,37 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
+/**
+ * @author zhongjh
+ */
 public class MediaGrid extends SquareFrameLayout implements View.OnClickListener {
 
     private ImageView mThumbnail;
-    private CheckView mCheckView; // 选择控件
-    private ImageView mGifTag;// gif标志图片
-    private TextView mVideoDuration; // 文本的时长（类似指视频的时长）
+    /**
+     * 选择控件
+     */
+    private CheckView mCheckView;
+    /**
+     * gif标志图片
+     */
+    private ImageView mGifTag;
+    /**
+     * 文本的时长（类似指视频的时长）
+     */
+    private TextView mVideoDuration;
 
-    private MultiMedia mMedia;// 值
-    private PreBindInfo mPreBindInfo; // 控件和一些别的变量
-    private OnMediaGridClickListener mListener; // 事件
-    private boolean checked;
+    /**
+     * 值
+     */
+    private MultiMedia mMedia;
+    /**
+     * 控件和一些别的变量
+     */
+    private PreBindInfo mPreBindInfo;
+    /**
+     * 事件
+     */
+    private OnMediaGridClickListener mListener;
 
     public MediaGrid(Context context) {
         super(context);
@@ -148,8 +168,22 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
 
     public interface OnMediaGridClickListener {
 
+        /**
+         * 点击事件
+         *
+         * @param thumbnail 图片控件
+         * @param item      数据
+         * @param holder    控件
+         */
         void onThumbnailClicked(ImageView thumbnail, MultiMedia item, RecyclerView.ViewHolder holder);
 
+        /**
+         * 选择事件
+         *
+         * @param checkView 选择控件
+         * @param item      数据
+         * @param holder    控件
+         */
         void onCheckViewClicked(CheckView checkView, MultiMedia item, RecyclerView.ViewHolder holder);
 
     }

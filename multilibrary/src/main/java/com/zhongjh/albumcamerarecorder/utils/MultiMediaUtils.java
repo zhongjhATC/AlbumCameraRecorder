@@ -6,6 +6,9 @@ import java.util.List;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 
+/**
+ * @author zhongjh
+ */
 public class MultiMediaUtils {
 
     /**

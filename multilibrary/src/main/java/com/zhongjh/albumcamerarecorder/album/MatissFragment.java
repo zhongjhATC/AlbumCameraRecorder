@@ -37,6 +37,7 @@ import com.zhongjh.albumcamerarecorder.R;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
+import gaode.zhongjh.com.common.utils.ColorFilterUtil;
 import gaode.zhongjh.com.common.widget.IncapableDialog;
 
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
@@ -155,11 +156,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         int color = ta.getColor(0, 0);
         ta.recycle();
         if (navigationIcon != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                navigationIcon.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
-            } else {
-                navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            }
+            ColorFilterUtil.setColorFilterSrcIn(navigationIcon,color);
         }
         mSelectedCollection.onCreate(savedInstanceState, false);
         if (savedInstanceState != null) {

@@ -139,13 +139,7 @@ public class AlbumMediaAdapter extends
         }
     }
 
-    /**
-     * 点击事件
-     *
-     * @param thumbnail 图片控件
-     * @param item      数据
-     * @param holder    控件
-     */
+
     @Override
     public void onThumbnailClicked(ImageView thumbnail, MultiMedia item, RecyclerView.ViewHolder holder) {
         if (mOnMediaClickListener != null) {
@@ -153,13 +147,7 @@ public class AlbumMediaAdapter extends
         }
     }
 
-    /**
-     * 选择事件
-     *
-     * @param checkView 选择控件
-     * @param item      数据
-     * @param holder    控件
-     */
+
     @Override
     public void onCheckViewClicked(CheckView checkView, MultiMedia item, RecyclerView.ViewHolder holder) {
         // 是否多选模式,显示数字

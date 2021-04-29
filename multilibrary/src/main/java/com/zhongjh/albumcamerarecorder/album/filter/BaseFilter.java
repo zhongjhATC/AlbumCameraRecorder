@@ -44,14 +44,18 @@ public abstract class BaseFilter {
 
     /**
      * Against what mime types this filter applies.
+     * 针对这个过滤器应用的mime类型。
+     * @return MimeType
      */
     protected abstract Set<MimeType> constraintTypes();
 
     /**
      * Invoked for filtering each item.
      *
-     * @return null if selectable, {@link IncapableCause} if not selectable.
      * 调用以过滤每个项。
+     * @param context 上下文
+     * @param item item
+     * @return null if selectable, {@link IncapableCause} if not selectable.
      */
     public abstract IncapableCause filter(Context context, MultiMedia item);
 
