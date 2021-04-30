@@ -74,9 +74,10 @@ public interface ImageStickerPortrait {
          */
         <V extends View & ImageSticker> void onShowing(V stickerView);
 
-        /**
+         /**
          * 删除
          * @param stickerView 标签的view
+         * @return 是否删除成功
          */
         <V extends View & ImageSticker> boolean onRemove(V stickerView);
     }

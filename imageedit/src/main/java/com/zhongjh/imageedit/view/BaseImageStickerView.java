@@ -116,6 +116,8 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
         return mScale;
     }
 
+
+
     @Override
     public void setScale(float scale) {
         mScale = scale;
