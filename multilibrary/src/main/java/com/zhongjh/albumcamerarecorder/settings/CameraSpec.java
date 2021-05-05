@@ -9,6 +9,9 @@ import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 
 import java.util.Set;
 
+/**
+ * @author zhongjh
+ */
 public class CameraSpec {
 
     private CameraSpec() {
@@ -33,26 +36,56 @@ public class CameraSpec {
      */
     private void reset() {
         mimeTypeSet = null;
-        imageSwitch = R.drawable.ic_camera_zjh;    // 切换前置/后置摄像头图标资源
-        imageFlashOn = R.drawable.ic_flash_on;      // 闪光灯开启状态图标
-        imageFlashOff = R.drawable.ic_flash_off;       // 闪光灯关闭状态图标
-        imageFlashAuto = R.drawable.ic_flash_auto;      // 闪光灯自动状态图标
-        duration = 10;    // 最长录制时间
-        minDuration = 1500;// 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+        // 切换前置/后置摄像头图标资源
+        imageSwitch = R.drawable.ic_camera_zjh;
+        // 闪光灯开启状态图标
+        imageFlashOn = R.drawable.ic_flash_on;
+        // 闪光灯关闭状态图标
+        imageFlashOff = R.drawable.ic_flash_off;
+        // 闪光灯自动状态图标
+        imageFlashAuto = R.drawable.ic_flash_auto;
+        // 最长录制时间
+        duration = 10;
+        // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+        minDuration = 1500;
         videoEditCoordinator = null;
     }
 
 
     // region 属性
 
-    public Set<MimeType> mimeTypeSet; // 选择 视频图片 的类型，MimeType.allOf()
-    public int imageSwitch = R.drawable.ic_camera_zjh;    // 切换前置/后置摄像头图标资源
-    public int imageFlashOn = R.drawable.ic_flash_on;      // 闪光灯开启状态图标
-    public int imageFlashOff = R.drawable.ic_flash_off;       // 闪光灯关闭状态图标
-    public int imageFlashAuto = R.drawable.ic_flash_auto;      // 闪光灯自动状态图标
-    public int duration = 10;    // 最长录制时间
-    public int minDuration = 1500;// 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
-    public VideoEditCoordinator videoEditCoordinator; // 视频编辑功能
+    /**
+     * 选择 视频图片 的类型，MimeType.allOf()
+     */
+    public Set<MimeType> mimeTypeSet;
+    /**
+     * 切换前置/后置摄像头图标资源
+     */
+    public int imageSwitch = R.drawable.ic_camera_zjh;
+    /**
+     * 闪光灯开启状态图标
+     */
+    public int imageFlashOn = R.drawable.ic_flash_on;
+    /**
+     * 闪光灯关闭状态图标
+     */
+    public int imageFlashOff = R.drawable.ic_flash_off;
+    /**
+     * 闪光灯自动状态图标
+     */
+    public int imageFlashAuto = R.drawable.ic_flash_auto;
+    /**
+     * 最长录制时间
+     */
+    public int duration = 10;
+    /**
+     * 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+     */
+    public int minDuration = 1500;
+    /**
+     * 视频编辑功能
+     */
+    public VideoEditCoordinator videoEditCoordinator;
 
 
     /**

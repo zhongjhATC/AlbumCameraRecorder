@@ -97,7 +97,7 @@ public class CameraFragment extends BaseFragment {
 
         mCameraLayout = view.findViewById(R.id.cameraLayout);
         mCameraLayout.setFragment(this);
-        mCameraLayout.setErrorLisenter(new ErrorListener() {
+        mCameraLayout.setErrorListener(new ErrorListener() {
             @Override
             public void onError() {
                 //错误监听

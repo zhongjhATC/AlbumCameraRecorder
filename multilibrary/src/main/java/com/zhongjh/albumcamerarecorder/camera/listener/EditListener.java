@@ -2,10 +2,9 @@ package com.zhongjh.albumcamerarecorder.camera.listener;
 
 import android.net.Uri;
 
-import java.io.File;
-
 /**
  * 编辑事件
+ * @author zhongjh
  */
 public interface EditListener {
 

@@ -7,20 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.Cursor;
-import android.graphics.BlendMode;
-import android.graphics.BlendModeColorFilter;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.widget.Toolbar;
-
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,31 +25,32 @@ import android.widget.TextView;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
-
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MimeType;
-import gaode.zhongjh.com.common.utils.ColorFilterUtil;
-import gaode.zhongjh.com.common.widget.IncapableDialog;
-
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaSelectionFragment;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
+import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
-
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import gaode.zhongjh.com.common.utils.ColorFilterUtil;
+import gaode.zhongjh.com.common.utils.StatusBarUtils;
+import gaode.zhongjh.com.common.widget.IncapableDialog;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
@@ -69,7 +61,9 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
 
 /**
  * 相册
- * Created by zhongjh on 2018/8/22.
+ *
+ * @author zhongjh
+ * @date 2018/8/22
  */
 public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks,
         MediaSelectionFragment.SelectionProvider,
@@ -83,14 +77,26 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private Activity mActivity;
     private Context mContext;
 
-    private GlobalSpec mGlobalSpec; // 公共配置
+    /**
+     * 公共配置
+     */
+    private GlobalSpec mGlobalSpec;
 
-    private final AlbumCollection mAlbumCollection = new AlbumCollection(); // 专辑下拉数据源
+    /**
+     * 专辑下拉数据源
+     */
+    private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection;
     private AlbumSpec mAlbumSpec;
 
-    private AlbumsSpinner mAlbumsSpinner; // 专辑下拉框控件
-    private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;   // 左上角的下拉框适配器
+    /**
+     * 专辑下拉框控件
+     */
+    private AlbumsSpinner mAlbumsSpinner;
+    /**
+     * 左上角的下拉框适配器
+     */
+    private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;
 
     private boolean mOriginalEnable;    // 是否原图
     private boolean mIsRefresh; // 是否刷新
@@ -145,11 +151,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private void initView(Bundle savedInstanceState) {
         // 兼容沉倾状态栏
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mViewHolder.toolbar.setPadding(0, StatusBarUtils.getStatusBarHeight(getActivity()), 0, 0);
-            ViewGroup.LayoutParams layoutParams = mViewHolder.toolbar.getLayoutParams();
-            layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(getActivity());
-        }
+        mViewHolder.toolbar.setPadding(0, StatusBarUtils.getStatusBarHeight(mActivity), 0, 0);
+        ViewGroup.LayoutParams layoutParams = mViewHolder.toolbar.getLayoutParams();
+        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(mActivity);
 
         Drawable navigationIcon = mViewHolder.toolbar.getNavigationIcon();
         TypedArray ta = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
@@ -409,7 +413,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (countOverMaxSize() > 0) {
             // 是否启用原图
             if (mOriginalEnable) {
-                // 弹出窗口提示大于xxmb
+                // 弹出窗口提示大于 xx mb
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.error_over_original_size, mAlbumSpec.originalMaxSize));
                 if (this.getFragmentManager() == null) {
@@ -488,12 +492,17 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.container.setVisibility(View.VISIBLE);
             mViewHolder.emptyView.setVisibility(View.GONE);
             if (!mIsRefresh) {
-                Fragment fragment = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
+                Fragment fragment = null;
+                if (getArguments() != null) {
+                    fragment = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
+                }
                 if (getFragmentManager() != null) {
-                    getFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
-                            .commitAllowingStateLoss();
+                    if (fragment != null) {
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
+                                .commitAllowingStateLoss();
+                    }
                 }
             }
         }

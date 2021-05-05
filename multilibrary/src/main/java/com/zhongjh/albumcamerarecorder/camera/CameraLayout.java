@@ -172,7 +172,7 @@ public class CameraLayout extends RelativeLayout {
 
     // region 回调监听属性
 
-    private ErrorListener mErrorLisenter;
+    private ErrorListener mErrorListener;
     /**
      * 退出当前Activity的按钮监听
      */
@@ -198,8 +198,8 @@ public class CameraLayout extends RelativeLayout {
 
     // 赋值Camera错误回调
 
-    public void setErrorLisenter(ErrorListener errorLisenter) {
-        this.mErrorLisenter = errorLisenter;
+    public void setErrorListener(ErrorListener errorListener) {
+        this.mErrorListener = errorListener;
     }
 
     /**
@@ -258,7 +258,7 @@ public class CameraLayout extends RelativeLayout {
         mContext = context;
         initData();
         initView();
-        initLisenter();
+        initListener();
     }
 
     /**
@@ -349,7 +349,7 @@ public class CameraLayout extends RelativeLayout {
     /**
      * 初始化有关事件
      */
-    private void initLisenter() {
+    private void initListener() {
         // 切换闪光灯模式
         initImgFlashListener();
 
@@ -415,10 +415,8 @@ public class CameraLayout extends RelativeLayout {
                 FileUtil.deleteFile(mVideoFile);
             }
             // 删除多个视频
-            if (mVideoPaths != null) {
-                for (String item : mVideoPaths) {
-                    FileUtil.deleteFile(item);
-                }
+            for (String item : mVideoPaths) {
+                FileUtil.deleteFile(item);
             }
             // 删除多个图片
             if (mCaptureBitmaps != null) {
@@ -432,10 +430,8 @@ public class CameraLayout extends RelativeLayout {
             }
         } else {
             // 如果是提交的，删除合成前的视频
-            if (mVideoPaths != null) {
-                for (String item : mVideoPaths) {
-                    FileUtil.deleteFile(item);
-                }
+            for (String item : mVideoPaths) {
+                FileUtil.deleteFile(item);
             }
         }
         mViewHolder.cameraView.destroy();
@@ -545,8 +541,8 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void onLongClickError() {
-                if (mErrorLisenter != null) {
-                    mErrorLisenter.onAudioPermissionError();
+                if (mErrorListener != null) {
+                    mErrorListener.onAudioPermissionError();
                 }
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickError();
@@ -693,7 +689,7 @@ public class CameraLayout extends RelativeLayout {
                 super.onCameraError(exception);
                 if (!TextUtils.isEmpty(exception.getMessage())) {
                     Log.d(TAG, exception.getMessage() + " " + exception.getReason());
-                    mErrorLisenter.onError();
+                    mErrorListener.onError();
                 }
             }
 

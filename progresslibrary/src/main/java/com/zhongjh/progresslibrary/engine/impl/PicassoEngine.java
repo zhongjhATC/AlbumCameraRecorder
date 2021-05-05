@@ -26,6 +26,7 @@ import com.zhongjh.progresslibrary.engine.ImageEngine;
 
 /**
  * {@link ImageEngine} implementation using Picasso.
+ * @author zhongjh
  */
 
 public class PicassoEngine implements ImageEngine {

@@ -4,12 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
@@ -20,6 +14,11 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_VIDEO;
@@ -34,7 +33,9 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
 
 /**
  * 多媒体的设置 - Matisse
- * Created by zhongjh on 2018/9/28.
+ *
+ * @author zhongjh
+ * @date 2018/9/28
  */
 public final class MultiMediaSetting {
 
@@ -44,8 +45,6 @@ public final class MultiMediaSetting {
     private MultiMediaSetting() {
 
     }
-
-    ;
 
     private MultiMediaSetting(Activity activity) {
         this(activity, null);
@@ -65,9 +64,7 @@ public final class MultiMediaSetting {
     }
 
     /**
-     * 由Activity打开
-     * <p>
-     * 当用户完成选择时，将调用此方法：{@link AppCompatActivity#onActivityResult(int, int, Intent)}
+     * 设置由Activity打开
      *
      * @param activity Activity instance.
      * @return this.
@@ -91,9 +88,7 @@ public final class MultiMediaSetting {
     /**
      * 获取用户确认后的是否选择标记
      *
-     * @param data 通过以下方法获取
-     *             {@link Activity#onActivityResult(int, int, Intent)} 或者
-     *             {@link Fragment#onActivityResult(int, int, Intent)}.
+     * @param data 通过以下方法获取 onActivityResult
      * @return 用户确认后的是否选择标记
      */
     public static boolean obtainMultimediaChoice(Intent data) {
@@ -103,9 +98,7 @@ public final class MultiMediaSetting {
     /**
      * 获取用户确认后的多媒体类型
      *
-     * @param data 通过以下方法获取
-     *             {@link Activity#onActivityResult(int, int, Intent)} 或者
-     *             {@link Fragment#onActivityResult(int, int, Intent)}.
+     * @param data 通过以下方法获取 onActivityResult
      * @return 用户确认后的多媒体类型
      */
     public static int obtainMultimediaType(Intent data) {
@@ -115,9 +108,7 @@ public final class MultiMediaSetting {
     /**
      * 获取用户选择/拍照的媒体路径列表 {@link Uri}
      *
-     * @param data 通过以下方法获取
-     *             {@link Activity#onActivityResult(int, int, Intent)} 或者
-     *             {@link Fragment#onActivityResult(int, int, Intent)}.
+     * @param data 通过以下方法获取 onActivityResult
      * @return 用户选择/拍照的媒体路径列表. {@link Uri}
      */
     public static List<Uri> obtainResult(Intent data) {
@@ -127,9 +118,7 @@ public final class MultiMediaSetting {
     /**
      * 获取用户选择/拍照的媒体路径列表
      *
-     * @param data 通过以下方法获取
-     *             {@link Fragment#onActivityResult(int, int, Intent)} 或者
-     *             {@link Activity#onActivityResult(int, int, Intent)}
+     * @param data 通过以下方法获取 onActivityResult
      * @return 用户选择/拍照的媒体路径列表.
      */
     public static List<String> obtainPathResult(Intent data) {
@@ -139,9 +128,7 @@ public final class MultiMediaSetting {
     /**
      * 获取用户录音的数据
      *
-     * @param data 通过以下方法获取
-     *             {@link Fragment#onActivityResult(int, int, Intent)} 或者
-     *             {@link Activity#onActivityResult(int, int, Intent)}
+     * @param data 通过以下方法获取 onActivityResult
      * @return 用户录音的数据
      */
     public static RecordingItem obtainRecordingItemResult(Intent data) {

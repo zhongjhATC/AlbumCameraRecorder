@@ -5,7 +5,9 @@ import android.content.pm.PackageManager;
 
 /**
  * 有关手机模块工具
- * Created by zhongjh on 2019/3/25.
+ *
+ * @author zhongjh
+ * @date 2019/3/25
  */
 public class PackageManagerUtils {
 
@@ -18,10 +20,7 @@ public class PackageManagerUtils {
         if (pm != null) {
             FeatureInfo[] features = pm.getSystemAvailableFeatures();
             if (features != null) {
-                for (FeatureInfo f : features) {
-                    if (f != null && PackageManager.FEATURE_CAMERA_FLASH.equals(f.name)) {
-                        ;
-                    }
+                for (FeatureInfo ignored : features) {
                     return true;
                 }
             }

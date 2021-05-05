@@ -14,6 +14,10 @@ import java.util.Set;
 
 import gaode.zhongjh.com.common.enums.MimeType;
 
+/**
+ * 相册设置接口
+ * @author zhongjh
+ */
 public interface AlbumSettingApi {
 
     /**

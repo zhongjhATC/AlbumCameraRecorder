@@ -5,13 +5,29 @@ import android.os.Parcelable;
 
 /**
  * 音频文件的存储
+ * @author zhongjh
  */
 public class RecordingItem implements Parcelable {
-    private String mName; // file name
-    private String mFilePath; //file path
-    private int mId; //id in database
-    private int mLength; // length of recording in seconds
-    private long mTime; // date/time of the recording
+    /**
+     * file name
+     */
+    private String mName;
+    /**
+     * file path
+     */
+    private String mFilePath;
+    /**
+     * id in database
+     */
+    private int mId;
+    /**
+     * length of recording in seconds
+     */
+    private int mLength;
+    /**
+     * date/time of the recording
+     */
+    private long mTime;
 
     public RecordingItem()
     {

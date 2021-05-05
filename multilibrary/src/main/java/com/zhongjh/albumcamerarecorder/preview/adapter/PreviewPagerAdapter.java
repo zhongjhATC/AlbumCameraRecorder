@@ -35,9 +35,9 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
  * @author zhongjh
  */
 public class PreviewPagerAdapter extends FragmentPagerAdapter {
-    private ArrayList<MultiMedia> mItems = new ArrayList<>();
-    private SparseArray<Fragment> fragments;
-    private OnPrimaryItemSetListener mListener;
+    private final ArrayList<MultiMedia> mItems = new ArrayList<>();
+    private final SparseArray<Fragment> fragments;
+    private final OnPrimaryItemSetListener mListener;
 
     public PreviewPagerAdapter(@NonNull FragmentManager fm, int behavior, OnPrimaryItemSetListener listener) {
         super(fm, behavior);
@@ -45,15 +45,16 @@ public class PreviewPagerAdapter extends FragmentPagerAdapter {
         fragments = new SparseArray<>(getCount());
     }
 
+    @NonNull
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment fragment = (Fragment) super.instantiateItem(container, position);
         fragments.put(position, fragment);
         return fragment;
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         super.destroyItem(container, position, object);
         fragments.remove(position);
     }
@@ -62,6 +63,7 @@ public class PreviewPagerAdapter extends FragmentPagerAdapter {
         return fragments.get(position);
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         return PreviewItemFragment.newInstance(mItems.get(position));
@@ -73,7 +75,7 @@ public class PreviewPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+    public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         super.setPrimaryItem(container, position, object);
         if (mListener != null) {
             mListener.onPrimaryItemSet(position);
@@ -98,6 +100,10 @@ public class PreviewPagerAdapter extends FragmentPagerAdapter {
 
     interface OnPrimaryItemSetListener {
 
+        /**
+         * 预览
+         * @param position 索引
+         */
         void onPrimaryItemSet(int position);
     }
 

@@ -5,12 +5,22 @@ import android.os.Parcelable;
 
 /**
  * 音频文件的存储
+ * @author zhongjh
  */
 public class RecordingItem implements Parcelable {
 
-    private String filePath; // 路径
-    private String url; // 网址
-    private int length; // 长度，单位秒
+    /**
+     * 路径
+     */
+    private String filePath;
+    /**
+     * 网址
+     */
+    private String url;
+    /**
+     * 长度，单位秒
+     */
+    private int length;
 
     public RecordingItem()
     {

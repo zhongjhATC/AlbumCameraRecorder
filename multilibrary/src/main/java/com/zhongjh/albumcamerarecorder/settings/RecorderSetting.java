@@ -4,6 +4,7 @@ import com.zhongjh.albumcamerarecorder.settings.api.RecorderSettingApi;
 
 /**
  * 录音机
+ * @author zhongjh
  */
 public final class RecorderSetting implements RecorderSettingApi {
 

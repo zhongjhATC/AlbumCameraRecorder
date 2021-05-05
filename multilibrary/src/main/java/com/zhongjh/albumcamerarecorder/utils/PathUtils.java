@@ -12,8 +12,8 @@ import android.provider.MediaStore;
 
 /**
  * http://stackoverflow.com/a/27271131/4739220
+ * @author zhongjh
  */
-
 public class PathUtils {
 
     private final static String PRIMARY = "primary";

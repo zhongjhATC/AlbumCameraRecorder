@@ -10,7 +10,9 @@ import android.view.MotionEvent;
 
 /**
  * 可以控制是否能滑动的 ViewPager
- * Created by zhongjh on 2018/10/10.
+ *
+ * @author zhongjh
+ * @date 2018/10/10
  */
 public class NoScrollViewPager extends ViewPager {
 

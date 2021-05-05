@@ -21,14 +21,21 @@ import java.io.File;
 
 /**
  * 设置保存目录的实体
+ * @author zhongjh
  */
 public class SaveStrategy {
 
-    // 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；
+    /**
+     * 参数1 true表示拍照存储在共有目录，false表示存储在私有目录；
+     */
     public boolean isPublic;
-    // 参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+    /**
+     * 参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+     */
     public String authority;
-    // 参数3 子文件夹的具体路径
+    /**
+     * 参数3 子文件夹的具体路径
+     */
     public String directory;
 
     public SaveStrategy(boolean isPublic, String authority, String directory) {

@@ -30,6 +30,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * 信息处理，toast和dialog
+ * @author zhongjh
  */
 @SuppressWarnings("unused")
 public class IncapableCause {
@@ -42,9 +43,12 @@ public class IncapableCause {
     public @interface Form {
     }
 
-    private int mForm = TOAST; // 默认toast模式
+    /**
+     * 默认toast模式
+     */
+    private int mForm = TOAST;
     private String mTitle;
-    private String mMessage;
+    private final String mMessage;
 
     public IncapableCause(String message) {
         mMessage = message;

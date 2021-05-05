@@ -41,6 +41,9 @@ import gaode.zhongjh.com.common.utils.FileUtil;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
+/**
+ * @author zhongjh
+ */
 public class PreviewItemFragment extends Fragment {
 
     private static final String ARGS_ITEM = "args_item";

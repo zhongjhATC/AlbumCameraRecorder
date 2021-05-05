@@ -27,6 +27,7 @@ import com.zhongjh.progresslibrary.engine.ImageEngine;
 
 /**
  * {@link ImageEngine} implementation using Glide.
+ * @author zhongjh
  */
 
 public class GlideEngine implements ImageEngine {

@@ -9,15 +9,23 @@ import android.view.View;
 
 /**
  * 一个类似三角形的向下控件
- * Created by zhongjh on 2018/8/7.
+ *
+ * @author zhongjh
+ * @date 2018/8/7
  */
 public class DownView extends View {
 
     private int mSize;
     private int mCenterX;
     private int mCenterY;
-    private float mStrokeWidth; // 线
-    private Paint mPaint; // 画笔
+    /**
+     * 线
+     */
+    private float mStrokeWidth;
+    /**
+     * 画笔
+     */
+    private Paint mPaint;
     private Path mPath;
 
 

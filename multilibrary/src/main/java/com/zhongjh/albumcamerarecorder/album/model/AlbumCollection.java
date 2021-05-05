@@ -15,15 +15,26 @@ import java.lang.ref.WeakReference;
 
 /**
  * 每个mLoaderManager都要跑onCreateLoader 初始化的方法，不然会是null
- * Created by zhongjh on 2018/8/30.
+ *
+ * @author zhongjh
+ * @date 2018/8/30
  */
 public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int LOADER_ID = 1;
     private static final String STATE_CURRENT_SELECTION = "state_current_selection";
-    private WeakReference<Context> mContext;    // 通过外部传入 Context，采用弱引用的方式防止内存泄露
-    private LoaderManager mLoaderManager;   // 加载器的管理器
-    private AlbumCallbacks mCallbacks;      // 回调
+    /**
+     * 通过外部传入 Context，采用弱引用的方式防止内存泄露
+     */
+    private WeakReference<Context> mContext;
+    /**
+     * 加载器的管理器
+     */
+    private LoaderManager mLoaderManager;
+    /**
+     * 回调
+     */
+    private AlbumCallbacks mCallbacks;
     private int mCurrentSelection;
     public boolean mLoadFinished;
 
@@ -31,9 +42,6 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
         Context context = mContext.get();
-        if (context == null) {
-            return null;
-        }
         mLoadFinished = false;
         return AlbumLoader.newInstance(context);
     }

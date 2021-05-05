@@ -8,18 +8,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView;
-import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 
 import java.io.File;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
@@ -28,6 +26,7 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
 
 /**
  * 一个预览合成分段录制的视频
+ * @author zhongjh
  */
 public class PreviewVideoActivity extends AppCompatActivity {
 
@@ -37,9 +36,10 @@ public class PreviewVideoActivity extends AppCompatActivity {
     String mPath;
     File mFile;
 
-    private MediaStoreCompat mVideoMediaStoreCompat; // 录像文件配置路径
-    private GlobalSpec mGlobalSpec; // 公共配置
-    private CameraSpec mCameraSpec; // 拍摄配置
+    /**
+     * 录像文件配置路径
+     */
+    private MediaStoreCompat mVideoMediaStoreCompat;
 
     /**
      * 打开activity
@@ -91,9 +91,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 初始化数据
      */
     private void initData() {
-        // 初始化设置
-        mCameraSpec = CameraSpec.getInstance();
-        mGlobalSpec = GlobalSpec.getInstance();
+        // 公共配置
+        GlobalSpec mGlobalSpec = GlobalSpec.getInstance();
         mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this);
         mVideoMediaStoreCompat.setSaveStrategy(mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 

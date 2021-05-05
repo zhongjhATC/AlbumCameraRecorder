@@ -31,20 +31,34 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
 
 /**
  * 相册 界面
- * Created by zhongjh on 2018/8/30.
+ *
+ * @author zhongjh
+ * @date 2018/8/30
  */
 public class MediaSelectionFragment extends Fragment implements
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
-    private static final String EXTRA_ALBUM = "extra_album";     // 专辑数据
+    /**
+     * 专辑数据
+     */
+    private static final String EXTRA_ALBUM = "extra_album";
 
     private final AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
     private RecyclerView mRecyclerView;
     private FrameLayout mFlMain;
     private AlbumMediaAdapter mAdapter;
-    private SelectionProvider mSelectionProvider; // 选择接口事件
-    private AlbumMediaAdapter.CheckStateListener mCheckStateListener;       // 单选事件
-    private AlbumMediaAdapter.OnMediaClickListener mOnMediaClickListener;   // 点击事件
+    /**
+     * 选择接口事件
+     */
+    private SelectionProvider mSelectionProvider;
+    /**
+     * 单选事件
+     */
+    private AlbumMediaAdapter.CheckStateListener mCheckStateListener;
+    /**
+     * 点击事件
+     */
+    private AlbumMediaAdapter.OnMediaClickListener mOnMediaClickListener;
 
     /**
      * 实例化
@@ -66,14 +80,16 @@ public class MediaSelectionFragment extends Fragment implements
      * @param context 上下文
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         // 旧版的知乎是用Activity，而这边则使用Fragments的获取到MatissFragment
         Fragment matissFragment = null;
-        for (Fragment fragment : getFragmentManager().getFragments()) {
-            if (fragment instanceof MatissFragment) {
-                matissFragment = fragment;
+        if (getFragmentManager() != null) {
+            for (Fragment fragment : getFragmentManager().getFragments()) {
+                if (fragment instanceof MatissFragment) {
+                    matissFragment = fragment;
+                }
             }
         }
         if (matissFragment == null) {
@@ -101,14 +117,23 @@ public class MediaSelectionFragment extends Fragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Album album = getArguments().getParcelable(EXTRA_ALBUM);
+        Album album = null;
+        if (getArguments() != null) {
+            album = getArguments().getParcelable(EXTRA_ALBUM);
+        }
 
         // 初始化底部间距
-        int marginBottom = getArguments().getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM);
+        int marginBottom = 0;
+        if (getArguments() != null) {
+            marginBottom = getArguments().getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM);
+        }
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mFlMain.getLayoutParams();
         layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(marginBottom);
 
         // 实例化适配器并且传递数据源
+        if (getContext() == null || getActivity() == null) {
+            return;
+        }
         mAdapter = new AlbumMediaAdapter(getContext(),
                 mSelectionProvider.provideSelectedItemCollection(), mRecyclerView);
         mAdapter.registerCheckStateListener(this);
@@ -170,7 +195,10 @@ public class MediaSelectionFragment extends Fragment implements
      * 重新获取数据源
      */
     public void restartLoaderMediaGrid() {
-        Album album = getArguments().getParcelable(EXTRA_ALBUM);
+        Album album = null;
+        if (getArguments() != null) {
+            album = getArguments().getParcelable(EXTRA_ALBUM);
+        }
         mAlbumMediaCollection.restartLoader(album);
     }
 
@@ -192,8 +220,10 @@ public class MediaSelectionFragment extends Fragment implements
     @Override
     public void onMediaClick(Album album, MultiMedia item, int adapterPosition) {
         if (mOnMediaClickListener != null) {
-            mOnMediaClickListener.onMediaClick(getArguments().getParcelable(EXTRA_ALBUM),
-                    item, adapterPosition);
+            if (getArguments() != null) {
+                mOnMediaClickListener.onMediaClick(getArguments().getParcelable(EXTRA_ALBUM),
+                        item, adapterPosition);
+            }
         }
     }
 
@@ -201,6 +231,10 @@ public class MediaSelectionFragment extends Fragment implements
      * 点击接口
      */
     public interface SelectionProvider {
+        /**
+         * 用于获取当前选择的数据
+         * @return 当前选择的数据
+         */
         SelectedItemCollection provideSelectedItemCollection();
     }
 

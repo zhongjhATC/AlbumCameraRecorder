@@ -4,12 +4,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-public class TouchTimeHandler
-        extends Handler {
+
+/**
+ * 用于处理长按按钮的事件
+ * @author zhongjh
+ */
+public class TouchTimeHandler  extends Handler {
     public static final int WHAT_233 = 0;
     private long delayTimeInMils;
     private boolean freeNow;
-    private Task task;
+    private final Task task;
     private boolean shouldContinue;
 
     public TouchTimeHandler(Looper looper, Task task) {
@@ -57,6 +61,10 @@ public class TouchTimeHandler
     }
 
     public interface Task {
+        /**
+         * 长按的按钮事件
+         */
         void run();
+
     }
 }

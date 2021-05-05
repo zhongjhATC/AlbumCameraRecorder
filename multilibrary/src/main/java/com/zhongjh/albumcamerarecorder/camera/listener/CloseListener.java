@@ -2,7 +2,9 @@ package com.zhongjh.albumcamerarecorder.camera.listener;
 
 /**
  * 退出监听
- * Created by zhongjh on 2018/10/10.
+ *
+ * @author zhongjh
+ * @date 2018/10/10
  */
 public interface CloseListener {
 

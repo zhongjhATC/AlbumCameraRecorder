@@ -26,6 +26,7 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
  * 多种样式版
+ * @author zhongjh
  */
 public class MainThemeActivity extends BaseActivity {
 
@@ -105,14 +106,20 @@ public class MainThemeActivity extends BaseActivity {
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
+        // 支持的类型：图片，视频
+        cameraSetting.mimeTypeSet(MimeType.ofAll());
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(true)
-                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
-                .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))// 自定义过滤器
-                .originalEnable(true)// 开启原图
-                .maxOriginalSize(10); // 最大原图size,仅当originalEnable为true的时候才有效
+                // 支持的类型：图片，视频
+                .mimeTypeSet(MimeType.ofAll())
+                // 是否显示多选图片的数字
+                .countable(true)
+                // 自定义过滤器
+                .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))
+                // 开启原图
+                .originalEnable(true)
+                // 最大原图size,仅当originalEnable为true的时候才有效
+                .maxOriginalSize(10);
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();

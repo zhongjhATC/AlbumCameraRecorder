@@ -25,11 +25,16 @@ import java.util.Set;
 
 /**
  * 选择的数据源
- * Created by zhongjh on 2018/8/28.
+ *
+ * @author zhongjh
+ * @date 2018/8/28
  */
 public class SelectedItemCollection {
 
-    public static final String STATE_SELECTION = "state_selection"; // 数据源的标记
+    /**
+     * 数据源的标记
+     */
+    public static final String STATE_SELECTION = "state_selection";
     public static final String STATE_COLLECTION_TYPE = "state_collection_type";
 
     /**

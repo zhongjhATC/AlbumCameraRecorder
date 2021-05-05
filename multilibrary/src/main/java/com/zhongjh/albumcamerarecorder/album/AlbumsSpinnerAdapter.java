@@ -4,26 +4,28 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.R;
-
-import java.io.File;
 
 /**
  * 左上角的下拉框适配器
- * Created by zhongjh on 2018/8/29.
+ *
+ * @author zhongjh
+ * @date 2018/8/29
  */
 public class AlbumsSpinnerAdapter extends CursorAdapter {
 
-    private final Drawable mPlaceholder; // 默认图片
+    /**
+     * 默认图片
+     */
+    private final Drawable mPlaceholder;
 
     public AlbumsSpinnerAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);

@@ -4,7 +4,9 @@ import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 
 /**
  * 有关录音功能的动态设置
- * Created by zhongjh on 2019/3/21.
+ *
+ * @author zhongjh
+ * @date 2019/3/21
  */
 public interface RecorderSettingApi {
 

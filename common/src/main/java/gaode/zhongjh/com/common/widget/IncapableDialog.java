@@ -27,6 +27,7 @@ import gaode.zhongjh.com.common.R;
 
 /**
  * 弹窗
+ * @author zhongjh
  */
 public class IncapableDialog extends DialogFragment {
 
@@ -68,7 +69,7 @@ public class IncapableDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.mContext = context;
     }

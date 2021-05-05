@@ -34,6 +34,7 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
 
 /**
  * 点击相册图片或者视频进来的
+ * @author zhongjh
  */
 public class AlbumPreviewActivity extends BasePreviewActivity implements
         AlbumMediaCollection.AlbumMediaCallbacks {
@@ -41,7 +42,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
     public static final String EXTRA_ALBUM = "extra_album";
     public static final String EXTRA_ITEM = "extra_item";
 
-    private AlbumMediaCollection mCollection = new AlbumMediaCollection();
+    private final AlbumMediaCollection mCollection = new AlbumMediaCollection();
 
     private boolean mIsAlreadySetPosition;
 
@@ -89,15 +90,18 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
 
     private void initItems(List<MultiMedia> items) {
         PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
-        adapter.addAll(items);
-        adapter.notifyDataSetChanged();
-        if (!mIsAlreadySetPosition) {
-            //onAlbumMediaLoad is called many times..
-            mIsAlreadySetPosition = true;
-            MultiMedia selected = getIntent().getParcelableExtra(EXTRA_ITEM);
-            int selectedIndex = MultiMediaUtils.checkedNumOf(items, selected) - 1; // -1是爲了拿到索引
-            mViewHolder.pager.setCurrentItem(selectedIndex, false);
-            mPreviousPos = selectedIndex;
+        if (adapter != null) {
+            adapter.addAll(items);
+            adapter.notifyDataSetChanged();
+            if (!mIsAlreadySetPosition) {
+                //onAlbumMediaLoad is called many times..
+                mIsAlreadySetPosition = true;
+                MultiMedia selected = getIntent().getParcelableExtra(EXTRA_ITEM);
+                // -1是爲了拿到索引
+                int selectedIndex = MultiMediaUtils.checkedNumOf(items, selected) - 1;
+                mViewHolder.pager.setCurrentItem(selectedIndex, false);
+                mPreviousPos = selectedIndex;
+            }
         }
     }
 
