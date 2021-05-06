@@ -24,6 +24,7 @@ import android.widget.ImageView;
  * 图片不同加载方式
  * Image loader interface. There are predefined {@link com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine}
  * and {@link com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine}.
+ * @author zhongjh
  */
 @SuppressWarnings("unused")
 public interface ImageEngine {

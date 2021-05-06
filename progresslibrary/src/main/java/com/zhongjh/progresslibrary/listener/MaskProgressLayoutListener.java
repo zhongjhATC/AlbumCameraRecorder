@@ -6,7 +6,9 @@ import com.zhongjh.progresslibrary.entity.MultiMediaView;
 
 /**
  * MaskProgressLayout的有关事件
- * Created by zhongjh on 2018/10/18.
+ *
+ * @author zhongjh
+ * @date 2018/10/18
  */
 public interface MaskProgressLayoutListener {
 
@@ -23,16 +25,21 @@ public interface MaskProgressLayoutListener {
 
     /**
      * 点击图片的事件
+     * @param view 点击的view
+     * @param multiMediaView 传递的多媒体
      */
     void onItemImage(View view, MultiMediaView multiMediaView);
 
     /**
      * 开始上传 - 指刚添加后的
+     * @param multiMediaView 传递的多媒体
      */
     void onItemStartUploading(MultiMediaView multiMediaView);
 
     /**
      * 回调删除事件
+     * @param view 点击的view
+     * @param multiMediaView 传递的多媒体
      */
     void onItemClose(View view, MultiMediaView multiMediaView);
 

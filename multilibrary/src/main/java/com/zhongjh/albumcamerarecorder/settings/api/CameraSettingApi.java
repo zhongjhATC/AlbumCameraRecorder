@@ -13,7 +13,9 @@ import gaode.zhongjh.com.common.enums.MimeType;
 
 /**
  * 有关拍摄界面的动态设置
- * Created by zhongjh on 2019/3/20.
+ *
+ * @author zhongjh
+ * @date 2019/3/20
  */
 public interface CameraSettingApi {
 

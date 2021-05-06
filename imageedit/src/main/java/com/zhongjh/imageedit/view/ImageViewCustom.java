@@ -2,6 +2,7 @@ package com.zhongjh.imageedit.view;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -34,7 +35,7 @@ import com.zhongjh.imageedit.core.sticker.ImageStickerPortrait;
 
 /**
  * Created by felix on 2017/11/14 下午6:43.
- * TODO clip外不加入path
+ * clip外不加入path
  */
 public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestureDetector.OnScaleGestureListener,
         ValueAnimator.AnimatorUpdateListener, ImageStickerPortrait.Callback, Animator.AnimatorListener {
@@ -272,7 +273,8 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         mImage.onDrawImage(canvas);
 
         // 马赛克
-        if (!mImage.isMosaicEmpty() || (mImage.getMode() == ImageMode.MOSAIC && !mPen.isEmpty())) {
+        boolean isMosaic = !mImage.isMosaicEmpty() || (mImage.getMode() == ImageMode.MOSAIC && !mPen.isEmpty());
+        if (isMosaic) {
             int count = mImage.onDrawMosaicsPath(canvas);
             if (mImage.getMode() == ImageMode.MOSAIC && !mPen.isEmpty()) {
                 mDoodlePaint.setStrokeWidth(ImagePath.BASE_MOSAIC_WIDTH);
@@ -428,6 +430,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     /**
      * 处理触屏事件，里面的延迟和取消延迟也是为了伸缩图片体验性提高
      */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         Log.d(TAG, "onTouchEvent");
@@ -673,9 +676,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     @Override
     public <V extends View & ImageSticker> boolean onRemove(V stickerView) {
         Log.d(TAG, "onRemove");
-        if (mImage != null) {
-            mImage.onRemoveSticker(stickerView);
-        }
+        mImage.onRemoveSticker(stickerView);
         stickerView.unregisterCallback(this);
         ViewParent parent = stickerView.getParent();
         if (parent != null) {

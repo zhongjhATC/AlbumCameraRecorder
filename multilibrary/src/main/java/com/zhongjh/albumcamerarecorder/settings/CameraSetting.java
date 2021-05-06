@@ -11,7 +11,9 @@ import java.util.Set;
 
 /**
  * 有关拍摄界面的动态设置
- * Created by zhongjh on 2018/12/26.
+ *
+ * @author zhongjh
+ * @date 2018/12/26
  */
 public final class CameraSetting implements CameraSettingApi {
 

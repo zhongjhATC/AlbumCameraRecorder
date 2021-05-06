@@ -15,7 +15,9 @@ import java.util.Set;
 
 /**
  * 相册设置
- * Created by zhongjh on 2018/12/27.
+ *
+ * @author zhongjh
+ * @date 2018/12/27
  */
 public class AlbumSetting implements AlbumSettingApi {
 

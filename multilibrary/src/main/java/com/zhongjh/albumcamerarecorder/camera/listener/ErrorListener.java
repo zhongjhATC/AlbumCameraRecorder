@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.camera.listener;
 
 /**
  * 处理异常的Listener
+ * @author zhongjh
  */
 public interface ErrorListener {
 

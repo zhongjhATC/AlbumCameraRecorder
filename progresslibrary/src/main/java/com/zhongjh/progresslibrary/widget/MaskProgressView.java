@@ -15,30 +15,74 @@ import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
  * 用于图片、视频的加载进度的view
  * <p>
  * 可以考虑这个：https://github.com/dudu90/FreshDownloadView
- * Created by zhongjh on 2018/10/16.
+ *
+ * @author zhongjh
+ * @date 2018/10/16
  */
 public class MaskProgressView extends androidx.appcompat.widget.AppCompatImageView {
 
     private static final String TAG = "MaskProgressView";
 
-    private static final int MAX_PROGRESS = 100; //最大进度值
+    /**
+     * 最大进度值
+     */
+    private static final int MAX_PROGRESS = 100;
 
-    private int width; // view 宽
-    private int height; // view 高
-    private Rect rect; // 遮罩矩形
-    private Paint maskingPaint;     // 遮罩层画笔
-    private Paint textPaint;        // 显示在遮罩层的字体画笔
-    private int percentage = 0;     // 设置进度
-    private int percentageTxt = 0;     // 设置文字进度
-    private int centerX;            // 字体的x位置
-    private int centerY;            // 字体的y位置
+    /**
+     * view 宽
+     */
+    private int width;
+    /**
+     * view 高
+     */
+    private int height;
+    /**
+     * 遮罩矩形
+     */
+    private Rect rect;
+    /**
+     * 遮罩层画笔
+     */
+    private Paint maskingPaint;
+    /**
+     * 显示在遮罩层的字体画笔
+     */
+    private Paint textPaint;
+    /**
+     * 设置进度
+     */
+    private int percentage = 0;
+    /**
+     * 设置文字进度
+     */
+    private int percentageTxt = 0;
+    /**
+     * 字体的x位置
+     */
+    private int centerX;
+    /**
+     * 字体的y位置
+     */
+    private int centerY;
 
     // region 属性
 
-    private int maskingColor; // 遮罩颜色，默认用主颜色
-    private int textSize;  // 显示在遮罩层的字体大小
-    private int textColor; // 显示在遮罩层的字体颜色
-    private String textString = "上传中";    // 加载中的文字
+    /**
+     * 遮罩颜色，默认用主颜色
+     */
+    private int maskingColor;
+    /**
+     * 显示在遮罩层的字体大小
+     */
+    private int textSize;
+    /**
+     * 显示在遮罩层的字体颜色
+     */
+    private int textColor;
+    /**
+     * 加载中的文字
+     */
+    private String textString = "上传中";
 
     public void setMaskingColor(int maskingColor) {
         this.maskingColor = maskingColor;
@@ -130,7 +174,7 @@ public class MaskProgressView extends androidx.appcompat.widget.AppCompatImageVi
                 // 画：百分比进度
                 String percentageText = percentageTxt + "%";
                 int percentageTextLength = (int) textPaint.measureText(percentageText);
-                canvas.drawText(percentageText, (width - percentageTextLength) / 2, (int) (height * 0.75), textPaint);
+                canvas.drawText(percentageText, (width - percentageTextLength) / 2f, (int) (height * 0.75), textPaint);
             }
         }
     }

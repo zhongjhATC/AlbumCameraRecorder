@@ -28,6 +28,7 @@ import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 
 /**
  * {@link ImageEngine} implementation using Glide.
+ * @author zhongjh
  */
 
 public class Glide4Engine implements ImageEngine {

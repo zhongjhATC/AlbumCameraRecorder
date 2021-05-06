@@ -9,7 +9,9 @@ import java.util.List;
 
 /**
  * 九宫格多媒体展示的相关api
- * Created by zhongjh on 2019/3/21.
+ *
+ * @author zhongjh
+ * @date 2019/3/21
  */
 public interface MaskProgressApi {
 

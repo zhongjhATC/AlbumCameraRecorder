@@ -3,15 +3,18 @@ package com.zhongjh.albumcamerarecorder.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 /**
- * Created by zhongjh on 2018/12/27.
+ *
+ * @author zhongjh
+ * @date 2018/12/27
  */
 public class ChildClickableFrameLayout extends RelativeLayout {
 
-    //子控件是否可以接受点击事件
+    /**
+     * 子控件是否可以接受点击事件
+     */
     private boolean childClickable = true;
 
     public ChildClickableFrameLayout(Context context) {
@@ -29,7 +32,7 @@ public class ChildClickableFrameLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        //返回true则拦截子控件所有点击事件，如果childclickable为true，则需返回false
+        //返回true则拦截子控件所有点击事件，如果childClickable为true，则需返回false
         return !childClickable;
     }
 

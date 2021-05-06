@@ -7,6 +7,7 @@ import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 
 /**
  * 录音、视频、音频的fragment继承于他
+ * @author zhongjh
  */
 public abstract class BaseFragment extends Fragment implements HandleBackInterface {
 

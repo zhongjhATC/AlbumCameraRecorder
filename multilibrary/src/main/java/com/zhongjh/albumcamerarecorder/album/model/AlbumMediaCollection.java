@@ -32,6 +32,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * 多媒体数据源
+ * @author zhongjh
  */
 public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 2;
@@ -42,15 +43,12 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
 
     @NonNull
     @Override
+    @SuppressWarnings("all")
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Context context = mContext.get();
-        if (context == null) {
-            return null;
-        }
-
-        Album album = args.getParcelable(ARGS_ALBUM);
-        if (album == null) {
-            return null;
+        Album album = null;
+        if (args != null) {
+            album = args.getParcelable(ARGS_ALBUM);
         }
 
         // 根据专辑返回图片数据源

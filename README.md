@@ -15,7 +15,7 @@
 
 本开源库的部分代码来自[Matisse](https://github.com/zhihu/Matisse).
 
-非常感谢知乎提供的这么棒的开源项目！    
+非常感谢知乎提供的这么棒的开源项目！
 
 ## 非X版本分支
 非X库版本,已经停止维护(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
@@ -70,9 +70,9 @@
 100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/WeTest.md).
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/5.jpg)
 
-## 使用   
+## 使用
 #### 启动多媒体相关功能
- 
+
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
         cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频

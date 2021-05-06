@@ -6,7 +6,9 @@ import java.util.HashMap;
 
 /**
  * 拍摄后操作图片的事件
- * Created by zhongjh on 2018/10/11.
+ *
+ * @author zhongjh
+ * @date 2018/10/11
  */
 public interface CaptureListener {
 

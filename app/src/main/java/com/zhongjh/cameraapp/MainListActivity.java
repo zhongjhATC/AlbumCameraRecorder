@@ -14,7 +14,9 @@ import gaode.zhongjh.com.common.enums.MimeType;
 
 /**
  * list配置
- * Created by zhongjh on 2019/4/25.
+ *
+ * @author zhongjh
+ * @date 2019/4/25
  */
 public class MainListActivity extends AppCompatActivity {
 

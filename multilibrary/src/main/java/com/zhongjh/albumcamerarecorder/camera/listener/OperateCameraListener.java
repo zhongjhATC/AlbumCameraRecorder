@@ -7,6 +7,7 @@ import java.util.ArrayList;
 /**
  * 拍照录像
  * 操作按钮的Listener
+ * @author zhongjh
  */
 public interface OperateCameraListener {
 

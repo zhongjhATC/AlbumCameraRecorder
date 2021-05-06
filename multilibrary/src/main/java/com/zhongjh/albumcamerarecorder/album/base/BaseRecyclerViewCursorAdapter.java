@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * 父类
  *
+ * @author zhongjh
  * @param <VH>
  */
 public abstract class BaseRecyclerViewCursorAdapter<VH extends RecyclerView.ViewHolder> extends

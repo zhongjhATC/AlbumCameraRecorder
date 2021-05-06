@@ -19,7 +19,9 @@ import gaode.zhongjh.com.common.entity.SaveStrategy;
 
 /**
  * 用于构建媒体具体公共设置 API。
- * Created by zhongjh on 2019/3/21.
+ *
+ * @author zhongjh
+ * @date 2019/3/21
  */
 public interface GlobalSettingApi {
 

@@ -5,6 +5,10 @@ import android.net.Uri;
 import java.io.File;
 
 
+/**
+ * 拍照制造出来的数据源
+ * @author zhongjh
+ */
 public class BitmapData {
 
     private String path;

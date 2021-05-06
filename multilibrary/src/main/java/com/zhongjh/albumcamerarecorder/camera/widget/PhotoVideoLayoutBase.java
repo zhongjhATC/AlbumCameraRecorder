@@ -13,7 +13,9 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 /**
  * 跟父类一样
- * Created by zhongjh on 2018/10/16.
+ *
+ * @author zhongjh
+ * @date 2018/10/16
  */
 public class PhotoVideoLayoutBase extends BaseOperationLayout {
 
@@ -27,7 +29,7 @@ public class PhotoVideoLayoutBase extends BaseOperationLayout {
     public interface RecordListener {
 
         /**
-         *
+         * 切换录制模式
          * @param tag 0代表当前是快拍默认录制模式，1代表当前是分段录制模式
          */
         void sectionRecord(String tag);

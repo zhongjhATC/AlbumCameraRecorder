@@ -44,7 +44,9 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
 
 /**
  * 用于构建媒体具体公共设置 API。
- * Created by zhongjh on 2018/9/28.
+ *
+ * @author zhongjh
+ * @date 2018/9/28
  */
 public final class GlobalSetting implements GlobalSettingApi {
 
@@ -182,8 +184,8 @@ public final class GlobalSetting implements GlobalSettingApi {
         if (activity == null) {
             return;
         }
-
-        int numItems = 0;// 数量
+        // 数量
+        int numItems = 0;
         // 根据相关配置做相应的初始化
         if (mGlobalSpec.albumSetting != null) {
             numItems++;

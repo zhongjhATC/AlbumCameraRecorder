@@ -6,6 +6,9 @@ import androidx.multidex.MultiDex;
 
 import com.tencent.bugly.crashreport.CrashReport;
 
+/**
+ * @author zhongjh
+ */
 public class MyApplication extends Application {
 
 

@@ -10,6 +10,7 @@ import android.widget.VideoView;
  * 全屏VideoView
  * 在VideoView宽高都设置为match_parent后，由于视频源的尺寸导致播放的时候不能全屏
  * 需要重写VideoView的onMeasure、setOnPreparedListener方法就可以了
+ * @author zhongjh
  */
 public class FullScreenVideoView extends VideoView {
 

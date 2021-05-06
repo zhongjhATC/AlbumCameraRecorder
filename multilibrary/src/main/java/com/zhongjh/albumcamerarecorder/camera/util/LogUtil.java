@@ -7,6 +7,7 @@ import static com.zhongjh.albumcamerarecorder.BuildConfig.DEBUG;
 
 /**
  * 日志工具
+ * @author zhongjh
  */
 public class LogUtil {
 
