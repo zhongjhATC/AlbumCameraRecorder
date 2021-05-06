@@ -229,7 +229,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
             result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(selectedUris));
             result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
-            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);// 是否启用原图
+            // 是否启用原图
+            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             mActivity.setResult(RESULT_OK, result);
             mActivity.finish();
         });
@@ -268,10 +269,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * @return 返回当前全部的类型
      */
     private int getMultimediaType(ArrayList<Uri> selectedUris) {
-        // 循环判断类型
-        int isImageSize = 0;// 图片类型的数量
-        int isVideoSize = 0;// 视频的数量
+        // 图片类型的数量
+        int isImageSize = 0;
+        // 视频的数量
+        int isVideoSize = 0;
         ContentResolver resolver = mContext.getContentResolver();
+        // 循环判断类型
         for (Uri uri : selectedUris) {
             for (MimeType type : MimeType.ofImage()) {
                 if (type.checkType(resolver, uri)) {
@@ -348,7 +351,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
                 result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(selectedUris));
                 result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
-                result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable); // 是否启用原图
+                // 是否启用原图
+                result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                 mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
             } else {

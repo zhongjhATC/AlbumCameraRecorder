@@ -12,7 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.documentfile.provider.DocumentFile;
 
+import android.os.Environment;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
@@ -192,7 +194,21 @@ public abstract class BaseActivity extends AppCompatActivity {
                         break;
                     case MultimediaTypes.BLEND:
                         // 混合类型，意思是图片可能跟录像在一起.
-                        getMaskProgressLayout().addImagesStartUpload(MultiMediaSetting.obtainPathResult(data));
+                        List<Uri> blends = MultiMediaSetting.obtainResult(data);
+                        List<Uri> images = new ArrayList<>();
+                        List<Uri> videos = new ArrayList<>();
+                        // 循环判断类型
+                        for (Uri uri : blends) {
+                            DocumentFile documentFile = DocumentFile.fromSingleUri(getBaseContext(), uri);
+                            if (documentFile.getType().startsWith("image")) {
+                                images.add(uri);
+                            } else if (documentFile.getType().startsWith("video")) {
+                                videos.add(uri);
+                            }
+                        }
+                        // 分别上传图片和视频
+                        getMaskProgressLayout().addUrisStartUpload(images);
+                        getMaskProgressLayout().addVideoStartUpload(videos);
                         break;
                     default:
                         break;
