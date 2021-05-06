@@ -65,15 +65,15 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            @SuppressWarnings({"unchecked","rawtypes"})
+            @SuppressWarnings({"unchecked", "rawtypes"})
             public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainActivity.this,  (ArrayList)mBinding.mplImageList.getImages(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(MainActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainActivity.this, (ArrayList)mBinding.mplImageList.getVideos());
+                    MultiMediaSetting.openPreviewVideo(MainActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
                 }
             }
 
@@ -232,24 +232,24 @@ public class MainActivity extends BaseActivity {
      * @return 相册设置
      */
     private AlbumSetting initAlbumSetting() {
-        AlbumSetting albumSetting = new AlbumSetting(true);
+        AlbumSetting albumSetting = new AlbumSetting(!mBinding.cbMediaTypeExclusive.isChecked());
         Set<MimeType> mimeTypeAlbum;
         if (mBinding.cbAlbumImage.isChecked() && mBinding.cbAlbumVideo.isChecked()) {
             mimeTypeAlbum = MimeType.ofAll();
             // 支持的类型：图片，视频
             albumSetting.mimeTypeSet(mimeTypeAlbum);
         } else if (mBinding.cbAlbumImage.isChecked()) {
-            mimeTypeAlbum = MimeType.ofVideo();
+            mimeTypeAlbum = MimeType.ofImage();
             // 支持的类型：图片，视频
             albumSetting.mimeTypeSet(mimeTypeAlbum);
         } else if (mBinding.cbAlbumVideo.isChecked()) {
-            mimeTypeAlbum = MimeType.ofImage();
+            mimeTypeAlbum = MimeType.ofVideo();
             // 支持的类型：图片，视频
             albumSetting.mimeTypeSet(mimeTypeAlbum);
         }
 
         albumSetting
-                // 仅仅显示一个多媒体类型
+                // 如果选择的媒体只有图像或视频，是否只显示一种媒体类型
                 .showSingleMediaType(mBinding.cbShowSingleMediaTypeTrue.isChecked())
                 // 是否显示多选图片的数字
                 .countable(mBinding.cbCountableTrue.isChecked())

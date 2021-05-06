@@ -117,6 +117,10 @@ public class MultiMedia implements Parcelable {
         return this.type;
     }
 
+    public String getMimeType() {
+        return mimeType;
+    }
+
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }

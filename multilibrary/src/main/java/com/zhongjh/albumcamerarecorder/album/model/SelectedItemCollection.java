@@ -14,7 +14,6 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
 
@@ -60,9 +59,17 @@ public class SelectedItemCollection {
      */
     private Set<MultiMedia> mItems;
     /**
-     * 当前选择的类型
+     * 当前选择的所有类型，列表如果包含了图片和视频，就会变成混合类型
      */
     private int mCollectionType = COLLECTION_UNDEFINED;
+    /**
+     * 当前选择的视频数量
+     */
+    private int mSelectedVideoCount;
+    /**
+     * 当前选择的图片数量
+     */
+    private int mSelectedImageCount;
 
     public SelectedItemCollection(Context context) {
         mContext = context;
@@ -250,13 +257,47 @@ public class SelectedItemCollection {
     /**
      * 验证当前item是否满足可以被选中的条件
      *
-     * @param item 数据源
+     * @param item 数据item
      * @return 弹窗
      */
     public IncapableCause isAcceptable(MultiMedia item) {
+        boolean maxSelectableReached = false;
+        int maxSelectable = 0;
+        // 判断是否混合视频图片模式
+        if (!AlbumSpec.getInstance().mediaTypeExclusive) {
+            // 混合检查
+            getSelectCount();
+            GlobalSpec spec = GlobalSpec.getInstance();
+            if (item.getMimeType().startsWith("image")) {
+                if (mSelectedImageCount == spec.maxImageSelectable) {
+                    maxSelectableReached = true;
+                    maxSelectable = spec.maxVideoSelectable;
+                }
+            } else if (item.getMimeType().startsWith("video")) {
+                if (mSelectedVideoCount == spec.maxVideoSelectable) {
+                    maxSelectableReached = true;
+                    maxSelectable = spec.maxVideoSelectable;
+                }
+            }
+        } else {
+            // 非混合模式
+            maxSelectableReached = maxSelectableReached();
+            maxSelectable = currentMaxSelectable();
+        }
+
+        return newIncapableCause(item, maxSelectableReached, maxSelectable);
+    }
+
+    /**
+     * 验证当前item是否满足可以被选中的条件
+     * @param item 数据item
+     * @param maxSelectableReached 是否已经选择最大值
+     * @param maxSelectable 选择的最大数量
+     * @return 弹窗
+     */
+    public IncapableCause newIncapableCause(MultiMedia item, boolean maxSelectableReached, int maxSelectable) {
         // 检查是否超过最大设置数量
-        if (maxSelectableReached()) {
-            int maxSelectable = currentMaxSelectable();
+        if (maxSelectableReached) {
             String cause;
 
             try {
@@ -296,13 +337,29 @@ public class SelectedItemCollection {
     }
 
     /**
+     * 获取当前选择了图片、视频数量
+     */
+    private void getSelectCount() {
+        mSelectedImageCount = 0;
+        mSelectedVideoCount = 0;
+        List<MultiMedia> list = new ArrayList<>(mItems);
+        for (MultiMedia multiMedia : list) {
+            if (multiMedia.getMimeType().startsWith("image")) {
+                mSelectedImageCount++;
+            } else if (multiMedia.getMimeType().startsWith("video")) {
+                mSelectedVideoCount++;
+            }
+        }
+    }
+
+    /**
      * 返回最多选择的数量
      *
      * @return 数量
      */
     private int currentMaxSelectable() {
         GlobalSpec spec = GlobalSpec.getInstance();
-        int leastCount = 0;
+        int leastCount;
         // 判断是否能同时选择视频和图片
         if (!AlbumSpec.getInstance().mediaTypeExclusive) {
             // 返回视频+图片

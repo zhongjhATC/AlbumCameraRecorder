@@ -313,18 +313,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="是否只能选择一种类型" />
-
                     <CheckBox
-                        android:id="@+id/cbShowSingleMediaTypeTrue"
+                        android:id="@+id/cbMediaTypeExclusive"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="true" />
+                        android:text="如果选择的媒体有图像或视频，是否能同时选择" />
 
                 </LinearLayout>
 
@@ -333,10 +328,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <TextView
+                    <CheckBox
+                        android:id="@+id/cbShowSingleMediaTypeTrue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="是否显示多选图片的数字" />
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="如果选择的媒体只有图像或视频，是否只显示一种媒体类型" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                     <CheckBox
                         android:id="@+id/cbCountableTrue"
@@ -344,7 +349,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="true" />
+                        android:text="是否显示多选图片的数字" />
 
                 </LinearLayout>
 
@@ -462,18 +467,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="是否开启原图选项" />
-
                     <CheckBox
                         android:id="@+id/cbOriginalEnableTrue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="true" />
+                        android:text="是否开启原图选项" />
 
                 </LinearLayout>
 
