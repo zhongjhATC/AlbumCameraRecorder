@@ -32,10 +32,12 @@ import com.zhongjh.imageedit.core.homing.ImageHoming;
 import com.zhongjh.imageedit.core.sticker.ImageSticker;
 import com.zhongjh.imageedit.core.sticker.ImageStickerPortrait;
 
-
 /**
- * Created by felix on 2017/11/14 下午6:43.
+ * ImageView
  * clip外不加入path
+ *
+ * @author zhongjh
+ * @date 2017/11/14 下午6:43
  */
 public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestureDetector.OnScaleGestureListener,
         ValueAnimator.AnimatorUpdateListener, ImageStickerPortrait.Callback, Animator.AnimatorListener {

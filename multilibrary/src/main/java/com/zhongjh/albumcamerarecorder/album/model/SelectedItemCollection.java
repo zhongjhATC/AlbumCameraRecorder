@@ -55,8 +55,14 @@ public class SelectedItemCollection {
     private static final int COLLECTION_MIXED = COLLECTION_IMAGE | COLLECTION_VIDEO;
 
     private final Context mContext;
-    private Set<MultiMedia> mItems;       // 数据源
-    private int mCollectionType = COLLECTION_UNDEFINED; // 类型
+    /**
+     * 数据源
+     */
+    private Set<MultiMedia> mItems;
+    /**
+     * 当前选择的类型
+     */
+    private int mCollectionType = COLLECTION_UNDEFINED;
 
     public SelectedItemCollection(Context context) {
         mContext = context;
@@ -155,7 +161,7 @@ public class SelectedItemCollection {
      */
     public boolean remove(MultiMedia item) {
         boolean removed;
-        MultiMedia multiMedia = MultiMediaUtils.checkedMultiMediaOf(new ArrayList<>(mItems),item);
+        MultiMedia multiMedia = MultiMediaUtils.checkedMultiMediaOf(new ArrayList<>(mItems), item);
         removed = mItems.remove(multiMedia);
         if (removed) {
             if (mItems.size() == 0) {
@@ -164,6 +170,7 @@ public class SelectedItemCollection {
             } else {
                 if (mCollectionType == COLLECTION_MIXED) {
                     currentMaxSelectable();
+                    Log.d("currentMaxSelectable", "currentMaxSelectable");
                 }
             }
         }
@@ -295,15 +302,23 @@ public class SelectedItemCollection {
      */
     private int currentMaxSelectable() {
         GlobalSpec spec = GlobalSpec.getInstance();
-        int leastCount;
-        if (mCollectionType == COLLECTION_IMAGE) {
-            leastCount = spec.maxImageSelectable;
-        } else if (mCollectionType == COLLECTION_VIDEO) {
-            leastCount = spec.maxVideoSelectable;
-        } else {
-            // 视频+语音
+        int leastCount = 0;
+        // 判断是否能同时选择视频和图片
+        if (!AlbumSpec.getInstance().mediaTypeExclusive) {
+            // 返回视频+图片
             leastCount = spec.maxImageSelectable + spec.maxVideoSelectable;
+        } else {
+            if (mCollectionType == COLLECTION_IMAGE) {
+                leastCount = spec.maxImageSelectable;
+            } else if (mCollectionType == COLLECTION_VIDEO) {
+                leastCount = spec.maxVideoSelectable;
+            } else {
+                // 返回视频+图片
+                leastCount = spec.maxImageSelectable + spec.maxVideoSelectable;
+            }
+
         }
+
         return leastCount;
     }
 
@@ -335,7 +350,7 @@ public class SelectedItemCollection {
      * @return 选择的索引，最终返回的选择了第几个
      */
     public int checkedNumOf(MultiMedia item) {
-        return MultiMediaUtils.checkedNumOf(new ArrayList<>(mItems),item);
+        return MultiMediaUtils.checkedNumOf(new ArrayList<>(mItems), item);
     }
 
 }

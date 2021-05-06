@@ -78,6 +78,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
+            @SuppressWarnings({"unchecked","rawtypes"})
             public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
@@ -164,17 +165,24 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         AlbumSetting albumSetting = new AlbumSetting(true)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
-                .showSingleMediaType(true) // 仅仅显示一个多媒体类型
-                .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))// 自定义过滤器
-                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))// 九宫格大小
-                .thumbnailScale(0.85f)// 图片缩放比例
+                // 仅仅显示一个多媒体类型
+                .showSingleMediaType(true)
+                // 是否显示多选图片的数字
+                .countable(true)
+                // 自定义过滤器
+                .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))
+                // 九宫格大小
+                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+                // 图片缩放比例
+                .thumbnailScale(0.85f)
                 .setOnSelectedListener((uriList, pathList) -> {
                     // 每次选择的事件
                     Log.e("onSelected", "onSelected: pathList=" + pathList);
                 })
-                .originalEnable(true)// 开启原图
-                .maxOriginalSize(1) // 最大原图size,仅当originalEnable为true的时候才有效
+                // 开启原图
+                .originalEnable(true)
+                // 最大原图size,仅当originalEnable为true的时候才有效
+                .maxOriginalSize(1)
                 .setOnCheckedListener(isChecked -> {
                     // 是否勾选了原图
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);

@@ -2,6 +2,8 @@ package gaode.zhongjh.com.common.enums;
 
 import android.content.ContentResolver;
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
 import androidx.collection.ArraySet;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
@@ -78,8 +80,14 @@ public enum MimeType  {
             "avi"
     ));
 
-    private final String mMimeTypeName;     // 类型名称
-    private final Set<String> mExtensions;  // 保存上面所有类型
+    /**
+     * 类型名称
+     */
+    private final String mMimeTypeName;
+    /**
+     * 保存上面所有类型
+     */
+    private final Set<String> mExtensions;
 
     MimeType(String mimeTypeName, Set<String> extensions) {
         mMimeTypeName = mimeTypeName;
@@ -127,6 +135,7 @@ public enum MimeType  {
         return new ArraySet<>(Arrays.asList(suffixes));
     }
 
+    @NonNull
     @Override
     public String toString() {
         return mMimeTypeName;

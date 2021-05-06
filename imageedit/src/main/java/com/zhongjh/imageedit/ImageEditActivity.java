@@ -23,7 +23,6 @@ import java.io.IOException;
  * @author felix
  * @date 2017/11/14 下午2:26
  */
-
 public class ImageEditActivity extends BaseImageEditActivity {
 
     private static final int MAX_WIDTH = 1024;

@@ -58,6 +58,7 @@ public class MainThemeActivity extends BaseActivity {
             }
 
             @Override
+            @SuppressWarnings({"unchecked","rawtypes"})
             public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
@@ -140,9 +141,12 @@ public class MainThemeActivity extends BaseActivity {
         globalSetting.recorderSetting(recorderSetting);
         globalSetting
                 .setOnMainListener(errorMessage -> Toast.makeText(MainThemeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
-                .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+                // 设置路径和7.0保护路径等等
+                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))
+                // for glide-V4
+                .imageEngine(new Glide4Engine())
+                // 最大10张图片或者最大1个视频
+                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

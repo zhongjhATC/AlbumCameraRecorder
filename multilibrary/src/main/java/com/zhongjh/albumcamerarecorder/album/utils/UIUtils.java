@@ -17,6 +17,9 @@ package com.zhongjh.albumcamerarecorder.album.utils;
 
 import android.content.Context;
 
+/**
+ * @author zhongjh
+ */
 public class UIUtils {
 
     public static int spanCount(Context context, int gridExpectedSize) {

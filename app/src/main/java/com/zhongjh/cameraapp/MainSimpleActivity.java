@@ -56,7 +56,7 @@ public class MainSimpleActivity extends BaseActivity {
         setContentView(R.layout.activity_main_simple);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_simple);
 
-        // 以下为点击时间
+        // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
@@ -66,6 +66,7 @@ public class MainSimpleActivity extends BaseActivity {
             }
 
             @Override
+            @SuppressWarnings({"unchecked","rawtypes"})
             public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
@@ -142,7 +143,7 @@ public class MainSimpleActivity extends BaseActivity {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(true)
+        AlbumSetting albumSetting = new AlbumSetting(false)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
                 // 是否显示多选图片的数字
@@ -160,19 +161,16 @@ public class MainSimpleActivity extends BaseActivity {
         // 全局
         GlobalSetting globalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
 
-        if (mBinding.cbAlbum.isChecked())
+        if (mBinding.cbAlbum.isChecked()){
             // 开启相册功能
-        {
             globalSetting.albumSetting(albumSetting);
         }
-        if (mBinding.cbCamera.isChecked())
+        if (mBinding.cbCamera.isChecked()){
             // 开启拍摄功能
-        {
             globalSetting.cameraSetting(cameraSetting);
         }
-        if (mBinding.cbRecorder.isChecked())
+        if (mBinding.cbRecorder.isChecked()){
             // 开启录音功能
-        {
             globalSetting.recorderSetting(recorderSetting);
         }
 

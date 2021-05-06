@@ -14,21 +14,26 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 /**
  * 录音控件，多了一个控件集成
- * Created by zhongjh on 2018/10/16.
+ *
+ * @author zhongjh
+ * @date 2018/10/16
  */
-public class SoundrecordingLayoutBase extends BaseOperationLayout {
+public class SoundRecordingLayoutBase extends BaseOperationLayout {
 
-    public int mState = Constants.STATE_PREVIEW;// 当前活动状态，默认休闲
+    /**
+     * 当前活动状态，默认休闲
+     */
+    public int mState = Constants.STATE_PREVIEW;
 
-    public SoundrecordingLayoutBase(@NonNull Context context) {
+    public SoundRecordingLayoutBase(@NonNull Context context) {
         super(context);
     }
 
-    public SoundrecordingLayoutBase(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public SoundRecordingLayoutBase(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SoundrecordingLayoutBase(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public SoundRecordingLayoutBase(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

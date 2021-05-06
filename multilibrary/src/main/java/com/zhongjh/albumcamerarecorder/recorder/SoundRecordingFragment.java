@@ -25,7 +25,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
-import com.zhongjh.albumcamerarecorder.recorder.widget.SoundrecordingLayoutBase;
+import com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayoutBase;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
@@ -163,7 +163,7 @@ public class SoundRecordingFragment extends BaseFragment {
             @Override
             public void actionDown() {
                 // 母窗体禁止滑动
-                ViewBusinessUtils.setTablayoutScroll(false, ((MainActivity) mActivity), mViewHolder.pvLayout);
+                ViewBusinessUtils.setTabLayoutScroll(false, ((MainActivity) mActivity), mViewHolder.pvLayout);
             }
 
             @Override
@@ -179,7 +179,7 @@ public class SoundRecordingFragment extends BaseFragment {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> onRecord(false, true), mRecordSpec.minDuration - time);
                 mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
+                ViewBusinessUtils.setTabLayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
             }
 
             @Override
@@ -210,7 +210,7 @@ public class SoundRecordingFragment extends BaseFragment {
      * 播放事件
      */
     private void initRlSoundRecordingClickListener() {
-        ((SoundrecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).rlSoundRecording.setOnClickListener(view -> {
+        ((SoundRecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).rlSoundRecording.setOnClickListener(view -> {
             initAudio();
             // 播放
             onPlay(isPlaying);
@@ -226,7 +226,7 @@ public class SoundRecordingFragment extends BaseFragment {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
+                ViewBusinessUtils.setTabLayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
                 // 重置取消确认按钮
                 mViewHolder.pvLayout.reset();
                 // 重置时间
@@ -354,7 +354,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void startPlaying() {
         // 变成等待的图标
-        ((SoundrecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
+        ((SoundRecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
         mMediaPlayer = new MediaPlayer();
 
         try {
@@ -378,7 +378,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void resumePlaying() {
         // 暂停图
-        ((SoundrecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
+        ((SoundRecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
         mMediaPlayer.start();
     }
 
@@ -387,7 +387,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void pausePlaying() {
         // 设置成播放的图片
-        ((SoundrecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        ((SoundRecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         mMediaPlayer.pause();
     }
 
@@ -396,7 +396,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void stopPlaying() {
         // 设置成播放的图片
-        ((SoundrecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        ((SoundRecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         // 停止mediaPlayer
         mMediaPlayer.stop();
         mMediaPlayer.reset();
@@ -414,7 +414,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void showRecordEndView() {
         // 录音按钮转变成播放按钮，播放录音
-        ((SoundrecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        ((SoundRecordingLayoutBase.ViewHolder) mViewHolder.pvLayout.viewHolder).ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
     }
 
     // region 有关录音相关方法
@@ -519,7 +519,7 @@ public class SoundRecordingFragment extends BaseFragment {
     public static class ViewHolder {
         View rootView;
         public Chronometer chronometer;
-        public SoundrecordingLayoutBase pvLayout;
+        public SoundRecordingLayoutBase pvLayout;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;

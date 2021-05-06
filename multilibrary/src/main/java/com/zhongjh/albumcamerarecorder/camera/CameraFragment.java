@@ -238,7 +238,7 @@ public class CameraFragment extends BaseFragment {
             @Override
             public void actionDown() {
                 // 母窗体禁止滑动
-                ViewBusinessUtils.setTablayoutScroll(false, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
+                ViewBusinessUtils.setTabLayoutScroll(false, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
@@ -249,7 +249,7 @@ public class CameraFragment extends BaseFragment {
             @Override
             public void onLongClickShort(long time) {
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
+                ViewBusinessUtils.setTabLayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
@@ -276,7 +276,7 @@ public class CameraFragment extends BaseFragment {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTablayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
+                ViewBusinessUtils.setTabLayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
@@ -321,7 +321,7 @@ public class CameraFragment extends BaseFragment {
             public void remove(HashMap<Integer, BitmapData> captureBitmaps) {
                 // 判断如果删除光图片的时候，母窗体启动滑动
                 if (captureBitmaps.size() <= 0) {
-                    ((MainActivity) mActivity).setTablayoutScroll(true);
+                    ((MainActivity) mActivity).setTabLayoutScroll(true);
                 }
             }
 
@@ -329,7 +329,7 @@ public class CameraFragment extends BaseFragment {
             public void add(HashMap<Integer, BitmapData> captureBitmaps) {
                 if (captureBitmaps.size() > 0) {
                     // 母窗体禁止滑动
-                    ((MainActivity) mActivity).setTablayoutScroll(false);
+                    ((MainActivity) mActivity).setTabLayoutScroll(false);
                 }
             }
         });

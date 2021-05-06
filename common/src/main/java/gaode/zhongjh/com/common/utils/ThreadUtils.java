@@ -1207,12 +1207,28 @@ public final class ThreadUtils {
 
         private Executor deliver;
 
+        /**
+         * 线程方法
+         * @return 实体
+         * @throws Throwable 异常
+         */
         public abstract T doInBackground() throws Throwable;
 
+        /**
+         * 成功
+         * @param result 实体
+         */
         public abstract void onSuccess(T result);
 
+        /**
+         * 取消
+         */
         public abstract void onCancel();
 
+        /**
+         * 失败
+         * @param t 异常
+         */
         public abstract void onFail(Throwable t);
 
         @Override
@@ -1255,22 +1271,14 @@ public final class ThreadUtils {
                     if (state.get() != RUNNING) {
                         return;
                     }
-                    getDeliver().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            onSuccess(result);
-                        }
-                    });
+                    getDeliver().execute(() -> onSuccess(result));
                 } else {
                     if (!state.compareAndSet(RUNNING, COMPLETING)) {
                         return;
                     }
-                    getDeliver().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            onSuccess(result);
-                            onDone();
-                        }
+                    getDeliver().execute(() -> {
+                        onSuccess(result);
+                        onDone();
                     });
                 }
             } catch (InterruptedException ignore) {
@@ -1279,12 +1287,9 @@ public final class ThreadUtils {
                 if (!state.compareAndSet(RUNNING, EXCEPTIONAL)) {
                     return;
                 }
-                getDeliver().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        onFail(throwable);
-                        onDone();
-                    }
+                getDeliver().execute(() -> {
+                    onFail(throwable);
+                    onDone();
                 });
             }
         }
@@ -1306,12 +1311,9 @@ public final class ThreadUtils {
                 }
             }
 
-            getDeliver().execute(new Runnable() {
-                @Override
-                public void run() {
-                    onCancel();
-                    onDone();
-                }
+            getDeliver().execute(() -> {
+                onCancel();
+                onDone();
             });
         }
 
@@ -1373,6 +1375,9 @@ public final class ThreadUtils {
         }
 
         public interface OnTimeoutListener {
+            /**
+             * 超时
+             */
             void onTimeout();
         }
 

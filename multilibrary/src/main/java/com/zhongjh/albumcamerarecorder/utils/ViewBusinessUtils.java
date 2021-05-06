@@ -5,7 +5,9 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 /**
  * 界面的业务逻辑
- * Created by zhongjh on 2018/10/16.
+ *
+ * @author zhongjh
+ * @date 2018/10/16
  */
 public class ViewBusinessUtils {
 
@@ -14,13 +16,13 @@ public class ViewBusinessUtils {
      *
      * @param isScroll 是否滑动
      */
-    public static void setTablayoutScroll(boolean isScroll, MainActivity mainActivity, BaseOperationLayout pvLayout) {
+    public static void setTabLayoutScroll(boolean isScroll, MainActivity mainActivity, BaseOperationLayout pvLayout) {
         if (isScroll) {
             // 母窗体启动滑动
-            mainActivity.setTablayoutScroll(true);
+            mainActivity.setTabLayoutScroll(true);
         } else {
             // 母窗体禁止滑动
-            mainActivity.setTablayoutScroll(false);
+            mainActivity.setTabLayoutScroll(false);
         }
     }
 

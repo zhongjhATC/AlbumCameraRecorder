@@ -70,25 +70,52 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
     protected PreviewPagerAdapter mAdapter;
 
-    protected boolean mOriginalEnable;      // 是否原图
-    private boolean mIsAlbumUri; // 是否返回相册的uri，否则是普通文件的uri
-    private boolean mIsEdit; // 是否编辑了图片
+    /**
+     * 是否原图
+     */
+    protected boolean mOriginalEnable;
+    /**
+     * 是否返回相册的uri，否则是普通文件的uri
+     */
+    private boolean mIsAlbumUri;
+    /**
+     * 是否编辑了图片
+     */
+    private boolean mIsEdit;
 
+    /**
+     * 当前预览的图片的索引,默认第一个
+     */
+    protected int mPreviousPos = -1;
 
-    protected int mPreviousPos = -1;    // 当前预览的图片的索引,默认第一个
+    /**
+     * 启用操作，默认true,也不启动右上角的选择框自定义触发事件
+     */
+    protected boolean mEnableOperation = true;
+    /**
+     * 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
+     */
+    protected boolean mIsSelectedListener = true;
+    /**
+     * 设置右上角是否检测类型
+     */
+    protected boolean mIsSelectedCheck = true;
 
-    protected boolean mEnableOperation = true; // 启用操作，默认true,也不启动右上角的选择框自定义触发事件
-    protected boolean mIsSelectedListener = true; // 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
-    protected boolean mIsSelectedCheck = true;  // 设置右上角是否检测类型
-
-    private MediaStoreCompat mPictureMediaStoreCompat;  // 图片存储器
-    private File mEditImageFile; // 当前编辑完的图片文件
+    /**
+     * 图片存储器
+     */
+    private MediaStoreCompat mPictureMediaStoreCompat;
+    /**
+     * 当前编辑完的图片文件
+     */
+    private File mEditImageFile;
 
     protected ViewHolder mViewHolder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(GlobalSpec.getInstance().themeId);  // 获取样式
+        // 获取样式
+        setTheme(GlobalSpec.getInstance().themeId);
         super.onCreate(savedInstanceState);
         StatusBarUtils.initStatusBar(BasePreviewActivity.this);
         setContentView(R.layout.activity_media_preview_zjh);
@@ -209,7 +236,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 编辑
         mViewHolder.tvEdit.setOnClickListener(this);
         // 返回
-        mViewHolder.ibtnBack.setOnClickListener(this);
+        mViewHolder.iBtnBack.setOnClickListener(this);
         // 确认
         mViewHolder.buttonApply.setOnClickListener(this);
         // 多图时滑动事件
@@ -508,7 +535,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static class ViewHolder {
         public Activity activity;
         public PreviewViewPager pager;
-        ImageButton ibtnBack;
+        ImageButton iBtnBack;
         TextView tvEdit;
         public CheckRadioView original;
         public LinearLayout originalLayout;
@@ -520,7 +547,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         ViewHolder(Activity activity) {
             this.activity = activity;
             this.pager = activity.findViewById(R.id.pager);
-            this.ibtnBack = activity.findViewById(R.id.ibtnBack);
+            this.iBtnBack = activity.findViewById(R.id.ibtnBack);
             this.tvEdit = activity.findViewById(R.id.tvEdit);
             this.original = activity.findViewById(R.id.original);
             this.originalLayout = activity.findViewById(R.id.originalLayout);

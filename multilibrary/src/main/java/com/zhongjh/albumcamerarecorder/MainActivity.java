@@ -114,20 +114,20 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (isShow) {
                 mTabLayout.setVisibility(View.VISIBLE);
-                setTablayoutScroll(true);
+                setTabLayoutScroll(true);
             } else {
                 mTabLayout.setVisibility(View.GONE);
-                setTablayoutScroll(false);
+                setTabLayoutScroll(false);
             }
         }
     }
 
     /**
-     * 设置tablayout是否可以滑动
+     * 设置tabLayout是否可以滑动
      *
      * @param isScroll 是否滑动
      */
-    public void setTablayoutScroll(boolean isScroll) {
+    public void setTabLayoutScroll(boolean isScroll) {
         // 判断只有一个的时候
         if (adapterViewPager.getCount() <= 1) {
             // 则隐藏底部

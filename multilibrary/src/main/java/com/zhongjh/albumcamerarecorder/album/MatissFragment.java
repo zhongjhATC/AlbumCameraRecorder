@@ -98,8 +98,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;
 
-    private boolean mOriginalEnable;    // 是否原图
-    private boolean mIsRefresh; // 是否刷新
+    /**
+     * 是否原图
+     */
+    private boolean mOriginalEnable;
+    /**
+     * 是否刷新
+     */
+    private boolean mIsRefresh;
 
     private ViewHolder mViewHolder;
 
