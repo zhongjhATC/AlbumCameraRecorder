@@ -22,6 +22,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static gaode.zhongjh.com.common.enums.Constant.IMAGE;
+import static gaode.zhongjh.com.common.enums.Constant.VIDEO;
+
 /**
  * 选择的数据源
  *
@@ -268,12 +271,12 @@ public class SelectedItemCollection {
             // 混合检查
             getSelectCount();
             GlobalSpec spec = GlobalSpec.getInstance();
-            if (item.getMimeType().startsWith("image")) {
+            if (item.getMimeType().startsWith(IMAGE)) {
                 if (mSelectedImageCount == spec.maxImageSelectable) {
                     maxSelectableReached = true;
                     maxSelectable = spec.maxVideoSelectable;
                 }
-            } else if (item.getMimeType().startsWith("video")) {
+            } else if (item.getMimeType().startsWith(VIDEO)) {
                 if (mSelectedVideoCount == spec.maxVideoSelectable) {
                     maxSelectableReached = true;
                     maxSelectable = spec.maxVideoSelectable;

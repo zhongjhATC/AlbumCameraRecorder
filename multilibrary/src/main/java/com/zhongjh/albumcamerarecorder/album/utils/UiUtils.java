@@ -20,7 +20,7 @@ import android.content.Context;
 /**
  * @author zhongjh
  */
-public class UIUtils {
+public class UiUtils {
 
     public static int spanCount(Context context, int gridExpectedSize) {
         int screenWidth = context.getResources().getDisplayMetrics().widthPixels;

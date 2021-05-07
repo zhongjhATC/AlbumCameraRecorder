@@ -151,7 +151,8 @@ public class ImageUtils {
         }
 
         // 宽高都小于Win，才有必要放大
-        if (isJustInner || frame.width() < win.width() && frame.height() < win.height()) {
+        boolean isScale = isJustInner || frame.width() < win.width() && frame.height() < win.height();
+        if (isScale) {
             dHoming.scale = Math.min(win.width() / frame.width(), win.height() / frame.height());
         }
 

@@ -19,7 +19,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
-import com.zhongjh.albumcamerarecorder.album.utils.UIUtils;
+import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
@@ -144,7 +144,7 @@ public class MediaSelectionFragment extends Fragment implements
         int spanCount;
         AlbumSpec albumSpec = AlbumSpec.getInstance();
         if (albumSpec.gridExpectedSize > 0) {
-            spanCount = UIUtils.spanCount(getContext(), albumSpec.gridExpectedSize);
+            spanCount = UiUtils.spanCount(getContext(), albumSpec.gridExpectedSize);
         } else {
             spanCount = albumSpec.spanCount;
         }

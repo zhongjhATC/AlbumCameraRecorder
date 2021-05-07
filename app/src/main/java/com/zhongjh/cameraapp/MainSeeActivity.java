@@ -64,8 +64,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         setContentView(R.layout.activity_main_see);
         progressDialog = new ProgressDialog(MainSeeActivity.this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_see);
-
-
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
@@ -145,11 +143,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
         });
-
         initConfig();
-
         initData();
-
     }
 
     /**

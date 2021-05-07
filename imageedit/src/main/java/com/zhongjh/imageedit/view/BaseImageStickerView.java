@@ -34,7 +34,6 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
 
     private float mScale = 1f;
 
-    // TODO
     private int mDownShowing = 0;
 
     private ImageStickerMoveHelper mMoveHelper;

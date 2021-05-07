@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
-import com.zhongjh.albumcamerarecorder.camera.util.DisplayMetricsSPUtils;
+import com.zhongjh.albumcamerarecorder.camera.util.DisplayMetricsSpUtils;
 import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton;
 import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.circularprogressview.CircularProgressListener;
@@ -133,7 +133,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
     public BaseOperationLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        mLayoutWidth = DisplayMetricsSPUtils.getScreenWidth(context);
+        mLayoutWidth = DisplayMetricsSpUtils.getScreenWidth(context);
         // 中心的按钮大小
         int mButtonSize = (int) (mLayoutWidth / 4.5f);
         mLayoutHeight = mButtonSize + (mButtonSize / 5) * 2 + 100;

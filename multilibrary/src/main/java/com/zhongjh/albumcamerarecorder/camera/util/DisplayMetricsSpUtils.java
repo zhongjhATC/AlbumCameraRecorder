@@ -11,7 +11,7 @@ import com.zhongjh.albumcamerarecorder.camera.common.Constants;
  * @author zhongjh
  * @date 2017/10/25
  */
-public class DisplayMetricsSPUtils {
+public class DisplayMetricsSpUtils {
 
     private static final String CAMERAVIEWSOUNDRECORDERSHAREDPREFERENCES = "cameraviewsoundrecorderSharedPreferences";
 
