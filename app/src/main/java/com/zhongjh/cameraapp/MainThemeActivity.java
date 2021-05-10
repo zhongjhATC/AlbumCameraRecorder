@@ -32,6 +32,9 @@ public class MainThemeActivity extends BaseActivity {
 
     ActivityMainThemeBinding mBinding;
 
+    GlobalSetting mGlobalSetting;
+    AlbumSetting mAlbumSetting;
+
     /**
      * @param activity 要跳转的activity
      */
@@ -99,6 +102,17 @@ public class MainThemeActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mGlobalSetting != null) {
+            mGlobalSetting.onDestroy();
+        }
+        if (mAlbumSetting != null) {
+            mAlbumSetting.onDestroy();
+        }
+    }
+
+    @Override
     protected MaskProgressLayout getMaskProgressLayout() {
         return mBinding.mplImageList;
     }
@@ -110,7 +124,7 @@ public class MainThemeActivity extends BaseActivity {
         // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(true)
+        mAlbumSetting = new AlbumSetting(true)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
                 // 是否显示多选图片的数字
@@ -125,21 +139,21 @@ public class MainThemeActivity extends BaseActivity {
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
         // 全局
-        GlobalSetting globalSetting = MultiMediaSetting.from(MainThemeActivity.this).choose(MimeType.ofAll());
+        mGlobalSetting = MultiMediaSetting.from(MainThemeActivity.this).choose(MimeType.ofAll());
 
         // 样式选择
         if (mBinding.rbBlue.isChecked()) {
-            globalSetting.theme(R.style.AppTheme_Blue);
+            mGlobalSetting.theme(R.style.AppTheme_Blue);
         }
         if (mBinding.rbBlack.isChecked()) {
-            globalSetting.theme(R.style.AppTheme_Dracula);
+            mGlobalSetting.theme(R.style.AppTheme_Dracula);
         }
 
 
-        globalSetting.albumSetting(albumSetting);
-        globalSetting.cameraSetting(cameraSetting);
-        globalSetting.recorderSetting(recorderSetting);
-        globalSetting
+        mGlobalSetting.albumSetting(mAlbumSetting);
+        mGlobalSetting.cameraSetting(cameraSetting);
+        mGlobalSetting.recorderSetting(recorderSetting);
+        mGlobalSetting
                 .setOnMainListener(errorMessage -> Toast.makeText(MainThemeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
                 // 设置路径和7.0保护路径等等
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))

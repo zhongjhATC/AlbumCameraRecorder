@@ -21,6 +21,11 @@ import gaode.zhongjh.com.common.enums.MimeType;
 public interface AlbumSettingApi {
 
     /**
+     * 销毁事件
+     */
+    void onDestroy();
+
+    /**
      * 支持的类型：图片，视频
      * 这个优先于 {@link MultiMediaSetting#choose}
      * @param mimeTypes 类型

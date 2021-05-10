@@ -62,6 +62,10 @@ public class PlayView extends FrameLayout {
         this.listener = listener;
     }
 
+    public void removeListener() {
+        this.listener = null;
+    }
+
     // region 有关音频
 
     private final MediaPlayer mMediaPlayer = new MediaPlayer();
@@ -253,7 +257,7 @@ public class PlayView extends FrameLayout {
     /**
      * 销毁播放器
      */
-    public void deStory() {
+    public void onDestroy() {
         if (mExecutorService != null) {
             // 试图停止所有正在执行的活动任务
             mExecutorService.shutdownNow();
@@ -266,6 +270,7 @@ public class PlayView extends FrameLayout {
             }
             mMediaPlayer.release();
         }
+        listener = null;
     }
 
     /**

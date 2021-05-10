@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayoutBase
+    <com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayout
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -37,6 +37,12 @@ public class AlbumSetting implements AlbumSettingApi {
     }
 
     @Override
+    public void onDestroy() {
+        mAlbumSpec.onSelectedListener = null;
+        mAlbumSpec.onCheckedListener = null;
+    }
+
+    @Override
     public AlbumSetting mimeTypeSet(@NonNull Set<MimeType> mimeTypes) {
         mAlbumSpec.mimeTypeSet = mimeTypes;
         return this;
@@ -110,5 +116,6 @@ public class AlbumSetting implements AlbumSettingApi {
         mAlbumSpec.onCheckedListener = listener;
         return this;
     }
+
 
 }

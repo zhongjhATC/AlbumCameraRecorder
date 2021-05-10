@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.documentfile.provider.DocumentFile;
 
-import android.os.Environment;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
@@ -225,7 +224,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         for (Map.Entry<MultiMediaView, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
-        getMaskProgressLayout().destroy();
+        getMaskProgressLayout().onDestroy();
         super.onDestroy();
     }
 

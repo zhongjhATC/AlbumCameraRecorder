@@ -18,22 +18,22 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
  * @author zhongjh
  * @date 2018/10/16
  */
-public class SoundRecordingLayoutBase extends BaseOperationLayout {
+public class SoundRecordingLayout extends BaseOperationLayout {
 
     /**
      * 当前活动状态，默认休闲
      */
     public int mState = Constants.STATE_PREVIEW;
 
-    public SoundRecordingLayoutBase(@NonNull Context context) {
+    public SoundRecordingLayout(@NonNull Context context) {
         super(context);
     }
 
-    public SoundRecordingLayoutBase(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public SoundRecordingLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SoundRecordingLayoutBase(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public SoundRecordingLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -71,6 +71,9 @@ public class SoundRecordingLayoutBase extends BaseOperationLayout {
             this.ivRing = rootView.findViewById(R.id.ivRing);
             this.ivRecord = rootView.findViewById(R.id.ivRecord);
             this.rlSoundRecording = rootView.findViewById(R.id.rlSoundRecording);
+
+            // 设置成普通点击事件
+            this.btnConfirm.setProgressMode(false);
         }
 
     }

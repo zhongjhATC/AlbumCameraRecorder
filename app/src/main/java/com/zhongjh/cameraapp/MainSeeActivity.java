@@ -3,7 +3,9 @@ package com.zhongjh.cameraapp;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+
 import androidx.databinding.DataBindingUtil;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +52,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     ProgressDialog progressDialog;
 
     GlobalSetting mGlobalSetting;
+    AlbumSetting mAlbumSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -76,7 +79,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            @SuppressWarnings({"unchecked","rawtypes"})
+            @SuppressWarnings({"unchecked", "rawtypes"})
             public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
@@ -147,6 +150,17 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         initData();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mGlobalSetting != null) {
+            mGlobalSetting.onDestroy();
+        }
+        if (mAlbumSetting != null) {
+            mAlbumSetting.onDestroy();
+        }
+    }
+
     /**
      * 初始化相关配置
      */
@@ -157,7 +171,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(true)
+        mAlbumSetting = new AlbumSetting(true)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
                 // 仅仅显示一个多媒体类型
@@ -189,10 +203,10 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         // 全局
         mGlobalSetting = MultiMediaSetting.from(MainSeeActivity.this)
                 .choose(MimeType.ofAll())
-                .albumSetting(albumSetting)
+                .albumSetting(mAlbumSetting)
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
-                .setOnMainListener(errorMessage -> Toast.makeText(MainSeeActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
+                .setOnMainListener(errorMessage -> Toast.makeText(getApplication(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
                 // 设置路径和7.0保护路径等等
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))
                 // 如果设置这个，有关图片的优先权比allStrategy高
@@ -303,7 +317,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         // 获取文件名
         String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
 
-        return new String[]{ MainSeeActivity.this.getExternalFilesDir("AA" + File.separator + "audioCache").getPath(), fileName};
+        return new String[]{MainSeeActivity.this.getExternalFilesDir("AA" + File.separator + "audioCache").getPath(), fileName};
     }
 
     /**

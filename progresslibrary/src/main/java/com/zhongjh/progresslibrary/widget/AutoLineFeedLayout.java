@@ -107,6 +107,10 @@ public class AutoLineFeedLayout extends ViewGroup {
         this.listener = listener;
     }
 
+    public void removeListener() {
+        this.listener = null;
+    }
+
     // endregion
 
     public AutoLineFeedLayout(Context context) {

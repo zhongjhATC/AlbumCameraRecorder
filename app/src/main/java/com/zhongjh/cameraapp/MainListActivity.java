@@ -4,6 +4,8 @@ import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
 

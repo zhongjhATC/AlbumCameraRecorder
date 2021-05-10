@@ -127,6 +127,6 @@ public interface MaskProgressApi {
     /**
      * 销毁所有相关正在执行的东西
      */
-    void destroy();
+    void onDestroy();
 
 }

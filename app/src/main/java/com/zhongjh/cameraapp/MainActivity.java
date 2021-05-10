@@ -39,6 +39,9 @@ public class MainActivity extends BaseActivity {
 
     ActivityMainBinding mBinding;
 
+    GlobalSetting mGlobalSetting;
+    AlbumSetting mAlbumSetting;
+
     /**
      * @param activity 要跳转的activity
      */
@@ -109,6 +112,17 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mGlobalSetting != null) {
+            mGlobalSetting.onDestroy();
+        }
+        if (mAlbumSetting != null) {
+            mAlbumSetting.onDestroy();
+        }
+    }
+
+    @Override
     protected MaskProgressLayout getMaskProgressLayout() {
         return mBinding.mplImageList;
     }
@@ -126,7 +140,7 @@ public class MainActivity extends BaseActivity {
         CameraSetting cameraSetting = initCameraSetting();
 
         // 相册设置
-        AlbumSetting albumSetting = initAlbumSetting();
+        mAlbumSetting = initAlbumSetting();
 
         // 录音机设置
         RecorderSetting recorderSetting = new RecorderSetting();
@@ -141,56 +155,56 @@ public class MainActivity extends BaseActivity {
             mimeTypes = MimeType.ofImage();
         }
 
-        GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
+        mGlobalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
         // 默认从第二个开始
-        globalSetting.defaultPosition(1);
+        mGlobalSetting.defaultPosition(1);
         // 启动过场动画，从下往上动画
-        globalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());
+        mGlobalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());
         // 是否支持编辑图片，预览相册、拍照处拥有编辑功能
-        globalSetting.isImageEdit(mBinding.cbIsEdit.isChecked());
+        mGlobalSetting.isImageEdit(mBinding.cbIsEdit.isChecked());
         if (mBinding.cbAlbum.isChecked())
         // 开启相册功能
         {
-            globalSetting.albumSetting(albumSetting);
+            mGlobalSetting.albumSetting(mAlbumSetting);
         }
         if (mBinding.cbCamera.isChecked())
         // 开启拍摄功能
         {
-            globalSetting.cameraSetting(cameraSetting);
+            mGlobalSetting.cameraSetting(cameraSetting);
         }
         if (mBinding.cbRecorder.isChecked())
         // 开启录音功能
         {
-            globalSetting.recorderSetting(recorderSetting);
+            mGlobalSetting.recorderSetting(recorderSetting);
         }
 
         // 自定义失败信息
-        globalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show());
+        mGlobalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show());
 
         // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
         if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString())) {
             // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-            globalSetting.allStrategy(
+            mGlobalSetting.allStrategy(
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAllFile.getText().toString()));
         }
         if (!TextUtils.isEmpty(mBinding.etPictureFile.getText().toString())) {
             // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-            globalSetting.pictureStrategy(
+            mGlobalSetting.pictureStrategy(
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etPictureFile.getText().toString()));
         }
         if (!TextUtils.isEmpty(mBinding.etAudioFile.getText().toString())) {
             // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-            globalSetting.audioStrategy(
+            mGlobalSetting.audioStrategy(
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAudioFile.getText().toString()));
         }
         if (!TextUtils.isEmpty(mBinding.etVideoFile.getText().toString())) {
             // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-            globalSetting.videoStrategy(
+            mGlobalSetting.videoStrategy(
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));
         }
 
         // 加载图片框架
-        globalSetting.imageEngine(new Glide4Engine())
+        mGlobalSetting.imageEngine(new Glide4Engine())
                 .maxSelectablePerMediaType(Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
                         Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
                         Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)

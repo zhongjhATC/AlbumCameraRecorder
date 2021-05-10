@@ -53,6 +53,7 @@ public final class GlobalSetting implements GlobalSettingApi {
     private final MultiMediaSetting mMultiMediaSetting;
     private final GlobalSpec mGlobalSpec;
 
+
     // www.代替枚举的@IntDef用法
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @IntDef({
@@ -75,6 +76,11 @@ public final class GlobalSetting implements GlobalSettingApi {
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ScreenOrientation {
+    }
+
+    @Override
+    public void onDestroy() {
+        mGlobalSpec.onMainListener = null;
     }
 
     /**

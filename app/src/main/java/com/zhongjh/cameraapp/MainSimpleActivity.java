@@ -43,6 +43,9 @@ public class MainSimpleActivity extends BaseActivity {
     ActivityMainSimpleBinding mBinding;
     private final String TAG = MainSimpleActivity.this.getClass().getSimpleName();
 
+    GlobalSetting mGlobalSetting;
+    AlbumSetting mAlbumSetting;
+
     /**
      * @param activity 要跳转的activity
      */
@@ -106,6 +109,17 @@ public class MainSimpleActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mGlobalSetting != null) {
+            mGlobalSetting.onDestroy();
+        }
+        if (mAlbumSetting != null) {
+            mAlbumSetting.onDestroy();
+        }
+    }
+
     /**
      * 获取权限
      */
@@ -143,7 +157,7 @@ public class MainSimpleActivity extends BaseActivity {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(false)
+        mAlbumSetting = new AlbumSetting(false)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
                 // 是否显示多选图片的数字
@@ -159,22 +173,22 @@ public class MainSimpleActivity extends BaseActivity {
         RecorderSetting recorderSetting = new RecorderSetting();
 
         // 全局
-        GlobalSetting globalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
+        mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
 
         if (mBinding.cbAlbum.isChecked()){
             // 开启相册功能
-            globalSetting.albumSetting(albumSetting);
+            mGlobalSetting.albumSetting(mAlbumSetting);
         }
         if (mBinding.cbCamera.isChecked()){
             // 开启拍摄功能
-            globalSetting.cameraSetting(cameraSetting);
+            mGlobalSetting.cameraSetting(cameraSetting);
         }
         if (mBinding.cbRecorder.isChecked()){
             // 开启录音功能
-            globalSetting.recorderSetting(recorderSetting);
+            mGlobalSetting.recorderSetting(recorderSetting);
         }
 
-        globalSetting
+        mGlobalSetting
                 .setOnMainListener(errorMessage -> {
                     Log.d(TAG, errorMessage);
                     Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show();

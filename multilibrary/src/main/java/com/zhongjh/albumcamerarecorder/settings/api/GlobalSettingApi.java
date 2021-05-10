@@ -26,6 +26,11 @@ import gaode.zhongjh.com.common.entity.SaveStrategy;
 public interface GlobalSettingApi {
 
     /**
+     * 销毁事件，防止内存泄漏
+     */
+    void onDestroy();
+
+    /**
      * 设置相册配置，如果不设置则不启用相册
      * @param albumSetting 相册
      * @return this

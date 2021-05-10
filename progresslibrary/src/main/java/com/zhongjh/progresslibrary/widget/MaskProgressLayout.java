@@ -366,8 +366,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void destroy() {
-        mViewHolder.playView.deStory();
+    public void onDestroy() {
+        mViewHolder.playView.onDestroy();
+        mViewHolder.alfMedia.removeListener();
+        mViewHolder.playView.removeListener();
+        this.listener = null;
     }
 
     /**
