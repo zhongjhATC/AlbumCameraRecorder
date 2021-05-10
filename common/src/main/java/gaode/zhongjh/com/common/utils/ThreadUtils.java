@@ -59,6 +59,7 @@ public final class ThreadUtils {
 
     /**
      * Return whether the thread is the main thread.
+     * 返回该线程是否是主线程。
      *
      * @return {@code true}: yes<br>{@code false}: no
      */
