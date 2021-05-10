@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/play_button"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_play_circle_outline_black_24dp" />
 
     <SeekBar

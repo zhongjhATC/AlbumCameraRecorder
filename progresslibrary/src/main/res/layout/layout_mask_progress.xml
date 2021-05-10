@@ -18,9 +18,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
         app:layout_constraintEnd_toStartOf="@+id/imgRemoveRecorder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/alfMedia">
@@ -38,7 +38,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/voice_upload"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <com.daimajia.numberprogressbar.NumberProgressBar
             android:id="@+id/numberProgressBar"
@@ -52,7 +54,8 @@
             android:id="@+id/playView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

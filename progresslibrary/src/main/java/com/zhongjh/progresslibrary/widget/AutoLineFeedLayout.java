@@ -1,5 +1,6 @@
 package com.zhongjh.progresslibrary.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -171,6 +172,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 初始化
      */
+    @SuppressLint("InflateParams")
     private void init() {
         // 默认➕号
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
@@ -186,6 +188,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      *
      * @param multiMediaViews 数据集合
      */
+    @SuppressLint("InflateParams")
     public void addImageData(List<MultiMediaView> multiMediaViews) {
         if (this.imageList == null) {
             this.imageList = new ArrayList<>();
@@ -198,8 +201,8 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 // 减1是因为多了一个add按钮控制
-                int endingPostion = getChildCount() - 1;
-                addView(viewHolder.itemView, endingPostion);
+                int endingPosition = getChildCount() - 1;
+                addView(viewHolder.itemView, endingPosition);
             }
         }
         // 重新整理Add是否显示，处理图片的索引
@@ -223,6 +226,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param isClean         添加前是否清空
      * @param isUploading     是否执行相关上传动作
      */
+    @SuppressLint("InflateParams")
     public void addVideoData(List<MultiMediaView> multiMediaViews, boolean isClean, boolean isUploading) {
         if (this.videoList == null) {
             this.videoList = new ArrayList<>();
@@ -238,7 +242,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             for (MultiMediaView multiMediaView : multiMediaViews) {
                 // 标记音频，为了后面识别是视频进行播放
                 multiMediaView.setMimeType(MimeType.MP4.toString());
-                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 addView(viewHolder.itemView, 0);
             }
@@ -278,6 +282,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        Log.d(TAG,"onMeasure");
         // 为所有的标签childView计算宽和高
         measureChildren(widthMeasureSpec, heightMeasureSpec);
 
@@ -312,13 +317,11 @@ public class AutoLineFeedLayout extends ViewGroup {
                 for (int i = 0; i < getChildCount(); i++) {
                     View view = getChildAt(i);
                     if (view.getVisibility() == GONE) {
-                        break;
+                        continue;
                     }
-                    // 获取标签宽度
-                    int childW = view.getMeasuredWidth();
+                    // 获取标签宽度,包括左右间距
+                    int childW = view.getMeasuredWidth() + LEFT_RIGHT_SPACE;
                     Log.v(TAG, "标签宽度:" + childW + " 行数：" + row + "  剩余宽度：" + widthSpace);
-                    // 减去标签左右间距
-                    widthSpace -= LEFT_RIGHT_SPACE;
                     if (widthSpace >= childW) {
                         // 如果剩余的宽度大于此标签的宽度，那就将此标签放到本行
                         widthSpace -= childW;
