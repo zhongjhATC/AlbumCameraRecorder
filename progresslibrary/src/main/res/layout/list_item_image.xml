@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:contentDescription="@string/play_button"
+        android:contentDescription="@string/z_progress_library_play_button"
         android:src="@drawable/ic_bf_gray"
         android:visibility="gone"
         tools:visibility="visible" />
@@ -28,7 +28,7 @@
         android:id="@+id/vmvClose"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:contentDescription="@string/delete_button"
+        android:contentDescription="@string/z_progress_library_delete_button"
         android:visibility="gone"
         app:vector_src="@drawable/ic_twotone_highlight_off_24dp"
         tools:visibility="visible" />
@@ -37,7 +37,7 @@
         android:id="@+id/imgClose"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:contentDescription="@string/delete_button"
+        android:contentDescription="@string/z_progress_library_delete_button"
         android:visibility="gone"
         app:srcCompat="@drawable/ic_twotone_highlight_off_24dp"
         tools:visibility="visible" />

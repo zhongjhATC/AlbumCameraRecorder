@@ -101,7 +101,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 用于判断最后一个添加符号标签图片
      */
-    private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_图标";
+    private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD";
     private ViewHolder viewHolderAdd;
 
     public void setListener(MaskProgressLayoutListener listener) {

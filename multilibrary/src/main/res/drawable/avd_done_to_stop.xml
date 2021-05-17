@@ -21,8 +21,8 @@
                 android:duration="250"
                 android:interpolator="@android:interpolator/fast_out_slow_in"
                 android:propertyName="pathData"
-                android:valueFrom="@string/ic_baseline_done"
-                android:valueTo="@string/ic_baseline_stop"
+                android:valueFrom="@string/z_multi_library_ic_baseline_done"
+                android:valueTo="@string/z_multi_library_ic_baseline_stop"
                 android:valueType="pathType" />
         </aapt:attr>
     </target>

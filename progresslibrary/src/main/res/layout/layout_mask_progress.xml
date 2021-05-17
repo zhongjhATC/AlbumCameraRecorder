@@ -37,7 +37,7 @@
             android:id="@+id/tvRecorderTip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/voice_upload"
+            android:text="@string/z_progress_library_voice_upload"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -64,7 +64,7 @@
         android:id="@+id/imgRemoveRecorder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/delete_button"
+        android:contentDescription="@string/z_progress_library_delete_button"
         android:padding="16dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/clRecorder"

@@ -1,0 +1,6 @@
+<resources>
+    <string name="z_progress_library_delete_button">删除按钮</string>
+    <string name="z_progress_library_play_button">播放按钮</string>
+    <string name="z_progress_library_voice_upload">语音上传中</string>
+    <string name="z_progress_on_the_cross">上传中</string>
+</resources>

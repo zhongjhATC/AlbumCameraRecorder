@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.zhongjh.progresslibrary.R;
+
 import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 
 /**
@@ -82,7 +84,7 @@ public class MaskProgressView extends androidx.appcompat.widget.AppCompatImageVi
     /**
      * 加载中的文字
      */
-    private String textString = "上传中";
+    private String textString = getResources().getString(R.string.z_progress_on_the_cross);
 
     public void setMaskingColor(int maskingColor) {
         this.maskingColor = maskingColor;

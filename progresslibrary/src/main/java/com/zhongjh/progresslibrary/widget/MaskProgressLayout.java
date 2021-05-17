@@ -145,7 +145,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         // endregion 遮罩层相关属性
 
         if (imageEngineStr == null) {
-            throw new RuntimeException("必须定义image_engine属性，指定某个显示图片类");
+            // 必须定义image_engine属性，指定某个显示图片类
+            throw new RuntimeException("The image_engine attribute must be defined to specify a class for displaying images");
         } else {
             Class<?> imageEngineClass;//完整类名
             try {
@@ -155,7 +156,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
                 e.printStackTrace();
             }
             if (mImageEngine == null) {
-                throw new RuntimeException("image_engine找不到相关类");
+                // image_engine找不到相关类
+                throw new RuntimeException("Image_engine could not find the related class");
             }
         }
 
@@ -460,7 +462,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
      */
     private void isAuthority() {
         if (mMediaStoreCompat.getSaveStrategy() == null || mMediaStoreCompat.getSaveStrategy().authority == null) {
-            throw new RuntimeException("必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错。也可以代码设置setAuthority");
+            // 必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错。也可以代码设置setAuthority
+            throw new RuntimeException("You must define the authority attribute, which specifies the provider's authorities, to serve to external files. Otherwise, Android7.0 will report an error.You can also set setAuthority in code");
         }
     }
 
