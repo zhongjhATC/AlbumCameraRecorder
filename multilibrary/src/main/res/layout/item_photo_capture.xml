@@ -29,7 +29,7 @@
         android:drawablePadding="8dp"
         android:drawableTop="@drawable/ic_photo_camera_white_24dp"
         android:gravity="center"
-        android:text="@string/photo_grid_capture"
+        android:text="@string/z_multi_library_photo_grid_capture"
         android:textColor="?capture.textColor"
         android:textSize="14sp"/>
 

@@ -89,7 +89,6 @@ public class CameraFragment extends BaseFragment {
 
         view.setOnKeyListener((v, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                Toast.makeText(mActivity, "拍摄界面onBack", Toast.LENGTH_SHORT).show();
                 return true;
             }
             return false;
@@ -189,7 +188,7 @@ public class CameraFragment extends BaseFragment {
             // 与上次点击返回键时刻作差
             if ((System.currentTimeMillis() - mExitTime) > MILLISECOND) {
                 // 大于2000ms则认为是误操作，使用Toast进行提示
-                Toast.makeText(mActivity.getApplicationContext(), "再按一次确认关闭", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity.getApplicationContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
                 // 并记录下本次点击“返回键”的时刻，以便下次进行判断
                 mExitTime = System.currentTimeMillis();
                 return true;

@@ -305,17 +305,17 @@ public class SelectedItemCollection {
 
             try {
                 cause = mContext.getResources().getString(
-                        R.string.error_over_count,
+                        R.string.z_multi_library_error_over_count,
                         maxSelectable
                 );
             } catch (Resources.NotFoundException e) {
                 cause = mContext.getString(
-                        R.string.error_over_count,
+                        R.string.z_multi_library_error_over_count,
                         maxSelectable
                 );
             } catch (NoClassDefFoundError e) {
                 cause = mContext.getString(
-                        R.string.error_over_count,
+                        R.string.z_multi_library_error_over_count,
                         maxSelectable
                 );
             }
@@ -323,7 +323,7 @@ public class SelectedItemCollection {
             return new IncapableCause(cause);
         } else if (typeConflict(item)) {
             // 判断选择资源(图片跟视频)是否类型冲突
-            return new IncapableCause(mContext.getString(R.string.error_type_conflict));
+            return new IncapableCause(mContext.getString(R.string.z_multi_library_error_type_conflict));
         }
 
         // 过滤文件

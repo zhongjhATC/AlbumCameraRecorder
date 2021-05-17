@@ -24,7 +24,7 @@
                 app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
                 app:maskingColor="?attr/colorPrimary"
                 app:maskingTextColor="@color/black_eighty_percent"
-                app:maskingTextContent="上传中可自定义"
+                app:maskingTextContent="@string/up_upload_is_customizable"
                 app:maskingTextSize="12"
                 app:maxCount="7" />
 
@@ -39,14 +39,14 @@
                     android:layout_height="match_parent"
                     android:checked="true"
                     android:gravity="center"
-                    android:text="蓝色样式" />
+                    android:text="@string/blue_style" />
 
                 <RadioButton
                     android:id="@+id/rbBlack"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="黑色样式" />
+                    android:text="@string/black_style" />
 
             </RadioGroup>
 

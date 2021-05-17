@@ -66,12 +66,12 @@ public class PhotoVideoLayoutBase extends BaseOperationLayout {
                     || "0".equals(viewHolder.tvSectionRecord.getTag())) {
                 // 切换分段录制模式
                 viewHolder.tvSectionRecord.setTag("1");
-                viewHolder.tvSectionRecord.setText(getResources().getString(R.string.section_to_record));
+                viewHolder.tvSectionRecord.setText(getResources().getString(R.string.z_multi_library_section_to_record));
                 viewHolder.btnClickOrLong.setSectionMode(true);
             } else {
                 // 切换默认的快拍录制模式
                 viewHolder.tvSectionRecord.setTag("0");
-                viewHolder.tvSectionRecord.setText(getResources().getString(R.string.default_to_record));
+                viewHolder.tvSectionRecord.setText(getResources().getString(R.string.z_multi_library_default_to_record));
                 viewHolder.btnClickOrLong.setSectionMode(false);
             }
             mRecordListener.sectionRecord(viewHolder.tvSectionRecord.getTag().toString());

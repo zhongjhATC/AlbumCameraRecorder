@@ -49,8 +49,8 @@ public class IncapableDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle bundle = getArguments();
-        String title = "标题";
-        String message = "内容";
+        String title = null;
+        String message = null;
         if (bundle != null) {
             title = getArguments().getString(EXTRA_TITLE);
             message = getArguments().getString(EXTRA_MESSAGE);

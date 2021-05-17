@@ -14,7 +14,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="简单版" />
+            android:text="@string/simple_version" />
 
         <Button
             android:id="@+id/btnConfigure"
@@ -23,7 +23,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="配置版" />
+            android:text="@string/configure_version" />
 
         <Button
             android:id="@+id/btnTheme"
@@ -32,7 +32,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="样式版" />
+            android:text="@string/style_version" />
 
         <Button
             android:id="@+id/btnOpenSee"
@@ -41,7 +41,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="打开默认有数据的" />
+            android:text="@string/open_the_default_data_set" />
 
         <Button
             android:id="@+id/btnPreview"
@@ -50,7 +50,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="直接预览" />
+            android:text="@string/instant_preview" />
 
     </LinearLayout>
 

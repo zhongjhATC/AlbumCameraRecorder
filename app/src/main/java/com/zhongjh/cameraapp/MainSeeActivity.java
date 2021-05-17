@@ -206,7 +206,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .albumSetting(mAlbumSetting)
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
-                .setOnMainListener(errorMessage -> Toast.makeText(getApplication(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
+                .setOnMainListener(errorMessage -> Toast.makeText(getApplication(), errorMessage, Toast.LENGTH_LONG).show())
                 // 设置路径和7.0保护路径等等
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))
                 // 如果设置这个，有关图片的优先权比allStrategy高
@@ -291,7 +291,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     @Override
     public void onFail(Throwable throwable) {
         progressDialog.hide();
-        Toast.makeText(this, "下载失败：" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 
     /**

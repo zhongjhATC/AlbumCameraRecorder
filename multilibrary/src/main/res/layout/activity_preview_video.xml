@@ -44,7 +44,7 @@
             android:paddingEnd="12dp"
             android:paddingBottom="4dp"
             android:textColor="@drawable/text_color_select"
-            android:text="确定"
+            android:text="@string/z_multi_library_confirm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />

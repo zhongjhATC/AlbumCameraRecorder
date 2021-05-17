@@ -11,6 +11,6 @@
         <path
             android:name="path"
             android:fillColor="@android:color/white"
-            android:pathData="@string/ic_baseline_stop" />
+            android:pathData="@string/z_multi_library_ic_baseline_stop" />
     </group>
 </vector>

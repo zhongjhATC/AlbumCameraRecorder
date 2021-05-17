@@ -102,12 +102,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                 if (size == 0) {
                     if (isBrowse) {
-                        Toast.makeText(this, "你可以重新打开相关功能", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.you_can_turn_it_back_on), Toast.LENGTH_SHORT).show();
                     } else {
                         startActivityForResult(new Intent(BaseActivity.this, com.zhongjh.albumcamerarecorder.MainActivity.class), 100);
                     }
                 } else {
-                    Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.please_open_it_in_settings_permission_management), Toast.LENGTH_SHORT).show();
                 }
             }
         }

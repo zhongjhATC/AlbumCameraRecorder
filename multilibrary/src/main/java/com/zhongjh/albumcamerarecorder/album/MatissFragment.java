@@ -242,7 +242,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 int count = countOverMaxSize();
                 if (count > 0) {
                     IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                            getString(R.string.error_over_original_count, count, mAlbumSpec.originalMaxSize));
+                            getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.originalMaxSize));
                     incapableDialog.show(getFragmentManager(),
                             IncapableDialog.class.getName());
                     return;
@@ -390,17 +390,17 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 如果没有数据，则设置不可点击
             mViewHolder.buttonPreview.setEnabled(false);
             mViewHolder.buttonApply.setEnabled(false);
-            mViewHolder.buttonApply.setText(getString(R.string.button_sure_default));
+            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure_default));
         } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
             // 不显示选择的数字
             mViewHolder.buttonPreview.setEnabled(true);
-            mViewHolder.buttonApply.setText(R.string.button_sure_default);
+            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
             mViewHolder.buttonApply.setEnabled(true);
         } else {
             // 显示选择的数字
             mViewHolder.buttonPreview.setEnabled(true);
             mViewHolder.buttonApply.setEnabled(true);
-            mViewHolder.buttonApply.setText(getString(R.string.button_sure, selectedCount));
+            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure, selectedCount));
         }
 
         // 是否显示原图控件
@@ -425,7 +425,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (mOriginalEnable) {
                 // 弹出窗口提示大于 xx mb
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.error_over_original_size, mAlbumSpec.originalMaxSize));
+                        getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.originalMaxSize));
                 if (this.getFragmentManager() == null) {
                     return;
                 }

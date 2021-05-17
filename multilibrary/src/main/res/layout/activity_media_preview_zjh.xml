@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:padding="16dp"
-            android:text="@string/button_edit"
+            android:text="@string/z_multi_library_button_edit"
             android:textColor="?attr/preview.bottomToolbar.back.textColor"
             android:textSize="16sp" />
 
@@ -63,7 +63,7 @@
                     android:enabled="true"
                     android:paddingStart="4dp"
                     android:paddingLeft="4dp"
-                    android:text="@string/button_original"
+                    android:text="@string/z_multi_library_button_original"
                     android:textColor="?attr/preview.bottomToolbar.back.textColor"
                     android:textSize="14sp"
                     tools:ignore="RtlSymmetry" />
@@ -116,7 +116,7 @@
             android:id="@+id/checkView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/choose_to_click_to_confirm_these"
+            android:contentDescription="@string/z_multi_library_choose_to_click_to_confirm_these"
             android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

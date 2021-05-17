@@ -20,7 +20,7 @@
         android:id="@+id/media_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@string/show_thumbnails" />
+        android:contentDescription="@string/z_multi_library_show_thumbnails" />
 
     <com.zhongjh.albumcamerarecorder.album.widget.CheckView
         android:id="@+id/checkView"
@@ -37,7 +37,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:contentDescription="@string/gif_label"
+        android:contentDescription="@string/z_multi_library_gif_label"
         android:src="@drawable/ic_gif"
         android:visibility="gone" />
 

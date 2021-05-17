@@ -204,14 +204,14 @@ public final class GlobalSetting implements GlobalSettingApi {
                 numItems++;
             } else {
                 if (mGlobalSpec.onMainListener != null) {
-                    mGlobalSpec.onMainListener.onOpenFail("录音已经达到上限");
+                    mGlobalSpec.onMainListener.onOpenFail(activity.getResources().getString(R.string.z_multi_library_the_recording_limit_has_been_reached));
                 } else {
-                    Toast.makeText(activity.getApplicationContext(), "录音已经达到上限", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity.getApplicationContext(), activity.getResources().getString(R.string.z_multi_library_the_recording_limit_has_been_reached), Toast.LENGTH_LONG).show();
                 }
             }
         }
         if (numItems <= 0) {
-            throw new IllegalStateException("必须在这三项 albumSetting、cameraSetting、recorderSetting设置其中一项 ");
+            throw new IllegalStateException("One of these three albumSetting, camerasSetting, and recordDerSetting must be set");
         }
 
         Intent intent = new Intent(activity, MainActivity.class);

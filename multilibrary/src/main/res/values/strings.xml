@@ -1,54 +1,61 @@
 <resources>
-    <string name="app_name">cameraviewsoundrecorder</string>
+    <string name="z_multi_library_album">album</string>
+    <string name="z_multi_library_take_photos">take photos</string>
+    <string name="z_multi_library_sound_recording">sound recording</string>
+    <string name="z_multi_library_press_confirm_again_to_close">Press confirm again to close</string>
+    <string name="z_multi_library_the_camera_limit_has_been_reached">The camera limit has been reached</string>
+    <string name="z_multi_library_the_recording_limit_has_been_reached">The recording limit has been reached</string>
 
     <!-- region 相册 -->
 
-    <string name="album_name_all">全部</string>
+    <string name="z_multi_library_album_name_all">all</string>
 
-    <string name="button_preview">预览</string>
-    <string name="button_apply_default">使用</string>
-    <string name="button_apply">使用(%1$d)</string>
-    <string name="button_back">返回</string>
-    <string name="button_edit">编辑</string>
-    <string name="photo_grid_capture">拍一张</string>
-    <string name="empty_text">还没有图片或视频</string>
-    <string name="section_to_record">分段录制</string>
-    <string name="default_to_record">快拍录制</string>
+    <string name="z_multi_library_button_preview">preview</string>
+    <string name="z_multi_library_button_apply_default">use</string>
+    <string name="z_multi_library_button_apply">use(%1$d)</string>
+    <string name="z_multi_library_button_back">back</string>
+    <string name="z_multi_library_button_edit">edit</string>
+    <string name="z_multi_library_photo_grid_capture">Take a</string>
+    <string name="z_multi_library_empty_text">No pictures or videos yet</string>
+    <string name="z_multi_library_section_to_record">Section to record</string>
+    <string name="z_multi_library_default_to_record">Fast recording</string>
 
 
-    <string name="error_over_count_default">您已经达到最大选择数量</string>
-    <string name="error_over_count">最多只能选择 %1$d 个文件</string>
-    <string name="error_under_quality">图片质量太低</string>
-    <string name="error_over_quality">图片质量太高</string>
-    <string name="error_file_type">不支持的文件类型</string>
-    <string name="error_type_conflict">不能同时选择图片和视频</string>
-    <string name="error_no_video_activity">没有支持视频预览的应用</string>
-    <string name="error_over_original_size">"该照片大于 %1$d M，无法上传将取消勾选原图"</string>
-    <string name="error_over_original_count">"有 %1$d 张照片大于 %2$d M\n无法上传，将取消勾选原图"</string>
-    <string name="button_original">原图</string>
-    <string name="button_sure_default">确定</string>
-    <string name="button_sure">确定(%1$d)</string>
+    <string name="z_multi_library_error_over_count_default">You have reached the maximum number of choices</string>
+    <string name="z_multi_library_error_over_count">You can select a maximum of %1$d file</string>
+    <string name="z_multi_library_error_under_quality">Image quality is too low</string>
+    <string name="z_multi_library_error_over_quality">Image quality too high</string>
+    <string name="z_multi_library_error_file_type">Unsupported file type</string>
+    <string name="z_multi_library_error_type_conflict">You cannot select images and videos at the same time</string>
+    <string name="z_multi_library_error_no_video_activity">There is no app that supports video preview</string>
+    <string name="z_multi_library_error_over_original_size">"If the photo is larger than %1$d M and cannot be uploaded, the original image will be unchecked"</string>
+    <string name="z_multi_library_error_over_original_count">"If %1$d photos larger than %2$d M\ncannot be uploaded, the original picture will be unchecked"</string>
+    <string name="z_multi_library_button_original">The original image</string>
+    <string name="z_multi_library_button_sure_default">confirm</string>
+    <string name="z_multi_library_button_sure">confirm(%1$d)</string>
 
-    <string name="show_thumbnails">展现的缩略图</string>
-    <string name="gif_label">gif标签</string>
+    <string name="z_multi_library_show_thumbnails">The thumbnail image displayed</string>
+    <string name="z_multi_library_gif_label">GIF label</string>
 
     <!-- endregion -->
 
-    <string name="light_touch_take_long_press_camera">轻触拍照，长按摄像</string>
-    <string name="light_touch_take">轻触拍照</string>
-    <string name="long_press_camera">长按摄像</string>
-    <string name="long_press_sound_recording">长按录音</string>
-    <string name="the_recording_time_is_too_short">录制时间过短</string>
-    <string name="video_can_only_exist_in_n">视频只可存在 %1$d 个</string>
+    <string name="z_multi_library_light_touch_take_long_press_camera">Tap the camera, long press the camera</string>
+    <string name="z_multi_library_light_touch_take">Touch your photo</string>
+    <string name="z_multi_library_long_press_camera">Long press camera</string>
+    <string name="z_multi_library_long_press_sound_recording">Long press the tape</string>
+    <string name="z_multi_library_the_recording_time_is_too_short">The recording time is too short</string>
+    <string name="z_multi_library_video_can_only_exist_in_n">Only %1$d video can exist</string>
 
     <!-- region 录像 -->
-    <string name="path_square">M 35,43 v 34 A 8 8 0 0 0 43,85 h 34 A 8 8 0 0 0 85 77 v -34 A 8 8 0 0 0 77 35 h -34 A 8 8 0 0 0 35 43</string>
-    <string name="path_circle">M 0 60 v 0 A 60 60 0 0 0 60 120 h 0 A 60 60 0 0 0 120 60 v 0 A 60 60 0 0 0 60 0 h 0 A 60 60 0 0 0 0 60</string>
-    <string name="ic_baseline_done">M 3.4 13.4 L 9 19 L 21 7 L 19.6 5.6 L 9 16.2 L 9 16.2 L 4.8 12 L 3.4 13.4</string> <!-- 第一个和完成都是用该图 -->
-    <string name="ic_baseline_stop">M 6 6 L 6 18 L 18 18 L 18 6 L 14.898 6 L 11.878 6 L 8.939 6 L 6 6</string><!-- 暂停图片 -->
-    <string name="delete_button">删除按钮</string>
-    <string name="play_button">播放按钮</string>
-    <string name="choose_to_click_to_confirm_these">选择了才可以点击确认这些</string>
+    <string name="z_multi_library_path_square">M 35,43 v 34 A 8 8 0 0 0 43,85 h 34 A 8 8 0 0 0 85 77 v -34 A 8 8 0 0 0 77 35 h -34 A 8 8 0 0 0 35 43</string>
+    <string name="z_multi_library_path_circle">M 0 60 v 0 A 60 60 0 0 0 60 120 h 0 A 60 60 0 0 0 120 60 v 0 A 60 60 0 0 0 60 0 h 0 A 60 60 0 0 0 0 60</string>
+    <string name="z_multi_library_ic_baseline_done">M 3.4 13.4 L 9 19 L 21 7 L 19.6 5.6 L 9 16.2 L 9 16.2 L 4.8 12 L 3.4 13.4</string> <!-- 第一个和完成都是用该图 -->
+    <string name="z_multi_library_ic_baseline_stop">M 6 6 L 6 18 L 18 18 L 18 6 L 14.898 6 L 11.878 6 L 8.939 6 L 6 6</string><!-- 暂停图片 -->
+    <string name="z_multi_library_delete_button">Delete button</string>
+    <string name="z_multi_library_play_button">Play button</string>
+    <string name="z_multi_library_choose_to_click_to_confirm_these">You can click to confirm these if you select them</string>
+    <string name="z_multi_library_confirm">confirm</string>
+
 
     <!-- endregion -->
 

@@ -120,7 +120,7 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
     public static IncapableCause isAcceptable(Context context, MultiMedia item) {
         // 判断资源类型是否已设置可选
         if (!isSelectableType(context, item)) {
-            return new IncapableCause(context.getString(R.string.error_file_type));
+            return new IncapableCause(context.getString(R.string.z_multi_library_error_file_type));
         }
 
         // 过滤不符合用户设定的资源 Filter提供抽象方法，由用户自行设置过滤规则

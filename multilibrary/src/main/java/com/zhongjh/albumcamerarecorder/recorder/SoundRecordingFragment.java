@@ -112,7 +112,7 @@ public class SoundRecordingFragment extends BaseFragment {
         // 初始化设置
         mRecordSpec = RecordeSpec.getInstance();
         // 提示文本
-        mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_sound_recording));
+        mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_sound_recording));
         // 设置录制时间
         mViewHolder.pvLayout.setDuration(mRecordSpec.duration * 1000);
         // 最短录制时间
@@ -132,7 +132,7 @@ public class SoundRecordingFragment extends BaseFragment {
             // 与上次点击返回键时刻作差
             if ((System.currentTimeMillis() - mExitTime) > AGAIN_TIME) {
                 // 大于2000ms则认为是误操作，使用Toast进行提示
-                Toast.makeText(mActivity.getApplicationContext(), "再按一次确认关闭", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity.getApplicationContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
                 // 并记录下本次点击“返回键”的时刻，以便下次进行判断
                 mExitTime = System.currentTimeMillis();
                 return true;
@@ -174,7 +174,7 @@ public class SoundRecordingFragment extends BaseFragment {
             @Override
             public void onLongClickShort(long time) {
                 Log.d(TAG, "onLongClickShort" + time);
-                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
+                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));  // 提示过短
                 // 停止录音
                 new Handler(Looper.getMainLooper()).postDelayed(() -> onRecord(false, true), mRecordSpec.minDuration - time);
                 mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
@@ -480,9 +480,6 @@ public class SoundRecordingFragment extends BaseFragment {
                             .putLong("elapsed", mElapsedMillis)
                             .apply();
                 }
-
-
-                Log.d(TAG, "停止录音");
                 if (mRecorder != null) {
                     try {
                         mRecorder.stop();

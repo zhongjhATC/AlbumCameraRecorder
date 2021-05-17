@@ -3,44 +3,44 @@
 [![MinSdk](https://img.shields.io/badge/MinSdk-21-blue.svg)](https://developer.android.com/about/versions/android-5.0)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/LICENSE)
 
-## 该版本是基于AndroidX版本开发的分支。版本号后面带着X的都是属于基于AndroidX版本开发。
-## 目前已经投入到正式项目中使用。
-## 有任何建议或者想添加的功能，都可提在Issues
+## This release is an offshoot of the AndroidX release.Any version number followed by an X is based on the AndroidX version.
+## At present, it has been put into use in the formal project.
+## If you have any suggestions or want to add functions, you can put forward on Issues
 
-## 中文
-一个高效的多媒体支持操作库，可多方面的简单配置操作拍照、相册、录制、录音等功能。
+## [中文](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/README_CN.md)
+An efficient multimedia support operation library, can be a variety of simple configuration operation photo, album, recording, recording and other functions.
 
-也支持配套使用的展示图片、视频、音频的九宫格功能。
+Also support supporting the use of the display of pictures, video, audio 9 grid function.
 
 
-本开源库的部分代码来自[Matisse](https://github.com/zhihu/Matisse).
+Part of the code for this open source library comes from [Matisse](https://github.com/zhihu/Matisse).
 
-非常感谢知乎提供的这么棒的开源项目！
+Thank you very much Zhihu for providing such a great open source project!
 
-## 非X版本分支
-非X库版本,已经停止维护(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
+## Non-X version branching
+A non-X library version, no longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
 
-## 特性
- - 支持自定义样式.支持更换里面的相关按钮.
- - 支持相册、录制、录音等三合一功能（类似抖音等），并且也可以通过配置只独立出其中一个功能.
- - 虽然功能很多，但是可以按照所需功能来引入某些库
- - 丰富的回调接口和调试信息,可利用现有API实现丰富的效果.
- - 兼容性强，不管是低版本的4.1还是目前最新版本的Android 11,都进行了相关兼容处理
- - 支持所有图片读取处理自定义，例如可自定义glide、Fresco等等都可以
- - 支持从相册选择图片
- - 支持相册按照手机文件区分不同的文件夹选择
- - 自定义性强，支持各种自定义最多选多少张图片、视频等等，也支持只显示自定义文件大小
- - 支持自定义相册的样式，颜色，大小等等
- - 录制拍照时支持闪光灯、前后摄像头切换
- - 录制拍照时支持双指触摸放大缩小，支持单指上下滑动控制亮度
- - 录制拍照长按按钮等所有UI可自定义，全是svg图片可以很好的处理动画细节
- - 录制支持分段录制，以后还会加入视频编辑
- - 图片编辑支持颜色涂鸦、输入文字、马赛克处理、旋转、裁剪等处理
- - 支持录音处理
- - 所有录制拍照都经过了压缩处理
- - 1.0.19X以后的版本兼容Android Q版本,如果打算保留自己项目sdk28的，可以只保留1.0.18X
+## peculiarity
+ - Support for custom styles. Support to change the relevant buttons inside.
+ - Support album, recording, recording and other functions in one (similar to Douyin, etc.), and you can configure only one of the functions independently.
+ - While there are many features, some libraries can be introduced as required
+ - Rich callback interface and debugging information, using the existing API to achieve a rich effect.
+ - Strong compatibility, whether the lower version of 4.1 or the current latest version of Android 11, has been carried out related compatibility processing
+ - Support all image reading and processing customization, such as custom Glide, Fresco, etc
+ - Support to select pictures from albums
+ - Supports photo albums to select different folders according to mobile phone files
+ - Strong customization, support a variety of maximum selection of how many pictures, videos, and so on, also support only display custom file size
+ - Support custom album style, color, size and so on
+ - Support flash and front and rear camera switching when taking photos
+ - Support double finger touch to zoom in and out when recording and photographing, and single finger sliding up and down to control brightness
+ - recording, taking photos, pressing buttons, all of the UI is customizable, all SVG images are good for handling animation details
+ - Recording support for segment recording, video editing will be added in the future
+ - Image editing supports color graffiti, input text, Mosaic processing, rotation, cropping and other processing
+ - Support recording processing
+ - All recorded photos are compressed
+ - Version after 1.0.19x is compatible with Android Q version, if you want to keep your project SDK28, you can only keep 1.0.18x
 
-## 引入
+## import
 
 #### Step 1. Add the JitPack repository to your build file
 
@@ -53,62 +53,82 @@
 #### Step 2. Add the dependency
 
 	dependencies {
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.31X'        // 公共库，必须使用此库
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.31X'      // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.31X' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.0.31X'  // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.0.31X'  // 配套编辑视频使用
+	     // Public library, which must be used
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.31X'
+	     // Core lib, call display album, recording screen, recording, etc
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.31X'
+         // Supporting use, mainly used to obtain data after the relevant display, the corresponding upload progress display, if you only need to obtain photos, video, audio and other data, their own code to obtain the data after the presentation, you can not need to use this
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.31X'
+         // Supporting the use of editing pictures
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.0.31X'
+	     // Supporting the use of editing video
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.0.31X'
 	}
 
-## 快照
+## snapshoot
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/Demonstration.gif)
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/DemonstrationShowImg.png)
 
 
 
-## 市场上常用手机兼容测试
-100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/WeTest.md).
+## Compatibility testing of mobile phones is commonly used in the market
+100% through[Compatibility Test Report](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/WeTest.md).
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/5.jpg)
 
-## 使用
-#### 启动多媒体相关功能
+## use
+#### Enable multimedia related functions
 
-        // 拍摄有关设置
+        // Shooting Related Settings
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
+        // Types supported: picture, video
+        cameraSetting.mimeTypeSet(MimeType.ofAll());
 
-        // 相册
-        AlbumSetting albumSetting = new AlbumSetting(true)
-                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
-                .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
-                .originalEnable(true)// 开启原图
-                .maxOriginalSize(10); // 最大原图size,仅当originalEnable为true的时候才有效
+        // album
+        mAlbumSetting = new AlbumSetting(false)
+                // Types supported: picture, video
+                .mimeTypeSet(MimeType.ofAll())
+                // Whether to display the number of multiple selected images
+                .countable(true)
+                // Custom filter
+                .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))
+                // Open the original
+                .originalEnable(true)
+                // Maximum original size, valid only if originalEnable is true
+                .maxOriginalSize(10);
 
-        // 录音机
+        // recorder
         RecorderSetting recorderSetting = new RecorderSetting();
 
-        // 全局
-        GlobalSetting globalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
+        // globalSetting
+        mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
 
-        if (mBinding.cbAlbum.isChecked())
-            // 开启相册功能
-            globalSetting.albumSetting(albumSetting);
-        if (mBinding.cbCamera.isChecked())
-            // 开启拍摄功能
-            globalSetting.cameraSetting(cameraSetting);
-        if (mBinding.cbRecorder.isChecked())
-            // 开启录音功能
-            globalSetting.recorderSetting(recorderSetting);
+        if (mBinding.cbAlbum.isChecked()){
+            // Open the album function
+            mGlobalSetting.albumSetting(mAlbumSetting);
+        }
+        if (mBinding.cbCamera.isChecked()){
+            // Turn on the shooting function
+            mGlobalSetting.cameraSetting(cameraSetting);
+        }
+        if (mBinding.cbRecorder.isChecked()){
+            // Enable recording
+            mGlobalSetting.recorderSetting(recorderSetting);
+        }
 
-        globalSetting
-                .setOnMainListener(errorMessage -> Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
-                .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+        mGlobalSetting
+                .setOnMainListener(errorMessage -> {
+                    Log.d(TAG, errorMessage);
+                    Toast.makeText(MainSimpleActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                })
+                // Set paths and 7.0 protection paths, and so on
+                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
+                // for glide-V4
+                .imageEngine(new Glide4Engine())
+                // Maximum 10 images or maximum 1 video
+                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
 
-#### 获取相关返回的数据
+#### Gets the relevant returned data
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -119,63 +139,69 @@
             case REQUEST_CODE_PREVIEW:
                 ```
             case REQUEST_CODE_CHOOSE:
-                // 获取类型，根据类型设置不同的事情
+                // Gets the type and sets different things according to the type
                 switch (MultiMediaSetting.obtainMultimediaType(data)) {
                     case MultimediaTypes.PICTURE:
-                        // 图片
-                        List<String> path = MultiMediaSetting.obtainPathResult(data);
+                        // picture
+                        List<String> path = MultiMediaSetting.obtainResult(data);
                         mBinding.mplImageList.addImagesStartUpload(path);
                         break;
                     case MultimediaTypes.VIDEO:
-                        // 录像
-                        List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
+                        // video
+                        List<String> videoPath = MultiMediaSetting.obtainResult(data);
                         mBinding.mplImageList.addVideoStartUpload(videoPath);
                         break;
                     case MultimediaTypes.AUDIO:
-                        // 语音
+                        // voice
                         RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
                         mBinding.mplImageList.addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
                         break;
                     case MultimediaTypes.BLEND:
-                        // 混合类型，意思是图片可能跟录像在一起.
-                        mBinding.mplImageList.addImagesStartUpload(MultiMediaSetting.obtainPathResult(data));
+                        // Mixed type, which means the image may accompany the video.
+                        List<Uri> blends = MultiMediaSetting.obtainResult(data);
+                        List<Uri> images = new ArrayList<>();
+                        List<Uri> videos = new ArrayList<>();
+                        // Type of circular judgment
+                        for (Uri uri : blends) {
+                            DocumentFile documentFile = DocumentFile.fromSingleUri(getBaseContext(), uri);
+                            if (documentFile.getType().startsWith("image")) {
+                                images.add(uri);
+                            } else if (documentFile.getType().startsWith("video")) {
+                                videos.add(uri);
+                            }
+                        }
+                        // Upload pictures and videos separately
+                        mBinding.mplImageList.addUrisStartUpload(images);
+                        mBinding.mplImageList.addVideoStartUpload(videos);
                         break;
                 }
                 break;
         }
     }
 
-#### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
+#### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java) for details.
 
-#### 相关API,更多API和支持持续丰富加入
- - [调用多媒体的公共配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).
- - [调用多媒体的相册配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/AlbumSettingApi.java).
- - [调用多媒体的录制配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/CameraSettingApi.java).
- - [调用多媒体的录音配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/RecorderSettingApi.java).
- - [多媒体UI相关属性配置](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/res/values/styles.xml)
+#### Related APIs, more APIs and support for continuous enrichment added
+ - [Call the multimedia public configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).
+ - [Call the multimedia album configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/AlbumSettingApi.java).
+ - [Call the recording configuration API for multimedia](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/CameraSettingApi.java).
+ - [Call the multimedia recording configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/RecorderSettingApi.java).
+ - [Multimedia UI related properties configuration](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/res/values/styles.xml)
 
-如果你使用展示的九宫库，那么下面这些api对你也有用
- - [九宫格相关API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/java/com/zhongjh/progresslibrary/api/MaskProgressApi.java).
- - [九宫格相关事件](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/java/com/zhongjh/progresslibrary/listener/MaskProgressLayoutListener.java).
- - [九宫格相关属性，配置UI等等](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/res/values/attrs.xml)
+If you use the shown library, the following APIs are also useful for you
+ - [Nine-grid related API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/java/com/zhongjh/progresslibrary/api/MaskProgressApi.java).
+ - [Nine-grid dependent Events](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/java/com/zhongjh/progresslibrary/listener/MaskProgressLayoutListener.java).
+ - [Nine-grid related properties, configuring the UI, etc](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/res/values/attrs.xml)
 
 
 
-## 历史更新
-从1.0.1版本开始总结的[历史更新](https://github.com/zhongjhATC/AlbumCameraRecorder/releases).
+## History update
+[History update](https://github.com/zhongjhATC/AlbumCameraRecorder/releases).
 
-## apk直接体验下载
- - 1.0.0版本，跟当前最新代码版本可能会有稍许不同
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/qrcode.png)
+# Write in the last
 
- - 链接下载地址：https://fir.im/s9b6?release_id=5c84dcd3ca87a807f7ef5181&fir_source=%E7%89%88%E6%9C%AC1&fir_campaign=%E7%89%88%E6%9C%AC1
+1. If you think it works, give me a Star（[GitHub](https://github.com/zhongjhATC/AlbumCameraRecorder)）
 
-# 写在最后
+2. If you find any BUG, please leave a comment or leave a Issues（[Issues](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)）
 
-1. 觉得好用的欢迎给个Star（[GitHub](https://github.com/zhongjhATC/AlbumCameraRecorder)）
-
-2. 发现任何BUG欢迎留言或者留个Issues（[Issues](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)）
-
-3. 任何转载请注明出处
-
-# QQ群915053430 此群于2021.4.28新建。用于解决问题，确保当前库是可以兼容最新版本，当然也坚持打造最万能的多媒体操作库
+3. Any reprint please indicate the source

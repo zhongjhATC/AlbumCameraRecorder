@@ -94,9 +94,6 @@ public class RecordingService extends Service {
                     .putLong("elpased", mElapsedMillis)
                     .apply();
         }
-
-
-        Log.d(TAG, "停止录音");
         if (mRecorder != null) {
             try {
                 mRecorder.stop();

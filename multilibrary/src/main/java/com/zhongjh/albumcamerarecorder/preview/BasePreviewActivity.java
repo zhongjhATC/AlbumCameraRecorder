@@ -278,7 +278,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             int count = countOverMaxSize();
             if (count > 0) {
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.error_over_original_count, count, mAlbumSpec.originalMaxSize));
+                        getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.originalMaxSize));
                 incapableDialog.show(getSupportFragmentManager(),
                         IncapableDialog.class.getName());
                 return;
@@ -399,16 +399,16 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         int selectedCount = mSelectedCollection.count();
         if (selectedCount == 0) {
             // 禁用
-            mViewHolder.buttonApply.setText(R.string.button_sure_default);
+            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
             mViewHolder.buttonApply.setEnabled(false);
         } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
             // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
-            mViewHolder.buttonApply.setText(R.string.button_sure_default);
+            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
             mViewHolder.buttonApply.setEnabled(true);
         } else {
             // 启用，显示数字
             mViewHolder.buttonApply.setEnabled(true);
-            mViewHolder.buttonApply.setText(getString(R.string.button_sure, selectedCount));
+            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure, selectedCount));
         }
 
         // 判断是否开启原图
@@ -446,7 +446,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (mOriginalEnable) {
                 // 弹框提示取消原图
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.error_over_original_size, mAlbumSpec.originalMaxSize));
+                        getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.originalMaxSize));
                 incapableDialog.show(getSupportFragmentManager(),
                         IncapableDialog.class.getName());
                 // 去掉原图按钮的选择状态

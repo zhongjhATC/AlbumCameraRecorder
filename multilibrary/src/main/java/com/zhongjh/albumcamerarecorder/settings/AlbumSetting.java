@@ -99,7 +99,7 @@ public class AlbumSetting implements AlbumSettingApi {
     @Override
     public AlbumSetting thumbnailScale(float scale) {
         if (scale <= SCALE_ZERO || scale > SCALE_ONE) {
-            throw new IllegalArgumentException("缩略图比例必须介于(0.0, 1.0]之间");
+            throw new IllegalArgumentException("Thumbnail scale must be between (0.0, 1.0)");
         }
         mAlbumSpec.thumbnailScale = scale;
         return this;

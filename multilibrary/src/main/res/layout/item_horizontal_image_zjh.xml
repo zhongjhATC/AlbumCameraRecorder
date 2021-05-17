@@ -20,6 +20,6 @@
         android:layout_height="wrap_content"
         android:paddingTop="6dp"
         app:srcCompat="@drawable/ic_twotone_cancel_24px"
-        android:contentDescription="@string/delete_button" />
+        android:contentDescription="@string/z_multi_library_delete_button" />
 
 </FrameLayout>

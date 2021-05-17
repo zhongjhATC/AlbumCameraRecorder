@@ -179,7 +179,7 @@ public class MainActivity extends BaseActivity {
         }
 
         // 自定义失败信息
-        mGlobalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show());
+        mGlobalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show());
 
         // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
         if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString())) {

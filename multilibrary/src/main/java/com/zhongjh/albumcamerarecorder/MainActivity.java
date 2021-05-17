@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             if (mSpec.albumSetting != null) {
                 if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
                     numItems++;
-                    mTitles.add("相册");
+                    mTitles.add(getString(R.string.z_multi_library_album));
 
                 }
             }
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                         mDefaultPosition = numItems;
                     }
                     numItems++;
-                    mTitles.add("拍照");
+                    mTitles.add(getString(R.string.z_multi_library_take_photos));
                 }
             }
             if (mSpec.recorderSetting != null) {
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                         mDefaultPosition = numItems;
                     }
                     numItems++;
-                    mTitles.add("录音");
+                    mTitles.add(getString(R.string.z_multi_library_sound_recording));
                 }
             }
 
@@ -203,17 +203,15 @@ public class MainActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment getItem(int position) {
-            switch (mTitles.get(position)) {
-                case "相册":
-                    if (adapterViewPager.getCount() <= 1) {
-                        return MatissFragment.newInstance(0);
-                    }
-                    return MatissFragment.newInstance(50);
-                case "录音":
-                    return SoundRecordingFragment.newInstance();
-                case "拍照":
-                default:
-                    return CameraFragment.newInstance();
+            if (mTitles.get(position).equals(getString(R.string.z_multi_library_album))) {
+                if (adapterViewPager.getCount() <= 1) {
+                    return MatissFragment.newInstance(0);
+                }
+                return MatissFragment.newInstance(50);
+            } else if (mTitles.get(position).equals(getString(R.string.z_multi_library_sound_recording))) {
+                return SoundRecordingFragment.newInstance();
+            } else {
+                return CameraFragment.newInstance();
             }
         }
 

@@ -22,7 +22,7 @@
             app:isOperation="true"
             app:maskingColor="?attr/colorPrimary"
             app:maskingTextColor="@color/black_eighty_percent"
-            app:maskingTextContent="上传中可自定义"
+            app:maskingTextContent="@string/up_upload_is_customizable"
             app:maskingTextSize="12"
             app:maxCount="12" />
 

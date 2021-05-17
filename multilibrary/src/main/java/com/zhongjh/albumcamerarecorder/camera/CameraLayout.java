@@ -324,24 +324,24 @@ public class CameraLayout extends RelativeLayout {
         if (mCameraSpec.onlySupportImages()) {
             // 禁用长按功能
             mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
-            mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take));
+            mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
         } else if (mCameraSpec.onlySupportVideos()) {
             // 禁用点击功能
             mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
-            mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_camera));
+            mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
         } else {
             // 支持所有，不过要判断数量
             if (mGlobalSpec.maxImageSelectable == 0) {
                 // 禁用点击功能
                 mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
-                mViewHolder.pvLayout.setTip(getResources().getString(R.string.long_press_camera));
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
             } else if (mGlobalSpec.maxVideoSelectable == 0) {
                 // 禁用长按功能
                 mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
-                mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take));
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
             } else {
                 mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_BOTH);
-                mViewHolder.pvLayout.setTip(getResources().getString(R.string.light_touch_take_long_press_camera));
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take_long_press_camera));
             }
         }
     }
@@ -490,14 +490,14 @@ public class CameraLayout extends RelativeLayout {
                         mClickOrLongListener.onClick();
                     }
                 } else {
-                    Toast.makeText(mContext, "已经达到拍照上限", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onLongClickShort(final long time) {
                 Log.d(TAG, "onLongClickShort " + time);
-                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.the_recording_time_is_too_short));  // 提示过短
+                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));  // 提示过短
                 setSwitchVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
                 postDelayed(() -> stopRecord(true), mCameraSpec.minDuration - time);

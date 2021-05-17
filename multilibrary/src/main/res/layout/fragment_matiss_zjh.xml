@@ -39,7 +39,7 @@
                 android:id="@+id/imgClose"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/delete_button"
+                android:contentDescription="@string/z_multi_library_delete_button"
                 app:srcCompat="@drawable/ic_close_white_24dp" />
 
             <RelativeLayout
@@ -81,7 +81,7 @@
             android:layout_gravity="start"
             android:foreground="?selectableItemBackground"
             android:padding="16dp"
-            android:text="@string/button_preview"
+            android:text="@string/z_multi_library_button_preview"
             android:textColor="?attr/bottomToolbar.preview.textColor"
             android:textSize="16sp" />
 
@@ -110,7 +110,7 @@
                 android:enabled="true"
                 android:paddingStart="4dp"
                 android:paddingLeft="4dp"
-                android:text="@string/button_original"
+                android:text="@string/z_multi_library_button_original"
                 android:textColor="?attr/bottomToolbar.preview.textColor"
                 android:textSize="14sp"
                 tools:ignore="RtlSymmetry" />
@@ -151,7 +151,7 @@
             android:drawableTop="?attr/album.emptyView"
             android:drawablePadding="8dp"
             android:gravity="center"
-            android:text="@string/empty_text"
+            android:text="@string/z_multi_library_empty_text"
             android:textColor="?attr/album.emptyView.textColor"
             android:textSize="16sp" />
 

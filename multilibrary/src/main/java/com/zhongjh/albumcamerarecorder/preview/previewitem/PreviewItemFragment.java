@@ -34,10 +34,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
-import java.io.File;
-
 import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.utils.FileUtil;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
@@ -97,7 +94,7 @@ public class PreviewItemFragment extends Fragment {
                 try {
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
-                    Toast.makeText(getContext(), R.string.error_no_video_activity, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.z_multi_library_error_no_video_activity, Toast.LENGTH_SHORT).show();
                 }
             });
         } else {

@@ -8,6 +8,6 @@
 
     <path
       android:name="iconPath"
-      android:pathData="@string/path_circle"
+      android:pathData="@string/z_multi_library_path_circle"
       android:fillColor="?attr/colorAccent"/>
 </vector>

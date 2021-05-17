@@ -23,7 +23,7 @@
         android:id="@+id/tvSectionRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/default_to_record"
+        android:text="@string/z_multi_library_default_to_record"
         android:textColor="@color/white"
         android:textSize="8sp"
         app:drawableTopCompat="@drawable/ic_record_section_24"

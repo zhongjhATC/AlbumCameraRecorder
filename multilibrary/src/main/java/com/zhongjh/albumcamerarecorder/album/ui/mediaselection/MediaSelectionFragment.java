@@ -93,7 +93,7 @@ public class MediaSelectionFragment extends Fragment implements
             }
         }
         if (matissFragment == null) {
-            throw new IllegalStateException("matissFragment 不能为null");
+            throw new IllegalStateException("matissFragment Cannot be null");
         }
         mSelectionProvider = (SelectionProvider) matissFragment;
         mCheckStateListener = (AlbumMediaAdapter.CheckStateListener) matissFragment;

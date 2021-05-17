@@ -24,7 +24,7 @@
                 app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
                 app:maskingColor="?attr/colorPrimary"
                 app:maskingTextColor="@color/black_eighty_percent"
-                app:maskingTextContent="上传中可自定义"
+                app:maskingTextContent="@string/up_upload_is_customizable"
                 app:maskingTextSize="12"
                 app:maxCount="7" />
 
@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:checked="true"
-                android:text="开启相册功能" />
+                android:text="@string/open_the_album_function" />
 
             <CheckBox
                 android:id="@+id/cbCamera"
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:checked="true"
-                android:text="开启拍摄功能" />
+                android:text="@string/turn_on_the_shooting_function" />
 
             <CheckBox
                 android:id="@+id/cbRecorder"
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:checked="true"
-                android:text="开启录音功能" />
+                android:text="@string/enable_recording" />
 
             <LinearLayout
                 android:layout_width="match_parent"

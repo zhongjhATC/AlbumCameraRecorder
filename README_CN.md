@@ -7,7 +7,7 @@
 ## 目前已经投入到正式项目中使用。
 ## 有任何建议或者想添加的功能，都可提在Issues
 
-## 中文
+## [English](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/README_EN.md)
 一个高效的多媒体支持操作库，可多方面的简单配置操作拍照、相册、录制、录音等功能。
 
 也支持配套使用的展示图片、视频、音频的九宫格功能。
@@ -75,37 +75,52 @@
 
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        cameraSetting.mimeTypeSet(MimeType.ofAll());// 支持的类型：图片，视频
+        // 支持的类型：图片，视频
+        cameraSetting.mimeTypeSet(MimeType.ofAll());
 
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(true)
-                .mimeTypeSet(MimeType.ofAll())// 支持的类型：图片，视频
-                .countable(true)// 是否显示多选图片的数字
-                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))// 自定义过滤器
-                .originalEnable(true)// 开启原图
-                .maxOriginalSize(10); // 最大原图size,仅当originalEnable为true的时候才有效
+        mAlbumSetting = new AlbumSetting(false)
+                // 支持的类型：图片，视频
+                .mimeTypeSet(MimeType.ofAll())
+                // 是否显示多选图片的数字
+                .countable(true)
+                // 自定义过滤器
+                .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))
+                // 开启原图
+                .originalEnable(true)
+                // 最大原图size,仅当originalEnable为true的时候才有效
+                .maxOriginalSize(10);
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
 
         // 全局
-        GlobalSetting globalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
+        mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
 
-        if (mBinding.cbAlbum.isChecked())
+        if (mBinding.cbAlbum.isChecked()){
             // 开启相册功能
-            globalSetting.albumSetting(albumSetting);
-        if (mBinding.cbCamera.isChecked())
+            mGlobalSetting.albumSetting(mAlbumSetting);
+        }
+        if (mBinding.cbCamera.isChecked()){
             // 开启拍摄功能
-            globalSetting.cameraSetting(cameraSetting);
-        if (mBinding.cbRecorder.isChecked())
+            mGlobalSetting.cameraSetting(cameraSetting);
+        }
+        if (mBinding.cbRecorder.isChecked()){
             // 开启录音功能
-            globalSetting.recorderSetting(recorderSetting);
+            mGlobalSetting.recorderSetting(recorderSetting);
+        }
 
-        globalSetting
-                .setOnMainListener(errorMessage -> Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show())
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))// 设置路径和7.0保护路径等等
-                .imageEngine(new Glide4Engine())    // for glide-V4
-                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)// 最大10张图片或者最大1个视频
+        mGlobalSetting
+                .setOnMainListener(errorMessage -> {
+                    Log.d(TAG, errorMessage);
+                    Toast.makeText(MainSimpleActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                })
+                // 设置路径和7.0保护路径等等
+                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
+                // for glide-V4
+                .imageEngine(new Glide4Engine())
+                // 最大10张图片或者最大1个视频
+                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
 
 #### 获取相关返回的数据
@@ -123,12 +138,12 @@
                 switch (MultiMediaSetting.obtainMultimediaType(data)) {
                     case MultimediaTypes.PICTURE:
                         // 图片
-                        List<String> path = MultiMediaSetting.obtainPathResult(data);
+                        List<String> path = MultiMediaSetting.obtainResult(data);
                         mBinding.mplImageList.addImagesStartUpload(path);
                         break;
                     case MultimediaTypes.VIDEO:
                         // 录像
-                        List<String> videoPath = MultiMediaSetting.obtainPathResult(data);
+                        List<String> videoPath = MultiMediaSetting.obtainResult(data);
                         mBinding.mplImageList.addVideoStartUpload(videoPath);
                         break;
                     case MultimediaTypes.AUDIO:
@@ -138,7 +153,21 @@
                         break;
                     case MultimediaTypes.BLEND:
                         // 混合类型，意思是图片可能跟录像在一起.
-                        mBinding.mplImageList.addImagesStartUpload(MultiMediaSetting.obtainPathResult(data));
+                        List<Uri> blends = MultiMediaSetting.obtainResult(data);
+                        List<Uri> images = new ArrayList<>();
+                        List<Uri> videos = new ArrayList<>();
+                        // 循环判断类型
+                        for (Uri uri : blends) {
+                            DocumentFile documentFile = DocumentFile.fromSingleUri(getBaseContext(), uri);
+                            if (documentFile.getType().startsWith("image")) {
+                                images.add(uri);
+                            } else if (documentFile.getType().startsWith("video")) {
+                                videos.add(uri);
+                            }
+                        }
+                        // 分别上传图片和视频
+                        mBinding.mplImageList.addUrisStartUpload(images);
+                        mBinding.mplImageList.addVideoStartUpload(videos);
                         break;
                 }
                 break;

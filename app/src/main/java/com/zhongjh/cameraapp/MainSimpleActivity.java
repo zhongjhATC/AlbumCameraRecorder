@@ -191,7 +191,7 @@ public class MainSimpleActivity extends BaseActivity {
         mGlobalSetting
                 .setOnMainListener(errorMessage -> {
                     Log.d(TAG, errorMessage);
-                    Toast.makeText(MainSimpleActivity.this.getApplicationContext(), "自定义失败信息：录音已经达到上限", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainSimpleActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
                 })
                 // 设置路径和7.0保护路径等等
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))

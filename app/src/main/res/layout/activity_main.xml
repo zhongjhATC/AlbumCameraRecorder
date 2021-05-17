@@ -24,7 +24,7 @@
                 app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
                 app:maskingColor="?attr/colorPrimary"
                 app:maskingTextColor="@color/black_eighty_percent"
-                app:maskingTextContent="上传中可自定义"
+                app:maskingTextContent="@string/up_upload_is_customizable"
                 app:maskingTextSize="12"
                 app:maxCount="7" />
 
@@ -33,7 +33,7 @@
                 android:layout_height="40dp"
                 android:background="@color/blue_album_dropdown_count_text"
                 android:gravity="center"
-                android:text="全局配置"
+                android:text="@string/global_configuration"
                 android:textColor="@color/white" />
 
             <LinearLayout
@@ -45,7 +45,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="全局功能" />
+                    android:text="@string/global_function" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -63,21 +63,21 @@
                             android:layout_height="match_parent"
                             android:checked="true"
                             android:gravity="center"
-                            android:text="支持全部" />
+                            android:text="@string/support_all" />
 
                         <RadioButton
                             android:id="@+id/rbAllImage"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="支持图片" />
+                            android:text="@string/support_image" />
 
                         <RadioButton
                             android:id="@+id/rbAllVideo"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="支持视频" />
+                            android:text="@string/support_video" />
 
                     </RadioGroup>
 
@@ -91,7 +91,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="启动动画" />
+                        android:text="@string/start_the_animation" />
 
                     <CheckBox
                         android:id="@+id/cbIsCutscenes"
@@ -111,7 +111,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="支持编辑图片" />
+                        android:text="@string/support_for_editing_images" />
 
                     <CheckBox
                         android:id="@+id/cbIsEdit"
@@ -131,7 +131,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="保存所有文件路径" />
+                        android:text="@string/save_all_file_paths" />
 
                     <EditText
                         android:id="@+id/etAllFile"
@@ -149,7 +149,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="保存图片路径" />
+                        android:text="@string/save_the_image_path" />
 
                     <EditText
                         android:id="@+id/etPictureFile"
@@ -167,7 +167,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="保存视频文件路径" />
+                        android:text="@string/save_the_path_to_the_video_file" />
 
                     <EditText
                         android:id="@+id/etVideoFile"
@@ -185,7 +185,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="保存音频文件路径" />
+                        android:text="@string/save_the_path_to_the_audio_file" />
 
                     <EditText
                         android:id="@+id/etAudioFile"
@@ -203,7 +203,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="最多可以设置几个图片：" />
+                        android:text="@string/you_can_set_up_to_several_images" />
 
                     <EditText
                         android:id="@+id/etAlbumCount"
@@ -223,7 +223,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="最多可以设置几个视频(添加可以设置多个，呈现的功能暂不考虑1个以上)：" />
+                        android:text="@string/at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment" />
 
                     <EditText
                         android:id="@+id/etVideoCount"
@@ -243,7 +243,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="最多可以设置几个音频(添加可以设置多个，呈现的功能暂不考虑1个以上)：：" />
+                        android:text="@string/you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one" />
 
                     <EditText
                         android:id="@+id/etAudioCount"
@@ -263,7 +263,7 @@
                 android:layout_height="40dp"
                 android:background="@color/blue_album_dropdown_count_text"
                 android:gravity="center"
-                android:text="相册配置"
+                android:text="@string/album_configuration"
                 android:textColor="@color/white" />
 
             <LinearLayout
@@ -278,12 +278,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:checked="true"
-                    android:text="开启相册功能" />
+                    android:text="@string/open_the_album_function" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="如果勾选这些,那么相册功能则以如下这些为标准：" />
+                    android:text="@string/if_these_are_checked_the_album_functionality_is_based_on_the_following" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -296,7 +296,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="支持图片" />
+                        android:text="@string/support_image" />
 
                     <CheckBox
                         android:id="@+id/cbAlbumVideo"
@@ -304,7 +304,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="支持视频" />
+                        android:text="@string/support_video" />
 
                 </LinearLayout>
 
@@ -319,7 +319,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="如果选择的媒体有图像或视频，是否能同时选择" />
+                        android:text="@string/if_the_selected_media_has_images_or_video_whether_both_can_be_selected" />
 
                 </LinearLayout>
 
@@ -334,7 +334,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="如果选择的媒体只有图像或视频，是否只显示一种媒体类型" />
+                        android:text="@string/whether_to_display_only_one_media_type_if_the_media_selected_is_only_images_or_video" />
 
                 </LinearLayout>
 
@@ -349,7 +349,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="是否显示多选图片的数字" />
+                        android:text="@string/whether_to_display_the_number_of_multiple_selected_images" />
 
                 </LinearLayout>
 
@@ -361,7 +361,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="九宫格大小(dp)" />
+                        android:text="@string/nine_grid_size_DP" />
 
                     <EditText
                         android:id="@+id/etGridExpectedSize"
@@ -380,7 +380,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="自定义过滤器："
+                        android:text="@string/custom_filters"
                         android:textColor="@color/dracula_album_dropdown_thumbnail_placeholder"
                         android:textSize="18sp" />
 
@@ -394,7 +394,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="过滤宽度不少于(px)" />
+                        android:text="@string/the_filter_width_should_be_no_less_than_px" />
 
                     <EditText
                         android:id="@+id/etAddFilterMinWidth"
@@ -413,7 +413,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="过滤高度不少于(px)" />
+                        android:text="@string/the_filter_height_shall_be_no_less_than_px" />
 
                     <EditText
                         android:id="@+id/etAddFilterMinHeight"
@@ -432,7 +432,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="过滤文件不能大于(m)" />
+                        android:text="@string/files_cannot_be_larger_than__m" />
 
                     <EditText
                         android:id="@+id/etMaxSizeInBytes"
@@ -451,7 +451,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="过滤图片缩放比例(最大为1)" />
+                        android:text="@string/filter_image_scaling_up_to_1" />
 
                     <EditText
                         android:id="@+id/etThumbnailScale"
@@ -473,7 +473,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="是否开启原图选项" />
+                        android:text="@string/whether_to_enable_the_original_image_option" />
 
                 </LinearLayout>
 
@@ -486,7 +486,7 @@
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:lines="3"
-                        android:text="最大原图size,仅当originalEnable为true的时候才有效(M)" />
+                        android:text="@string/maximum_original_size_valid_only_if_original_enable_is_true_m" />
 
                     <EditText
                         android:id="@+id/etMaxOriginalSize"
@@ -504,7 +504,7 @@
                 android:layout_height="40dp"
                 android:background="@color/blue_album_dropdown_count_text"
                 android:gravity="center"
-                android:text="录制配置"
+                android:text="@string/the_recording_configuration"
                 android:textColor="@color/white" />
 
             <LinearLayout
@@ -519,7 +519,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:checked="true"
-                    android:text="开启拍摄功能" />
+                    android:text="@string/turn_on_the_shooting_function" />
 
                 <CheckBox
                     android:id="@+id/cbVideoEdit"
@@ -527,7 +527,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:checked="true"
-                    android:text="开启分段录制功能" />
+                    android:text="@string/enable_segmented_recording" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -540,7 +540,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="支持图片" />
+                        android:text="@string/support_image" />
 
                     <CheckBox
                         android:id="@+id/cbCameraVideo"
@@ -548,7 +548,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:text="支持视频" />
+                        android:text="@string/support_video" />
 
                 </LinearLayout>
 
@@ -560,7 +560,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="最长录制时间" />
+                        android:text="@string/maximum_recording_time" />
 
                     <EditText
                         android:id="@+id/etCameraDuration"
@@ -579,7 +579,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="最短录制时间(毫秒)" />
+                        android:text="@string/minimum_recording_time_milliseconds" />
 
                     <EditText
                         android:id="@+id/etMinCameraDuration"
@@ -597,7 +597,7 @@
                 android:layout_height="40dp"
                 android:background="@color/blue_album_dropdown_count_text"
                 android:gravity="center"
-                android:text="录音配置"
+                android:text="@string/recording_configuration"
                 android:textColor="@color/white" />
 
             <LinearLayout
@@ -612,7 +612,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:checked="true"
-                    android:text="开启录音功能" />
+                    android:text="@string/enable_recording" />
 
             </LinearLayout>
 
