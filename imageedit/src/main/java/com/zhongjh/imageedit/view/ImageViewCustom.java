@@ -439,13 +439,11 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 // 取消延迟
-                Log.d(TAG, "onTouchEvent 取消延迟");
                 removeCallbacks(this);
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 // 取消或者离开触屏延迟1.2秒
-                Log.d(TAG, "onTouchEvent 延迟1200");
                 postDelayed(this, 1200);
                 break;
             default:

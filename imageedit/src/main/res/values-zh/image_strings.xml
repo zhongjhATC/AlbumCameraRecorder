@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_doodle">doodle</string>
+    <string name="image_text">text</string>
+    <string name="image_mosaic">mosaic</string>
+    <string name="image_clip">clip</string>
+    <string name="image_reset">reset</string>
+    <string name="image_done">done</string>
+    <string name="image_cancel">cancel</string>
+    <string name="image_rotate">rotate</string>
+
+    <string name="image_mosaic_tip">Please smear blurry on the picture directly</string>
+    <string name="image_undo">undo</string>
+    <string name="image_all_photo">All photo</string>
+    <string name="image_original">original</string>
+    <string name="image_preview">preview</string>
+</resources>
