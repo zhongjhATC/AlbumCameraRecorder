@@ -86,12 +86,7 @@ public class ImageEditActivity extends BaseImageEditActivity {
 
         options.inJustDecodeBounds = false;
 
-        Bitmap bitmap = decoder.decode(options);
-        if (bitmap == null) {
-            return null;
-        }
-
-        return bitmap;
+        return decoder.decode(options);
     }
 
     @Override

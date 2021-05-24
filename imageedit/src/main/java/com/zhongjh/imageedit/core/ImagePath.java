@@ -22,7 +22,10 @@ public class ImagePath {
 
     private ImageMode mode = ImageMode.DOODLE;
 
-    public static final float BASE_DOODLE_WIDTH = 20f;
+    /**
+     * 画笔的宽度
+     */
+    public static final float BASE_DOODLE_WIDTH = 10f;
 
     public static final float BASE_MOSAIC_WIDTH = 72f;
 

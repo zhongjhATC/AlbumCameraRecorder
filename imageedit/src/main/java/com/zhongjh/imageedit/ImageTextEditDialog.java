@@ -22,11 +22,9 @@ import com.zhongjh.imageedit.view.ImageColorGroup;
 public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
         RadioGroup.OnCheckedChangeListener {
 
-    private static final String TAG = "IMGTextEditDialog";
-
     private EditText mEditText;
 
-    private Callback mCallback;
+    private final Callback mCallback;
 
     private ImageText mDefaultText;
 

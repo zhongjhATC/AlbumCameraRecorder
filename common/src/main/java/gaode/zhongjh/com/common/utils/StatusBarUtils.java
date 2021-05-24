@@ -21,16 +21,20 @@ public class StatusBarUtils {
         window.setAttributes(attributes);
         window.setStatusBarColor(Color.TRANSPARENT);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false);
-            WindowInsetsController controller = window.getInsetsController();
-            if(controller != null) {
-                controller.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
-            }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            window.getDecorView().getWindowInsetsController().hide(
+//                    android.view.WindowInsets.Type.statusBars()
+//            );
+
+//            window.setDecorFitsSystemWindows(false);
+//            WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
+//            if(controller != null) {
+//                controller.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+//                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+//            }
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
+//        }
     }
 
 

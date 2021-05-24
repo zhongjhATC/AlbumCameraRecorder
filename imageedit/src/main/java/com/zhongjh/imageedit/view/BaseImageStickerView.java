@@ -42,15 +42,15 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
 
     private ImageView mRemoveView, mAdjustView;
 
-    private float mMaxScaleValue = MAX_SCALE_VALUE;
+    private final float mMaxScaleValue = MAX_SCALE_VALUE;
 
-    private Paint mPaint;
+    private final Paint mPaint;
 
-    private Matrix mMatrix = new Matrix();
+    private final Matrix mMatrix = new Matrix();
 
-    private RectF mFrame = new RectF();
+    private final RectF mFrame = new RectF();
 
-    private Rect mTempFrame = new Rect();
+    private final Rect mTempFrame = new Rect();
 
     private static final float MAX_SCALE_VALUE = 4f;
 
