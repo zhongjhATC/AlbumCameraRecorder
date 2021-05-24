@@ -40,7 +40,7 @@ ext {
     versionName = '1.0.31'
 
     androidCompileSdkVersion = 30
-    androidBuildToolsVersion = '26.0.2'
+    androidBuildToolsVersion = '30.0.3'
     recyclerviewSdkVersion = '1.1.0'
     appcompatSdkVersion = '1.2.0'
     constraintlayoutSdkVersion = '2.0.1'

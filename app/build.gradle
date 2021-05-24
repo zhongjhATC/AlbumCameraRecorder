@@ -17,6 +17,7 @@ android {
     }
 
     compileSdkVersion rootProject.ext.androidCompileSdkVersion
+    buildToolsVersion rootProject.ext.androidBuildToolsVersion
     defaultConfig {
         applicationId "com.zhongjh.cameraviewsoundrecorder"
         minSdkVersion rootProject.ext.minSdkVersion
