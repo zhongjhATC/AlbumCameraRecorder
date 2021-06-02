@@ -69,7 +69,7 @@ dependencies {
     implementation project(path: ':imageedit')
     implementation project(path: ':videoedit')
     implementation project(':albumCameraRecorderCommon')
-    implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.1'
+    implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.2'
 
     // 图片
     implementation 'com.github.bumptech.glide:glide:4.8.0'

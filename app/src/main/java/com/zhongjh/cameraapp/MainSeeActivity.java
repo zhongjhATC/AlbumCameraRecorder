@@ -47,7 +47,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     /**
      * 初始化下载
      */
-    private DownloadHelper mDownloadHelper = new DownloadHelper("http://www.baseurl.com", this);
+    private DownloadHelper mDownloadHelper = new DownloadHelper(this);
 
     ProgressDialog progressDialog;
 
