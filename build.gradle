@@ -36,11 +36,11 @@ task clean(type: Delete) {
 
 ext {
 
-    versionCode = 1031
-    versionName = '1.0.31'
+    versionCode = 1032
+    versionName = '1.0.32'
 
     androidCompileSdkVersion = 30
-    androidBuildToolsVersion = '26.0.2'
+    androidBuildToolsVersion = '30.0.3'
     recyclerviewSdkVersion = '1.1.0'
     appcompatSdkVersion = '1.2.0'
     constraintlayoutSdkVersion = '2.0.1'
