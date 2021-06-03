@@ -30,8 +30,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 
-        <service android:name=".recorder.service.RecordingService" />
-
     </application>
 
 
