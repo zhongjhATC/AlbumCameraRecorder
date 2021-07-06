@@ -59,8 +59,6 @@
         app:type="confirm"
         tools:visibility="visible" />
 
-
-
     <!-- 中间的操作按钮 -->
     <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
         android:id="@+id/btnClickOrLong"

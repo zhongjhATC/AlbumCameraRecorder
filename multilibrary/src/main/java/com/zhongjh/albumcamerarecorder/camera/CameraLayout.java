@@ -765,8 +765,7 @@ public class CameraLayout extends RelativeLayout {
             ImageView imgPhoto = Objects.requireNonNull(mCaptureViews.get(entry.getKey())).findViewById(R.id.imgPhoto);
             Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).setUri(multiMediaArrayList.get(position).getUri());
             Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).setPath(multiMediaArrayList.get(position).getPath());
-            mGlobalSpec.imageEngine.loadThumbnail(getContext(), imgPhoto.getWidth(), mPlaceholder,
-                    imgPhoto, Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).getUri());
+            mGlobalSpec.imageEngine.loadUriImage(getContext(), imgPhoto, Objects.requireNonNull(mCaptureBitmaps.get(entry.getKey())).getUri());
             position++;
         }
     }
@@ -901,6 +900,7 @@ public class CameraLayout extends RelativeLayout {
                     // 删除图片
                     FileUtil.deleteFile(mPhotoFile);
                 }
+                mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
                 break;
             case TYPE_SHORT:
                 // 短视屏停止录像并删除文件
@@ -977,8 +977,7 @@ public class CameraLayout extends RelativeLayout {
             // 如果只有单个图片，就显示相应的提示结果等等
             mViewHolder.imgPhoto.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mCaptureBitmaps.put(0, bitmapData);
-            mGlobalSpec.imageEngine.loadThumbnail(getContext(), mViewHolder.imgPhoto.getWidth(), mPlaceholder,
-                    mViewHolder.imgPhoto, bitmapData.getUri());
+            mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
@@ -992,8 +991,11 @@ public class CameraLayout extends RelativeLayout {
                 mViewHolder.rlEdit.setVisibility(View.VISIBLE);
                 mViewHolder.rlEdit.setTag(uri);
             } else {
-                mViewHolder.rlEdit.setVisibility(View.GONE);
+                mViewHolder.rlEdit.setVisibility(View.INVISIBLE);
             }
+
+            // 隐藏拍照按钮
+            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setVisibility(View.INVISIBLE);
         }
 
         // 回调接口：添加图片后剩下的相关数据
@@ -1018,8 +1020,7 @@ public class CameraLayout extends RelativeLayout {
 
         // 添加view
         ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_horizontal_image_zjh, null));
-        mGlobalSpec.imageEngine.loadThumbnail(getContext(), viewHolderImageView.imgPhoto.getWidth(), mPlaceholder,
-                viewHolderImageView.imgPhoto, bitmapData.getUri());
+        mGlobalSpec.imageEngine.loadUriImage(getContext(), viewHolderImageView.imgPhoto, bitmapData.getUri());
         // 删除事件
         viewHolderImageView.imgCancel.setTag(R.id.tagid, mPosition);
         viewHolderImageView.imgCancel.setOnClickListener(v -> removePosition(Integer.parseInt(v.getTag(R.id.tagid).toString())));

@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/black_eighty_percent"
     android:orientation="vertical"
+    android:animateLayoutChanges="true"
     android:paddingTop="1dp">
 
     <!-- 拍摄 -->
