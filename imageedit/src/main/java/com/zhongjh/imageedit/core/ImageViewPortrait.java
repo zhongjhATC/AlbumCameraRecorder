@@ -3,7 +3,7 @@ package com.zhongjh.imageedit.core;
 /**
  * @author felix
  * @date 2017/11/16 下午5:49
- * 这是模仿view的相关接口,因为有些地方只
+ * 这是模仿view的相关接口
  */
 public interface ImageViewPortrait {
 

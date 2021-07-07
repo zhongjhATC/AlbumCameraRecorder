@@ -438,6 +438,7 @@ public class CameraLayout extends RelativeLayout {
         mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
         if (mCameraSpec.videoEditCoordinator != null) {
             mCameraSpec.videoEditCoordinator.onDestroy();
+            mCameraSpec.videoEditCoordinator = null;
         }
     }
 

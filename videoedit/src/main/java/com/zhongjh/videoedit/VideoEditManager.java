@@ -66,7 +66,7 @@ public class VideoEditManager extends VideoEditCoordinator {
 
     public static class MyRxFfmpegSubscriber extends RxFFmpegSubscriber {
 
-        private WeakReference<VideoEditListener> mWeakReference;
+        private final WeakReference<VideoEditListener> mWeakReference;
 
         public MyRxFfmpegSubscriber(VideoEditListener videoEditListener) {
             mWeakReference = new WeakReference<>(videoEditListener);

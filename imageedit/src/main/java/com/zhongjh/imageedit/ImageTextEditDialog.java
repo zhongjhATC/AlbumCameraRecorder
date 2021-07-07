@@ -15,7 +15,6 @@ import com.zhongjh.imageedit.core.ImageText;
 import com.zhongjh.imageedit.view.ImageColorGroup;
 
 /**
- *
  * @author felix
  * @date 2017/12/1 上午11:21
  */
@@ -24,7 +23,7 @@ public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
 
     private EditText mEditText;
 
-    private final Callback mCallback;
+    private Callback mCallback;
 
     private ImageText mDefaultText;
 
@@ -50,6 +49,12 @@ public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
 
         findViewById(R.id.ibtnBack).setOnClickListener(this);
         findViewById(R.id.ibtnDone).setOnClickListener(this);
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        mCallback = null;
     }
 
     @Override
@@ -103,6 +108,7 @@ public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
 
         /**
          * 点击完成后执行的该事件
+         *
          * @param text dialog的text
          */
         void onText(ImageText text);

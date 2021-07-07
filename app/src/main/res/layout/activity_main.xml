@@ -206,6 +206,7 @@
                         android:text="@string/you_can_set_up_to_several_images" />
 
                     <EditText
+
                         android:id="@+id/etAlbumCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
