@@ -54,15 +54,15 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 
 	dependencies {
 	     // Public library, which must be used
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.35X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.36X'
 	     // Core lib, call display album, recording screen, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.35X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.36X'
          // Supporting use, mainly used to obtain data after the relevant display, the corresponding upload progress display, if you only need to obtain photos, video, audio and other data, their own code to obtain the data after the presentation, you can not need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.35X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.36X'
          // Supporting the use of editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.0.35X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.0.36X'
 	     // Supporting the use of editing video
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.0.35X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.0.36X'
 	}
 
 ## snapshoot
