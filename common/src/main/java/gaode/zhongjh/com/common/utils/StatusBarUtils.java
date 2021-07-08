@@ -16,19 +16,21 @@ public class StatusBarUtils {
 
     public static void initStatusBar(Activity activity) {
         // 设置状态栏为透明并且为全屏模式
-        Window window = activity.getWindow();
-        WindowManager.LayoutParams attributes = window.getAttributes();
-        window.setAttributes(attributes);
-        window.setStatusBarColor(Color.TRANSPARENT);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.getDecorView().getWindowInsetsController().hide(
-                    android.view.WindowInsets.Type.statusBars()
-            );
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = activity.getWindow();
+            WindowManager.LayoutParams attributes = window.getAttributes();
+            window.setAttributes(attributes);
+            activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         } else {
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            Window window = activity.getWindow();
+            WindowManager.LayoutParams attributes = window.getAttributes();
+            attributes.flags |= flagTranslucentStatus;
+            window.setAttributes(attributes);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
     }
 
