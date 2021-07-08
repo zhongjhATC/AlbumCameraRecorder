@@ -111,6 +111,8 @@ public class PlayView extends FrameLayout {
         initListener();
     }
 
+
+
     /**
      * 初始化相关数据
      *
