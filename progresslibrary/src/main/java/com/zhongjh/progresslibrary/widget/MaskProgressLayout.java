@@ -9,16 +9,12 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.Group;
 import androidx.core.content.ContextCompat;
 
-import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.zhongjh.progresslibrary.R;
 import com.zhongjh.progresslibrary.api.MaskProgressApi;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
@@ -43,7 +39,7 @@ import gaode.zhongjh.com.common.utils.MediaStoreCompat;
  */
 public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
-    private Context mContext;
+    private final Context mContext;
     /**
      * 文件配置路径
      */
@@ -70,6 +66,15 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
      * 音频 文件的进度条颜色
      */
     private int audioProgressColor;
+    /**
+     * 删除颜色
+     */
+    private int audioDeleteColor;
+    /**
+     * 播放按钮的颜色
+     */
+    private int audioPlayColor;
+
     /**
      * 点击事件(这里只针对音频)
      */
@@ -129,11 +134,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
         // region 音频
         // 音频，删除按钮的颜色
-        int audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioDeleteColor, colorPrimary);
+        audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioDeleteColor, colorPrimary);
         // 音频 文件的进度条颜色
         audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioProgressColor, colorPrimary);
         // 音频 播放按钮的颜色
-        int audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioPlayColor, colorPrimary);
+        audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioPlayColor, colorPrimary);
         // endregion 音频
 
         // region 遮罩层相关属性
@@ -175,8 +180,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
         maskProgressLayoutStyle.recycle();
         typedArray.recycle();
-
-        initListener();
     }
 
     @Override
@@ -250,7 +253,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
         multiMediaView.setPath(filePath);
         multiMediaView.setUri(mMediaStoreCompat.getUri(filePath));
-        multiMediaView.setViewHolder(this);
         addAudioData(multiMediaView, filePath, length);
 
         // 检测添加多媒体上限
@@ -267,14 +269,13 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             if (0 != duration) {
                 MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
                 multiMediaView.setUrl(audioUrl);
-                multiMediaView.setViewHolder(this);
 
                 if (this.audioList == null) {
                     this.audioList = new ArrayList<>();
                 }
                 audioList.add(multiMediaView);
 
-                PlayProgressView playProgressView = newPlayProgressView();
+                PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
                 isShowRemoveRecorder();
@@ -300,10 +301,9 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
         multiMediaView.setPath(file);
-        multiMediaView.setViewHolder(this);
 
 
-        PlayProgressView playProgressView = newPlayProgressView();
+        PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
         isShowRemoveRecorder();
@@ -369,39 +369,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     /**
-     * 音频上传完成后
-     */
-    public void audioUploadCompleted() {
-        // TODO
-//        // 显示完成后的音频
-//        mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
-//        mViewHolder.playView.setVisibility(View.VISIBLE);
-//        isShowRemoveRecorder();
-    }
-
-    /**
-     * 初始化所有事件
-     */
-    private void initListener() {
-        // TODO
-//        // 音频删除事件
-//        this.mViewHolder.imgRemoveRecorder.setOnClickListener(v -> {
-//            if (audioList.size() > 0)
-//            // 需要判断，防止是网址状态未提供实体数据的
-//            {
-//                listener.onItemClose(MaskProgressLayout.this, audioList.get(0));
-//            }
-//            // 隐藏音频相关控件
-//            mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
-//            mViewHolder.playView.setVisibility(View.GONE);
-//            audioList.clear();
-//            mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
-//            mViewHolder.alfMedia.checkLastImages();
-//            isShowRemoveRecorder();
-//        });
-    }
-
-    /**
      * 设置是否显示删除音频按钮
      */
     private void isShowRemoveRecorder() {
@@ -445,7 +412,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             // 显示音频的进度条
             this.listener.onItemStartUploading(multiMediaView);
         }
-        PlayProgressView playProgressView = newPlayProgressView();
+        PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
         // 初始化播放控件
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(filePath);
@@ -460,10 +427,22 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     /**
      * 创建一个新的playProgressView
+     *
+     * @param multiMediaView 这是携带view的实体控件
      * @return playProgressView
      */
-    private PlayProgressView newPlayProgressView() {
+    private PlayProgressView newPlayProgressView(MultiMediaView multiMediaView) {
         PlayProgressView playProgressView = new PlayProgressView(mContext);
+        playProgressView.setCallback(() -> {
+            if (audioList.size() > 0) {
+                // 需要判断，防止是网址状态未提供实体数据的
+                listener.onItemClose(MaskProgressLayout.this, multiMediaView);
+            }
+            audioList.remove(multiMediaView);
+            mViewHolder.alfMedia.checkLastImages();
+        });
+        playProgressView.initStyle(audioDeleteColor, audioProgressColor, audioPlayColor);
+        multiMediaView.setPlayProgressView(playProgressView);
         playProgressView.setListener(listener);
         // 添加入view
         mViewHolder.llContent.addView(playProgressView);

@@ -127,7 +127,14 @@ public class PlayView extends FrameLayout {
         mViewHolder.seekbar.getProgressDrawable().setColorFilter(filter);
         mViewHolder.seekbar.getThumb().setColorFilter(filter);
 
-        mViewHolder.seekbar.setEnabled(!TextUtils.isEmpty(mRecordingItem.getFilePath()));
+        mViewHolder.seekbar.setEnabled(!TextUtils.isEmpty(recordingItem.getFilePath()));
+
+        // 当前时间
+        mViewHolder.tvCurrentProgress.setText("00:00/");
+        // 总计时间
+        mViewHolder.tvTotalProgress.setText(generateTime(recordingItem.getLength()));
+        // 设置进度条
+        mViewHolder.seekbar.setMax(recordingItem.getLength());
 
         initData();
     }
@@ -159,13 +166,16 @@ public class PlayView extends FrameLayout {
             }
         });
 
-        //异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
+        // 异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
         mMediaPlayer.setOnPreparedListener(mediaPlayer -> {
             mViewHolder.seekbar.setProgress(0);
             mViewHolder.imgPlay.setEnabled(true);
-            mViewHolder.tvCurrentProgress.setText("00:00/");// 当前时间
-            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration())); // 总计时间
-            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());//设置进度条
+            // 当前时间
+            mViewHolder.tvCurrentProgress.setText("00:00/");
+            // 总计时间
+            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration()));
+            // 设置进度条
+            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());
         });
 
         // 播放完成事件

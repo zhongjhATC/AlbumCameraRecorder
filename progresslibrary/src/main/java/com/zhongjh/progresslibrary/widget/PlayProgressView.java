@@ -34,6 +34,20 @@ public class PlayProgressView extends ConstraintLayout {
      */
     private boolean isOperation = true;
 
+    private Callback callback;
+
+    public interface Callback {
+
+        /**
+         * 音频删除事件
+         */
+        void onRemoveRecorder();
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
     public PlayProgressView(@NonNull Context context) {
         this(context, null);
     }
@@ -54,13 +68,29 @@ public class PlayProgressView extends ConstraintLayout {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
         mViewHolder = new ViewHolder(View.inflate(getContext(), R.layout.layout_play_progress, this));
-        initStyle();
+        addInit();
+        initListener();
+    }
+
+    /**
+     * 初始化所有事件
+     */
+    private void initListener() {
+        // 音频删除事件
+        this.mViewHolder.imgRemoveRecorder.setOnClickListener(v -> {
+            callback.onRemoveRecorder();
+            // 隐藏音频相关控件
+            mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
+            mViewHolder.playView.setVisibility(View.GONE);
+            mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
+            isShowRemoveRecorder();
+        });
     }
 
     /**
      * 初始化样式
      */
-    private void initStyle() {
+    public void initStyle(int audioDeleteColor, int audioProgressColor, int audioPlayColor) {
         // 设置上传音频等属性
         mViewHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor);
         isShowRemoveRecorder();
@@ -134,6 +164,17 @@ public class PlayProgressView extends ConstraintLayout {
     public void setData(RecordingItem recordingItem, int audioProgressColor) {
         mViewHolder.playView.setData(recordingItem, audioProgressColor);
     }
+
+    /**
+     * 音频上传完成后
+     */
+    public void audioUploadCompleted() {
+        // 显示完成后的音频
+        mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
+        mViewHolder.playView.setVisibility(View.VISIBLE);
+        isShowRemoveRecorder();
+    }
+
 
     public static class ViewHolder {
 
