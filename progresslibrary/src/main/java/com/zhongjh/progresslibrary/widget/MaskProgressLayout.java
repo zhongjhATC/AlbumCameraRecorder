@@ -274,13 +274,14 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
                 }
                 audioList.add(multiMediaView);
 
+                PlayProgressView playProgressView = newPlayProgressView();
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
-                mViewHolder.playView.setVisibility(View.VISIBLE);
+                playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
                 isShowRemoveRecorder();
                 RecordingItem recordingItem = new RecordingItem();
                 recordingItem.setUrl(audioUrl);
                 recordingItem.setLength(duration);
-                mViewHolder.playView.setData(recordingItem, audioProgressColor);
+                playProgressView.setData(recordingItem, audioProgressColor);
                 //记得释放资源
                 mediaPlayer.release();
             }
@@ -301,13 +302,15 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         multiMediaView.setPath(file);
         multiMediaView.setViewHolder(this);
 
+
+        PlayProgressView playProgressView = newPlayProgressView();
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
-        mViewHolder.playView.setVisibility(View.VISIBLE);
+        playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
         isShowRemoveRecorder();
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(file);
         recordingItem.setLength(Integer.parseInt(duration));
-        mViewHolder.playView.setData(recordingItem, audioProgressColor);
+        playProgressView.mViewHolder.playView.setData(recordingItem, audioProgressColor);
     }
 
     @Override
@@ -327,7 +330,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void onAudioClick() {
-        mViewHolder.playView.mViewHolder.imgPlay.performClick();
+        // TODO
+//        mViewHolder.playView.mViewHolder.imgPlay.performClick();
     }
 
     @Override
@@ -354,9 +358,13 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void onDestroy() {
-        mViewHolder.playView.onDestroy();
         mViewHolder.alfMedia.removeListener();
-        mViewHolder.playView.removeListener();
+
+        for (int i = 0; i < mViewHolder.llContent.getChildCount(); i++) {
+            PlayProgressView item = (PlayProgressView) mViewHolder.llContent.getChildAt(i);
+            item.mViewHolder.playView.onDestroy();
+            item.mViewHolder.playView.removeListener();
+        }
         this.listener = null;
     }
 
@@ -364,31 +372,33 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
      * 音频上传完成后
      */
     public void audioUploadCompleted() {
-        // 显示完成后的音频
-        mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
-        mViewHolder.playView.setVisibility(View.VISIBLE);
-        isShowRemoveRecorder();
+        // TODO
+//        // 显示完成后的音频
+//        mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
+//        mViewHolder.playView.setVisibility(View.VISIBLE);
+//        isShowRemoveRecorder();
     }
 
     /**
      * 初始化所有事件
      */
     private void initListener() {
-        // 音频删除事件
-        this.mViewHolder.imgRemoveRecorder.setOnClickListener(v -> {
-            if (audioList.size() > 0)
-            // 需要判断，防止是网址状态未提供实体数据的
-            {
-                listener.onItemClose(MaskProgressLayout.this, audioList.get(0));
-            }
-            // 隐藏音频相关控件
-            mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
-            mViewHolder.playView.setVisibility(View.GONE);
-            audioList.clear();
-            mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
-            mViewHolder.alfMedia.checkLastImages();
-            isShowRemoveRecorder();
-        });
+        // TODO
+//        // 音频删除事件
+//        this.mViewHolder.imgRemoveRecorder.setOnClickListener(v -> {
+//            if (audioList.size() > 0)
+//            // 需要判断，防止是网址状态未提供实体数据的
+//            {
+//                listener.onItemClose(MaskProgressLayout.this, audioList.get(0));
+//            }
+//            // 隐藏音频相关控件
+//            mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
+//            mViewHolder.playView.setVisibility(View.GONE);
+//            audioList.clear();
+//            mViewHolder.imgRemoveRecorder.setVisibility(View.GONE);
+//            mViewHolder.alfMedia.checkLastImages();
+//            isShowRemoveRecorder();
+//        });
     }
 
     /**
@@ -435,13 +445,12 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             // 显示音频的进度条
             this.listener.onItemStartUploading(multiMediaView);
         }
+        PlayProgressView playProgressView = newPlayProgressView();
         // 初始化播放控件
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(filePath);
         recordingItem.setLength(length);
         playProgressView.setData(recordingItem, audioProgressColor);
-        // 添加入view
-        mViewHolder.llContent.addView(playProgressView);
         // 添加音频后重置所有当前播放中的音频
         for (int i = 0; i < mViewHolder.llContent.getChildCount(); i++) {
             PlayProgressView item = (PlayProgressView) mViewHolder.llContent.getChildAt(i);
@@ -456,6 +465,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     private PlayProgressView newPlayProgressView() {
         PlayProgressView playProgressView = new PlayProgressView(mContext);
         playProgressView.setListener(listener);
+        // 添加入view
+        mViewHolder.llContent.addView(playProgressView);
         return playProgressView;
     }
 
