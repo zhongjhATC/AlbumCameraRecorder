@@ -33,9 +33,11 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
+import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import gaode.zhongjh.com.common.utils.ThreadUtils;
 
 import static android.app.Activity.RESULT_OK;
@@ -109,6 +111,10 @@ public class SoundRecordingFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
+        // 兼容沉倾状态栏
+        mViewHolder.chronometer.setPadding(0, StatusBarUtils.getStatusBarHeight(Objects.requireNonNull(getContext())), 0, 0);
+        ViewGroup.LayoutParams layoutParams = mViewHolder.chronometer.getLayoutParams();
+        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(Objects.requireNonNull(getContext()));
         // 初始化设置
         mRecordSpec = RecordeSpec.getInstance();
         // 提示文本

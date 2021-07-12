@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -63,6 +64,7 @@ import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.listener.VideoEditListener;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
+import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
@@ -302,6 +304,11 @@ public class CameraLayout extends RelativeLayout {
         setWillNotDraw(false);
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
+
+        // 兼容沉倾状态栏
+        mViewHolder.clMenu.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()), 0, 0);
+        ViewGroup.LayoutParams layoutParams = mViewHolder.clMenu.getLayoutParams();
+        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(getContext());
 
         // 如果没启动视频编辑，隐藏分段录制功能
         if (mCameraSpec.videoEditCoordinator == null) {
