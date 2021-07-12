@@ -230,7 +230,6 @@
                         android:id="@+id/etVideoCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="false"
                         android:inputType="number"
                         android:text="1" />
 
@@ -250,10 +249,8 @@
                         android:id="@+id/etAudioCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="false"
                         android:inputType="number"
                         android:text="1" />
-
 
                 </LinearLayout>
 
