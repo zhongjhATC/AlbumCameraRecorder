@@ -39,7 +39,7 @@ dependencies {
     compileOnly 'com.squareup.picasso:picasso:2.5.2'
 
     // 拍摄、录像核心类 https://github.com/natario1/CameraView
-    api 'com.otaliastudios:cameraview:2.7.0'
+    api 'com.otaliastudios:cameraview:2.7.1'
 
     // 自制按钮进度
     api 'com.github.zhongjhATC:CircularProgressView:1.5'
