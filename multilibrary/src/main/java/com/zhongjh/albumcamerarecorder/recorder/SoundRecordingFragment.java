@@ -111,10 +111,6 @@ public class SoundRecordingFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
-        // 兼容沉倾状态栏
-        mViewHolder.chronometer.setPadding(0, StatusBarUtils.getStatusBarHeight(Objects.requireNonNull(getContext())), 0, 0);
-        ViewGroup.LayoutParams layoutParams = mViewHolder.chronometer.getLayoutParams();
-        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(getContext());
         // 初始化设置
         mRecordSpec = RecordeSpec.getInstance();
         // 提示文本
