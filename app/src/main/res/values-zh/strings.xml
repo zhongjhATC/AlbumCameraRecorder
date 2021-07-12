@@ -15,8 +15,9 @@
     <string name="save_the_image_path">保存图片路径</string>
     <string name="save_the_path_to_the_video_file">保存视频文件路径</string>
     <string name="save_the_path_to_the_audio_file">保存音频文件路径</string>
+    <string name="you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations">最多可以设置几个图片\视频\音频：如果设置为0，则总数是下面三个配置的和</string>
     <string name="you_can_set_up_to_several_images">最多可以设置几个图片：</string>
-    <string name="you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one">最多可以设置几个音频(添加可以设置多个，呈现的功能暂不考虑1个以上)：</string>
+    <string name="you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one">最多可以设置几个音频：</string>
     <string name="open_the_album_function">开启相册功能</string>
     <string name="if_these_are_checked_the_album_functionality_is_based_on_the_following">如果勾选这些,那么相册功能则以如下这些为标准：</string>
     <string name="if_the_selected_media_has_images_or_video_whether_both_can_be_selected">如果选择的媒体有图像或视频，是否能同时选择</string>
@@ -45,7 +46,7 @@
     <string name="you_can_turn_it_back_on">你可以重新打开相关功能</string>
     <string name="please_open_it_in_settings_permission_management">请到设置-权限管理中开启</string>
     <string name="download_failed">下载失败</string>
-    <string name="at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment">最多可以设置几个视频(添加可以设置多个，呈现的功能暂不考虑1个以上)：</string>
+    <string name="at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment">最多可以设置几个视频：</string>
     <string name="album_configuration">相册配置</string>
     <string name="custom_filters">自定义过滤器：</string>
     <string name="recording_configuration">录音配置</string>

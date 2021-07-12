@@ -128,7 +128,7 @@ public final class GlobalSetting implements GlobalSettingApi {
 
 
     @Override
-    public GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
+    public GlobalSetting maxSelectablePerMediaType(int maxSelectable,int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
         mGlobalSpec.maxImageSelectable = maxImageSelectable;
         mGlobalSpec.maxVideoSelectable = maxVideoSelectable;
         mGlobalSpec.maxAudioSelectable = maxAudioSelectable;

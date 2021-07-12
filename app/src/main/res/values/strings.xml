@@ -15,8 +15,9 @@
     <string name="save_the_image_path">Save the image path</string>
     <string name="save_the_path_to_the_video_file">Save the path to the video file</string>
     <string name="save_the_path_to_the_audio_file">Save the path to the audio file</string>
+    <string name="you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations">You can set up to a few Images/Video/Audio: If set to 0, the total is the sum of the following three configurations</string>
     <string name="you_can_set_up_to_several_images">You can set up to several images:</string>
-    <string name="you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one">You can set up to several audio (add can set more than one, rendering function is not considered more than one) :</string>
+    <string name="you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one">You can set up to several audio :</string>
     <string name="open_the_album_function">Open the album function</string>
     <string name="if_these_are_checked_the_album_functionality_is_based_on_the_following">If checked, the album functionality is based on the following:</string>
     <string name="if_the_selected_media_has_images_or_video_whether_both_can_be_selected">If the selected media has images or video, whether both can be selected</string>
@@ -45,7 +46,7 @@
     <string name="you_can_turn_it_back_on">You can turn it back on</string>
     <string name="please_open_it_in_settings_permission_management">Please open it in Settings - Permission Management</string>
     <string name="download_failed">Download failed</string>
-    <string name="at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment">At most, several videos can be set (multiple videos can be set to add, and more than one rendering function is not considered for the moment) :</string>
+    <string name="at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment">At most, several videos can be set  :</string>
     <string name="album_configuration">Photo album configuration</string>
     <string name="custom_filters">Custom filters:</string>
     <string name="recording_configuration">Recording configuration</string>

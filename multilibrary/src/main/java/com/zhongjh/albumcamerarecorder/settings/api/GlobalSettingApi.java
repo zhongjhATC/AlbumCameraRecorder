@@ -75,12 +75,13 @@ public interface GlobalSettingApi {
     /**
      * 仅当 {@link AlbumSpec#mediaTypeExclusive} 设置为true并且您希望为图像和视频媒体类型设置不同的最大可选文件时才有用。
      *
+     * @param maxSelectable 最大选择数量，如果设置为0以下，那么能选择的总数量就是 maxImageSelectable/maxVideoSelectable/maxAudioSelectable 的总数
      * @param maxImageSelectable imga的最大可选计数.
      * @param maxVideoSelectable video的最大可选计数.
      * @param maxAudioSelectable audio的最大可选计数.
      * @return {@link GlobalSetting} this
      */
-    GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable);
+    GlobalSetting maxSelectablePerMediaType(int maxSelectable,int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable);
 
     /**
      * 保存文件的位置{@link androidx.core.content.FileProvider}.
