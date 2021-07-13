@@ -6,6 +6,7 @@ import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -99,18 +100,18 @@ public class AlbumSpec {
      * @return 是否
      */
     public boolean singleSelectionModeEnabled() {
-        return !countable && GlobalSpec.getInstance().maxImageSelectable == 1 && GlobalSpec.getInstance().maxVideoSelectable == 1;
+        return !countable && SelectableUtils.getSingleImageVideo();
     }
 
     /**
-     * 仅显示图片 或者 图片可选为0个
+     * 仅显示图片 或者 视频可选为0个
      */
     public boolean onlyShowImages() {
         return (showSingleMediaType && MimeType.ofImage().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM))) || GlobalSpec.getInstance().maxVideoSelectable == 0;
     }
 
     /**
-     * 仅显示视频 或者 视频可选为0个
+     * 仅显示视频 或者 图片可选为0个
      */
     public boolean onlyShowVideos() {
         return (showSingleMediaType && MimeType.ofVideo().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM))) || GlobalSpec.getInstance().maxImageSelectable == 0;

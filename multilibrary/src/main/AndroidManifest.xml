@@ -15,19 +15,19 @@
         <activity
             android:name=".MainActivity"
             android:hardwareAccelerated="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".preview.SelectedPreviewActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".preview.AlbumPreviewActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".camera.PreviewVideoActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
     </application>

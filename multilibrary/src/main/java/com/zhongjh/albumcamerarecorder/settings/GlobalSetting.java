@@ -3,12 +3,14 @@ package com.zhongjh.albumcamerarecorder.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.fragment.app.Fragment;
+
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -20,6 +22,7 @@ import gaode.zhongjh.com.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -128,7 +131,8 @@ public final class GlobalSetting implements GlobalSettingApi {
 
 
     @Override
-    public GlobalSetting maxSelectablePerMediaType(int maxSelectable,int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
+    public GlobalSetting maxSelectablePerMediaType(Integer maxSelectable, int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
+        mGlobalSpec.maxSelectable = maxSelectable;
         mGlobalSpec.maxImageSelectable = maxImageSelectable;
         mGlobalSpec.maxVideoSelectable = maxVideoSelectable;
         mGlobalSpec.maxAudioSelectable = maxAudioSelectable;
@@ -200,7 +204,7 @@ public final class GlobalSetting implements GlobalSettingApi {
             numItems++;
         }
         if (mGlobalSpec.recorderSetting != null && numItems <= 0) {
-            if (mGlobalSpec.maxAudioSelectable > 0) {
+            if (SelectableUtils.getAudioMaxCount() > 0) {
                 numItems++;
             } else {
                 if (mGlobalSpec.onMainListener != null) {

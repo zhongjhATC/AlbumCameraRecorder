@@ -16,6 +16,7 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -272,14 +273,14 @@ public class SelectedItemCollection {
             getSelectCount();
             GlobalSpec spec = GlobalSpec.getInstance();
             if (item.getMimeType().startsWith(IMAGE)) {
-                if (mSelectedImageCount == spec.maxImageSelectable) {
+                if (SelectableUtils.isImageMaxCount(mSelectedImageCount)) {
                     maxSelectableReached = true;
-                    maxSelectable = spec.maxVideoSelectable;
+                    maxSelectable = SelectableUtils.getImageMaxCount();
                 }
             } else if (item.getMimeType().startsWith(VIDEO)) {
-                if (mSelectedVideoCount == spec.maxVideoSelectable) {
+                if (SelectableUtils.isVideoMaxCount(mSelectedVideoCount)) {
                     maxSelectableReached = true;
-                    maxSelectable = spec.maxVideoSelectable;
+                    maxSelectable = SelectableUtils.getVideoMaxCount();
                 }
             }
         } else {
@@ -293,9 +294,10 @@ public class SelectedItemCollection {
 
     /**
      * 验证当前item是否满足可以被选中的条件
-     * @param item 数据item
+     *
+     * @param item                 数据item
      * @param maxSelectableReached 是否已经选择最大值
-     * @param maxSelectable 选择的最大数量
+     * @param maxSelectable        选择的最大数量
      * @return 弹窗
      */
     public IncapableCause newIncapableCause(MultiMedia item, boolean maxSelectableReached, int maxSelectable) {
@@ -361,20 +363,19 @@ public class SelectedItemCollection {
      * @return 数量
      */
     private int currentMaxSelectable() {
-        GlobalSpec spec = GlobalSpec.getInstance();
         int leastCount;
         // 判断是否能同时选择视频和图片
         if (!AlbumSpec.getInstance().mediaTypeExclusive) {
             // 返回视频+图片
-            leastCount = spec.maxImageSelectable + spec.maxVideoSelectable;
+            leastCount = SelectableUtils.getImageVideoMaxCount();
         } else {
             if (mCollectionType == COLLECTION_IMAGE) {
-                leastCount = spec.maxImageSelectable;
+                leastCount =  SelectableUtils.getImageMaxCount();
             } else if (mCollectionType == COLLECTION_VIDEO) {
-                leastCount = spec.maxVideoSelectable;
+                leastCount =  SelectableUtils.getVideoMaxCount();
             } else {
                 // 返回视频+图片
-                leastCount = spec.maxImageSelectable + spec.maxVideoSelectable;
+                leastCount = SelectableUtils.getImageVideoMaxCount();
             }
 
         }

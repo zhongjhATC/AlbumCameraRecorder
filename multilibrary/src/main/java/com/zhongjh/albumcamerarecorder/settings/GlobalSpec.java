@@ -50,9 +50,9 @@ public class GlobalSpec {
     @StyleRes
     public int themeId;
     /**
-     * 最大选择数量，如果设置为0以下，那么能选择的总数量就是 maxImageSelectable/maxVideoSelectable/maxAudioSelectable 的总数
+     * 最大选择数量，如果设置为null，那么能选择的总数量就是 maxImageSelectable+maxVideoSelectable+maxAudioSelectable 的总数
      */
-    public int maxSelectable = -1;
+    public Integer maxSelectable = -1;
     /**
      * 最大图片选择数量
      */

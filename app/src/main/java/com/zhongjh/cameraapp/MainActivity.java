@@ -135,7 +135,6 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-
         // 拍摄有关设置
         CameraSetting cameraSetting = initCameraSetting();
 
@@ -205,7 +204,10 @@ public class MainActivity extends BaseActivity {
 
         // 加载图片框架
         mGlobalSetting.imageEngine(new Glide4Engine())
-                .maxSelectablePerMediaType(Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
+                .maxSelectablePerMediaType(
+                        mBinding.etMaxCount.getText().toString().isEmpty() ? null :
+                        Integer.parseInt(mBinding.etMaxCount.getText().toString()) - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount),
+                        Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
                         Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
                         Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);

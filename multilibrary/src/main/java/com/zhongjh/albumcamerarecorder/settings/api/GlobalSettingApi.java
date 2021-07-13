@@ -81,7 +81,7 @@ public interface GlobalSettingApi {
      * @param maxAudioSelectable audio的最大可选计数.
      * @return {@link GlobalSetting} this
      */
-    GlobalSetting maxSelectablePerMediaType(int maxSelectable,int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable);
+    GlobalSetting maxSelectablePerMediaType(Integer maxSelectable,int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable);
 
     /**
      * 保存文件的位置{@link androidx.core.content.FileProvider}.
