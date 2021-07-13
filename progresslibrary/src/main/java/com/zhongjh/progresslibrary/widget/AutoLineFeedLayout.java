@@ -103,6 +103,14 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD";
     private ViewHolder viewHolderAdd;
+    /**
+     * 最后一次点击时间
+     */
+    private long mLastClickTime;
+    /**
+     * 1000毫秒只允许点击一次
+     */
+    private static final long CLICK_INTERVAL = 1000L;
 
     public void setListener(MaskProgressLayoutListener listener) {
         this.listener = listener;
@@ -506,25 +514,31 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         @Override
         public void onClick(View v) {
+            // 防止抖动多次点击
             if (listener != null) {
-                if (!TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getPath().equals(ADD)) {
-                    // 加载➕图
-                    listener.onItemAdd(v, multiMediaView, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
-                } else {
-                    // 点击
-                    if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
-                        // 如果是图片，直接跳转详情
-                        listener.onItemImage(v, multiMediaView);
+                long currentTime = System.currentTimeMillis();
+                // 经过了足够长的时间，允许点击
+                if (currentTime - mLastClickTime > CLICK_INTERVAL) {
+                    if (!TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getPath().equals(ADD)) {
+                        // 加载➕图
+                        listener.onItemAdd(v, multiMediaView, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
                     } else {
-                        // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
-                        if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
-                            // 执行下载事件
-                            listener.onItemVideoStartDownload(multiMediaView.getUrl());
-                        } else {
-                            // 点击事件
+                        // 点击
+                        if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
+                            // 如果是图片，直接跳转详情
                             listener.onItemImage(v, multiMediaView);
+                        } else {
+                            // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
+                            if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
+                                // 执行下载事件
+                                listener.onItemVideoStartDownload(multiMediaView.getUrl());
+                            } else {
+                                // 点击事件
+                                listener.onItemImage(v, multiMediaView);
+                            }
                         }
                     }
+                    mLastClickTime = currentTime;
                 }
             }
         }
