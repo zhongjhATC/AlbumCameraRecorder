@@ -195,14 +195,14 @@ public final class MultiMediaSetting {
      * @param activity 窗体
      * @param list     需要显示的大图
      */
-    public static void openPreviewVideo(Activity activity, ArrayList<MultiMedia> list) {
+    public static void openPreviewVideo(Activity activity, ArrayList<MultiMedia> list, int position) {
         // 转换成items
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, list);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_VIDEO);
 
         Intent intent = new Intent(activity, AlbumPreviewActivity.class);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(0));
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(position));
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
