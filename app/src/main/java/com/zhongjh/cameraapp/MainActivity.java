@@ -211,6 +211,13 @@ public class MainActivity extends BaseActivity {
                         Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
                         Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
+
+        // 设置九宫格的最大呈现数据，如果设置了公共最大值，则以这个值为准，否则是图片、视频、音频三个总数的总和
+        mBinding.mplImageList.setMaxMediaCount(
+            mBinding.etMaxCount.getText().toString().isEmpty() ?
+                    Integer.parseInt(mBinding.etAlbumCount.getText().toString()) + Integer.parseInt(mBinding.etVideoCount.getText().toString()) + Integer.parseInt(mBinding.etAudioCount.getText().toString())
+                    : Integer.parseInt(mBinding.etMaxCount.getText().toString())
+        );
     }
 
     /**

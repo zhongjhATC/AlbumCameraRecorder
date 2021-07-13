@@ -80,6 +80,20 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
      */
     private MaskProgressLayoutListener listener;
 
+    /**
+     * @return 最多显示多少个图片/视频/语音
+     */
+    public int getMaxMediaCount() {
+        return mViewHolder.alfMedia.getMaxMediaCount();
+    }
+
+    /**
+     * 设置最多显示多少个图片/视频/语音
+     */
+    public void setMaxMediaCount(int maxMediaCount) {
+        mViewHolder.alfMedia.setMaxMediaCount(maxMediaCount);
+    }
+
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
         mViewHolder.alfMedia.setListener(listener);
         this.listener = listener;

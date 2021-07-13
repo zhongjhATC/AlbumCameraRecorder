@@ -120,6 +120,20 @@ public class AutoLineFeedLayout extends ViewGroup {
         this.listener = null;
     }
 
+    /**
+     * @return 最多显示多少个图片/视频/语音
+     */
+    public int getMaxMediaCount() {
+        return maxMediaCount;
+    }
+
+    /**
+     * 设置最多显示多少个图片/视频/语音
+     */
+    public void setMaxMediaCount(int maxMediaCount) {
+        this.maxMediaCount = maxMediaCount;
+    }
+
     // endregion
 
     public AutoLineFeedLayout(Context context) {

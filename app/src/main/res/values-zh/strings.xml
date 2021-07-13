@@ -15,7 +15,7 @@
     <string name="save_the_image_path">保存图片路径</string>
     <string name="save_the_path_to_the_video_file">保存视频文件路径</string>
     <string name="save_the_path_to_the_audio_file">保存音频文件路径</string>
-    <string name="you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations">最多可以设置几个图片\视频\音频：如果设置为0，则总数是下面三个配置的和</string>
+    <string name="you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations">最多可以设置公共最大值包含图片、视频、音频，如果设置为0，则总数是下面三个配置的和</string>
     <string name="you_can_set_up_to_several_images">最多可以设置几个图片：</string>
     <string name="you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one">最多可以设置几个音频：</string>
     <string name="open_the_album_function">开启相册功能</string>
