@@ -131,7 +131,23 @@ public final class GlobalSetting implements GlobalSettingApi {
 
 
     @Override
-    public GlobalSetting maxSelectablePerMediaType(Integer maxSelectable, int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
+    public GlobalSetting maxSelectablePerMediaType(Integer maxSelectable, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable) {
+        if (maxSelectable == null && maxImageSelectable == null && maxVideoSelectable == null && maxAudioSelectable == null) {
+            throw new IllegalStateException("必须其中一个有值");
+        }
+        if (maxSelectable != null && maxImageSelectable != null && maxImageSelectable > maxSelectable) {
+            throw new IllegalStateException("maxSelectable 必须比 maxImageSelectable 大");
+        }
+        if (maxSelectable != null && maxVideoSelectable != null && maxVideoSelectable > maxSelectable) {
+            throw new IllegalStateException("maxSelectable 必须比 maxVideoSelectable 大");
+        }
+        if (maxSelectable != null && maxAudioSelectable != null && maxAudioSelectable > maxSelectable) {
+            throw new IllegalStateException("maxSelectable 必须比 maxAudioSelectable 大");
+        }
+
+        // 计算
+
+
         mGlobalSpec.maxSelectable = maxSelectable;
         mGlobalSpec.maxImageSelectable = maxImageSelectable;
         mGlobalSpec.maxVideoSelectable = maxVideoSelectable;
@@ -215,7 +231,7 @@ public final class GlobalSetting implements GlobalSettingApi {
             }
         }
         if (numItems <= 0) {
-            throw new IllegalStateException("One of these three albumSetting, camerasSetting, and recordDerSetting must be set");
+            throw new IllegalStateException(activity.getResources().getString(R.string.z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set));
         }
 
         Intent intent = new Intent(activity, MainActivity.class);

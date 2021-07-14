@@ -197,8 +197,8 @@ public class MainSimpleActivity extends BaseActivity {
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大10张图片或者最大1个视频
-                .maxSelectablePerMediaType(11 - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount),
+                // 最大5张图片、最大3个视频、最大1个音频
+                .maxSelectablePerMediaType(null,
                         5 - alreadyImageCount,
                         3 - alreadyVideoCount,
                         3 - alreadyAudioCount)

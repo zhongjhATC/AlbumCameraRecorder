@@ -5,6 +5,7 @@
     <string name="z_multi_library_press_confirm_again_to_close">Press confirm again to close</string>
     <string name="z_multi_library_the_camera_limit_has_been_reached">The camera limit has been reached</string>
     <string name="z_multi_library_the_recording_limit_has_been_reached">The recording limit has been reached</string>
+    <string name="z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set">one of these three albumSetting, camerasSetting, and recordDerSetting must be set</string>
 
     <!-- region 相册 -->
 

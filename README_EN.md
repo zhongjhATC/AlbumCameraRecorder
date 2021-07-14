@@ -125,7 +125,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 // Maximum 10 images or maximum 1 video
-                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
+                .maxSelectablePerMediaType(null,10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
 
 #### Gets the relevant returned data

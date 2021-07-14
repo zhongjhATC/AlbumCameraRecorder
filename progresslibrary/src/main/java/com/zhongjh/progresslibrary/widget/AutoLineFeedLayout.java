@@ -418,6 +418,9 @@ public class AutoLineFeedLayout extends ViewGroup {
         for (int i = 0; i < imageList.size(); i++) {
             imageList.get(i).setPosition(i);
         }
+        for (int i = 0; i < videoList.size(); i++) {
+            videoList.get(i).setPosition(i);
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

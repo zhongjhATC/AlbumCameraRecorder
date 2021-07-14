@@ -52,19 +52,19 @@ public class GlobalSpec {
     /**
      * 最大选择数量，如果设置为null，那么能选择的总数量就是 maxImageSelectable+maxVideoSelectable+maxAudioSelectable 的总数
      */
-    public Integer maxSelectable = -1;
+    public Integer maxSelectable = null;
     /**
      * 最大图片选择数量
      */
-    public int maxImageSelectable = -1;
+    public Integer maxImageSelectable = null;
     /**
      * 最大视频选择数量
      */
-    public int maxVideoSelectable = -1;
+    public Integer maxVideoSelectable = null;
     /**
      * 最大音频选择数量
      */
-    public int maxAudioSelectable = -1;
+    public Integer maxAudioSelectable = null;
     /**
      * 拍照\录像\存储的保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
      */
@@ -119,9 +119,10 @@ public class GlobalSpec {
         mimeTypeSet = null;
         defaultPosition = 0;
         themeId = R.style.AppTheme_Blue;
-        maxImageSelectable = -1;
-        maxVideoSelectable = -1;
-        maxAudioSelectable = -1;
+        maxSelectable = null;
+        maxImageSelectable = null;
+        maxVideoSelectable = null;
+        maxAudioSelectable = null;
         saveStrategy = null;
         pictureStrategy = null;
         videoStrategy = null;

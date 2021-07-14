@@ -202,22 +202,33 @@ public class MainActivity extends BaseActivity {
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));
         }
 
-        // 加载图片框架
+        Integer maxImageSelectable = null;
+        Integer maxVideoSelectable = null;
+        Integer maxAudioSelectable = null;
+        if (!mBinding.etAlbumCount.getText().toString().isEmpty()) {
+            maxImageSelectable = Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount;
+        }
+        if (!mBinding.etVideoCount.getText().toString().isEmpty()) {
+            maxVideoSelectable = Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount;
+        }
+        if (!mBinding.etAudioCount.getText().toString().isEmpty()) {
+            maxAudioSelectable = Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount;
+        }
+
+        // 加载图片框架，具体注释看maxSelectablePerMediaType方法注释
         mGlobalSetting.imageEngine(new Glide4Engine())
                 .maxSelectablePerMediaType(
-                        mBinding.etMaxCount.getText().toString().isEmpty() ? null :
-                        Integer.parseInt(mBinding.etMaxCount.getText().toString()) - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount),
-                        Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
-                        Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
-                        Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)
+                        getMaxCount(),
+                        maxImageSelectable,
+                        maxVideoSelectable,
+                        maxAudioSelectable,
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
 
-        // 设置九宫格的最大呈现数据，如果设置了公共最大值，则以这个值为准，否则是图片、视频、音频三个总数的总和
-        mBinding.mplImageList.setMaxMediaCount(
-            mBinding.etMaxCount.getText().toString().isEmpty() ?
-                    Integer.parseInt(mBinding.etAlbumCount.getText().toString()) + Integer.parseInt(mBinding.etVideoCount.getText().toString()) + Integer.parseInt(mBinding.etAudioCount.getText().toString())
-                    : Integer.parseInt(mBinding.etMaxCount.getText().toString())
-        );
+        // 设置九宫格的最大呈现数据
+        mBinding.mplImageList.setMaxMediaCount(getMaxCount(),getImageCount(),getVideoCount(),getAudioCount());
     }
 
     /**
@@ -295,6 +306,46 @@ public class MainActivity extends BaseActivity {
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);
                 });
         return albumSetting;
+    }
+
+    /**
+     * @return 返回 图片、视频、音频能选择的上限
+     */
+    private Integer getMaxCount() {
+        if (!mBinding.etMaxCount.getText().toString().isEmpty()) {
+            return Integer.parseInt(mBinding.etMaxCount.getText().toString());
+        }
+        return null;
+    }
+
+    /**
+     * @return 返回图片能选择的上限
+     */
+    private Integer getImageCount() {
+        if (!mBinding.etAlbumCount.getText().toString().isEmpty()) {
+            return Integer.parseInt(mBinding.etAlbumCount.getText().toString());
+        }
+        return null;
+    }
+
+    /**
+     * @return 返回视频能选择的上限
+     */
+    private Integer getVideoCount() {
+        if (!mBinding.etVideoCount.getText().toString().isEmpty()) {
+            return Integer.parseInt(mBinding.etVideoCount.getText().toString());
+        }
+        return null;
+    }
+
+    /**
+     * @return 返回音频能选择的上限
+     */
+    private Integer getAudioCount() {
+        if (!mBinding.etAudioCount.getText().toString().isEmpty()) {
+            return Integer.parseInt(mBinding.etAudioCount.getText().toString());
+        }
+        return null;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
 import android.content.Intent;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 
@@ -32,6 +33,7 @@ public interface GlobalSettingApi {
 
     /**
      * 设置相册配置，如果不设置则不启用相册
+     *
      * @param albumSetting 相册
      * @return this
      */
@@ -39,6 +41,7 @@ public interface GlobalSettingApi {
 
     /**
      * 设置录制配置，如果不设置则不启用录制
+     *
      * @param cameraSetting 录制
      * @return this
      */
@@ -46,6 +49,7 @@ public interface GlobalSettingApi {
 
     /**
      * 设置录音配置，如果不设置则不启用录音
+     *
      * @param recorderSetting 录音
      * @return this
      */
@@ -66,22 +70,33 @@ public interface GlobalSettingApi {
 
     /**
      * 设置界面默认显示 相册、录制、录音 三个其中之一
-     * @param position 0：相册，录制：1，录音：2
      *
+     * @param position 0：相册，录制：1，录音：2
      * @return {@link GlobalSetting} this
      */
     GlobalSetting defaultPosition(int position);
 
     /**
      * 仅当 {@link AlbumSpec#mediaTypeExclusive} 设置为true并且您希望为图像和视频媒体类型设置不同的最大可选文件时才有用。
+     * <p>
+     * <p>
+     * 根据当前设置值来呈现相应的功能：
+     * 1： maxSelectable有值maxImageSelectable无值，可选择的图片上限和所有数据的上限总和以maxSelectable为标准
+     * 2： maxSelectable无值maxImageSelectable有值，可选择的图片上限以maxImageSelectable为准，其他例如视频音频也是以各自的上限为准
+     * 3： maxSelectable有值maxImageSelectable有值，可选择的图片上限以maxImageSelectable为准，但是最终总和数据以maxSelectable为标准
      *
-     * @param maxSelectable 最大选择数量，如果设置为0以下，那么能选择的总数量就是 maxImageSelectable/maxVideoSelectable/maxAudioSelectable 的总数
+     * @param maxSelectable      最大选择数量
      * @param maxImageSelectable imga的最大可选计数.
      * @param maxVideoSelectable video的最大可选计数.
      * @param maxAudioSelectable audio的最大可选计数.
+     * @param alreadyImageCount  已选择的图片数量
+     * @param alreadyVideoCount  已选择的视频数量
+     * @param alreadyAudioCount  已选择的音频数量
      * @return {@link GlobalSetting} this
      */
-    GlobalSetting maxSelectablePerMediaType(Integer maxSelectable,int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable);
+    GlobalSetting maxSelectablePerMediaType(Integer maxSelectable,
+                                            Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable,
+                                            int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount);
 
     /**
      * 保存文件的位置{@link androidx.core.content.FileProvider}.
@@ -94,6 +109,7 @@ public interface GlobalSettingApi {
     /**
      * 保存图片文件的位置{@link androidx.core.content.FileProvider}.
      * 如果设置这个，有关图片的优先权比allStrategy高     *
+     *
      * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
      * @return {@link GlobalSetting} this
      */
@@ -132,6 +148,7 @@ public interface GlobalSettingApi {
 
     /**
      * 设置是否启动过场动画 ，只包括开始打开界面和关闭界面的过场动画
+     *
      * @param isCutscenes 是否启动
      * @return {@link GlobalSetting} this
      */
@@ -139,8 +156,8 @@ public interface GlobalSettingApi {
 
     /**
      * 设置图片是否开启编辑功能，涉及功能：预览、拍照
-     * @param isImageEdit 图片是否编辑
      *
+     * @param isImageEdit 图片是否编辑
      * @return {@link GlobalSetting} this
      */
     GlobalSetting isImageEdit(boolean isImageEdit);

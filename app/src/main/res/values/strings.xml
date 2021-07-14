@@ -15,7 +15,8 @@
     <string name="save_the_image_path">Save the image path</string>
     <string name="save_the_path_to_the_video_file">Save the path to the video file</string>
     <string name="save_the_path_to_the_audio_file">Save the path to the audio file</string>
-    <string name="you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations">You can set up to a few Images/Video/Audio: If set to 0, the total is the sum of the following three configurations</string>
+    <string name="you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations">
+        When the number of images, videos, and audio is specified, the rendering total is the sum of them; otherwise, it is the value currently set</string>
     <string name="you_can_set_up_to_several_images">You can set up to several images:</string>
     <string name="you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one">You can set up to several audio :</string>
     <string name="open_the_album_function">Open the album function</string>

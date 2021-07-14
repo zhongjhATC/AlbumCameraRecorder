@@ -5,6 +5,7 @@
     <string name="z_multi_library_press_confirm_again_to_close">再按一次确认关闭</string>
     <string name="z_multi_library_the_camera_limit_has_been_reached">已经达到拍照上限</string>
     <string name="z_multi_library_the_recording_limit_has_been_reached">录音已经达到上限</string>
+    <string name="z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set">必须设置这三个albumSetting, camerasSetting和recordDerSetting中的其中一个</string>
 
     <!-- region 相册 -->
 
