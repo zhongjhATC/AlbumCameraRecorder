@@ -107,9 +107,9 @@ public class SelectableUtils {
     public static int getImageVideoMaxCount() {
         if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxVideoSelectable != null) {
             return GlobalSpec.getInstance().maxImageSelectable + GlobalSpec.getInstance().maxVideoSelectable;
-        } else if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxVideoSelectable == null) {
+        } else if (GlobalSpec.getInstance().maxImageSelectable != null) {
             return GlobalSpec.getInstance().maxImageSelectable;
-        } else if (GlobalSpec.getInstance().maxImageSelectable == null && GlobalSpec.getInstance().maxVideoSelectable != null) {
+        } else if (GlobalSpec.getInstance().maxVideoSelectable != null) {
             return GlobalSpec.getInstance().maxVideoSelectable;
         } else if (GlobalSpec.getInstance().maxSelectable != null) {
             return GlobalSpec.getInstance().maxSelectable;
@@ -162,9 +162,9 @@ public class SelectableUtils {
     public static boolean getSingleImageVideo() {
         if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxVideoSelectable != null) {
             return GlobalSpec.getInstance().maxImageSelectable == 1 && GlobalSpec.getInstance().maxVideoSelectable == 1;
-        } else if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxVideoSelectable == null) {
+        } else if (GlobalSpec.getInstance().maxImageSelectable != null) {
             return GlobalSpec.getInstance().maxImageSelectable == 1;
-        } else if (GlobalSpec.getInstance().maxImageSelectable == null && GlobalSpec.getInstance().maxVideoSelectable != null) {
+        } else if (GlobalSpec.getInstance().maxVideoSelectable != null) {
             return GlobalSpec.getInstance().maxVideoSelectable == 1;
         } else if (GlobalSpec.getInstance().maxSelectable != null) {
             return GlobalSpec.getInstance().maxSelectable == 1;

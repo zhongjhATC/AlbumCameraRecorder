@@ -131,7 +131,8 @@ public final class GlobalSetting implements GlobalSettingApi {
 
 
     @Override
-    public GlobalSetting maxSelectablePerMediaType(Integer maxSelectable, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable) {
+    public GlobalSetting maxSelectablePerMediaType(Integer maxSelectable, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable,
+                                                   int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         if (maxSelectable == null && maxImageSelectable == null && maxVideoSelectable == null && maxAudioSelectable == null) {
             throw new IllegalStateException("必须其中一个有值");
         }
@@ -146,12 +147,22 @@ public final class GlobalSetting implements GlobalSettingApi {
         }
 
         // 计算
-
-
         mGlobalSpec.maxSelectable = maxSelectable;
-        mGlobalSpec.maxImageSelectable = maxImageSelectable;
-        mGlobalSpec.maxVideoSelectable = maxVideoSelectable;
-        mGlobalSpec.maxAudioSelectable = maxAudioSelectable;
+        if (maxImageSelectable != null) {
+            mGlobalSpec.maxImageSelectable = maxImageSelectable - alreadyImageCount;
+        } else {
+            mGlobalSpec.maxImageSelectable = null;
+        }
+        if (maxVideoSelectable != null) {
+            mGlobalSpec.maxVideoSelectable = maxVideoSelectable - alreadyVideoCount;
+        } else {
+            mGlobalSpec.maxVideoSelectable = null;
+        }
+        if (maxAudioSelectable != null) {
+            mGlobalSpec.maxAudioSelectable = maxAudioSelectable - alreadyAudioCount;
+        } else {
+            mGlobalSpec.maxAudioSelectable = null;
+        }
         return this;
     }
 

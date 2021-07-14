@@ -55,6 +55,9 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        // 设置九宫格的最大呈现数据
+        mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
+
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
@@ -202,33 +205,17 @@ public class MainActivity extends BaseActivity {
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));
         }
 
-        Integer maxImageSelectable = null;
-        Integer maxVideoSelectable = null;
-        Integer maxAudioSelectable = null;
-        if (!mBinding.etAlbumCount.getText().toString().isEmpty()) {
-            maxImageSelectable = Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount;
-        }
-        if (!mBinding.etVideoCount.getText().toString().isEmpty()) {
-            maxVideoSelectable = Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount;
-        }
-        if (!mBinding.etAudioCount.getText().toString().isEmpty()) {
-            maxAudioSelectable = Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount;
-        }
-
         // 加载图片框架，具体注释看maxSelectablePerMediaType方法注释
         mGlobalSetting.imageEngine(new Glide4Engine())
                 .maxSelectablePerMediaType(
                         getMaxCount(),
-                        maxImageSelectable,
-                        maxVideoSelectable,
-                        maxAudioSelectable,
+                        getImageCount(),
+                        getVideoCount(),
+                        getAudioCount(),
                         alreadyImageCount,
                         alreadyVideoCount,
                         alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
-
-        // 设置九宫格的最大呈现数据
-        mBinding.mplImageList.setMaxMediaCount(getMaxCount(),getImageCount(),getVideoCount(),getAudioCount());
     }
 
     /**

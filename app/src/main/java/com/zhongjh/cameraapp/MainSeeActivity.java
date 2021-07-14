@@ -255,9 +255,12 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 最大10张图片或者最大1个视频
         mGlobalSetting.maxSelectablePerMediaType(null,
-                5 - alreadyImageCount,
-                3 - alreadyVideoCount,
-                3 - alreadyAudioCount)
+                5,
+                3,
+                3,
+                alreadyImageCount,
+                alreadyVideoCount,
+                alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

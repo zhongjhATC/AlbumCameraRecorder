@@ -90,8 +90,14 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     /**
      * 设置最多显示多少个图片/视频/语音
      */
-    public void setMaxMediaCount(int maxMediaCount) {
-        mViewHolder.alfMedia.setMaxMediaCount(maxMediaCount);
+    public void setMaxMediaCount(Integer maxMediaCount, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable) {
+        // 计算最终呈现的总数，这个总数决定是否还能点击添加
+        if (maxMediaCount != null) {
+            mViewHolder.alfMedia.setMaxMediaCount(maxMediaCount);
+        } else {
+            mViewHolder.alfMedia.setMaxMediaCount(maxImageSelectable + maxVideoSelectable + maxAudioSelectable);
+        }
+
     }
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {

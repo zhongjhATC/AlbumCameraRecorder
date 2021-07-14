@@ -161,9 +161,12 @@ public class MainThemeActivity extends BaseActivity {
                 .imageEngine(new Glide4Engine())
                 // 最大10张图片或者最大1个视频
                 .maxSelectablePerMediaType(null,
-                        5 - alreadyImageCount,
-                        3 - alreadyVideoCount,
-                        3 - alreadyAudioCount)
+                        5,
+                        3,
+                        3,
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 
