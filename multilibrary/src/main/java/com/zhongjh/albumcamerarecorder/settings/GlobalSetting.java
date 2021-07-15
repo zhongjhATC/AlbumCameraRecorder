@@ -133,8 +133,14 @@ public final class GlobalSetting implements GlobalSettingApi {
     @Override
     public GlobalSetting maxSelectablePerMediaType(Integer maxSelectable, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable,
                                                    int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-        if (maxSelectable == null && maxImageSelectable == null && maxVideoSelectable == null && maxAudioSelectable == null) {
-            throw new IllegalStateException("必须其中一个有值");
+        if (maxSelectable == null && maxImageSelectable == null) {
+            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值");
+        }
+        if (maxSelectable == null && maxVideoSelectable == null) {
+            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值");
+        }
+        if (maxSelectable == null && maxAudioSelectable == null) {
+            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值");
         }
         if (maxSelectable != null && maxImageSelectable != null && maxImageSelectable > maxSelectable) {
             throw new IllegalStateException("maxSelectable 必须比 maxImageSelectable 大");

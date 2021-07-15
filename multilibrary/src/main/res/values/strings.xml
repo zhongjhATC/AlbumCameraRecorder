@@ -24,6 +24,8 @@
 
     <string name="z_multi_library_error_over_count_default">You have reached the maximum number of choices</string>
     <string name="z_multi_library_error_over_count">You can select a maximum of %1$d file</string>
+    <string name="z_multi_library_error_over_count_video">You can select a maximum of %1$d video</string>
+    <string name="z_multi_library_error_over_count_image">You can select a maximum of %1$d picture</string>
     <string name="z_multi_library_error_under_quality">Image quality is too low</string>
     <string name="z_multi_library_error_over_quality">Image quality too high</string>
     <string name="z_multi_library_error_file_type">Unsupported file type</string>

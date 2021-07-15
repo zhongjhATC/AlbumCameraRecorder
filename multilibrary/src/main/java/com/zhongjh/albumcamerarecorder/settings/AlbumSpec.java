@@ -107,14 +107,18 @@ public class AlbumSpec {
      * 仅显示图片 或者 视频可选为0个
      */
     public boolean onlyShowImages() {
-        return (showSingleMediaType && MimeType.ofImage().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM))) || GlobalSpec.getInstance().maxVideoSelectable == 0;
+        return (showSingleMediaType &&
+                MimeType.ofImage().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM)))
+                || (GlobalSpec.getInstance().maxVideoSelectable != null && GlobalSpec.getInstance().maxVideoSelectable == 0);
     }
 
     /**
      * 仅显示视频 或者 图片可选为0个
      */
     public boolean onlyShowVideos() {
-        return (showSingleMediaType && MimeType.ofVideo().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM))) || GlobalSpec.getInstance().maxImageSelectable == 0;
+        return (showSingleMediaType &&
+                MimeType.ofVideo().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM)))
+                || (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxImageSelectable == 0);
     }
 
     private static final class InstanceHolder {
