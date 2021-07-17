@@ -1,4 +1,4 @@
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.phone;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -17,6 +17,10 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.configuration.GifSizeFilter;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -52,7 +56,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     ProgressDialog progressDialog;
 
     GlobalSetting mGlobalSetting;
-    AlbumSetting mAlbumSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -156,9 +159,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         if (mGlobalSetting != null) {
             mGlobalSetting.onDestroy();
         }
-        if (mAlbumSetting != null) {
-            mAlbumSetting.onDestroy();
-        }
     }
 
     /**
@@ -171,7 +171,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
         // 相册
-        mAlbumSetting = new AlbumSetting(true)
+        AlbumSetting albumSetting = new AlbumSetting(true)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
                 // 仅仅显示一个多媒体类型
@@ -203,7 +203,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         // 全局
         mGlobalSetting = MultiMediaSetting.from(MainSeeActivity.this)
                 .choose(MimeType.ofAll())
-                .albumSetting(mAlbumSetting)
+                .albumSetting(albumSetting)
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
                 .setOnMainListener(errorMessage -> Toast.makeText(getApplication(), errorMessage, Toast.LENGTH_LONG).show())

@@ -84,6 +84,9 @@ public final class GlobalSetting implements GlobalSettingApi {
     @Override
     public void onDestroy() {
         mGlobalSpec.onMainListener = null;
+        if (mGlobalSpec.albumSetting != null) {
+            mGlobalSpec.albumSetting.onDestroy();
+        }
     }
 
     /**

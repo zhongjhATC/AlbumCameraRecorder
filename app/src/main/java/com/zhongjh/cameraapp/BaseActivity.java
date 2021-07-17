@@ -236,16 +236,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         return (int) (dp * density + 0.5);
     }
 
-    class MyTask extends Timer {
+    protected class MyTask extends Timer {
 
         int percentage = 0;// 百分比
         MultiMediaView multiMedia;
 
-        MyTask(MultiMediaView multiMedia) {
+        public MyTask(MultiMediaView multiMedia) {
             this.multiMedia = multiMedia;
         }
 
-        void schedule() {
+        public void schedule() {
             this.schedule(new TimerTask() {
                 @Override
                 public void run() {

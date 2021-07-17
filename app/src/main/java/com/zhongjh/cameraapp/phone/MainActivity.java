@@ -1,4 +1,4 @@
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.phone;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +17,10 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.configuration.GifSizeFilter;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -40,7 +44,6 @@ public class MainActivity extends BaseActivity {
     ActivityMainBinding mBinding;
 
     GlobalSetting mGlobalSetting;
-    AlbumSetting mAlbumSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -120,9 +123,6 @@ public class MainActivity extends BaseActivity {
         if (mGlobalSetting != null) {
             mGlobalSetting.onDestroy();
         }
-        if (mAlbumSetting != null) {
-            mAlbumSetting.onDestroy();
-        }
     }
 
     @Override
@@ -146,7 +146,7 @@ public class MainActivity extends BaseActivity {
         CameraSetting cameraSetting = initCameraSetting();
 
         // 相册设置
-        mAlbumSetting = initAlbumSetting();
+        AlbumSetting albumSetting = initAlbumSetting();
 
         // 录音机设置
         RecorderSetting recorderSetting = new RecorderSetting();
@@ -171,7 +171,7 @@ public class MainActivity extends BaseActivity {
         if (mBinding.cbAlbum.isChecked())
         // 开启相册功能
         {
-            mGlobalSetting.albumSetting(mAlbumSetting);
+            mGlobalSetting.albumSetting(albumSetting);
         }
         if (mBinding.cbCamera.isChecked())
         // 开启拍摄功能

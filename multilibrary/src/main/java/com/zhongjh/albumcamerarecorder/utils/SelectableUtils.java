@@ -66,8 +66,8 @@ public class SelectableUtils {
      */
     public static boolean recorderValid() {
         if (GlobalSpec.getInstance().recorderSetting != null) {
-            if (GlobalSpec.getInstance().maxAudioSelectable != null && GlobalSpec.getInstance().maxAudioSelectable > 0) {
-                return true;
+            if (GlobalSpec.getInstance().maxAudioSelectable != null) {
+                return GlobalSpec.getInstance().maxAudioSelectable > 0;
             } else {
                 return GlobalSpec.getInstance().maxSelectable != null && GlobalSpec.getInstance().maxSelectable > 0;
             }
@@ -181,19 +181,6 @@ public class SelectableUtils {
     }
 
     /**
-     * 相册使用的场景，跟getImageMaxCount不一样的是因为可能图片视频混搭
-     * @return 返回最多能选择的数量
-     */
-    public static int getAlbumMaxCount() {
-        if (GlobalSpec.getInstance().maxSelectable != null) {
-            return GlobalSpec.getInstance().maxSelectable;
-        } else {
-            return (GlobalSpec.getInstance().maxImageSelectable == null ? 0 : GlobalSpec.getInstance().maxImageSelectable)
-                    + (GlobalSpec.getInstance().maxVideoSelectable == null ? 0 : GlobalSpec.getInstance().maxVideoSelectable);
-        }
-    }
-
-    /**
      * @return 返回最多能选择的视频数量
      */
     public static int getVideoMaxCount() {
@@ -234,6 +221,5 @@ public class SelectableUtils {
         }
         return false;
     }
-
 
 }

@@ -16,7 +16,7 @@
     <string name="save_the_path_to_the_video_file">保存视频文件路径</string>
     <string name="save_the_path_to_the_audio_file">保存音频文件路径</string>
     <string name="you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations">
-        当明确图片、视频、音频的数量，则呈现总数是他们的总和，否则是当前设置的值</string>
+        当明确图片、视频、音频的数量，则呈现总数是他们的总和，否则是当前设置的值，更多详情看方法注释</string>
     <string name="you_can_set_up_to_several_images">最多可以设置几个图片：</string>
     <string name="you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one">最多可以设置几个音频：</string>
     <string name="open_the_album_function">开启相册功能</string>
@@ -40,6 +40,7 @@
     <string name="simple_version">简单版</string>
     <string name="configure_version">配置版</string>
     <string name="style_version">样式版</string>
+    <string name="configure_upperlimit_version">这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例</string>
     <string name="open_the_default_data_set">打开默认有数据的</string>
     <string name="instant_preview">直接预览</string>
     <string name="blue_style">蓝色样式</string>

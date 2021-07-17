@@ -1,19 +1,9 @@
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.phone;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-
 import androidx.databinding.DataBindingUtil;
-
-import android.os.Build;
 import android.os.Bundle;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -23,7 +13,11 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
+import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.configuration.GifSizeFilter;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.R;
+import com.zhongjh.cameraapp.databinding.ActivityMainThemeBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -35,29 +29,27 @@ import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
- * 简单版
+ * 多种样式版
  * @author zhongjh
  */
-public class MainSimpleActivity extends BaseActivity {
+public class MainThemeActivity extends BaseActivity {
 
-    ActivityMainSimpleBinding mBinding;
-    private final String TAG = MainSimpleActivity.this.getClass().getSimpleName();
+    ActivityMainThemeBinding mBinding;
 
     GlobalSetting mGlobalSetting;
-    AlbumSetting mAlbumSetting;
 
     /**
      * @param activity 要跳转的activity
      */
     public static void newInstance(Activity activity) {
-        activity.startActivity(new Intent(activity, MainSimpleActivity.class));
+        activity.startActivity(new Intent(activity, MainThemeActivity.class));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_simple);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_simple);
+        setContentView(R.layout.activity_main_theme);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_theme);
 
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
@@ -65,7 +57,10 @@ public class MainSimpleActivity extends BaseActivity {
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                getPermissions(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                boolean isOk = getPermissions(false);
+                if (isOk) {
+                    openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                }
             }
 
             @Override
@@ -74,10 +69,10 @@ public class MainSimpleActivity extends BaseActivity {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainSimpleActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(MainThemeActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainSimpleActivity.this, (ArrayList) mBinding.mplImageList.getVideos(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewVideo(MainThemeActivity.this, (ArrayList) mBinding.mplImageList.getVideos(), multiMediaView.getPosition());
                 }
             }
 
@@ -115,33 +110,6 @@ public class MainSimpleActivity extends BaseActivity {
         if (mGlobalSetting != null) {
             mGlobalSetting.onDestroy();
         }
-        if (mAlbumSetting != null) {
-            mAlbumSetting.onDestroy();
-        }
-    }
-
-    /**
-     * 获取权限
-     */
-    private void getPermissions(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
-                    .PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager
-                            .PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
-                            .PERMISSION_GRANTED) {
-                openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
-            } else {
-                //不具有获取权限，需要进行权限申请
-                ActivityCompat.requestPermissions(MainSimpleActivity.this, new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
-            }
-        } else {
-            openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
-        }
     }
 
     @Override
@@ -155,9 +123,8 @@ public class MainSimpleActivity extends BaseActivity {
         CameraSetting cameraSetting = new CameraSetting();
         // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
-
         // 相册
-        mAlbumSetting = new AlbumSetting(false)
+        AlbumSetting albumSetting = new AlbumSetting(true)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
                 // 是否显示多选图片的数字
@@ -171,33 +138,28 @@ public class MainSimpleActivity extends BaseActivity {
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
-
         // 全局
-        mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
+        mGlobalSetting = MultiMediaSetting.from(MainThemeActivity.this).choose(MimeType.ofAll());
 
-        if (mBinding.cbAlbum.isChecked()){
-            // 开启相册功能
-            mGlobalSetting.albumSetting(mAlbumSetting);
+        // 样式选择
+        if (mBinding.rbBlue.isChecked()) {
+            mGlobalSetting.theme(R.style.AppTheme_Blue);
         }
-        if (mBinding.cbCamera.isChecked()){
-            // 开启拍摄功能
-            mGlobalSetting.cameraSetting(cameraSetting);
-        }
-        if (mBinding.cbRecorder.isChecked()){
-            // 开启录音功能
-            mGlobalSetting.recorderSetting(recorderSetting);
+        if (mBinding.rbBlack.isChecked()) {
+            mGlobalSetting.theme(R.style.AppTheme_Dracula);
         }
 
+
+        mGlobalSetting.albumSetting(albumSetting);
+        mGlobalSetting.cameraSetting(cameraSetting);
+        mGlobalSetting.recorderSetting(recorderSetting);
         mGlobalSetting
-                .setOnMainListener(errorMessage -> {
-                    Log.d(TAG, errorMessage);
-                    Toast.makeText(MainSimpleActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-                })
+                .setOnMainListener(errorMessage -> Toast.makeText(MainThemeActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show())
                 // 设置路径和7.0保护路径等等
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
+                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大5张图片、最大3个视频、最大1个音频
+                // 最大10张图片或者最大1个视频
                 .maxSelectablePerMediaType(null,
                         5,
                         3,

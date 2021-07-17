@@ -67,7 +67,7 @@
 
 
         <activity
-            android:name=".MainListActivity"
+            android:name=".phone.MainListActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -77,19 +77,23 @@
         </activity>
 
         <activity
-            android:name=".MainSimpleActivity"
+            android:name=".phone.MainSimpleActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".MainThemeActivity"
+            android:name=".phone.MainThemeActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".phone.MainActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".MainSeeActivity"
+            android:name=".phone.MainSeeActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".phone.MainUpperLimitActivity"
             android:screenOrientation="portrait" />
 
         <provider
