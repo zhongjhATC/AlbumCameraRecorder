@@ -61,6 +61,14 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     private int maxMediaCount;
     /**
+     * 每行列数
+     */
+    private int columnNumber;
+    /**
+     * 列与列之间的间隔
+     */
+    private int columnSpace;
+    /**
      * 图片加载方式
      */
     private ImageEngine imageEngine;
@@ -132,6 +140,22 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     public void setMaxMediaCount(int maxMediaCount) {
         this.maxMediaCount = maxMediaCount;
+    }
+
+    /**
+     * 设置一行多少列
+     * @param columnNumber 每行列数
+     */
+    public void setColumnNumber(int columnNumber) {
+
+    }
+
+    /**
+     * 设置列与列之间的间隔
+     * @param columnSpace 间隔
+     */
+    public void setColumnSpace(int columnSpace) {
+
     }
 
     // endregion
