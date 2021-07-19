@@ -50,6 +50,7 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
@@ -338,11 +339,11 @@ public class CameraLayout extends RelativeLayout {
             mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
         } else {
             // 支持所有，不过要判断数量
-            if (mGlobalSpec.maxImageSelectable == 0) {
+            if (SelectableUtils.getImageMaxCount() == 0) {
                 // 禁用点击功能
                 mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
                 mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
-            } else if (mGlobalSpec.maxVideoSelectable == 0) {
+            } else if (SelectableUtils.getVideoMaxCount()  == 0) {
                 // 禁用长按功能
                 mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
                 mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
@@ -979,7 +980,7 @@ public class CameraLayout extends RelativeLayout {
         System.gc();// 加速回收机制
 
         // 判断是否多个图片
-        if (mGlobalSpec.maxImageSelectable > 1) {
+        if (SelectableUtils.getImageMaxCount() > 1) {
             addMultiplePicture(bitmapData);
         } else {
             // 如果只有单个图片，就显示相应的提示结果等等
@@ -1174,9 +1175,8 @@ public class CameraLayout extends RelativeLayout {
      * @return 数量
      */
     private int currentMaxSelectable() {
-        GlobalSpec spec = GlobalSpec.getInstance();
         // 返回最大选择数量
-        return spec.maxImageSelectable;
+        return SelectableUtils.getImageMaxCount();
     }
 
     /**

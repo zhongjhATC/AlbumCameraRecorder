@@ -61,6 +61,14 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     private int maxMediaCount;
     /**
+     * 每行列数
+     */
+    private int columnNumber;
+    /**
+     * 列与列之间的间隔
+     */
+    private int columnSpace;
+    /**
      * 图片加载方式
      */
     private ImageEngine imageEngine;
@@ -103,6 +111,14 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     private final static String ADD = "ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD_ADD";
     private ViewHolder viewHolderAdd;
+    /**
+     * 最后一次点击时间
+     */
+    private long mLastClickTime;
+    /**
+     * 1000毫秒只允许点击一次
+     */
+    private static final long CLICK_INTERVAL = 1000L;
 
     public void setListener(MaskProgressLayoutListener listener) {
         this.listener = listener;
@@ -110,6 +126,36 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     public void removeListener() {
         this.listener = null;
+    }
+
+    /**
+     * @return 最多显示多少个图片/视频/语音
+     */
+    public int getMaxMediaCount() {
+        return maxMediaCount;
+    }
+
+    /**
+     * 设置最多显示多少个图片/视频/语音
+     */
+    public void setMaxMediaCount(int maxMediaCount) {
+        this.maxMediaCount = maxMediaCount;
+    }
+
+    /**
+     * 设置一行多少列
+     * @param columnNumber 每行列数
+     */
+    public void setColumnNumber(int columnNumber) {
+
+    }
+
+    /**
+     * 设置列与列之间的间隔
+     * @param columnSpace 间隔
+     */
+    public void setColumnSpace(int columnSpace) {
+
     }
 
     // endregion
@@ -173,7 +219,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 初始化
      */
     @SuppressLint("InflateParams")
-    private void init() {
+    public void init() {
         // 默认➕号
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
         multiMediaView.setPath(ADD);
@@ -236,15 +282,21 @@ public class AutoLineFeedLayout extends ViewGroup {
             this.videoList.clear();
             removeViewAt(0);
         }
+        // 记录视频的坐标点，视频默认加载在最前面
+        int position = 0;
+        if (this.videoList.size() > 0) {
+            position = this.videoList.size();
+        }
         this.videoList.addAll(multiMediaViews);
         if (videoList != null && videoList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             for (MultiMediaView multiMediaView : multiMediaViews) {
                 // 标记音频，为了后面识别是视频进行播放
                 multiMediaView.setMimeType(MimeType.MP4.toString());
-                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
-                addView(viewHolder.itemView, 0);
+                addView(viewHolder.itemView, position);
+                position++;
             }
         }
         // 重新整理Add是否显示，处理图片的索引
@@ -282,7 +334,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.d(TAG,"onMeasure");
+        Log.d(TAG, "onMeasure");
         // 为所有的标签childView计算宽和高
         measureChildren(widthMeasureSpec, heightMeasureSpec);
 
@@ -380,8 +432,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 检查最后一个是否是添加
      */
     public void checkLastImages() {
-        int mediaCount = (imageList.size() + videoList.size() +
-                (this.maskProgressLayout.mViewHolder.playView.getVisibility() == View.VISIBLE || this.maskProgressLayout.mViewHolder.groupRecorderProgress.getVisibility() == View.VISIBLE ? 1 : 0));
+        int mediaCount = (imageList.size() + videoList.size() + this.maskProgressLayout.audioList.size());
         if (mediaCount < maxMediaCount && isOperation) {
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
@@ -396,6 +447,9 @@ public class AutoLineFeedLayout extends ViewGroup {
     private void updatePosition() {
         for (int i = 0; i < imageList.size(); i++) {
             imageList.get(i).setPosition(i);
+        }
+        for (int i = 0; i < videoList.size(); i++) {
+            videoList.get(i).setPosition(i);
         }
     }
 
@@ -507,25 +561,31 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         @Override
         public void onClick(View v) {
+            // 防止抖动多次点击
             if (listener != null) {
-                if (!TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getPath().equals(ADD)) {
-                    // 加载➕图
-                    listener.onItemAdd(v, multiMediaView, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
-                } else {
-                    // 点击
-                    if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
-                        // 如果是图片，直接跳转详情
-                        listener.onItemImage(v, multiMediaView);
+                long currentTime = System.currentTimeMillis();
+                // 经过了足够长的时间，允许点击
+                if (currentTime - mLastClickTime > CLICK_INTERVAL) {
+                    if (!TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getPath().equals(ADD)) {
+                        // 加载➕图
+                        listener.onItemAdd(v, multiMediaView, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
                     } else {
-                        // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
-                        if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
-                            // 执行下载事件
-                            listener.onItemVideoStartDownload(multiMediaView.getUrl());
-                        } else {
-                            // 点击事件
+                        // 点击
+                        if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
+                            // 如果是图片，直接跳转详情
                             listener.onItemImage(v, multiMediaView);
+                        } else {
+                            // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
+                            if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
+                                // 执行下载事件
+                                listener.onItemVideoStartDownload(multiMediaView.getUrl());
+                            } else {
+                                // 点击事件
+                                listener.onItemImage(v, multiMediaView);
+                            }
                         }
                     }
+                    mLastClickTime = currentTime;
                 }
             }
         }

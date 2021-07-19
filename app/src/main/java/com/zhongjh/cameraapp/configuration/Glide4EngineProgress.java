@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.configuration;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -23,20 +23,34 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
-import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
+import com.zhongjh.progresslibrary.engine.ImageEngine;
 
 
 /**
+ * 这是配合展示数据九宫格view使用的 com.zhongjh.progresslibrary.widget.MaskProgressLayout
  * {@link ImageEngine} implementation using Glide.
  * @author zhongjh
  */
-public class Glide4Engine implements ImageEngine {
+
+public class Glide4EngineProgress implements ImageEngine {
 
     @Override
     public void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(uri)
+                .apply(new RequestOptions()
+                        .override(resize, resize)
+                        .placeholder(placeholder)
+                        .centerCrop())
+                .into(imageView);
+    }
+
+    @Override
+    public void loadUrlThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, String url) {
+        Glide.with(context)
+                .asBitmap() // some .jpeg files are actually gif
+                .load(url)
                 .apply(new RequestOptions()
                         .override(resize, resize)
                         .placeholder(placeholder)
@@ -64,40 +78,6 @@ public class Glide4Engine implements ImageEngine {
                 .apply(new RequestOptions()
                         .override(resizeX, resizeY)
                         .priority(Priority.HIGH)
-                        .error(R.drawable.image_failed)
-                        .fitCenter())
-                .into(imageView);
-    }
-
-    @Override
-    public void loadUrlImage(Context context, ImageView imageView, String url) {
-        Glide.with(context)
-                .load(url)
-                .apply(new RequestOptions()
-                        .priority(Priority.HIGH)
-                        .error(R.drawable.image_failed)
-                        .fitCenter())
-                .into(imageView);
-    }
-
-    @Override
-    public void loadUriImage(Context context, ImageView imageView, Uri uri) {
-        Glide.with(context)
-                .load(uri)
-                .apply(new RequestOptions()
-                        .priority(Priority.HIGH)
-                        .error(R.drawable.image_failed)
-                        .fitCenter())
-                .into(imageView);
-    }
-
-    @Override
-    public void loadDrawableImage(Context context, ImageView imageView, Integer resourceId) {
-        Glide.with(context)
-                .load(resourceId)
-                .apply(new RequestOptions()
-                        .priority(Priority.HIGH)
-                        .error(R.drawable.image_failed)
                         .fitCenter())
                 .into(imageView);
     }

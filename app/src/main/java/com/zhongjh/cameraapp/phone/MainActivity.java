@@ -1,4 +1,4 @@
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.phone;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +17,10 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.configuration.GifSizeFilter;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -40,7 +44,6 @@ public class MainActivity extends BaseActivity {
     ActivityMainBinding mBinding;
 
     GlobalSetting mGlobalSetting;
-    AlbumSetting mAlbumSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -54,6 +57,9 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        // 设置九宫格的最大呈现数据
+        mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
 
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
@@ -76,7 +82,7 @@ public class MainActivity extends BaseActivity {
                     MultiMediaSetting.openPreviewImage(MainActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
+                    MultiMediaSetting.openPreviewVideo(MainActivity.this, (ArrayList) mBinding.mplImageList.getVideos(), multiMediaView.getPosition());
                 }
             }
 
@@ -117,9 +123,6 @@ public class MainActivity extends BaseActivity {
         if (mGlobalSetting != null) {
             mGlobalSetting.onDestroy();
         }
-        if (mAlbumSetting != null) {
-            mAlbumSetting.onDestroy();
-        }
     }
 
     @Override
@@ -135,12 +138,15 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+        if (!check()) {
+            return;
+        }
 
         // 拍摄有关设置
         CameraSetting cameraSetting = initCameraSetting();
 
         // 相册设置
-        mAlbumSetting = initAlbumSetting();
+        AlbumSetting albumSetting = initAlbumSetting();
 
         // 录音机设置
         RecorderSetting recorderSetting = new RecorderSetting();
@@ -165,7 +171,7 @@ public class MainActivity extends BaseActivity {
         if (mBinding.cbAlbum.isChecked())
         // 开启相册功能
         {
-            mGlobalSetting.albumSetting(mAlbumSetting);
+            mGlobalSetting.albumSetting(albumSetting);
         }
         if (mBinding.cbCamera.isChecked())
         // 开启拍摄功能
@@ -203,11 +209,16 @@ public class MainActivity extends BaseActivity {
                     new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));
         }
 
-        // 加载图片框架
+        // 加载图片框架，具体注释看maxSelectablePerMediaType方法注释
         mGlobalSetting.imageEngine(new Glide4Engine())
-                .maxSelectablePerMediaType(Integer.parseInt(mBinding.etAlbumCount.getText().toString()) - alreadyImageCount,
-                        Integer.parseInt(mBinding.etVideoCount.getText().toString()) - alreadyVideoCount,
-                        Integer.parseInt(mBinding.etAudioCount.getText().toString()) - alreadyAudioCount)
+                .maxSelectablePerMediaType(
+                        getMaxCount(),
+                        getImageCount(),
+                        getVideoCount(),
+                        getAudioCount(),
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 
@@ -286,6 +297,86 @@ public class MainActivity extends BaseActivity {
                     Log.e("isChecked", "onCheck: isChecked=" + isChecked);
                 });
         return albumSetting;
+    }
+
+    /**
+     * @return 返回 图片、视频、音频能选择的上限
+     */
+    private Integer getMaxCount() {
+        if (!mBinding.etMaxCount.getText().toString().isEmpty()) {
+            return Integer.parseInt(mBinding.etMaxCount.getText().toString());
+        }
+        return null;
+    }
+
+    /**
+     * @return 返回图片能选择的上限
+     */
+    private Integer getImageCount() {
+        if (!mBinding.etAlbumCount.getText().toString().isEmpty()) {
+            return Integer.parseInt(mBinding.etAlbumCount.getText().toString());
+        }
+        return null;
+    }
+
+    /**
+     * @return 返回视频能选择的上限
+     */
+    private Integer getVideoCount() {
+        if (!mBinding.etVideoCount.getText().toString().isEmpty()) {
+            return Integer.parseInt(mBinding.etVideoCount.getText().toString());
+        }
+        return null;
+    }
+
+    /**
+     * @return 返回音频能选择的上限
+     */
+    private Integer getAudioCount() {
+        if (!mBinding.etAudioCount.getText().toString().isEmpty()) {
+            return Integer.parseInt(mBinding.etAudioCount.getText().toString());
+        }
+        return null;
+    }
+
+    /**
+     * 检测正确性
+     *
+     * @return 是否正确
+     */
+    private boolean check() {
+        if (getMaxCount() == null && getImageCount() == null) {
+            Toast.makeText(this, "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (getMaxCount() == null && getVideoCount() == null) {
+            Toast.makeText(this, "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (getMaxCount() == null && getAudioCount() == null) {
+            Toast.makeText(this, "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (getMaxCount() != null && getImageCount() != null && getImageCount() > getMaxCount()) {
+            Toast.makeText(this, "maxSelectable 必须比 maxImageSelectable 大",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (getMaxCount() != null && getVideoCount() != null && getVideoCount() > getMaxCount()) {
+            Toast.makeText(this, "maxSelectable 必须比 maxVideoSelectable 大",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (getMaxCount() != null && getAudioCount() != null && getAudioCount() > getMaxCount()) {
+            Toast.makeText(this, "maxSelectable 必须比 maxAudioSelectable 大",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
     }
 
 }

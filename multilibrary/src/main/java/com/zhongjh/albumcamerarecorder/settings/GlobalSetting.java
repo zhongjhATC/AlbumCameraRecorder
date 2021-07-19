@@ -3,12 +3,14 @@ package com.zhongjh.albumcamerarecorder.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.fragment.app.Fragment;
+
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -20,6 +22,7 @@ import gaode.zhongjh.com.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -81,6 +84,9 @@ public final class GlobalSetting implements GlobalSettingApi {
     @Override
     public void onDestroy() {
         mGlobalSpec.onMainListener = null;
+        if (mGlobalSpec.albumSetting != null) {
+            mGlobalSpec.albumSetting.onDestroy();
+        }
     }
 
     /**
@@ -128,10 +134,46 @@ public final class GlobalSetting implements GlobalSettingApi {
 
 
     @Override
-    public GlobalSetting maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
-        mGlobalSpec.maxImageSelectable = maxImageSelectable;
-        mGlobalSpec.maxVideoSelectable = maxVideoSelectable;
-        mGlobalSpec.maxAudioSelectable = maxAudioSelectable;
+    public GlobalSetting maxSelectablePerMediaType(Integer maxSelectable, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable,
+                                                   int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+        if (maxSelectable == null && maxImageSelectable == null) {
+            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值");
+        }
+        if (maxSelectable == null && maxVideoSelectable == null) {
+            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值");
+        }
+        if (maxSelectable == null && maxAudioSelectable == null) {
+            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值");
+        }
+        if (maxSelectable != null && maxImageSelectable != null && maxImageSelectable > maxSelectable) {
+            throw new IllegalStateException("maxSelectable 必须比 maxImageSelectable 大");
+        }
+        if (maxSelectable != null && maxVideoSelectable != null && maxVideoSelectable > maxSelectable) {
+            throw new IllegalStateException("maxSelectable 必须比 maxVideoSelectable 大");
+        }
+        if (maxSelectable != null && maxAudioSelectable != null && maxAudioSelectable > maxSelectable) {
+            throw new IllegalStateException("maxSelectable 必须比 maxAudioSelectable 大");
+        }
+
+        // 计算
+        if (maxSelectable != null) {
+            mGlobalSpec.maxSelectable = maxSelectable - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount);
+        }
+        if (maxImageSelectable != null) {
+            mGlobalSpec.maxImageSelectable = maxImageSelectable - alreadyImageCount;
+        } else {
+            mGlobalSpec.maxImageSelectable = null;
+        }
+        if (maxVideoSelectable != null) {
+            mGlobalSpec.maxVideoSelectable = maxVideoSelectable - alreadyVideoCount;
+        } else {
+            mGlobalSpec.maxVideoSelectable = null;
+        }
+        if (maxAudioSelectable != null) {
+            mGlobalSpec.maxAudioSelectable = maxAudioSelectable - alreadyAudioCount;
+        } else {
+            mGlobalSpec.maxAudioSelectable = null;
+        }
         return this;
     }
 
@@ -200,7 +242,7 @@ public final class GlobalSetting implements GlobalSettingApi {
             numItems++;
         }
         if (mGlobalSpec.recorderSetting != null && numItems <= 0) {
-            if (mGlobalSpec.maxAudioSelectable > 0) {
+            if (SelectableUtils.getAudioMaxCount() > 0) {
                 numItems++;
             } else {
                 if (mGlobalSpec.onMainListener != null) {
@@ -211,7 +253,7 @@ public final class GlobalSetting implements GlobalSettingApi {
             }
         }
         if (numItems <= 0) {
-            throw new IllegalStateException("One of these three albumSetting, camerasSetting, and recordDerSetting must be set");
+            throw new IllegalStateException(activity.getResources().getString(R.string.z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set));
         }
 
         Intent intent = new Intent(activity, MainActivity.class);

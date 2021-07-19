@@ -1,17 +1,11 @@
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.phone;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import androidx.databinding.DataBindingUtil;
 
-import android.os.Build;
 import android.os.Bundle;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.util.Log;
 import android.view.View;
@@ -23,6 +17,10 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.configuration.GifSizeFilter;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -44,7 +42,6 @@ public class MainSimpleActivity extends BaseActivity {
     private final String TAG = MainSimpleActivity.this.getClass().getSimpleName();
 
     GlobalSetting mGlobalSetting;
-    AlbumSetting mAlbumSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -65,7 +62,10 @@ public class MainSimpleActivity extends BaseActivity {
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                getPermissions(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                boolean isOk = getPermissions(false);
+                if (isOk) {
+                    openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                }
             }
 
             @Override
@@ -77,7 +77,7 @@ public class MainSimpleActivity extends BaseActivity {
                     MultiMediaSetting.openPreviewImage(MainSimpleActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainSimpleActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
+                    MultiMediaSetting.openPreviewVideo(MainSimpleActivity.this, (ArrayList) mBinding.mplImageList.getVideos(), multiMediaView.getPosition());
                 }
             }
 
@@ -115,33 +115,6 @@ public class MainSimpleActivity extends BaseActivity {
         if (mGlobalSetting != null) {
             mGlobalSetting.onDestroy();
         }
-        if (mAlbumSetting != null) {
-            mAlbumSetting.onDestroy();
-        }
-    }
-
-    /**
-     * 获取权限
-     */
-    private void getPermissions(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
-                    .PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager
-                            .PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
-                            .PERMISSION_GRANTED) {
-                openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
-            } else {
-                //不具有获取权限，需要进行权限申请
-                ActivityCompat.requestPermissions(MainSimpleActivity.this, new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
-            }
-        } else {
-            openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
-        }
     }
 
     @Override
@@ -157,7 +130,7 @@ public class MainSimpleActivity extends BaseActivity {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
         // 相册
-        mAlbumSetting = new AlbumSetting(false)
+        AlbumSetting albumSetting = new AlbumSetting(false)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
                 // 是否显示多选图片的数字
@@ -177,7 +150,7 @@ public class MainSimpleActivity extends BaseActivity {
 
         if (mBinding.cbAlbum.isChecked()){
             // 开启相册功能
-            mGlobalSetting.albumSetting(mAlbumSetting);
+            mGlobalSetting.albumSetting(albumSetting);
         }
         if (mBinding.cbCamera.isChecked()){
             // 开启拍摄功能
@@ -197,8 +170,14 @@ public class MainSimpleActivity extends BaseActivity {
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大10张图片或者最大1个视频
-                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
+                // 最大5张图片、最大3个视频、最大1个音频
+                .maxSelectablePerMediaType(null,
+                        5,
+                        3,
+                        3,
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

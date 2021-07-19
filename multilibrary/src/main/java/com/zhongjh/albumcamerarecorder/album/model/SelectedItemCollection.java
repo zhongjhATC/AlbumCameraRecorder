@@ -7,22 +7,23 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
-
-import gaode.zhongjh.com.common.entity.IncapableCause;
-import gaode.zhongjh.com.common.entity.MultiMedia;
-
+import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import gaode.zhongjh.com.common.entity.IncapableCause;
+import gaode.zhongjh.com.common.entity.MultiMedia;
+
 import static gaode.zhongjh.com.common.enums.Constant.IMAGE;
+import static gaode.zhongjh.com.common.enums.Constant.IMAGE_VIDEO;
 import static gaode.zhongjh.com.common.enums.Constant.VIDEO;
 
 /**
@@ -266,58 +267,55 @@ public class SelectedItemCollection {
     public IncapableCause isAcceptable(MultiMedia item) {
         boolean maxSelectableReached = false;
         int maxSelectable = 0;
+        String type = "";
+        SelectedCountMessage selectedCountMessage;
         // 判断是否混合视频图片模式
         if (!AlbumSpec.getInstance().mediaTypeExclusive) {
             // 混合检查
             getSelectCount();
-            GlobalSpec spec = GlobalSpec.getInstance();
             if (item.getMimeType().startsWith(IMAGE)) {
-                if (mSelectedImageCount == spec.maxImageSelectable) {
+                selectedCountMessage = SelectableUtils.isImageMaxCount(mSelectedImageCount, mSelectedVideoCount);
+                if (selectedCountMessage.isMaxSelectableReached()) {
                     maxSelectableReached = true;
-                    maxSelectable = spec.maxVideoSelectable;
+                    maxSelectable = selectedCountMessage.getMaxCount();
+                    type = selectedCountMessage.getType();
                 }
             } else if (item.getMimeType().startsWith(VIDEO)) {
-                if (mSelectedVideoCount == spec.maxVideoSelectable) {
+                selectedCountMessage = SelectableUtils.isVideoMaxCount(mSelectedVideoCount, mSelectedImageCount);
+                if (selectedCountMessage.isMaxSelectableReached()) {
                     maxSelectableReached = true;
-                    maxSelectable = spec.maxVideoSelectable;
+                    maxSelectable = selectedCountMessage.getMaxCount();
+                    type = selectedCountMessage.getType();
                 }
             }
+            return newIncapableCause(item, maxSelectableReached, maxSelectable, true, type);
         } else {
             // 非混合模式
             maxSelectableReached = maxSelectableReached();
             maxSelectable = currentMaxSelectable();
+            return newIncapableCause(item, maxSelectableReached, maxSelectable, false, null);
         }
 
-        return newIncapableCause(item, maxSelectableReached, maxSelectable);
     }
 
     /**
      * 验证当前item是否满足可以被选中的条件
-     * @param item 数据item
+     *
+     * @param item                 数据item
      * @param maxSelectableReached 是否已经选择最大值
-     * @param maxSelectable 选择的最大数量
+     * @param maxSelectable        选择的最大数量
+     * @param isMashup             提示是否提示
+     * @param type                 类型
      * @return 弹窗
      */
-    public IncapableCause newIncapableCause(MultiMedia item, boolean maxSelectableReached, int maxSelectable) {
+    public IncapableCause newIncapableCause(MultiMedia item, boolean maxSelectableReached, int maxSelectable, boolean isMashup, String type) {
         // 检查是否超过最大设置数量
         if (maxSelectableReached) {
             String cause;
-
             try {
-                cause = mContext.getResources().getString(
-                        R.string.z_multi_library_error_over_count,
-                        maxSelectable
-                );
-            } catch (Resources.NotFoundException e) {
-                cause = mContext.getString(
-                        R.string.z_multi_library_error_over_count,
-                        maxSelectable
-                );
-            } catch (NoClassDefFoundError e) {
-                cause = mContext.getString(
-                        R.string.z_multi_library_error_over_count,
-                        maxSelectable
-                );
+                cause = getCause(maxSelectable, isMashup, type);
+            } catch (Resources.NotFoundException | NoClassDefFoundError e) {
+                cause = getCause(maxSelectable, isMashup, type);
             }
             // 生成窗口
             return new IncapableCause(cause);
@@ -325,9 +323,44 @@ public class SelectedItemCollection {
             // 判断选择资源(图片跟视频)是否类型冲突
             return new IncapableCause(mContext.getString(R.string.z_multi_library_error_type_conflict));
         }
-
         // 过滤文件
         return PhotoMetadataUtils.isAcceptable(mContext, item);
+    }
+
+    /**
+     * 根据相关参数构造文本消息
+     *
+     * @param maxSelectable 选择的最大数量
+     * @param isMashup      提示是否提示
+     * @param type          类型
+     * @return 文本消息
+     */
+    private String getCause(int maxSelectable, boolean isMashup, String type) {
+        String cause = "";
+        if (isMashup) {
+            if (type.equals(IMAGE_VIDEO)) {
+                cause = mContext.getResources().getString(
+                        R.string.z_multi_library_error_over_count,
+                        maxSelectable
+                );
+            } else if (type.equals(IMAGE)) {
+                cause = mContext.getResources().getString(
+                        R.string.z_multi_library_error_over_count_image,
+                        maxSelectable
+                );
+            } else if (type.equals(VIDEO)) {
+                cause = mContext.getResources().getString(
+                        R.string.z_multi_library_error_over_count_video,
+                        maxSelectable
+                );
+            }
+        } else {
+            cause = mContext.getResources().getString(
+                    R.string.z_multi_library_error_over_count,
+                    maxSelectable
+            );
+        }
+        return cause;
     }
 
     /**
@@ -361,20 +394,19 @@ public class SelectedItemCollection {
      * @return 数量
      */
     private int currentMaxSelectable() {
-        GlobalSpec spec = GlobalSpec.getInstance();
         int leastCount;
         // 判断是否能同时选择视频和图片
         if (!AlbumSpec.getInstance().mediaTypeExclusive) {
             // 返回视频+图片
-            leastCount = spec.maxImageSelectable + spec.maxVideoSelectable;
+            leastCount = SelectableUtils.getImageVideoMaxCount();
         } else {
             if (mCollectionType == COLLECTION_IMAGE) {
-                leastCount = spec.maxImageSelectable;
+                leastCount = SelectableUtils.getImageMaxCount();
             } else if (mCollectionType == COLLECTION_VIDEO) {
-                leastCount = spec.maxVideoSelectable;
+                leastCount = SelectableUtils.getVideoMaxCount();
             } else {
                 // 返回视频+图片
-                leastCount = spec.maxImageSelectable + spec.maxVideoSelectable;
+                leastCount = SelectableUtils.getImageVideoMaxCount();
             }
 
         }

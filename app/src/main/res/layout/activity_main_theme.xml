@@ -21,7 +21,7 @@
                 app:authority="com.zhongjh.cameraapp.fileprovider"
                 app:imageAddDrawable="@drawable/ic_add_gray"
                 app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
-                app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
+                app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
                 app:maskingColor="?attr/colorPrimary"
                 app:maskingTextColor="@color/black_eighty_percent"
                 app:maskingTextContent="@string/up_upload_is_customizable"

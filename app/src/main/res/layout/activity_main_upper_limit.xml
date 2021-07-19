@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.zhongjh.progresslibrary.widget.MaskProgressLayout
+                android:id="@+id/mplImageList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:audioDeleteColor="@color/blue_primary"
+                app:audioPlayColor="@color/blue_primary"
+                app:audioProgressColor="@color/blue_primary"
+                app:authority="com.zhongjh.cameraapp.fileprovider"
+                app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
+                app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
+                app:maskingColor="?attr/colorPrimary"
+                app:maskingTextColor="@color/black_eighty_percent"
+                app:maskingTextContent="@string/up_upload_is_customizable"
+                app:maskingTextSize="12"
+                app:maxCount="7" />
+
+            <Button
+                android:id="@+id/btnReset"
+                android:text="清空"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rbEachLimit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:text="总上限(null) 图片上限(2) 视频上限(1) 音频上限(1)" />
+
+                <RadioButton
+                    android:id="@+id/rbSumLimit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="总上限(20) 图片上限(null) 视频上限(null) 音频上限(null)" />
+
+                <RadioButton
+                    android:id="@+id/rbImageLimit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="总上限(5) 图片上限(null) 视频上限(1) 音频上限(1)" />
+
+                <RadioButton
+                    android:id="@+id/rbVideoLimit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="总上限(5) 图片上限(3) 视频上限(null) 音频上限(1) " />
+
+                <RadioButton
+                    android:id="@+id/rbAudioLimit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="总上限(5) 图片上限(3) 视频上限(1) 音频上限(null) " />
+
+                <RadioButton
+                    android:id="@+id/rbOne"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="总上限(5) 图片上限(3) 视频上限(null) 音频上限(null) " />
+
+                <RadioButton
+                    android:id="@+id/rbTwo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="总上限(5) 图片上限(null) 视频上限(2) 音频上限(null) " />
+
+                <RadioButton
+                    android:id="@+id/rbThree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="总上限(5) 图片上限(null) 视频上限(null) 音频上限(2) " />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</layout>

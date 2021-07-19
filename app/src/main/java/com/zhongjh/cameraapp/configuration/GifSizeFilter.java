@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.configuration;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -25,17 +25,18 @@ import gaode.zhongjh.com.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
+import com.zhongjh.cameraapp.R;
 
 import java.util.HashSet;
 import java.util.Set;
 
-class GifSizeFilter extends BaseFilter {
+public class GifSizeFilter extends BaseFilter {
 
     private int mMinWidth;
     private int mMinHeight;
     private int mMaxSize;
 
-    GifSizeFilter(int minWidth, int minHeight, int maxSizeInBytes) {
+    public GifSizeFilter(int minWidth, int minHeight, int maxSizeInBytes) {
         mMinWidth = minWidth;
         mMinHeight = minHeight;
         mMaxSize = maxSizeInBytes;

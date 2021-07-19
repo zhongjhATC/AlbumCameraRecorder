@@ -1,4 +1,4 @@
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.phone;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,6 +13,10 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.configuration.GifSizeFilter;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainThemeBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -33,7 +37,6 @@ public class MainThemeActivity extends BaseActivity {
     ActivityMainThemeBinding mBinding;
 
     GlobalSetting mGlobalSetting;
-    AlbumSetting mAlbumSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -69,7 +72,7 @@ public class MainThemeActivity extends BaseActivity {
                     MultiMediaSetting.openPreviewImage(MainThemeActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainThemeActivity.this, (ArrayList) mBinding.mplImageList.getVideos());
+                    MultiMediaSetting.openPreviewVideo(MainThemeActivity.this, (ArrayList) mBinding.mplImageList.getVideos(), multiMediaView.getPosition());
                 }
             }
 
@@ -107,9 +110,6 @@ public class MainThemeActivity extends BaseActivity {
         if (mGlobalSetting != null) {
             mGlobalSetting.onDestroy();
         }
-        if (mAlbumSetting != null) {
-            mAlbumSetting.onDestroy();
-        }
     }
 
     @Override
@@ -124,7 +124,7 @@ public class MainThemeActivity extends BaseActivity {
         // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
         // 相册
-        mAlbumSetting = new AlbumSetting(true)
+        AlbumSetting albumSetting = new AlbumSetting(true)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
                 // 是否显示多选图片的数字
@@ -150,7 +150,7 @@ public class MainThemeActivity extends BaseActivity {
         }
 
 
-        mGlobalSetting.albumSetting(mAlbumSetting);
+        mGlobalSetting.albumSetting(albumSetting);
         mGlobalSetting.cameraSetting(cameraSetting);
         mGlobalSetting.recorderSetting(recorderSetting);
         mGlobalSetting
@@ -160,7 +160,13 @@ public class MainThemeActivity extends BaseActivity {
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 // 最大10张图片或者最大1个视频
-                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
+                .maxSelectablePerMediaType(null,
+                        5,
+                        3,
+                        3,
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

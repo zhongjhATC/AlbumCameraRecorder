@@ -15,6 +15,7 @@ import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_zjh);
 
         mVpPager = findViewById(R.id.viewPager);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(),BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, mSpec);
+        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, mSpec);
         mVpPager.setAdapter(adapterViewPager);
         mVpPager.setOffscreenPageLimit(3);
         // 根据配置默认选第几个
@@ -165,30 +166,23 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // 根据相关配置做相应的初始化
-            if (mSpec.albumSetting != null) {
-                if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
-                    numItems++;
-                    mTitles.add(getString(R.string.z_multi_library_album));
-
-                }
+            if (SelectableUtils.albumValid()) {
+                numItems++;
+                mTitles.add(getString(R.string.z_multi_library_album));
             }
-            if (mSpec.cameraSetting != null) {
-                if (mSpec.maxImageSelectable > 0 || mSpec.maxVideoSelectable > 0) {
-                    if (defaultPositionType == CAMERA) {
-                        mDefaultPosition = numItems;
-                    }
-                    numItems++;
-                    mTitles.add(getString(R.string.z_multi_library_take_photos));
+            if (SelectableUtils.cameraValid()) {
+                if (defaultPositionType == CAMERA) {
+                    mDefaultPosition = numItems;
                 }
+                numItems++;
+                mTitles.add(getString(R.string.z_multi_library_take_photos));
             }
-            if (mSpec.recorderSetting != null) {
-                if (mSpec.maxAudioSelectable > 0) {
-                    if (defaultPositionType == RECORDER) {
-                        mDefaultPosition = numItems;
-                    }
-                    numItems++;
-                    mTitles.add(getString(R.string.z_multi_library_sound_recording));
+            if (SelectableUtils.recorderValid()) {
+                if (defaultPositionType == RECORDER) {
+                    mDefaultPosition = numItems;
                 }
+                numItems++;
+                mTitles.add(getString(R.string.z_multi_library_sound_recording));
             }
 
         }

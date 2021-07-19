@@ -1,12 +1,12 @@
-package com.zhongjh.cameraapp;
+package com.zhongjh.cameraapp.phone;
 
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
 
 import java.util.ArrayList;
@@ -53,6 +53,9 @@ public class MainListActivity extends AppCompatActivity {
             list.add(R.drawable.ic_play_arrow_white_24dp);
             MultiMediaSetting.openPreviewResourceId(MainListActivity.this, list, 0);
         });
+
+        // 这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例
+        mBinding.btnUpperLimit.setOnClickListener(v -> MainUpperLimitActivity.newInstance(MainListActivity.this));
     }
 
 }

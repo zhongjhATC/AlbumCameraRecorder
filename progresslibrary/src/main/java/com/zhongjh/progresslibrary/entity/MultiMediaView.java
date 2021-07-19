@@ -4,6 +4,7 @@ import android.view.View;
 
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
+import com.zhongjh.progresslibrary.widget.PlayProgressView;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
@@ -20,15 +21,15 @@ public class MultiMediaView extends MultiMedia {
     private final static int FULL_PERCENT = 100;
 
     /**
-     * 绑定的父列表view
-     */
-    private MaskProgressLayout maskProgressLayout;
-    /**
      * 绑定子view,包含其他所有控件（显示view,删除view）
      */
     private View itemView;
     /**
-     * 绑定子view，用于显示图片、视频的view
+     * 绑定音频View
+     */
+    private PlayProgressView playProgressView;
+    /**
+     * 绑定子view: 用于显示图片、视频的view
      */
     private MaskProgressView maskProgressView;
 
@@ -48,16 +49,16 @@ public class MultiMediaView extends MultiMedia {
         this.maskProgressView = maskProgressView;
     }
 
-    public void setViewHolder(MaskProgressLayout maskProgressLayout) {
-        this.maskProgressLayout = maskProgressLayout;
+    public void setPlayProgressView(PlayProgressView playProgressView) {
+        this.playProgressView = playProgressView;
     }
 
     public MaskProgressView getMaskProgressView() {
         return maskProgressView;
     }
 
-    public MaskProgressLayout getMaskProgressLayout() {
-        return maskProgressLayout;
+    public PlayProgressView getPlayProgressView() {
+        return playProgressView;
     }
 
     /**
@@ -68,9 +69,9 @@ public class MultiMediaView extends MultiMedia {
             this.maskProgressView.setPercentage(percent);
         } else if (type == MultimediaTypes.AUDIO) {
             // 隐藏显示音频的设置一系列动作
-            this.maskProgressLayout.mViewHolder.numberProgressBar.setProgress(percent);
+            this.playProgressView.mViewHolder.numberProgressBar.setProgress(percent);
             if (percent == FULL_PERCENT) {
-                this.maskProgressLayout.audioUploadCompleted();
+                this.playProgressView.audioUploadCompleted();
             }
         }
     }

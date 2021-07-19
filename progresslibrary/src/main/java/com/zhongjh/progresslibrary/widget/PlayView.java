@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -39,6 +40,8 @@ import java.util.concurrent.TimeUnit;
  * @date 2019/2/1
  */
 public class PlayView extends FrameLayout {
+
+    private static final String TAG = PlayView.class.getSimpleName();
 
     /**
      * 当前音频数据
@@ -111,12 +114,15 @@ public class PlayView extends FrameLayout {
         initListener();
     }
 
+
+
     /**
      * 初始化相关数据
      *
      * @param recordingItem      音频数据源
      * @param audioProgressColor 进度条颜色
      */
+    @SuppressLint("SetTextI18n")
     public void setData(RecordingItem recordingItem, int audioProgressColor) {
         this.mRecordingItem = recordingItem;
         // 设置进度条颜色
@@ -125,17 +131,14 @@ public class PlayView extends FrameLayout {
         mViewHolder.seekbar.getProgressDrawable().setColorFilter(filter);
         mViewHolder.seekbar.getThumb().setColorFilter(filter);
 
-        mViewHolder.seekbar.setEnabled(!TextUtils.isEmpty(mRecordingItem.getFilePath()));
+        mViewHolder.seekbar.setEnabled(!TextUtils.isEmpty(recordingItem.getFilePath()));
 
-        initData();
-    }
-
-    /**
-     * 根据当前文件初始化一些相关数据
-     */
-    private void initData() {
-        // 准备播放
-        play();
+        // 当前时间
+        mViewHolder.tvCurrentProgress.setText("00:00/");
+        // 总计时间
+        mViewHolder.tvTotalProgress.setText(generateTime(recordingItem.getLength()));
+        // 设置进度条
+        mViewHolder.seekbar.setMax(recordingItem.getLength());
     }
 
     /**
@@ -148,6 +151,7 @@ public class PlayView extends FrameLayout {
 
         // 播放按钮
         mViewHolder.imgPlay.setOnClickListener(v -> {
+            Log.d(TAG,"setOnClickListener");
             // 判断该音频是否有文件地址，如果没有则请求下载
             if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
                 onPlay();
@@ -157,47 +161,36 @@ public class PlayView extends FrameLayout {
             }
         });
 
-        //异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
+        // 异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
         mMediaPlayer.setOnPreparedListener(mediaPlayer -> {
+            Log.d(TAG,"setOnPreparedListener");
             mViewHolder.seekbar.setProgress(0);
             mViewHolder.imgPlay.setEnabled(true);
-            mViewHolder.tvCurrentProgress.setText("00:00/");// 当前时间
-            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration())); // 总计时间
-            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());//设置进度条
+            // 当前时间
+            mViewHolder.tvCurrentProgress.setText("00:00/");
+            // 总计时间
+            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration()));
+            // 设置进度条
+            mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());
         });
 
         // 播放完成事件
         mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
-            //进度归零
+            Log.d(TAG,"setOnCompletionListener");
+            // 进度归零
             mMediaPlayer.seekTo(0);
-            //进度条归零
+            // 进度条归零
             mViewHolder.seekbar.setProgress(0);
-            //控制栏中的播放按钮显示暂停状态
+            // 控制栏中的播放按钮显示暂停状态
             mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
             mIsPlaying = false;
-            //重置并准备重新播放
+            // 重置并准备重新播放
             mMediaPlayer.reset();
-            play();
         });
 
     }
 
     // region 有关音频的方法
-
-    /**
-     * 播放
-     */
-    public void play() {
-        if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
-            try {
-                mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
-                //采用同步准备，使用prepare方法时，用户进入该界面需要等待几秒，如同死机一般，，，
-                mMediaPlayer.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * 播放或者暂停
@@ -212,9 +205,16 @@ public class PlayView extends FrameLayout {
         } else {
             //如果当前停止播放  继续播放 更改控制栏状态
             if (mMediaPlayer != null) {
+                Log.d(TAG,"播放");
                 mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
+                try {
+                    mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
+                    mMediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 mMediaPlayer.start();
-                //定时器 更新进度
+                // 定时器 更新进度
                 if (mExecutorService == null) {
                     mExecutorService = new ScheduledThreadPoolExecutor(1, (ThreadFactory) Thread::new);
                     mTimerTask = new TimerTask() {

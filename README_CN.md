@@ -120,7 +120,7 @@
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 // 最大10张图片或者最大1个视频
-                .maxSelectablePerMediaType(5 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
+                .maxSelectablePerMediaType(null,10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
 
 #### 获取相关返回的数据

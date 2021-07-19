@@ -21,7 +21,7 @@
                 app:authority="com.zhongjh.cameraapp.fileprovider"
                 app:imageAddDrawable="@drawable/ic_add_gray"
                 app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
-                app:imageEngine="com.zhongjh.cameraapp.Glide4EngineProgress"
+                app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
                 app:maskingColor="?attr/colorPrimary"
                 app:maskingTextColor="@color/black_eighty_percent"
                 app:maskingTextContent="@string/up_upload_is_customizable"
@@ -195,6 +195,18 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations" />
+
+                <EditText
+                    android:id="@+id/etMaxCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="10" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -206,7 +218,6 @@
                         android:text="@string/you_can_set_up_to_several_images" />
 
                     <EditText
-
                         android:id="@+id/etAlbumCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -219,7 +230,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -230,7 +241,6 @@
                         android:id="@+id/etVideoCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="false"
                         android:inputType="number"
                         android:text="1" />
 
@@ -239,7 +249,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -250,10 +260,8 @@
                         android:id="@+id/etAudioCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="false"
                         android:inputType="number"
                         android:text="1" />
-
 
                 </LinearLayout>
 

@@ -84,6 +84,11 @@ public interface MaskProgressApi {
     void addAudioCover(String file);
 
     /**
+     * 重置所有即是清空数据
+     */
+    void reset();
+
+    /**
      * 获取图片数据
      * @return 返回当前包含url的图片数据
      */
