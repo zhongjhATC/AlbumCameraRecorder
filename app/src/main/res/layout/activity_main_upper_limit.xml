@@ -19,7 +19,6 @@
                 app:audioPlayColor="@color/blue_primary"
                 app:audioProgressColor="@color/blue_primary"
                 app:authority="com.zhongjh.cameraapp.fileprovider"
-                app:imageAddDrawable="@drawable/ic_add_gray"
                 app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
                 app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
                 app:maskingColor="?attr/colorPrimary"

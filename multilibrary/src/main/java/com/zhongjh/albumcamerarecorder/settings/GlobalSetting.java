@@ -156,7 +156,9 @@ public final class GlobalSetting implements GlobalSettingApi {
         }
 
         // 计算
-        mGlobalSpec.maxSelectable = maxSelectable - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount);
+        if (maxSelectable != null) {
+            mGlobalSpec.maxSelectable = maxSelectable - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount);
+        }
         if (maxImageSelectable != null) {
             mGlobalSpec.maxImageSelectable = maxImageSelectable - alreadyImageCount;
         } else {
