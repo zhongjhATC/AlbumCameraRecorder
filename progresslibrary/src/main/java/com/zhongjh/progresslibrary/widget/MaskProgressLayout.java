@@ -334,6 +334,21 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
+    public void reset() {
+        // 清空数据
+        mViewHolder.alfMedia.imageList.clear();
+        mViewHolder.alfMedia.videoList.clear();
+        this.audioList.clear();
+        // 清空view
+        mViewHolder.llContent.removeAllViews();
+        // 从倒数第二个删除，最后一个是ADD
+        for (int i = mViewHolder.alfMedia.getChildCount() - 2; i >= 0; i--) {
+            mViewHolder.alfMedia.removeViewAt(i);
+        }
+        mViewHolder.alfMedia.checkLastImages();
+    }
+
+    @Override
     public ArrayList<MultiMediaView> getImages() {
         return mViewHolder.alfMedia.imageList;
     }
@@ -468,7 +483,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         mViewHolder.llContent.addView(playProgressView);
         return playProgressView;
     }
-
 
     /**
      * 检测属性

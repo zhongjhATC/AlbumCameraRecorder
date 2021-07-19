@@ -195,7 +195,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 初始化
      */
     @SuppressLint("InflateParams")
-    private void init() {
+    public void init() {
         // 默认➕号
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
         multiMediaView.setPath(ADD);
@@ -258,15 +258,21 @@ public class AutoLineFeedLayout extends ViewGroup {
             this.videoList.clear();
             removeViewAt(0);
         }
+        // 记录视频的坐标点，视频默认加载在最前面
+        int position = 0;
+        if (this.videoList.size() > 0) {
+            position = this.videoList.size();
+        }
         this.videoList.addAll(multiMediaViews);
         if (videoList != null && videoList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             for (MultiMediaView multiMediaView : multiMediaViews) {
                 // 标记音频，为了后面识别是视频进行播放
                 multiMediaView.setMimeType(MimeType.MP4.toString());
-                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
-                addView(viewHolder.itemView, 0);
+                addView(viewHolder.itemView, position);
+                position++;
             }
         }
         // 重新整理Add是否显示，处理图片的索引
@@ -304,7 +310,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.d(TAG,"onMeasure");
+        Log.d(TAG, "onMeasure");
         // 为所有的标签childView计算宽和高
         measureChildren(widthMeasureSpec, heightMeasureSpec);
 

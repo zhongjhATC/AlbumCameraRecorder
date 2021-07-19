@@ -21,11 +21,13 @@ import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainUpperLimitBinding;
+import com.zhongjh.cameraapp.model.LimitModel;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
@@ -116,6 +118,16 @@ public class MainUpperLimitActivity extends BaseActivity {
             }
 
         });
+
+        // 清空重置
+        mBinding.btnReset.setOnClickListener(v -> {
+            mBinding.mplImageList.reset();
+            // 停止所有的上传
+            for (Map.Entry<MultiMediaView, MyTask> entry : timers.entrySet()) {
+                entry.getValue().cancel();
+            }
+        });
+
     }
 
     @Override
@@ -132,7 +144,6 @@ public class MainUpperLimitActivity extends BaseActivity {
     }
 
     @Override
-
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
@@ -164,6 +175,14 @@ public class MainUpperLimitActivity extends BaseActivity {
         // 开启录音功能
         mGlobalSetting.recorderSetting(recorderSetting);
 
+
+        // 最大5张图片、最大3个视频、最大1个音频
+        LimitModel limitModel = getLimitModel();
+        mBinding.mplImageList.setMaxMediaCount(limitModel.getMaxSelectable(),
+                limitModel.getMaxImageSelectable(),
+                limitModel.getMaxVideoSelectable(),
+                limitModel.getMaxAudioSelectable());
+
         mGlobalSetting
                 .setOnMainListener(errorMessage -> {
                     Log.d(TAG, errorMessage);
@@ -173,15 +192,61 @@ public class MainUpperLimitActivity extends BaseActivity {
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大5张图片、最大3个视频、最大1个音频
-                .maxSelectablePerMediaType(null,
-                        5,
-                        3,
-                        3,
+                .maxSelectablePerMediaType(limitModel.getMaxSelectable(),
+                        limitModel.getMaxImageSelectable(),
+                        limitModel.getMaxVideoSelectable(),
+                        limitModel.getMaxAudioSelectable(),
                         alreadyImageCount,
                         alreadyVideoCount,
                         alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
+    }
+
+    private LimitModel getLimitModel() {
+        LimitModel limitModel = new LimitModel();
+        // 根据选择类型返回相关上限设置
+        if (mBinding.rbEachLimit.isChecked()) {
+            limitModel.setMaxSelectable(null);
+            limitModel.setMaxImageSelectable(2);
+            limitModel.setMaxVideoSelectable(1);
+            limitModel.setMaxAudioSelectable(1);
+        } else if (mBinding.rbSumLimit.isChecked()) {
+            limitModel.setMaxSelectable(20);
+            limitModel.setMaxImageSelectable(null);
+            limitModel.setMaxVideoSelectable(null);
+            limitModel.setMaxAudioSelectable(null);
+        } else if (mBinding.rbImageLimit.isChecked()) {
+            limitModel.setMaxSelectable(5);
+            limitModel.setMaxImageSelectable(null);
+            limitModel.setMaxVideoSelectable(1);
+            limitModel.setMaxAudioSelectable(1);
+        } else if (mBinding.rbVideoLimit.isChecked()) {
+            limitModel.setMaxSelectable(5);
+            limitModel.setMaxImageSelectable(3);
+            limitModel.setMaxVideoSelectable(null);
+            limitModel.setMaxAudioSelectable(1);
+        } else if (mBinding.rbAudioLimit.isChecked()) {
+            limitModel.setMaxSelectable(5);
+            limitModel.setMaxImageSelectable(3);
+            limitModel.setMaxVideoSelectable(1);
+            limitModel.setMaxAudioSelectable(null);
+        } else if (mBinding.rbOne.isChecked()) {
+            limitModel.setMaxSelectable(5);
+            limitModel.setMaxImageSelectable(3);
+            limitModel.setMaxVideoSelectable(null);
+            limitModel.setMaxAudioSelectable(null);
+        } else if (mBinding.rbTwo.isChecked()) {
+            limitModel.setMaxSelectable(5);
+            limitModel.setMaxImageSelectable(null);
+            limitModel.setMaxVideoSelectable(2);
+            limitModel.setMaxAudioSelectable(null);
+        } else if (mBinding.rbThree.isChecked()) {
+            limitModel.setMaxSelectable(5);
+            limitModel.setMaxImageSelectable(null);
+            limitModel.setMaxVideoSelectable(null);
+            limitModel.setMaxAudioSelectable(2);
+        }
+        return limitModel;
     }
 
 }
