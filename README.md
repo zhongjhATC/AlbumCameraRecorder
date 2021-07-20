@@ -54,15 +54,15 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 
 	dependencies {
 	     // Public library, which must be used
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.0.37X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.00X'
 	     // Core lib, call display album, recording screen, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.0.37X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.00X'
          // Supporting use, mainly used to obtain data after the relevant display, the corresponding upload progress display, if you only need to obtain photos, video, audio and other data, their own code to obtain the data after the presentation, you can not need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.0.37X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.00X'
          // Supporting the use of editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.0.37X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.00X'
 	     // Supporting the use of editing video
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.0.37X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.00X'
 	}
 
 ## snapshoot
@@ -124,9 +124,15 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // Maximum 10 images or maximum 1 video
-                .maxSelectablePerMediaType(null,10 - alreadyImageCount, 1 - alreadyVideoCount, 1 - alreadyAudioCount)
-                .forResult(REQUEST_CODE_CHOOSE);
+                // Maximum 5 images or maximum 3 video
+                .maxSelectablePerMediaType(null,
+                                        5,
+                                        3,
+                                        3,
+                                        alreadyImageCount,
+                                        alreadyVideoCount,
+                                        alreadyAudioCount)
+                                .forResult(REQUEST_CODE_CHOOSE);
 
 #### Gets the relevant returned data
 
