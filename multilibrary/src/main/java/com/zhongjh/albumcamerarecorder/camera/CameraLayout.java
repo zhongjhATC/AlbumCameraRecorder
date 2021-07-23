@@ -343,7 +343,7 @@ public class CameraLayout extends RelativeLayout {
                 // 禁用点击功能
                 mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
                 mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
-            } else if (SelectableUtils.getVideoMaxCount()  == 0) {
+            } else if (SelectableUtils.getVideoMaxCount() == 0) {
                 // 禁用长按功能
                 mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
                 mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
@@ -799,8 +799,8 @@ public class CameraLayout extends RelativeLayout {
         BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri);
         mCaptureBitmaps.put(0, bitmapData);
 
-        mGlobalSpec.imageEngine.loadThumbnail(getContext(), mViewHolder.imgPhoto.getWidth(), mPlaceholder,
-                mViewHolder.imgPhoto, uri);
+        mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, uri);
+        mViewHolder.rlEdit.setTag(uri);
     }
 
     /**
@@ -984,7 +984,7 @@ public class CameraLayout extends RelativeLayout {
             addMultiplePicture(bitmapData);
         } else {
             // 如果只有单个图片，就显示相应的提示结果等等
-            mViewHolder.imgPhoto.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            mViewHolder.imgPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
             mCaptureBitmaps.put(0, bitmapData);
             mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
