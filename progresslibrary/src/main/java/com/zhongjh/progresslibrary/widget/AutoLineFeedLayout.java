@@ -227,6 +227,8 @@ public class AutoLineFeedLayout extends ViewGroup {
         viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
         viewHolderAdd.bind(multiMediaView);
         addView(viewHolderAdd.itemView);
+
+        // 获取屏幕的整个宽度
     }
 
     /**
