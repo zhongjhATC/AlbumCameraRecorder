@@ -2,25 +2,25 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="88dp"
+    android:layout_height="88dp"
     android:orientation="vertical">
 
     <com.zhongjh.progresslibrary.widget.MaskProgressView
         android:id="@+id/mpvImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:scaleType="centerCrop"
         android:src="@drawable/selector_image_add" />
 
     <ImageView
         android:id="@+id/imgPlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:layout_gravity="center"
         android:contentDescription="@string/z_progress_library_play_button"
-        android:src="@drawable/ic_bf_gray"
+        android:src="@drawable/ic_play_circle_outline_black_48dp"
         android:visibility="gone"
         tools:visibility="visible" />
 
@@ -41,6 +41,5 @@
         android:visibility="gone"
         app:srcCompat="@drawable/ic_twotone_highlight_off_24dp"
         tools:visibility="visible" />
-
 
 </FrameLayout>

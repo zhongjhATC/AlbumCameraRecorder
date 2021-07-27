@@ -44,6 +44,14 @@ public class AutoLineFeedLayout extends ViewGroup {
     // region 相关属性
 
     /**
+     * 该控件的整个宽度
+     */
+    private int mWidth = 0;
+    /**
+     * 添加图片的资源
+     */
+    private Drawable mAddDrawable;
+    /**
      * 图片数据
      */
     public ArrayList<MultiMediaView> imageList = new ArrayList<>();
@@ -144,6 +152,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     /**
      * 设置一行多少列
+     *
      * @param columnNumber 每行列数
      */
     public void setColumnNumber(int columnNumber) {
@@ -152,6 +161,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     /**
      * 设置列与列之间的间隔
+     *
      * @param columnSpace 间隔
      */
     public void setColumnSpace(int columnSpace) {
@@ -162,17 +172,14 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     public AutoLineFeedLayout(Context context) {
         super(context);
-        init();
     }
 
     public AutoLineFeedLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
     public AutoLineFeedLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
     }
 
     public boolean isOperation() {
@@ -206,11 +213,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         // 添加图片的资源
         if (addDrawable != null) {
-            viewHolderAdd.mpvImage.setImageDrawable(addDrawable);
-        }
-
-        if (!isOperation) {
-            viewHolderAdd.itemView.setVisibility(View.GONE);
+            mAddDrawable = addDrawable;
         }
     }
 
@@ -219,16 +222,27 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 初始化
      */
     @SuppressLint("InflateParams")
-    public void init() {
-        // 默认➕号
-        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
-        multiMediaView.setPath(ADD);
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
-        viewHolderAdd.bind(multiMediaView);
-        addView(viewHolderAdd.itemView);
+    public void init(int widthMeasureSpec) {
+        if (mWidth == 0) {
+            mWidth = MeasureSpec.getSize(widthMeasureSpec);
+            // 默认➕号
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
+            multiMediaView.setPath(ADD);
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+            viewHolderAdd.bind(multiMediaView);
+            addView(viewHolderAdd.itemView);
 
-        // 获取屏幕的整个宽度
+            if (mAddDrawable != null) {
+                viewHolderAdd.mpvImage.setImageDrawable(mAddDrawable);
+            }
+
+            if (!isOperation) {
+                viewHolderAdd.itemView.setVisibility(View.GONE);
+            } else {
+                viewHolderAdd.itemView.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     /**
@@ -344,8 +358,9 @@ public class AutoLineFeedLayout extends ViewGroup {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         // 建议的高度
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
         // 布局的宽度采用建议宽度（match_parent或者size），如果设置wrap_content也是match_parent的效果
-        int width = MeasureSpec.getSize(widthMeasureSpec);
+        init(widthMeasureSpec);
 
         int height;
         if (heightMode == MeasureSpec.EXACTLY) {
@@ -367,7 +382,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 // 标签行数
                 int row = 1;
                 // 当前行右侧剩余的宽度
-                int widthSpace = width;
+                int widthSpace = mWidth;
                 for (int i = 0; i < getChildCount(); i++) {
                     View view = getChildAt(i);
                     if (view.getVisibility() == GONE) {
@@ -382,7 +397,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                     } else {
                         row++;    // 增加一行
                         // 如果剩余的宽度不能摆放此标签，那就将此标签放入一行
-                        widthSpace = width - childW;
+                        widthSpace = mWidth - childW;
                     }
                 }
                 // 由于每个标签的高度是相同的，所以直接获取第一个标签的高度即可
@@ -395,7 +410,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         }
 
         // 设置测量宽度和测量高度
-        setMeasuredDimension(width, height);
+        setMeasuredDimension(mWidth, height);
     }
 
     @Override
