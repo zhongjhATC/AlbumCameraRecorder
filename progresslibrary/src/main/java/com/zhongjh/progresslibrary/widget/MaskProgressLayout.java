@@ -139,6 +139,10 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         TypedArray maskProgressLayoutStyle = getContext().obtainStyledAttributes(attrs, R.styleable.MaskProgressLayout);
         // 是否允许操作
         isOperation = maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayout_isOperation, true);
+        // 一行多少列
+        int columnNumber = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_columnNumber, 4);
+        // 列与列之间多少间隔px单位
+        int columnSpace = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_columnSpace, 10);
         // 获取默认图片
         Drawable drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_album_thumbnail_placeholder);
         // 获取添加图片
@@ -195,7 +199,10 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             drawable = ContextCompat.getDrawable(getContext(), R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
-        mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable, maxCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent, imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
+        mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable,
+                maxCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
+                imageDeleteColor, imageDeleteDrawable, imageAddDrawable,
+                columnNumber, columnSpace);
 
 
         maskProgressLayoutStyle.recycle();

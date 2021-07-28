@@ -71,11 +71,11 @@ public class AutoLineFeedLayout extends ViewGroup {
     /**
      * 每行列数
      */
-    private int columnNumber;
+    private int columnNumber = 4;
     /**
      * 列与列之间的间隔
      */
-    private int columnSpace;
+    private int columnSpace = 10;
     /**
      * 图片加载方式
      */
@@ -112,7 +112,9 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 相关事件
      */
     private MaskProgressLayoutListener listener;
-    private final static int LEFT_RIGHT_SPACE = 10;
+    /**
+     * 行间距
+     */
     private final static int ROW_SPACE = 10;
     /**
      * 用于判断最后一个添加符号标签图片
@@ -156,7 +158,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param columnNumber 每行列数
      */
     public void setColumnNumber(int columnNumber) {
-
+        this.columnNumber = columnNumber;
     }
 
     /**
@@ -165,7 +167,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param columnSpace 间隔
      */
     public void setColumnSpace(int columnSpace) {
-
+        this.columnSpace = columnSpace;
     }
 
     // endregion
@@ -198,7 +200,8 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     public void initConfig(MaskProgressLayout maskProgressLayout, ImageEngine imageEngine, boolean isOperation, Drawable placeholder, int maxMediaCount,
                            int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent,
-                           int deleteColor, Drawable deleteImage, Drawable addDrawable) {
+                           int deleteColor, Drawable deleteImage, Drawable addDrawable,
+                           int columnNumber, int columnSpace) {
         this.maskProgressLayout = maskProgressLayout;
         this.placeholder = placeholder;
         this.imageEngine = imageEngine;
@@ -210,6 +213,8 @@ public class AutoLineFeedLayout extends ViewGroup {
         this.maskingTextContent = maskingTextContent;
         this.deleteColor = deleteColor;
         this.deleteImage = deleteImage;
+        this.columnNumber = columnNumber;
+        this.columnSpace = columnSpace;
 
         // 添加图片的资源
         if (addDrawable != null) {
@@ -232,6 +237,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
             viewHolderAdd.bind(multiMediaView);
             addView(viewHolderAdd.itemView);
+            initWidth(viewHolderAdd.itemView);
 
             if (mAddDrawable != null) {
                 viewHolderAdd.mpvImage.setImageDrawable(mAddDrawable);
@@ -368,7 +374,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             height = heightSize;
         } else {
             int childCount = 0;
-            // 其他情况下（AT_MOST、UNSPECIFIED）需要计算计算高度
+            // 获取不处于隐藏的view的数量
             for (int i = 0; i < getChildCount(); i++) {
                 View childView = getChildAt(i);
                 if (childView.getVisibility() != GONE) {
@@ -388,14 +394,18 @@ public class AutoLineFeedLayout extends ViewGroup {
                     if (view.getVisibility() == GONE) {
                         continue;
                     }
-                    // 获取标签宽度,包括左右间距
-                    int childW = view.getMeasuredWidth() + LEFT_RIGHT_SPACE;
+                    // 获取标签宽度,包括右间距,如果是该行最后一个,则不加上间距。
+                    int childW = view.getMeasuredWidth() + columnSpace;
                     Log.v(TAG, "标签宽度:" + childW + " 行数：" + row + "  剩余宽度：" + widthSpace);
+
+                    // 如果剩余的宽度大于此标签的宽度，那就将此标签放到本行
                     if (widthSpace >= childW) {
-                        // 如果剩余的宽度大于此标签的宽度，那就将此标签放到本行
                         widthSpace -= childW;
+                    } else if (widthSpace >= view.getMeasuredWidth()) {
+                        widthSpace -= view.getMeasuredWidth();
                     } else {
-                        row++;    // 增加一行
+                        // 增加一行
+                        row++;
                         // 如果剩余的宽度不能摆放此标签，那就将此标签放入一行
                         widthSpace = mWidth - childW;
                     }
@@ -404,7 +414,6 @@ public class AutoLineFeedLayout extends ViewGroup {
                 int childH = getChildAt(0).getMeasuredHeight();
                 // 最终布局的高度=标签高度*行数+行距*(行数-1)
                 height = (childH * row) + ROW_SPACE * (row - 1);
-
                 Log.v(TAG, "总高度:" + height + " 行数：" + row + "  标签高度：" + childH);
             }
         }
@@ -425,13 +434,13 @@ public class AutoLineFeedLayout extends ViewGroup {
             if (childView.getVisibility() != GONE) {
                 int childW = childView.getMeasuredWidth();
                 int childH = childView.getMeasuredHeight();
-                //右侧位置=本行已经占有的位置+当前标签的宽度
+                // 右侧位置=本行已经占有的位置+当前标签的宽度
                 right += childW;
-                //底部位置=已经摆放的行数*（标签高度+行距）+当前标签高度
+                // 底部位置=已经摆放的行数*（标签高度+行距）+当前标签高度
                 botom = row * (childH + ROW_SPACE) + childH;
                 // 如果右侧位置已经超出布局右边缘，跳到下一行
                 // if it can't drawing on a same line , skip to next line
-                if (right > (r - LEFT_RIGHT_SPACE)) {
+                if (right > r) {
                     row++;
                     right = childW;
                     botom = row * (childH + ROW_SPACE) + childH;
@@ -440,7 +449,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                         " right = " + right + " botom = " + botom);
                 childView.layout(right - childW, botom - childH, right, botom);
 
-                right += LEFT_RIGHT_SPACE;
+                right += columnSpace;
             }
         }
     }
@@ -470,6 +479,22 @@ public class AutoLineFeedLayout extends ViewGroup {
         }
     }
 
+    /**
+     * 动态根据columnNumber设置宽度，高度跟宽度一样
+     *
+     * @param itemView view
+     */
+    private void initWidth(View itemView) {
+        // 设置动态宽度，先获取间隔宽度
+        LayoutParams layoutParams = itemView.getLayoutParams();
+        int sumColumnSpace = (columnNumber - 1) * columnSpace;
+        // view的剩余宽度
+        int viewWidth = (mWidth - sumColumnSpace) / columnNumber;
+        layoutParams.width = viewWidth;
+        layoutParams.height = viewWidth;
+        itemView.setLayoutParams(layoutParams);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public MaskProgressView mpvImage;
@@ -477,7 +502,6 @@ public class AutoLineFeedLayout extends ViewGroup {
         private MultiMediaView multiMediaView;
 
         private final View vClose;
-
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -509,6 +533,7 @@ public class AutoLineFeedLayout extends ViewGroup {
 
         public void bind(MultiMediaView multiMediaView) {
             this.multiMediaView = multiMediaView;
+
             if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
                 this.multiMediaView.setMaskProgressView(mpvImage);
                 this.multiMediaView.setItemView(itemView);
