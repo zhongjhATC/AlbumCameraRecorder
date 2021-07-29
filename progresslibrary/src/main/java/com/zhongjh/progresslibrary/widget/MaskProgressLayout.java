@@ -97,7 +97,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         } else {
             mViewHolder.alfMedia.setMaxMediaCount(maxImageSelectable + maxVideoSelectable + maxAudioSelectable);
         }
-
     }
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {

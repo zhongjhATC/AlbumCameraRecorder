@@ -26,8 +26,8 @@
                 app:maskingTextColor="@color/black_eighty_percent"
                 app:maskingTextContent="@string/up_upload_is_customizable"
                 app:maskingTextSize="12"
-                app:columnNumber="8"
-                app:columnSpace="1"
+                app:columnNumber="4"
+                app:columnSpace="10"
                 app:maxCount="7" />
 
             <CheckBox

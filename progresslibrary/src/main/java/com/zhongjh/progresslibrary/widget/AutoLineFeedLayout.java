@@ -40,7 +40,6 @@ public class AutoLineFeedLayout extends ViewGroup {
     private final static String TAG = "AutoLineFeedLayout";
     private MaskProgressLayout maskProgressLayout;
 
-
     // region 相关属性
 
     /**
@@ -152,24 +151,6 @@ public class AutoLineFeedLayout extends ViewGroup {
         this.maxMediaCount = maxMediaCount;
     }
 
-    /**
-     * 设置一行多少列
-     *
-     * @param columnNumber 每行列数
-     */
-    public void setColumnNumber(int columnNumber) {
-        this.columnNumber = columnNumber;
-    }
-
-    /**
-     * 设置列与列之间的间隔
-     *
-     * @param columnSpace 间隔
-     */
-    public void setColumnSpace(int columnSpace) {
-        this.columnSpace = columnSpace;
-    }
-
     // endregion
 
     public AutoLineFeedLayout(Context context) {
@@ -271,6 +252,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 // 减1是因为多了一个add按钮控制
                 int endingPosition = getChildCount() - 1;
                 addView(viewHolder.itemView, endingPosition);
+                initWidth(viewHolder.itemView);
             }
         }
         // 重新整理Add是否显示，处理图片的索引
@@ -318,6 +300,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 addView(viewHolder.itemView, position);
+                initWidth(viewHolder.itemView);
                 position++;
             }
         }
