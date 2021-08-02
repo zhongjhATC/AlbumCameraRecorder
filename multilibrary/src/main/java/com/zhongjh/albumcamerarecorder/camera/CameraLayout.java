@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -173,6 +175,31 @@ public class CameraLayout extends RelativeLayout {
      * 处于分段录制模式下合成的新的视频
      */
     private String mNewSectionVideoPath;
+    /**
+     * 用于延迟隐藏的事件，如果不用延迟，会有短暂闪屏现象
+     */
+    private Handler mCameraViewGoneHandler = new Handler(Looper.getMainLooper());
+    /**
+     * 用于延迟显示的事件，如果不用延迟，会有短暂闪屏现象
+     */
+    private Handler mCameraViewVisibleHandler = new Handler(Looper.getMainLooper());
+    private Runnable mCameraViewGoneRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // 隐藏cameraView
+            ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
+            layoutParams.height = 1;
+            layoutParams.width = 1;
+            mViewHolder.cameraView.setLayoutParams(layoutParams);
+        }
+    };
+    private Runnable mCameraViewVisibleRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // 隐藏播放视频
+            mViewHolder.vvPreview.setVisibility(View.INVISIBLE);
+        }
+    };
 
     // region 回调监听属性
 
@@ -449,6 +476,8 @@ public class CameraLayout extends RelativeLayout {
             mCameraSpec.videoEditCoordinator.onDestroy();
             mCameraSpec.videoEditCoordinator = null;
         }
+        mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
+        mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
     }
 
     /**
@@ -1126,24 +1155,21 @@ public class CameraLayout extends RelativeLayout {
      * 设置录制界面隐藏
      */
     private void setCameraViewGone() {
-        ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
-        layoutParams.height = 1;
-        layoutParams.width = 1;
-        mViewHolder.cameraView.setLayoutParams(layoutParams);
         // 录制隐藏就显示播放
         mViewHolder.vvPreview.setVisibility(View.VISIBLE);
+        mCameraViewGoneHandler.postDelayed(mCameraViewGoneRunnable,300);
     }
 
     /**
      * 设置录制界面显示
      */
     private void setCameraViewVisible() {
+        // 录制显示就隐藏播放
         ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
         layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         mViewHolder.cameraView.setLayoutParams(layoutParams);
-        // 录制显示就隐藏播放
-        mViewHolder.vvPreview.setVisibility(View.INVISIBLE);
+        mCameraViewVisibleHandler.postDelayed(mCameraViewVisibleRunnable,300);
     }
 
     /**
