@@ -37,8 +37,8 @@ allprojects {
 
 ext {
 
-    versionCode = 1101
-    versionName = '1.1.01'
+    versionCode = 1114
+    versionName = '1.1.14'
 
     androidCompileSdkVersion = 30
     androidBuildToolsVersion = '30.0.3'
