@@ -6,9 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_eighty_percent"
-    android:orientation="vertical"
     android:animateLayoutChanges="true"
+    android:orientation="vertical"
     android:paddingTop="1dp">
+
+    <com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView
+        android:id="@+id/vvPreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="显示当前摄像的"
+        tools:ignore="HardcodedText" />
 
     <!-- 拍摄 -->
     <com.otaliastudios.cameraview.CameraView
@@ -33,14 +40,6 @@
         app:cameraMode="video"
         app:cameraPlaySounds="true"
         app:cameraPreview="glSurface" />
-
-    <com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView
-        android:id="@+id/vvPreview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="显示当前摄像的"
-        android:visibility="invisible"
-        tools:ignore="HardcodedText" />
 
     <ImageView
         android:id="@+id/imgPhoto"

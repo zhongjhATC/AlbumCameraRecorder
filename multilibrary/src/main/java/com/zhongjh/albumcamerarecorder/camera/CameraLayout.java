@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -899,8 +900,8 @@ public class CameraLayout extends RelativeLayout {
                 stopVideo();
                 // 取消视频删除文件
                 FileUtil.deleteFile(mVideoFile);
-                // 隐藏video
-                mViewHolder.vvPreview.setVisibility(INVISIBLE);
+                // 开始录制
+                setCameraViewVisible();
                 break;
             case TYPE_PICTURE:
                 // 隐藏图片view
@@ -1108,16 +1109,41 @@ public class CameraLayout extends RelativeLayout {
         Uri uri = Uri.fromFile(file);
         mViewHolder.vvPreview.setVideoURI(uri);
         // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
-        mViewHolder.vvPreview.setVisibility(View.VISIBLE);
         if (!mViewHolder.vvPreview.isPlaying()) {
             mViewHolder.vvPreview.start();
         }
+        // 停止录制
+        setCameraViewGone();
         mViewHolder.vvPreview.setOnCompletionListener(mediaPlayer -> {
             // 循环播放
             if (!mViewHolder.vvPreview.isPlaying()) {
                 mViewHolder.vvPreview.start();
             }
         });
+    }
+
+    /**
+     * 设置录制界面隐藏
+     */
+    private void setCameraViewGone() {
+        ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
+        layoutParams.height = 1;
+        layoutParams.width = 1;
+        mViewHolder.cameraView.setLayoutParams(layoutParams);
+        // 录制隐藏就显示播放
+        mViewHolder.vvPreview.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 设置录制界面显示
+     */
+    private void setCameraViewVisible() {
+        ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
+        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        mViewHolder.cameraView.setLayoutParams(layoutParams);
+        // 录制显示就隐藏播放
+        mViewHolder.vvPreview.setVisibility(View.INVISIBLE);
     }
 
     /**
