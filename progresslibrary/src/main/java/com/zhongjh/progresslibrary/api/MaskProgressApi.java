@@ -1,6 +1,7 @@
 package com.zhongjh.progresslibrary.api;
 
 import android.net.Uri;
+import android.view.View;
 
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 
@@ -17,6 +18,7 @@ public interface MaskProgressApi {
 
     /**
      * 设置authority
+     *
      * @param authority provider的authorities属性
      */
     void setAuthority(String authority);
@@ -44,12 +46,14 @@ public interface MaskProgressApi {
 
     /**
      * 设置视频地址并且启动上传(一般用于刚确认了哪些数据后)
+     *
      * @param videoUris 视频地址列表
      */
     void addVideoStartUpload(List<Uri> videoUris);
 
     /**
      * 设置视频地址直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
+     *
      * @param videoPath 视频地址列表
      */
     void addVideoCover(List<String> videoPath);
@@ -65,7 +69,7 @@ public interface MaskProgressApi {
      * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)
      *
      * @param filePath 音频文件地址
-     * @param length 音频文件长度
+     * @param length   音频文件长度
      */
     void addAudioStartUpload(String filePath, int length);
 
@@ -79,9 +83,10 @@ public interface MaskProgressApi {
     /**
      * 设置音频文件直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
      *
+     * @param view 音频view
      * @param file 文件路径
      */
-    void addAudioCover(String file);
+    void setAudioCover(View view, String file);
 
     /**
      * 重置所有即是清空数据
@@ -90,26 +95,31 @@ public interface MaskProgressApi {
 
     /**
      * 获取图片数据
+     *
      * @return 返回当前包含url的图片数据
      */
     ArrayList<MultiMediaView> getImages();
 
     /**
      * 获取视频数据
+     *
      * @return 返回当前包含url的视频数据
      */
     ArrayList<MultiMediaView> getVideos();
 
     /**
      * 获取音频数据
+     *
      * @return 返回当前包含url的音频数据
      */
     ArrayList<MultiMediaView> getAudios();
 
     /**
      * 语音点击
+     *
+     * @view 点击的view
      */
-    void onAudioClick();
+    void onAudioClick(View view);
 
     /**
      * 视频点击
@@ -118,6 +128,7 @@ public interface MaskProgressApi {
 
     /**
      * 删除单个图片
+     *
      * @param position 图片的索引，该索引列表不包含视频等
      */
     void onRemoveItemImage(int position);

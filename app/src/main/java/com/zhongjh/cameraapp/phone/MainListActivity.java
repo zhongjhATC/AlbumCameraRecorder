@@ -2,6 +2,8 @@ package com.zhongjh.cameraapp.phone;
 
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
@@ -56,6 +58,9 @@ public class MainListActivity extends AppCompatActivity {
 
         // 这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例
         mBinding.btnUpperLimit.setOnClickListener(v -> MainUpperLimitActivity.newInstance(MainListActivity.this));
+
+        // recyclerView版
+        mBinding.btnRecyclerView.setOnClickListener(v -> RecyclerViewActivity.newInstance(MainListActivity.this));
     }
 
 }

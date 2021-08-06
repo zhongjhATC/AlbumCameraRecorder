@@ -45,9 +45,10 @@ public interface MaskProgressLayoutListener {
 
     /**
      * 开始下载音频
+     * @param view 点击的view
      * @param url 网址
      */
-    void onItemAudioStartDownload(String url);
+    void onItemAudioStartDownload(View view,String url);
 
     /**
      * 开始下载视频

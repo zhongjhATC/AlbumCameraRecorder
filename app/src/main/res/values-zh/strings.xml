@@ -52,4 +52,6 @@
     <string name="album_configuration">相册配置</string>
     <string name="custom_filters">自定义过滤器：</string>
     <string name="recording_configuration">录音配置</string>
+    <string name="recyclerView_version">recyclerView版本</string>
+
 </resources>

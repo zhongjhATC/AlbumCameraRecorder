@@ -47,6 +47,10 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
     ActivityMainSeeBinding mBinding;
+    /**
+     * 用于下载后记录的音频view
+     */
+    View mAudioView;
 
     /**
      * 初始化下载
@@ -112,7 +116,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public void onItemAudioStartDownload(String url) {
+            public void onItemAudioStartDownload(View view, String url) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
                     // 判断是否存在文件
@@ -120,11 +124,12 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                     boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
                     if (!isExists) {
                         // 调用方法
+                        mAudioView = view;
                         mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
                     } else {
                         // 直接赋值
-                        mBinding.mplImageList.addAudioCover(fileFullPath[0] + File.separator + fileFullPath[1]);
-                        mBinding.mplImageList.onAudioClick();
+                        mBinding.mplImageList.setAudioCover(view, fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.mplImageList.onAudioClick(view);
                     }
                 }
             }
@@ -281,7 +286,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         String suffix = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
         switch (suffix) {
             case "mp3":
-                mBinding.mplImageList.addAudioCover(file.getPath());
+                mBinding.mplImageList.setAudioCover(mAudioView, file.getPath());
                 break;
             case "mp4":
                 List<String> videoPath = new ArrayList<>();

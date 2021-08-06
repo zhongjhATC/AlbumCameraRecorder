@@ -34,6 +34,7 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
  * 简单版
+ *
  * @author zhongjh
  */
 public class MainSimpleActivity extends BaseActivity {
@@ -69,7 +70,7 @@ public class MainSimpleActivity extends BaseActivity {
             }
 
             @Override
-            @SuppressWarnings({"unchecked","rawtypes"})
+            @SuppressWarnings({"unchecked", "rawtypes"})
             public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
@@ -97,7 +98,7 @@ public class MainSimpleActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartDownload(String url) {
+            public void onItemAudioStartDownload(View view, String url) {
 
             }
 
@@ -148,15 +149,15 @@ public class MainSimpleActivity extends BaseActivity {
         // 全局
         mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
 
-        if (mBinding.cbAlbum.isChecked()){
+        if (mBinding.cbAlbum.isChecked()) {
             // 开启相册功能
             mGlobalSetting.albumSetting(albumSetting);
         }
-        if (mBinding.cbCamera.isChecked()){
+        if (mBinding.cbCamera.isChecked()) {
             // 开启拍摄功能
             mGlobalSetting.cameraSetting(cameraSetting);
         }
-        if (mBinding.cbRecorder.isChecked()){
+        if (mBinding.cbRecorder.isChecked()) {
             // 开启录音功能
             mGlobalSetting.recorderSetting(recorderSetting);
         }

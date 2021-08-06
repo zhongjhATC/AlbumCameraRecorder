@@ -304,6 +304,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
                 PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
+                // 隐藏上传进度
+                playProgressView.mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
                 isShowRemoveRecorder();
                 RecordingItem recordingItem = new RecordingItem();
                 recordingItem.setUrl(audioUrl);
@@ -318,7 +320,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void addAudioCover(String file) {
+    public void setAudioCover(View view, String file) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(file);
 
@@ -328,15 +330,13 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
         multiMediaView.setPath(file);
 
-
-        PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
-        playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
+        view.setVisibility(View.VISIBLE);
         isShowRemoveRecorder();
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(file);
         recordingItem.setLength(Integer.parseInt(duration));
-        playProgressView.mViewHolder.playView.setData(recordingItem, audioProgressColor);
+        ((PlayView) view).setData(recordingItem, audioProgressColor);
     }
 
     @Override
@@ -370,9 +370,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void onAudioClick() {
-        // TODO
-//        mViewHolder.playView.mViewHolder.imgPlay.performClick();
+    public void onAudioClick(View view) {
+        view.performClick();
     }
 
     @Override

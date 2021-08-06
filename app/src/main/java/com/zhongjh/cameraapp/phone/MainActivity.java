@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartDownload(String url) {
+            public void onItemAudioStartDownload(View view, String url) {
 
             }
 

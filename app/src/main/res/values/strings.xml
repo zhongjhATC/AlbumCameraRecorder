@@ -52,4 +52,5 @@
     <string name="album_configuration">Photo album configuration</string>
     <string name="custom_filters">Custom filters:</string>
     <string name="recording_configuration">Recording configuration</string>
+    <string name="recyclerView_version">recyclerView version</string>
 </resources>

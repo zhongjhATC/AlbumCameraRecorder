@@ -96,6 +96,10 @@
             android:name=".phone.MainUpperLimitActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".phone.RecyclerViewActivity"
+            android:screenOrientation="portrait" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.zhongjh.cameraapp.fileprovider"

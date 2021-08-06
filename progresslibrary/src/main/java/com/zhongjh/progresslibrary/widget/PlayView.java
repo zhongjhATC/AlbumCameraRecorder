@@ -157,7 +157,7 @@ public class PlayView extends FrameLayout {
                 onPlay();
             } else {
                 // 调用下载
-                listener.onItemAudioStartDownload(mRecordingItem.getUrl());
+                listener.onItemAudioStartDownload(this,mRecordingItem.getUrl());
             }
         });
 

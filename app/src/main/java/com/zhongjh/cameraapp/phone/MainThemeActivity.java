@@ -2,7 +2,9 @@ package com.zhongjh.cameraapp.phone;
 
 import android.app.Activity;
 import android.content.Intent;
+
 import androidx.databinding.DataBindingUtil;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -30,6 +32,7 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
  * 多种样式版
+ *
  * @author zhongjh
  */
 public class MainThemeActivity extends BaseActivity {
@@ -64,7 +67,7 @@ public class MainThemeActivity extends BaseActivity {
             }
 
             @Override
-            @SuppressWarnings({"unchecked","rawtypes"})
+            @SuppressWarnings({"unchecked", "rawtypes"})
             public void onItemImage(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
@@ -92,7 +95,7 @@ public class MainThemeActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartDownload(String url) {
+            public void onItemAudioStartDownload(View view, String url) {
 
             }
 

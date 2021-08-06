@@ -108,7 +108,7 @@ public class MainUpperLimitActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartDownload(String url) {
+            public void onItemAudioStartDownload(View view, String url) {
 
             }
 

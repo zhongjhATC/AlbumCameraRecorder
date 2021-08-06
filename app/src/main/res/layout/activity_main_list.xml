@@ -61,6 +61,15 @@
             android:layout_marginTop="16dp"
             android:text="@string/configure_upperlimit_version" />
 
+        <Button
+            android:id="@+id/btnRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/recyclerView_version" />
+
     </LinearLayout>
 
 </layout>

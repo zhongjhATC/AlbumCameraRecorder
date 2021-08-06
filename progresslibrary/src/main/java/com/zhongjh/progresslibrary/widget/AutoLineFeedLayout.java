@@ -201,6 +201,13 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (addDrawable != null) {
             mAddDrawable = addDrawable;
         }
+
+        // 默认➕号
+        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
+        multiMediaView.setPath(ADD);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+        viewHolderAdd.bind(multiMediaView);
     }
 
 
@@ -211,12 +218,6 @@ public class AutoLineFeedLayout extends ViewGroup {
     public void init(int widthMeasureSpec) {
         if (mWidth == 0) {
             mWidth = MeasureSpec.getSize(widthMeasureSpec);
-            // 默认➕号
-            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
-            multiMediaView.setPath(ADD);
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            viewHolderAdd = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
-            viewHolderAdd.bind(multiMediaView);
             addView(viewHolderAdd.itemView);
             initWidth(viewHolderAdd.itemView);
 
