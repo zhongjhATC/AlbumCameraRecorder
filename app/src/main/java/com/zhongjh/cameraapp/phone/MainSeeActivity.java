@@ -242,7 +242,9 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         mBinding.mplImageList.addImageUrls(imageUrls);
         mBinding.mplImageList.addAudioUrl("https://img.huoyunji.com/audio_20190221105823_Android_28360");
+        // 设置file,不管
         mBinding.mplImageList.addVideoUrl("https://img.huoyunji.com/video_20190221105749_Android_31228");
+
     }
 
     @Override

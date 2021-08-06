@@ -371,7 +371,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void onAudioClick(View view) {
-        view.performClick();
+        ((PlayView) view).mViewHolder.imgPlay.performClick();
     }
 
     @Override
