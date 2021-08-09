@@ -291,36 +291,38 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void addAudioUrl(String audioUrl) {
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(audioUrl);
-            mediaPlayer.prepare();
-            int duration = mediaPlayer.getDuration();
-            if (0 != duration) {
-                MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
-                multiMediaView.setUrl(audioUrl);
+    public void setAudioUrls(List<String> audioUrls) {
+        for (int i = 0; i < audioUrls.size(); i++) {
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(audioUrls.get(i));
+                mediaPlayer.prepare();
+                int duration = mediaPlayer.getDuration();
+                if (0 != duration) {
+                    MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
+                    multiMediaView.setUrl(audioUrls.get(i));
 
-                if (this.audioList == null) {
-                    this.audioList = new ArrayList<>();
+                    if (this.audioList == null) {
+                        this.audioList = new ArrayList<>();
+                    }
+                    audioList.add(multiMediaView);
+
+                    PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
+                    // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
+                    playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
+                    // 隐藏上传进度
+                    playProgressView.mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
+                    isShowRemoveRecorder();
+                    RecordingItem recordingItem = new RecordingItem();
+                    recordingItem.setUrl(audioUrls.get(i));
+                    recordingItem.setLength(duration);
+                    playProgressView.setData(recordingItem, audioProgressColor);
+                    //记得释放资源
+                    mediaPlayer.release();
                 }
-                audioList.add(multiMediaView);
-
-                PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
-                // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
-                playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
-                // 隐藏上传进度
-                playProgressView.mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
-                isShowRemoveRecorder();
-                RecordingItem recordingItem = new RecordingItem();
-                recordingItem.setUrl(audioUrl);
-                recordingItem.setLength(duration);
-                playProgressView.setData(recordingItem, audioProgressColor);
-                //记得释放资源
-                mediaPlayer.release();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

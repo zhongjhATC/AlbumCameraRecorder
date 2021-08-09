@@ -76,9 +76,9 @@ public interface MaskProgressApi {
     /**
      * 添加音频网址数据
      *
-     * @param audioUrl 音频网址
+     * @param audioUrls 音频网址列表
      */
-    void addAudioUrl(String audioUrl);
+    void setAudioUrls(List<String> audioUrls);
 
     /**
      * 设置音频文件直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)

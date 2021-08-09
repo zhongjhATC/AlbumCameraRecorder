@@ -229,7 +229,13 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      */
     private void initData() {
         mBinding.mplImageList.setOperation(true);
-        mBinding.mplImageList.addAudioUrl("https://img.huoyunji.com/audio_20190221105823_Android_28360");
+
+        // 音频数据
+        List<String> audioUrls = new ArrayList<>();
+        audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
+        audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
+        mBinding.mplImageList.setAudioUrls(audioUrls);
+
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
         videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
