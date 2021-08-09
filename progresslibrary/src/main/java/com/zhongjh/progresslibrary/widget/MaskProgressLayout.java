@@ -223,7 +223,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUri(uri);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.setImageData(multiMediaViews);
+        mViewHolder.alfMedia.addImageData(multiMediaViews);
+        mViewHolder.alfMedia.refreshImageView(multiMediaViews);
     }
 
     @Override
@@ -236,7 +237,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUri(mMediaStoreCompat.getUri(string));
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.setImageData(multiMediaViews);
+        mViewHolder.alfMedia.addImageData(multiMediaViews);
     }
 
     @Override
@@ -247,7 +248,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUrl(string);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.setImageData(multiMediaViews);
+        mViewHolder.alfMedia.addImageData(multiMediaViews);
     }
 
     @Override
@@ -265,14 +266,16 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void setVideoUrl(String videoUrl) {
+    public void setVideoUrls(List<String> videoUrls) {
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
-        MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
-        multiMediaView.setUploading(false);
-        multiMediaView.setPosition(0);
-        multiMediaView.setUrl(videoUrl);
-        multiMediaViews.add(multiMediaView);
-        mViewHolder.alfMedia.setVideoData(multiMediaViews, false);
+        for (int i = 0; i < videoUrls.size(); i++) {
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
+            multiMediaView.setUploading(false);
+            multiMediaView.setPosition(i);
+            multiMediaView.setUrl(videoUrls.get(i));
+            multiMediaViews.add(multiMediaView);
+        }
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, false);
     }
 
     @Override
@@ -430,15 +433,15 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     private void addVideo(List<Uri> videoUris, boolean icClean, boolean isUploading) {
         isAuthority();
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
-        for (int i = 0;i<videoUris.size();i++) {
+        for (int i = 0; i < videoUris.size(); i++) {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
             multiMediaView.setUri(videoUris.get(i));
             multiMediaView.setUploading(isUploading);
             multiMediaView.setPosition(i);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.setVideoData(multiMediaViews, icClean);
-        mViewHolder.alfMedia.refreshVideoView();
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, icClean);
+        mViewHolder.alfMedia.refreshVideoView(multiMediaViews);
     }
 
     /**

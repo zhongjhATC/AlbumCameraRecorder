@@ -61,9 +61,9 @@ public interface MaskProgressApi {
     /**
      * 设置视频网址数据
      *
-     * @param videoUrl 视频网址
+     * @param videoUrls 视频网址列表
      */
-    void setVideoUrl(String videoUrl);
+    void setVideoUrls(List<String> videoUrls);
 
     /**
      * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)

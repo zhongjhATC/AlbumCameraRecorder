@@ -64,6 +64,10 @@ public class AutoLineFeedLayout extends ViewGroup {
     public ArrayList<MultiMediaView> videoList = new ArrayList<>();
 
     /**
+     * 记录当前最后一个视频索引
+     */
+    private int mVideoPosition = 0;
+    /**
      * 是否操作
      */
     private boolean isOperation;
@@ -238,8 +242,8 @@ public class AutoLineFeedLayout extends ViewGroup {
             }
 
             Log.d(TAG, "refreshView");
-            refreshImageView();
-            refreshVideoView();
+            refreshImageView(imageList);
+            refreshVideoView(videoList);
         }
     }
 
@@ -249,7 +253,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param multiMediaViews 数据集合
      */
     @SuppressLint("InflateParams")
-    public void setImageData(List<MultiMediaView> multiMediaViews) {
+    public void addImageData(List<MultiMediaView> multiMediaViews) {
         Log.d(TAG + " Test", "setImageData");
         if (this.imageList == null) {
             this.imageList = new ArrayList<>();
@@ -265,15 +269,18 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param isClean         添加前是否清空
      */
     @SuppressLint("InflateParams")
-    public void setVideoData(List<MultiMediaView> multiMediaViews, boolean isClean) {
+    public void addVideoData(List<MultiMediaView> multiMediaViews, boolean isClean) {
         Log.d(TAG + " Test", "setVideoData");
         if (this.videoList == null) {
             this.videoList = new ArrayList<>();
         }
         if (isClean && this.videoList.size() > 0) {
             // 清空有关数据
+            for (int i = 0; i < videoList.size(); i++) {
+                removeViewAt(i);
+            }
             this.videoList.clear();
-            removeViewAt(0);
+            mVideoPosition = 0;
         }
         this.videoList.addAll(multiMediaViews);
     }
@@ -294,9 +301,9 @@ public class AutoLineFeedLayout extends ViewGroup {
             imageList.remove(multiMediaView);
         } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
             videoList.remove(multiMediaView);
+            mVideoPosition--;
         }
         ViewGroup parent = (ViewGroup) multiMediaView.getItemView().getParent();
-//        parent.removeViewAt( 1 + videoList.size() + position);// ADD和视频就占据2个位置了
         parent.removeView(multiMediaView.getItemView());
         checkLastImages();
     }
@@ -448,13 +455,15 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     /**
      * 刷新图片view
+     *
+     * @param imageListAdd 图片数据
      */
     @SuppressLint("InflateParams")
-    public void refreshImageView() {
+    public void refreshImageView(ArrayList<MultiMediaView> imageListAdd) {
         Log.d(TAG + " Test", "refreshImageView");
         if (imageList != null && imageList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            for (MultiMediaView multiMediaView : imageList) {
+            for (MultiMediaView multiMediaView : imageListAdd) {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 // 减1是因为多了一个add按钮控制
@@ -463,7 +472,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 initWidth(viewHolder.itemView);
             }
             // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
-            for (MultiMediaView multiMediaView : imageList) {
+            for (MultiMediaView multiMediaView : imageListAdd) {
                 // 判断multiMedia有没有path,有path没有url就执行上传
                 boolean pathNotNull = TextUtils.isEmpty(multiMediaView.getUrl()) &&
                         (!TextUtils.isEmpty(multiMediaView.getPath()) || multiMediaView.getUri() != null);
@@ -476,29 +485,27 @@ public class AutoLineFeedLayout extends ViewGroup {
 
     /**
      * 刷新视频view
+     *
+     * @param videoListAdd 视频数据
      */
     @SuppressLint("InflateParams")
-    public void refreshVideoView() {
+    public void refreshVideoView(ArrayList<MultiMediaView> videoListAdd) {
         Log.d(TAG + " Test", "refreshVideoView");
         // 记录视频的坐标点，视频默认加载在最前面
-        int position = 0;
-        if (this.videoList.size() > 0) {
-            position = this.videoList.size() - 1;
-        }
         if (videoList.size() > 0) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            for (MultiMediaView multiMediaView : videoList) {
+            for (MultiMediaView multiMediaView : videoListAdd) {
                 // 标记音频，为了后面识别是视频进行播放
                 multiMediaView.setMimeType(MimeType.MP4.toString());
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
-                addView(viewHolder.itemView, position);
+                addView(viewHolder.itemView, mVideoPosition);
                 initWidth(viewHolder.itemView);
-                position++;
+                mVideoPosition++;
             }
         }
         // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
-        for (MultiMediaView multiMediaView : videoList) {
+        for (MultiMediaView multiMediaView : videoListAdd) {
             if (multiMediaView.isUploading()) {
                 // 判断multiMedia有没有path,有path没有uri就执行上传
                 this.listener.onItemStartUploading(multiMediaView);
@@ -584,6 +591,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                             imageList.remove(multiMediaView);
                         } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                             videoList.remove(multiMediaView);
+                            mVideoPosition--;
                         }
                         ViewGroup parent = (ViewGroup) this.itemView.getParent();
                         parent.removeView(this.itemView);
@@ -644,6 +652,5 @@ public class AutoLineFeedLayout extends ViewGroup {
         }
 
     }
-
 
 }

@@ -70,7 +70,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             holder.mplImageList.addAudioUrl(datas.get(position).getAudioUrls().get(0));
         }
         if (datas.get(position).getVideoUrls().size() > 0) {
-            holder.mplImageList.setVideoUrl(datas.get(position).getVideoUrls().get(0));
+            holder.mplImageList.setVideoUrls(datas.get(position).getVideoUrls());
         }
     }
 
