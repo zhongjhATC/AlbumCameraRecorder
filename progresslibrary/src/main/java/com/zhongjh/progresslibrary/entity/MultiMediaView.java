@@ -32,6 +32,10 @@ public class MultiMediaView extends MultiMedia {
      * 绑定子view: 用于显示图片、视频的view
      */
     private MaskProgressView maskProgressView;
+    /**
+     * 是否进行上传动作
+      */
+    private boolean isUploading;
 
     public MultiMediaView(@MultimediaTypes int multiMediaState) {
         setType(multiMediaState);
@@ -74,6 +78,14 @@ public class MultiMediaView extends MultiMedia {
                 this.playProgressView.audioUploadCompleted();
             }
         }
+    }
+
+    public boolean isUploading() {
+        return isUploading;
+    }
+
+    public void setUploading(boolean uploading) {
+        isUploading = uploading;
     }
 
     @Override

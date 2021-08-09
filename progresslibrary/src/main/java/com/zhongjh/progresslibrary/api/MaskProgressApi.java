@@ -38,11 +38,11 @@ public interface MaskProgressApi {
     void addImagesStartUpload(List<String> imagePaths);
 
     /**
-     * 添加图片网址数据
+     * 设置图片网址数据
      *
      * @param imagesUrls 图片网址
      */
-    void addImageUrls(List<String> imagesUrls);
+    void setImageUrls(List<String> imagesUrls);
 
     /**
      * 设置视频地址并且启动上传(一般用于刚确认了哪些数据后)
@@ -59,11 +59,11 @@ public interface MaskProgressApi {
     void addVideoCover(List<String> videoPath);
 
     /**
-     * 添加视频网址数据
+     * 设置视频网址数据
      *
      * @param videoUrl 视频网址
      */
-    void addVideoUrl(String videoUrl);
+    void setVideoUrl(String videoUrl);
 
     /**
      * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)

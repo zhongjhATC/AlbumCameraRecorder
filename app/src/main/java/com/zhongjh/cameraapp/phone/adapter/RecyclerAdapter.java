@@ -65,12 +65,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.mplImageList.addImageUrls(datas.get(position).getImageUrls());
+        holder.mplImageList.setImageUrls(datas.get(position).getImageUrls());
         if (datas.get(position).getAudioUrls().size() > 0) {
             holder.mplImageList.addAudioUrl(datas.get(position).getAudioUrls().get(0));
         }
         if (datas.get(position).getVideoUrls().size() > 0) {
-            holder.mplImageList.addVideoUrl(datas.get(position).getVideoUrls().get(0));
+            holder.mplImageList.setVideoUrl(datas.get(position).getVideoUrls().get(0));
         }
     }
 

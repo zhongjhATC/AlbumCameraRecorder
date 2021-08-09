@@ -47,6 +47,10 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     private int mWidth = 0;
     /**
+     * item的高度
+     */
+    private int mItemHeight = 0;
+    /**
      * 添加图片的资源
      */
     private Drawable mAddDrawable;
@@ -226,10 +230,16 @@ public class AutoLineFeedLayout extends ViewGroup {
             }
 
             if (!isOperation) {
+                Log.d(TAG, "viewHolderAdd.itemView.setVisibility(View.GONE)");
                 viewHolderAdd.itemView.setVisibility(View.GONE);
             } else {
-                viewHolderAdd.itemView.setVisibility(View.VISIBLE);
+                Log.d(TAG, "viewHolderAdd.itemView.setVisibility(View.VISIBLE)");
+                checkLastImages();
             }
+
+            Log.d(TAG, "refreshView");
+            refreshImageView();
+            refreshVideoView();
         }
     }
 
@@ -239,35 +249,13 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param multiMediaViews 数据集合
      */
     @SuppressLint("InflateParams")
-    public void addImageData(List<MultiMediaView> multiMediaViews) {
+    public void setImageData(List<MultiMediaView> multiMediaViews) {
+        Log.d(TAG + " Test", "setImageData");
         if (this.imageList == null) {
             this.imageList = new ArrayList<>();
         }
         // 记录数据的结尾,为了保证视频在第一位
         this.imageList.addAll(multiMediaViews);
-        if (imageList != null && imageList.size() > 0) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            for (MultiMediaView multiMediaView : multiMediaViews) {
-                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
-                viewHolder.bind(multiMediaView);
-                // 减1是因为多了一个add按钮控制
-                int endingPosition = getChildCount() - 1;
-                addView(viewHolder.itemView, endingPosition);
-                initWidth(viewHolder.itemView);
-            }
-        }
-        // 重新整理Add是否显示，处理图片的索引
-        checkLastImages();
-        // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
-        for (MultiMediaView multiMediaView : multiMediaViews) {
-            // 判断multiMedia有没有path,有path没有url就执行上传
-            boolean pathNotNull = TextUtils.isEmpty(multiMediaView.getUrl()) &&
-                    (!TextUtils.isEmpty(multiMediaView.getPath()) || multiMediaView.getUri() != null);
-            if (pathNotNull) {
-                this.listener.onItemStartUploading(multiMediaView);
-            }
-        }
-
     }
 
     /**
@@ -275,10 +263,10 @@ public class AutoLineFeedLayout extends ViewGroup {
      *
      * @param multiMediaViews 数据集合
      * @param isClean         添加前是否清空
-     * @param isUploading     是否执行相关上传动作
      */
     @SuppressLint("InflateParams")
-    public void addVideoData(List<MultiMediaView> multiMediaViews, boolean isClean, boolean isUploading) {
+    public void setVideoData(List<MultiMediaView> multiMediaViews, boolean isClean) {
+        Log.d(TAG + " Test", "setVideoData");
         if (this.videoList == null) {
             this.videoList = new ArrayList<>();
         }
@@ -287,33 +275,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             this.videoList.clear();
             removeViewAt(0);
         }
-        // 记录视频的坐标点，视频默认加载在最前面
-        int position = 0;
-        if (this.videoList.size() > 0) {
-            position = this.videoList.size();
-        }
         this.videoList.addAll(multiMediaViews);
-        if (videoList != null && videoList.size() > 0) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            for (MultiMediaView multiMediaView : multiMediaViews) {
-                // 标记音频，为了后面识别是视频进行播放
-                multiMediaView.setMimeType(MimeType.MP4.toString());
-                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
-                viewHolder.bind(multiMediaView);
-                addView(viewHolder.itemView, position);
-                initWidth(viewHolder.itemView);
-                position++;
-            }
-        }
-        // 重新整理Add是否显示，处理图片的索引
-        checkLastImages();
-        // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
-        for (MultiMediaView multiMediaView : multiMediaViews) {
-            // 判断multiMedia有没有path,有path没有uri就执行上传
-            if (isUploading) {
-                this.listener.onItemStartUploading(multiMediaView);
-            }
-        }
     }
 
     /**
@@ -322,6 +284,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param position 图片的索引，该索引列表不包含视频等
      */
     public void onRemoveItemImage(int position) {
+        Log.d(TAG + " Test", "onRemoveItemImage");
         MultiMediaView multiMediaView = imageList.get(position);
         if (listener != null) {
             listener.onItemClose(multiMediaView.getMaskProgressView(), multiMediaView);
@@ -394,11 +357,9 @@ public class AutoLineFeedLayout extends ViewGroup {
                         widthSpace = mWidth - childW;
                     }
                 }
-                // 由于每个标签的高度是相同的，所以直接获取第一个标签的高度即可
-                int childH = getChildAt(0).getMeasuredHeight();
                 // 最终布局的高度=标签高度*行数+行距*(行数-1)
-                height = (childH * row) + ROW_SPACE * (row - 1);
-                Log.v(TAG, "总高度:" + height + " 行数：" + row + "  标签高度：" + childH);
+                height = (mItemHeight * row) + ROW_SPACE * (row - 1);
+                Log.v(TAG, "总高度:" + height + " 行数：" + row + "  标签高度：" + mItemHeight);
             }
         }
 
@@ -442,10 +403,13 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 检查最后一个是否是添加
      */
     public void checkLastImages() {
+        Log.d(TAG + " Test", "checkLastImages");
         int mediaCount = (imageList.size() + videoList.size() + this.maskProgressLayout.audioList.size());
         if (mediaCount < maxMediaCount && isOperation) {
+            Log.d(TAG, "viewHolderAdd.itemView.setVisibility(View.VISIBLE)");
             viewHolderAdd.itemView.setVisibility(View.VISIBLE);
         } else {
+            Log.d(TAG, "viewHolderAdd.itemView.setVisibility(View.GONE)");
             viewHolderAdd.itemView.setVisibility(View.GONE);
         }
         updatePosition();
@@ -455,6 +419,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * 更新索引
      */
     private void updatePosition() {
+        Log.d(TAG + " Test", "updatePosition");
         for (int i = 0; i < imageList.size(); i++) {
             imageList.get(i).setPosition(i);
         }
@@ -469,6 +434,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param itemView view
      */
     private void initWidth(View itemView) {
+        Log.d(TAG + " Test", "initWidth");
         // 设置动态宽度，先获取间隔宽度
         LayoutParams layoutParams = itemView.getLayoutParams();
         int sumColumnSpace = (columnNumber - 1) * columnSpace;
@@ -476,7 +442,68 @@ public class AutoLineFeedLayout extends ViewGroup {
         int viewWidth = (mWidth - sumColumnSpace) / columnNumber;
         layoutParams.width = viewWidth;
         layoutParams.height = viewWidth;
+        mItemHeight = viewWidth;
         itemView.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * 刷新图片view
+     */
+    @SuppressLint("InflateParams")
+    public void refreshImageView() {
+        Log.d(TAG + " Test", "refreshImageView");
+        if (imageList != null && imageList.size() > 0) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            for (MultiMediaView multiMediaView : imageList) {
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+                viewHolder.bind(multiMediaView);
+                // 减1是因为多了一个add按钮控制
+                int endingPosition = getChildCount() - 1;
+                addView(viewHolder.itemView, endingPosition);
+                initWidth(viewHolder.itemView);
+            }
+            // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
+            for (MultiMediaView multiMediaView : imageList) {
+                // 判断multiMedia有没有path,有path没有url就执行上传
+                boolean pathNotNull = TextUtils.isEmpty(multiMediaView.getUrl()) &&
+                        (!TextUtils.isEmpty(multiMediaView.getPath()) || multiMediaView.getUri() != null);
+                if (pathNotNull) {
+                    this.listener.onItemStartUploading(multiMediaView);
+                }
+            }
+        }
+    }
+
+    /**
+     * 刷新视频view
+     */
+    @SuppressLint("InflateParams")
+    public void refreshVideoView() {
+        Log.d(TAG + " Test", "refreshVideoView");
+        // 记录视频的坐标点，视频默认加载在最前面
+        int position = 0;
+        if (this.videoList.size() > 0) {
+            position = this.videoList.size() - 1;
+        }
+        if (videoList.size() > 0) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            for (MultiMediaView multiMediaView : videoList) {
+                // 标记音频，为了后面识别是视频进行播放
+                multiMediaView.setMimeType(MimeType.MP4.toString());
+                ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
+                viewHolder.bind(multiMediaView);
+                addView(viewHolder.itemView, position);
+                initWidth(viewHolder.itemView);
+                position++;
+            }
+        }
+        // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
+        for (MultiMediaView multiMediaView : videoList) {
+            if (multiMediaView.isUploading()) {
+                // 判断multiMedia有没有path,有path没有uri就执行上传
+                this.listener.onItemStartUploading(multiMediaView);
+            }
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -524,6 +551,7 @@ public class AutoLineFeedLayout extends ViewGroup {
             }
             // 设置条目的点击事件
             itemView.setOnClickListener(this);
+            itemView.setTag(multiMediaView.getType());
             // 设置图片
             if (!TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getPath().equals(ADD)) {
                 // 加载➕图
@@ -564,7 +592,6 @@ public class AutoLineFeedLayout extends ViewGroup {
                 } else {
                     vClose.setVisibility(View.GONE);
                 }
-
             }
         }
 

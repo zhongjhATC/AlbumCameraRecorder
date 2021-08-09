@@ -230,6 +230,9 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     private void initData() {
         mBinding.mplImageList.setOperation(true);
         List<String> imageUrls = new ArrayList<>();
+        mBinding.mplImageList.addAudioUrl("https://img.huoyunji.com/audio_20190221105823_Android_28360");
+        // 设置file,不管
+        mBinding.mplImageList.setVideoUrl("https://img.huoyunji.com/video_20190221105749_Android_31228");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105726_Android_15181?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
@@ -240,10 +243,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        mBinding.mplImageList.addImageUrls(imageUrls);
-        mBinding.mplImageList.addAudioUrl("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        // 设置file,不管
-        mBinding.mplImageList.addVideoUrl("https://img.huoyunji.com/video_20190221105749_Android_31228");
+        mBinding.mplImageList.setImageUrls(imageUrls);
 
     }
 
@@ -262,7 +262,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 最大10张图片或者最大1个视频
         mGlobalSetting.maxSelectablePerMediaType(null,
-                5,
+                6,
                 3,
                 3,
                 alreadyImageCount,
