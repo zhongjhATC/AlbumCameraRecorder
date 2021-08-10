@@ -481,6 +481,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 }
             }
         }
+        updatePosition();
     }
 
     /**
@@ -511,6 +512,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 this.listener.onItemStartUploading(multiMediaView);
             }
         }
+        updatePosition();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

@@ -22,28 +22,28 @@ public class MultiMediaUtils {
         int index = -1;
         if (item.getMediaUri() != null) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getMediaUri().equals(item.getMediaUri()) && items.get(i).getPosition() == item.getPosition()) {
+                if (items.get(i).getMediaUri() != null && items.get(i).getMediaUri().equals(item.getMediaUri()) && items.get(i).getPosition() == item.getPosition()) {
                     index = i;
                     break;
                 }
             }
         } else if (item.getUri() != null) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUri().equals(item.getUri()) && items.get(i).getPosition() == item.getPosition()) {
+                if (items.get(i).getUri() != null && items.get(i).getUri().equals(item.getUri()) && items.get(i).getPosition() == item.getPosition()) {
                     index = i;
                     break;
                 }
             }
         } else if (item.getDrawableId() != -1) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getDrawableId() == item.getDrawableId() && items.get(i).getPosition() == item.getPosition()) {
+                if (items.get(i).getDrawableId() != -1 && items.get(i).getDrawableId() == item.getDrawableId() && items.get(i).getPosition() == item.getPosition()) {
                     index = i;
                     break;
                 }
             }
         } else if (item.getUrl() != null) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUrl().equals(item.getUrl()) && items.get(i).getPosition() == item.getPosition()) {
+                if (items.get(i).getUrl() != null && items.get(i).getUrl().equals(item.getUrl()) && items.get(i).getPosition() == item.getPosition()) {
                     index = i;
                     break;
                 }
