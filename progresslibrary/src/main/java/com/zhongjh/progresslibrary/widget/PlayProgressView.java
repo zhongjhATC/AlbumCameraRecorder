@@ -175,7 +175,6 @@ public class PlayProgressView extends ConstraintLayout {
         isShowRemoveRecorder();
     }
 
-
     public static class ViewHolder {
 
         View rootView;

@@ -55,6 +55,10 @@ public class PlayView extends FrameLayout {
      * 标记当前播放状态
      */
     private boolean mIsPlaying = false;
+    /**
+     * 标记是否播放结束
+     */
+    private boolean mIsCompletion = true;
 
     /**
      * 相关事件
@@ -113,8 +117,6 @@ public class PlayView extends FrameLayout {
 
         initListener();
     }
-
-
 
     /**
      * 初始化相关数据
@@ -186,6 +188,7 @@ public class PlayView extends FrameLayout {
             mIsPlaying = false;
             // 重置并准备重新播放
             mMediaPlayer.reset();
+            mIsCompletion = true;
         });
 
     }
@@ -206,11 +209,14 @@ public class PlayView extends FrameLayout {
             //如果当前停止播放  继续播放 更改控制栏状态
             Log.d(TAG,"播放");
             mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
-            try {
-                mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
-                mMediaPlayer.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
+            // 判断如果是结束了就是重新播放，否则就是继续播放
+            if (mIsCompletion) {
+                try {
+                    mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
+                    mMediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             mMediaPlayer.start();
             // 定时器 更新进度
@@ -232,6 +238,7 @@ public class PlayView extends FrameLayout {
             }
         }
         mIsPlaying = !mIsPlaying;
+        mIsCompletion = false;
     }
 
     /**
