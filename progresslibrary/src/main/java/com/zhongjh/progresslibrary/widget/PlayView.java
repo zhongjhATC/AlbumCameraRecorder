@@ -198,39 +198,37 @@ public class PlayView extends FrameLayout {
     private void onPlay() {
         if (mIsPlaying) {
             //如果当前正在播放  停止播放 更改控制栏播放状态
-            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+            if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
             }
         } else {
             //如果当前停止播放  继续播放 更改控制栏状态
-            if (mMediaPlayer != null) {
-                Log.d(TAG,"播放");
-                mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
-                try {
-                    mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
-                    mMediaPlayer.prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                mMediaPlayer.start();
-                // 定时器 更新进度
-                if (mExecutorService == null) {
-                    mExecutorService = new ScheduledThreadPoolExecutor(1, (ThreadFactory) Thread::new);
-                    mTimerTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (isChanging) {
-                                return;
-                            }
-                            if (mIsPlaying) {
-                                mHandler.sendEmptyMessage(0);
-                                mViewHolder.seekbar.setProgress(mMediaPlayer.getCurrentPosition());
-                            }
+            Log.d(TAG,"播放");
+            mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
+            try {
+                mMediaPlayer.setDataSource(mRecordingItem.getFilePath());
+                mMediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mMediaPlayer.start();
+            // 定时器 更新进度
+            if (mExecutorService == null) {
+                mExecutorService = new ScheduledThreadPoolExecutor(1, (ThreadFactory) Thread::new);
+                mTimerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (isChanging) {
+                            return;
                         }
-                    };
-                    mExecutorService.scheduleAtFixedRate(mTimerTask, 0, 1000, TimeUnit.MILLISECONDS);
-                }
+                        if (mIsPlaying) {
+                            mHandler.sendEmptyMessage(0);
+                            mViewHolder.seekbar.setProgress(mMediaPlayer.getCurrentPosition());
+                        }
+                    }
+                };
+                mExecutorService.scheduleAtFixedRate(mTimerTask, 0, 1000, TimeUnit.MILLISECONDS);
             }
         }
         mIsPlaying = !mIsPlaying;
@@ -246,12 +244,10 @@ public class PlayView extends FrameLayout {
             mExecutorService = null;
             mTimerTask = null;
         }
-        if (mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying()) {
-                mMediaPlayer.stop();
-            }
-            mMediaPlayer.reset();
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
         }
+        mMediaPlayer.reset();
     }
 
     /**
@@ -264,12 +260,10 @@ public class PlayView extends FrameLayout {
             mExecutorService = null;
             mTimerTask = null;
         }
-        if (mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying()) {
-                mMediaPlayer.stop();
-            }
-            mMediaPlayer.release();
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
         }
+        mMediaPlayer.release();
         listener = null;
     }
 
