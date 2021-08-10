@@ -34,6 +34,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
      * 构造数据
      */
     private void initData() {
+        Data data1 = new Data();
+        List<String> imageUrls1 = new ArrayList<>();
+        imageUrls1.add("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg11.51tietu.net%2Fpic%2F2016-071418%2F20160714181543xyu10ukncwf221991.jpg&refer=http%3A%2F%2Fimg11.51tietu.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1631178701&t=bc3132a59d5252ef953c3204e0d96939");
+        imageUrls1.add("https://img1.baidu.com/it/u=3766151103,2483188409&fm=26&fmt=auto&gp=0.jpg");
+        data1.setImageUrls(imageUrls1);
+        datas.add(data1);
+
         // 模拟20条
         for (int i = 0; i < 20; i++) {
             if (i == 2) {
@@ -65,6 +72,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.mplImageList.reset();
         holder.mplImageList.setImageUrls(datas.get(position).getImageUrls());
         if (datas.get(position).getAudioUrls().size() > 0) {
             holder.mplImageList.setAudioUrls(datas.get(position).getAudioUrls());
@@ -85,7 +93,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
         public ViewHolder(View view) {
             super(view);
-            mplImageList = (MaskProgressLayout) view.findViewById(R.id.mplImageList);
+            mplImageList = view.findViewById(R.id.mplImageList);
         }
     }
 }

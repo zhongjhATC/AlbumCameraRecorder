@@ -253,13 +253,16 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param multiMediaViews 数据集合
      */
     @SuppressLint("InflateParams")
-    public void addImageData(List<MultiMediaView> multiMediaViews) {
+    public void addImageData(List<MultiMediaView> multiMediaViews, boolean isrefresh) {
         Log.d(TAG + " Test", "setImageData");
         if (this.imageList == null) {
             this.imageList = new ArrayList<>();
         }
         // 记录数据的结尾,为了保证视频在第一位
         this.imageList.addAll(multiMediaViews);
+        if (isrefresh) {
+            refreshImageView(imageList);
+        }
     }
 
     /**
@@ -269,7 +272,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      * @param isClean         添加前是否清空
      */
     @SuppressLint("InflateParams")
-    public void addVideoData(List<MultiMediaView> multiMediaViews, boolean isClean) {
+    public void addVideoData(List<MultiMediaView> multiMediaViews, boolean isClean, boolean isrefresh) {
         Log.d(TAG + " Test", "setVideoData");
         if (this.videoList == null) {
             this.videoList = new ArrayList<>();
@@ -283,6 +286,9 @@ public class AutoLineFeedLayout extends ViewGroup {
             mVideoPosition = 0;
         }
         this.videoList.addAll(multiMediaViews);
+        if (isrefresh) {
+            refreshVideoView(imageList);
+        }
     }
 
     /**

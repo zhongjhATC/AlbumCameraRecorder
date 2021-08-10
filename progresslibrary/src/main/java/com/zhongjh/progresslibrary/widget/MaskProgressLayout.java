@@ -223,7 +223,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUri(uri);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addImageData(multiMediaViews);
+        mViewHolder.alfMedia.addImageData(multiMediaViews, false);
         mViewHolder.alfMedia.refreshImageView(multiMediaViews);
     }
 
@@ -237,7 +237,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUri(mMediaStoreCompat.getUri(string));
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addImageData(multiMediaViews);
+        mViewHolder.alfMedia.addImageData(multiMediaViews, false);
     }
 
     @Override
@@ -248,7 +248,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUrl(string);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addImageData(multiMediaViews);
+        mViewHolder.alfMedia.addImageData(multiMediaViews, true);
     }
 
     @Override
@@ -275,7 +275,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUrl(videoUrls.get(i));
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addVideoData(multiMediaViews, false);
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, false, true);
     }
 
     @Override
@@ -442,7 +442,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setPosition(i);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addVideoData(multiMediaViews, icClean);
+        mViewHolder.alfMedia.addVideoData(multiMediaViews, icClean, false);
         mViewHolder.alfMedia.refreshVideoView(multiMediaViews);
     }
 
