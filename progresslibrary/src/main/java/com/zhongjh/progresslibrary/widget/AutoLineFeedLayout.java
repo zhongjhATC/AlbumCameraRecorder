@@ -260,9 +260,9 @@ public class AutoLineFeedLayout extends ViewGroup {
         }
         // 记录数据的结尾,为了保证视频在第一位
         this.imageList.addAll(multiMediaViews);
-        if (isrefresh) {
-            refreshImageView(imageList);
-        }
+//        if (isrefresh) {
+//            refreshImageView(imageList);
+//        }
     }
 
     /**
@@ -286,9 +286,9 @@ public class AutoLineFeedLayout extends ViewGroup {
             mVideoPosition = 0;
         }
         this.videoList.addAll(multiMediaViews);
-        if (isrefresh) {
-            refreshVideoView(imageList);
-        }
+//        if (isrefresh) {
+//            refreshVideoView(imageList);
+//        }
     }
 
     /**
