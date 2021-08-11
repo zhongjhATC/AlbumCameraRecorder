@@ -72,6 +72,10 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     private boolean isOperation;
     /**
+     * 是否加入了AddView
+     */
+    private boolean isAddAddView;
+    /**
      * 设置最多显示多少个图片/视频/语音
      */
     private int maxMediaCount;
@@ -227,6 +231,8 @@ public class AutoLineFeedLayout extends ViewGroup {
         if (mWidth == 0) {
             mWidth = MeasureSpec.getSize(widthMeasureSpec);
             addView(viewHolderAdd.itemView);
+            isAddAddView = true;
+            Log.d(TAG + " Test", "addView");
             initWidth(viewHolderAdd.itemView);
 
             if (mAddDrawable != null) {
@@ -242,8 +248,8 @@ public class AutoLineFeedLayout extends ViewGroup {
             }
 
             Log.d(TAG, "refreshView");
-            refreshImageView(imageList);
-            refreshVideoView(videoList);
+//            refreshImageView(imageList);
+//            refreshVideoView(videoList);
         }
     }
 
@@ -260,9 +266,9 @@ public class AutoLineFeedLayout extends ViewGroup {
         }
         // 记录数据的结尾,为了保证视频在第一位
         this.imageList.addAll(multiMediaViews);
-//        if (isrefresh) {
-//            refreshImageView(imageList);
-//        }
+        if (isrefresh) {
+            refreshImageView(imageList);
+        }
     }
 
     /**
@@ -286,9 +292,9 @@ public class AutoLineFeedLayout extends ViewGroup {
             mVideoPosition = 0;
         }
         this.videoList.addAll(multiMediaViews);
-//        if (isrefresh) {
-//            refreshVideoView(imageList);
-//        }
+        if (isrefresh) {
+            refreshVideoView(videoList);
+        }
     }
 
     /**
@@ -473,8 +479,14 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 // 减1是因为多了一个add按钮控制
-                int endingPosition = getChildCount() - 1;
+                int endingPosition;
+                if (isAddAddView) {
+                    endingPosition = getChildCount() - 1;
+                } else {
+                    endingPosition = getChildCount();
+                }
                 addView(viewHolder.itemView, endingPosition);
+                Log.d(TAG + " Test", "addImageView:" + endingPosition);
                 initWidth(viewHolder.itemView);
             }
             // 为了multiMediaView的hashCode起到正确作用，这里才开始循环进行上传
@@ -507,6 +519,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 ViewHolder viewHolder = new ViewHolder(inflater.inflate(R.layout.list_item_image, null));
                 viewHolder.bind(multiMediaView);
                 addView(viewHolder.itemView, mVideoPosition);
+                Log.d(TAG + " Test", "addVideoView:" + mVideoPosition);
                 initWidth(viewHolder.itemView);
                 mVideoPosition++;
             }
@@ -519,6 +532,21 @@ public class AutoLineFeedLayout extends ViewGroup {
             }
         }
         updatePosition();
+    }
+
+    /**
+     * 重置view
+     */
+    public void reset() {
+        // 清空数据
+        imageList.clear();
+        videoList.clear();
+        mVideoPosition = 0;
+        // 从倒数第二个删除，最后一个是ADD,保留ADD
+        for (int i = getChildCount() - 2; i >= 0; i--) {
+            removeViewAt(i);
+        }
+        checkLastImages();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
