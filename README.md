@@ -12,10 +12,8 @@ An efficient multimedia support operation library, can be a variety of simple co
 
 Also support supporting the use of the display of pictures, video, audio 9 grid function.
 
-
-Part of the code for this open source library comes from [Matisse](https://github.com/zhihu/Matisse).
-
-Thank you very much Zhihu for providing such a great open source project!
+ - Part of the code for this open source library comes from [Matisse](https://github.com/zhihu/Matisse).
+ - This open source library camera code from [CameraView](https://github.com/natario1/CameraView).
 
 ## Non-X version branching
 A non-X library version, no longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
@@ -54,15 +52,15 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 
 	dependencies {
 	     // Public library, which must be used
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.17X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.18X'
 	     // Core lib, call display album, recording screen, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.17X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.18X'
          // Supporting use, mainly used to obtain data after the relevant display, the corresponding upload progress display, if you only need to obtain photos, video, audio and other data, their own code to obtain the data after the presentation, you can not need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.17X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.18X'
          // Supporting the use of editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.17X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.18X'
 	     // Supporting the use of editing video
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.17X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.18X'
 	}
 
 ## snapshoot

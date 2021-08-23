@@ -1,4 +1,8 @@
 # 历史更新
+## 1.1.18X
+ -  CameraSetting增加了一个setOnCameraViewListenerApi方法，可以在回调中自定义CameraView相关设置。
+    具体设置请看它的相关源码网站https://github.com/natario1/CameraView
+
 ## 1.1.17X
  - 修复九宫预览数据某些情况导致显示错误问题
  - 优化九宫预览初次显示大量数据时卡顿的问题
