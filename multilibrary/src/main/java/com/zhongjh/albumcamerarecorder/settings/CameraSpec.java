@@ -5,6 +5,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
 import gaode.zhongjh.com.common.enums.MimeType;
 
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 
 import java.util.Set;
@@ -104,5 +105,9 @@ public class CameraSpec {
 
     // endregion 属性
 
+    /**
+     * CameraView有关事件
+     */
+    public OnCameraViewListener onCameraViewListener;
 
 }

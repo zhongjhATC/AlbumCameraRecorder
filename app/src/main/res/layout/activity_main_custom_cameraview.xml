@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="这是单纯演示如何自定义CameraView的一些参数，当然如果没必要的话，最好是不要自定义"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.zhongjh.progresslibrary.widget.MaskProgressLayout
+                android:id="@+id/mplImageList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:audioDeleteColor="@color/blue_primary"
+                app:audioPlayColor="@color/blue_primary"
+                app:audioProgressColor="@color/blue_primary"
+                app:authority="com.zhongjh.cameraapp.fileprovider"
+                app:imageAddDrawable="@drawable/ic_add_gray"
+                app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
+                app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
+                app:maskingColor="?attr/colorPrimary"
+                app:maskingTextColor="@color/black_eighty_percent"
+                app:maskingTextContent="@string/up_upload_is_customizable"
+                app:maskingTextSize="12"
+                app:columnNumber="4"
+                app:columnSpace="10"
+                app:maxCount="7" />
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+</layout>

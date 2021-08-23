@@ -1,7 +1,11 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
+import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
@@ -18,6 +22,11 @@ import gaode.zhongjh.com.common.enums.MimeType;
  * @date 2019/3/20
  */
 public interface CameraSettingApi {
+
+    /**
+     * 销毁事件
+     */
+    void onDestroy();
 
     /**
      * 支持的类型：图片，视频
@@ -82,5 +91,14 @@ public interface CameraSettingApi {
      * @return {@link GlobalSetting} for fluent API.
      */
     CameraSetting imageFlashAuto(int imageFlashAuto);
+
+    /**
+     * 有关CameraView事件
+     * <p>
+     *
+     * @param listener {@link OnCameraViewListener}
+     * @return {@link AlbumSetting} this
+     */
+    CameraSetting setOnCameraViewListener(@Nullable OnCameraViewListener listener);
 
 }

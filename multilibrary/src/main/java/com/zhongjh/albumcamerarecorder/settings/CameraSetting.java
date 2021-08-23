@@ -1,7 +1,9 @@
 package com.zhongjh.albumcamerarecorder.settings;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi;
 
 import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
@@ -15,12 +17,18 @@ import java.util.Set;
  * @author zhongjh
  * @date 2018/12/26
  */
-public final class CameraSetting implements CameraSettingApi {
+public class CameraSetting implements CameraSettingApi {
 
     private final CameraSpec mCameraSpec;
 
+
     public CameraSetting() {
         mCameraSpec = CameraSpec.getCleanInstance();
+    }
+
+    @Override
+    public void onDestroy() {
+        mCameraSpec.onCameraViewListener = null;
     }
 
     @Override
@@ -70,5 +78,12 @@ public final class CameraSetting implements CameraSettingApi {
         mCameraSpec.imageFlashAuto = imageFlashAuto;
         return this;
     }
+
+    @Override
+    public CameraSetting setOnCameraViewListener(@Nullable OnCameraViewListener listener) {
+        mCameraSpec.onCameraViewListener = listener;
+        return this;
+    }
+
 
 }

@@ -61,6 +61,11 @@ public class MainListActivity extends AppCompatActivity {
 
         // recyclerView版
         mBinding.btnRecyclerView.setOnClickListener(v -> RecyclerViewActivity.newInstance(MainListActivity.this));
+
+        // 自定义CameraView
+        mBinding.btnCustomCameraView.setOnClickListener(v -> MainCustomCameraViewActivity.newInstance(MainListActivity.this));
+
+
     }
 
 }

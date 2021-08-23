@@ -5,8 +5,8 @@
     android:id="@+id/rlMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_eighty_percent"
     android:animateLayoutChanges="true"
+    android:background="@color/black_eighty_percent"
     android:orientation="vertical"
     android:paddingTop="1dp">
 
@@ -22,6 +22,7 @@
         android:id="@+id/cameraView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:keepScreenOn="true"
         app:cameraAudio="on"
@@ -36,16 +37,16 @@
         app:cameraGestureScrollVertical="exposureCorrection"
         app:cameraGestureTap="autoFocus"
         app:cameraGrid="off"
-        app:cameraPreviewFrameRate="22"
         app:cameraMode="video"
         app:cameraPlaySounds="true"
-        app:cameraPreview="glSurface" />
+        app:cameraPreview="glSurface"
+        app:cameraPreviewFrameRate="22" />
 
     <ImageView
         android:id="@+id/imgPhoto"
-        android:background="#000"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#000"
         android:contentDescription="如果是当张照片便显示当前拍照的"
         android:visibility="invisible"
         tools:ignore="HardcodedText" />

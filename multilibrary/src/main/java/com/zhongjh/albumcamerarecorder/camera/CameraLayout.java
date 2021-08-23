@@ -3,10 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,8 +51,8 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
-import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
+import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -125,11 +122,6 @@ public class CameraLayout extends RelativeLayout {
      * 当前界面的所有控件
      */
     public ViewHolder mViewHolder;
-
-    /**
-     * 默认图片
-     */
-    private Drawable mPlaceholder;
     /**
      * 拍照的图片-集合
      */
@@ -178,22 +170,23 @@ public class CameraLayout extends RelativeLayout {
     /**
      * 用于延迟隐藏的事件，如果不用延迟，会有短暂闪屏现象
      */
-    private Handler mCameraViewGoneHandler = new Handler(Looper.getMainLooper());
+    private final Handler mCameraViewGoneHandler = new Handler(Looper.getMainLooper());
     /**
      * 用于延迟显示的事件，如果不用延迟，会有短暂闪屏现象
      */
-    private Handler mCameraViewVisibleHandler = new Handler(Looper.getMainLooper());
-    private Runnable mCameraViewGoneRunnable = new Runnable() {
+    private final Handler mCameraViewVisibleHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mCameraViewGoneRunnable = new Runnable() {
         @Override
         public void run() {
             // 隐藏cameraView
-            ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
+            RelativeLayout.LayoutParams layoutParams = (LayoutParams) mViewHolder.cameraView.getLayoutParams();
             layoutParams.height = 1;
             layoutParams.width = 1;
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
             mViewHolder.cameraView.setLayoutParams(layoutParams);
         }
     };
-    private Runnable mCameraViewVisibleRunnable = new Runnable() {
+    private final Runnable mCameraViewVisibleRunnable = new Runnable() {
         @Override
         public void run() {
             // 隐藏播放视频
@@ -306,11 +299,6 @@ public class CameraLayout extends RelativeLayout {
         // 用于播放的视频file
         mVideoFile = mVideoMediaStoreCompat.getFilePath(1);
 
-        // 默认图片
-        TypedArray ta = mContext.getTheme().obtainStyledAttributes(
-                new int[]{R.attr.album_thumbnail_placeholder});
-        mPlaceholder = ta.getDrawable(0);
-
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
@@ -347,7 +335,10 @@ public class CameraLayout extends RelativeLayout {
         // 默认是快拍录制模式
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(false);
 
-        // 初始化cameraView
+        // 初始化cameraView,接口引用到外面
+        if (mCameraSpec.onCameraViewListener != null) {
+            mCameraSpec.onCameraViewListener.onInitListener(mViewHolder.cameraView);
+        }
 
         setFlashLamp(); // 设置闪光灯模式
         mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
@@ -1157,7 +1148,7 @@ public class CameraLayout extends RelativeLayout {
     private void setCameraViewGone() {
         // 录制隐藏就显示播放
         mViewHolder.vvPreview.setVisibility(View.VISIBLE);
-        mCameraViewGoneHandler.postDelayed(mCameraViewGoneRunnable,300);
+        mCameraViewGoneHandler.postDelayed(mCameraViewGoneRunnable, 300);
     }
 
     /**
@@ -1165,11 +1156,12 @@ public class CameraLayout extends RelativeLayout {
      */
     private void setCameraViewVisible() {
         // 录制显示就隐藏播放
-        ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
+        RelativeLayout.LayoutParams layoutParams = (LayoutParams) mViewHolder.cameraView.getLayoutParams();
         layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
         mViewHolder.cameraView.setLayoutParams(layoutParams);
-        mCameraViewVisibleHandler.postDelayed(mCameraViewVisibleRunnable,300);
+        mCameraViewVisibleHandler.postDelayed(mCameraViewVisibleRunnable, 300);
     }
 
     /**
