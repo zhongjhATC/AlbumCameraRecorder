@@ -1,4 +1,7 @@
 # 历史更新
+## 1.1.19X
+ - 添加cameraSetting清空事件
+
 ## 1.1.18X
  -  CameraSetting增加了一个setOnCameraViewListenerApi方法，可以在回调中自定义CameraView相关设置。
     具体设置请看它的相关源码网站https://github.com/natario1/CameraView
