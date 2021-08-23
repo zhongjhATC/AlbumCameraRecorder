@@ -87,6 +87,9 @@ public final class GlobalSetting implements GlobalSettingApi {
         if (mGlobalSpec.albumSetting != null) {
             mGlobalSpec.albumSetting.onDestroy();
         }
+        if (mGlobalSpec.cameraSetting != null) {
+            mGlobalSpec.cameraSetting.onDestroy();
+        }
     }
 
     /**
