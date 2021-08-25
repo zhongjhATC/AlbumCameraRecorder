@@ -13,10 +13,6 @@
     <uses-permission android:name="com.wissen.permission.MY_SERVICE_PERMISSION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android..permission.WRITE_SETTINGS" />
-    <!-- 信息拦截权限 -->
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.WRITE_SMS" />
     <!-- 语音权限 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- 蓝牙录音 -->
@@ -54,8 +50,6 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <!-- 视频权限 end -->
-
-    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:name=".MyApplication"
