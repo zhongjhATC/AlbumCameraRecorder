@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +33,7 @@ import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.VideoResult;
+import com.otaliastudios.cameraview.controls.Facing;
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
@@ -182,7 +186,7 @@ public class CameraLayout extends RelativeLayout {
             RelativeLayout.LayoutParams layoutParams = (LayoutParams) mViewHolder.cameraView.getLayoutParams();
             layoutParams.height = 1;
             layoutParams.width = 1;
-            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
             mViewHolder.cameraView.setLayoutParams(layoutParams);
         }
     };
@@ -671,6 +675,31 @@ public class CameraLayout extends RelativeLayout {
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
                 result.toBitmap(bitmap -> {
+                    boolean isFront = false;
+                    if (mViewHolder.cameraView.getFacing().equals(Facing.FRONT)) {
+                        // 如果是前面
+                        isFront = true;
+                    }
+                    android.hardware.camera2.CameraManager manager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);
+                    try {
+                        for (int i = 0; i < manager.getCameraIdList().length; i++) {
+                            CameraCharacteristics characteristics = manager.getCameraCharacteristics(manager.getCameraIdList()[i]);
+                            Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                            if (isFront && facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                                // 目前打开摄像头的是前置，获取角度
+                                int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                                Toast.makeText(mContext, "角度：" + sensorOrientation, Toast.LENGTH_SHORT).show();
+                            } else if (!isFront && facing == CameraCharacteristics.LENS_FACING_BACK) {
+                                {
+                                    // 目前打开摄像头的是后置，获取角度
+                                    int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                                    Toast.makeText(mContext, "角度：" + sensorOrientation, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
                     // 显示图片
                     showPicture(bitmap);
                     // 恢复点击
@@ -1159,7 +1188,7 @@ public class CameraLayout extends RelativeLayout {
         RelativeLayout.LayoutParams layoutParams = (LayoutParams) mViewHolder.cameraView.getLayoutParams();
         layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         mViewHolder.cameraView.setLayoutParams(layoutParams);
         mCameraViewVisibleHandler.postDelayed(mCameraViewVisibleRunnable, 300);
     }
