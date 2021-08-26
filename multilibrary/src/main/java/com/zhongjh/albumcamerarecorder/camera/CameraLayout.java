@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,12 +16,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -30,6 +31,7 @@ import androidx.fragment.app.Fragment;
 
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
+import com.otaliastudios.cameraview.CameraOptions;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.VideoResult;
@@ -45,7 +47,6 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
-import com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayoutBase;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -54,8 +55,8 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
-import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
+import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -178,26 +179,22 @@ public class CameraLayout extends RelativeLayout {
     /**
      * 用于延迟隐藏的事件，如果不用延迟，会有短暂闪屏现象
      */
-    private Handler mCameraViewGoneHandler = new Handler(Looper.getMainLooper());
+    private final Handler mCameraViewGoneHandler = new Handler(Looper.getMainLooper());
     /**
      * 用于延迟显示的事件，如果不用延迟，会有短暂闪屏现象
      */
-    private Handler mCameraViewVisibleHandler = new Handler(Looper.getMainLooper());
-    private Runnable mCameraViewGoneRunnable = new Runnable() {
+    private final Handler mCameraViewVisibleHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mCameraViewGoneRunnable = new Runnable() {
         @Override
         public void run() {
             // 隐藏cameraView
-            ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
-            layoutParams.height = 1;
-            layoutParams.width = 1;
-            mViewHolder.cameraView.setLayoutParams(layoutParams);
+            mViewHolder.cameraView.close();
         }
     };
-    private Runnable mCameraViewVisibleRunnable = new Runnable() {
+    private final Runnable mCameraViewVisibleRunnable = new Runnable() {
         @Override
         public void run() {
-            // 隐藏播放视频
-            mViewHolder.vvPreview.setVisibility(View.INVISIBLE);
+            mViewHolder.cameraView.open();
         }
     };
 
@@ -430,7 +427,6 @@ public class CameraLayout extends RelativeLayout {
      */
     public void onPause() {
         LogUtil.i("CameraLayout onPause");
-        stopVideo(); // 停止播放
         mViewHolder.cameraView.close();
     }
 
@@ -562,16 +558,8 @@ public class CameraLayout extends RelativeLayout {
                 // 录像结束
                 stopRecord(false);
                 // 判断模式
-                if (!mIsSectionRecord) {
-                    // 分段录制留着按钮可以继续录制视频
-                    mViewHolder.pvLayout.hideBtnClickOrLong();
-                } else {
+                if (mIsSectionRecord) {
                     mVideoTimes.add(time);
-                }
-                // 如果已经有录像缓存，那么就不执行这个动作了
-                if (mVideoPaths.size() <= 0) {
-                    mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
-                    mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
                 }
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickEnd(time);
@@ -679,13 +667,11 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
-                Toast.makeText(mContext, "角度" + getNaturalOrientation(result.getData()), Toast.LENGTH_SHORT).show();
                 result.toBitmap(bitmap -> {
                     // 显示图片
                     showPicture(bitmap);
                     // 恢复点击
                     mViewHolder.rlMain.setChildClickable(true);
-
                 });
                 super.onPictureTaken(result);
             }
@@ -696,8 +682,9 @@ public class CameraLayout extends RelativeLayout {
                 // 判断是否短时间结束
                 if (!mIsShort) {
                     if (!mIsSectionRecord) {
-                        // 如果录制结束，播放该视频
-                        playVideo(result.getFile());
+                        // 如果录制结束，打开该视频 TODO
+                        PreviewVideoActivity.startActivity(fragment, result.getFile().getPath());
+                        fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
                         Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
                     } else {
                         // 加入视频列表
@@ -870,6 +857,7 @@ public class CameraLayout extends RelativeLayout {
         if (mIsSectionRecord && mVideoPaths.size() >= 1) {
             // 打开新的界面预览视频
             PreviewVideoActivity.startActivity(fragment, mNewSectionVideoPath);
+            fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
         } else {
             // 根据不同状态处理相应的事件
             if (getState() == Constants.STATE_PICTURE) {
@@ -927,16 +915,13 @@ public class CameraLayout extends RelativeLayout {
     private void resetState(int type) {
         switch (type) {
             case TYPE_VIDEO:
-                // 停止播放重新播放
-                stopVideo();
                 // 取消视频删除文件
                 FileUtil.deleteFile(mVideoFile);
-                // 开始录制
-                setCameraViewVisible();
                 break;
             case TYPE_PICTURE:
                 // 隐藏图片view
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
+                mViewHolder.flShow.setVisibility(INVISIBLE);
                 if (mPhotoFile != null) {
                     // 删除图片
                     FileUtil.deleteFile(mPhotoFile);
@@ -950,7 +935,6 @@ public class CameraLayout extends RelativeLayout {
                 break;
             case TYPE_DEFAULT:
             default:
-                mViewHolder.vvPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 break;
         }
         setSwitchVisibility(VISIBLE);
@@ -965,17 +949,19 @@ public class CameraLayout extends RelativeLayout {
     private void confirmState(int type) {
         switch (type) {
             case TYPE_VIDEO:
-                // 录视频完成
-                stopVideo();    // 停止播放
-                // 加入视频到android系统库里面
-                Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
-                if (mOperateCameraListener != null) {
-                    mOperateCameraListener.recordSuccess(mVideoFile.getPath(), mediaUri);
-                }
+                // TODO
+//                // 录视频完成
+//                stopVideo();    // 停止播放
+//                // 加入视频到android系统库里面
+//                Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
+//                if (mOperateCameraListener != null) {
+//                    mOperateCameraListener.recordSuccess(mVideoFile.getPath(), mediaUri);
+//                }
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
+                mViewHolder.flShow.setVisibility(INVISIBLE);
                 if (mOperateCameraListener != null) {
                     ArrayList<String> paths = getPaths();
                     ArrayList<Uri> uris = getUris(paths);
@@ -1016,10 +1002,10 @@ public class CameraLayout extends RelativeLayout {
             addMultiplePicture(bitmapData);
         } else {
             // 如果只有单个图片，就显示相应的提示结果等等
-            mViewHolder.imgPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
             mCaptureBitmaps.put(0, bitmapData);
             mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
+            mViewHolder.flShow.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
             mPhotoFile = file;
@@ -1127,63 +1113,6 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 播放视频,用于录制后，在是否确认的界面中，播放视频
-     */
-    private void playVideo(File file) {
-        mViewHolder.vvPreview.pause();
-        // mediaController 是底部控制条
-        MediaController mediaController = new MediaController(mContext);
-        mediaController.setAnchorView(mViewHolder.vvPreview);
-        mediaController.setMediaPlayer(mViewHolder.vvPreview);
-        mediaController.setVisibility(View.GONE);
-        mViewHolder.vvPreview.setMediaController(mediaController);
-        Uri uri = Uri.fromFile(file);
-        mViewHolder.vvPreview.setVideoURI(uri);
-        // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
-        if (!mViewHolder.vvPreview.isPlaying()) {
-            mViewHolder.vvPreview.start();
-        }
-        // 停止录制
-        setCameraViewGone();
-        mViewHolder.vvPreview.setOnCompletionListener(mediaPlayer -> {
-            // 循环播放
-            if (!mViewHolder.vvPreview.isPlaying()) {
-                mViewHolder.vvPreview.start();
-            }
-        });
-    }
-
-    /**
-     * 设置录制界面隐藏
-     */
-    private void setCameraViewGone() {
-        // 录制隐藏就显示播放
-        mViewHolder.vvPreview.setVisibility(View.VISIBLE);
-        mCameraViewGoneHandler.postDelayed(mCameraViewGoneRunnable, 300);
-    }
-
-    /**
-     * 设置录制界面显示
-     */
-    private void setCameraViewVisible() {
-        // 录制显示就隐藏播放
-        ViewGroup.LayoutParams layoutParams = mViewHolder.cameraView.getLayoutParams();
-        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        mViewHolder.cameraView.setLayoutParams(layoutParams);
-        mCameraViewVisibleHandler.postDelayed(mCameraViewVisibleRunnable, 300);
-    }
-
-    /**
-     * 停止播放视频
-     */
-    private void stopVideo() {
-        if (mViewHolder.vvPreview.isPlaying()) {
-            mViewHolder.vvPreview.pause();
-        }
-    }
-
-    /**
      * 获取当前view的状态
      *
      * @return 状态
@@ -1286,119 +1215,6 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 从底层返回的数据拿到对应的图片的角度，有些手机hal层会对手机拍出来的照片作相应的旋转，有些手机不会(比如三星手机)
-     *
-     * @param jpeg
-     * @return
-     */
-    public static int getNaturalOrientation(byte[] jpeg) {
-        if (jpeg == null) {
-            return 0;
-        }
-
-        int offset = 0;
-        int length = 0;
-
-        // ISO/IEC 10918-1:1993(E)
-        while (offset + 3 < jpeg.length && (jpeg[offset++] & 0xFF) == 0xFF) {
-            int marker = jpeg[offset] & 0xFF;
-
-            // Check if the marker is a padding.
-            if (marker == 0xFF) {
-                continue;
-            }
-            offset++;
-
-            // Check if the marker is SOI or TEM.
-            if (marker == 0xD8 || marker == 0x01) {
-                continue;
-            }
-            // Check if the marker is EOI or SOS.
-            if (marker == 0xD9 || marker == 0xDA) {
-                break;
-            }
-
-            // Get the length and check if it is reasonable.
-            length = pack(jpeg, offset, 2, false);
-            if (length < 2 || offset + length > jpeg.length) {
-                return 0;
-            }
-
-            // Break if the marker is EXIF in APP1.
-            if (marker == 0xE1 && length >= 8 &&
-                    pack(jpeg, offset + 2, 4, false) == 0x45786966 &&
-                    pack(jpeg, offset + 6, 2, false) == 0) {
-                offset += 8;
-                length -= 8;
-                break;
-            }
-
-            // Skip other markers.
-            offset += length;
-            length = 0;
-        }
-
-        // JEITA CP-3451 Exif Version 2.2
-        if (length > 8) {
-            // Identify the byte order.
-            int tag = pack(jpeg, offset, 4, false);
-            if (tag != 0x49492A00 && tag != 0x4D4D002A) {
-                return 0;
-            }
-            boolean littleEndian = (tag == 0x49492A00);
-
-            // Get the offset and check if it is reasonable.
-            int count = pack(jpeg, offset + 4, 4, littleEndian) + 2;
-            if (count < 10 || count > length) {
-                return 0;
-            }
-            offset += count;
-            length -= count;
-
-            // Get the count and go through all the elements.
-            count = pack(jpeg, offset - 2, 2, littleEndian);
-            while (count-- > 0 && length >= 12) {
-                // Get the tag and check if it is orientation.
-                tag = pack(jpeg, offset, 2, littleEndian);
-                if (tag == 0x0112) {
-                    // We do not really care about type and count, do we?
-                    int orientation = pack(jpeg, offset + 8, 2, littleEndian);
-                    switch (orientation) {
-                        case 1:
-                            return 0;
-                        case 3:
-                            return 180;
-                        case 6:
-                            return 90;
-                        case 8:
-                            return 270;
-                    }
-                    return 0;
-                }
-                offset += 12;
-                length -= 12;
-            }
-        }
-        return 0;
-    }
-
-    private static int pack(byte[] bytes, int offset, int length,
-                            boolean littleEndian) {
-        int step = 1;
-        if (littleEndian) {
-            offset += length - 1;
-            step = -1;
-        }
-
-        int value = 0;
-        while (length-- > 0) {
-            value = (value << 8) | (bytes[offset] & 0xFF);
-            offset += step;
-        }
-        return value;
-    }
-
-    /**
      * 设置fragment
      */
     public void setFragment(CameraFragment fragment) {
@@ -1409,8 +1225,8 @@ public class CameraLayout extends RelativeLayout {
 
         View rootView;
         ChildClickableFrameLayout rlMain;
-        FullScreenVideoView vvPreview;
         ImageView imgPhoto;
+        FrameLayout flShow;
         public ImageView imgFlash;
         public ImageView imgSwitch;
         public PhotoVideoLayoutBase pvLayout;
@@ -1428,6 +1244,7 @@ public class CameraLayout extends RelativeLayout {
             this.rootView = rootView;
             this.rlMain = rootView.findViewById(R.id.rlMain);
             this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
+            this.flShow = rootView.findViewById(R.id.flShow);
             this.imgFlash = rootView.findViewById(R.id.imgFlash);
             this.imgSwitch = rootView.findViewById(R.id.imgSwitch);
             this.pvLayout = rootView.findViewById(R.id.pvLayout);
@@ -1438,7 +1255,6 @@ public class CameraLayout extends RelativeLayout {
             this.vLine3 = rootView.findViewById(R.id.vLine3);
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
-            this.vvPreview = rootView.findViewById(R.id.vvPreview);
             this.clMenu = rootView.findViewById(R.id.clMenu);
             this.rlEdit = rootView.findViewById(R.id.rlEdit);
         }

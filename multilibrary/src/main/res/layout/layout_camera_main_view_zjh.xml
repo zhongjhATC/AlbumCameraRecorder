@@ -10,13 +10,6 @@
     android:orientation="vertical"
     android:paddingTop="1dp">
 
-    <com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView
-        android:id="@+id/vvPreview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="显示当前摄像的"
-        tools:ignore="HardcodedText" />
-
     <!-- 拍摄 -->
     <com.otaliastudios.cameraview.CameraView
         android:id="@+id/cameraView"
@@ -42,14 +35,24 @@
         app:cameraPreview="glSurface"
         app:cameraPreviewFrameRate="22" />
 
-    <ImageView
-        android:id="@+id/imgPhoto"
+    <FrameLayout
+        android:id="@+id/flShow"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#000"
-        android:contentDescription="如果是当张照片便显示当前拍照的"
-        android:visibility="invisible"
-        tools:ignore="HardcodedText" />
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imgPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:contentDescription="如果是当张照片便显示当前拍照的"
+            android:visibility="invisible"
+            tools:ignore="HardcodedText" />
+
+    </FrameLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clMenu"

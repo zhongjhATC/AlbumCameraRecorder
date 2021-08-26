@@ -95,9 +95,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        if (mSpec.isCutscenes)
-        //关闭窗体动画显示
-        {
+        if (mSpec.isCutscenes) {
+            //关闭窗体动画显示
             this.overridePendingTransition(0, R.anim.activity_close);
         }
     }

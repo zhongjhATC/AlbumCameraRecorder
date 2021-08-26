@@ -7,9 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.widget.FullScreenVideoView;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 
@@ -18,6 +18,7 @@ import java.io.File;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
@@ -26,11 +27,12 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
 
 /**
  * 一个预览合成分段录制的视频
+ *
  * @author zhongjh
  */
 public class PreviewVideoActivity extends AppCompatActivity {
 
-    FullScreenVideoView mVideoViewPreview;
+    VideoView mVideoViewPreview;
     ImageView mImgClose;
     Button mBtnConfirm;
     String mPath;
@@ -63,6 +65,13 @@ public class PreviewVideoActivity extends AppCompatActivity {
         initView();
         initListener();
         initData();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        //关闭窗体动画显示
+        this.overridePendingTransition(0, R.anim.activity_close);
     }
 
     /**
