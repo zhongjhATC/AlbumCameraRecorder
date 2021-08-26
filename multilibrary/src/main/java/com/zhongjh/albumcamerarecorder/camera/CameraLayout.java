@@ -560,6 +560,11 @@ public class CameraLayout extends RelativeLayout {
                 // 判断模式
                 if (mIsSectionRecord) {
                     mVideoTimes.add(time);
+                    // 如果已经有录像缓存，那么就不执行这个动作了
+                    if (mVideoPaths.size() <= 0) {
+                        mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
+                        mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+                    }
                 }
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickEnd(time);
