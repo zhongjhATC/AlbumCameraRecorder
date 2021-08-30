@@ -930,6 +930,7 @@ public class CameraLayout extends RelativeLayout {
                 break;
             case TYPE_PICTURE:
                 // 隐藏图片view
+                mViewHolder.cameraView.open();
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
                 mViewHolder.flShow.setVisibility(INVISIBLE);
                 if (mPhotoFile != null) {
@@ -970,6 +971,7 @@ public class CameraLayout extends RelativeLayout {
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
+                mViewHolder.cameraView.open();
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
                 mViewHolder.flShow.setVisibility(INVISIBLE);
                 if (mOperateCameraListener != null) {
@@ -1014,6 +1016,7 @@ public class CameraLayout extends RelativeLayout {
             // 如果只有单个图片，就显示相应的提示结果等等
             mCaptureBitmaps.put(0, bitmapData);
             mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
+            mViewHolder.cameraView.close();
             mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mViewHolder.flShow.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();

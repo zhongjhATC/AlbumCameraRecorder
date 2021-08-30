@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
-            android:contentDescription="如果是当张照片便显示当前拍照的"
+            android:contentDescription="如果是单张照片便显示当前拍照的"
             android:visibility="invisible"
             tools:ignore="HardcodedText" />
 

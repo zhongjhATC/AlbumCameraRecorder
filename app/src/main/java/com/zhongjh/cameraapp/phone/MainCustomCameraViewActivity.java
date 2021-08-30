@@ -141,9 +141,12 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
         // 自定义cameraView的宽高，更多设置参考 https://github.com/natario1/CameraView 源码
         cameraSetting.setOnCameraViewListener(cameraView -> {
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(200, 200);
+            // 可以自定义cameraView预览时候的宽高
+            RelativeLayout.LayoutParams layoutParams =
+                    new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
             cameraView.setLayoutParams(layoutParams);
+            // 注意，如果需要按照比例显示视频或者图片，需要先设置cameraView的宽高为WRAP_CONTENT。同时该比例会自动根据当前手机的传感器选择最适用的。
             SizeSelector sizeSelector = SizeSelectors.aspectRatio(AspectRatio.of(1, 1), 0f);
             cameraView.setPictureSize(sizeSelector);
             cameraView.setVideoSize(sizeSelector);
