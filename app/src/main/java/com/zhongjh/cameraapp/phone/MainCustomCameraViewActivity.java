@@ -12,6 +12,9 @@ import android.widget.Toast;
 import androidx.databinding.DataBindingUtil;
 
 import com.otaliastudios.cameraview.CameraView;
+import com.otaliastudios.cameraview.size.AspectRatio;
+import com.otaliastudios.cameraview.size.SizeSelector;
+import com.otaliastudios.cameraview.size.SizeSelectors;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -141,6 +144,9 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(200, 200);
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
             cameraView.setLayoutParams(layoutParams);
+            SizeSelector sizeSelector = SizeSelectors.aspectRatio(AspectRatio.of(1, 1), 0f);
+            cameraView.setPictureSize(sizeSelector);
+            cameraView.setVideoSize(sizeSelector);
         });
 
         // 相册

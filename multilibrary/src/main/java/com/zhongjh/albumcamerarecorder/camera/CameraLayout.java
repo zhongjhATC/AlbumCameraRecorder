@@ -331,6 +331,11 @@ public class CameraLayout extends RelativeLayout {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
 
+        // 回调cameraView可以自定义相关参数
+        if (mCameraSpec.onCameraViewListener != null) {
+            mCameraSpec.onCameraViewListener.onInitListener(mViewHolder.cameraView);
+        }
+
         // 兼容沉倾状态栏
         mViewHolder.clMenu.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()), 0, 0);
         ViewGroup.LayoutParams layoutParams = mViewHolder.clMenu.getLayoutParams();
