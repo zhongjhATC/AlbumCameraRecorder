@@ -14,6 +14,7 @@ import androidx.exifinterface.media.ExifInterface;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -96,6 +97,12 @@ public class BitmapUtils {
         } else {
             String photoPath = file.getAbsolutePath();
             uri = mediaStoreCompat.getUri(photoPath);
+            // 添加到图库数据库
+            try {
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getPath(), "", "");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             // 这个判断AndroidQ的就是用来解决ACTION_MEDIA_SCANNER_SCAN_FILE过时的方式
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
         }
