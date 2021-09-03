@@ -61,6 +61,8 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.21X'
 	     // Supporting the use of editing video
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.21X'
+	     // must
+	     implementation 'com.google.android.material:material:1.2.1'
 	}
 
 ## snapshoot

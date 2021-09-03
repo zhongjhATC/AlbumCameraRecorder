@@ -87,13 +87,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (!writeGranted) {
                     size++;
                 }
-                //录音权限
+                // 录音权限
                 int recordPermissionResult = grantResults[1];
                 boolean recordPermissionGranted = recordPermissionResult == PackageManager.PERMISSION_GRANTED;
                 if (!recordPermissionGranted) {
                     size++;
                 }
-                //相机权限
+                // 相机权限
                 int cameraPermissionResult = grantResults[2];
                 boolean cameraPermissionGranted = cameraPermissionResult == PackageManager.PERMISSION_GRANTED;
                 if (!cameraPermissionGranted) {

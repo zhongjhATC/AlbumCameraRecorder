@@ -57,6 +57,7 @@
          implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.21X' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.21X'  // 配套编辑图片使用
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.21X'  // 配套编辑视频使用
+	     implementation 'com.google.android.material:material:1.2.1' // 必须的
 	}
 
 ## 快照

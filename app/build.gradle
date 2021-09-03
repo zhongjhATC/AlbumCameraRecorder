@@ -65,13 +65,19 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+    // 基本库
+    implementation "androidx.recyclerview:recyclerview:$rootProject.ext.recyclerviewSdkVersion"
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintlayoutSdkVersion"
+
+    // 关联库
     implementation project(path: ':multilibrary')
     implementation project(path: ':progresslibrary')
     implementation project(path: ':imageedit')
     implementation project(path: ':videoedit')
     implementation project(':albumCameraRecorderCommon')
     implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.2'
+    implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
 
     // 图片
     implementation 'com.github.bumptech.glide:glide:4.8.0'
