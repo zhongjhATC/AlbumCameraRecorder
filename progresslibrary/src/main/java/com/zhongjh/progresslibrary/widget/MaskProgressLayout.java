@@ -104,6 +104,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         this.listener = listener;
     }
 
+//    public void setMaskProgressLayoutListenerOnItemAdd(MaskProgressLayoutListener listener) {
+//        mViewHolder.alfMedia.setListener(listener);
+//        this.listener = listener;
+//    }
+
     public MaskProgressLayout(@NonNull Context context) {
         this(context, null);
     }

@@ -56,5 +56,4 @@ public interface MaskProgressLayoutListener {
      */
     void onItemVideoStartDownload(String url);
 
-
 }

@@ -76,6 +76,7 @@ dependencies {
     implementation project(path: ':imageedit')
     implementation project(path: ':videoedit')
     implementation project(':albumCameraRecorderCommon')
+    implementation project(':combined')
     implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.2'
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
 

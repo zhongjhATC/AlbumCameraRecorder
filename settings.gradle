@@ -1,3 +1,4 @@
+include ':combined'
 include ':videoedit'
 include ':imageedit'
 include ':app', ':multilibrary', ':progresslibrary'
