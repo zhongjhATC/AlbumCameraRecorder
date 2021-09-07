@@ -1,10 +1,17 @@
 package com.zhongjh.albumcamerarecorder;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -37,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
     private final static int ALBUM = 0;
     private final static int CAMERA = 1;
     private final static int RECORDER = 2;
+    /**
+     * 权限申请自定义码
+     */
+    protected final int GET_PERMISSION_REQUEST = 100;
 
     /**
      * 底部控件
@@ -52,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
     private int mDefaultPosition;
 
     GlobalSpec mSpec;
+    /**
+     * 是否初始化完毕
+     */
+    boolean mIsInit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,23 +81,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.activity_main_zjh);
-
-        mVpPager = findViewById(R.id.viewPager);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, mSpec);
-        mVpPager.setAdapter(adapterViewPager);
-        mVpPager.setOffscreenPageLimit(3);
-        // 根据配置默认选第几个
-        mVpPager.setCurrentItem(mDefaultPosition);
-        // 底部
-        mTabLayout = findViewById(R.id.tableLayout);
-        // 判断只有一个的时候
-        if (adapterViewPager.getCount() <= 1) {
-            // 则隐藏底部
-            mTabLayout.setVisibility(View.GONE);
-        } else {
-            mTabLayout.setVisibility(View.VISIBLE);
-            mTabLayout.setupWithViewPager(mVpPager);
-        }
+        requestPermissions();
     }
 
     @Override
@@ -99,6 +98,152 @@ public class MainActivity extends AppCompatActivity {
             //关闭窗体动画显示
             this.overridePendingTransition(0, R.anim.activity_close);
         }
+    }
+
+    @TargetApi(23)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == GET_PERMISSION_REQUEST) {
+            requestPermissions();
+        }
+    }
+
+    /**
+     * 初始化，在权限全部通过后才进行该初始化
+     */
+    private void init() {
+        if (!mIsInit) {
+            mVpPager = findViewById(R.id.viewPager);
+            mTabLayout = findViewById(R.id.tableLayout);
+            adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, mSpec);
+            mVpPager.setAdapter(adapterViewPager);
+            mVpPager.setOffscreenPageLimit(3);
+            // 根据配置默认选第几个
+            mVpPager.setCurrentItem(mDefaultPosition);
+            // 判断只有一个的时候
+            if (adapterViewPager.getCount() <= 1) {
+                // 则隐藏底部
+                mTabLayout.setVisibility(View.GONE);
+            } else {
+                mTabLayout.setVisibility(View.VISIBLE);
+                mTabLayout.setupWithViewPager(mVpPager);
+            }
+            mIsInit = true;
+        }
+    }
+
+    /**
+     * 请求权限
+     */
+    private void requestPermissions() {
+        // 判断权限，权限通过才可以初始化相关
+        ArrayList<String> needPermissions = getNeedPermissions();
+        if (needPermissions.size() > 0) {
+            for (String item : needPermissions) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                switch (item) {
+                    case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                        // 弹窗提示为什么要请求这个权限
+                        builder.setTitle("提示");
+                        builder.setMessage("使用该功能需要用到文件读写权限，否则无法正常运行，接下来会向您申请读写设备上的照片及文件权限");
+                        builder.setPositiveButton("好的", (dialog, which) -> {
+                            dialog.dismiss();
+                            // 请求权限
+                            requestPermissions2(item);
+                        });
+                        builder.setNegativeButton("取消", (dialog, which) -> {
+                            dialog.dismiss();
+                            MainActivity.this.finish();
+                        });
+                        builder.create().show();
+                        return;
+                    case Manifest.permission.RECORD_AUDIO:
+                        // 弹窗提示为什么要请求这个权限
+                        builder.setTitle("提示");
+                        builder.setMessage("使用该功能需要用到录音权限，否则无法正常运行，接下来会向您申请本地录音相关权限");
+                        builder.setPositiveButton("好的", (dialog, which) -> {
+                            dialog.dismiss();
+                            // 请求权限
+                            requestPermissions2(item);
+                        });
+                        builder.setNegativeButton("取消", (dialog, which) -> {
+                            dialog.dismiss();
+                            MainActivity.this.finish();
+                        });
+                        builder.create().show();
+                        return;
+                    case Manifest.permission.CAMERA:
+                        // 弹窗提示为什么要请求这个权限
+                        builder.setTitle("提示");
+                        builder.setMessage("使用该功能需要用到录制权限，否则无法正常运行，接下来会向您申请拍摄照片和录制视频相关权限");
+                        builder.setPositiveButton("好的", (dialog, which) -> {
+                            dialog.dismiss();
+                            // 请求权限
+                            requestPermissions2(item);
+                        });
+                        builder.setNegativeButton("取消", (dialog, which) -> {
+                            dialog.dismiss();
+                            MainActivity.this.finish();
+                        });
+                        builder.create().show();
+                        return;
+                    default:
+                        return;
+                }
+            }
+        } else {
+            // 没有所需要请求的权限，就进行初始化
+            init();
+        }
+    }
+
+    /**
+     * 获取目前需要请求的权限
+     */
+    protected ArrayList<String> getNeedPermissions() {
+        // 需要请求的权限列表
+        ArrayList<String> permissions = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 存储功能必须验证
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+            // 判断如果有录音功能则验证录音
+            if (SelectableUtils.recorderValid()) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager
+                        .PERMISSION_GRANTED) {
+                    if (!permissions.contains(Manifest.permission.RECORD_AUDIO)) {
+                        permissions.add(Manifest.permission.RECORD_AUDIO);
+                    }
+                }
+            }
+            // 判断如果有录制功能则验证录音、录制
+            if (SelectableUtils.cameraValid()) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager
+                        .PERMISSION_GRANTED) {
+                    if (!permissions.contains(Manifest.permission.RECORD_AUDIO)) {
+                        permissions.add(Manifest.permission.RECORD_AUDIO);
+                    }
+                }
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager
+                        .PERMISSION_GRANTED) {
+                    if (!permissions.contains(Manifest.permission.CAMERA)) {
+                        permissions.add(Manifest.permission.CAMERA);
+                    }
+                }
+            }
+        }
+        return permissions;
+    }
+
+    /**
+     * 请求权限
+     *
+     * @param permission 权限
+     */
+    private void requestPermissions2(String permission) {
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, GET_PERMISSION_REQUEST);
     }
 
     /**
@@ -145,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
         int numItems;// 数量
@@ -164,11 +310,12 @@ public class MainActivity extends AppCompatActivity {
                 defaultPositionType = CAMERA;
             }
 
-            // 根据相关配置做相应的初始化
+            // 根据相关配置做相应的初始化，相册生效
             if (SelectableUtils.albumValid()) {
                 numItems++;
                 mTitles.add(getString(R.string.z_multi_library_album));
             }
+            // 相机生效
             if (SelectableUtils.cameraValid()) {
                 if (defaultPositionType == CAMERA) {
                     mDefaultPosition = numItems;
@@ -176,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
                 numItems++;
                 mTitles.add(getString(R.string.z_multi_library_take_photos));
             }
+            // 录音生效
             if (SelectableUtils.recorderValid()) {
                 if (defaultPositionType == RECORDER) {
                     mDefaultPosition = numItems;

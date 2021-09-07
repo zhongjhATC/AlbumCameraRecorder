@@ -38,6 +38,7 @@
     <string name="minimum_recording_time_milliseconds">Minimum recording time (milliseconds)</string>
     <string name="enable_recording">Enable recording</string>
     <string name="simple_version">Simple version of</string>
+    <string name="super_simple_version">Super simple</string>
     <string name="configure_version">Configure version</string>
     <string name="style_version">Style version</string>
     <string name="configure_upperlimit_version">This is flexible configuration can choose xx pictures,xx videos,xx audio usage</string>

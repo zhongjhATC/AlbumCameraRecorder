@@ -6,10 +6,6 @@ package com.zhongjh.albumcamerarecorder.constants;
 public class Constant {
 
     /**
-     * 相册的预览
-     */
-    public static final int REQUEST_CODE_PREVIEW = 23;
-    /**
      * 相册的拍照（作废）
      */
     private static final int REQUEST_CODE_CAPTURE = 24;

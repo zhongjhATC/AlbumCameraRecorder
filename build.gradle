@@ -42,9 +42,10 @@ ext {
 
     androidCompileSdkVersion = 30
     androidBuildToolsVersion = '30.0.3'
-    recyclerviewSdkVersion = '1.1.0'
-    appcompatSdkVersion = '1.2.0'
-    constraintlayoutSdkVersion = '2.0.1'
+    recyclerviewSdkVersion = '1.2.1'
+    appcompatSdkVersion = '1.3.1'
+    constraintlayoutSdkVersion = '2.0.4'
+    documentfileSdkVersion = '1.0.1'
     androidMaterialSdkVersion = '1.2.1'
     minSdkVersion = 21
     targetSdkVersion = 30

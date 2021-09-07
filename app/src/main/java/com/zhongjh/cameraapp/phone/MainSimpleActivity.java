@@ -71,7 +71,7 @@ public class MainSimpleActivity extends BaseActivity {
 
             @Override
             @SuppressWarnings({"unchecked", "rawtypes"})
-            public void onItemImage(View view, MultiMediaView multiMediaView) {
+            public void onItemClick(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
@@ -93,8 +93,11 @@ public class MainSimpleActivity extends BaseActivity {
             @Override
             public void onItemClose(View view, MultiMediaView multiMediaView) {
                 // 停止上传
-                timers.get(multiMediaView).cancel();
-                timers.remove(multiMediaView);
+                MyTask myTask = timers.get(multiMediaView);
+                if (myTask != null) {
+                    myTask.cancel();
+                    timers.remove(multiMediaView);
+                }
             }
 
             @Override

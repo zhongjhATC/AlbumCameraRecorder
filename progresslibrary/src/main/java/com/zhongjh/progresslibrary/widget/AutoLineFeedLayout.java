@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.utils.ThreadUtils;
 
 /**
@@ -702,7 +701,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                         // 点击
                         if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                             // 如果是图片，直接跳转详情
-                            listener.onItemImage(v, multiMediaView);
+                            listener.onItemClick(v, multiMediaView);
                         } else {
                             // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
                             if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
@@ -710,7 +709,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                                 listener.onItemVideoStartDownload(multiMediaView.getUrl());
                             } else {
                                 // 点击事件
-                                listener.onItemImage(v, multiMediaView);
+                                listener.onItemClick(v, multiMediaView);
                             }
                         }
                     }

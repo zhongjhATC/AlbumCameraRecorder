@@ -104,7 +104,10 @@ public class AlbumMediaLoader extends CursorLoader {
 
     // ===============================================================
 
-    private static final String ORDER_BY = MediaStore.Images.Media.DATE_TAKEN + " DESC";
+    private static final String ORDER_BY = "case ifnull(" + MediaStore.Images.Media.DATE_TAKEN + ",0)" +
+            " when 0 then " + MediaStore.Images.Media.DATE_MODIFIED + "*1000" +
+            " else " + MediaStore.Images.Media.DATE_TAKEN +
+            " end" + " DESC , " + MediaStore.Images.ImageColumns._ID + " DESC";
 
     private AlbumMediaLoader(Context context, String selection, String[] selectionArgs) {
         super(context, QUERY_URI, PROJECTION, selection, selectionArgs, ORDER_BY);

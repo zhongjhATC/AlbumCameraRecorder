@@ -57,7 +57,6 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDI
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW;
 
 /**
  * 相册
@@ -213,7 +212,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, true);
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+            startActivityForResult(intent, mGlobalSpec.requestCode);
             if (mGlobalSpec.isCutscenes) {
                 mActivity.overridePendingTransition(R.anim.activity_open, 0);
             }
@@ -327,7 +326,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             return;
         }
         // 请求的预览界面
-        if (requestCode == REQUEST_CODE_PREVIEW) {
+        if (requestCode == mGlobalSpec.requestCode) {
             Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
             // 获取选择的数据
             ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
@@ -537,7 +536,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, true);
-        startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+        startActivityForResult(intent, mGlobalSpec.requestCode);
         if (mGlobalSpec.isCutscenes) {
             mActivity.overridePendingTransition(R.anim.activity_open, 0);
         }

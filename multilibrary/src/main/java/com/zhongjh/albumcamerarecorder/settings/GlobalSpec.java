@@ -94,7 +94,10 @@ public class GlobalSpec {
      * 主界面的有关事件
      */
     public OnMainListener onMainListener;
-
+    /**
+     * 请求界面的Code
+     */
+    public int requestCode;
 
     private GlobalSpec() {
     }
@@ -131,6 +134,7 @@ public class GlobalSpec {
         imageEngine = new GlideEngine();
         isCutscenes = true;
         isImageEdit = true;
+        requestCode = 0;
     }
 
     private static final class InstanceHolder {

@@ -29,8 +29,9 @@ android {
 dependencies {
 
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
+    implementation "androidx.documentfile:documentfile:$rootProject.ext.documentfileSdkVersion"
 
-    compileOnly project(path: ':multilibrary')
-    compileOnly project(path: ':progresslibrary')
-    compileOnly project(':albumCameraRecorderCommon')
+    api project(path: ':multilibrary')
+    api project(path: ':progresslibrary')
+    api project(':albumCameraRecorderCommon')
 }

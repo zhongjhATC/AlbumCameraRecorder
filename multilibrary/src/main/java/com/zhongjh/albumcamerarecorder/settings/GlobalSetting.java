@@ -231,6 +231,7 @@ public final class GlobalSetting implements GlobalSettingApi {
 
     @Override
     public void forResult(int requestCode) {
+        mGlobalSpec.requestCode = requestCode;
         Activity activity = mMultiMediaSetting.getActivity();
         if (activity == null) {
             return;

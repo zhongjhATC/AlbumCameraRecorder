@@ -33,8 +33,6 @@ import java.util.TimerTask;
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
-import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW;
-
 /**
  * 父类，包含下面几部分操作：
  * 1.权限控制
@@ -56,6 +54,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 返回九宫格
+     *
      * @return MaskProgressLayout
      */
     protected abstract MaskProgressLayout getMaskProgressLayout();
@@ -147,74 +146,69 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (resultCode != RESULT_OK) {
             return;
         }
-        switch (requestCode) {
-            case REQUEST_CODE_PREVIEW:
-                // 如果在预览界面点击了确定
-                if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                    // 请求的预览界面
-                    Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
-                    // 获取选择的数据
-                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                    if (selected == null) {
-                        return;
-                    }
-                    // 循环判断，如果不存在，则删除
-                    for (int i = getMaskProgressLayout().getImages().size() - 1; i >= 0; i--) {
-                        int k = 0;
-                        for (MultiMedia multiMedia : selected) {
-                            if (!getMaskProgressLayout().getImages().get(i).equals(multiMedia)) {
-                                k++;
-                            }
-                        }
-                        if (k == selected.size()) {
-                            // 所有都不符合，则删除
-                            getMaskProgressLayout().onRemoveItemImage(i);
+        if (requestCode == REQUEST_CODE_CHOOSE) {
+            // 如果是在预览界面点击了确定
+            if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                // 请求的预览界面
+                Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+                // 获取选择的数据
+                ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                if (selected == null) {
+                    return;
+                }
+                // 循环判断，如果不存在，则删除
+                for (int i = getMaskProgressLayout().getImages().size() - 1; i >= 0; i--) {
+                    int k = 0;
+                    for (MultiMedia multiMedia : selected) {
+                        if (!getMaskProgressLayout().getImages().get(i).equals(multiMedia)) {
+                            k++;
                         }
                     }
+                    if (k == selected.size()) {
+                        // 所有都不符合，则删除
+                        getMaskProgressLayout().onRemoveItemImage(i);
+                    }
                 }
-                break;
-            case REQUEST_CODE_CHOOSE:
-                // 获取类型，根据类型设置不同的事情
-                switch (MultiMediaSetting.obtainMultimediaType(data)) {
-                    case MultimediaTypes.PICTURE:
-                        // 图片，自动AndroidQ版本以后，使用除了本身app的文件，最好是用uri方式控制
-                        List<Uri> path = MultiMediaSetting.obtainResult(data);
-                        getMaskProgressLayout().addUrisStartUpload(path);
-                        break;
-                    case MultimediaTypes.VIDEO:
-                        // 录像
-                        List<Uri> videoUris = MultiMediaSetting.obtainResult(data);
-                        getMaskProgressLayout().addVideoStartUpload(videoUris);
-                        break;
-                    case MultimediaTypes.AUDIO:
-                        // 语音
-                        RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                        getMaskProgressLayout().addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
-                        break;
-                    case MultimediaTypes.BLEND:
-                        // 混合类型，意思是图片可能跟录像在一起.
-                        List<Uri> blends = MultiMediaSetting.obtainResult(data);
-                        List<Uri> images = new ArrayList<>();
-                        List<Uri> videos = new ArrayList<>();
-                        // 循环判断类型
-                        for (Uri uri : blends) {
-                            DocumentFile documentFile = DocumentFile.fromSingleUri(getBaseContext(), uri);
-                            if (documentFile.getType().startsWith("image")) {
-                                images.add(uri);
-                            } else if (documentFile.getType().startsWith("video")) {
-                                videos.add(uri);
-                            }
+                return;
+            }
+            // 获取类型，根据类型设置不同的事情
+            switch (MultiMediaSetting.obtainMultimediaType(data)) {
+                case MultimediaTypes.PICTURE:
+                    // 图片，自动AndroidQ版本以后，使用除了本身app的文件，最好是用uri方式控制
+                    List<Uri> path = MultiMediaSetting.obtainResult(data);
+                    getMaskProgressLayout().addUrisStartUpload(path);
+                    break;
+                case MultimediaTypes.VIDEO:
+                    // 录像
+                    List<Uri> videoUris = MultiMediaSetting.obtainResult(data);
+                    getMaskProgressLayout().addVideoStartUpload(videoUris);
+                    break;
+                case MultimediaTypes.AUDIO:
+                    // 语音
+                    RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
+                    getMaskProgressLayout().addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
+                    break;
+                case MultimediaTypes.BLEND:
+                    // 混合类型，意思是图片可能跟录像在一起.
+                    List<Uri> blends = MultiMediaSetting.obtainResult(data);
+                    List<Uri> images = new ArrayList<>();
+                    List<Uri> videos = new ArrayList<>();
+                    // 循环判断类型
+                    for (Uri uri : blends) {
+                        DocumentFile documentFile = DocumentFile.fromSingleUri(getBaseContext(), uri);
+                        if (documentFile.getType().startsWith("image")) {
+                            images.add(uri);
+                        } else if (documentFile.getType().startsWith("video")) {
+                            videos.add(uri);
                         }
-                        // 分别上传图片和视频
-                        getMaskProgressLayout().addUrisStartUpload(images);
-                        getMaskProgressLayout().addVideoStartUpload(videos);
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            default:
-                break;
+                    }
+                    // 分别上传图片和视频
+                    getMaskProgressLayout().addUrisStartUpload(images);
+                    getMaskProgressLayout().addVideoStartUpload(videos);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

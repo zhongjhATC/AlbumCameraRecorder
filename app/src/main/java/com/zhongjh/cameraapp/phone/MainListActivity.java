@@ -35,6 +35,8 @@ public class MainListActivity extends AppCompatActivity {
         // 简单版
         mBinding.btnSimple.setOnClickListener(v -> MainSimpleActivity.newInstance(MainListActivity.this));
 
+        mBinding.btnSuperSimple.setOnClickListener(v -> MainSuperSimpleActivity.newInstance(MainListActivity.this));
+
         // 配置版
         mBinding.btnConfigure.setOnClickListener(v -> MainActivity.newInstance(MainListActivity.this));
 

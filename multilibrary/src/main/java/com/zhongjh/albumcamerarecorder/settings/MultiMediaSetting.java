@@ -29,7 +29,6 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDI
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW;
 
 /**
  * 多媒体的设置 - Matisse
@@ -177,13 +176,9 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        if (globalSpec != null) {
-            if (globalSpec.isCutscenes) {
-                activity.overridePendingTransition(R.anim.activity_open, 0);
-            }
-        } else {
+        activity.startActivityForResult(intent, globalSpec.requestCode);
+        if (globalSpec.isCutscenes) {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
@@ -207,13 +202,9 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        if (globalSpec != null) {
-            if (globalSpec.isCutscenes) {
-                activity.overridePendingTransition(R.anim.activity_open, 0);
-            }
-        } else {
+        activity.startActivityForResult(intent, globalSpec.requestCode);
+        if (globalSpec.isCutscenes) {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
@@ -271,13 +262,9 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
-        activity.startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        if (globalSpec != null) {
-            if (globalSpec.isCutscenes) {
-                activity.overridePendingTransition(R.anim.activity_open, 0);
-            }
-        } else {
+        activity.startActivityForResult(intent, globalSpec.requestCode);
+        if (globalSpec.isCutscenes) {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }

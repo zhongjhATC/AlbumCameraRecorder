@@ -59,8 +59,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    // 操作文件
-    implementation 'androidx.documentfile:documentfile:1.0.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -69,14 +67,16 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$rootProject.ext.recyclerviewSdkVersion"
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintlayoutSdkVersion"
+    implementation "androidx.documentfile:documentfile:$rootProject.ext.documentfileSdkVersion"
 
-    // 关联库
-    implementation project(path: ':multilibrary')
-    implementation project(path: ':progresslibrary')
+    // 主要库，如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
+    implementation project(':combined')
+    // 如果只想使用multilibrary，就单独引用multilibrary和albumCameraRecorderCommon
+    //implementation project(path: ':multilibrary')
+    //implementation project(path: ':progresslibrary')
+    //implementation project(':albumCameraRecorderCommon')
     implementation project(path: ':imageedit')
     implementation project(path: ':videoedit')
-    implementation project(':albumCameraRecorderCommon')
-    implementation project(':combined')
     implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.2'
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
 

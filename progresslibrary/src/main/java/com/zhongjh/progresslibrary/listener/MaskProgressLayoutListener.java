@@ -24,11 +24,11 @@ public interface MaskProgressLayoutListener {
     void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount);
 
     /**
-     * 点击图片的事件
+     * 点击item的事件
      * @param view 点击的view
      * @param multiMediaView 传递的多媒体
      */
-    void onItemImage(View view, MultiMediaView multiMediaView);
+    void onItemClick(View view, MultiMediaView multiMediaView);
 
     /**
      * 开始上传 - 指刚添加后的

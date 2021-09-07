@@ -68,7 +68,7 @@ public class MainThemeActivity extends BaseActivity {
 
             @Override
             @SuppressWarnings({"unchecked", "rawtypes"})
-            public void onItemImage(View view, MultiMediaView multiMediaView) {
+            public void onItemClick(View view, MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片

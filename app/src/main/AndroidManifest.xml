@@ -69,6 +69,10 @@
             android:name=".phone.MainCustomCameraViewActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".phone.MainSuperSimpleActivity"
+            android:screenOrientation="portrait" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.zhongjh.cameraapp.fileprovider"

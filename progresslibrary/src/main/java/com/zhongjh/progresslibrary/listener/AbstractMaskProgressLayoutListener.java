@@ -5,18 +5,18 @@ import android.view.View;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 
 /**
+ * "抽象接口"
  * @author zhongjh
- * @date 2021/9/6
+ * @date 2021/9/7
  */
 public class AbstractMaskProgressLayoutListener implements MaskProgressLayoutListener {
-
     @Override
     public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
 
     }
 
     @Override
-    public void onItemImage(View view, MultiMediaView multiMediaView) {
+    public void onItemClick(View view, MultiMediaView multiMediaView) {
 
     }
 
@@ -39,5 +39,4 @@ public class AbstractMaskProgressLayoutListener implements MaskProgressLayoutLis
     public void onItemVideoStartDownload(String url) {
 
     }
-
 }

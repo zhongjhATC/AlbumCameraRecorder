@@ -38,6 +38,7 @@
     <string name="minimum_recording_time_milliseconds">最短录制时间(毫秒)</string>
     <string name="enable_recording">开启录音功能</string>
     <string name="simple_version">简单版</string>
+    <string name="super_simple_version">超级简单版</string>
     <string name="configure_version">配置版</string>
     <string name="style_version">样式版</string>
     <string name="configure_upperlimit_version">这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例</string>
