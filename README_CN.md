@@ -22,6 +22,7 @@
 ## 特性
  - 支持自定义样式.支持更换里面的相关按钮.
  - 支持相册、录制、录音等三合一功能（类似抖音等），并且也可以通过配置只独立出其中一个功能.
+ - 支持可自定义权限请求也可以直接交由该库完成权限请求
  - 虽然功能很多，但是可以按照所需功能来引入某些库
  - 丰富的回调接口和调试信息,可利用现有API实现丰富的效果.
  - 兼容性强，不管是低版本的4.1还是目前最新版本的Android 11,都进行了相关兼容处理
@@ -52,12 +53,23 @@
 #### Step 2. Add the dependency
 
 	dependencies {
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.22X'        // 公共库，必须使用此库
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.22X'      // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.22X' // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，自行写获取后呈现方式，可以不需要是用这个
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.22X'  // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.22X'  // 配套编辑视频使用
-	     implementation 'com.google.android.material:material:1.2.1' // 必须的
+	     // 必须的
+    	 implementation 'com.google.android.material:material:1.2.1'
+
+	     // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.23X'
+
+	     // 公共库，如果不使用上面的combined库
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.23X'
+	     // 核心lib，调用显示相册、录屏、录音等
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.23X'
+         // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.23X'
+
+         // 配套编辑图片使用
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.23X'
+	     // 配套编辑视频使用
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.23X'
 	}
 
 ## 快照
@@ -145,35 +157,18 @@
                     case MultimediaTypes.PICTURE:
                         // 图片
                         List<String> path = MultiMediaSetting.obtainResult(data);
-                        mBinding.mplImageList.addImagesStartUpload(path);
                         break;
                     case MultimediaTypes.VIDEO:
                         // 录像
                         List<String> videoPath = MultiMediaSetting.obtainResult(data);
-                        mBinding.mplImageList.addVideoStartUpload(videoPath);
                         break;
                     case MultimediaTypes.AUDIO:
                         // 语音
                         RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                        mBinding.mplImageList.addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
                         break;
                     case MultimediaTypes.BLEND:
                         // 混合类型，意思是图片可能跟录像在一起.
                         List<Uri> blends = MultiMediaSetting.obtainResult(data);
-                        List<Uri> images = new ArrayList<>();
-                        List<Uri> videos = new ArrayList<>();
-                        // 循环判断类型
-                        for (Uri uri : blends) {
-                            DocumentFile documentFile = DocumentFile.fromSingleUri(getBaseContext(), uri);
-                            if (documentFile.getType().startsWith("image")) {
-                                images.add(uri);
-                            } else if (documentFile.getType().startsWith("video")) {
-                                videos.add(uri);
-                            }
-                        }
-                        // 分别上传图片和视频
-                        mBinding.mplImageList.addUrisStartUpload(images);
-                        mBinding.mplImageList.addVideoStartUpload(videos);
                         break;
                 }
                 break;

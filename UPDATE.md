@@ -1,4 +1,9 @@
 # 历史更新
+## 1.1.23X
+ - 简化代码
+ - 添加自带权限请求等逻辑(上述两点可看Demo中的MainSuperSimpleActivity示例)
+ - 基于以上两点，添加combined包
+
 ## 1.1.22X
  - 修改lib体积大小
 

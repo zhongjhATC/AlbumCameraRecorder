@@ -21,6 +21,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 ## peculiarity
  - Support for custom styles. Support to change the relevant buttons inside.
  - Support album, recording, recording and other functions in one (similar to Douyin, etc.), and you can configure only one of the functions independently.
+ - Customizable permission requests are supported and can be directed to the library to complete permission requests
  - While there are many features, some libraries can be introduced as required
  - Rich callback interface and debugging information, using the existing API to achieve a rich effect.
  - Strong compatibility, whether the lower version of 4.1 or the current latest version of Android 11, has been carried out related compatibility processing
@@ -51,18 +52,23 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 #### Step 2. Add the dependency
 
 	dependencies {
-	     // Public library, which must be used
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.22X'
-	     // Core lib, call display album, recording screen, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.22X'
-         // Supporting use, mainly used to obtain data after the relevant display, the corresponding upload progress display, if you only need to obtain photos, video, audio and other data, their own code to obtain the data after the presentation, you can not need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.22X'
-         // Supporting the use of editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.22X'
-	     // Supporting the use of editing video
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.22X'
-	     // must
-	     implementation 'com.google.android.material:material:1.2.1'
+	     // a must
+    	 implementation 'com.google.android.material:material:1.2.1'
+
+	     // if you want to simplify the code and at the same time use multilibrary and progresslibrary, albumCameraRecorderCommon, can directly use the combined library
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.23X'
+
+	     // Public library, if not using the combined library above
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.23X'
+	     // core lib, call display album, screen recording, recording, etc
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.23X'
+         // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.23X'
+
+         // use it with editing pictures
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.23X'
+	     // For editing video
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.23X'
 	}
 
 ## snapshoot
@@ -150,35 +156,18 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
                     case MultimediaTypes.PICTURE:
                         // picture
                         List<String> path = MultiMediaSetting.obtainResult(data);
-                        mBinding.mplImageList.addImagesStartUpload(path);
                         break;
                     case MultimediaTypes.VIDEO:
                         // video
                         List<String> videoPath = MultiMediaSetting.obtainResult(data);
-                        mBinding.mplImageList.addVideoStartUpload(videoPath);
                         break;
                     case MultimediaTypes.AUDIO:
                         // voice
                         RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                        mBinding.mplImageList.addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
                         break;
                     case MultimediaTypes.BLEND:
                         // Mixed type, which means the image may accompany the video.
                         List<Uri> blends = MultiMediaSetting.obtainResult(data);
-                        List<Uri> images = new ArrayList<>();
-                        List<Uri> videos = new ArrayList<>();
-                        // Type of circular judgment
-                        for (Uri uri : blends) {
-                            DocumentFile documentFile = DocumentFile.fromSingleUri(getBaseContext(), uri);
-                            if (documentFile.getType().startsWith("image")) {
-                                images.add(uri);
-                            } else if (documentFile.getType().startsWith("video")) {
-                                videos.add(uri);
-                            }
-                        }
-                        // Upload pictures and videos separately
-                        mBinding.mplImageList.addUrisStartUpload(images);
-                        mBinding.mplImageList.addVideoStartUpload(videos);
                         break;
                 }
                 break;
