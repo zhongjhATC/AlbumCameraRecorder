@@ -32,6 +32,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$rootProject.ext.recyclerviewSdkVersion"
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintlayoutSdkVersion"
+    implementation 'androidx.asynclayoutinflater:asynclayoutinflater:1.0.0'
     compileOnly "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
     implementation 'it.sephiroth.android.library.imagezoom:library:1.0.4'
     // 图片

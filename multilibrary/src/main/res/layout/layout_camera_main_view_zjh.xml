@@ -33,7 +33,7 @@
         app:cameraMode="video"
         app:cameraPlaySounds="true"
         app:cameraPreview="glSurface"
-        app:cameraPreviewFrameRate="22" />
+        app:cameraPreviewFrameRate="22"/>
 
     <FrameLayout
         android:id="@+id/flShow"

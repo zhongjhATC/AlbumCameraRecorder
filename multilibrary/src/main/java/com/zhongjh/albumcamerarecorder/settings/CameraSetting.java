@@ -56,6 +56,12 @@ public class CameraSetting implements CameraSettingApi {
     }
 
     @Override
+    public CameraSetting watermarkResource(int watermarkResource) {
+        mCameraSpec.watermarkResource = watermarkResource;
+        return this;
+    }
+
+    @Override
     public CameraSetting imageSwitch(int imageSwitch) {
         mCameraSpec.imageSwitch = imageSwitch;
         return this;

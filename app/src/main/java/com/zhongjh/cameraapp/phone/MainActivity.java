@@ -245,6 +245,10 @@ public class MainActivity extends BaseActivity {
         cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));
         // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
         cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()));
+        // 是否启用水印
+        if (mBinding.cbWatermark.isChecked()) {
+            cameraSetting.watermarkResource(R.layout.watermark);
+        }
 
         if (mBinding.cbVideoEdit.isChecked()) {
             // 启动这个即可开启视频编辑功能

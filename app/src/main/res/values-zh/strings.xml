@@ -9,6 +9,7 @@
     <string name="support_all">支持全部</string>
     <string name="support_image">支持图片</string>
     <string name="support_video">支持视频</string>
+    <string name="start_the_watermark">启动水印</string>
     <string name="start_the_animation">启动动画</string>
     <string name="support_for_editing_images">支持编辑图片</string>
     <string name="save_all_file_paths">保存所有文件路径</string>

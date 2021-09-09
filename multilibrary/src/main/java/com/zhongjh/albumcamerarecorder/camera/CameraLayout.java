@@ -26,6 +26,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
@@ -331,15 +333,25 @@ public class CameraLayout extends RelativeLayout {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
 
+//        if (mCameraSpec.watermarkResource != -1) {
+//            new AsyncLayoutInflater(mContext).inflate(mCameraSpec.watermarkResource,
+//                    mViewHolder.cameraView, (view1, resid, parent) -> mViewHolder.cameraView.addView(view1));
+//        }
+
+
         // 回调cameraView可以自定义相关参数
         if (mCameraSpec.onCameraViewListener != null) {
             mCameraSpec.onCameraViewListener.onInitListener(mViewHolder.cameraView);
         }
 
         // 兼容沉倾状态栏
-        mViewHolder.clMenu.setPadding(0, StatusBarUtils.getStatusBarHeight(getContext()), 0, 0);
+        mViewHolder.clMenu.setPadding(0, StatusBarUtils.getStatusBarHeight(
+
+                getContext()), 0, 0);
         ViewGroup.LayoutParams layoutParams = mViewHolder.clMenu.getLayoutParams();
-        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(getContext());
+        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(
+
+                getContext());
 
         // 如果没启动视频编辑，隐藏分段录制功能
         if (mCameraSpec.videoEditCoordinator == null) {

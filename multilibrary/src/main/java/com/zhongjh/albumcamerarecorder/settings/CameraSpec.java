@@ -50,6 +50,7 @@ public class CameraSpec {
         // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
         minDuration = 1500;
         videoEditCoordinator = null;
+        watermarkResource = -1;
     }
 
 
@@ -87,6 +88,10 @@ public class CameraSpec {
      * 视频编辑功能
      */
     public VideoEditCoordinator videoEditCoordinator;
+    /**
+     * 水印资源id
+     */
+    public int watermarkResource = -1;
 
 
     /**

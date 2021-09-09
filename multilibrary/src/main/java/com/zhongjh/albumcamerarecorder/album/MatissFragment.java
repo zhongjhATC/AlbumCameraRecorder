@@ -43,6 +43,7 @@ import com.zhongjh.albumcamerarecorder.utils.PathUtils;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import gaode.zhongjh.com.common.entity.MultiMedia;
@@ -73,7 +74,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private static final String CHECK_STATE = "checkState";
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private Context mContext;
 
     /**
@@ -123,7 +124,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     @Override
     public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
-        this.mActivity = activity;
+        this.mActivity = (AppCompatActivity) activity;
     }
 
     @Override
@@ -501,18 +502,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.container.setVisibility(View.VISIBLE);
             mViewHolder.emptyView.setVisibility(View.GONE);
             if (!mIsRefresh) {
-                Fragment fragment = null;
-                if (getArguments() != null) {
-                    fragment = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
-                }
-                if (getFragmentManager() != null) {
-                    if (fragment != null) {
-                        getFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
-                                .commitAllowingStateLoss();
-                    }
-                }
+                assert getArguments() != null;
+                Fragment fragment = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
+                mActivity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
+                        .commitAllowingStateLoss();
             }
         }
     }
