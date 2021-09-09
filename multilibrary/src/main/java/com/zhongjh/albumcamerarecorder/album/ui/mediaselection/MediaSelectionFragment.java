@@ -178,9 +178,7 @@ public class MediaSelectionFragment extends Fragment implements
         mAlbumMediaCollection.load(album);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroyData() {
         mAlbumMediaCollection.onDestroy();
     }
 

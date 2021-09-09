@@ -76,6 +76,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private AppCompatActivity mActivity;
     private Context mContext;
+    /**
+     * 上一个Fragment,因为切换相册后，数据要进行一次销毁才能读取
+     */
+    MediaSelectionFragment mFragmentLast;
 
     /**
      * 公共配置
@@ -487,6 +491,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumCollection.restartLoadAlbums();
     }
 
+
+
     /**
      * 选择某个专辑的时候
      *
@@ -503,10 +509,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.emptyView.setVisibility(View.GONE);
             if (!mIsRefresh) {
                 assert getArguments() != null;
-                Fragment fragment = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
+                if (mFragmentLast != null) {
+                    // 在实例化新的之前，先清除旧的数据才可以查询
+                    mFragmentLast.onDestroyData();
+                }
+                mFragmentLast = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
                 mActivity.getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
+                        .replace(R.id.container, mFragmentLast, MediaSelectionFragment.class.getSimpleName())
                         .commitAllowingStateLoss();
             }
         }
