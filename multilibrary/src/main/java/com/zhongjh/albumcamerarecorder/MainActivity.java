@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> needPermissions = getNeedPermissions();
         if (needPermissions.size() > 0) {
             for (String item : needPermissions) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
                 switch (item) {
                     case Manifest.permission.WRITE_EXTERNAL_STORAGE:
                         // 弹窗提示为什么要请求这个权限

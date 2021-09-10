@@ -972,7 +972,7 @@ public class CameraLayout extends RelativeLayout {
     private void confirmState(int type) {
         switch (type) {
             case TYPE_VIDEO:
-                // TODO
+                // TODO 弃用，已经改用跳转到第二个界面播放视频了
 //                // 录视频完成
 //                stopVideo();    // 停止播放
 //                // 加入视频到android系统库里面
