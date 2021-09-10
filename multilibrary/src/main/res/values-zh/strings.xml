@@ -3,7 +3,17 @@
     <string name="z_multi_library_take_photos">拍照</string>
     <string name="z_multi_library_sound_recording">录音</string>
     <string name="z_multi_library_setting">设置</string>
+    <string name="z_multi_library_close">关闭</string>
     <string name="z_multi_library_hint">提示</string>
+    <string name="z_multi_library_ok">好的</string>
+    <string name="z_multi_library_cancel">取消</string>
+    <string name="z_multi_library_to_use_this_feature">使用该功能需要用到</string>
+    <string name="z_multi_library_file_read_and_write_permission_to_read_and_store_related_files"> 文件读写权限来读取存储相关文件 </string>
+    <string name="z_multi_library_record_permission_to_record_sound"> 录音权限来录制声音 </string>
+    <string name="z_multi_library_record_permission_to_shoot"> 录制权限来拍摄 </string>
+    <string name="z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you">  否则无法正常运行，接下来会向您申请相关权限</string>
+
+
     <string name="permission_has_been_set_and_will_no_longer_be_asked">权限已被设置不再询问，需要自行到设置界面启动权限</string>
     <string name="z_multi_library_press_confirm_again_to_close">再按一次确认关闭</string>
     <string name="z_multi_library_the_camera_limit_has_been_reached">已经达到拍照上限</string>

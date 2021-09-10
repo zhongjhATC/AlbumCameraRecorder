@@ -137,12 +137,14 @@ public class MainActivity extends AppCompatActivity {
             // 全部拒绝后就提示去到应用设置里面修改配置
             int permissionsLength = 0;
             for (int i = 0; i < grantResults.length; i++) {
+                // 只有当用户同时点选了拒绝开启权限和不再提醒后才会true
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
                     if (grantResults[i] == PERMISSION_DENIED) {
                         permissionsLength++;
                     }
                 }
             }
+            // 至少一个不再提醒
             if (permissionsLength > 0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
                 builder.setPositiveButton(getString(R.string.z_multi_library_setting), (dialog, which) -> {
@@ -151,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
                     intent.setData(Uri.fromParts("package", getPackageName(), null));
                     MainActivity.this.startActivityForResult(intent, REQUEST_CODE_SETTING);
                     mIsShowDialog = false;
+                });
+                builder.setNegativeButton(getString(R.string.z_multi_library_close), (dialog, which) -> {
+                    dialog.dismiss();
+                    MainActivity.this.finish();
                 });
                 builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked));
                 builder.setTitle(getString(R.string.z_multi_library_hint));
@@ -169,7 +175,18 @@ public class MainActivity extends AppCompatActivity {
         }
         if (!mIsShowDialog) {
             if (requestCode == GET_PERMISSION_REQUEST) {
-                requestPermissions();
+                int permissionsLength = 0;
+                for (int i = 0; i < grantResults.length; i++) {
+                    if (grantResults[i] == PERMISSION_DENIED) {
+                        // 如果拒绝后
+                        permissionsLength++;
+                    }
+                }
+                if (permissionsLength > 0) {
+                    requestPermissionsDialog();
+                } else {
+                    requestPermissions();
+                }
             }
         }
     }
@@ -198,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * 请求权限
      */
@@ -205,21 +223,36 @@ public class MainActivity extends AppCompatActivity {
         // 判断权限，权限通过才可以初始化相关
         ArrayList<String> needPermissions = getNeedPermissions();
         if (needPermissions.size() > 0) {
+            // 请求权限
+            requestPermissions2(needPermissions);
+        } else {
+            // 没有所需要请求的权限，就进行初始化
+            init();
+        }
+    }
+
+    /**
+     * 请求权限 - 如果曾经拒绝过，则弹出dialog
+     */
+    private void requestPermissionsDialog() {
+        // 判断权限，权限通过才可以初始化相关
+        ArrayList<String> needPermissions = getNeedPermissions();
+        if (needPermissions.size() > 0) {
             // 动态消息
             StringBuilder message = new StringBuilder();
-            message.append("使用该功能需要用到");
+            message.append(getString(R.string.z_multi_library_to_use_this_feature));
             for (String item : needPermissions) {
                 switch (item) {
                     case Manifest.permission.WRITE_EXTERNAL_STORAGE:
-                        message.append(" 文件读写权限来读取存储相关文件 ");
+                        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files));
                         break;
                     case Manifest.permission.RECORD_AUDIO:
                         // 弹窗提示为什么要请求这个权限
-                        message.append(" 录音权限来录制声音 ");
+                        message.append(getString(R.string.z_multi_library_record_permission_to_record_sound));
                         break;
                     case Manifest.permission.CAMERA:
                         // 弹窗提示为什么要请求这个权限
-                        message.append(" 录制权限来拍摄 ");
+                        message.append(getString(R.string.z_multi_library_record_permission_to_shoot));
                         break;
                     default:
                         break;
@@ -228,15 +261,15 @@ public class MainActivity extends AppCompatActivity {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
             // 弹窗提示为什么要请求这个权限
-            builder.setTitle("提示");
-            message.append(" 否则无法正常运行，接下来会向您申请相关权限");
+            builder.setTitle(getString(R.string.z_multi_library_hint));
+            message.append(getString(R.string.z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you));
             builder.setMessage(message.toString());
-            builder.setPositiveButton("好的", (dialog, which) -> {
+            builder.setPositiveButton(getString(R.string.z_multi_library_ok), (dialog, which) -> {
                 dialog.dismiss();
                 // 请求权限
                 requestPermissions2(needPermissions);
             });
-            builder.setNegativeButton("取消", (dialog, which) -> {
+            builder.setNegativeButton(getString(R.string.z_multi_library_cancel), (dialog, which) -> {
                 dialog.dismiss();
                 MainActivity.this.finish();
             });

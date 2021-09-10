@@ -3,7 +3,15 @@
     <string name="z_multi_library_take_photos">take photos</string>
     <string name="z_multi_library_sound_recording">sound recording</string>
     <string name="z_multi_library_setting">setting</string>
+    <string name="z_multi_library_close">close</string>
     <string name="z_multi_library_hint">hint</string>
+    <string name="z_multi_library_ok">OK</string>
+    <string name="z_multi_library_cancel">Cancel</string>
+    <string name="z_multi_library_to_use_this_feature">To use this feature</string>
+    <string name="z_multi_library_file_read_and_write_permission_to_read_and_store_related_files"> File read and write permission to read and store related files </string>
+    <string name="z_multi_library_record_permission_to_record_sound"> Record permission to record sound </string>
+    <string name="z_multi_library_record_permission_to_shoot"> Record permission to shoot </string>
+    <string name="z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you">  Otherwise, it cannot run normally and will apply for relevant permissions from you</string>
     <string name="permission_has_been_set_and_will_no_longer_be_asked">Permission has been set no longer asked, you need to go to the setting interface to start permission  </string>
     <string name="z_multi_library_press_confirm_again_to_close">Press confirm again to close</string>
     <string name="z_multi_library_the_camera_limit_has_been_reached">The camera limit has been reached</string>
