@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.AppUtils;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
@@ -154,11 +156,22 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this.startActivityForResult(intent, REQUEST_CODE_SETTING);
                     mIsShowDialog = false;
                 });
-                builder.setNegativeButton(getString(R.string.z_multi_library_close), (dialog, which) -> {
+                builder.setNegativeButton(getString(R.string.z_multi_library_cancel), (dialog, which) -> {
                     dialog.dismiss();
                     MainActivity.this.finish();
                 });
-                builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked));
+
+                // 获取app名称
+                String appName = AppUtils.getAppName(getApplicationContext());
+                if (TextUtils.isEmpty(appName)) {
+                    builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked));
+                } else {
+                    StringBuilder toSettingTipStr = new StringBuilder();
+                    toSettingTipStr.append(getString(R.string.z_multi_library_in_settings_apply));
+                    toSettingTipStr.append(appName);
+                    toSettingTipStr.append(getString(R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions));
+                    builder.setMessage(toSettingTipStr.toString());
+                }
                 builder.setTitle(getString(R.string.z_multi_library_hint));
                 builder.setOnDismissListener(dialog12 -> mIsShowDialog = false);
                 Dialog dialog = builder.create();

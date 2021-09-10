@@ -14,6 +14,8 @@
     <string name="z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you">  否则无法正常运行，接下来会向您申请相关权限</string>
 
 
+    <string name="z_multi_library_in_settings_apply">在设置-应用-</string>
+    <string name="z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions">-权限中开启存储、相机权限，以正常使用相关功能</string>
     <string name="permission_has_been_set_and_will_no_longer_be_asked">权限已被设置不再询问，需要自行到设置界面启动权限</string>
     <string name="z_multi_library_press_confirm_again_to_close">再按一次确认关闭</string>
     <string name="z_multi_library_the_camera_limit_has_been_reached">已经达到拍照上限</string>
