@@ -2,6 +2,9 @@
     <string name="z_multi_library_album">相册</string>
     <string name="z_multi_library_take_photos">拍照</string>
     <string name="z_multi_library_sound_recording">录音</string>
+    <string name="z_multi_library_setting">设置</string>
+    <string name="z_multi_library_hint">提示</string>
+    <string name="permission_has_been_set_and_will_no_longer_be_asked">权限已被设置不再询问，需要自行到设置界面启动权限</string>
     <string name="z_multi_library_press_confirm_again_to_close">再按一次确认关闭</string>
     <string name="z_multi_library_the_camera_limit_has_been_reached">已经达到拍照上限</string>
     <string name="z_multi_library_the_recording_limit_has_been_reached">录音已经达到上限</string>

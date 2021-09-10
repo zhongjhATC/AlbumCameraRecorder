@@ -2,6 +2,9 @@
     <string name="z_multi_library_album">album</string>
     <string name="z_multi_library_take_photos">take photos</string>
     <string name="z_multi_library_sound_recording">sound recording</string>
+    <string name="z_multi_library_setting">setting</string>
+    <string name="z_multi_library_hint">hint</string>
+    <string name="permission_has_been_set_and_will_no_longer_be_asked">Permission has been set no longer asked, you need to go to the setting interface to start permission  </string>
     <string name="z_multi_library_press_confirm_again_to_close">Press confirm again to close</string>
     <string name="z_multi_library_the_camera_limit_has_been_reached">The camera limit has been reached</string>
     <string name="z_multi_library_the_recording_limit_has_been_reached">The recording limit has been reached</string>

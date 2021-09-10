@@ -3,12 +3,19 @@ package com.zhongjh.albumcamerarecorder;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -26,10 +33,14 @@ import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
+import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
 /**
@@ -48,7 +59,11 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 权限申请自定义码
      */
-    protected final int GET_PERMISSION_REQUEST = 100;
+    protected static final int GET_PERMISSION_REQUEST = 100;
+    /**
+     * 跳转到设置界面
+     */
+    private static final int REQUEST_CODE_SETTING = 101;
 
     /**
      * 底部控件
@@ -68,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
      * 是否初始化完毕
      */
     boolean mIsInit;
+    /**
+     * 是否弹出提示多次拒绝权限的dialog
+     */
+    private boolean mIsShowDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,12 +120,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SETTING) {
+            // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
+            requestPermissions();
+        }
+    }
+
     @TargetApi(23)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == GET_PERMISSION_REQUEST) {
-            requestPermissions();
+        if (!mIsShowDialog) {
+            // 全部拒绝后就提示去到应用设置里面修改配置
+            int permissionsLength = 0;
+            for (int i = 0; i < grantResults.length; i++) {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
+                    if (grantResults[i] == PERMISSION_DENIED) {
+                        permissionsLength++;
+                    }
+                }
+            }
+            if (permissionsLength > 0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+                builder.setPositiveButton(getString(R.string.z_multi_library_setting), (dialog, which) -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.fromParts("package", getPackageName(), null));
+                    MainActivity.this.startActivityForResult(intent, REQUEST_CODE_SETTING);
+                    mIsShowDialog = false;
+                });
+                builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked));
+                builder.setTitle(getString(R.string.z_multi_library_hint));
+                builder.setOnDismissListener(dialog12 -> mIsShowDialog = false);
+                Dialog dialog = builder.create();
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setOnKeyListener((dialog1, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+                        finish();
+                    }
+                    return false;
+                });
+                dialog.show();
+                mIsShowDialog = true;
+            }
+        }
+        if (!mIsShowDialog) {
+            if (requestCode == GET_PERMISSION_REQUEST) {
+                requestPermissions();
+            }
         }
     }
 
@@ -141,58 +205,50 @@ public class MainActivity extends AppCompatActivity {
         // 判断权限，权限通过才可以初始化相关
         ArrayList<String> needPermissions = getNeedPermissions();
         if (needPermissions.size() > 0) {
+            // 动态消息
+            StringBuilder message = new StringBuilder();
+            message.append("使用该功能需要用到");
             for (String item : needPermissions) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
                 switch (item) {
                     case Manifest.permission.WRITE_EXTERNAL_STORAGE:
-                        // 弹窗提示为什么要请求这个权限
-                        builder.setTitle("提示");
-                        builder.setMessage("使用该功能需要用到文件读写权限，否则无法正常运行，接下来会向您申请读写设备上的照片及文件权限");
-                        builder.setPositiveButton("好的", (dialog, which) -> {
-                            dialog.dismiss();
-                            // 请求权限
-                            requestPermissions2(item);
-                        });
-                        builder.setNegativeButton("取消", (dialog, which) -> {
-                            dialog.dismiss();
-                            MainActivity.this.finish();
-                        });
-                        builder.create().show();
-                        return;
+                        message.append(" 文件读写权限来读取存储相关文件 ");
+                        break;
                     case Manifest.permission.RECORD_AUDIO:
                         // 弹窗提示为什么要请求这个权限
-                        builder.setTitle("提示");
-                        builder.setMessage("使用该功能需要用到录音权限，否则无法正常运行，接下来会向您申请本地录音相关权限");
-                        builder.setPositiveButton("好的", (dialog, which) -> {
-                            dialog.dismiss();
-                            // 请求权限
-                            requestPermissions2(item);
-                        });
-                        builder.setNegativeButton("取消", (dialog, which) -> {
-                            dialog.dismiss();
-                            MainActivity.this.finish();
-                        });
-                        builder.create().show();
-                        return;
+                        message.append(" 录音权限来录制声音 ");
+                        break;
                     case Manifest.permission.CAMERA:
                         // 弹窗提示为什么要请求这个权限
-                        builder.setTitle("提示");
-                        builder.setMessage("使用该功能需要用到录制权限，否则无法正常运行，接下来会向您申请拍摄照片和录制视频相关权限");
-                        builder.setPositiveButton("好的", (dialog, which) -> {
-                            dialog.dismiss();
-                            // 请求权限
-                            requestPermissions2(item);
-                        });
-                        builder.setNegativeButton("取消", (dialog, which) -> {
-                            dialog.dismiss();
-                            MainActivity.this.finish();
-                        });
-                        builder.create().show();
-                        return;
+                        message.append(" 录制权限来拍摄 ");
+                        break;
                     default:
-                        return;
+                        break;
                 }
             }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+            // 弹窗提示为什么要请求这个权限
+            builder.setTitle("提示");
+            message.append(" 否则无法正常运行，接下来会向您申请相关权限");
+            builder.setMessage(message.toString());
+            builder.setPositiveButton("好的", (dialog, which) -> {
+                dialog.dismiss();
+                // 请求权限
+                requestPermissions2(needPermissions);
+            });
+            builder.setNegativeButton("取消", (dialog, which) -> {
+                dialog.dismiss();
+                MainActivity.this.finish();
+            });
+            Dialog dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setOnKeyListener((dialog1, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+                    finish();
+                }
+                return false;
+            });
+            dialog.show();
         } else {
             // 没有所需要请求的权限，就进行初始化
             init();
@@ -241,10 +297,10 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 请求权限
      *
-     * @param permission 权限
+     * @param permissions 权限
      */
-    private void requestPermissions2(String permission) {
-        ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, GET_PERMISSION_REQUEST);
+    private void requestPermissions2(ArrayList<String> permissions) {
+        ActivityCompat.requestPermissions(MainActivity.this, (String[]) permissions.toArray(new String[0]), GET_PERMISSION_REQUEST);
     }
 
     /**
