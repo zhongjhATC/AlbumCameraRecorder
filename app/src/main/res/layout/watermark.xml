@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 必须使用merge标签，根布局只能ImageView控件 -->
 <merge
     tools:parentTag="android.widget.FrameLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
