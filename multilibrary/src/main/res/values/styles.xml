@@ -96,7 +96,7 @@
 
     <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!-- Used for the buttons -->
-        <item name="colorAccent">@color/image_color_red</item>
+        <item name="colorAccent">#FF5151</item>
         <!-- Used for the title and text -->
         <item name="android:textColorPrimary">#000000</item>
         <!-- Used for the background -->
