@@ -338,72 +338,62 @@ public class CameraLayout extends RelativeLayout {
             LayoutInflater.from(mContext).inflate(mCameraSpec.watermarkResource, mViewHolder.cameraView, true);
         }
 
-    // 回调cameraView可以自定义相关参数
-        if(mCameraSpec.onCameraViewListener !=null)
+        // 回调cameraView可以自定义相关参数
+        if (mCameraSpec.onCameraViewListener != null) {
+            mCameraSpec.onCameraViewListener.onInitListener(mViewHolder.cameraView);
+        }
 
-    {
-        mCameraSpec.onCameraViewListener.onInitListener(mViewHolder.cameraView);
-    }
+        // 兼容沉倾状态栏
+        mViewHolder.clMenu.setPadding(0, StatusBarUtils.getStatusBarHeight(
 
-    // 兼容沉倾状态栏
-        mViewHolder.clMenu.setPadding(0,StatusBarUtils.getStatusBarHeight(
+                getContext()), 0, 0);
+        ViewGroup.LayoutParams layoutParams = mViewHolder.clMenu.getLayoutParams();
+        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(
 
-    getContext()),0,0);
-    ViewGroup.LayoutParams layoutParams = mViewHolder.clMenu.getLayoutParams();
-    layoutParams.height =layoutParams.height +StatusBarUtils.getStatusBarHeight(
+                getContext());
 
-    getContext());
+        // 如果没启动视频编辑，隐藏分段录制功能
+        if (mCameraSpec.videoEditCoordinator == null) {
+            mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+        }
 
-    // 如果没启动视频编辑，隐藏分段录制功能
-        if(mCameraSpec.videoEditCoordinator ==null)
-
-    {
-        mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
-    }
-
-    // 默认是快拍录制模式
+        // 默认是快拍录制模式
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(false);
 
-    // 初始化cameraView
+        // 初始化cameraView
 
-    setFlashLamp(); // 设置闪光灯模式
+        setFlashLamp(); // 设置闪光灯模式
         mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
-    // 设置录制时间
-        mViewHolder.pvLayout.setDuration(mCameraSpec.duration *1000);
-    // 最短录制时间
+        // 设置录制时间
+        mViewHolder.pvLayout.setDuration(mCameraSpec.duration * 1000);
+        // 最短录制时间
         mViewHolder.pvLayout.setMinDuration(mCameraSpec.minDuration);
 
-    // 判断点击和长按的权限
-        if(mCameraSpec.onlySupportImages())
-
-    {
-        // 禁用长按功能
-        mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
-        mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
-    } else if(mCameraSpec.onlySupportVideos())
-
-    {
-        // 禁用点击功能
-        mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
-        mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
-    } else
-
-    {
-        // 支持所有，不过要判断数量
-        if (SelectableUtils.getImageMaxCount() == 0) {
-            // 禁用点击功能
-            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
-            mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
-        } else if (SelectableUtils.getVideoMaxCount() == 0) {
+        // 判断点击和长按的权限
+        if (mCameraSpec.onlySupportImages()) {
             // 禁用长按功能
             mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
             mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
+        } else if (mCameraSpec.onlySupportVideos()) {
+            // 禁用点击功能
+            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
+            mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
         } else {
-            mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_BOTH);
-            mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take_long_press_camera));
+            // 支持所有，不过要判断数量
+            if (SelectableUtils.getImageMaxCount() == 0) {
+                // 禁用点击功能
+                mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
+            } else if (SelectableUtils.getVideoMaxCount() == 0) {
+                // 禁用长按功能
+                mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
+            } else {
+                mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_BOTH);
+                mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_take_long_press_camera));
+            }
         }
     }
-}
 
     /**
      * 初始化有关事件
@@ -713,7 +703,8 @@ public class CameraLayout extends RelativeLayout {
                 // 判断是否短时间结束
                 if (!mIsShort) {
                     if (!mIsSectionRecord) {
-                        // 如果录制结束，打开该视频 TODO
+                        // 打开底部菜单
+                        // 如果录制结束，打开该视频
                         PreviewVideoActivity.startActivity(fragment, result.getFile().getPath());
                         fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
                         Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
@@ -1255,56 +1246,56 @@ public class CameraLayout extends RelativeLayout {
         this.fragment = fragment;
     }
 
-public static class ViewHolder {
+    public static class ViewHolder {
 
-    View rootView;
-    ChildClickableFrameLayout rlMain;
-    ImageView imgPhoto;
-    FrameLayout flShow;
-    public ImageView imgFlash;
-    public ImageView imgSwitch;
-    public PhotoVideoLayoutBase pvLayout;
-    public HorizontalScrollView hsvPhoto;
-    LinearLayout llPhoto;
-    View vLine1;
-    View vLine2;
-    View vLine3;
-    ImageView imgClose;
-    CameraView cameraView;
-    ConstraintLayout clMenu;
-    RelativeLayout rlEdit;
+        View rootView;
+        ChildClickableFrameLayout rlMain;
+        ImageView imgPhoto;
+        FrameLayout flShow;
+        public ImageView imgFlash;
+        public ImageView imgSwitch;
+        public PhotoVideoLayoutBase pvLayout;
+        public HorizontalScrollView hsvPhoto;
+        LinearLayout llPhoto;
+        View vLine1;
+        View vLine2;
+        View vLine3;
+        ImageView imgClose;
+        CameraView cameraView;
+        ConstraintLayout clMenu;
+        RelativeLayout rlEdit;
 
-    ViewHolder(View rootView) {
-        this.rootView = rootView;
-        this.rlMain = rootView.findViewById(R.id.rlMain);
-        this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
-        this.flShow = rootView.findViewById(R.id.flShow);
-        this.imgFlash = rootView.findViewById(R.id.imgFlash);
-        this.imgSwitch = rootView.findViewById(R.id.imgSwitch);
-        this.pvLayout = rootView.findViewById(R.id.pvLayout);
-        this.hsvPhoto = rootView.findViewById(R.id.hsvPhoto);
-        this.llPhoto = rootView.findViewById(R.id.llPhoto);
-        this.vLine1 = rootView.findViewById(R.id.vLine1);
-        this.vLine2 = rootView.findViewById(R.id.vLine2);
-        this.vLine3 = rootView.findViewById(R.id.vLine3);
-        this.imgClose = rootView.findViewById(R.id.imgClose);
-        this.cameraView = rootView.findViewById(R.id.cameraView);
-        this.clMenu = rootView.findViewById(R.id.clMenu);
-        this.rlEdit = rootView.findViewById(R.id.rlEdit);
+        ViewHolder(View rootView) {
+            this.rootView = rootView;
+            this.rlMain = rootView.findViewById(R.id.rlMain);
+            this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
+            this.flShow = rootView.findViewById(R.id.flShow);
+            this.imgFlash = rootView.findViewById(R.id.imgFlash);
+            this.imgSwitch = rootView.findViewById(R.id.imgSwitch);
+            this.pvLayout = rootView.findViewById(R.id.pvLayout);
+            this.hsvPhoto = rootView.findViewById(R.id.hsvPhoto);
+            this.llPhoto = rootView.findViewById(R.id.llPhoto);
+            this.vLine1 = rootView.findViewById(R.id.vLine1);
+            this.vLine2 = rootView.findViewById(R.id.vLine2);
+            this.vLine3 = rootView.findViewById(R.id.vLine3);
+            this.imgClose = rootView.findViewById(R.id.imgClose);
+            this.cameraView = rootView.findViewById(R.id.cameraView);
+            this.clMenu = rootView.findViewById(R.id.clMenu);
+            this.rlEdit = rootView.findViewById(R.id.rlEdit);
+        }
+
     }
 
-}
+    public static class ViewHolderImageView {
+        public View rootView;
+        public ImageView imgPhoto;
+        public ImageView imgCancel;
 
-public static class ViewHolderImageView {
-    public View rootView;
-    public ImageView imgPhoto;
-    public ImageView imgCancel;
+        public ViewHolderImageView(View rootView) {
+            this.rootView = rootView;
+            this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
+            this.imgCancel = rootView.findViewById(R.id.imgCancel);
+        }
 
-    public ViewHolderImageView(View rootView) {
-        this.rootView = rootView;
-        this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
-        this.imgCancel = rootView.findViewById(R.id.imgCancel);
     }
-
-}
 }
