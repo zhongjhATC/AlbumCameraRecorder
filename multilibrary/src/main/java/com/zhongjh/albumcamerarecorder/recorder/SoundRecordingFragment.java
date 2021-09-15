@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.recorder;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
@@ -48,7 +49,6 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STA
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
-import static it.sephiroth.android.library.imagezoom.ImageViewTouchBase.LOG_TAG;
 
 /**
  * 录音
@@ -64,6 +64,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private final static int AGAIN_TIME = 2000;
     protected Activity mActivity;
+    private Context mContext;
 
     RecordeSpec mRecordSpec;
 
@@ -110,6 +111,12 @@ public class SoundRecordingFragment extends BaseFragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
@@ -123,6 +130,12 @@ public class SoundRecordingFragment extends BaseFragment {
         mViewHolder.pvLayout.setMinDuration(mRecordSpec.minDuration);
         // 设置只能长按
         mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
+
+        // 兼容沉倾状态栏
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mContext);
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mViewHolder.chronometer.getLayoutParams();
+        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin + statusBarHeight, layoutParams.rightMargin, layoutParams.bottomMargin);
+
         initListener();
         return mViewHolder.rootView;
     }
@@ -368,7 +381,7 @@ public class SoundRecordingFragment extends BaseFragment {
 
             mMediaPlayer.setOnPreparedListener(mp -> mMediaPlayer.start());
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(TAG, "prepare() failed");
         }
 
         mMediaPlayer.setOnCompletionListener(mp -> stopPlaying());
@@ -452,7 +465,7 @@ public class SoundRecordingFragment extends BaseFragment {
             //startForeground(1, createNotification());
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(TAG, "prepare() failed");
         }
     }
 

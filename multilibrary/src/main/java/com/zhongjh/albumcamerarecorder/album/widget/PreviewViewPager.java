@@ -20,6 +20,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.viewpager.widget.ViewPager;
+
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
 /**

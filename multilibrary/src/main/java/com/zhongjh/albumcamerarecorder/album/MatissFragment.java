@@ -50,6 +50,7 @@ import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.ColorFilterUtil;
+import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import gaode.zhongjh.com.common.widget.IncapableDialog;
 
@@ -161,10 +162,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private void initView(Bundle savedInstanceState) {
         // 兼容沉倾状态栏
-        mViewHolder.toolbar.setPadding(0, StatusBarUtils.getStatusBarHeight(mActivity), 0, 0);
         ViewGroup.LayoutParams layoutParams = mViewHolder.toolbar.getLayoutParams();
-        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(mActivity);
-
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mContext);
+        layoutParams.height = layoutParams.height + statusBarHeight;
+        mViewHolder.toolbar.setLayoutParams(layoutParams);
+        mViewHolder.toolbar.setPadding(mViewHolder.toolbar.getPaddingLeft(), statusBarHeight,
+                mViewHolder.toolbar.getPaddingRight(), mViewHolder.toolbar.getPaddingBottom());
         Drawable navigationIcon = mViewHolder.toolbar.getNavigationIcon();
         TypedArray ta = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
         int color = ta.getColor(0, 0);

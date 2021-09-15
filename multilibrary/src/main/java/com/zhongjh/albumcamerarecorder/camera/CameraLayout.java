@@ -344,13 +344,10 @@ public class CameraLayout extends RelativeLayout {
         }
 
         // 兼容沉倾状态栏
-        mViewHolder.clMenu.setPadding(0, StatusBarUtils.getStatusBarHeight(
-
-                getContext()), 0, 0);
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mContext);
+        mViewHolder.clMenu.setPadding(0, statusBarHeight, 0, 0);
         ViewGroup.LayoutParams layoutParams = mViewHolder.clMenu.getLayoutParams();
-        layoutParams.height = layoutParams.height + StatusBarUtils.getStatusBarHeight(
-
-                getContext());
+        layoutParams.height = layoutParams.height + statusBarHeight;
 
         // 如果没启动视频编辑，隐藏分段录制功能
         if (mCameraSpec.videoEditCoordinator == null) {
