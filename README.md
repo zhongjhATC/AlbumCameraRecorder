@@ -54,21 +54,22 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 	dependencies {
 	     // a must
     	 implementation 'com.google.android.material:material:1.2.1'
+    	 implementation 'it.sephiroth.android.library.imagezoom:imagezoom:+'
 
 	     // if you want to simplify the code and at the same time use multilibrary and progresslibrary, albumCameraRecorderCommon, can directly use the combined library
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.26X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.27X'
 
 	     // Public library, if not using the combined library above
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.26X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.27X'
 	     // core lib, call display album, screen recording, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.26X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.27X'
          // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.26X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.27X'
 
          // use it with editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.26X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.27X'
 	     // For editing video
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.26X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.27X'
 	}
 
 ## snapshoot
