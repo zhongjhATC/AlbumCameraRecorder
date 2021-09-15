@@ -88,12 +88,7 @@ public class CameraFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
 
-        view.setOnKeyListener((v, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                return true;
-            }
-            return false;
-        });
+        view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
 
         mCameraLayout = view.findViewById(R.id.cameraLayout);
         mCameraLayout.setFragment(this);

@@ -42,10 +42,10 @@
         android:background="#000"
         android:visibility="gone">
 
-        <ImageView
+        <it.sephiroth.android.library.imagezoom.ImageViewTouch
             android:id="@+id/imgPhoto"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:contentDescription="如果是单张照片便显示当前拍照的"

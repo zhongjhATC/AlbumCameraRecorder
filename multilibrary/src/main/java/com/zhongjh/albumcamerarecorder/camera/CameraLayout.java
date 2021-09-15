@@ -73,6 +73,7 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.listener.VideoEditListener;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
+import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
@@ -837,6 +838,7 @@ public class CameraLayout extends RelativeLayout {
         BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri);
         mCaptureBitmaps.put(0, bitmapData);
 
+        mViewHolder.imgPhoto.canScroll();
         mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, uri);
         mViewHolder.rlEdit.setTag(uri);
     }
@@ -1024,9 +1026,10 @@ public class CameraLayout extends RelativeLayout {
         } else {
             // 如果只有单个图片，就显示相应的提示结果等等
             mCaptureBitmaps.put(0, bitmapData);
+            mViewHolder.imgPhoto.canScroll();
+            mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
             mViewHolder.cameraView.close();
-            mViewHolder.imgPhoto.setVisibility(VISIBLE);
             mViewHolder.flShow.setVisibility(VISIBLE);
             mViewHolder.pvLayout.startTipAlphaAnimation();
             mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
@@ -1247,7 +1250,7 @@ public class CameraLayout extends RelativeLayout {
 
         View rootView;
         ChildClickableFrameLayout rlMain;
-        ImageView imgPhoto;
+        ImageViewTouch imgPhoto;
         FrameLayout flShow;
         public ImageView imgFlash;
         public ImageView imgSwitch;
