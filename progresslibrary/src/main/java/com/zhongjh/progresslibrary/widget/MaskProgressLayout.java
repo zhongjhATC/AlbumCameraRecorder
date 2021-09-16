@@ -1,5 +1,6 @@
 package com.zhongjh.progresslibrary.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -7,12 +8,14 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
 
 import com.zhongjh.progresslibrary.R;
@@ -29,6 +32,7 @@ import java.util.List;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
+import gaode.zhongjh.com.common.utils.ThreadUtils;
 
 /**
  * 这是返回（图片、视频、录音）等文件后，显示的Layout
@@ -292,38 +296,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void setAudioUrls(List<String> audioUrls) {
-        for (int i = 0; i < audioUrls.size(); i++) {
-            MediaPlayer mediaPlayer = new MediaPlayer();
-            try {
-                mediaPlayer.setDataSource(audioUrls.get(i));
-                mediaPlayer.prepare();
-                int duration = mediaPlayer.getDuration();
-                if (0 != duration) {
-                    MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
-                    multiMediaView.setUrl(audioUrls.get(i));
-
-                    if (this.audioList == null) {
-                        this.audioList = new ArrayList<>();
-                    }
-                    audioList.add(multiMediaView);
-
-                    PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
-                    // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
-                    playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
-                    // 隐藏上传进度
-                    playProgressView.mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
-                    isShowRemoveRecorder();
-                    RecordingItem recordingItem = new RecordingItem();
-                    recordingItem.setUrl(audioUrls.get(i));
-                    recordingItem.setLength(duration);
-                    playProgressView.setData(recordingItem, audioProgressColor);
-                    //记得释放资源
-                    mediaPlayer.release();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        createPlayProgressView(audioUrls, 0);
     }
 
     @Override
@@ -411,6 +384,91 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     /**
+     * 有序的创建并且加入音频控件
+     */
+    private void createPlayProgressView(List<String> audioUrls, final int position) {
+        if (position >= audioUrls.size()) {
+            return;
+        }
+        String url = audioUrls.get(position);
+        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<PlayProgressView>() {
+
+            @Override
+            public PlayProgressView doInBackground() {
+                PlayProgressView playProgressView;
+                MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
+                multiMediaView.setUrl(url);
+
+                if (MaskProgressLayout.this.audioList == null) {
+                    MaskProgressLayout.this.audioList = new ArrayList<>();
+                }
+                audioList.add(multiMediaView);
+
+                playProgressView = newPlayProgressView(multiMediaView);
+                // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
+                playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
+                // 隐藏上传进度
+                playProgressView.mViewHolder.groupRecorderProgress.setVisibility(View.GONE);
+                isShowRemoveRecorder();
+
+                // 设置数据源
+                RecordingItem recordingItem = new RecordingItem();
+                recordingItem.setUrl(url);
+                playProgressView.setData(recordingItem, audioProgressColor);
+
+                return playProgressView;
+            }
+
+            @Override
+            public void onSuccess(PlayProgressView playProgressView) {
+                // 添加入view
+                if (playProgressView != null) {
+                    mViewHolder.llContent.addView(playProgressView);
+                    int newPosition = position + 1;
+                    createPlayProgressView(audioUrls, newPosition);
+//                    getDuration(playProgressView, url);
+                }
+            }
+        });
+    }
+
+//    /**
+//     * 获取时长
+//     */
+//    private void getDuration(PlayProgressView playProgressView, String url) {
+//        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<RecordingItem>() {
+//
+//            @Override
+//            public RecordingItem doInBackground() {
+//                // 获取时长
+//                RecordingItem recordingItem = null;
+//                try {
+//                    MediaPlayer mediaPlayer = new MediaPlayer();
+//                    mediaPlayer.setDataSource(url);
+//                    mediaPlayer.prepare();
+//                    int duration = mediaPlayer.getDuration();
+//                    if (0 != duration) {
+//                        recordingItem = new RecordingItem();
+//                        recordingItem.setUrl(url);
+//                        recordingItem.setLength(duration);
+//                    }
+//                    // 记得释放资源
+//                    mediaPlayer.release();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                return recordingItem;
+//            }
+//
+//            @Override
+//            public void onSuccess(RecordingItem result) {
+//                playProgressView.setData(result, audioProgressColor);
+//                playProgressView.mViewHolder.playView.updateTotal();
+//            }
+//        });
+//    }
+
+    /**
      * 设置是否显示删除音频按钮
      */
     private void isShowRemoveRecorder() {
@@ -458,6 +516,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             this.listener.onItemStartUploading(multiMediaView);
         }
         PlayProgressView playProgressView = newPlayProgressView(multiMediaView);
+        mViewHolder.llContent.addView(playProgressView);
         // 初始化播放控件
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(filePath);
@@ -489,8 +548,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         playProgressView.initStyle(audioDeleteColor, audioProgressColor, audioPlayColor);
         multiMediaView.setPlayProgressView(playProgressView);
         playProgressView.setListener(listener);
-        // 添加入view
-        mViewHolder.llContent.addView(playProgressView);
         return playProgressView;
     }
 

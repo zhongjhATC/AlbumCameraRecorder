@@ -475,7 +475,7 @@ public class AutoLineFeedLayout extends ViewGroup {
      */
     @SuppressLint("InflateParams")
     public void refreshImageView(ArrayList<MultiMediaView> imageListAdd) {
-        ThreadUtils.executeBySingle(new ThreadUtils.BaseSimpleBaseTask<List<ViewHolder>>() {
+        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<List<ViewHolder>>() {
             @Override
             public List<ViewHolder> doInBackground() {
                 List<ViewHolder> viewHolders = new ArrayList<>();
@@ -526,7 +526,7 @@ public class AutoLineFeedLayout extends ViewGroup {
     @SuppressLint("InflateParams")
     public void refreshVideoView(ArrayList<MultiMediaView> videoListAdd) {
         Log.d(TAG + " Test", "refreshVideoView");
-        ThreadUtils.executeBySingle(new ThreadUtils.BaseSimpleBaseTask<List<ViewHolder>>() {
+        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<List<ViewHolder>>() {
 
             @Override
             public List<ViewHolder> doInBackground() {

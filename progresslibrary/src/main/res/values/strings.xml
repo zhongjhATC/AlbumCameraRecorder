@@ -3,4 +3,5 @@
     <string name="z_progress_library_play_button">Play button</string>
     <string name="z_progress_library_voice_upload">Voice uploading</string>
     <string name="z_progress_on_the_cross">On the cross</string>
+    <string name="z_progress_click_download_to_open_the_audio">Click Download to open the audio</string>
 </resources>

@@ -88,7 +88,7 @@ public class PlayView extends FrameLayout {
     private boolean isChanging = false;
 
 
-    private final Handler mHandler = new MyHandler(getContext().getMainLooper(),PlayView.this);
+    private final Handler mHandler = new MyHandler(getContext().getMainLooper(), PlayView.this);
 
     // endregion 有关音频
 
@@ -138,9 +138,20 @@ public class PlayView extends FrameLayout {
         // 当前时间
         mViewHolder.tvCurrentProgress.setText("00:00/");
         // 总计时间
-        mViewHolder.tvTotalProgress.setText(generateTime(recordingItem.getLength()));
+        if (recordingItem.getLength() <= 0) {
+            mViewHolder.tvTotalProgress.setText(getResources().getString(R.string.z_progress_click_download_to_open_the_audio));
+        } else {
+            mViewHolder.tvTotalProgress.setText(generateTime(recordingItem.getLength(), 0));
+        }
         // 设置进度条
         mViewHolder.seekbar.setMax(recordingItem.getLength());
+    }
+
+    /**
+     * 更新总数
+     */
+    public void updateTotal() {
+        mViewHolder.tvTotalProgress.setText(generateTime(mRecordingItem.getLength(), 0));
     }
 
     /**
@@ -153,32 +164,32 @@ public class PlayView extends FrameLayout {
 
         // 播放按钮
         mViewHolder.imgPlay.setOnClickListener(v -> {
-            Log.d(TAG,"setOnClickListener");
+            Log.d(TAG, "setOnClickListener");
             // 判断该音频是否有文件地址，如果没有则请求下载
             if (!TextUtils.isEmpty(mRecordingItem.getFilePath())) {
                 onPlay();
             } else {
                 // 调用下载
-                listener.onItemAudioStartDownload(this,mRecordingItem.getUrl());
+                listener.onItemAudioStartDownload(this, mRecordingItem.getUrl());
             }
         });
 
         // 异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
         mMediaPlayer.setOnPreparedListener(mediaPlayer -> {
-            Log.d(TAG,"setOnPreparedListener");
+            Log.d(TAG, "setOnPreparedListener");
             mViewHolder.seekbar.setProgress(0);
             mViewHolder.imgPlay.setEnabled(true);
             // 当前时间
             mViewHolder.tvCurrentProgress.setText("00:00/");
             // 总计时间
-            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration()));
+            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration(), 0));
             // 设置进度条
             mViewHolder.seekbar.setMax(mMediaPlayer.getDuration());
         });
 
         // 播放完成事件
         mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
-            Log.d(TAG,"setOnCompletionListener");
+            Log.d(TAG, "setOnCompletionListener");
             // 进度归零
             mMediaPlayer.seekTo(0);
             // 进度条归零
@@ -186,6 +197,10 @@ public class PlayView extends FrameLayout {
             // 控制栏中的播放按钮显示暂停状态
             mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
             mIsPlaying = false;
+            // 当前时间
+            mViewHolder.tvCurrentProgress.setText("00:00/");
+            // 总计时间
+            mViewHolder.tvTotalProgress.setText(generateTime(mMediaPlayer.getDuration(), 0));
             // 重置并准备重新播放
             mMediaPlayer.reset();
             mIsCompletion = true;
@@ -207,7 +222,7 @@ public class PlayView extends FrameLayout {
             }
         } else {
             //如果当前停止播放  继续播放 更改控制栏状态
-            Log.d(TAG,"播放");
+            Log.d(TAG, "播放");
             mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
             // 判断如果是结束了就是重新播放，否则就是继续播放
             if (mIsCompletion) {
@@ -278,13 +293,13 @@ public class PlayView extends FrameLayout {
      * 格式化显示的时间
      */
     @SuppressLint("DefaultLocale")
-    private String generateTime(long time) {
+    private String generateTime(long time, int secondsAdd) {
         int totalSeconds = (int) (time / 1000);
         int seconds = totalSeconds % 60;
         int minutes = (totalSeconds / 60) % 60;
         int hours = totalSeconds / 3600;
         return hours > 0 ? String.format("%02d:%02d:%02d", hours, minutes,
-                seconds) : String.format("%02d:%02d", minutes, seconds);
+                seconds + secondsAdd) : String.format("%02d:%02d", minutes, seconds + secondsAdd);
     }
 
     /**
@@ -294,7 +309,7 @@ public class PlayView extends FrameLayout {
 
         private final WeakReference<PlayView> mPlayView;
 
-        public MyHandler(@NonNull Looper looper,PlayView playView) {
+        public MyHandler(@NonNull Looper looper, PlayView playView) {
             super(looper);
             mPlayView = new WeakReference<>(playView);
         }
@@ -307,7 +322,7 @@ public class PlayView extends FrameLayout {
                 super.handleMessage(msg);
                 if (msg.what == 0) {
                     //设置当前播放进度
-                    playView.mViewHolder.tvCurrentProgress.setText(playView.generateTime(playView.mMediaPlayer.getCurrentPosition()) + "/");
+                    playView.mViewHolder.tvCurrentProgress.setText(playView.generateTime(playView.mMediaPlayer.getCurrentPosition(), 1) + "/");
                 }
             }
         }
@@ -355,7 +370,7 @@ public class PlayView extends FrameLayout {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             mMediaPlayer.seekTo(mViewHolder.seekbar.getProgress());
-            mViewHolder.tvCurrentProgress.setText(generateTime(mMediaPlayer.getCurrentPosition()) + "/");
+            mViewHolder.tvCurrentProgress.setText(generateTime(mMediaPlayer.getCurrentPosition(), 0) + "/");
             isChanging = false;
         }
 
