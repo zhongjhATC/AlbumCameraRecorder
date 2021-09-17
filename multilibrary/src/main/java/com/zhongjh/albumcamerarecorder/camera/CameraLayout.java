@@ -991,7 +991,7 @@ public class CameraLayout extends RelativeLayout {
                     mOperateCameraListener.captureSuccess(paths, uris);
                     // 加入图片到android系统库里面
                     for (BitmapData value : mCaptureBitmaps.values()) {
-                        BitmapUtils.displayToGallery(getContext(), new File(value.getPath()), TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
+                        BitmapUtils.displayToGallery(getContext(), new File(value.getPath()), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
                     }
                 }
                 break;

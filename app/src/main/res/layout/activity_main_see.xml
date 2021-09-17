@@ -12,6 +12,7 @@
             android:id="@+id/mplImageList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:album.thumbnail.placeholder="@drawable/loading"
             app:audioDeleteColor="@color/blue_primary"
             app:audioPlayColor="@color/blue_primary"
             app:audioProgressColor="@color/blue_primary"
@@ -28,15 +29,15 @@
 
         <Button
             android:id="@+id/btnSetValue"
-            android:text="赋值"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="赋值" />
 
         <Button
             android:id="@+id/btnReset"
-            android:text="重置"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="重置" />
 
     </LinearLayout>
 

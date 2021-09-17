@@ -206,7 +206,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                         if (multiMedia.getPath() != null) {
                             File file = new File(multiMedia.getPath());
                             // 加入相册库
-                            Uri editMediaUri = BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
+                            Uri editMediaUri = BitmapUtils.displayToGallery(this, file, TYPE_PICTURE,-1, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
                             multiMedia.setUri(null);
                             multiMedia.setMediaUri(editMediaUri);
                         }

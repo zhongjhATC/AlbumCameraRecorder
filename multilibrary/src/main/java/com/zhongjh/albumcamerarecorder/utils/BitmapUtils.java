@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -39,11 +40,12 @@ public class BitmapUtils {
     /**
      * 插入图片、视频到图库
      *
-     * @param context 上下文
-     * @param file    要保存的文件
-     * @param type    mp4 jpeg
+     * @param context  上下文
+     * @param file     要保存的文件
+     * @param type     mp4 jpeg
+     * @param duration video专属的时长,图片传-1即可
      */
-    public static Uri displayToGallery(Context context, File file, int type, String directory, MediaStoreCompat mediaStoreCompat) {
+    public static Uri displayToGallery(Context context, File file, int type, int duration, String directory, MediaStoreCompat mediaStoreCompat) {
         if (file == null || !file.exists()) {
             return null;
         }
@@ -51,7 +53,7 @@ public class BitmapUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // 插入file数据到相册
             ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, "albumcamerarecorder");
+            values.put(MediaStore.Images.Media.TITLE, AppUtils.getAppName(context));
             values.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
             values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
             values.put(MediaStore.Images.Media.ORIENTATION, 0);
@@ -98,10 +100,29 @@ public class BitmapUtils {
             String photoPath = file.getAbsolutePath();
             uri = mediaStoreCompat.getUri(photoPath);
             // 添加到图库数据库
-            try {
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getPath(), "", "");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DATA, photoPath);
+            values.put(MediaStore.Images.Media.TITLE, AppUtils.getAppName(context));
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
+            values.put(MediaStore.Images.Media.SIZE, file.length());
+            switch (type) {
+                case TYPE_VIDEO:
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "video/mp4");
+                    // 计算时间
+                    if (duration == 0) {
+                        MediaPlayer mp = MediaPlayer.create(context, uri);
+                        duration = mp.getDuration();
+                        mp.release();
+                    }
+                    values.put("duration", duration);
+                    uri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+                    break;
+                case TYPE_PICTURE:
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    break;
+                default:
+                    break;
             }
             // 这个判断AndroidQ的就是用来解决ACTION_MEDIA_SCANNER_SCAN_FILE过时的方式
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));

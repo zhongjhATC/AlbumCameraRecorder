@@ -644,7 +644,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                     imgPlay.setVisibility(View.GONE);
                 }
 
-                ThreadUtils.runOnUiThread(this::loadImage);
+                loadImage();
 
                 // 显示close
                 if (isOperation) {

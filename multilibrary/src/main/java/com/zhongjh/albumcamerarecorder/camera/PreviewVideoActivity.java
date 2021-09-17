@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -37,6 +38,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     Button mBtnConfirm;
     String mPath;
     File mFile;
+    int mDuration;
 
     /**
      * 录像文件配置路径
@@ -87,7 +89,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         mBtnConfirm.setOnClickListener(v -> {
             Intent intent = new Intent();
             // 加入视频到android系统库里面
-            Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), mFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
+            Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), mFile, TYPE_VIDEO, mDuration, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
             intent.putExtra("path", mPath);
             intent.putExtra("uri", mediaUri);
             setResult(RESULT_OK, intent);
@@ -127,6 +129,13 @@ public class PreviewVideoActivity extends AppCompatActivity {
         if (!mVideoViewPreview.isPlaying()) {
             mVideoViewPreview.start();
         }
+        mVideoViewPreview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                // 获取时长
+                mDuration = mVideoViewPreview.getDuration();
+            }
+        });
         mVideoViewPreview.setOnCompletionListener(mediaPlayer -> {
             // 循环播放
             if (!mVideoViewPreview.isPlaying()) {
