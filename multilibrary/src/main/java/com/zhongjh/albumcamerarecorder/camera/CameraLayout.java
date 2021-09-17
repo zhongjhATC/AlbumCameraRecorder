@@ -985,11 +985,18 @@ public class CameraLayout extends RelativeLayout {
                 mViewHolder.flShow.setVisibility(INVISIBLE);
                 if (mOperateCameraListener != null) {
                     // 执行等待动画
+                    mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(1);
                     // 开始迁移文件
                     ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
                         @Override
                         public Void doInBackground() {
                             ArrayList<String> paths = getPaths();
+                            // 总长度
+                            int maxCount = paths.size();
+                            // 将缓存文件拷贝到配置目录
+                            for (String item : paths) {
+//                                https://github.com/Blankj/AndroidUtilCode/tree/master/lib/utilcode/src/main/java/com/blankj/utilcode/util
+                            }
                             ArrayList<Uri> uris = getUris(paths);
                             mOperateCameraListener.captureSuccess(paths, uris);
                             // 加入图片到android系统库里面
