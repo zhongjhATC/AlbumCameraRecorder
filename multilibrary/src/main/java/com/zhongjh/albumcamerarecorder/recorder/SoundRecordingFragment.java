@@ -447,7 +447,7 @@ public class SoundRecordingFragment extends BaseFragment {
         MediaStoreCompat mAudioMediaStoreCompat = new MediaStoreCompat(getContext());
         mAudioMediaStoreCompat.setSaveStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
 
-        mFile = mAudioMediaStoreCompat.getFilePath(2);
+        mFile = mAudioMediaStoreCompat.getFilePath(2, true);
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);

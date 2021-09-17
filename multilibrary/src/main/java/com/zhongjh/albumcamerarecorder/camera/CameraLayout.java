@@ -73,6 +73,7 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.listener.VideoEditListener;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
+import gaode.zhongjh.com.common.utils.ThreadUtils;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
@@ -92,6 +93,9 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
  * @date 2018/7/23.
  * 一个全局界面，包含了 右上角的闪光灯、前/后置摄像头的切换、底部按钮功能、对焦框等、显示当前拍照和摄像的界面
  * 该类类似MVP的View，主要包含有关 除了Camera的其他所有ui操作
+ *
+ * 录制逻辑：
+ * 拍摄/录制 文件后，会先缓存到Cache文件夹，当点击完成后，才将相关确认的文件复制到配置的路径下，加入相册库，并且清空Cache文件夹
  */
 public class CameraLayout extends RelativeLayout {
 
@@ -305,7 +309,7 @@ public class CameraLayout extends RelativeLayout {
         mVideoMediaStoreCompat.setSaveStrategy(mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 
         // 用于播放的视频file
-        mVideoFile = mVideoMediaStoreCompat.getFilePath(1);
+        mVideoFile = mVideoMediaStoreCompat.getFilePath(1, true);
 
         // 默认图片
         TypedArray ta = mContext.getTheme().obtainStyledAttributes(
@@ -355,8 +359,8 @@ public class CameraLayout extends RelativeLayout {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
         }
 
-        // 默认是快拍录制模式
-        mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(false);
+        // 处理图片、视频等需要进度显示
+        mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(true);
 
         // 初始化cameraView
 
@@ -616,7 +620,7 @@ public class CameraLayout extends RelativeLayout {
             public void startProgress() {
                 if (mIsSectionRecord) {
                     // 合并视频
-                    mNewSectionVideoPath = mVideoMediaStoreCompat.getFilePath(1).getPath();
+                    mNewSectionVideoPath = mVideoMediaStoreCompat.getFilePath(1, true).getPath();
                     mCameraSpec.videoEditCoordinator.merge(mNewSectionVideoPath, mVideoPaths,
                             mContext.getCacheDir().getPath() + File.separator + "cam.txt");
                 }
@@ -641,7 +645,8 @@ public class CameraLayout extends RelativeLayout {
     private void initPvLayoutRecordListener() {
         mViewHolder.pvLayout.setRecordListener(tag -> {
             mIsSectionRecord = "1".equals(tag);
-            mViewHolder.pvLayout.setProgressMode(mIsSectionRecord);
+//            mViewHolder.pvLayout.setProgressMode(mIsSectionRecord);
+            mViewHolder.pvLayout.setProgressMode(true);
         });
     }
 
@@ -712,7 +717,7 @@ public class CameraLayout extends RelativeLayout {
                         // 显示当前进度
                         mViewHolder.pvLayout.setData(mVideoTimes);
                         // 创建新的file
-                        mVideoFile = mVideoMediaStoreCompat.getFilePath(1);
+                        mVideoFile = mVideoMediaStoreCompat.getFilePath(1, true);
                         // 如果是在已经合成的情况下继续拍摄，那就重置状态
                         if (!mViewHolder.pvLayout.getProgressMode()) {
                             mViewHolder.pvLayout.setProgressMode(true);
@@ -761,7 +766,7 @@ public class CameraLayout extends RelativeLayout {
     private void initPhotoEditListener() {
         mViewHolder.rlEdit.setOnClickListener(view -> {
             Uri uri = (Uri) view.getTag();
-            mPhotoEditFile = mPictureMediaStoreCompat.createFile(0);
+            mPhotoEditFile = mPictureMediaStoreCompat.createFile(0, true);
             if (mEditListener != null) {
                 mEditListener.onImageEdit(uri, mPhotoEditFile.getAbsolutePath());
             }
@@ -893,8 +898,8 @@ public class CameraLayout extends RelativeLayout {
             } else if (getState() == Constants.STATE_PICTURE_PREVIEW) {
                 // 图片模式的提交
                 confirmState(TYPE_PICTURE);
-                // 设置空闲状态
-                setState(Constants.STATE_PREVIEW);
+//                // 设置空闲状态
+//                setState(Constants.STATE_PREVIEW);
             }
         }
     }
@@ -972,13 +977,6 @@ public class CameraLayout extends RelativeLayout {
         switch (type) {
             case TYPE_VIDEO:
                 // TODO 弃用，已经改用跳转到第二个界面播放视频了
-//                // 录视频完成
-//                stopVideo();    // 停止播放
-//                // 加入视频到android系统库里面
-//                Uri mediaUri = BitmapUtils.displayToGallery(getContext(), mVideoFile, TYPE_VIDEO, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
-//                if (mOperateCameraListener != null) {
-//                    mOperateCameraListener.recordSuccess(mVideoFile.getPath(), mediaUri);
-//                }
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
@@ -986,13 +984,55 @@ public class CameraLayout extends RelativeLayout {
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
                 mViewHolder.flShow.setVisibility(INVISIBLE);
                 if (mOperateCameraListener != null) {
-                    ArrayList<String> paths = getPaths();
-                    ArrayList<Uri> uris = getUris(paths);
-                    mOperateCameraListener.captureSuccess(paths, uris);
-                    // 加入图片到android系统库里面
-                    for (BitmapData value : mCaptureBitmaps.values()) {
-                        BitmapUtils.displayToGallery(getContext(), new File(value.getPath()), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
-                    }
+                    // 执行等待动画
+                    // 开始迁移文件
+                    ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
+                        @Override
+                        public Void doInBackground() {
+                            ArrayList<String> paths = getPaths();
+                            ArrayList<Uri> uris = getUris(paths);
+                            mOperateCameraListener.captureSuccess(paths, uris);
+                            // 加入图片到android系统库里面
+                            for (BitmapData value : mCaptureBitmaps.values()) {
+                                BitmapUtils.displayToGallery(getContext(), new File(value.getPath()), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        public void onSuccess(Void result) {
+
+                        }
+                    };
+
+                        mCameraSpec.videoEditCoordinator.setVideoEditListener(new VideoEditListener() {
+                            @Override
+                            public void onFinish() {
+                                mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(100);
+                            }
+
+                            @Override
+                            public void onProgress(int progress, long progressTime) {
+                                if (progress >= PROGRESS_MAX) {
+                                    mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(99);
+                                } else {
+                                    mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(progress);
+                                }
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                Log.d(TAG, "onCancel");
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                Log.d(TAG, "onError" + message);
+                            }
+                        });
+
+
+
                 }
                 break;
             case TYPE_SHORT:
@@ -1000,7 +1040,7 @@ public class CameraLayout extends RelativeLayout {
             default:
                 break;
         }
-        mViewHolder.pvLayout.reset();
+//        mViewHolder.pvLayout.reset();
     }
 
     /**
@@ -1010,7 +1050,7 @@ public class CameraLayout extends RelativeLayout {
      */
     private void showPicture(Bitmap bitmap) {
         // 初始化数据并且存储进file
-        File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap);
+        File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
         Uri uri = mPictureMediaStoreCompat.getUri(file.getPath());
         BitmapData bitmapData = new BitmapData(file.getPath(), uri);
         // 回收bitmap

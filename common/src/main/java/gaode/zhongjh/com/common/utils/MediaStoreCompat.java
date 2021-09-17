@@ -64,10 +64,11 @@ public class MediaStoreCompat {
     /**
      * 创建文件
      *
-     * @param type 0是图片 1是视频 2是音频
-     * @return 临时文件
+     * @param type    0是图片 1是视频 2是音频
+     * @param isCache 是否缓存文件夹
+     * @return 文件
      */
-    public File createFile(int type) {
+    public File createFile(int type, boolean isCache) {
         String timeStamp =
                 new SimpleDateFormat("yyyyMMdd_HHmmssS", Locale.getDefault()).format(new Date());
         String fileName;
@@ -83,31 +84,39 @@ public class MediaStoreCompat {
                 fileName = String.format("AUDIO_%s.mp3", timeStamp);
                 break;
         }
-        File storageDir = null;
+        File storageDir;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // 29以上的版本都必须是私有的
-            switch (type) {
-                case 0:
-                    storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_PICTURES + File.separator + mSaveStrategy.directory);
-                    break;
-                case 1:
-                    storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_MOVIES + File.separator + mSaveStrategy.directory);
-                    break;
-                case 2:
-                default:
-                    storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_MUSIC + File.separator + mSaveStrategy.directory);
-                    break;
+            // 29以上的版本都必须是私有的或者公共目录
+            if (isCache) {
+                storageDir = new File(mContext.get().getCacheDir().getPath() + File.separator + mSaveStrategy.directory);
+            } else {
+                switch (type) {
+                    case 0:
+                        storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_PICTURES + File.separator + mSaveStrategy.directory);
+                        break;
+                    case 1:
+                        storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_MOVIES + File.separator + mSaveStrategy.directory);
+                        break;
+                    case 2:
+                    default:
+                        storageDir = mContext.get().getExternalFilesDir(Environment.DIRECTORY_MUSIC + File.separator + mSaveStrategy.directory);
+                        break;
+                }
             }
         } else {
-            if (mSaveStrategy.isPublic) {
-                storageDir = Environment.getExternalStoragePublicDirectory(
-                        mSaveStrategy.directory);
-                assert storageDir != null;
-                if (!storageDir.exists()) {
-                    storageDir.mkdirs();
-                }
+            if (isCache) {
+                storageDir = new File(mContext.get().getCacheDir().getPath() + File.separator + mSaveStrategy.directory);
             } else {
-                storageDir = mContext.get().getExternalFilesDir(mSaveStrategy.directory);
+                if (mSaveStrategy.isPublic) {
+                    storageDir = Environment.getExternalStoragePublicDirectory(
+                            mSaveStrategy.directory);
+                    assert storageDir != null;
+                    if (!storageDir.exists()) {
+                        storageDir.mkdirs();
+                    }
+                } else {
+                    storageDir = mContext.get().getExternalFilesDir(mSaveStrategy.directory);
+                }
             }
         }
 
@@ -120,27 +129,27 @@ public class MediaStoreCompat {
         }
 
         return tempFile;
-
     }
 
     /**
      * 返回创建文件的路径
      *
-     * @param type 0是图片 1是视频 2是音频
+     * @param type    0是图片 1是视频 2是音频
+     * @param isCache 是否缓存文件夹
      * @return File
      */
-    public File getFilePath(int type) {
-        return createFile(type);
+    public File getFilePath(int type, boolean isCache) {
+        return createFile(type, isCache);
     }
 
     /**
-     * 保存bitmap到file
-     *
+     * @param bitmap  保存bitmap到file
+     * @param isCache 是否缓存文件夹
      * @return 返回file的路径
      */
-    public File saveFileByBitmap(Bitmap bitmap) {
+    public File saveFileByBitmap(Bitmap bitmap, boolean isCache) {
         File file;
-        file = createFile(0);
+        file = createFile(0, isCache);
         try {
             assert file != null;
             FileOutputStream out = new FileOutputStream(file);
