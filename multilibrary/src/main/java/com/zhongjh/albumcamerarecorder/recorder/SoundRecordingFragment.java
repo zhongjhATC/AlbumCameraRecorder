@@ -35,10 +35,8 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import gaode.zhongjh.com.common.utils.ThreadUtils;
@@ -447,7 +445,7 @@ public class SoundRecordingFragment extends BaseFragment {
         MediaStoreCompat mAudioMediaStoreCompat = new MediaStoreCompat(getContext());
         mAudioMediaStoreCompat.setSaveStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
 
-        mFile = mAudioMediaStoreCompat.getFilePath(2, true);
+        mFile = mAudioMediaStoreCompat.createFile(2, true);
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);

@@ -42,8 +42,8 @@ dependencies {
     // 拍摄、录像核心类 https://github.com/natario1/CameraView
     api 'com.otaliastudios:cameraview:2.7.1'
 
-    // 自制按钮进度
-    api 'com.github.zhongjhATC:CircularProgressView:1.5'
+    // 自制按钮进度 https://github.com/zhongjhATC/CircularProgressView
+    api 'com.github.zhongjhATC:CircularProgressView:1.6'
 
     compileOnly project(':albumCameraRecorderCommon')
     compileOnly project(':imageedit')

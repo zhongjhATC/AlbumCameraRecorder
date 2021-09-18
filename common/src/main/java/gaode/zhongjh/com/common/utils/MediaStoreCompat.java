@@ -84,6 +84,18 @@ public class MediaStoreCompat {
                 fileName = String.format("AUDIO_%s.mp3", timeStamp);
                 break;
         }
+        return createFile(fileName, type, isCache);
+    }
+
+    /**
+     * 通过名字创建文件
+     *
+     * @param fileName 文件名
+     * @param type     0是图片 1是视频 2是音频
+     * @param isCache  是否缓存文件夹
+     * @return 文件
+     */
+    public File createFile(String fileName, int type, boolean isCache) {
         File storageDir;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // 29以上的版本都必须是私有的或者公共目录
@@ -106,6 +118,10 @@ public class MediaStoreCompat {
         } else {
             if (isCache) {
                 storageDir = new File(mContext.get().getCacheDir().getPath() + File.separator + mSaveStrategy.directory);
+                assert storageDir != null;
+                if (!storageDir.exists()) {
+                    storageDir.mkdirs();
+                }
             } else {
                 if (mSaveStrategy.isPublic) {
                     storageDir = Environment.getExternalStoragePublicDirectory(
@@ -121,25 +137,7 @@ public class MediaStoreCompat {
         }
 
         // Avoid joining path components manually
-        File tempFile = new File(storageDir, fileName);
-
-        // Handle the situation that user's external storage is not ready
-        if (!Environment.MEDIA_MOUNTED.equals(EnvironmentCompat.getStorageState(tempFile))) {
-            return null;
-        }
-
-        return tempFile;
-    }
-
-    /**
-     * 返回创建文件的路径
-     *
-     * @param type    0是图片 1是视频 2是音频
-     * @param isCache 是否缓存文件夹
-     * @return File
-     */
-    public File getFilePath(int type, boolean isCache) {
-        return createFile(type, isCache);
+        return new File(storageDir, fileName);
     }
 
     /**

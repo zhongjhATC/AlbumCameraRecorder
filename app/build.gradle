@@ -77,7 +77,7 @@ dependencies {
     //implementation project(':albumCameraRecorderCommon')
     implementation project(path: ':imageedit')
     implementation project(path: ':videoedit')
-    implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.2'
+    implementation 'com.github.zhongjhATC:Retrofit2Rxjava2Download:1.0.5'
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
     implementation 'it.sephiroth.android.library.imagezoom:imagezoom:+'
 
