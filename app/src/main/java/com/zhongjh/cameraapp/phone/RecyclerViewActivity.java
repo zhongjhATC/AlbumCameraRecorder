@@ -17,7 +17,7 @@ import com.zhongjh.cameraapp.databinding.ActivityRecyclerviewBinding;
 import com.zhongjh.cameraapp.phone.adapter.RecyclerAdapter;
 
 /**
- * @TODO 该方面功能仍在完善中
+ * TODO 该方面功能仍在完善中
  * 演示RecyclerView下操作
  *
  * @author zhongjh

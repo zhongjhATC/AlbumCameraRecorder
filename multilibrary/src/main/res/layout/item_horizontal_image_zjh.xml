@@ -8,9 +8,9 @@
         android:id="@+id/imgPhoto"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="16dp"
+        android:background="@drawable/shape_border"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_launcher_background" />
 
@@ -18,8 +18,8 @@
         android:id="@+id/imgCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/z_multi_library_delete_button"
         android:paddingTop="6dp"
-        app:srcCompat="@drawable/ic_twotone_cancel_24px"
-        android:contentDescription="@string/z_multi_library_delete_button" />
+        app:srcCompat="@drawable/ic_twotone_cancel_24px" />
 
 </FrameLayout>

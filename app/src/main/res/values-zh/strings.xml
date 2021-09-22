@@ -56,5 +56,7 @@
     <string name="recording_configuration">录音配置</string>
     <string name="recyclerView_version">recyclerView版本</string>
     <string name="custom_cameraView">自定义相机</string>
+    <string name="other_api">其他API</string>
+
 
 </resources>

@@ -526,19 +526,22 @@ public class CameraLayout extends RelativeLayout {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onClick() {
-                // 判断数量
-                if (mViewHolder.llPhoto.getChildCount() < currentMaxSelectable()) {
-                    // 拍照  隐藏 闪光灯、右上角的切换摄像头
-                    setSwitchVisibility(INVISIBLE);
-                    mViewHolder.imgFlash.setVisibility(INVISIBLE);
-                    // 设置不能点击，防止多次点击报错
-                    mViewHolder.rlMain.setChildClickable(false);
-                    mViewHolder.cameraView.takePictureSnapshot();
-                    if (mClickOrLongListener != null) {
-                        mClickOrLongListener.onClick();
+                // 开启才能执行别的事件
+                if (mViewHolder.cameraView.isOpened()) {
+                    // 判断数量
+                    if (mViewHolder.llPhoto.getChildCount() < currentMaxSelectable()) {
+                        // 拍照  隐藏 闪光灯、右上角的切换摄像头
+                        setSwitchVisibility(INVISIBLE);
+                        mViewHolder.imgFlash.setVisibility(INVISIBLE);
+                        // 设置不能点击，防止多次点击报错
+                        mViewHolder.rlMain.setChildClickable(false);
+                        mViewHolder.cameraView.takePictureSnapshot();
+                        if (mClickOrLongListener != null) {
+                            mClickOrLongListener.onClick();
+                        }
+                    } else {
+                        Toast.makeText(mContext, getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(mContext, getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -556,16 +559,19 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void onLongClick() {
-                // 用于播放的视频file
-                if (mVideoFile == null) {
-                    mVideoFile = mVideoMediaStoreCompat.createFile(1, true);
-                }
-                mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
-                // 开始录像
-                setSwitchVisibility(INVISIBLE);
-                mViewHolder.imgFlash.setVisibility(INVISIBLE);
-                if (mClickOrLongListener != null) {
-                    mClickOrLongListener.onLongClick();
+                // 开启才能执行别的事件
+                if (mViewHolder.cameraView.isOpened()) {
+                    // 用于播放的视频file
+                    if (mVideoFile == null) {
+                        mVideoFile = mVideoMediaStoreCompat.createFile(1, true);
+                    }
+                    mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
+                    // 开始录像
+                    setSwitchVisibility(INVISIBLE);
+                    mViewHolder.imgFlash.setVisibility(INVISIBLE);
+                    if (mClickOrLongListener != null) {
+                        mClickOrLongListener.onLongClick();
+                    }
                 }
             }
 
@@ -980,10 +986,8 @@ public class CameraLayout extends RelativeLayout {
                 break;
             case TYPE_PICTURE:
                 // 拍照完成
-                mViewHolder.cameraView.open();
-                mViewHolder.imgPhoto.setVisibility(INVISIBLE);
-                mViewHolder.flShow.setVisibility(INVISIBLE);
                 if (mOperateCameraListener != null) {
+                    // 移动文件
                     moveFile();
                 }
                 break;

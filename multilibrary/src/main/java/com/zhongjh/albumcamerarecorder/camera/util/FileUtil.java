@@ -1,7 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.util;
 
-import android.os.FileUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,21 +12,19 @@ import java.io.IOException;
  */
 public class FileUtil {
 
-    public static boolean deleteFile(String url) {
-        boolean result = false;
-        File file = new File(url);
-        if (file.exists()) {
-            result = file.delete();
-        }
-        return result;
+    public static boolean deleteFile(String path) {
+        File file = new File(path);
+        return deleteFile(file);
     }
 
-    public static boolean deleteFile(File file) {
-        boolean result = false;
-        if (file.exists()) {
-            result = file.delete();
-        }
-        return result;
+    /**
+     * Delete the file.
+     *
+     * @param file The file.
+     * @return {@code true}: success<br>{@code false}: fail
+     */
+    public static boolean deleteFile(final File file) {
+        return file != null && (!file.exists() || file.isFile() && file.delete());
     }
 
     /**
@@ -258,6 +254,101 @@ public class FileUtil {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Return the size.
+     *
+     * @param file The directory.
+     * @return the size
+     */
+    public static String getSize(final File file) {
+        if (file == null) {
+            return "";
+        }
+        if (file.isDirectory()) {
+            return getDirSize(file);
+        }
+        return getFileSize(file);
+    }
+
+    /**
+     * Return the size of file.
+     *
+     * @param file The file.
+     * @return the length of file
+     */
+    private static String getFileSize(final File file) {
+        long len = getFileLength(file);
+        return len == -1 ? "" : ConvertUtils.byte2FitMemorySize(len);
+    }
+
+    /**
+     * Return the length of file.
+     *
+     * @param file The file.
+     * @return the length of file
+     */
+    private static long getFileLength(final File file) {
+        if (!isFile(file)) {
+            return -1;
+        }
+        return file.length();
+    }
+
+    /**
+     * Return the size of directory.
+     *
+     * @param dir The directory.
+     * @return the size of directory
+     */
+    private static String getDirSize(final File dir) {
+        long len = getDirLength(dir);
+        return len == -1 ? "" : ConvertUtils.byte2FitMemorySize(len);
+    }
+
+    /**
+     * Return the length of directory.
+     *
+     * @param dir The directory.
+     * @return the length of directory
+     */
+    private static long getDirLength(final File dir) {
+        if (!isDir(dir)) {
+            return 0;
+        }
+        long len = 0;
+        File[] files = dir.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    len += getDirLength(file);
+                } else {
+                    len += file.length();
+                }
+            }
+        }
+        return len;
+    }
+
+    /**
+     * Return whether it is a directory.
+     *
+     * @param file The file.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isDir(final File file) {
+        return file != null && file.exists() && file.isDirectory();
+    }
+
+    /**
+     * Return whether it is a file.
+     *
+     * @param file The file.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isFile(final File file) {
+        return file != null && file.exists() && file.isFile();
     }
 
     public interface OnReplaceListener {
