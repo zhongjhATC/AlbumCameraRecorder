@@ -57,4 +57,5 @@
     <string name="recyclerView_version">recyclerView version</string>
     <string name="custom_cameraView">custom cameraView</string>
     <string name="other_api">other api</string>
+    <string name="obtain_the_cache_file_size">Obtain the cache file size (including only the cache file generated when taking photos, recording, cutting, not including the file produced by Glide)  </string>
 </resources>

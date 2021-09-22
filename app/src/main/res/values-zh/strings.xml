@@ -57,6 +57,7 @@
     <string name="recyclerView_version">recyclerView版本</string>
     <string name="custom_cameraView">自定义相机</string>
     <string name="other_api">其他API</string>
+    <string name="obtain_the_cache_file_size">获取缓存文件大小(只包括拍照、录制、裁剪时产生的缓存文件，不包括glide等产生的文件)</string>
 
 
 </resources>
