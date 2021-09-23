@@ -100,7 +100,10 @@ public class MediaStoreCompat {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // 29以上的版本都必须是私有的或者公共目录
             if (isCache) {
-                storageDir = new File(mContext.get().getCacheDir().getPath() + File.separator + mSaveStrategy.directory);
+                storageDir = new File( mContext.get().getExternalCacheDir().getPath() + File.separator + mSaveStrategy.directory);
+                if (!storageDir.exists()) {
+                    storageDir.mkdirs();
+                }
             } else {
                 switch (type) {
                     case 0:
@@ -118,7 +121,6 @@ public class MediaStoreCompat {
         } else {
             if (isCache) {
                 storageDir = new File(mContext.get().getCacheDir().getPath() + File.separator + mSaveStrategy.directory);
-                assert storageDir != null;
                 if (!storageDir.exists()) {
                     storageDir.mkdirs();
                 }
