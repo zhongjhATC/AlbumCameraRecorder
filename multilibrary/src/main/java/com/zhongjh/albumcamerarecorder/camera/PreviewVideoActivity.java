@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -11,10 +12,13 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
+import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +26,9 @@ import androidx.fragment.app.Fragment;
 
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
+import gaode.zhongjh.com.common.utils.ThreadUtils;
 
+import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
 
@@ -35,7 +41,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     VideoView mVideoViewPreview;
     ImageView mImgClose;
-    Button mBtnConfirm;
+    CircularProgressButton mBtnConfirm;
     String mPath;
     File mFile;
     int mDuration;
@@ -83,18 +89,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
         mVideoViewPreview = findViewById(R.id.vvPreview);
         mImgClose = findViewById(R.id.imgClose);
         mBtnConfirm = findViewById(R.id.btnConfirm);
+        mBtnConfirm.setIndeterminateProgressMode(true);
     }
 
     private void initListener() {
-        mBtnConfirm.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            // 加入视频到android系统库里面
-            Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), mFile, TYPE_VIDEO, mDuration, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
-            intent.putExtra("path", mPath);
-            intent.putExtra("uri", mediaUri);
-            setResult(RESULT_OK, intent);
-            PreviewVideoActivity.this.finish();
-        });
+        mBtnConfirm.setOnClickListener(v -> moveVideoFile());
         mImgClose.setOnClickListener(v -> PreviewVideoActivity.this.finish());
     }
 
@@ -129,12 +128,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
         if (!mVideoViewPreview.isPlaying()) {
             mVideoViewPreview.start();
         }
-        mVideoViewPreview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                // 获取时长
-                mDuration = mVideoViewPreview.getDuration();
-            }
+        mVideoViewPreview.setOnPreparedListener(mp -> {
+            // 获取时长
+            mDuration = mVideoViewPreview.getDuration();
         });
         mVideoViewPreview.setOnCompletionListener(mediaPlayer -> {
             // 循环播放
@@ -142,6 +138,50 @@ public class PreviewVideoActivity extends AppCompatActivity {
                 mVideoViewPreview.start();
             }
         });
+    }
+
+    /**
+     * 迁移视频文件，缓存文件迁移到配置目录
+     */
+    private void moveVideoFile() {
+        // 执行等待动画
+        mBtnConfirm.setProgress(50);
+        // 开始迁移文件，将 缓存文件 拷贝到 配置目录
+        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
+            @Override
+            public Void doInBackground() {
+                // 获取文件名称
+                String newFileName = mPath.substring(mPath.lastIndexOf(File.separator));
+                File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
+                FileUtil.copy(new File(mPath), newFile, null, (ioProgress, file) -> {
+                    if (ioProgress >= 1) {
+                        ThreadUtils.runOnUiThread(() -> {
+                            mBtnConfirm.setProgress(100);
+                            confirm(newFile);
+                        });
+                    }
+                });
+                return null;
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+
+            }
+        });
+    }
+
+    /**
+     * 确定该视频
+     */
+    private void confirm(File newFile) {
+        Intent intent = new Intent();
+        // 加入视频到android系统库里面
+        Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mDuration, mVideoMediaStoreCompat.getSaveStrategy().directory, mVideoMediaStoreCompat);
+        intent.putExtra("path", newFile.getPath());
+        intent.putExtra("uri", mediaUri);
+        setResult(RESULT_OK, intent);
+        PreviewVideoActivity.this.finish();
     }
 
 }

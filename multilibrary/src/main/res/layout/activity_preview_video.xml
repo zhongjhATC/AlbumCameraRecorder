@@ -39,21 +39,24 @@
             app:srcCompat="@drawable/ic_close_white_24dp"
             tools:ignore="ContentDescription" />
 
-        <Button
+        <com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton
             android:id="@+id/btnConfirm"
-            android:layout_width="60dp"
-            android:layout_height="36dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/cpb_white"
+            android:gravity="center"
             android:layout_margin="16dp"
-            android:background="@drawable/btn_select"
-            android:paddingStart="12dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="4dp"
-            android:text="@string/z_multi_library_confirm"
-            android:textColor="@drawable/text_color_select"
+            app:cpb_cornerRadius="24dp"
+            app:cpb_colorIndicator="@color/operation_background_pressed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription" />
+            app:cpb_selectorComplete="@color/operation_background"
+            app:cpb_selectorError="@color/operation_background"
+            app:cpb_selectorIdle="@color/operation_background"
+            app:cpb_iconComplete="@drawable/ic_baseline_done"
+            app:cpb_iconError="@drawable/ic_baseline_close_24"
+            app:cpb_textIdle="@string/z_multi_library_confirm" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -21,4 +21,6 @@
 
     <dimen name="album_item_height">72dp</dimen>
 
+    <dimen name="cpb_stroke_width">4dp</dimen>
+
 </resources>

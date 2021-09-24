@@ -714,8 +714,7 @@ public class CameraLayout extends RelativeLayout {
                 // 判断是否短时间结束
                 if (!mIsShort) {
                     if (!mIsSectionRecord) {
-                        // 打开底部菜单
-                        // 如果录制结束，打开该视频
+                        //  如果录制结束，打开该视频。打开底部菜单
                         PreviewVideoActivity.startActivity(fragment, result.getFile().getPath());
                         fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
                         Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
@@ -988,7 +987,7 @@ public class CameraLayout extends RelativeLayout {
                 // 拍照完成
                 if (mOperateCameraListener != null) {
                     // 移动文件
-                    moveFile();
+                    movePictureFile();
                 }
                 break;
             case TYPE_SHORT:
@@ -999,9 +998,9 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 迁移文件，缓存文件迁移到配置目录
+     * 迁移图片文件，缓存文件迁移到配置目录
      */
-    private void moveFile() {
+    private void movePictureFile() {
         // 执行等待动画
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(1);
         // 开始迁移文件
@@ -1238,7 +1237,7 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 返回当前所有的路径 paths
+     * 返回当前所有图片的路径 paths
      */
     private ArrayList<String> getPaths() {
         ArrayList<String> paths = new ArrayList<>();
@@ -1249,7 +1248,7 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 返回当前所有的路径 uris
+     * 返回当前所有图片的路径 uris
      */
     private ArrayList<Uri> getUris(ArrayList<String> paths) {
         ArrayList<Uri> uris = new ArrayList<>();
