@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
@@ -179,5 +180,10 @@ public interface GlobalSettingApi {
      * @param requestCode 请求活动或片段的标识.
      */
     void forResult(int requestCode);
+
+    /**
+     * 获取文件大小
+     */
+    void getFileSize(Context context);
 
 }

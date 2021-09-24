@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.settings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
@@ -19,7 +20,9 @@ import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
+import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
+import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
@@ -55,7 +58,6 @@ public final class GlobalSetting implements GlobalSettingApi {
 
     private final MultiMediaSetting mMultiMediaSetting;
     private final GlobalSpec mGlobalSpec;
-
 
     // www.代替枚举的@IntDef用法
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -274,5 +276,12 @@ public final class GlobalSetting implements GlobalSettingApi {
 
     }
 
+    @Override
+    public void getFileSize(Context context) {
+//        MediaStoreCompat pictureMediaStoreCompat = new MediaStoreCompat(context);
+//        MediaStoreCompat videoMediaStoreCompat = new MediaStoreCompat(context);
+//        mVideoMediaStoreCompat.setSaveStrategy(mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
+//        FileUtil.getSize(FileUtil.getFileByPath())
+    }
 
 }

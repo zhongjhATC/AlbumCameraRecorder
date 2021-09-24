@@ -115,6 +115,14 @@ public class MainActivity extends BaseActivity {
             }
 
         });
+
+        // 获取文件大小
+        mBinding.btnFileSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
