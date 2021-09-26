@@ -303,14 +303,6 @@ public class CameraLayout extends RelativeLayout {
         mCameraSpec = CameraSpec.getInstance();
         mGlobalSpec = GlobalSpec.getInstance();
         mPictureMediaStoreCompat = new MediaStoreCompat(getContext());
-        mVideoMediaStoreCompat = new MediaStoreCompat(getContext());
-        mVideoMediaStoreCompat.setSaveStrategy(mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
-
-        // 默认图片
-        TypedArray ta = mContext.getTheme().obtainStyledAttributes(
-                new int[]{R.attr.album_thumbnail_placeholder});
-        mPlaceholder = ta.getDrawable(0);
-
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
@@ -323,6 +315,15 @@ public class CameraLayout extends RelativeLayout {
                 mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.saveStrategy);
             }
         }
+        mVideoMediaStoreCompat = new MediaStoreCompat(getContext());
+        mVideoMediaStoreCompat.setSaveStrategy(mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
+
+        // 默认图片
+        TypedArray ta = mContext.getTheme().obtainStyledAttributes(
+                new int[]{R.attr.album_thumbnail_placeholder});
+        mPlaceholder = ta.getDrawable(0);
+
+
     }
 
     /**

@@ -27,6 +27,7 @@ import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
@@ -274,14 +275,6 @@ public final class GlobalSetting implements GlobalSettingApi {
             }
         }
 
-    }
-
-    @Override
-    public void getFileSize(Context context) {
-//        MediaStoreCompat pictureMediaStoreCompat = new MediaStoreCompat(context);
-//        MediaStoreCompat videoMediaStoreCompat = new MediaStoreCompat(context);
-//        mVideoMediaStoreCompat.setSaveStrategy(mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
-//        FileUtil.getSize(FileUtil.getFileByPath())
     }
 
 }

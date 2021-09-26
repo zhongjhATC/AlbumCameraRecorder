@@ -668,6 +668,20 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnDeleteFileCache"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:text="@string/obtain_the_cache_file_size" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

@@ -120,7 +120,7 @@ public class MediaStoreCompat {
             }
         } else {
             if (isCache) {
-                storageDir = new File(mContext.get().getCacheDir().getPath() + File.separator + mSaveStrategy.directory);
+                storageDir = new File(mContext.get().getExternalCacheDir().getPath() + File.separator + mSaveStrategy.directory);
                 if (!storageDir.exists()) {
                     storageDir.mkdirs();
                 }

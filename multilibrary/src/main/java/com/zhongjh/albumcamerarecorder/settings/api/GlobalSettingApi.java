@@ -181,9 +181,4 @@ public interface GlobalSettingApi {
      */
     void forResult(int requestCode);
 
-    /**
-     * 获取文件大小
-     */
-    void getFileSize(Context context);
-
 }

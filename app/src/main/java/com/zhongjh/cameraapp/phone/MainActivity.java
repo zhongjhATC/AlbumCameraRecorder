@@ -11,12 +11,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
@@ -116,13 +118,11 @@ public class MainActivity extends BaseActivity {
 
         });
 
-        // 获取文件大小
-        mBinding.btnFileSize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        // 获取文件大小 文件目录：context.getExternalCacheDir()
+        mBinding.btnFileSize.setOnClickListener(v -> mBinding.tvFileSize.setText(AlbumCameraRecorderApi.getFileSize(getApplication())));
 
-            }
-        });
+        // 删除文件缓存 文件目录：context.getExternalCacheDir()
+        mBinding.btnDeleteFileCache.setOnClickListener(v -> AlbumCameraRecorderApi.deleteCacheDirFile(getApplication()));
     }
 
     @Override

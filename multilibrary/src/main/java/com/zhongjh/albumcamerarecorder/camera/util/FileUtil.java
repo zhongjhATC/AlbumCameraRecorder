@@ -183,7 +183,7 @@ public class FileUtil {
      * @param dir The directory.
      * @return {@code true}: success<br>{@code false}: fail
      */
-    private static boolean deleteDir(final File dir) {
+    public static boolean deleteDir(final File dir) {
         if (dir == null) {
             return false;
         }
