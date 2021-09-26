@@ -72,7 +72,7 @@ public class FileUtil {
                                    final File destDir,
                                    final OnReplaceListener listener,
                                    final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
-        return copyOrMoveDir(srcDir, destDir, listener, onProgressUpdateListener, false);
+        return copyOrMoveDir(srcDir, destDir, listener, onProgressUpdateListener, true);
     }
 
     /**
@@ -87,7 +87,7 @@ public class FileUtil {
                                     final File destFile,
                                     final OnReplaceListener listener,
                                     final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
-        return copyOrMoveFile(srcFile, destFile, listener, onProgressUpdateListener, false);
+        return copyOrMoveFile(srcFile, destFile, listener, onProgressUpdateListener, true);
     }
 
     private static boolean copyOrMoveDir(final File srcDir,

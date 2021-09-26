@@ -678,7 +678,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
-                    android:text="@string/obtain_the_cache_file_size" />
+                    android:text="@string/clear_the_cache_file_size" />
 
             </LinearLayout>
 
