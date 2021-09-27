@@ -56,6 +56,7 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -660,11 +661,11 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 视频编辑后的事件，目前只有分段录制后合并
+     * 视频编辑后的事件，目前 有分段录制后合并、压缩视频
      */
     private void initVideoEditListener() {
         if (mCameraSpec.videoEditCoordinator != null) {
-            mCameraSpec.videoEditCoordinator.setVideoEditListener(new VideoEditListener() {
+            mCameraSpec.videoEditCoordinator.setVideoMergeListener(new VideoEditListener() {
                 @Override
                 public void onFinish() {
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(100);
@@ -1016,11 +1017,23 @@ public class CameraLayout extends RelativeLayout {
                 int progress = 100 / maxCount;
                 // 将 缓存文件 拷贝到 配置目录
                 for (String item : paths) {
+                    File oldFile = new File(item);
+                    // 压缩图片
+                    File compressionFile = null;
+                    if (mGlobalSpec.compressionInterface != null) {
+                        try {
+                            compressionFile = mGlobalSpec.compressionInterface.compressionFile(mContext, oldFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        compressionFile = oldFile;
+                    }
                     // 获取文件名称
                     String newFileName = item.substring(item.lastIndexOf(File.separator));
                     File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
                     Log.d(TAG, "newFile" + newFile.getAbsolutePath());
-                    FileUtil.copy(new File(item), newFile, null, (ioProgress, file) -> {
+                    FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
                         if (ioProgress >= 1) {
                             newPaths.add(file.getAbsolutePath());
                             Log.d(TAG, file.getAbsolutePath());
@@ -1049,6 +1062,12 @@ public class CameraLayout extends RelativeLayout {
             @Override
             public void onSuccess(Void result) {
 
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                ThreadUtils.runOnUiThread(() -> Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show());
             }
         });
     }

@@ -23,6 +23,7 @@ import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
@@ -222,6 +223,12 @@ public final class GlobalSetting implements GlobalSettingApi {
     @Override
     public GlobalSetting isImageEdit(boolean isImageEdit) {
         mGlobalSpec.isImageEdit = isImageEdit;
+        return this;
+    }
+
+    @Override
+    public GlobalSetting setOnCompressionInterface(@Nullable CompressionInterface listener) {
+        mGlobalSpec.compressionInterface = listener;
         return this;
     }
 

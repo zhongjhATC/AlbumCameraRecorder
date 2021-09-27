@@ -6,6 +6,7 @@ import gaode.zhongjh.com.common.listener.VideoEditListener;
 
 /**
  * 视频编辑协调者
+ *
  * @author zhongjh
  */
 public class VideoEditCoordinator {
@@ -15,12 +16,20 @@ public class VideoEditCoordinator {
      */
     protected VideoEditCoordinator mVideoEditManager;
     /**
-     * 事件回调
+     * 合并事件回调
      */
-    protected VideoEditListener mVideoEditListener;
+    protected VideoEditListener mVideoMergeListener;
+    /**
+     * 压缩事件回调
+     */
+    protected VideoEditListener mVideoCompressListener;
 
-    public void setVideoEditListener(VideoEditListener videoEditListener) {
-        mVideoEditListener = videoEditListener;
+    public void setVideoMergeListener(VideoEditListener videoMergeListener) {
+        mVideoMergeListener = videoMergeListener;
+    }
+
+    public void setVideoCompressListener(VideoEditListener videoCompressListener) {
+        mVideoCompressListener = videoCompressListener;
     }
 
     /**
@@ -32,6 +41,16 @@ public class VideoEditCoordinator {
      */
     public void merge(String newPath, ArrayList<String> paths, String txtPath) {
         mVideoEditManager.merge(newPath, paths, txtPath);
+    }
+
+    /**
+     * 压缩视频
+     *
+     * @param oldPath      压缩前的文件地址
+     * @param compressPath 压缩后的文件地址
+     */
+    public void compress(String oldPath, String compressPath) {
+        mVideoEditManager.compress(oldPath, compressPath);
     }
 
     /**

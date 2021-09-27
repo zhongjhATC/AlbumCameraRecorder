@@ -9,6 +9,7 @@ import androidx.annotation.StyleRes;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;
+import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -162,6 +163,13 @@ public interface GlobalSettingApi {
      * @return {@link GlobalSetting} this
      */
     GlobalSetting isImageEdit(boolean isImageEdit);
+
+    /**
+     * 有关压缩操作的接口
+     * @param listener 接口 {@link CompressionInterface}
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    GlobalSetting setOnCompressionInterface(@Nullable CompressionInterface listener);
 
     /**
      * 有关首页的一些事件

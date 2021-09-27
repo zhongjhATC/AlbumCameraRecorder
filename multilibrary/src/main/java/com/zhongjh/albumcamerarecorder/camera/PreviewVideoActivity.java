@@ -13,6 +13,7 @@ import android.widget.VideoView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
@@ -24,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import gaode.zhongjh.com.common.listener.VideoEditListener;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import gaode.zhongjh.com.common.utils.ThreadUtils;
@@ -50,6 +52,10 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 录像文件配置路径
      */
     private MediaStoreCompat mVideoMediaStoreCompat;
+    /**
+     * 拍摄配置
+     */
+    private CameraSpec mCameraSpec;
 
     /**
      * 打开activity
@@ -70,6 +76,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_video);
         mPath = getIntent().getStringExtra("path");
+        // 初始化设置
+        mCameraSpec = CameraSpec.getInstance();
         initView();
         initListener();
         initData();
@@ -80,6 +88,15 @@ public class PreviewVideoActivity extends AppCompatActivity {
         super.finish();
         //关闭窗体动画显示
         this.overridePendingTransition(0, R.anim.activity_close);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mCameraSpec.videoEditCoordinator != null) {
+            mCameraSpec.videoEditCoordinator.onDestroy();
+            mCameraSpec.videoEditCoordinator = null;
+        }
     }
 
     /**
@@ -93,7 +110,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     }
 
     private void initListener() {
-        mBtnConfirm.setOnClickListener(v -> moveVideoFile());
+        mBtnConfirm.setOnClickListener(v -> confirm());
         mImgClose.setOnClickListener(v -> PreviewVideoActivity.this.finish());
     }
 
@@ -138,6 +155,51 @@ public class PreviewVideoActivity extends AppCompatActivity {
                 mVideoViewPreview.start();
             }
         });
+    }
+
+    /**
+     * 提交
+     */
+    private void confirm() {
+        // 判断是否开启了视频编辑功能
+        if (mCameraSpec.videoEditCoordinator != null) {
+            // 如果开启了直接压缩
+            compress();
+        } else {
+            // 否则直接转移
+            moveVideoFile();
+        }
+    }
+
+    /**
+     * 压缩视频
+     */
+    private void compress() {
+        // 获取文件名称
+        String newFileName = mPath.substring(mPath.lastIndexOf(File.separator));
+        File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
+        mCameraSpec.videoEditCoordinator.setVideoCompressListener(new VideoEditListener() {
+            @Override
+            public void onFinish() {
+                confirm(newFile);
+            }
+
+            @Override
+            public void onProgress(int progress, long progressTime) {
+                mBtnConfirm.setProgress(progress);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(String message) {
+
+            }
+        });
+        mCameraSpec.videoEditCoordinator.compress(mPath, newFile.getPath());
     }
 
     /**

@@ -95,4 +95,7 @@ dependencies {
 
     implementation 'androidx.multidex:multidex:2.0.1'
 
+    // luban压缩图片
+    implementation 'top.zibin:Luban:1.1.8'
+
 }

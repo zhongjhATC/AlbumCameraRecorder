@@ -17,7 +17,8 @@ import io.microshow.rxffmpeg.RxFFmpegSubscriber;
  */
 public class VideoEditManager extends VideoEditCoordinator {
 
-    MyRxFfmpegSubscriber mMyRxFfmpegSubscriber;
+    MyRxFfmpegSubscriber mMyRxFfmpegMergeSubscriber;
+    MyRxFfmpegSubscriber mMyRxFfmpegCompressSubscriber;
 
     @Override
     public void merge(String newPath, ArrayList<String> paths,String txtPath) {
@@ -49,18 +50,33 @@ public class VideoEditManager extends VideoEditCoordinator {
 
         String commands = "ffmpeg -y -f concat -safe 0 -i " + file.getPath() + " -c copy " + newPath;
 
-        mMyRxFfmpegSubscriber = new MyRxFfmpegSubscriber(mVideoEditListener);
+        mMyRxFfmpegMergeSubscriber = new MyRxFfmpegSubscriber(mVideoMergeListener);
 
-        //开始执行FFmpeg命令
+        // 开始执行FFmpeg命令
         RxFFmpegInvoke.getInstance()
                 .runCommandRxJava(commands.split(" "))
-                .subscribe(mMyRxFfmpegSubscriber);
+                .subscribe(mMyRxFfmpegMergeSubscriber);
+    }
+
+    @Override
+    public void compress(String oldPath,String compressPath) {
+        String commands = "ffmpeg -y -i " + oldPath + " -b 2097k -r 30 -vcodec libx264 -preset superfast " + compressPath;
+
+        mMyRxFfmpegCompressSubscriber = new MyRxFfmpegSubscriber(mVideoCompressListener);
+
+        // 开始执行FFmpeg命令
+        RxFFmpegInvoke.getInstance()
+                .runCommandRxJava(commands.split(" "))
+                .subscribe(mMyRxFfmpegCompressSubscriber);
     }
 
     @Override
     public void onDestroy() {
-        if (mMyRxFfmpegSubscriber != null) {
-            mMyRxFfmpegSubscriber.dispose();
+        if (mMyRxFfmpegMergeSubscriber != null) {
+            mMyRxFfmpegMergeSubscriber.dispose();
+        }
+        if (mMyRxFfmpegCompressSubscriber != null) {
+            mMyRxFfmpegCompressSubscriber.dispose();
         }
     }
 

@@ -20,6 +20,7 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.configuration.CompressionLuBan;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.R;
@@ -35,6 +36,7 @@ import java.util.Set;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import top.zibin.luban.Luban;
 
 /**
  * 配置版
@@ -191,6 +193,8 @@ public class MainActivity extends BaseActivity {
         {
             mGlobalSetting.recorderSetting(recorderSetting);
         }
+
+        mGlobalSetting.setOnCompressionInterface(new CompressionLuBan());
 
         // 自定义失败信息
         mGlobalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show());

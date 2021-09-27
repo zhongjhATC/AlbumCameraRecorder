@@ -7,6 +7,8 @@ import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
+
+import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 
@@ -91,6 +93,10 @@ public class GlobalSpec {
      */
     public boolean isImageEdit;
     /**
+     * 压缩接口
+     */
+    public CompressionInterface compressionInterface;
+    /**
      * 主界面的有关事件
      */
     public OnMainListener onMainListener;
@@ -134,6 +140,7 @@ public class GlobalSpec {
         imageEngine = new GlideEngine();
         isCutscenes = true;
         isImageEdit = true;
+        compressionInterface = null;
         requestCode = 0;
     }
 
