@@ -54,10 +54,17 @@ public class VideoEditCoordinator {
     }
 
     /**
-     * 销毁
+     * 销毁合并事件
      */
-    public void onDestroy() {
-        mVideoEditManager.onDestroy();
+    public void onMergeDestroy() {
+        mVideoEditManager.onMergeDestroy();
+    }
+
+    /**
+     * 销毁压缩事件
+     */
+    public void onCompressDestroy() {
+        mVideoEditManager.onCompressDestroy();
     }
 
 }

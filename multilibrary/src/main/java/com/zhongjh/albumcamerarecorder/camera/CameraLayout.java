@@ -484,7 +484,7 @@ public class CameraLayout extends RelativeLayout {
         mViewHolder.cameraView.destroy();
         mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
         if (mCameraSpec.videoEditCoordinator != null) {
-            mCameraSpec.videoEditCoordinator.onDestroy();
+            mCameraSpec.videoEditCoordinator.onMergeDestroy();
             mCameraSpec.videoEditCoordinator = null;
         }
         mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
@@ -638,7 +638,7 @@ public class CameraLayout extends RelativeLayout {
             @Override
             public void stopProgress() {
                 if (mCameraSpec.videoEditCoordinator != null) {
-                    mCameraSpec.videoEditCoordinator.onDestroy();
+                    mCameraSpec.videoEditCoordinator.onMergeDestroy();
                 }
             }
 

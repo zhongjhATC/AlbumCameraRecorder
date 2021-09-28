@@ -1,12 +1,9 @@
 package com.zhongjh.albumcamerarecorder.camera;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -19,7 +16,6 @@ import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
 import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +26,6 @@ import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import gaode.zhongjh.com.common.utils.ThreadUtils;
 
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
 
@@ -94,8 +89,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (mCameraSpec.videoEditCoordinator != null) {
-            mCameraSpec.videoEditCoordinator.onDestroy();
-            mCameraSpec.videoEditCoordinator = null;
+            mCameraSpec.videoEditCoordinator.onCompressDestroy();
         }
     }
 
