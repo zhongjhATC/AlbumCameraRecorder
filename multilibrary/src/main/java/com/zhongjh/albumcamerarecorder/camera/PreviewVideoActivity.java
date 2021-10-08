@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -36,12 +37,18 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
  */
 public class PreviewVideoActivity extends AppCompatActivity {
 
+    private static final String TAG = PreviewVideoActivity.class.getSimpleName();
+
     VideoView mVideoViewPreview;
     ImageView mImgClose;
     CircularProgressButton mBtnConfirm;
     String mPath;
     File mFile;
     int mDuration;
+    /**
+     * 按钮事件运行中，因为该自定义控件如果通过setEnabled控制会导致动画不起效果，所以需要该变量控制按钮事件是否生效
+     */
+    boolean mIsRun;
 
     /**
      * 录像文件配置路径
@@ -104,7 +111,13 @@ public class PreviewVideoActivity extends AppCompatActivity {
     }
 
     private void initListener() {
-        mBtnConfirm.setOnClickListener(v -> confirm());
+        mBtnConfirm.setOnClickListener(v -> {
+            if (mIsRun) {
+                return;
+            }
+            mIsRun = true;
+            confirm();
+        });
         mImgClose.setOnClickListener(v -> PreviewVideoActivity.this.finish());
     }
 
@@ -190,7 +203,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
             @Override
             public void onError(String message) {
-
+                mIsRun = false;
             }
         });
         mCameraSpec.videoEditCoordinator.compress(mPath, newFile.getPath());
@@ -200,6 +213,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 迁移视频文件，缓存文件迁移到配置目录
      */
     private void moveVideoFile() {
+        Log.d(TAG,"moveVideoFile");
         // 执行等待动画
         mBtnConfirm.setProgress(50);
         // 开始迁移文件，将 缓存文件 拷贝到 配置目录
@@ -213,6 +227,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
                     if (ioProgress >= 1) {
                         ThreadUtils.runOnUiThread(() -> {
                             mBtnConfirm.setProgress(100);
+                            mIsRun = false;
                             confirm(newFile);
                         });
                     }
@@ -223,6 +238,12 @@ public class PreviewVideoActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void result) {
 
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                mIsRun = false;
             }
         });
     }
