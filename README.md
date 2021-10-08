@@ -37,7 +37,6 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
  - Image editing supports color graffiti, input text, Mosaic processing, rotation, cropping and other processing
  - Support recording processing
  - All recorded photos are compressed
- - Version after 1.0.19x is compatible with Android Q version, if you want to keep your project SDK28, you can only keep 1.0.18x
 
 ## import
 
