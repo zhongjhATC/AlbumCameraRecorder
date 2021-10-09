@@ -17,15 +17,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
@@ -1142,7 +1141,7 @@ public class CameraLayout extends RelativeLayout {
         mViewHolder.vLine2.setVisibility(View.VISIBLE);
 
         // 添加view
-        ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_horizontal_image_zjh, null));
+        ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_image_zjh, null));
         mGlobalSpec.imageEngine.loadUriImage(getContext(), viewHolderImageView.imgPhoto, bitmapData.getUri());
         // 删除事件
         viewHolderImageView.imgCancel.setTag(R.id.tagid, mPosition);
@@ -1348,8 +1347,7 @@ public class CameraLayout extends RelativeLayout {
         public ImageView imgFlash;
         public ImageView imgSwitch;
         public PhotoVideoLayoutBase pvLayout;
-        public HorizontalScrollView hsvPhoto;
-        LinearLayout llPhoto;
+        public RecyclerView rlPhoto;
         View vLine1;
         View vLine2;
         View vLine3;
@@ -1366,8 +1364,7 @@ public class CameraLayout extends RelativeLayout {
             this.imgFlash = rootView.findViewById(R.id.imgFlash);
             this.imgSwitch = rootView.findViewById(R.id.imgSwitch);
             this.pvLayout = rootView.findViewById(R.id.pvLayout);
-            this.hsvPhoto = rootView.findViewById(R.id.hsvPhoto);
-            this.llPhoto = rootView.findViewById(R.id.llPhoto);
+            this.rlPhoto = rootView.findViewById(R.id.rlPhoto);
             this.vLine1 = rootView.findViewById(R.id.vLine1);
             this.vLine2 = rootView.findViewById(R.id.vLine2);
             this.vLine3 = rootView.findViewById(R.id.vLine3);

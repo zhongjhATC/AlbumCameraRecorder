@@ -96,25 +96,14 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <HorizontalScrollView
-        android:id="@+id/hsvPhoto"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rlPhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/vLine1"
         android:background="#20000000"
         android:contentDescription="显示多个图片的"
-        android:scrollbars="none"
-        android:visibility="gone"
-        tools:ignore="HardcodedText">
-
-        <LinearLayout
-            android:id="@+id/llPhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" />
-
-
-    </HorizontalScrollView>
+        tools:ignore="HardcodedText" />
 
     <View
         android:id="@+id/vLine1"
