@@ -36,8 +36,12 @@
  - 录制拍照长按按钮等所有UI可自定义，全是svg图片可以很好的处理动画细节
  - 录制支持分段录制，以后还会加入视频编辑
  - 图片编辑支持颜色涂鸦、输入文字、马赛克处理、旋转、裁剪等处理
- - 支持录音处理
- - 所有录制拍照都经过了压缩处理
+ - 支持拍摄、录制时的水印功能
+ - 自带权限功能，无需修改任意代码，权限功能包括权限检测、发送权限时告知为何请求、多次拒绝后会提示是否跳转到设置界面设置权限。也可以自定义权限
+ - 所有录制拍照都可以选择深度压缩处理，图片可选择自定义压缩处理，也可以使用Demo中的LuBan压缩，视频压缩则是使用ffmpeg处理
+ - 完善的缓存管理系统
+ - 完善的动画效果，后续还会继续增加
+ - 性能优化，内存泄漏这些都一一仔细处理过
 
 ## 引入
 
@@ -52,24 +56,20 @@
 #### Step 2. Add the dependency
 
 	dependencies {
-	     // 必须的
-    	 implementation 'com.google.android.material:material:1.2.1'
-    	 implementation 'it.sephiroth.android.library.imagezoom:imagezoom:+'
-
 	     // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.27X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.28X'
 
 	     // 公共库，如果不使用上面的combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.27X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.28X'
 	     // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.27X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.28X'
          // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.27X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.28X'
 
          // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.27X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.28X'
 	     // 配套编辑视频使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.27X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.28X'
 	}
 
 ## 快照

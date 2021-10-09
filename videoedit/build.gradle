@@ -31,7 +31,7 @@ android {
 dependencies {
 
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
-    compileOnly "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
+    implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
 
     compileOnly project(':albumCameraRecorderCommon')
     implementation 'com.github.microshow:RxFFmpeg:4.9.0'

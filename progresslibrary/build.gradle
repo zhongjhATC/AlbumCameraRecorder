@@ -33,7 +33,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$rootProject.ext.recyclerviewSdkVersion"
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintlayoutSdkVersion"
-    compileOnly "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
+    implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
 
     // 图片
     compileOnly 'com.github.bumptech.glide:glide:3.7.0'
