@@ -532,9 +532,6 @@ public class CameraLayout extends RelativeLayout {
                 if (mViewHolder.cameraView.isOpened()) {
                     // 判断数量
                     if (mViewHolder.llPhoto.getChildCount() < currentMaxSelectable()) {
-                        // 拍照  隐藏 闪光灯、右上角的切换摄像头
-                        setSwitchVisibility(INVISIBLE);
-                        mViewHolder.imgFlash.setVisibility(INVISIBLE);
                         // 设置不能点击，防止多次点击报错
                         mViewHolder.rlMain.setChildClickable(false);
                         mViewHolder.cameraView.takePictureSnapshot();
@@ -986,6 +983,7 @@ public class CameraLayout extends RelativeLayout {
                 // TODO 弃用，已经改用跳转到第二个界面播放视频了
                 break;
             case TYPE_PICTURE:
+                setUIEnableFalse();
                 // 拍照完成
                 if (mOperateCameraListener != null) {
                     // 移动文件
@@ -1061,13 +1059,14 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void onSuccess(Void result) {
-
+                setUIEnableTrue();
             }
 
             @Override
             public void onFail(Throwable t) {
                 super.onFail(t);
-                ThreadUtils.runOnUiThread(() -> Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show());
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+                setUIEnableTrue();
             }
         });
     }
@@ -1093,6 +1092,9 @@ public class CameraLayout extends RelativeLayout {
         if (SelectableUtils.getImageMaxCount() > 1) {
             addMultiplePicture(bitmapData);
         } else {
+            // 拍照  隐藏 闪光灯、右上角的切换摄像头
+            setSwitchVisibility(INVISIBLE);
+            mViewHolder.imgFlash.setVisibility(INVISIBLE);
             // 如果只有单个图片，就显示相应的提示结果等等
             mCaptureBitmaps.put(0, bitmapData);
             mViewHolder.imgPhoto.canScroll();
@@ -1306,6 +1308,28 @@ public class CameraLayout extends RelativeLayout {
         } else {
             mViewHolder.imgSwitch.setVisibility(viewVisibility);
         }
+    }
+
+    /**
+     * 设置界面的功能按钮可以使用
+     * 场景：如果压缩或者移动文件时异常，则恢复
+     */
+    private void setUIEnableTrue() {
+        mViewHolder.imgFlash.setEnabled(true);
+        mViewHolder.imgSwitch.setEnabled(true);
+        mViewHolder.pvLayout.setEnabled(true);
+        // 重置按钮进度
+        mViewHolder.pvLayout.viewHolder.btnConfirm.reset();
+    }
+
+    /**
+     * 设置界面的功能按钮禁止使用
+     * 场景：确认图片时，压缩中途禁止某些功能使用
+     */
+    private void setUIEnableFalse() {
+        mViewHolder.imgFlash.setEnabled(false);
+        mViewHolder.imgSwitch.setEnabled(false);
+        mViewHolder.pvLayout.setEnabled(false);
     }
 
     /**

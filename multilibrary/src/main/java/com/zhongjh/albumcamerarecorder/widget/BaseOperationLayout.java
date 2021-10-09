@@ -458,7 +458,10 @@ public abstract class BaseOperationLayout extends FrameLayout {
      */
     @Override
     public void setEnabled(boolean enabled) {
-        viewHolder.btnClickOrLong.setEnabled(enabled);
+        viewHolder.btnClickOrLong.setTouchable(enabled);
+        viewHolder.btnConfirm.setEnabled(enabled);
+        viewHolder.btnCancel.setEnabled(enabled);
+        viewHolder.tvSectionRecord.setEnabled(enabled);
     }
 
     /**
