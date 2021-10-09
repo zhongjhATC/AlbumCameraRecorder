@@ -1,7 +1,7 @@
 # AlbumCameraRecorderX
 
 [![MinSdk](https://img.shields.io/badge/MinSdk-21-blue.svg)](https://developer.android.com/about/versions/android-5.0)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/LICENSE)
 
 ## 该版本是基于AndroidX版本开发的分支。版本号后面带着X的都是属于基于AndroidX版本开发。
 ## 目前已经投入到正式项目中使用。
@@ -73,14 +73,14 @@
 	}
 
 ## 快照
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/Demonstration.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/DemonstrationShowImg.png)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration.gif)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/DemonstrationShowImg.png)
 
 
 
 ## 市场上常用手机兼容测试
-100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/WeTest.md).
-![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/5.jpg)
+100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/WeTest.md).
+![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/androidx/wetest/5.jpg)
 
 ## 使用
 #### 启动多媒体相关功能
@@ -175,19 +175,20 @@
         }
     }
 
-#### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
+#### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
 
 #### 相关API,更多API和支持持续丰富加入
- - [调用多媒体的公共配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).
- - [调用多媒体的相册配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/AlbumSettingApi.java).
- - [调用多媒体的录制配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/CameraSettingApi.java).
- - [调用多媒体的录音配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/RecorderSettingApi.java).
- - [多媒体UI相关属性配置](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/res/values/styles.xml)
+ - [调用多媒体的公共配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).
+ - [调用多媒体的相册配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/AlbumSettingApi.java).
+ - [调用多媒体的录制配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/CameraSettingApi.java).
+ - [调用多媒体的录音配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/RecorderSettingApi.java).
+ - [多媒体UI相关属性配置](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/res/values/styles.xml)
+ - [多媒体相关静态方法](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/AlbumCameraRecorderApi.java)
 
 如果你使用展示的九宫库，那么下面这些api对你也有用
- - [九宫格相关API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/java/com/zhongjh/progresslibrary/api/MaskProgressApi.java).
- - [九宫格相关事件](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/java/com/zhongjh/progresslibrary/listener/MaskProgressLayoutListener.java).
- - [九宫格相关属性，配置UI等等](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/res/values/attrs.xml)
+ - [九宫格相关API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/java/com/zhongjh/progresslibrary/api/MaskProgressApi.java).
+ - [九宫格相关事件](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/java/com/zhongjh/progresslibrary/listener/MaskProgressLayoutListener.java).
+ - [九宫格相关属性，配置UI等等](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/res/values/attrs.xml)
 
 
 

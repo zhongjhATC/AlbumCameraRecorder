@@ -1,7 +1,7 @@
 # AlbumCameraRecorderX
 
 [![MinSdk](https://img.shields.io/badge/MinSdk-21-blue.svg)](https://developer.android.com/about/versions/android-5.0)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/LICENSE)
 
 ## This release is an offshoot of the AndroidX release.Any version number followed by an X is based on the AndroidX version.
 ## At present, it has been put into use in the formal project.
@@ -71,14 +71,14 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 	}
 
 ## snapshoot
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/Demonstration.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/DemonstrationShowImg.png)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration.gif)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/DemonstrationShowImg.png)
 
 
 
 ## Compatibility testing of mobile phones is commonly used in the market
-100% through[Compatibility Test Report](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/WeTest.md).
-![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/master/wetest/5.jpg)
+100% through[Compatibility Test Report](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/WeTest.md).
+![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/androidx/wetest/5.jpg)
 
 ## use
 #### Enable multimedia related functions
@@ -173,19 +173,21 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
         }
     }
 
-#### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java) for details.
+#### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java) for details.
 
 #### Related APIs, more APIs and support for continuous enrichment added
- - [Call the multimedia public configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).
- - [Call the multimedia album configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/AlbumSettingApi.java).
- - [Call the recording configuration API for multimedia](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/CameraSettingApi.java).
- - [Call the multimedia recording configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/RecorderSettingApi.java).
- - [Multimedia UI related properties configuration](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/multilibrary/src/main/res/values/styles.xml)
+ - [Call the multimedia public configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).
+ - [Call the multimedia album configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/AlbumSettingApi.java).
+ - [Call the recording configuration API for multimedia](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/CameraSettingApi.java).
+ - [Call the multimedia recording configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/RecorderSettingApi.java).
+ - [Multimedia UI related properties configuration](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/res/values/styles.xml)
+ - [Multimedia related static methods](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/AlbumCameraRecorderApi.java)
+
 
 If you use the shown library, the following APIs are also useful for you
- - [Nine-grid related API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/java/com/zhongjh/progresslibrary/api/MaskProgressApi.java).
- - [Nine-grid dependent Events](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/java/com/zhongjh/progresslibrary/listener/MaskProgressLayoutListener.java).
- - [Nine-grid related properties, configuring the UI, etc](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/master/progresslibrary/src/main/res/values/attrs.xml)
+ - [Nine-grid related API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/java/com/zhongjh/progresslibrary/api/MaskProgressApi.java).
+ - [Nine-grid dependent Events](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/java/com/zhongjh/progresslibrary/listener/MaskProgressLayoutListener.java).
+ - [Nine-grid related properties, configuring the UI, etc](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/res/values/attrs.xml)
 
 
 
