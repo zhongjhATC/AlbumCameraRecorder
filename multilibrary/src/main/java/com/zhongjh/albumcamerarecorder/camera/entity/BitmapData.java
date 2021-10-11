@@ -11,12 +11,25 @@ import java.io.File;
  */
 public class BitmapData {
 
+    /**
+     * 虚拟id,用于操作中途区分
+     */
+    private long id;
     private String path;
     private Uri uri;
 
-    public BitmapData(String path, Uri uri) {
+    public BitmapData(long id,String path, Uri uri) {
+        this.id = id;
         this.path = path;
         this.uri = uri;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getPath() {

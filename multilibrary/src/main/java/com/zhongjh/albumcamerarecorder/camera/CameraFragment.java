@@ -35,6 +35,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
@@ -131,25 +132,14 @@ public class CameraFragment extends BaseFragment {
                     if (selected == null) {
                         return;
                     }
-                    // 循环判断，如果不存在，则删除
-                    ListIterator<Map.Entry<Integer, BitmapData>> i = new ArrayList<>(mCameraLayout.mCaptureBitmaps.entrySet()).listIterator(mCameraLayout.mCaptureBitmaps.size());
-                    while (i.hasPrevious()) {
-                        Map.Entry<Integer, BitmapData> entry = i.previous();
-                        int k = 0;
-                        for (MultiMedia multiMedia : selected) {
-                            // 根据索引判断是否相同
-                            if (!entry.getKey().equals(multiMedia.getPosition())) {
-                                k++;
-                            }
-                        }
-                        if (k == selected.size()) {
-                            // 所有都不符合，则删除
-                            mCameraLayout.removePosition(entry.getKey());
-                        }
+                    // 重新赋值
+                    ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
+                    for (MultiMedia item : selected) {
+                        BitmapData bitmapData = new BitmapData(item.getId(),item.getPath(),item.getUri());
+                        bitmapDatas.add(bitmapData);
                     }
-
-                    // 刷新多个图片
-                    mCameraLayout.refreshMultiPhoto(selected);
+                    // 全部刷新
+                    mCameraLayout.refreshMultiPhoto(bitmapDatas);
                 }
                 break;
             case REQUEST_CODE_PREVIEW_VIDEO:

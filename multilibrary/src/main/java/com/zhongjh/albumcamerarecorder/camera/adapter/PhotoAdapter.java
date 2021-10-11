@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
 import java.util.List;
 
@@ -23,9 +24,21 @@ import java.util.List;
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
     Context mContext;
+    GlobalSpec mGlobalSpec;
+    List<BitmapData> mListData;
 
-    public PhotoAdapter(Context context, List<String> listData) {
+    // region 回调监听事件
+
+    private PhotoAdapterListener mPhotoAdapterListener;
+
+    // endregion
+
+    public PhotoAdapter(Context context, GlobalSpec globalSpec,
+                        List<BitmapData> listData, PhotoAdapterListener photoAdapterListener) {
         mContext = context;
+        mGlobalSpec = globalSpec;
+        this.mListData = listData;
+        mPhotoAdapterListener = photoAdapterListener;
     }
 
     @NonNull
@@ -36,13 +49,35 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
+        mGlobalSpec.imageEngine.loadUriImage(mContext, holder.imgPhoto, mListData.get(position).getUri());
+        holder.imgCancel.setOnClickListener(v -> removePosition(position));
+    }
 
+    public List<BitmapData> getListData() {
+        return mListData;
+    }
+
+    public void setListData(List<BitmapData> listData) {
+        this.mListData = listData;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 根据索引删除view
+     * @param position 索引
+     */
+    public void removePosition(int position) {
+        mListData.remove(position);
+        mPhotoAdapterListener.onDelete(mListData.get(position));
+        notifyItemRemoved(position);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mListData != null ? mListData.size() : 0;
     }
+
+
 
     static class PhotoViewHolder extends RecyclerView.ViewHolder {
 
