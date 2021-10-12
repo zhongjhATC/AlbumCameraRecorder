@@ -30,14 +30,10 @@ import com.zhongjh.imageedit.ImageEditActivity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.List;
 
 import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity.REQ_IMAGE_EDIT;
@@ -92,7 +88,7 @@ public class CameraFragment extends BaseFragment {
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
 
         mCameraLayout = view.findViewById(R.id.cameraLayout);
-        mCameraLayout.setFragment(this);
+        mCameraLayout.init(this);
         mCameraLayout.setErrorListener(new ErrorListener() {
             @Override
             public void onError() {
@@ -135,7 +131,7 @@ public class CameraFragment extends BaseFragment {
                     // 重新赋值
                     ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
                     for (MultiMedia item : selected) {
-                        BitmapData bitmapData = new BitmapData(item.getId(),item.getPath(),item.getUri());
+                        BitmapData bitmapData = new BitmapData(item.getPosition(),item.getPath(),item.getUri());
                         bitmapDatas.add(bitmapData);
                     }
                     // 全部刷新
@@ -303,16 +299,16 @@ public class CameraFragment extends BaseFragment {
     private void initCameraLayoutCaptureListener() {
         mCameraLayout.setCaptureListener(new CaptureListener() {
             @Override
-            public void remove(HashMap<Integer, BitmapData> captureBitmaps) {
+            public void remove(List<BitmapData> captureData) {
                 // 判断如果删除光图片的时候，母窗体启动滑动
-                if (captureBitmaps.size() <= 0) {
+                if (captureData.size() <= 0) {
                     ((MainActivity) mActivity).setTabLayoutScroll(true);
                 }
             }
 
             @Override
-            public void add(HashMap<Integer, BitmapData> captureBitmaps) {
-                if (captureBitmaps.size() > 0) {
+            public void add(List<BitmapData> captureDatas) {
+                if (captureDatas.size() > 0) {
                     // 母窗体禁止滑动
                     ((MainActivity) mActivity).setTabLayoutScroll(false);
                 }

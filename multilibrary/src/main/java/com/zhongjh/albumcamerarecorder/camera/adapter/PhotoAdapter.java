@@ -1,19 +1,35 @@
 package com.zhongjh.albumcamerarecorder.camera.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import gaode.zhongjh.com.common.entity.MultiMedia;
+import gaode.zhongjh.com.common.enums.MimeType;
+import gaode.zhongjh.com.common.enums.MultimediaTypes;
+
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
 /**
  * 横向形式显示多个图片的
@@ -24,6 +40,7 @@ import java.util.List;
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
     Context mContext;
+    Fragment mFragment;
     GlobalSpec mGlobalSpec;
     List<BitmapData> mListData;
 
@@ -33,9 +50,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     // endregion
 
-    public PhotoAdapter(Context context, GlobalSpec globalSpec,
+    public PhotoAdapter(Context context, Fragment fragment, GlobalSpec globalSpec,
                         List<BitmapData> listData, PhotoAdapterListener photoAdapterListener) {
         mContext = context;
+        mFragment = fragment;
         mGlobalSpec = globalSpec;
         this.mListData = listData;
         mPhotoAdapterListener = photoAdapterListener;
@@ -50,6 +68,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         mGlobalSpec.imageEngine.loadUriImage(mContext, holder.imgPhoto, mListData.get(position).getUri());
+        // 点击图片
+        holder.itemView.setOnClickListener(v -> onClickListener(position));
         holder.imgCancel.setOnClickListener(v -> removePosition(position));
     }
 
@@ -63,21 +83,65 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     /**
+     * 点击事件
+     * @param position 索引
+     */
+    private void onClickListener(int position) {
+        ArrayList<MultiMedia> items = new ArrayList<>();
+        for (BitmapData item : mListData) {
+            MultiMedia multiMedia = new MultiMedia();
+            multiMedia.setUri(item.getUri());
+            multiMedia.setPath(item.getPath());
+            multiMedia.setType(MultimediaTypes.PICTURE);
+            multiMedia.setMimeType(MimeType.JPEG.toString());
+            multiMedia.setPosition(item.getPosition());
+            items.add(multiMedia);
+        }
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, items);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+
+        Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
+
+        // 获取目前点击的这个item
+        MultiMedia item = new MultiMedia();
+        item.setUri(mListData.get(position).getUri());
+        item.setPath(mListData.get(position).getPath());
+        item.setType(MultimediaTypes.PICTURE);
+        item.setMimeType(MimeType.JPEG.toString());
+        item.setPosition(mListData.get(position).getPosition());
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+        intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, false);
+        mFragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
+        if (mGlobalSpec.isCutscenes) {
+            if (mFragment.getActivity() != null) {
+                mFragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+            }
+        }
+    }
+
+    /**
      * 根据索引删除view
+     *
      * @param position 索引
      */
     public void removePosition(int position) {
+        mPhotoAdapterListener.onDelete(position);
         mListData.remove(position);
-        mPhotoAdapterListener.onDelete(mListData.get(position));
         notifyItemRemoved(position);
+        notifyItemRangeChanged(position,getItemCount());
     }
 
     @Override
     public int getItemCount() {
         return mListData != null ? mListData.size() : 0;
     }
-
-
 
     static class PhotoViewHolder extends RecyclerView.ViewHolder {
 

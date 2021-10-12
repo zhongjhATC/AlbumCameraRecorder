@@ -2,12 +2,10 @@ package com.zhongjh.albumcamerarecorder.camera;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -24,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraException;
@@ -34,6 +33,7 @@ import com.otaliastudios.cameraview.VideoResult;
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
+import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
@@ -45,8 +45,6 @@ import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayoutBase;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
@@ -58,23 +56,14 @@ import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MimeType;
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
 import gaode.zhongjh.com.common.listener.VideoEditListener;
 import gaode.zhongjh.com.common.utils.MediaStoreCompat;
 import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import gaode.zhongjh.com.common.utils.ThreadUtils;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONG_CLICK;
@@ -82,7 +71,6 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_DEFAU
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_SHORT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
 /**
  * @author zhongjh
@@ -93,7 +81,7 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
  * 录制逻辑：
  * 拍摄/录制 文件后，会先缓存到Cache文件夹，当点击完成后，才将相关确认的文件复制到配置的路径下，加入相册库，并且清空Cache文件夹
  */
-public class CameraLayout extends RelativeLayout {
+public class CameraLayout extends RelativeLayout implements PhotoAdapterListener {
 
     private final String TAG = CameraLayout.class.getSimpleName();
     private final static int PROGRESS_MAX = 100;
@@ -144,13 +132,9 @@ public class CameraLayout extends RelativeLayout {
      */
     List<BitmapData> mCaptureData = new ArrayList<>();
     /**
-     * 拍照的图片控件-集合
-     */
-    private final LinkedHashMap<Integer, View> mCaptureViews = new LinkedHashMap<>();
-    /**
      * 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
      */
-    private int mPosition = -1;
+    private int mPosition = 0;
     /**
      * 拷贝文件是否拷贝完
      */
@@ -233,7 +217,7 @@ public class CameraLayout extends RelativeLayout {
      * 拍摄后操作图片的事件
      */
     private CaptureListener mCaptureListener;
-    private Fragment fragment;
+    private Fragment mFragment;
 
 
     // 赋值Camera错误回调
@@ -328,8 +312,22 @@ public class CameraLayout extends RelativeLayout {
         TypedArray ta = mContext.getTheme().obtainStyledAttributes(
                 new int[]{R.attr.album_thumbnail_placeholder});
         mPlaceholder = ta.getDrawable(0);
+    }
 
+    /**
+     * 初始化
+     *
+     * @param fragment 设置fragment
+     */
+    public void init(CameraFragment fragment) {
+        this.mFragment = fragment;
 
+        // 初始化多图适配器，先判断是不是多图配置
+        if (SelectableUtils.getImageMaxCount() > 1) {
+            mPhotoAdapter = new PhotoAdapter(mContext, fragment, mGlobalSpec, mCaptureData, this);
+            mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+            mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
+        }
     }
 
     /**
@@ -705,7 +703,7 @@ public class CameraLayout extends RelativeLayout {
             public void onPictureTaken(@NonNull PictureResult result) {
                 result.toBitmap(bitmap -> {
                     // 显示图片
-                    showPicture(bitmap);
+                    addCaptureDatas(bitmap);
                     // 恢复点击
                     mViewHolder.rlMain.setChildClickable(true);
                 });
@@ -719,8 +717,8 @@ public class CameraLayout extends RelativeLayout {
                 if (!mIsShort) {
                     if (!mIsSectionRecord) {
                         //  如果录制结束，打开该视频。打开底部菜单
-                        PreviewVideoActivity.startActivity(fragment, result.getFile().getPath());
-                        fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+                        PreviewVideoActivity.startActivity(mFragment, result.getFile().getPath());
+                        mFragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
                         Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
                     } else {
                         // 加入视频列表
@@ -785,49 +783,11 @@ public class CameraLayout extends RelativeLayout {
     }
 
     /**
-     * 进行删除
-     *
-     * @param position 索引
-     */
-    public void removePosition(int position) {
-        mPhotoAdapter.removePosition(position);
-
-
-//        // 删除文件
-//        FileUtil.deleteFile(Objects.requireNonNull(mCaptureBitmaps.get(position)).getPath());
-//
-//        // 删除数据
-//        mCaptureBitmaps.remove(position);
-//        mViewHolder.llPhoto.removeView(mCaptureViews.get(position));
-//
-//        // 回调接口：删除图片后剩下的相关数据
-//        mCaptureListener.remove(mCaptureBitmaps);
-//
-//        // 当列表全部删掉的话，就隐藏
-//        if (mCaptureBitmaps.size() <= 0) {
-//            // 隐藏横版列表
-//            mViewHolder.rlPhoto.setVisibility(View.GONE);
-//
-//            // 隐藏横版列表的线条空间
-//            mViewHolder.vLine1.setVisibility(View.GONE);
-//            mViewHolder.vLine2.setVisibility(View.GONE);
-//
-//            // 隐藏右侧按钮
-//            mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
-//
-//            // 恢复长按事件，即重新启用录像
-//            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
-//
-//            // 设置空闲状态
-//            setState(Constants.STATE_PREVIEW);
-//        }
-    }
-
-    /**
      * 刷新多个图片
      */
     public void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas) {
-        mPhotoAdapter.setListData(bitmapDatas);
+        mCaptureData = bitmapDatas;
+        mPhotoAdapter.setListData(mCaptureData);
     }
 
     /**
@@ -889,8 +849,8 @@ public class CameraLayout extends RelativeLayout {
     private synchronized void pvLayoutCommit() {
         if (mIsSectionRecord && mVideoPaths.size() >= 1) {
             // 打开新的界面预览视频
-            PreviewVideoActivity.startActivity(fragment, mNewSectionVideoPath);
-            fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+            PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
+            mFragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
         } else {
             // 根据不同状态处理相应的事件
             if (getState() == Constants.STATE_PICTURE) {
@@ -984,7 +944,7 @@ public class CameraLayout extends RelativeLayout {
                 // TODO 弃用，已经改用跳转到第二个界面播放视频了
                 break;
             case TYPE_PICTURE:
-                setUIEnableFalse();
+                setUiEnableFalse();
                 // 拍照完成
                 if (mOperateCameraListener != null) {
                     // 移动文件
@@ -1060,81 +1020,89 @@ public class CameraLayout extends RelativeLayout {
 
             @Override
             public void onSuccess(Void result) {
-                setUIEnableTrue();
+                setUiEnableTrue();
             }
 
             @Override
             public void onFail(Throwable t) {
                 super.onFail(t);
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
-                setUIEnableTrue();
+                setUiEnableTrue();
             }
         });
     }
 
     /**
-     * 显示图片 单个或者多个
+     * 添加入数据源
      *
      * @param bitmap bitmap
      */
-    private void showPicture(Bitmap bitmap) {
+    private void addCaptureDatas(Bitmap bitmap) {
         // 初始化数据并且存储进file
         File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
         Uri uri = mPictureMediaStoreCompat.getUri(file.getPath());
-        BitmapData bitmapData = new BitmapData(file.getPath(), uri);
+        mPosition++;
+        BitmapData bitmapData = new BitmapData(mPosition, file.getPath(), uri);
         // 回收bitmap
         if (bitmap.isRecycled()) {
             // 回收并且置为null
             bitmap.recycle();
         }
-        System.gc();// 加速回收机制
-
+        // 加速回收机制
+        System.gc();
+        // 添加入数据源
+        mCaptureData.add(bitmapData);
         // 判断是否多个图片
         if (SelectableUtils.getImageMaxCount() > 1) {
-            addMultiplePicture(bitmapData);
+            showMultiplePicture();
         } else {
-            // 拍照  隐藏 闪光灯、右上角的切换摄像头
-            setSwitchVisibility(INVISIBLE);
-            mViewHolder.imgFlash.setVisibility(INVISIBLE);
-            // 如果只有单个图片，就显示相应的提示结果等等
-            mCaptureBitmaps.put(0, bitmapData);
-            mViewHolder.imgPhoto.canScroll();
-            mViewHolder.imgPhoto.setVisibility(VISIBLE);
-            mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
-            mViewHolder.cameraView.close();
-            mViewHolder.flShow.setVisibility(VISIBLE);
-            mViewHolder.pvLayout.startTipAlphaAnimation();
-            mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
-            mPhotoFile = file;
-
-            // 设置当前模式是图片模式
-            setState(Constants.STATE_PICTURE);
-
-            // 判断是否要编辑
-            if (mGlobalSpec.isImageEdit) {
-                mViewHolder.rlEdit.setVisibility(View.VISIBLE);
-                mViewHolder.rlEdit.setTag(uri);
-            } else {
-                mViewHolder.rlEdit.setVisibility(View.INVISIBLE);
-            }
-
-            // 隐藏拍照按钮
-            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setVisibility(View.INVISIBLE);
+            showSinglePicture(bitmapData, file, uri);
         }
 
         // 回调接口：添加图片后剩下的相关数据
-        mCaptureListener.add(mCaptureBitmaps);
+        mCaptureListener.add(mCaptureData);
     }
 
     /**
-     * 如果是多个图片则添加集合并显示
+     * 显示单图
      *
-     * @param bitmapData 图片数据源
+     * @param bitmapData 显示单图数据源
+     * @param file       显示单图的文件
+     * @param uri        显示单图的uri
      */
-    private void addMultiplePicture(BitmapData bitmapData) {
-        mPosition++;
-        // 如果是多个图片，就把当前图片添加到集合并显示出来
-        mCaptureBitmaps.put(mPosition, bitmapData);
+    private void showSinglePicture(BitmapData bitmapData, File file, Uri uri) {
+        // 拍照  隐藏 闪光灯、右上角的切换摄像头
+        setSwitchVisibility(INVISIBLE);
+        mViewHolder.imgFlash.setVisibility(INVISIBLE);
+        // 如果只有单个图片，就显示相应的提示结果等等
+        mViewHolder.imgPhoto.canScroll();
+        mViewHolder.imgPhoto.setVisibility(VISIBLE);
+        mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
+        mViewHolder.cameraView.close();
+        mViewHolder.flShow.setVisibility(VISIBLE);
+        mViewHolder.pvLayout.startTipAlphaAnimation();
+        mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
+        mPhotoFile = file;
+
+        // 设置当前模式是图片模式
+        setState(Constants.STATE_PICTURE);
+
+        // 判断是否要编辑
+        if (mGlobalSpec.isImageEdit) {
+            mViewHolder.rlEdit.setVisibility(View.VISIBLE);
+            mViewHolder.rlEdit.setTag(uri);
+        } else {
+            mViewHolder.rlEdit.setVisibility(View.INVISIBLE);
+        }
+
+        // 隐藏拍照按钮
+        mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * 显示多图
+     */
+    private void showMultiplePicture() {
         // 显示横版列表
         mViewHolder.rlPhoto.setVisibility(View.VISIBLE);
 
@@ -1142,57 +1110,10 @@ public class CameraLayout extends RelativeLayout {
         mViewHolder.vLine1.setVisibility(View.VISIBLE);
         mViewHolder.vLine2.setVisibility(View.VISIBLE);
 
-        // 添加view
-        ViewHolderImageView viewHolderImageView = new ViewHolderImageView(View.inflate(getContext(), R.layout.item_image_zjh, null));
-        mGlobalSpec.imageEngine.loadUriImage(getContext(), viewHolderImageView.imgPhoto, bitmapData.getUri());
-        // 删除事件
-        viewHolderImageView.imgCancel.setTag(R.id.tagid, mPosition);
-        viewHolderImageView.imgCancel.setOnClickListener(v -> removePosition(Integer.parseInt(v.getTag(R.id.tagid).toString())));
+        // 更新最后一个添加
+        mPhotoAdapter.notifyItemInserted(mPhotoAdapter.getItemCount() - 1);
+        mPhotoAdapter.notifyItemRangeChanged(mPhotoAdapter.getItemCount() - 1, mPhotoAdapter.getItemCount());
 
-        // 打开显示大图
-        viewHolderImageView.imgPhoto.setTag(R.id.tagid, String.valueOf(mPosition));
-        viewHolderImageView.imgPhoto.setOnClickListener(v -> {
-            ArrayList<MultiMedia> items = new ArrayList<>();
-            for (Map.Entry<Integer, BitmapData> entry : mCaptureBitmaps.entrySet()) {
-                MultiMedia item = new MultiMedia();
-                item.setUri(entry.getValue().getUri());
-                item.setPath(entry.getValue().getPath());
-                item.setType(MultimediaTypes.PICTURE);
-                item.setMimeType(MimeType.JPEG.toString());
-                item.setPosition(entry.getKey());
-                items.add(item);
-            }
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(STATE_SELECTION, items);
-            bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
-
-            Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
-
-            // 获取目前点击的这个item
-            MultiMedia item = new MultiMedia();
-            item.setUri(Objects.requireNonNull(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid))))).getUri());
-            item.setPath(Objects.requireNonNull(mCaptureBitmaps.get(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid))))).getPath());
-            item.setType(MultimediaTypes.PICTURE);
-            item.setMimeType(MimeType.JPEG.toString());
-            item.setPosition(Integer.parseInt(String.valueOf(v.getTag(R.id.tagid))));
-            intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
-
-            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
-            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-            intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
-            intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
-            intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-            intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, false);
-            fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
-            if (mGlobalSpec.isCutscenes) {
-                if (fragment.getActivity() != null) {
-                    fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
-                }
-            }
-        });
-
-        mCaptureViews.put(mPosition, viewHolderImageView.rootView);
-        mViewHolder.llPhoto.addView(viewHolderImageView.rootView);
         mViewHolder.pvLayout.startTipAlphaAnimation();
         mViewHolder.pvLayout.startOperaeBtnAnimatorMulti();
 
@@ -1264,7 +1185,7 @@ public class CameraLayout extends RelativeLayout {
      */
     private ArrayList<String> getPaths() {
         ArrayList<String> paths = new ArrayList<>();
-        for (BitmapData value : mCaptureBitmaps.values()) {
+        for (BitmapData value : mCaptureData) {
             paths.add(value.getPath());
         }
         return paths;
@@ -1315,7 +1236,7 @@ public class CameraLayout extends RelativeLayout {
      * 设置界面的功能按钮可以使用
      * 场景：如果压缩或者移动文件时异常，则恢复
      */
-    private void setUIEnableTrue() {
+    private void setUiEnableTrue() {
         mViewHolder.imgFlash.setEnabled(true);
         mViewHolder.imgSwitch.setEnabled(true);
         mViewHolder.pvLayout.setEnabled(true);
@@ -1327,17 +1248,43 @@ public class CameraLayout extends RelativeLayout {
      * 设置界面的功能按钮禁止使用
      * 场景：确认图片时，压缩中途禁止某些功能使用
      */
-    private void setUIEnableFalse() {
+    private void setUiEnableFalse() {
         mViewHolder.imgFlash.setEnabled(false);
         mViewHolder.imgSwitch.setEnabled(false);
         mViewHolder.pvLayout.setEnabled(false);
     }
 
-    /**
-     * 设置fragment
-     */
-    public void setFragment(CameraFragment fragment) {
-        this.fragment = fragment;
+    @Override
+    public void onClick() {
+
+    }
+
+    @Override
+    public void onDelete(int position) {
+        // 删除文件
+        FileUtil.deleteFile(mCaptureData.get(position).getPath());
+
+        // 回调接口：删除图片后剩下的相关数据
+        mCaptureListener.remove(mCaptureData);
+
+        // 当列表全部删掉的话，就隐藏,为什么是 <= 1，因为是先删除实体，再删除数据源，所以这个判断结束后，就会删除数据源实际是0了
+        if (mCaptureData.size() <= 1) {
+            // 隐藏横版列表
+            mViewHolder.rlPhoto.setVisibility(View.GONE);
+
+            // 隐藏横版列表的线条空间
+            mViewHolder.vLine1.setVisibility(View.GONE);
+            mViewHolder.vLine2.setVisibility(View.GONE);
+
+            // 隐藏右侧按钮
+            mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
+
+            // 恢复长按事件，即重新启用录像
+            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
+
+            // 设置空闲状态
+            setState(Constants.STATE_PREVIEW);
+        }
     }
 
     public static class ViewHolder {
@@ -1374,19 +1321,6 @@ public class CameraLayout extends RelativeLayout {
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);
             this.rlEdit = rootView.findViewById(R.id.rlEdit);
-        }
-
-    }
-
-    public static class ViewHolderImageView {
-        public View rootView;
-        public ImageView imgPhoto;
-        public ImageView imgCancel;
-
-        public ViewHolderImageView(View rootView) {
-            this.rootView = rootView;
-            this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
-            this.imgCancel = rootView.findViewById(R.id.imgCancel);
         }
 
     }

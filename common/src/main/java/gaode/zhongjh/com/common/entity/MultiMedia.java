@@ -20,7 +20,7 @@ public class MultiMedia implements Parcelable {
 
     protected long id;
     /**
-     * 九宫格的当前图片索引，不计算视频和录音，因为这个position随便会改变，所以不加入hashCode,equals这些里面计算,也可以用作CameraLayout的索引
+     * 九宫格的当前图片索引，不计算视频和录音，因为这个position随时会改变，所以不加入hashCode,equals这些里面计算,也可以用作CameraLayout的索引
      */
     protected int position = -1;
     /**
@@ -195,14 +195,6 @@ public class MultiMedia implements Parcelable {
 
     public void setOldUri(Uri oldUri) {
         this.oldUri = oldUri;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     /**

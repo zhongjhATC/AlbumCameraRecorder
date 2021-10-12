@@ -3,14 +3,22 @@ package com.zhongjh.albumcamerarecorder.camera.adapter;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 
 /**
- * 处理异常的Listener
+ * 多图的AdapterListener
+ *
  * @author zhongjh
  */
 public interface PhotoAdapterListener {
 
     /**
-     * 删除该图片
+     * 点击图片事件
      */
-    void onDelete(BitmapData bitmapData);
+    void onClick();
+
+    /**
+     * 删除该图片
+     *
+     * @param position 数据的索引
+     */
+    void onDelete(int position);
 
 }
