@@ -17,8 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.progresslibrary.R;
+import com.zhongjh.progresslibrary.adapter.PhotoAdapter;
 import com.zhongjh.progresslibrary.api.MaskProgressApi;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
@@ -44,6 +46,7 @@ import gaode.zhongjh.com.common.utils.ThreadUtils;
 public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     private final Context mContext;
+    private PhotoAdapter mPhotoAdapter;
     /**
      * 文件配置路径
      */
@@ -88,7 +91,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
      * @return 最多显示多少个图片/视频/语音
      */
     public int getMaxMediaCount() {
-        return mViewHolder.alfMedia.getMaxMediaCount();
+        return mPhotoAdapter.getMaxMediaCount();
     }
 
     /**
@@ -97,14 +100,14 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     public void setMaxMediaCount(Integer maxMediaCount, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable) {
         // 计算最终呈现的总数，这个总数决定是否还能点击添加
         if (maxMediaCount != null) {
-            mViewHolder.alfMedia.setMaxMediaCount(maxMediaCount);
+            mPhotoAdapter.setMaxMediaCount(maxMediaCount);
         } else {
-            mViewHolder.alfMedia.setMaxMediaCount(maxImageSelectable + maxVideoSelectable + maxAudioSelectable);
+            mPhotoAdapter.setMaxMediaCount(maxImageSelectable + maxVideoSelectable + maxAudioSelectable);
         }
     }
 
     public void setMaskProgressLayoutListener(MaskProgressLayoutListener listener) {
-        mViewHolder.alfMedia.setListener(listener);
+        mPhotoAdapter.setListener(listener);
         this.listener = listener;
     }
 
@@ -202,6 +205,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             drawable = ContextCompat.getDrawable(getContext(), R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
+        mPhotoAdapter = new PhotoAdapter(mContext, isOperation, imageAddDrawable);
         mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable,
                 maxCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
                 imageDeleteColor, imageDeleteDrawable, imageAddDrawable,
@@ -563,12 +567,12 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     public static class ViewHolder {
         View rootView;
-        AutoLineFeedLayout alfMedia;
+        RecyclerView rlGrid;
         LinearLayout llContent;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
-            this.alfMedia = rootView.findViewById(R.id.alfMedia);
+            this.rlGrid = rootView.findViewById(R.id.rlGrid);
             this.llContent = rootView.findViewById(R.id.llContent);
         }
     }

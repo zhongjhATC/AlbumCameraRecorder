@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:background="#00000020">
 
-    <com.zhongjh.progresslibrary.widget.AutoLineFeedLayout
-        android:id="@+id/alfMedia"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rlGrid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"

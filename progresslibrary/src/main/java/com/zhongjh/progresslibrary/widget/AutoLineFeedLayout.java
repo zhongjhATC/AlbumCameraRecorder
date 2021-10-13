@@ -220,7 +220,7 @@ public class AutoLineFeedLayout extends ViewGroup {
         // 默认➕号
         MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.ADD);
         multiMediaView.setPath(ADD);
-        viewHolderAdd = new ViewHolder(mInflater.inflate(R.layout.list_item_image, null));
+        viewHolderAdd = new ViewHolder(mInflater.inflate(R.layout.item_image, null));
         viewHolderAdd.bind(multiMediaView);
         viewHolderAdd.init();
     }
@@ -481,7 +481,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 List<ViewHolder> viewHolders = new ArrayList<>();
                 if (imageList != null && imageList.size() > 0) {
                     for (MultiMediaView multiMediaView : imageListAdd) {
-                        ViewHolder viewHolder = new ViewHolder(mInflater.inflate(R.layout.list_item_image, null));
+                        ViewHolder viewHolder = new ViewHolder(mInflater.inflate(R.layout.item_image, null));
                         viewHolder.bind(multiMediaView);
                         viewHolders.add(viewHolder);
                     }
@@ -534,7 +534,7 @@ public class AutoLineFeedLayout extends ViewGroup {
                 // 记录视频的坐标点，视频默认加载在最前面
                 if (videoList.size() > 0) {
                     for (MultiMediaView multiMediaView : videoListAdd) {
-                        ViewHolder viewHolder = new ViewHolder(mInflater.inflate(R.layout.list_item_image, null));
+                        ViewHolder viewHolder = new ViewHolder(mInflater.inflate(R.layout.item_image, null));
                         viewHolders.add(viewHolder);
                         viewHolder.bind(multiMediaView);
                     }
