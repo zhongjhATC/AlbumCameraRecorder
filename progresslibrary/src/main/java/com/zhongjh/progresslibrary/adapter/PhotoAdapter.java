@@ -1,8 +1,11 @@
 package com.zhongjh.progresslibrary.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +17,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.sdsmdg.harjot.vectormaster.VectorMasterView;
 import com.sdsmdg.harjot.vectormaster.models.PathModel;
 import com.zhongjh.progresslibrary.R;
+import com.zhongjh.progresslibrary.engine.ImageEngine;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
+import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import gaode.zhongjh.com.common.listener.OnMoreClickListener;
 
 /**
  * 九宫展示数据
@@ -30,15 +36,27 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
  * @author zhongjh
  * @date 2021/10/13
  */
-public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>
-        implements View.OnClickListener {
+public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
+    private Context mContext;
+
+    private final static String TAG = PhotoAdapter.class.getSimpleName();
     private final LayoutInflater mInflater;
 
     /**
      * 数据源（包括视频和图片）
      */
     private ArrayList<MultiMediaView> list = new ArrayList<>();
+    /**
+     * 图片数据数量
+     */
+    private int mImageCount = 0;
+    /**
+     * 视频数据数量
+     */
+    private int mVideoCount = 0;
+
+    private MaskProgressLayout maskProgressLayout;
     /**
      * 相关事件
      */
@@ -64,6 +82,14 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * 添加图片的资源
      */
     private Drawable mAddDrawable;
+    /**
+     * 图片加载方式
+     */
+    private ImageEngine imageEngine;
+    /**
+     * 默认图片
+     */
+    private Drawable placeholder;
     /**
      * 有关遮罩层：颜色
      */
@@ -98,16 +124,27 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     /**
-     * @param context     上下文
-     * @param isOperation 是否操作
-     * @param addDrawable 添加的图片资源
+     * @param context            上下文
+     * @param maskProgressLayout 父控件
+     * @param isOperation        是否操作
+     * @param maskingColor       有关遮罩层：颜色
+     * @param maskingTextSize    有关遮罩层：文字大小
+     * @param maskingTextColor   有关遮罩层：文字颜色
+     * @param maskingTextContent 有关遮罩层：文字内容
+     * @param addDrawable        添加的图片资源
      */
-    public PhotoAdapter(Context context, boolean isOperation,
+    public PhotoAdapter(Context context, MaskProgressLayout maskProgressLayout,
+                        ImageEngine imageEngine, Drawable placeholder, boolean isOperation, int maxMediaCount,
                         int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent,
                         int deleteColor, Drawable deleteImage, Drawable addDrawable) {
+        this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
 
+        this.maskProgressLayout = maskProgressLayout;
+        this.imageEngine = imageEngine;
+        this.placeholder = placeholder;
         this.isOperation = isOperation;
+        this.maxMediaCount = maxMediaCount;
 
         this.maskingColor = maskingColor;
         this.maskingTextSize = maskingTextSize;
@@ -159,19 +196,167 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             multiMediaView.setMaskProgressView(holder.mpvImage);
             multiMediaView.setItemView(holder.itemView);
         }
+
+        // 设置图片
+        if (isShowAddItem(position)) {
+            // 加载➕图
+            holder.mpvImage.setImageResource(R.drawable.selector_image_add);
+            // 隐藏close
+            holder.vClose.setVisibility(View.GONE);
+            holder.vClose.setOnClickListener(null);
+            holder.imgPlay.setVisibility(View.GONE);
+        } else {
+            // 根据类型做相关设置
+            if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                // 判断是否显示播放按钮
+                holder.imgPlay.setVisibility(View.VISIBLE);
+                // 视频处理
+            } else if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
+                holder.imgPlay.setVisibility(View.GONE);
+            }
+
+            holder.loadImage(mContext, imageEngine, placeholder, multiMediaView);
+
+            // 显示close
+            if (isOperation) {
+                holder.vClose.setVisibility(View.VISIBLE);
+                holder.vClose.setOnClickListener(v -> {
+                    if (listener != null) {
+                        listener.onItemClose(v, multiMediaView);
+                    }
+                    list.remove(multiMediaView);
+                    ViewGroup parent = (ViewGroup) holder.itemView.getParent();
+                    parent.removeView(holder.itemView);
+                });
+            } else {
+                holder.vClose.setVisibility(View.GONE);
+            }
+        }
+
         // 设置条目的点击事件
-        holder.itemView.setOnClickListener(this);
-        holder.itemView.setTag(multiMediaView.getType());
+        holder.itemView.setOnClickListener(new OnMoreClickListener() {
+            @Override
+            public void onMoreClickListener(View v) {
+                if (listener != null) {
+                    if (isShowAddItem(position)) {
+                        // 点击加载➕图
+                        listener.onItemAdd(v, multiMediaView, mImageCount, mVideoCount, maskProgressLayout.audioList.size());
+                    } else {
+                        // 点击
+                        if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
+                            // 如果是图片，直接跳转详情
+                            listener.onItemClick(v, multiMediaView);
+                        } else {
+                            // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
+                            if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
+                                // 执行下载事件
+                                listener.onItemVideoStartDownload(multiMediaView.getUrl());
+                            } else {
+                                // 点击事件
+                                listener.onItemClick(v, multiMediaView);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * 添加图片数据
+     *
+     * @param multiMediaViews 数据集合
+     */
+    public void addImageData(List<MultiMediaView> multiMediaViews) {
+        Log.d(TAG + " Test", "addImageData");
+        int position = getNeedAddPosition(MultimediaTypes.PICTURE);
+        list.addAll(position, multiMediaViews);
+        // 刷新ui
+        notifyItemRangeInserted(position, multiMediaViews.size());
+        notifyItemRangeChanged(position, multiMediaViews.size());
+    }
+
+    /**
+     * 赋值图片数据
+     */
+    public void setImageData(List<MultiMediaView> multiMediaViews) {
+        Log.d(TAG + " Test", "setImageData");
+        int position = getImageFirstPosition();
+        // 首先旧的会删掉，触发删除事件
+        listener.onItemClose(v, multiMediaView);
+
+        list.remove()
+
+    }
+
+    /**
+     * 添加视频数据
+     *
+     * @param multiMediaViews 数据集合
+     * @param isClean         添加前是否清空
+     */
+    @SuppressLint("InflateParams")
+    public void addVideoData(List<MultiMediaView> multiMediaViews, boolean isClean, boolean isrefresh) {
+        Log.d(TAG + " Test", "addVideoData");
+        int position = getNeedAddPosition(MultimediaTypes.VIDEO);
+        list.addAll(position, multiMediaViews);
+        // 刷新ui
+        notifyItemRangeInserted(position, multiMediaViews.size());
+        notifyItemRangeChanged(position, multiMediaViews.size());
     }
 
     @Override
     public int getItemCount() {
+        // 计算图片和视频的数量
+        mImageCount = 0;
+        mVideoCount = 0;
+        for (MultiMediaView item : list) {
+            if (item.getType() == MultimediaTypes.PICTURE) {
+                mImageCount++;
+            } else if (item.getType() == MultimediaTypes.AUDIO) {
+                mVideoCount++;
+            }
+        }
         // 数量如果小于最大值并且允许操作，才+1，这个+1是最后加个可操作的Add方框
         if (list.size() < maxMediaCount && isOperation) {
             return list.size() + 1;
         } else {
             return list.size();
         }
+    }
+
+    /**
+     * 根据类型获取当前要添加的位置，新增的图片在最后一个，新增的视频在图片的前面
+     *
+     * @param type 数据类型
+     * @return 索引
+     */
+    private int getNeedAddPosition(int type) {
+        // 获取图片第一个索引
+        int imageFirstPosition = getImageFirstPosition();
+        if (type == MultimediaTypes.PICTURE) {
+            return list.size() - 1;
+        } else if (type == MultimediaTypes.VIDEO) {
+            return imageFirstPosition - 1;
+        }
+        return 0;
+    }
+
+    /**
+     * 获取列表中第一个图片的索引
+     *
+     * @return 索引
+     */
+    private int getImageFirstPosition() {
+        if (list.size() <= 0) {
+            return 0;
+        }
+        for (MultiMediaView item : list) {
+            if (item.getType() == MultimediaTypes.PICTURE) {
+                return list.indexOf(item);
+            }
+        }
+        return 0;
     }
 
     /**
@@ -183,37 +368,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     private boolean isShowAddItem(int position) {
         int size = list.size();
         return position == size;
-    }
-
-    @Override
-    public void onClick(View v) {
-        // 防止抖动多次点击
-        if (listener != null) {
-            long currentTime = System.currentTimeMillis();
-            // 经过了足够长的时间，允许点击
-            if (currentTime - mLastClickTime > CLICK_INTERVAL) {
-                if (!TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getPath().equals(ADD)) {
-                    // 加载➕图
-                    listener.onItemAdd(v, multiMediaView, imageList.size(), videoList.size(), maskProgressLayout.audioList.size());
-                } else {
-                    // 点击
-                    if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
-                        // 如果是图片，直接跳转详情
-                        listener.onItemClick(v, multiMediaView);
-                    } else {
-                        // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
-                        if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
-                            // 执行下载事件
-                            listener.onItemVideoStartDownload(multiMediaView.getUrl());
-                        } else {
-                            // 点击事件
-                            listener.onItemClick(v, multiMediaView);
-                        }
-                    }
-                }
-                mLastClickTime = currentTime;
-            }
-        }
     }
 
     static class PhotoViewHolder extends RecyclerView.ViewHolder {
@@ -230,6 +384,24 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             imgPlay = itemView.findViewById(R.id.imgPlay);
             vmvClose = itemView.findViewById(R.id.vmvClose);
             imgClose = itemView.findViewById(R.id.imgClose);
+        }
+
+        /**
+         * 加载图片
+         */
+        private void loadImage(Context context, ImageEngine imageEngine,
+                               Drawable placeholder, MultiMediaView multiMediaView) {
+            // 加载图片
+            if (!TextUtils.isEmpty(multiMediaView.getPath())) {
+                imageEngine.loadThumbnail(context, mpvImage.getWidth(), placeholder,
+                        mpvImage, Uri.fromFile(new File(multiMediaView.getPath())));
+            } else if (!TextUtils.isEmpty(multiMediaView.getUrl())) {
+                imageEngine.loadUrlThumbnail(context, mpvImage.getWidth(), placeholder,
+                        mpvImage, multiMediaView.getUrl());
+            } else if (multiMediaView.getUri() != null) {
+                imageEngine.loadThumbnail(context, mpvImage.getWidth(), placeholder,
+                        mpvImage, multiMediaView.getUri());
+            }
         }
     }
 

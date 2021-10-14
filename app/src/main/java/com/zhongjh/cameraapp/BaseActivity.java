@@ -176,7 +176,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 case MultimediaTypes.PICTURE:
                     // 图片，自从AndroidQ版本以后，Path只能访问本身app的文件，所以只能用uri方式控制
                     List<Uri> path = MultiMediaSetting.obtainResult(data);
-                    getMaskProgressLayout().addUrisStartUpload(path);
+                    getMaskProgressLayout().addImagesUriStartUpload(path);
                     break;
                 case MultimediaTypes.VIDEO:
                     // 录像
@@ -203,7 +203,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                         }
                     }
                     // 分别上传图片和视频
-                    getMaskProgressLayout().addUrisStartUpload(images);
+                    getMaskProgressLayout().addImagesUriStartUpload(images);
                     getMaskProgressLayout().addVideoStartUpload(videos);
                     break;
                 default:

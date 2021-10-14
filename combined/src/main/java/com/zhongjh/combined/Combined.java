@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
@@ -133,7 +132,7 @@ public class Combined {
                 case MultimediaTypes.PICTURE:
                     // 图片，自动AndroidQ版本以后，使用除了本身app的文件，最好是用uri方式控制
                     List<Uri> path = MultiMediaSetting.obtainResult(data);
-                    this.maskProgressLayout.addUrisStartUpload(path);
+                    this.maskProgressLayout.addImagesUriStartUpload(path);
                     break;
                 case MultimediaTypes.VIDEO:
                     // 录像
@@ -162,7 +161,7 @@ public class Combined {
                         }
                     }
                     // 分别上传图片和视频
-                    this.maskProgressLayout.addUrisStartUpload(images);
+                    this.maskProgressLayout.addImagesUriStartUpload(images);
                     this.maskProgressLayout.addVideoStartUpload(videos);
                     break;
                 default:

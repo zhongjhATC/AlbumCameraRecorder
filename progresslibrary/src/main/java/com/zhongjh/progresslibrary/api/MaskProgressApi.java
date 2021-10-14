@@ -24,18 +24,18 @@ public interface MaskProgressApi {
     void setAuthority(String authority);
 
     /**
-     * 设置图片Uri并且启动上传(一般用于刚确认了哪些数据后)
+     * 添加图片Uri并且启动上传(一般用于刚确认了哪些数据后)
      *
-     * @param uris 图片数据源
+     * @param uris 图片Uri数据源
      */
-    void addUrisStartUpload(List<Uri> uris);
+    void addImagesUriStartUpload(List<Uri> uris);
 
     /**
-     * 设置图片并且启动上传(一般用于刚确认了哪些数据后)
+     * 添加图片并且启动上传(一般用于刚确认了哪些数据后)
      *
-     * @param imagePaths 图片数据源
+     * @param imagePaths 图片路径数据源
      */
-    void addImagesStartUpload(List<String> imagePaths);
+    void addImagesPathStartUpload(List<String> imagePaths);
 
     /**
      * 设置图片网址数据

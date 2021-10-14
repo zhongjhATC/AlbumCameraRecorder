@@ -205,12 +205,10 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             drawable = ContextCompat.getDrawable(getContext(), R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
-        mPhotoAdapter = new PhotoAdapter(mContext, isOperation, imageAddDrawable);
-        mViewHolder.alfMedia.initConfig(this, mImageEngine, isOperation, drawable,
-                maxCount, maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
-                imageDeleteColor, imageDeleteDrawable, imageAddDrawable,
-                columnNumber, columnSpace);
-
+        mPhotoAdapter = new PhotoAdapter(mContext, this,
+                mImageEngine, drawable, isOperation, maxCount,
+                maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
+                imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
 
         maskProgressLayoutStyle.recycle();
         typedArray.recycle();
@@ -223,7 +221,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void addUrisStartUpload(List<Uri> uris) {
+    public void addImagesUriStartUpload(List<Uri> uris) {
         isAuthority();
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (Uri uri : uris) {
@@ -231,12 +229,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUri(uri);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addImageData(multiMediaViews, false);
-        mViewHolder.alfMedia.refreshImageView(multiMediaViews);
+        mPhotoAdapter.addImageData(multiMediaViews);
     }
 
     @Override
-    public void addImagesStartUpload(List<String> imagePaths) {
+    public void addImagesPathStartUpload(List<String> imagePaths) {
         isAuthority();
         ArrayList<MultiMediaView> multiMediaViews = new ArrayList<>();
         for (String string : imagePaths) {
@@ -245,7 +242,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUri(mMediaStoreCompat.getUri(string));
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addImageData(multiMediaViews, false);
+        mPhotoAdapter.addImageData(multiMediaViews);
     }
 
     @Override
@@ -256,7 +253,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUrl(string);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addImageData(multiMediaViews, true);
+        mPhotoAdapter.addImageData(multiMediaViews, true);
     }
 
     @Override
