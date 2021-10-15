@@ -115,12 +115,20 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         this.listener = listener;
     }
 
+    public void removeListener() {
+        this.listener = null;
+    }
+
     public int getMaxMediaCount() {
         return maxMediaCount;
     }
 
     public void setMaxMediaCount(int maxMediaCount) {
         this.maxMediaCount = maxMediaCount;
+    }
+
+    public void setOperation(boolean operation) {
+        isOperation = operation;
     }
 
     /**
@@ -221,12 +229,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             if (isOperation) {
                 holder.vClose.setVisibility(View.VISIBLE);
                 holder.vClose.setOnClickListener(v -> {
-                    if (listener != null) {
-                        listener.onItemClose(v, multiMediaView);
-                    }
-                    list.remove(multiMediaView);
-                    ViewGroup parent = (ViewGroup) holder.itemView.getParent();
-                    parent.removeView(holder.itemView);
+
                 });
             } else {
                 holder.vClose.setVisibility(View.GONE);
@@ -263,6 +266,40 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     /**
+     * 清空数据
+     */
+    public void clearAll() {
+        list.clear();
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 获取图片的数据
+     */
+    public ArrayList<MultiMediaView> getImageData() {
+        ArrayList<MultiMediaView> imageDatas = new ArrayList<>();
+        for (MultiMediaView multiMediaView : list) {
+            if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
+                imageDatas.add(multiMediaView);
+            }
+        }
+        return imageDatas;
+    }
+
+    /**
+     * 获取视频的数据
+     */
+    public ArrayList<MultiMediaView> getVideoData() {
+        ArrayList<MultiMediaView> videoDatas = new ArrayList<>();
+        for (MultiMediaView multiMediaView : list) {
+            if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                videoDatas.add(multiMediaView);
+            }
+        }
+        return videoDatas;
+    }
+
+    /**
      * 添加图片数据
      *
      * @param multiMediaViews 数据集合
@@ -281,28 +318,52 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      */
     public void setImageData(List<MultiMediaView> multiMediaViews) {
         Log.d(TAG + " Test", "setImageData");
-        int position = getImageFirstPosition();
-        // 首先旧的会删掉，触发删除事件
-        listener.onItemClose(v, multiMediaView);
-
-        list.remove()
-
+        // 删除当前所有图片
+        for (int i = list.size() - 1; i >= 0; i--) {
+            if (list.get(i).getType() == MultimediaTypes.PICTURE) {
+                list.remove(i);
+                notifyItemRemoved(i);
+            }
+        }
+        // 增加新的图片数据
+        int position = list.size() - 1;
+        list.addAll(multiMediaViews);
+        notifyItemRangeInserted(position, multiMediaViews.size());
+        notifyItemRangeChanged(position, multiMediaViews.size());
     }
 
     /**
      * 添加视频数据
      *
      * @param multiMediaViews 数据集合
-     * @param isClean         添加前是否清空
      */
     @SuppressLint("InflateParams")
-    public void addVideoData(List<MultiMediaView> multiMediaViews, boolean isClean, boolean isrefresh) {
+    public void addVideoData(List<MultiMediaView> multiMediaViews) {
         Log.d(TAG + " Test", "addVideoData");
         int position = getNeedAddPosition(MultimediaTypes.VIDEO);
         list.addAll(position, multiMediaViews);
         // 刷新ui
         notifyItemRangeInserted(position, multiMediaViews.size());
         notifyItemRangeChanged(position, multiMediaViews.size());
+    }
+
+    /**
+     * 赋值视频数据
+     */
+    public void setVideoData(List<MultiMediaView> multiMediaViews) {
+        Log.d(TAG + " Test", "setVideoData");
+        // 删除当前所有视频
+        for (int i = list.size() - 1; i >= 0; i--) {
+            if (list.get(i).getType() == MultimediaTypes.VIDEO) {
+                list.remove(i);
+                notifyItemRemoved(i);
+            }
+        }
+
+        // 增加新的视频数据
+        list.addAll(0, multiMediaViews);
+        notifyItemRangeInserted(0, multiMediaViews.size());
+        notifyItemRangeChanged(0, multiMediaViews.size());
     }
 
     @Override
@@ -318,11 +379,25 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             }
         }
         // 数量如果小于最大值并且允许操作，才+1，这个+1是最后加个可操作的Add方框
-        if (list.size() < maxMediaCount && isOperation) {
+        if ((list.size() + maskProgressLayout.audioList.size()) < maxMediaCount && isOperation) {
             return list.size() + 1;
         } else {
             return list.size();
         }
+    }
+
+    /**
+     * 删除某个数据
+     * @param position 索引
+     */
+    public void removePosition(int position) {
+        MultiMediaView multiMediaView = list.get(position);
+        if (listener != null) {
+            listener.onItemClose(multiMediaView.getItemView(), multiMediaView);
+        }
+        list.remove(multiMediaView);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, 1);
     }
 
     /**

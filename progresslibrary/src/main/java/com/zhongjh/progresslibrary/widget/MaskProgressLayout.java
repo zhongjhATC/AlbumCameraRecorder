@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.progresslibrary.R;
@@ -209,6 +210,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
                 mImageEngine, drawable, isOperation, maxCount,
                 maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
                 imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
+        mViewHolder.rlGrid.setLayoutManager(new GridLayoutManager(getContext(), columnNumber));
+        mViewHolder.rlGrid.setAdapter(mPhotoAdapter);
 
         maskProgressLayoutStyle.recycle();
         typedArray.recycle();
@@ -253,7 +256,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUrl(string);
             multiMediaViews.add(multiMediaView);
         }
-        mPhotoAdapter.addImageData(multiMediaViews, true);
+        mPhotoAdapter.setImageData(multiMediaViews);
     }
 
     @Override
@@ -280,7 +283,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setUrl(videoUrls.get(i));
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addVideoData(multiMediaViews, false, true);
+        mPhotoAdapter.setVideoData(multiMediaViews);
     }
 
     @Override
@@ -292,7 +295,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         addAudioData(multiMediaView, filePath, length);
 
         // 检测添加多媒体上限
-        mViewHolder.alfMedia.checkLastImages();
+        mPhotoAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -326,18 +329,18 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         // 清空view
         mViewHolder.llContent.removeAllViews();
 
-        // 清空alfMedia数据和view
-        mViewHolder.alfMedia.reset();
+        // 清空数据和view
+        mPhotoAdapter.clearAll();
     }
 
     @Override
     public ArrayList<MultiMediaView> getImages() {
-        return mViewHolder.alfMedia.imageList;
+        return mPhotoAdapter.getImageData();
     }
 
     @Override
     public ArrayList<MultiMediaView> getVideos() {
-        return mViewHolder.alfMedia.videoList;
+        return mPhotoAdapter.getVideoData();
     }
 
     @Override
@@ -352,18 +355,18 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void onVideoClick() {
-        mViewHolder.alfMedia.getChildAt(0).performClick();
+//        mViewHolder.alfMedia.getChildAt(0).performClick();
     }
 
     @Override
     public void onRemoveItemImage(int position) {
-        mViewHolder.alfMedia.onRemoveItemImage(position);
+        mPhotoAdapter.removePosition(position);
     }
 
     @Override
     public void setOperation(boolean isOperation) {
         this.isOperation = isOperation;
-        mViewHolder.alfMedia.setOperation(isOperation);
+        mPhotoAdapter.setOperation(isOperation);
         // 添加音频后重置所有当前播放中的音频
         for (int i = 0; i < mViewHolder.llContent.getChildCount(); i++) {
             PlayProgressView item = (PlayProgressView) mViewHolder.llContent.getChildAt(i);
@@ -374,7 +377,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void onDestroy() {
-        mViewHolder.alfMedia.removeListener();
+        mPhotoAdapter.removeListener();
 
         for (int i = 0; i < mViewHolder.llContent.getChildCount(); i++) {
             PlayProgressView item = (PlayProgressView) mViewHolder.llContent.getChildAt(i);
@@ -427,47 +430,10 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
                     mViewHolder.llContent.addView(playProgressView);
                     int newPosition = position + 1;
                     createPlayProgressView(audioUrls, newPosition);
-//                    getDuration(playProgressView, url);
                 }
             }
         });
     }
-
-//    /**
-//     * 获取时长
-//     */
-//    private void getDuration(PlayProgressView playProgressView, String url) {
-//        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<RecordingItem>() {
-//
-//            @Override
-//            public RecordingItem doInBackground() {
-//                // 获取时长
-//                RecordingItem recordingItem = null;
-//                try {
-//                    MediaPlayer mediaPlayer = new MediaPlayer();
-//                    mediaPlayer.setDataSource(url);
-//                    mediaPlayer.prepare();
-//                    int duration = mediaPlayer.getDuration();
-//                    if (0 != duration) {
-//                        recordingItem = new RecordingItem();
-//                        recordingItem.setUrl(url);
-//                        recordingItem.setLength(duration);
-//                    }
-//                    // 记得释放资源
-//                    mediaPlayer.release();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                return recordingItem;
-//            }
-//
-//            @Override
-//            public void onSuccess(RecordingItem result) {
-//                playProgressView.setData(result, audioProgressColor);
-//                playProgressView.mViewHolder.playView.updateTotal();
-//            }
-//        });
-//    }
 
     /**
      * 设置是否显示删除音频按钮
@@ -496,8 +462,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setPosition(i);
             multiMediaViews.add(multiMediaView);
         }
-        mViewHolder.alfMedia.addVideoData(multiMediaViews, icClean, false);
-        mViewHolder.alfMedia.refreshVideoView(multiMediaViews);
+        if (icClean) {
+            mPhotoAdapter.setVideoData(multiMediaViews);
+        } else {
+            mPhotoAdapter.addVideoData(multiMediaViews);
+        }
     }
 
     /**
@@ -544,7 +513,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
                 listener.onItemClose(MaskProgressLayout.this, multiMediaView);
             }
             audioList.remove(multiMediaView);
-            mViewHolder.alfMedia.checkLastImages();
+            mPhotoAdapter.notifyDataSetChanged();
         });
         playProgressView.initStyle(audioDeleteColor, audioProgressColor, audioPlayColor);
         multiMediaView.setPlayProgressView(playProgressView);
