@@ -106,6 +106,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * 有关遮罩层：文字内容
      */
     private String maskingTextContent;
+    MultiMediaView mMultiMediaViewAdd = new MultiMediaView(MultimediaTypes.ADD);
 
     public MaskProgressLayoutListener getListener() {
         return listener;
@@ -199,12 +200,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
-        MultiMediaView multiMediaView = list.get(position);
-        if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
-            multiMediaView.setMaskProgressView(holder.mpvImage);
-            multiMediaView.setItemView(holder.itemView);
-        }
-
         // 设置图片
         if (isShowAddItem(position)) {
             // 加载➕图
@@ -213,7 +208,23 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             holder.vClose.setVisibility(View.GONE);
             holder.vClose.setOnClickListener(null);
             holder.imgPlay.setVisibility(View.GONE);
+            // 设置条目的点击事件
+            holder.itemView.setOnClickListener(new OnMoreClickListener() {
+                @Override
+                public void onMoreClickListener(View v) {
+                    mMultiMediaViewAdd.setMaskProgressView(holder.mpvImage);
+                    mMultiMediaViewAdd.setItemView(holder.itemView);
+                    // 点击加载➕图
+                    listener.onItemAdd(v, mMultiMediaViewAdd, mImageCount, mVideoCount, maskProgressLayout.audioList.size());
+                }
+            });
         } else {
+            MultiMediaView multiMediaView = list.get(position);
+            if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                multiMediaView.setMaskProgressView(holder.mpvImage);
+                multiMediaView.setItemView(holder.itemView);
+            }
+
             // 根据类型做相关设置
             if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                 // 判断是否显示播放按钮
@@ -228,23 +239,16 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             // 显示close
             if (isOperation) {
                 holder.vClose.setVisibility(View.VISIBLE);
-                holder.vClose.setOnClickListener(v -> {
-
-                });
+                holder.vClose.setOnClickListener(v -> removePosition(position));
             } else {
                 holder.vClose.setVisibility(View.GONE);
             }
-        }
 
-        // 设置条目的点击事件
-        holder.itemView.setOnClickListener(new OnMoreClickListener() {
-            @Override
-            public void onMoreClickListener(View v) {
-                if (listener != null) {
-                    if (isShowAddItem(position)) {
-                        // 点击加载➕图
-                        listener.onItemAdd(v, multiMediaView, mImageCount, mVideoCount, maskProgressLayout.audioList.size());
-                    } else {
+            // 设置条目的点击事件
+            holder.itemView.setOnClickListener(new OnMoreClickListener() {
+                @Override
+                public void onMoreClickListener(View v) {
+                    if (listener != null) {
                         // 点击
                         if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                             // 如果是图片，直接跳转详情
@@ -261,8 +265,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                         }
                     }
                 }
-            }
-        });
+            });
+
+        }
     }
 
     /**
@@ -388,6 +393,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     /**
      * 删除某个数据
+     *
      * @param position 索引
      */
     public void removePosition(int position) {
