@@ -442,6 +442,7 @@ public class SelectedItemCollection {
      * @return 选择的索引，最终返回的选择了第几个
      */
     public int checkedNumOf(MultiMedia item) {
+        // TODO 看看这里mItems能不能获取传递过来的
         return MultiMediaUtils.checkedNumOf(new ArrayList<>(mItems), item);
     }
 

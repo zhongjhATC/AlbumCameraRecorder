@@ -20,35 +20,41 @@ public class MultiMediaUtils {
      */
     public static int checkedNumOf(List<MultiMedia> items, MultiMedia item) {
         int index = -1;
-        if (item.getMediaUri() != null) {
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getMediaUri() != null && items.get(i).getMediaUri().equals(item.getMediaUri())) {
-                    index = i;
-                    break;
-                }
-            }
-        } else if (item.getUri() != null) {
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUri() != null && items.get(i).getUri().equals(item.getUri())) {
-                    index = i;
-                    break;
-                }
-            }
-        } else if (item.getDrawableId() != -1) {
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getDrawableId() != -1 && items.get(i).getDrawableId() == item.getDrawableId()) {
-                    index = i;
-                    break;
-                }
-            }
-        } else if (item.getUrl() != null) {
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUrl() != null && items.get(i).getUrl().equals(item.getUrl())) {
-                    index = i;
-                    break;
-                }
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).equals(item)) {
+                index = i;
+                break;
             }
         }
+//        if (item.getMediaUri() != null) {
+//            for (int i = 0; i < items.size(); i++) {
+//                if (items.get(i).getMediaUri() != null && items.get(i).getMediaUri().equals(item.getMediaUri())) {
+//                    index = i;
+//                    break;
+//                }
+//            }
+//        } else if (item.getUri() != null) {
+//            for (int i = 0; i < items.size(); i++) {
+//                if (items.get(i).getUri() != null && items.get(i).getUri().equals(item.getUri())) {
+//                    index = i;
+//                    break;
+//                }
+//            }
+//        } else if (item.getDrawableId() != -1) {
+//            for (int i = 0; i < items.size(); i++) {
+//                if (items.get(i).getDrawableId() != -1 && items.get(i).getDrawableId() == item.getDrawableId()) {
+//                    index = i;
+//                    break;
+//                }
+//            }
+//        } else if (item.getUrl() != null) {
+//            for (int i = 0; i < items.size(); i++) {
+//                if (items.get(i).getUrl() != null && items.get(i).getUrl().equals(item.getUrl())) {
+//                    index = i;
+//                    break;
+//                }
+//            }
+//        }
         // 如果选择的为 -1 就是未选状态，否则选择基础数量+1
         return index == -1 ? CheckView.UNCHECKED : index + 1;
     }
