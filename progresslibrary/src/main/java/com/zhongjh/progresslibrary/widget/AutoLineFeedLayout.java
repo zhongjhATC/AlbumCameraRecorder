@@ -434,20 +434,6 @@ public class AutoLineFeedLayout extends ViewGroup {
             Log.d(TAG, "viewHolderAdd.itemView.setVisibility(View.GONE)");
             viewHolderAdd.itemView.setVisibility(View.GONE);
         }
-        updatePosition();
-    }
-
-    /**
-     * 更新索引
-     */
-    private void updatePosition() {
-        Log.d(TAG + " Test", "updatePosition");
-        for (int i = 0; i < imageList.size(); i++) {
-            imageList.get(i).setPosition(i);
-        }
-        for (int i = 0; i < videoList.size(); i++) {
-            videoList.get(i).setPosition(i);
-        }
     }
 
     /**
@@ -513,7 +499,6 @@ public class AutoLineFeedLayout extends ViewGroup {
                         AutoLineFeedLayout.this.listener.onItemStartUploading(multiMediaView);
                     }
                 }
-                updatePosition();
             }
         });
     }
@@ -558,7 +543,6 @@ public class AutoLineFeedLayout extends ViewGroup {
                         AutoLineFeedLayout.this.listener.onItemStartUploading(multiMediaView);
                     }
                 }
-                updatePosition();
             }
         });
     }

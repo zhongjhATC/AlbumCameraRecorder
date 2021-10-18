@@ -20,10 +20,6 @@ public class MultiMedia implements Parcelable {
 
     protected long id;
     /**
-     * 九宫格的当前图片索引，不计算视频和录音，因为这个position随时会改变，所以不加入hashCode,equals这些里面计算,也可以用作CameraLayout的索引
-     */
-    protected int position = -1;
-    /**
      * 真实路径
      */
     protected String path;
@@ -125,13 +121,6 @@ public class MultiMedia implements Parcelable {
         this.mimeType = mimeType;
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
 
     public String getPath() {
         return path;
@@ -212,7 +201,6 @@ public class MultiMedia implements Parcelable {
                 && (uri != null && uri.equals(other.uri) || (uri == null && other.uri == null))
                 && size == other.size
                 && duration == other.duration
-                && position == other.position
                 && drawableId == other.drawableId;
 
     }
@@ -296,7 +284,6 @@ public class MultiMedia implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.id);
-        dest.writeInt(this.position);
         dest.writeString(this.path);
         dest.writeString(this.url);
         dest.writeInt(this.drawableId);
@@ -310,7 +297,6 @@ public class MultiMedia implements Parcelable {
 
     protected MultiMedia(Parcel in) {
         this.id = in.readLong();
-        this.position = in.readInt();
         this.path = in.readString();
         this.url = in.readString();
         this.drawableId = in.readInt();

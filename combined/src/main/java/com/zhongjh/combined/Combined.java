@@ -65,10 +65,10 @@ public class Combined {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(activity, (ArrayList) maskProgressLayout.getImages(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(activity, (ArrayList) maskProgressLayout.getImages(), maskProgressLayout.getImages().indexOf(multiMediaView));
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(activity, (ArrayList) maskProgressLayout.getVideos(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewVideo(activity, (ArrayList) maskProgressLayout.getVideos(), maskProgressLayout.getVideos().indexOf(multiMediaView));
                 }
                 listener.onItemClick(view, multiMediaView);
             }

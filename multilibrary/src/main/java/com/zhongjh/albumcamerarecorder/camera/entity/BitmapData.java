@@ -11,25 +11,12 @@ import java.io.File;
  */
 public class BitmapData {
 
-    /**
-     * 索引，用于中途操作区分
-     */
-    private int position;
     private String path;
     private Uri uri;
 
-    public BitmapData(int position,String path, Uri uri) {
-        this.position = position;
+    public BitmapData(String path, Uri uri) {
         this.path = path;
         this.uri = uri;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
     }
 
     public String getPath() {

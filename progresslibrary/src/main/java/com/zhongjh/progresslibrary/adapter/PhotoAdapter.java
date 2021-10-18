@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sdsmdg.harjot.vectormaster.VectorMasterView;
@@ -39,6 +42,7 @@ import gaode.zhongjh.com.common.listener.OnMoreClickListener;
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
     private Context mContext;
+    private GridLayoutManager mGridLayoutManage;
 
     private final static String TAG = PhotoAdapter.class.getSimpleName();
     private final LayoutInflater mInflater;
@@ -142,11 +146,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * @param maskingTextContent 有关遮罩层：文字内容
      * @param addDrawable        添加的图片资源
      */
-    public PhotoAdapter(Context context, MaskProgressLayout maskProgressLayout,
+    public PhotoAdapter(Context context, GridLayoutManager gridLayoutManager, MaskProgressLayout maskProgressLayout,
                         ImageEngine imageEngine, Drawable placeholder, boolean isOperation, int maxMediaCount,
                         int maskingColor, int maskingTextSize, int maskingTextColor, String maskingTextContent,
                         int deleteColor, Drawable deleteImage, Drawable addDrawable) {
         this.mContext = context;
+        this.mGridLayoutManage = gridLayoutManager;
         this.mInflater = LayoutInflater.from(context);
 
         this.maskProgressLayout = maskProgressLayout;
@@ -173,6 +178,15 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.item_image, parent, false);
         PhotoViewHolder photoViewHolder = new PhotoViewHolder(view);
+
+        // 设置高度
+        ViewGroup.LayoutParams params = photoViewHolder.itemView.getLayoutParams();
+        // 动态计算，设置item的宽高一致，总宽度-左右margin-左右padding / 总列数-item左右margin-item左右padding
+        params.height =
+                mGridLayoutManage.getWidth() / mGridLayoutManage.getSpanCount() -
+                        2 * photoViewHolder.itemView.getPaddingLeft() -
+                        2 * ((ViewGroup.MarginLayoutParams) params).leftMargin;
+
 
         // 判断有没有自定义图片
         if (deleteImage != null) {
@@ -403,7 +417,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         }
         list.remove(multiMediaView);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, 1);
+        notifyItemRangeChanged(position, list.size());
     }
 
     /**
@@ -413,11 +427,14 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * @return 索引
      */
     private int getNeedAddPosition(int type) {
-        // 获取图片第一个索引
-        int imageFirstPosition = getImageFirstPosition();
         if (type == MultimediaTypes.PICTURE) {
+            if (list.size() <= 0) {
+                return 0;
+            }
             return list.size() - 1;
         } else if (type == MultimediaTypes.VIDEO) {
+            // 获取图片第一个索引
+            int imageFirstPosition = getImageFirstPosition();
             return imageFirstPosition - 1;
         }
         return 0;
@@ -458,6 +475,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         public VectorMasterView vmvClose;
         public ImageView imgClose;
         public View vClose;
+        public FrameLayout flMain;
 
         PhotoViewHolder(View itemView) {
             super(itemView);
@@ -465,6 +483,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             imgPlay = itemView.findViewById(R.id.imgPlay);
             vmvClose = itemView.findViewById(R.id.vmvClose);
             imgClose = itemView.findViewById(R.id.imgClose);
+            flMain = itemView.findViewById(R.id.flMain);
         }
 
         /**

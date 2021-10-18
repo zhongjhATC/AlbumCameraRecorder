@@ -94,7 +94,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             multiMedia.setPath(item.getPath());
             multiMedia.setType(MultimediaTypes.PICTURE);
             multiMedia.setMimeType(MimeType.JPEG.toString());
-            multiMedia.setPosition(item.getPosition());
             items.add(multiMedia);
         }
         Bundle bundle = new Bundle();
@@ -109,7 +108,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         item.setPath(mListData.get(position).getPath());
         item.setType(MultimediaTypes.PICTURE);
         item.setMimeType(MimeType.JPEG.toString());
-        item.setPosition(mListData.get(position).getPosition());
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);

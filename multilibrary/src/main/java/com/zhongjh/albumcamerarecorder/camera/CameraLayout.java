@@ -132,10 +132,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     List<BitmapData> mCaptureData = new ArrayList<>();
     /**
-     * 数据目前的最长索引，上面两个集合都是根据这个索引进行删除增加。这个索引只有递增没有递减
-     */
-    private int mPosition = 0;
-    /**
      * 拷贝文件是否拷贝完
      */
     private int currentCount = 0;
@@ -807,7 +803,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
         // 重置mCaptureBitmaps
         mCaptureData.clear();
-        BitmapData bitmapData = new BitmapData(1, mPhotoFile.getPath(), uri);
+        BitmapData bitmapData = new BitmapData( mPhotoFile.getPath(), uri);
         mCaptureData.add(bitmapData);
 
         mViewHolder.imgPhoto.canScroll();
@@ -1041,8 +1037,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 初始化数据并且存储进file
         File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
         Uri uri = mPictureMediaStoreCompat.getUri(file.getPath());
-        mPosition++;
-        BitmapData bitmapData = new BitmapData(mPosition, file.getPath(), uri);
+        BitmapData bitmapData = new BitmapData(file.getPath(), uri);
         // 回收bitmap
         if (bitmap.isRecycled()) {
             // 回收并且置为null

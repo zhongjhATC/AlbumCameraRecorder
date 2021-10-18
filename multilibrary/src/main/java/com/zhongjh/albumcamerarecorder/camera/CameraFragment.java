@@ -131,7 +131,7 @@ public class CameraFragment extends BaseFragment {
                     // 重新赋值
                     ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
                     for (MultiMedia item : selected) {
-                        BitmapData bitmapData = new BitmapData(item.getPosition(),item.getPath(),item.getUri());
+                        BitmapData bitmapData = new BitmapData(item.getPath(),item.getUri());
                         bitmapDatas.add(bitmapData);
                     }
                     // 全部刷新

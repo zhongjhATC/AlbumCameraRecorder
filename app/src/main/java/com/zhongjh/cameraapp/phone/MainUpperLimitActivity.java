@@ -85,10 +85,12 @@ public class MainUpperLimitActivity extends BaseActivity {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainUpperLimitActivity.this, (ArrayList) mBinding.mplImageList.getImages(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewImage(MainUpperLimitActivity.this, (ArrayList) mBinding.mplImageList.getImages(),
+                            mBinding.mplImageList.getImages().indexOf(multiMediaView));
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainUpperLimitActivity.this, (ArrayList) mBinding.mplImageList.getVideos(), multiMediaView.getPosition());
+                    MultiMediaSetting.openPreviewVideo(MainUpperLimitActivity.this, (ArrayList) mBinding.mplImageList.getVideos(),
+                            mBinding.mplImageList.getVideos().indexOf(multiMediaView));
                 }
             }
 

@@ -206,11 +206,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             drawable = ContextCompat.getDrawable(getContext(), R.color.thumbnail_placeholder);
         }
         // 初始化九宫格的控件
-        mPhotoAdapter = new PhotoAdapter(mContext, this,
+        mViewHolder.rlGrid.setLayoutManager(new GridLayoutManager(getContext(), columnNumber));
+        mPhotoAdapter = new PhotoAdapter(mContext, (GridLayoutManager) mViewHolder.rlGrid.getLayoutManager(),this,
                 mImageEngine, drawable, isOperation, maxCount,
                 maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
                 imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
-        mViewHolder.rlGrid.setLayoutManager(new GridLayoutManager(getContext(), columnNumber));
         mViewHolder.rlGrid.setAdapter(mPhotoAdapter);
 
         maskProgressLayoutStyle.recycle();
@@ -279,7 +279,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         for (int i = 0; i < videoUrls.size(); i++) {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
             multiMediaView.setUploading(false);
-            multiMediaView.setPosition(i);
             multiMediaView.setUrl(videoUrls.get(i));
             multiMediaViews.add(multiMediaView);
         }
@@ -459,7 +458,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
             multiMediaView.setUri(videoUris.get(i));
             multiMediaView.setUploading(isUploading);
-            multiMediaView.setPosition(i);
             multiMediaViews.add(multiMediaView);
         }
         if (icClean) {
