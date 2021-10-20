@@ -51,6 +51,10 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * 用于下载后记录的音频view
      */
     View mAudioView;
+    /**
+     * 用于下载后记录的视频view
+     */
+    MultiMediaView mVideoMultiMediaView;
 
     /**
      * 初始化下载
@@ -137,20 +141,20 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public void onItemVideoStartDownload(String url) {
+            public void onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
-                    String[] fileFullPath = getFileFullPath(url, 1);
+                    String[] fileFullPath = getFileFullPath(multiMediaView.getUrl(), 1);
                     boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
                     if (!isExists) {
                         // 调用方法
-                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
+                        mVideoMultiMediaView = multiMediaView;
+                        mDownloadHelper.downloadFile(multiMediaView.getUrl(), fileFullPath[0], fileFullPath[1]);
                     } else {
                         // 直接赋值
-                        List<String> videoPath = new ArrayList<>();
-                        videoPath.add(fileFullPath[0] + File.separator + fileFullPath[1]);
-                        mBinding.mplImageList.addVideoCover(videoPath);
-                        mBinding.mplImageList.onVideoClick();
+                        multiMediaView.setPath(fileFullPath[0] + File.separator + fileFullPath[1]);
+                        runOnUiThread(view::performClick);
+                        Log.d("执行点击","执行点击");
                     }
                 }
             }
@@ -158,12 +162,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         });
         initConfig();
         initData();
-        findViewById(R.id.btnSetValue).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initData();
-            }
-        });
+        findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
         findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
     }
 
@@ -248,7 +247,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
         videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
-        videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
+        videoUrls.add("https://www.w3school.com.cn/example/html5/mov_bbb.mp4");
         mBinding.mplImageList.setVideoUrls(videoUrls);
 
         // 图片数据
@@ -315,9 +314,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 mBinding.mplImageList.setAudioCover(mAudioView, file.getPath());
                 break;
             case "mp4":
-                List<String> videoPath = new ArrayList<>();
-                videoPath.add(file.getPath());
-                mBinding.mplImageList.addVideoCover(videoPath);
+                mBinding.mplImageList.setVideoCover(mVideoMultiMediaView, file.getPath());
                 break;
             default:
                 break;

@@ -114,7 +114,7 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemVideoStartDownload(String url) {
+            public void onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
 
             }
 

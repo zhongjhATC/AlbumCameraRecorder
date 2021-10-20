@@ -115,7 +115,7 @@ public class MainUpperLimitActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemVideoStartDownload(String url) {
+            public void onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
 
             }
 

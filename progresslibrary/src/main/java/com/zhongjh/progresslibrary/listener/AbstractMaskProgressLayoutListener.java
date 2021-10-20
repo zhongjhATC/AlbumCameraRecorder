@@ -36,7 +36,8 @@ public class AbstractMaskProgressLayoutListener implements MaskProgressLayoutLis
     }
 
     @Override
-    public void onItemVideoStartDownload(String url) {
+    public void onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
 
     }
+
 }

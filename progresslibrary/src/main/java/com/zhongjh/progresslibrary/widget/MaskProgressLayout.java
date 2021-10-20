@@ -265,12 +265,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void addVideoCover(List<String> videoPath) {
-        List<Uri> uris = new ArrayList<>();
-        for (String item : videoPath) {
-            uris.add(mMediaStoreCompat.getUri(item));
-        }
-        addVideo(uris, true, false);
+    public void setVideoCover(MultiMediaView multiMediaView,String videoPath) {
+        multiMediaView.setUri(mMediaStoreCompat.getUri(videoPath));
     }
 
     @Override
@@ -350,11 +346,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     @Override
     public void onAudioClick(View view) {
         ((PlayView) view).mViewHolder.imgPlay.performClick();
-    }
-
-    @Override
-    public void onVideoClick() {
-//        mViewHolder.alfMedia.getChildAt(0).performClick();
     }
 
     @Override

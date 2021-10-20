@@ -56,7 +56,7 @@ public interface MaskProgressApi {
      *
      * @param videoPath 视频地址列表
      */
-    void addVideoCover(List<String> videoPath);
+    void setVideoCover(MultiMediaView multiMediaView,String videoPath);
 
     /**
      * 设置视频网址数据
@@ -120,11 +120,6 @@ public interface MaskProgressApi {
      * @view 点击的view
      */
     void onAudioClick(View view);
-
-    /**
-     * 视频点击
-     */
-    void onVideoClick();
 
     /**
      * 删除单个图片

@@ -94,7 +94,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
             adapter.addAll(items);
             adapter.notifyDataSetChanged();
             if (!mIsAlreadySetPosition) {
-                //onAlbumMediaLoad is called many times..
+                // onAlbumMediaLoad is called many times..
                 mIsAlreadySetPosition = true;
                 MultiMedia selected = getIntent().getParcelableExtra(EXTRA_ITEM);
                 // -1是爲了拿到索引

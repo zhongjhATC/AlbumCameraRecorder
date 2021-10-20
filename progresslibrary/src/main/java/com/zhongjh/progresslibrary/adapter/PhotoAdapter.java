@@ -81,11 +81,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     /**
      * 删除图片的内圆颜色
      */
-    private int deleteColor = -1;
+    private int deleteColor;
     /**
      * 删除图片的资源,优先权比deleteColor高
      */
-    private Drawable deleteImage = null;
+    private Drawable deleteImage;
     /**
      * 添加图片的资源
      */
@@ -114,6 +114,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * 有关遮罩层：文字内容
      */
     private String maskingTextContent;
+
+    private int mItemHeight;
     MultiMediaView mMultiMediaViewAdd = new MultiMediaView(MultimediaTypes.ADD);
 
     public MaskProgressLayoutListener getListener() {
@@ -183,13 +185,20 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         View view = mInflater.inflate(R.layout.item_image, parent, false);
         PhotoViewHolder photoViewHolder = new PhotoViewHolder(view);
 
-        // 设置高度
-        ViewGroup.LayoutParams params = photoViewHolder.itemView.getLayoutParams();
-        // 动态计算，设置item的宽高一致，总宽度-左右margin-左右padding / 总列数-item左右margin-item左右padding
-        params.height =
-                mGridLayoutManage.getWidth() / mGridLayoutManage.getSpanCount() -
-                        2 * photoViewHolder.itemView.getPaddingLeft() -
-                        2 * ((ViewGroup.MarginLayoutParams) params).leftMargin;
+        if (mItemHeight == 0) {
+            // 设置高度
+            ViewGroup.LayoutParams params = photoViewHolder.itemView.getLayoutParams();
+            // 动态计算，设置item的宽高一致，总宽度-左右margin-左右padding / 总列数-item左右margin-item左右padding
+            mItemHeight =
+                    mGridLayoutManage.getWidth() / mGridLayoutManage.getSpanCount() -
+                            2 * photoViewHolder.itemView.getPaddingLeft() -
+                            2 * ((ViewGroup.MarginLayoutParams) params).leftMargin;
+            params.height = mItemHeight;
+        } else {
+            // 设置高度
+            ViewGroup.LayoutParams params = photoViewHolder.itemView.getLayoutParams();
+            params.height = mItemHeight;
+        }
 
 
         // 判断有没有自定义图片
@@ -252,7 +261,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                 holder.imgPlay.setVisibility(View.GONE);
             }
 
-            holder.loadImage(mContext, imageEngine, placeholder, multiMediaView);
+            holder.loadImage(mContext, imageEngine, placeholder, multiMediaView, mItemHeight);
 
             // 显示close
             if (isOperation) {
@@ -275,7 +284,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                             // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
                             if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
                                 // 执行下载事件
-                                listener.onItemVideoStartDownload(multiMediaView.getUrl());
+                                listener.onItemVideoStartDownload(v, multiMediaView);
                             } else {
                                 // 点击事件
                                 listener.onItemClick(v, multiMediaView);
@@ -508,16 +517,16 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
          * 加载图片
          */
         private void loadImage(Context context, ImageEngine imageEngine,
-                               Drawable placeholder, MultiMediaView multiMediaView) {
+                               Drawable placeholder, MultiMediaView multiMediaView, int height) {
             // 加载图片
             if (!TextUtils.isEmpty(multiMediaView.getPath())) {
-                imageEngine.loadThumbnail(context, mpvImage.getWidth(), placeholder,
+                imageEngine.loadThumbnail(context, height, placeholder,
                         mpvImage, Uri.fromFile(new File(multiMediaView.getPath())));
             } else if (!TextUtils.isEmpty(multiMediaView.getUrl())) {
-                imageEngine.loadUrlThumbnail(context, mpvImage.getWidth(), placeholder,
+                imageEngine.loadUrlThumbnail(context, height, placeholder,
                         mpvImage, multiMediaView.getUrl());
             } else if (multiMediaView.getUri() != null) {
-                imageEngine.loadThumbnail(context, mpvImage.getWidth(), placeholder,
+                imageEngine.loadThumbnail(context, height, placeholder,
                         mpvImage, multiMediaView.getUri());
             }
         }

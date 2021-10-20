@@ -89,8 +89,8 @@ public class Combined {
             }
 
             @Override
-            public void onItemVideoStartDownload(String url) {
-                listener.onItemVideoStartDownload(url);
+            public void onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
+                listener.onItemVideoStartDownload(view,multiMediaView);
             }
         });
     }
