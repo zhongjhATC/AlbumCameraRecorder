@@ -18,6 +18,9 @@ import gaode.zhongjh.com.common.enums.MultimediaTypes;
  */
 public class MultiMedia implements Parcelable {
 
+    /**
+     * 用于区分，因为九宫数据是允许选择重复的
+     */
     protected long id;
     /**
      * 真实路径
@@ -103,6 +106,14 @@ public class MultiMedia implements Parcelable {
         this.mediaUri = ContentUris.withAppendedId(contentUri, id);
         this.size = size;
         this.duration = duration;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setType(@MultimediaTypes int multiMediaState) {

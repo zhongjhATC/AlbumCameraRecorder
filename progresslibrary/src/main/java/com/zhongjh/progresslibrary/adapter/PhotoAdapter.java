@@ -52,6 +52,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      */
     private ArrayList<MultiMediaView> list = new ArrayList<>();
     /**
+     * 每次添加数据增长的id，用于在相同地址的情况下区分两张图等
+     */
+    private long mId;
+    /**
      * 图片数据数量
      */
     private int mImageCount = 0;
@@ -299,6 +303,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         ArrayList<MultiMediaView> imageDatas = new ArrayList<>();
         for (MultiMediaView multiMediaView : list) {
             if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
+                multiMediaView.setId(mId++);
                 imageDatas.add(multiMediaView);
             }
         }
@@ -312,6 +317,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         ArrayList<MultiMediaView> videoDatas = new ArrayList<>();
         for (MultiMediaView multiMediaView : list) {
             if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                multiMediaView.setId(mId++);
                 videoDatas.add(multiMediaView);
             }
         }
@@ -326,6 +332,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     public void addImageData(List<MultiMediaView> multiMediaViews) {
         Log.d(TAG + " Test", "addImageData");
         int position = getNeedAddPosition(MultimediaTypes.PICTURE);
+        for (MultiMediaView item : multiMediaViews) {
+            item.setId(mId++);
+        }
         list.addAll(position, multiMediaViews);
         // 刷新ui
         notifyItemRangeInserted(position, multiMediaViews.size());
@@ -346,6 +355,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         }
         // 增加新的图片数据
         int position = list.size() - 1;
+        for (MultiMediaView item : multiMediaViews) {
+            item.setId(mId++);
+        }
         list.addAll(multiMediaViews);
         notifyItemRangeInserted(position, multiMediaViews.size());
         notifyItemRangeChanged(position, multiMediaViews.size());
@@ -360,6 +372,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     public void addVideoData(List<MultiMediaView> multiMediaViews) {
         Log.d(TAG + " Test", "addVideoData");
         int position = getNeedAddPosition(MultimediaTypes.VIDEO);
+        for (MultiMediaView item : multiMediaViews) {
+            item.setId(mId++);
+        }
         list.addAll(position, multiMediaViews);
         // 刷新ui
         notifyItemRangeInserted(position, multiMediaViews.size());
@@ -380,6 +395,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         }
 
         // 增加新的视频数据
+        for (MultiMediaView item : multiMediaViews) {
+            item.setId(mId++);
+        }
         list.addAll(0, multiMediaViews);
         notifyItemRangeInserted(0, multiMediaViews.size());
         notifyItemRangeChanged(0, multiMediaViews.size());
@@ -431,11 +449,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             if (list.size() <= 0) {
                 return 0;
             }
-            return list.size() - 1;
+            return list.size();
         } else if (type == MultimediaTypes.VIDEO) {
             // 获取图片第一个索引
             int imageFirstPosition = getImageFirstPosition();
-            return imageFirstPosition - 1;
+            return imageFirstPosition;
         }
         return 0;
     }

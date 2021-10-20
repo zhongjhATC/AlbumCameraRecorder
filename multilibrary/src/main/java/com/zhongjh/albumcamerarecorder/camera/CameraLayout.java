@@ -319,11 +319,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         this.mFragment = fragment;
 
         // 初始化多图适配器，先判断是不是多图配置
-        if (SelectableUtils.getImageMaxCount() > 1) {
-            mPhotoAdapter = new PhotoAdapter(mContext, fragment, mGlobalSpec, mCaptureData, this);
-            mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-            mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
-        }
+        mPhotoAdapter = new PhotoAdapter(mContext, fragment, mGlobalSpec, mCaptureData, this);
+        mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+        mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
     }
 
     /**
@@ -803,7 +801,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
         // 重置mCaptureBitmaps
         mCaptureData.clear();
-        BitmapData bitmapData = new BitmapData( mPhotoFile.getPath(), uri);
+        BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri);
         mCaptureData.add(bitmapData);
 
         mViewHolder.imgPhoto.canScroll();
@@ -907,7 +905,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 break;
             case TYPE_PICTURE:
                 // 隐藏图片view
-                mViewHolder.cameraView.open();
+                if (!mViewHolder.cameraView.isOpened()) {
+                    mViewHolder.cameraView.open();
+                }
                 mViewHolder.imgPhoto.setVisibility(INVISIBLE);
                 mViewHolder.flShow.setVisibility(INVISIBLE);
                 if (mPhotoFile != null) {
@@ -1271,14 +1271,19 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             mViewHolder.vLine1.setVisibility(View.GONE);
             mViewHolder.vLine2.setVisibility(View.GONE);
 
-            // 隐藏右侧按钮
+            // 隐藏左右侧按钮
+            mViewHolder.pvLayout.getViewHolder().btnCancel.setVisibility(View.GONE);
             mViewHolder.pvLayout.getViewHolder().btnConfirm.setVisibility(View.GONE);
 
             // 恢复长按事件，即重新启用录像
+            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
             mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
 
             // 设置空闲状态
             setState(Constants.STATE_PREVIEW);
+
+            // 如果是单图编辑情况下
+            mViewHolder.rlEdit.setVisibility(View.GONE);
         }
     }
 

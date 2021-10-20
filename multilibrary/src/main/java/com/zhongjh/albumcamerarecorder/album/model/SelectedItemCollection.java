@@ -61,7 +61,7 @@ public class SelectedItemCollection {
     /**
      * 数据源
      */
-    private Set<MultiMedia> mItems;
+    private ArrayList<MultiMedia> mItems;
     /**
      * 当前选择的所有类型，列表如果包含了图片和视频，就会变成混合类型
      */
@@ -85,16 +85,16 @@ public class SelectedItemCollection {
      */
     public void onCreate(Bundle bundle, boolean isAllowRepeat) {
         if (bundle == null) {
-            mItems = new LinkedHashSet<>();
+            mItems = new ArrayList<>();
         } else {
             // 获取缓存的数据
             List<MultiMedia> saved = bundle.getParcelableArrayList(STATE_SELECTION);
             if (saved != null) {
                 if (isAllowRepeat) {
-                    mItems = new LinkedHashSet<>();
+                    mItems = new ArrayList<>();
                     mItems.addAll(saved);
                 } else {
-                    mItems = new LinkedHashSet<>(saved);
+                    mItems = new ArrayList<>(saved);
                 }
             }
 
@@ -108,7 +108,7 @@ public class SelectedItemCollection {
      * @param outState 缓存
      */
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(STATE_SELECTION, new ArrayList<>(mItems));
+        outState.putParcelableArrayList(STATE_SELECTION, mItems);
         outState.putInt(STATE_COLLECTION_TYPE, mCollectionType);
     }
 
@@ -119,7 +119,7 @@ public class SelectedItemCollection {
      */
     public Bundle getDataWithBundle() {
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, new ArrayList<>(mItems));
+        bundle.putParcelableArrayList(STATE_SELECTION, mItems);
         bundle.putInt(STATE_COLLECTION_TYPE, mCollectionType);
         return bundle;
     }
@@ -172,7 +172,7 @@ public class SelectedItemCollection {
      */
     public boolean remove(MultiMedia item) {
         boolean removed;
-        MultiMedia multiMedia = MultiMediaUtils.checkedMultiMediaOf(new ArrayList<>(mItems), item);
+        MultiMedia multiMedia = MultiMediaUtils.checkedMultiMediaOf(mItems, item);
         removed = mItems.remove(multiMedia);
         if (removed) {
             if (mItems.size() == 0) {
@@ -210,7 +210,7 @@ public class SelectedItemCollection {
      * @return list<Item>
      */
     public List<MultiMedia> asList() {
-        return new ArrayList<>(mItems);
+        return mItems;
     }
 
     /**
@@ -378,8 +378,7 @@ public class SelectedItemCollection {
     private void getSelectCount() {
         mSelectedImageCount = 0;
         mSelectedVideoCount = 0;
-        List<MultiMedia> list = new ArrayList<>(mItems);
-        for (MultiMedia multiMedia : list) {
+        for (MultiMedia multiMedia : mItems) {
             if (multiMedia.getMimeType().startsWith("image")) {
                 mSelectedImageCount++;
             } else if (multiMedia.getMimeType().startsWith("video")) {
@@ -442,7 +441,6 @@ public class SelectedItemCollection {
      * @return 选择的索引，最终返回的选择了第几个
      */
     public int checkedNumOf(MultiMedia item) {
-        // TODO 看看这里mItems能不能获取传递过来的
         return MultiMediaUtils.checkedNumOf(new ArrayList<>(mItems), item);
     }
 
