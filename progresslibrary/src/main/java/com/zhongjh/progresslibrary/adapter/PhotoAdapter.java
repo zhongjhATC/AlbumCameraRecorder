@@ -284,7 +284,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                             // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
                             if (TextUtils.isEmpty(multiMediaView.getPath()) && multiMediaView.getUri() == null) {
                                 // 执行下载事件
-                                listener.onItemVideoStartDownload(v, multiMediaView);
+                                boolean isContinue = listener.onItemVideoStartDownload(v, multiMediaView);
+                                if (isContinue) {
+                                    // 点击事件
+                                    listener.onItemClick(v, multiMediaView);
+                                }
                             } else {
                                 // 点击事件
                                 listener.onItemClick(v, multiMediaView);
@@ -312,7 +316,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         ArrayList<MultiMediaView> imageDatas = new ArrayList<>();
         for (MultiMediaView multiMediaView : list) {
             if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
-                multiMediaView.setId(mId++);
                 imageDatas.add(multiMediaView);
             }
         }
@@ -326,7 +329,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         ArrayList<MultiMediaView> videoDatas = new ArrayList<>();
         for (MultiMediaView multiMediaView : list) {
             if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
-                multiMediaView.setId(mId++);
                 videoDatas.add(multiMediaView);
             }
         }

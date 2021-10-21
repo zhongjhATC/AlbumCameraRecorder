@@ -59,7 +59,9 @@ public interface MaskProgressLayoutListener {
      *
      * @param view           点击的view
      * @param multiMediaView 传递的多媒体
+     *
+     * @return 是否触发后面的事件
      */
-    void onItemVideoStartDownload(View view, MultiMediaView multiMediaView);
+    boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView);
 
 }

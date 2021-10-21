@@ -17,6 +17,7 @@ import java.util.Set;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import gaode.zhongjh.com.common.entity.MultiMedia;
 import gaode.zhongjh.com.common.enums.MimeType;
 
@@ -162,10 +163,11 @@ public final class MultiMediaSetting {
      * 调用打开图片预览 - 主要用于配合九宫图
      *
      * @param activity 窗体
+     * @param requestCode 请求码
      * @param list     数据源
      * @param position 当前数据的索引
      */
-    public static void openPreviewImage(Activity activity, ArrayList<MultiMedia> list, int position) {
+    public static void openPreviewImage(Activity activity, int requestCode, ArrayList<MultiMedia> list, int position) {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, list);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
@@ -177,7 +179,7 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        activity.startActivityForResult(intent, globalSpec.requestCode);
+        activity.startActivityForResult(intent, requestCode);
         if (globalSpec.isCutscenes) {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }
@@ -188,9 +190,11 @@ public final class MultiMediaSetting {
      * 调用打开单个视频 - 主要用于配合九宫图
      *
      * @param activity 窗体
+     * @param requestCode 请求码
      * @param list     需要显示的大图
+     * @param position 当前数据的索引
      */
-    public static void openPreviewVideo(Activity activity, ArrayList<MultiMedia> list, int position) {
+    public static void openPreviewVideo(Activity activity, int requestCode, ArrayList<MultiMedia> list, int position) {
         // 转换成items
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, list);
@@ -203,7 +207,7 @@ public final class MultiMediaSetting {
         intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
-        activity.startActivityForResult(intent, globalSpec.requestCode);
+        activity.startActivityForResult(intent, requestCode);
         if (globalSpec.isCutscenes) {
             activity.overridePendingTransition(R.anim.activity_open, 0);
         }

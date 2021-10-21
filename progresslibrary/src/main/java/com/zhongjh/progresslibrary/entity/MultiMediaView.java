@@ -99,4 +99,10 @@ public class MultiMediaView extends MultiMedia {
         // 父类已重写
         return super.hashCode();
     }
+
+    /**
+     * 无视防抖动的影响
+     */
+    public void onClick(View view) {
+    }
 }

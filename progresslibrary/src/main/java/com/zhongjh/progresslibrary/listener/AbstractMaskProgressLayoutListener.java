@@ -36,8 +36,8 @@ public class AbstractMaskProgressLayoutListener implements MaskProgressLayoutLis
     }
 
     @Override
-    public void onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
-
+    public boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
+        return false;
     }
 
 }

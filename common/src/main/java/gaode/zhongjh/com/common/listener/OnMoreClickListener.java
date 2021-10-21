@@ -2,6 +2,8 @@ package gaode.zhongjh.com.common.listener;
 
 import android.view.View;
 
+import gaode.zhongjh.com.common.entity.MultiMedia;
+
 /**
  * 防抖动点击
  *
@@ -33,7 +35,6 @@ public abstract class OnMoreClickListener implements View.OnClickListener {
             lastTime = currentTime;
             onMoreClickListener(v);
         }
-
     }
 
 }

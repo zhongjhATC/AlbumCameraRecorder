@@ -240,8 +240,10 @@ public class SelectedItemCollection {
         for (MultiMedia item : mItems) {
             if (item.getMediaUri() != null) {
                 paths.add(PathUtils.getPath(mContext, item.getMediaUri()));
-            } else {
+            } else if (item.getUri() != null) {
                 paths.add(PathUtils.getPath(mContext, item.getUri()));
+            } else if (item.getUrl() != null) {
+                paths.add(item.getUrl());
             }
 
         }

@@ -83,11 +83,13 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
                     // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainCustomCameraViewActivity.this, (ArrayList) mBinding.mplImageList.getImages(),
+                    MultiMediaSetting.openPreviewImage(MainCustomCameraViewActivity.this, REQUEST_CODE_CHOOSE,
+                            (ArrayList) mBinding.mplImageList.getImages(),
                             mBinding.mplImageList.getImages().indexOf(multiMediaView));
                 } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainCustomCameraViewActivity.this, (ArrayList) mBinding.mplImageList.getVideos(),
+                    MultiMediaSetting.openPreviewVideo(MainCustomCameraViewActivity.this, REQUEST_CODE_CHOOSE,
+                            (ArrayList) mBinding.mplImageList.getVideos(),
                             mBinding.mplImageList.getVideos().indexOf(multiMediaView));
                 }
             }
@@ -113,8 +115,8 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
-
+            public boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
+                return false;
             }
 
         });
@@ -146,7 +148,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             // 可以自定义cameraView预览时候的宽高
             RelativeLayout.LayoutParams layoutParams =
                     new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
             cameraView.setLayoutParams(layoutParams);
             // 注意，如果需要按照比例显示视频或者图片，需要先设置cameraView的宽高为WRAP_CONTENT。同时该比例会自动根据当前手机的传感器选择最适用的。
             SizeSelector sizeSelector = SizeSelectors.aspectRatio(AspectRatio.of(1, 1), 0f);
