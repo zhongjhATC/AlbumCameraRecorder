@@ -48,7 +48,6 @@ public class PreviewItemFragment extends Fragment {
 
     private static final String ARGS_ITEM = "args_item";
 
-
     View videoPlayButton;
     ImageViewTouch image;
 
