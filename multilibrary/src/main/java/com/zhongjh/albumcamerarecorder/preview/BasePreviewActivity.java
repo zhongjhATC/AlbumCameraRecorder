@@ -23,6 +23,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
+import com.zhongjh.albumcamerarecorder.listener.PreviewListener;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -49,7 +50,7 @@ import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTU
  * @author zhongjh
  */
 public class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
-        ViewPager.OnPageChangeListener {
+        ViewPager.OnPageChangeListener, PreviewListener {
 
     public static final int REQ_IMAGE_EDIT = 1;
     public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
@@ -530,6 +531,11 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         IncapableCause cause = mSelectedCollection.isAcceptable(item);
         IncapableCause.handleCause(this, cause);
         return cause == null;
+    }
+
+    @Override
+    public void test() {
+
     }
 
     public static class ViewHolder {

@@ -6,7 +6,6 @@
     android:background="@color/black"
     android:orientation="horizontal">
 
-
     <VideoView
         android:id="@+id/vvPreview"
         android:layout_width="match_parent"
@@ -56,7 +55,6 @@
             app:cpb_iconComplete="@drawable/ic_baseline_done"
             app:cpb_iconError="@drawable/ic_baseline_close_24"
             app:cpb_textIdle="@string/z_multi_library_confirm" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

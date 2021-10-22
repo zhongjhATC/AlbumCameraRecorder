@@ -23,9 +23,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 
@@ -89,6 +92,10 @@ public class PreviewItemFragment extends Fragment {
                     uri = item.getMediaUri();
                 }else if(item.getUri() != null) {
                     uri = item.getUri();
+                }
+                // 如果uri为null并且url有值，那就用播放器播放网址
+                if (uri == null && !TextUtils.isEmpty(item.getUrl())) {
+                    uri = Uri.parse(item.getUrl());
                 }
                 intent.setDataAndType(uri, "video/*");
                 try {
