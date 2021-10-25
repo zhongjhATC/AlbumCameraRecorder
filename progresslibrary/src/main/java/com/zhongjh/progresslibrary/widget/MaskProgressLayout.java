@@ -266,7 +266,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void setVideoCover(MultiMediaView multiMediaView,String videoPath) {
-        multiMediaView.setUri(mMediaStoreCompat.getUri(videoPath));
+        multiMediaView.setPath(videoPath);
     }
 
     @Override

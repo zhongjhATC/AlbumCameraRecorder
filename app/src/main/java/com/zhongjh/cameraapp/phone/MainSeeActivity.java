@@ -361,7 +361,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         // 获取文件名
         String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
 
-        return new String[]{MainSeeActivity.this.getExternalFilesDir("AA" + File.separator + "audioCache").getPath(), fileName};
+        return new String[]{MainSeeActivity.this.getCacheDir().getPath(), fileName};
     }
 
     /**
