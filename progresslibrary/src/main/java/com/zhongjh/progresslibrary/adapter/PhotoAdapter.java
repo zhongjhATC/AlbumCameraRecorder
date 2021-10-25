@@ -310,6 +310,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     /**
+     * @return 获取所有数据源
+     */
+    public ArrayList<MultiMediaView> getData() {
+        return list;
+    }
+
+    /**
      * 获取图片的数据
      */
     public ArrayList<MultiMediaView> getImageData() {

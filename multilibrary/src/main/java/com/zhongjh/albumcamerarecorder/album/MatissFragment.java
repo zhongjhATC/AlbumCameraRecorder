@@ -317,8 +317,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         super.onDestroy();
         // 销毁相册model
         mAlbumCollection.onDestroy();
-        mAlbumSpec.onCheckedListener = null;
-        mAlbumSpec.onSelectedListener = null;
+//        mAlbumSpec.onCheckedListener = null;
+//        mAlbumSpec.onSelectedListener = null;
     }
 
     @Override

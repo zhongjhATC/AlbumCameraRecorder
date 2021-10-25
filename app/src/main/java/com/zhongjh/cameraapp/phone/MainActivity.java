@@ -304,7 +304,7 @@ public class MainActivity extends BaseActivity {
                 .thumbnailScale(0.85f)
                 .setOnSelectedListener((uriList, pathList) -> {
                     // 每次选择的事件
-                    Log.e("onSelected", "onSelected: pathList=" + pathList);
+                    Log.d("onSelected", "onSelected: pathList=" + pathList);
                 })
                 // 开启原图
                 .originalEnable(mBinding.cbOriginalEnableTrue.isChecked())
@@ -312,7 +312,7 @@ public class MainActivity extends BaseActivity {
                 .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString()))
                 .setOnCheckedListener(isChecked -> {
                     // 是否勾选了原图
-                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
+                    Log.d("isChecked", "onCheck: isChecked=" + isChecked);
                 });
         return albumSetting;
     }

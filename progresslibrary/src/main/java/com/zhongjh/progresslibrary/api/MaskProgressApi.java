@@ -94,6 +94,13 @@ public interface MaskProgressApi {
     void reset();
 
     /**
+     * 获取图片、视频数据
+     *
+     * @return 返回当前包含url的图片、视频数据
+     */
+    ArrayList<MultiMediaView> getImagesAndVideos();
+
+    /**
      * 获取图片数据
      *
      * @return 返回当前包含url的图片数据

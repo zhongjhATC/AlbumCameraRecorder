@@ -93,17 +93,22 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             @SuppressWarnings({"unchecked", "rawtypes"})
             public void onItemClick(View view, MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
-                    // 判断如果是图片类型就预览当前所有图片
+                if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     MultiMediaSetting.openPreviewImage(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
-                            (ArrayList) mBinding.mplImageList.getImages(),
-                            mBinding.mplImageList.getImages().indexOf(multiMediaView));
-                } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
-                    // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
-                            (ArrayList) mBinding.mplImageList.getVideos(),
-                            mBinding.mplImageList.getVideos().indexOf(multiMediaView));
+                            (ArrayList) mBinding.mplImageList.getImagesAndVideos(),
+                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
+//                if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
+//                    // 判断如果是图片类型就预览当前所有图片
+//                    MultiMediaSetting.openPreviewImage(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
+//                            (ArrayList) mBinding.mplImageList.getImages(),
+//                            mBinding.mplImageList.getImages().indexOf(multiMediaView));
+//                } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
+//                    // 判断如果是视频类型就预览视频
+//                    MultiMediaSetting.openPreviewVideo(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
+//                            (ArrayList) mBinding.mplImageList.getVideos(),
+//                            mBinding.mplImageList.getVideos().indexOf(multiMediaView));
+//                }
             }
 
             @Override
@@ -204,7 +209,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .thumbnailScale(0.85f)
                 .setOnSelectedListener((uriList, pathList) -> {
                     // 每次选择的事件
-                    Log.e("onSelected", "onSelected: pathList=" + pathList);
+                    Log.d("onSelected", "onSelected: pathList=" + pathList);
                 })
                 // 开启原图
                 .originalEnable(true)
@@ -212,7 +217,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .maxOriginalSize(1)
                 .setOnCheckedListener(isChecked -> {
                     // 是否勾选了原图
-                    Log.e("isChecked", "onCheck: isChecked=" + isChecked);
+                    Log.d("isChecked", "onCheck: isChecked=" + isChecked);
                 });
 
         // 录音机

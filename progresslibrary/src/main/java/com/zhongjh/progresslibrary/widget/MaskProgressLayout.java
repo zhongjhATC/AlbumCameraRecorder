@@ -329,6 +329,11 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
+    public ArrayList<MultiMediaView> getImagesAndVideos() {
+        return mPhotoAdapter.getData();
+    }
+
+    @Override
     public ArrayList<MultiMediaView> getImages() {
         return mPhotoAdapter.getImageData();
     }
