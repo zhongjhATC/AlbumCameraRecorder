@@ -244,6 +244,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                     listener.onItemAdd(v, mMultiMediaViewAdd, mImageCount, mVideoCount, maskProgressLayout.audioList.size());
                 }
             });
+            holder.mpvImage.reset();
         } else {
             MultiMediaView multiMediaView = list.get(position);
             if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
@@ -301,7 +302,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             if (multiMediaView.isUploading()) {
                 this.listener.onItemStartUploading(multiMediaView);
             } else {
-
+                // 取消上传动画
+                holder.mpvImage.reset();
             }
 
         }
@@ -451,6 +453,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             listener.onItemClose(multiMediaView.getItemView(), multiMediaView);
         }
         list.remove(multiMediaView);
+        multiMediaView.getMaskProgressView().reset();
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, list.size());
     }
