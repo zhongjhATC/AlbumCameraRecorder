@@ -207,7 +207,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         }
         // 初始化九宫格的控件
         mViewHolder.rlGrid.setLayoutManager(new GridLayoutManager(getContext(), columnNumber));
-        mPhotoAdapter = new PhotoAdapter(mContext, (GridLayoutManager) mViewHolder.rlGrid.getLayoutManager(),this,
+        mPhotoAdapter = new PhotoAdapter(mContext, (GridLayoutManager) mViewHolder.rlGrid.getLayoutManager(), this,
                 mImageEngine, drawable, isOperation, maxCount,
                 maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
                 imageDeleteColor, imageDeleteDrawable, imageAddDrawable);
@@ -231,6 +231,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
             multiMediaView.setUri(uri);
             multiMediaViews.add(multiMediaView);
+            // 图片上传进度
+            this.listener.onItemStartUploading(multiMediaView);
         }
         mPhotoAdapter.addImageData(multiMediaViews);
     }
@@ -244,6 +246,8 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setPath(string);
             multiMediaView.setUri(mMediaStoreCompat.getUri(string));
             multiMediaViews.add(multiMediaView);
+            // 图片上传进度
+            this.listener.onItemStartUploading(multiMediaView);
         }
         mPhotoAdapter.addImageData(multiMediaViews);
     }
@@ -265,7 +269,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void setVideoCover(MultiMediaView multiMediaView,String videoPath) {
+    public void setVideoCover(MultiMediaView multiMediaView, String videoPath) {
         multiMediaView.setPath(videoPath);
     }
 
@@ -295,7 +299,18 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
     @Override
     public void setAudioUrls(List<String> audioUrls) {
-        createPlayProgressView(audioUrls, 0);
+        List<MultiMediaView> multiMediaViews = new ArrayList<>();
+        for (String item : audioUrls) {
+            MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
+            multiMediaView.setUrl(item);
+
+            if (MaskProgressLayout.this.audioList == null) {
+                MaskProgressLayout.this.audioList = new ArrayList<>();
+            }
+            audioList.add(multiMediaView);
+            multiMediaViews.add(multiMediaView);
+        }
+        createPlayProgressView(multiMediaViews, 0);
     }
 
     @Override
@@ -354,7 +369,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     @Override
-    public void onRemoveItemImage(int position) {
+    public void removePosition(int position) {
         mPhotoAdapter.removePosition(position);
     }
 
@@ -383,27 +398,19 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
     }
 
     /**
-     * 有序的创建并且加入音频控件
+     * 递归、有序的创建并且加入音频控件
      */
-    private void createPlayProgressView(List<String> audioUrls, final int position) {
-        if (position >= audioUrls.size()) {
+    private void createPlayProgressView(List<MultiMediaView> audioMultiMediaViews, final int position) {
+        if (position >= audioMultiMediaViews.size()) {
             return;
         }
-        String url = audioUrls.get(position);
         ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<PlayProgressView>() {
 
             @Override
             public PlayProgressView doInBackground() {
                 PlayProgressView playProgressView;
-                MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.AUDIO);
-                multiMediaView.setUrl(url);
 
-                if (MaskProgressLayout.this.audioList == null) {
-                    MaskProgressLayout.this.audioList = new ArrayList<>();
-                }
-                audioList.add(multiMediaView);
-
-                playProgressView = newPlayProgressView(multiMediaView);
+                playProgressView = newPlayProgressView(audioMultiMediaViews.get(position));
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 playProgressView.mViewHolder.playView.setVisibility(View.VISIBLE);
                 // 隐藏上传进度
@@ -412,7 +419,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
 
                 // 设置数据源
                 RecordingItem recordingItem = new RecordingItem();
-                recordingItem.setUrl(url);
+                recordingItem.setUrl(audioMultiMediaViews.get(position).getUrl());
                 playProgressView.setData(recordingItem, audioProgressColor);
 
                 return playProgressView;
@@ -424,7 +431,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
                 if (playProgressView != null) {
                     mViewHolder.llContent.addView(playProgressView);
                     int newPosition = position + 1;
-                    createPlayProgressView(audioUrls, newPosition);
+                    createPlayProgressView(audioMultiMediaViews, newPosition);
                 }
             }
         });
@@ -454,6 +461,10 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
             multiMediaView.setUri(videoUris.get(i));
             multiMediaView.setUploading(isUploading);
+            if (isUploading) {
+                // 图片上传进度
+                this.listener.onItemStartUploading(multiMediaView);
+            }
             multiMediaViews.add(multiMediaView);
         }
         if (icClean) {

@@ -133,7 +133,7 @@ public interface MaskProgressApi {
      *
      * @param position 图片的索引，该索引列表不包含视频等
      */
-    void onRemoveItemImage(int position);
+    void removePosition(int position);
 
     /**
      * 设置是否可操作(一般只用于展览作用)

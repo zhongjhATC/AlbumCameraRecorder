@@ -130,9 +130,6 @@ public class SelectedItemCollection {
      * @param item 数据
      */
     public boolean add(MultiMedia item) {
-        if (typeConflict(item)) {
-            throw new IllegalArgumentException("Can't select images and videos at the same time.");
-        }
         boolean added = mItems.add(item);
         // 如果只选中了图片Item， mCollectionType设置为COLLECTION_IMAGE
         // 如果只选中了图片影音资源，mCollectionType设置为COLLECTION_IMAGE

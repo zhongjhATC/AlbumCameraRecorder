@@ -63,12 +63,11 @@ public class Combined {
             @Override
             public void onItemClick(View view, MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
-                    // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(activity, requestCode, (ArrayList) maskProgressLayout.getImages(), maskProgressLayout.getImages().indexOf(multiMediaView));
-                } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
-                    // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(activity, requestCode, (ArrayList) maskProgressLayout.getVideos(), maskProgressLayout.getVideos().indexOf(multiMediaView));
+                if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                    // 预览
+                    MultiMediaSetting.openPreviewData(activity, requestCode,
+                            maskProgressLayout.getImagesAndVideos(),
+                            maskProgressLayout.getImages().indexOf(multiMediaView));
                 }
                 listener.onItemClick(view, multiMediaView);
             }
@@ -113,16 +112,16 @@ public class Combined {
                     return;
                 }
                 // 循环判断，如果不存在，则删除
-                for (int i = this.maskProgressLayout.getImages().size() - 1; i >= 0; i--) {
+                for (int i = this.maskProgressLayout.getImagesAndVideos().size() - 1; i >= 0; i--) {
                     int k = 0;
                     for (MultiMedia multiMedia : selected) {
-                        if (!this.maskProgressLayout.getImages().get(i).equals(multiMedia)) {
+                        if (!this.maskProgressLayout.getImagesAndVideos().get(i).equals(multiMedia)) {
                             k++;
                         }
                     }
                     if (k == selected.size()) {
                         // 所有都不符合，则删除
-                        this.maskProgressLayout.onRemoveItemImage(i);
+                        this.maskProgressLayout.removePosition(i);
                     }
                 }
                 return;

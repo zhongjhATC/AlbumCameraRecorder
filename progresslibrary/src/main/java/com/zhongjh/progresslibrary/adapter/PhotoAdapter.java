@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,8 +40,8 @@ import gaode.zhongjh.com.common.listener.OnMoreClickListener;
  */
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
-    private Context mContext;
-    private GridLayoutManager mGridLayoutManage;
+    private final Context mContext;
+    private final GridLayoutManager mGridLayoutManage;
 
     private final static String TAG = PhotoAdapter.class.getSimpleName();
     private final LayoutInflater mInflater;
@@ -50,7 +49,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     /**
      * 数据源（包括视频和图片）
      */
-    private ArrayList<MultiMediaView> list = new ArrayList<>();
+    private final ArrayList<MultiMediaView> list = new ArrayList<>();
     /**
      * 每次添加数据增长的id，用于在相同地址的情况下区分两张图等
      */
@@ -64,7 +63,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      */
     private int mVideoCount = 0;
 
-    private MaskProgressLayout maskProgressLayout;
+    private final MaskProgressLayout maskProgressLayout;
     /**
      * 相关事件
      */
@@ -81,11 +80,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     /**
      * 删除图片的内圆颜色
      */
-    private int deleteColor;
+    private final int deleteColor;
     /**
      * 删除图片的资源,优先权比deleteColor高
      */
-    private Drawable deleteImage;
+    private final Drawable deleteImage;
     /**
      * 添加图片的资源
      */
@@ -93,27 +92,27 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     /**
      * 图片加载方式
      */
-    private ImageEngine imageEngine;
+    private final ImageEngine imageEngine;
     /**
      * 默认图片
      */
-    private Drawable placeholder;
+    private final Drawable placeholder;
     /**
      * 有关遮罩层：颜色
      */
-    private int maskingColor;
+    private final int maskingColor;
     /**
      * 有关遮罩层：文字大小
      */
-    private int maskingTextSize;
+    private final int maskingTextSize;
     /**
      * 有关遮罩层：文字颜色
      */
-    private int maskingTextColor;
+    private final int maskingTextColor;
     /**
      * 有关遮罩层：文字内容
      */
-    private String maskingTextContent;
+    private final String maskingTextContent;
 
     private int mItemHeight;
     MultiMediaView mMultiMediaViewAdd = new MultiMediaView(MultimediaTypes.ADD);
@@ -357,6 +356,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         // 刷新ui
         notifyItemRangeInserted(position, multiMediaViews.size());
         notifyItemRangeChanged(position, multiMediaViews.size());
+        isRemoveAdd();
     }
 
     /**
@@ -379,6 +379,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         list.addAll(multiMediaViews);
         notifyItemRangeInserted(position, multiMediaViews.size());
         notifyItemRangeChanged(position, multiMediaViews.size());
+        isRemoveAdd();
     }
 
     /**
@@ -397,6 +398,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         // 刷新ui
         notifyItemRangeInserted(position, multiMediaViews.size());
         notifyItemRangeChanged(position, multiMediaViews.size());
+        isRemoveAdd();
     }
 
     /**
@@ -419,6 +421,22 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         list.addAll(0, multiMediaViews);
         notifyItemRangeInserted(0, multiMediaViews.size());
         notifyItemRangeChanged(0, multiMediaViews.size());
+        isRemoveAdd();
+    }
+
+    /**
+     * 删除某个数据
+     *
+     * @param position 索引
+     */
+    public void removePosition(int position) {
+        MultiMediaView multiMediaView = list.get(position);
+        if (listener != null) {
+            listener.onItemClose(multiMediaView.getItemView(), multiMediaView);
+        }
+        list.remove(multiMediaView);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, list.size());
     }
 
     @Override
@@ -442,18 +460,18 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     /**
-     * 删除某个数据
-     *
-     * @param position 索引
+     * 判断是否删除Add Item
      */
-    public void removePosition(int position) {
-        MultiMediaView multiMediaView = list.get(position);
-        if (listener != null) {
-            listener.onItemClose(multiMediaView.getItemView(), multiMediaView);
+    private void isRemoveAdd() {
+        // 判断是否等于最大数量,并且是可操作的才进行去掉add
+        Log.d(TAG, "1 " + ((list.size() + maskProgressLayout.audioList.size()) >= maxMediaCount));
+        Log.d(TAG, "2 " + isOperation);
+        if ((list.size() + maskProgressLayout.audioList.size()) >= maxMediaCount
+                && isOperation) {
+            notifyItemRemoved(list.size());
+            notifyItemRangeChanged(list.size(), 1);
+            Log.d(TAG, "isRemoveAdd");
         }
-        list.remove(multiMediaView);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, list.size());
     }
 
     /**
@@ -464,14 +482,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      */
     private int getNeedAddPosition(int type) {
         if (type == MultimediaTypes.PICTURE) {
-            if (list.size() <= 0) {
-                return 0;
-            }
-            return list.size();
+            return Math.max(list.size(), 0);
         } else if (type == MultimediaTypes.VIDEO) {
             // 获取图片第一个索引
-            int imageFirstPosition = getImageFirstPosition();
-            return imageFirstPosition;
+            return getImageFirstPosition();
         }
         return 0;
     }

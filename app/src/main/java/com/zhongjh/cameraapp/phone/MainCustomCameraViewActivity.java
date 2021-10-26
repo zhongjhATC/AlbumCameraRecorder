@@ -11,12 +11,10 @@ import android.widget.Toast;
 
 import androidx.databinding.DataBindingUtil;
 
-import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.size.AspectRatio;
 import com.otaliastudios.cameraview.size.SizeSelector;
 import com.otaliastudios.cameraview.size.SizeSelectors;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
@@ -27,7 +25,6 @@ import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameraviewBinding;
-import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -81,16 +78,10 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             @SuppressWarnings({"unchecked", "rawtypes"})
             public void onItemClick(View view, MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
-                    // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainCustomCameraViewActivity.this, REQUEST_CODE_CHOOSE,
-                            (ArrayList) mBinding.mplImageList.getImages(),
-                            mBinding.mplImageList.getImages().indexOf(multiMediaView));
-                } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
-                    // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainCustomCameraViewActivity.this, REQUEST_CODE_CHOOSE,
-                            (ArrayList) mBinding.mplImageList.getVideos(),
-                            mBinding.mplImageList.getVideos().indexOf(multiMediaView));
+                if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                    MultiMediaSetting.openPreviewData(MainCustomCameraViewActivity.this, REQUEST_CODE_CHOOSE,
+                            mBinding.mplImageList.getImagesAndVideos(),
+                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 

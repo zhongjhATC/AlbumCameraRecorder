@@ -157,16 +157,16 @@ public abstract class BaseActivity extends AppCompatActivity {
                     return;
                 }
                 // 循环判断，如果不存在，则删除
-                for (int i = getMaskProgressLayout().getImages().size() - 1; i >= 0; i--) {
+                for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
                     int k = 0;
                     for (MultiMedia multiMedia : selected) {
-                        if (!getMaskProgressLayout().getImages().get(i).equals(multiMedia)) {
+                        if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(multiMedia)) {
                             k++;
                         }
                     }
                     if (k == selected.size()) {
                         // 所有都不符合，则删除
-                        getMaskProgressLayout().onRemoveItemImage(i);
+                        getMaskProgressLayout().removePosition(i);
                     }
                 }
                 return;

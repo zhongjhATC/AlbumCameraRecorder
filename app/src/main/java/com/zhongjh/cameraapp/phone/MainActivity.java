@@ -18,7 +18,6 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.configuration.CompressionLuBan;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
@@ -36,7 +35,6 @@ import java.util.Set;
 import gaode.zhongjh.com.common.entity.SaveStrategy;
 import gaode.zhongjh.com.common.enums.MimeType;
 import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import top.zibin.luban.Luban;
 
 /**
  * 配置版
@@ -81,14 +79,10 @@ public class MainActivity extends BaseActivity {
             @SuppressWarnings({"unchecked", "rawtypes"})
             public void onItemClick(View view, MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMediaView.getType() == MultimediaTypes.PICTURE) {
-                    // 判断如果是图片类型就预览当前所有图片
-                    MultiMediaSetting.openPreviewImage(MainActivity.this, REQUEST_CODE_CHOOSE,
-                            (ArrayList) mBinding.mplImageList.getImages(), mBinding.mplImageList.getImages().indexOf(multiMediaView));
-                } else if (multiMediaView.getType() == MultimediaTypes.VIDEO) {
-                    // 判断如果是视频类型就预览视频
-                    MultiMediaSetting.openPreviewVideo(MainActivity.this, REQUEST_CODE_CHOOSE,
-                            (ArrayList) mBinding.mplImageList.getVideos(), mBinding.mplImageList.getVideos().indexOf(multiMediaView));
+                if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                    MultiMediaSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
+                            mBinding.mplImageList.getImagesAndVideos(),
+                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
