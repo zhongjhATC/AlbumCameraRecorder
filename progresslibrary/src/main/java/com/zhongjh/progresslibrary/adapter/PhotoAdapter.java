@@ -265,7 +265,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             // 显示close
             if (isOperation) {
                 holder.vClose.setVisibility(View.VISIBLE);
-                holder.vClose.setOnClickListener(v -> removePosition(position));
+                holder.vClose.setOnClickListener(v -> removePosition(multiMediaView));
             } else {
                 holder.vClose.setVisibility(View.GONE);
             }
@@ -296,6 +296,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                     }
                 }
             });
+
+            // 是否上传
+            if (multiMediaView.isUploading()) {
+                this.listener.onItemStartUploading(multiMediaView);
+            } else {
+
+            }
 
         }
     }
@@ -426,6 +433,15 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     /**
      * 删除某个数据
+     * @param multiMediaView 集合里面的某个对象
+     */
+    private void removePosition(MultiMediaView multiMediaView) {
+        int position = list.indexOf(multiMediaView);
+        removePosition(position);
+    }
+
+    /**
+     * 删除某个数据
      *
      * @param position 索引
      */
@@ -464,13 +480,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      */
     private void isRemoveAdd() {
         // 判断是否等于最大数量,并且是可操作的才进行去掉add
-        Log.d(TAG, "1 " + ((list.size() + maskProgressLayout.audioList.size()) >= maxMediaCount));
-        Log.d(TAG, "2 " + isOperation);
         if ((list.size() + maskProgressLayout.audioList.size()) >= maxMediaCount
                 && isOperation) {
             notifyItemRemoved(list.size());
             notifyItemRangeChanged(list.size(), 1);
-            Log.d(TAG, "isRemoveAdd");
         }
     }
 

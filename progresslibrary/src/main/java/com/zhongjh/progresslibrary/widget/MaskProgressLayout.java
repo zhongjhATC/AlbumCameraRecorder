@@ -231,8 +231,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
             multiMediaView.setUri(uri);
             multiMediaViews.add(multiMediaView);
-            // 图片上传进度
-            this.listener.onItemStartUploading(multiMediaView);
         }
         mPhotoAdapter.addImageData(multiMediaViews);
     }
@@ -246,8 +244,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             multiMediaView.setPath(string);
             multiMediaView.setUri(mMediaStoreCompat.getUri(string));
             multiMediaViews.add(multiMediaView);
-            // 图片上传进度
-            this.listener.onItemStartUploading(multiMediaView);
         }
         mPhotoAdapter.addImageData(multiMediaViews);
     }
@@ -461,10 +457,6 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.VIDEO);
             multiMediaView.setUri(videoUris.get(i));
             multiMediaView.setUploading(isUploading);
-            if (isUploading) {
-                // 图片上传进度
-                this.listener.onItemStartUploading(multiMediaView);
-            }
             multiMediaViews.add(multiMediaView);
         }
         if (icClean) {
