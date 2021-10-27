@@ -300,6 +300,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
             // 是否上传
             if (multiMediaView.isUploading()) {
+                // 设置该对象已经上传请求过了
+                multiMediaView.setUploading(false);
                 this.listener.onItemStartUploading(multiMediaView);
             } else {
                 // 取消上传动画
@@ -455,7 +457,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         list.remove(multiMediaView);
         multiMediaView.getMaskProgressView().reset();
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, list.size());
+        notifyItemRangeChanged(position, 1);
     }
 
     @Override
@@ -466,7 +468,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         for (MultiMediaView item : list) {
             if (item.getType() == MultimediaTypes.PICTURE) {
                 mImageCount++;
-            } else if (item.getType() == MultimediaTypes.AUDIO) {
+            } else if (item.getType() == MultimediaTypes.VIDEO) {
                 mVideoCount++;
             }
         }

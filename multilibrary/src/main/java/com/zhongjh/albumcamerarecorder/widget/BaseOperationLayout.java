@@ -461,7 +461,10 @@ public abstract class BaseOperationLayout extends FrameLayout {
         viewHolder.btnClickOrLong.setTouchable(enabled);
         viewHolder.btnConfirm.setEnabled(enabled);
         viewHolder.btnCancel.setEnabled(enabled);
-        viewHolder.tvSectionRecord.setEnabled(enabled);
+        // 录音控件是没拥有该控件的
+        if (viewHolder.tvSectionRecord != null) {
+            viewHolder.tvSectionRecord.setEnabled(enabled);
+        }
     }
 
     /**

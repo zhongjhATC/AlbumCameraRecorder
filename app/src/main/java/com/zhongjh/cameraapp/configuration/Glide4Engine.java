@@ -65,7 +65,7 @@ public class Glide4Engine implements ImageEngine {
                 .apply(new RequestOptions()
                         .override(resizeX, resizeY)
                         .priority(Priority.HIGH)
-                        .error(R.drawable.image_failed)
+                        .error(R.drawable.ic_failed)
                         .fitCenter())
                 .into(imageView);
     }
@@ -76,7 +76,7 @@ public class Glide4Engine implements ImageEngine {
                 .load(url)
                 .apply(new RequestOptions()
                         .priority(Priority.HIGH)
-                        .error(R.drawable.image_failed)
+                        .error(R.drawable.ic_failed)
                         .fitCenter())
                 .into(imageView);
     }
@@ -87,7 +87,7 @@ public class Glide4Engine implements ImageEngine {
                 .load(uri)
                 .apply(new RequestOptions()
                         .priority(Priority.HIGH)
-                        .error(R.drawable.image_failed)
+                        .error(R.drawable.ic_failed)
                         .fitCenter())
                 .into(imageView);
     }
@@ -98,7 +98,7 @@ public class Glide4Engine implements ImageEngine {
                 .load(resourceId)
                 .apply(new RequestOptions()
                         .priority(Priority.HIGH)
-                        .error(R.drawable.image_failed)
+                        .error(R.drawable.ic_failed)
                         .fitCenter())
                 .into(imageView);
     }

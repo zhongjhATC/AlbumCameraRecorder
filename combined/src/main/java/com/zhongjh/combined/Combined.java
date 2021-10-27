@@ -67,7 +67,7 @@ public class Combined {
                     // 预览
                     MultiMediaSetting.openPreviewData(activity, requestCode,
                             maskProgressLayout.getImagesAndVideos(),
-                            maskProgressLayout.getImages().indexOf(multiMediaView));
+                            maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
                 }
                 listener.onItemClick(view, multiMediaView);
             }

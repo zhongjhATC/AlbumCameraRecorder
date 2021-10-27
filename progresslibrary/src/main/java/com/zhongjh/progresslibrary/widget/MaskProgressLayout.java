@@ -230,6 +230,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
         for (Uri uri : uris) {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
             multiMediaView.setUri(uri);
+            multiMediaView.setUploading(true);
             multiMediaViews.add(multiMediaView);
         }
         mPhotoAdapter.addImageData(multiMediaViews);
@@ -243,6 +244,7 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
             MultiMediaView multiMediaView = new MultiMediaView(MultimediaTypes.PICTURE);
             multiMediaView.setPath(string);
             multiMediaView.setUri(mMediaStoreCompat.getUri(string));
+            multiMediaView.setUploading(true);
             multiMediaViews.add(multiMediaView);
         }
         mPhotoAdapter.addImageData(multiMediaViews);

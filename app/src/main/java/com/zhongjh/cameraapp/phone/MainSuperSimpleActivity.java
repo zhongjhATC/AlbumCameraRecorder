@@ -3,6 +3,7 @@ package com.zhongjh.cameraapp.phone;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -119,7 +120,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 .imageEngine(new Glide4Engine())
                 // 最大5张图片、最大3个视频、最大1个音频
                 .maxSelectablePerMediaType(null,
-                        5,
+                        6,
                         3,
                         3,
                         0,
@@ -132,6 +133,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
             @Override
             public void onItemStartUploading(MultiMediaView multiMediaView) {
                 super.onItemStartUploading(multiMediaView);
+                Log.d("onItemStartUploading","onItemStartUploading");
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
                 MyTask timer = new MyTask(multiMediaView);
                 timers.put(multiMediaView, timer);
@@ -144,6 +146,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 // 停止上传
                 MyTask myTask = timers.get(multiMediaView);
                 if (myTask != null) {
+                    Log.d("onItemClose","取消");
                     myTask.cancel();
                     timers.remove(multiMediaView);
                 }
@@ -168,6 +171,10 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         percentage++;
                         multiMedia.setPercentage(percentage);
+                        Log.d("MyTask",multiMedia.getUri().toString() + "进度： " + percentage);
+                        if (percentage == 100) {
+                            this.cancel();
+                        }
                         // 现实应用设置完成赋值url的时候可以这样写如下代码：
 //                        // 赋值完成
 //                        multiMedia.setUrl(url);
