@@ -241,7 +241,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                     mMultiMediaViewAdd.setMaskProgressView(holder.mpvImage);
                     mMultiMediaViewAdd.setItemView(holder.itemView);
                     // 点击加载➕图
-                    listener.onItemAdd(v, mMultiMediaViewAdd, mImageCount, mVideoCount, maskProgressLayout.audioList.size());
+                    if (listener != null) {
+                        listener.onItemAdd(v, mMultiMediaViewAdd, mImageCount, mVideoCount, maskProgressLayout.audioList.size());
+                    }
                 }
             });
             holder.mpvImage.reset();
@@ -302,7 +304,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             if (multiMediaView.isUploading()) {
                 // 设置该对象已经上传请求过了
                 multiMediaView.setUploading(false);
-                this.listener.onItemStartUploading(multiMediaView);
+                if (listener != null) {
+                    this.listener.onItemStartUploading(multiMediaView);
+                }
             } else {
                 // 取消上传动画
                 holder.mpvImage.reset();
@@ -437,6 +441,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     /**
      * 删除某个数据
+     *
      * @param multiMediaView 集合里面的某个对象
      */
     private void removePosition(MultiMediaView multiMediaView) {

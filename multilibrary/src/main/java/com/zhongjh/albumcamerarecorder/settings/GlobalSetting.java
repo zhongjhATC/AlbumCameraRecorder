@@ -185,6 +185,24 @@ public final class GlobalSetting implements GlobalSettingApi {
     }
 
     @Override
+    public GlobalSetting alreadyCount(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+        // 计算
+        if (mGlobalSpec.maxSelectable != null) {
+            mGlobalSpec.maxSelectable = mGlobalSpec.maxSelectable - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount);
+        }
+        if (mGlobalSpec.maxImageSelectable != null) {
+            mGlobalSpec.maxImageSelectable = mGlobalSpec.maxImageSelectable - alreadyImageCount;
+        }
+        if (mGlobalSpec.maxVideoSelectable != null) {
+            mGlobalSpec.maxVideoSelectable = mGlobalSpec.maxVideoSelectable - alreadyVideoCount;
+        }
+        if (mGlobalSpec.maxAudioSelectable != null) {
+            mGlobalSpec.maxAudioSelectable = mGlobalSpec.maxAudioSelectable - alreadyAudioCount;
+        }
+        return this;
+    }
+
+    @Override
     public GlobalSetting allStrategy(SaveStrategy saveStrategy) {
         mGlobalSpec.saveStrategy = saveStrategy;
         return this;

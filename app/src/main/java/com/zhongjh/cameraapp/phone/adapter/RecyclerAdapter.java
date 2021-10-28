@@ -4,11 +4,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.cameraapp.R;
+import com.zhongjh.progresslibrary.entity.MultiMediaView;
+import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import java.util.ArrayList;
@@ -22,10 +25,12 @@ import java.util.List;
  */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
+    private Context mContext;
     private LayoutInflater mInflater;
     List<Data> datas = new ArrayList<>();
 
     public RecyclerAdapter(Context context) {
+        this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
         initData();
     }
@@ -80,6 +85,37 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         if (datas.get(position).getVideoUrls().size() > 0) {
             holder.mplImageList.setVideoUrls(datas.get(position).getVideoUrls());
         }
+        holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+            @Override
+            public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+                Toast.makeText(mContext, "这边写跳转相册代码获取到的数据填充该RecyclerView即可", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onItemClick(View view, MultiMediaView multiMediaView) {
+
+            }
+
+            @Override
+            public void onItemStartUploading(MultiMediaView multiMediaView) {
+
+            }
+
+            @Override
+            public void onItemClose(View view, MultiMediaView multiMediaView) {
+
+            }
+
+            @Override
+            public void onItemAudioStartDownload(View view, String url) {
+
+            }
+
+            @Override
+            public boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
+                return false;
+            }
+        });
     }
 
     @Override

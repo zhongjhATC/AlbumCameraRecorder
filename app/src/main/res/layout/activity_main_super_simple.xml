@@ -28,7 +28,7 @@
                 app:maskingTextColor="@color/black_eighty_percent"
                 app:maskingTextContent="@string/up_upload_is_customizable"
                 app:maskingTextSize="12"
-                app:maxCount="7" />
+                app:maxCount="12" />
 
         </LinearLayout>
 

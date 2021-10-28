@@ -101,6 +101,14 @@ public interface GlobalSettingApi {
                                             int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount);
 
     /**
+     * @param alreadyImageCount  已选择的图片数量
+     * @param alreadyVideoCount  已选择的视频数量
+     * @param alreadyAudioCount  已选择的音频数量
+     * @return {@link GlobalSetting} this
+     */
+    GlobalSetting alreadyCount(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount);
+
+    /**
      * 保存文件的位置{@link androidx.core.content.FileProvider}.
      *
      * @param saveStrategy {@link SaveStrategy}, 仅在启用捕获时需要
@@ -166,6 +174,7 @@ public interface GlobalSettingApi {
 
     /**
      * 有关压缩操作的接口
+     *
      * @param listener 接口 {@link CompressionInterface}
      * @return {@link GlobalSetting} for fluent API.
      */

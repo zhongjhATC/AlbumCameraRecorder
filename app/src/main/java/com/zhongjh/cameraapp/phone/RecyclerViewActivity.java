@@ -28,7 +28,6 @@ public class RecyclerViewActivity extends AppCompatActivity {
     private final String TAG = RecyclerViewActivity.this.getClass().getSimpleName();
 
     ActivityRecyclerviewBinding mBinding;
-    GlobalSetting mGlobalSetting;
 
     /**
      * @param activity 要跳转的activity

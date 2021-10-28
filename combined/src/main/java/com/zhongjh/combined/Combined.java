@@ -56,6 +56,7 @@ public class Combined {
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击Add
+                globalSetting.alreadyCount(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
                 globalSetting.forResult(requestCode);
                 listener.onItemAdd(view, multiMediaView, alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }

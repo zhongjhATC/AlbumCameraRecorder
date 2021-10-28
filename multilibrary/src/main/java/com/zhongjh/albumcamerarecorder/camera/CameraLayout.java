@@ -348,9 +348,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         ViewGroup.LayoutParams layoutParams = mViewHolder.clMenu.getLayoutParams();
         layoutParams.height = layoutParams.height + statusBarHeight;
 
-        // 如果没启动视频编辑，隐藏分段录制功能
-        if (mCameraSpec.videoEditCoordinator == null) {
+        // 如果启动视频编辑并且可录制数量>=0，便显示分段录制功能
+        if (SelectableUtils.getVideoMaxCount() <= 0 || mCameraSpec.videoEditCoordinator == null) {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+        } else {
+            mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
         }
 
         // 处理图片、视频等需要进度显示
@@ -421,7 +423,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
         // 编辑图片事件
         initPhotoEditListener();
-
     }
 
     /**
@@ -614,7 +615,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             @Override
             public void confirm() {
-
+                pvLayoutCommit();
             }
 
             @Override
@@ -867,7 +868,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 取消后的重置相关
      */
     private void cancelOnReset() {
-        if (mCameraSpec.videoEditCoordinator != null) {
+        // 如果启动视频编辑并且可录制数量>=0，便显示分段录制功能
+        if (SelectableUtils.getVideoMaxCount() <= 0 || mCameraSpec.videoEditCoordinator == null) {
+            mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+        } else {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
         }
 

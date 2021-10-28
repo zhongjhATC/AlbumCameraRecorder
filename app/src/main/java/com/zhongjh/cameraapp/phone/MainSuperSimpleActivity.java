@@ -127,7 +127,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                         0,
                         0);
 
-        // 这里是将AlbumCameraRecorder和Mask控件合并
+        // 这里是将AlbumCameraRecorder和Mask控件合并，需要放在初始化最后，alreadyImageCount才能以最新生效
         mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
                 mGlobalSetting, mBinding.mplImageList, new AbstractMaskProgressLayoutListener() {
             @Override
