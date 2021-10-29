@@ -57,6 +57,10 @@ public class ClickOrLongButton extends View {
      */
     private Float mCurrentSumNumberDegrees = 0F;
     /**
+     * 上一个录制的节点，以360度为单位
+     */
+    private Float mCurrentSumNumberDegreesOld = 0F;
+    /**
      * 当前录制的时间点
      */
     private Long mCurrentSumTime = 0L;
@@ -65,9 +69,13 @@ public class ClickOrLongButton extends View {
      */
     private int mMinDuration = 1500;
     /**
-     * 记录当前录制多长的时间秒
+     * 记录当前录制的总共多长的时间秒
      */
     private long mRecordedTime;
+    /**
+     * 分段录制：当前最新的一段录制时间
+     */
+    private long mRecordedTimeSection;
     private static final float PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1F;
     private int mBoundingBoxSize;
     private int mOutCircleWidth;
@@ -153,6 +161,7 @@ public class ClickOrLongButton extends View {
             }
             long timeLapse = System.currentTimeMillis() - btnPressTime;
             mRecordedTime = (timeLapse - mMinDuration);
+            mRecordedTimeSection = mRecordedTime;
             mRecordedTime = mRecordedTime + mCurrentSumTime;
             float percent = mRecordedTime / timeLimitInMils;
             Log.d(TAG, "mCurrentSumTime " + mCurrentSumTime);
@@ -161,6 +170,8 @@ public class ClickOrLongButton extends View {
                 boolean actionDown = mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH);
                 if (actionDown) {
                     mClickOrLongListener.actionDown();
+                    mCurrentSumNumberDegreesOld = mCurrentSumNumberDegrees;
+                    Log.d(TAG, "mCurrentSumNumberDegreesOld: " + mCurrentSumNumberDegreesOld);
                     mActionDown = true;
                 }
             }
@@ -170,11 +181,14 @@ public class ClickOrLongButton extends View {
                     if (recordState == RECORD_NOT_STARTED) {
                         recordState = RECORD_STARTED;
                         if (mClickOrLongListener != null) {
+                            Log.d(TAG, "timeLapse " + timeLapse);
                             mClickOrLongListener.onLongClick();
                             // 如果禁止点击，那么就轮到长按触发actionDown
                             if (!mActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONG_CLICK) {
                                 // 如果禁止点击也不能触发该事件
                                 mClickOrLongListener.actionDown();
+                                mCurrentSumNumberDegreesOld = mCurrentSumNumberDegrees;
+                                Log.d(TAG, "mCurrentSumNumberDegreesOld: " + mCurrentSumNumberDegreesOld);
                                 mActionDown = true;
                             }
                         }
@@ -371,6 +385,8 @@ public class ClickOrLongButton extends View {
         Log.d(TAG, "onDraw percentInDegree" + percentInDegree);
         Log.d(TAG, "onDraw mCurrentSumNumberDegrees" + mCurrentSumNumberDegrees);
 
+        //
+
         // 从这个顺序来看，即是从270为开始
         for (Float item : mCurrentLocation) {
             canvas.drawArc(outMostCircleRect, item, 3, false, outProcessIntervalCirclePaint);
@@ -420,7 +436,11 @@ public class ClickOrLongButton extends View {
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null) {
-                    if (mRecordedTime < mMinDuration) {
+                    Log.d(TAG,"时间短的比较：" + mRecordedTime + " " + mMinDuration);
+                    if (mIsSectionMode && mRecordedTimeSection < mMinDuration) {
+                        // 如果处于分段录制并且录制时间过短
+                        mClickOrLongListener.onLongClickShort(mRecordedTimeSection);
+                    } if (mRecordedTime < mMinDuration) {
                         // 回调录制时间过短
                         mClickOrLongListener.onLongClickShort(mRecordedTime);
                     } else {
@@ -579,6 +599,15 @@ public class ClickOrLongButton extends View {
      */
     public void setButtonFeatures(int buttonStateBoth) {
         this.mButtonState = buttonStateBoth;
+    }
+
+    /**
+     * 分段录制回滚上一段
+     * 一般用于录制时出现异常
+     */
+    public void selectionRecordRollBack() {
+        mCurrentSumNumberDegrees = mCurrentSumNumberDegreesOld;
+        invalidate();
     }
 
     /**

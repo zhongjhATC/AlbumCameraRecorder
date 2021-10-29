@@ -157,6 +157,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private boolean mIsSectionRecord;
     /**
+     * 上一个分段录制的时间
+     */
+    private long mSectionRecordTime;
+    /**
      * 处于分段录制模式下的视频的文件列表
      */
     private final ArrayList<String> mVideoPaths = new ArrayList<>();
@@ -545,7 +549,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             @Override
             public void onLongClickShort(final long time) {
                 Log.d(TAG, "onLongClickShort " + time);
-                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));  // 提示过短
+                // 提示过短
+                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
                 setSwitchVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
                 postDelayed(() -> stopRecord(true), mCameraSpec.minDuration - time);
@@ -575,17 +580,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             @Override
             public void onLongClickEnd(long time) {
                 Log.d(TAG, "onLongClickEnd " + time);
+                mSectionRecordTime = time;
                 // 录像结束
                 stopRecord(false);
-                // 判断模式
-                if (mIsSectionRecord) {
-                    mVideoTimes.add(time);
-                    // 如果已经有录像缓存，那么就不执行这个动作了
-                    if (mVideoPaths.size() <= 0) {
-                        mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
-                        mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
-                    }
-                }
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickEnd(time);
                 }
@@ -689,7 +686,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
-     * 拍照监听
+     * 拍照、录制监听
      */
     private void initCameraViewListener() {
         mViewHolder.cameraView.addCameraListener(new CameraListener() {
@@ -716,6 +713,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                         mFragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
                         Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
                     } else {
+                        Log.d(TAG, "onVideoTaken 分段录制 " + result.getFile().getPath());
+                        mVideoTimes.add(mSectionRecordTime);
+                        // 如果已经有录像缓存，那么就不执行这个动作了
+                        if (mVideoPaths.size() <= 0) {
+                            mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
+                            mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+                        }
                         // 加入视频列表
                         mVideoPaths.add(result.getFile().getPath());
                         // 显示当前进度
@@ -745,8 +749,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             public void onCameraError(@NonNull CameraException exception) {
                 super.onCameraError(exception);
                 if (!TextUtils.isEmpty(exception.getMessage())) {
-                    Log.d(TAG, exception.getMessage() + " " + exception.getReason());
+                    Log.d(TAG, "onCameraError:" + exception.getMessage() + " " + exception.getReason());
                     mErrorListener.onError();
+                    // 如果是分段录制情况中，则回滚上一个进度
+                    if (mIsSectionRecord) {
+                        Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
+                        mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
+                    }
                 }
             }
 
@@ -1213,7 +1222,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         if (isShort) {
             // 如果视频过短就是录制不成功
             resetState(TYPE_SHORT);
-            mViewHolder.pvLayout.reset();
+            // 判断不是分段录制 并且 没有分段录制片段
+            if (!mIsSectionRecord && mVideoPaths.size() <= 0) {
+                mViewHolder.pvLayout.reset();
+            }
         } else {
             // 设置成视频播放状态
             setState(Constants.STATE_VIDEO);
