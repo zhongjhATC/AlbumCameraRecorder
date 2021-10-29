@@ -554,6 +554,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 setSwitchVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
                 postDelayed(() -> stopRecord(true), mCameraSpec.minDuration - time);
+                // 如果是分段录制情况中，则回滚上一个进度
+                if (mIsSectionRecord) {
+                    Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
+                    mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
+                }
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickShort(time);
                 }
@@ -751,11 +756,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 if (!TextUtils.isEmpty(exception.getMessage())) {
                     Log.d(TAG, "onCameraError:" + exception.getMessage() + " " + exception.getReason());
                     mErrorListener.onError();
-                    // 如果是分段录制情况中，则回滚上一个进度
-                    if (mIsSectionRecord) {
-                        Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
-                        mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
-                    }
                 }
             }
 
