@@ -246,6 +246,11 @@ public class CameraFragment extends BaseFragment {
             public void onLongClickError() {
 
             }
+
+            @Override
+            public void onBanClickTips() {
+
+            }
         });
     }
 

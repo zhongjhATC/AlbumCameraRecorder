@@ -40,4 +40,9 @@ public interface ClickOrLongListener {
      */
     void onLongClickError();
 
+    /**
+     * 禁止点击后，依然点击时的提示
+     */
+    void onBanClickTips();
+
 }

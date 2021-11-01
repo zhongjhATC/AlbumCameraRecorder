@@ -556,7 +556,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 postDelayed(() -> stopRecord(true), mCameraSpec.minDuration - time);
                 // 如果是分段录制情况中，则回滚上一个进度
                 if (mIsSectionRecord) {
-                    Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
                     mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
                 }
                 if (mClickOrLongListener != null) {
@@ -601,6 +600,12 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickError();
                 }
+            }
+
+            @Override
+            public void onBanClickTips() {
+                Toast.makeText(mContext, R.string.z_multi_library_working_video_click_later,
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -709,6 +714,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             @Override
             public void onVideoTaken(@NonNull VideoResult result) {
+                Log.d(TAG, "onVideoTaken");
                 super.onVideoTaken(result);
                 // 判断是否短时间结束
                 if (!mIsShort) {
@@ -742,21 +748,30 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     FileUtil.deleteFile(mVideoFile);
                     mIsShort = false;
                 }
+                mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setTouchable(true);
             }
 
             @Override
             public void onVideoRecordingStart() {
                 Log.d(TAG, "onVideoRecordingStart");
                 super.onVideoRecordingStart();
+                // 录制开始后，在没有结果之前，禁止第二次点击
+                mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setTouchable(false);
             }
 
             @Override
             public void onCameraError(@NonNull CameraException exception) {
+                Log.d(TAG, "onCameraError");
                 super.onCameraError(exception);
+                if (mIsSectionRecord) {
+                    Toast.makeText(mContext, R.string.z_multi_library_recording_error_roll_back_previous_paragraph, Toast.LENGTH_SHORT).show();
+                    mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
+                }
                 if (!TextUtils.isEmpty(exception.getMessage())) {
                     Log.d(TAG, "onCameraError:" + exception.getMessage() + " " + exception.getReason());
                     mErrorListener.onError();
                 }
+                mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setTouchable(true);
             }
 
         });

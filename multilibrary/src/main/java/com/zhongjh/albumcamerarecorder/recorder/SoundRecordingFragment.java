@@ -228,6 +228,11 @@ public class SoundRecordingFragment extends BaseFragment {
             public void onLongClickError() {
 
             }
+
+            @Override
+            public void onBanClickTips() {
+
+            }
         });
     }
 

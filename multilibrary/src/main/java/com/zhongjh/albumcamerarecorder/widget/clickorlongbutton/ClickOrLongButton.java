@@ -69,9 +69,9 @@ public class ClickOrLongButton extends View {
      */
     private int mMinDuration = 1500;
     /**
-     * 记录当前录制的总共多长的时间秒
+     * 动画的预备时间
      */
-    private long mRecordedTime;
+    private int mMInDurationAnimation = 1500;
     /**
      * 分段录制：当前最新的一段录制时间
      */
@@ -157,15 +157,15 @@ public class ClickOrLongButton extends View {
         public void run() {
             if (mIsSectionMode && mCurrentLocation.size() > 0) {
                 // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
-                mMinDuration = 0;
+                mMInDurationAnimation = 0;
             }
             long timeLapse = System.currentTimeMillis() - btnPressTime;
-            mRecordedTime = (timeLapse - mMinDuration);
-            mRecordedTimeSection = mRecordedTime;
-            mRecordedTime = mRecordedTime + mCurrentSumTime;
-            float percent = mRecordedTime / timeLimitInMils;
+            mCurrentSumTime = (timeLapse - mMInDurationAnimation);
+            mRecordedTimeSection = mCurrentSumTime;
+            mCurrentSumTime = mCurrentSumTime + mCurrentSumTime;
+            float percent = mCurrentSumTime / timeLimitInMils;
             Log.d(TAG, "mCurrentSumTime " + mCurrentSumTime);
-            Log.d(TAG, "mRecordedTime " + mRecordedTime);
+            Log.d(TAG, "mRecordedTime " + mCurrentSumTime);
             if (!mActionDown && timeLapse >= 1) {
                 boolean actionDown = mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH);
                 if (actionDown) {
@@ -176,7 +176,7 @@ public class ClickOrLongButton extends View {
                 }
             }
 
-            if (timeLapse >= mMinDuration) {
+            if (timeLapse >= mMInDurationAnimation) {
                 synchronized (ClickOrLongButton.this) {
                     if (recordState == RECORD_NOT_STARTED) {
                         recordState = RECORD_STARTED;
@@ -201,7 +201,7 @@ public class ClickOrLongButton extends View {
                 outMostWhiteCirclePaint.setColor(colorRoundBorder);
                 percentInDegree = (360.0F * percent);
                 if (mIsSectionMode) {
-                    if (mCurrentLocation.size() > 0 || (timeLapse - mMinDuration) >= mMinDuration) {
+                    if (mCurrentLocation.size() > 0 || (timeLapse - mMInDurationAnimation) >= mMInDurationAnimation) {
                         mCurrentSumNumberDegrees = percentInDegree;
                     }
                 }
@@ -226,8 +226,6 @@ public class ClickOrLongButton extends View {
                         innerCircleRadiusToDraw = calPercent * innerCircleRadiusWhenRecord;
                     }
                     invalidate();
-                } else {
-                    reset();
                 }
             }
         }
@@ -405,11 +403,16 @@ public class ClickOrLongButton extends View {
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
-        if (!touchable) {
-            return false;
-        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                if (mCurrentSumTime / timeLimitInMils >= FULL_PROGRESS) {
+                    // 进度已满,不执行任何动作
+                    return true;
+                }
+                if (!touchable) {
+                    mClickOrLongListener.onBanClickTips();
+                    return true;
+                }
                 Log.d(TAG, "onTouchEvent: down");
                 // 是否支持长按
                 boolean longClick = mClickOrLongListener != null
@@ -436,16 +439,16 @@ public class ClickOrLongButton extends View {
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null) {
-                    Log.d(TAG,"时间短的比较：" + mRecordedTime + " " + mMinDuration);
+                    Log.d(TAG,"时间短的比较：" + mCurrentSumTime + " " + mMinDuration + " " + mRecordedTimeSection);
                     if (mIsSectionMode && mRecordedTimeSection < mMinDuration) {
                         // 如果处于分段录制并且录制时间过短
                         mClickOrLongListener.onLongClickShort(mRecordedTimeSection);
-                    } if (mRecordedTime < mMinDuration) {
+                    } if (mCurrentSumTime < mMinDuration) {
                         // 回调录制时间过短
-                        mClickOrLongListener.onLongClickShort(mRecordedTime);
+                        mClickOrLongListener.onLongClickShort(mCurrentSumTime);
                     } else {
                         // 回调录制结束
-                        mClickOrLongListener.onLongClickEnd(mRecordedTime);
+                        mClickOrLongListener.onLongClickEnd(mCurrentSumTime);
                     }
                 }
                 recordState = RECORD_ENDED;
@@ -547,6 +550,7 @@ public class ClickOrLongButton extends View {
      */
     public void setMinDuration(int duration) {
         mMinDuration = duration;
+        mMInDurationAnimation = duration;
     }
 
     /**

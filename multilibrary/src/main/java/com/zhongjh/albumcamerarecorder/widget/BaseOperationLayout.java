@@ -243,6 +243,13 @@ public abstract class BaseOperationLayout extends FrameLayout {
                     mClickOrLongListener.onLongClickError();
                 }
             }
+
+            @Override
+            public void onBanClickTips() {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onBanClickTips();
+                }
+            }
         });
     }
 
