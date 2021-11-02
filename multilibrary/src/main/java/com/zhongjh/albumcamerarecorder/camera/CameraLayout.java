@@ -530,8 +530,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onClick() {
-                // 开启才能执行别的事件
-                if (mViewHolder.cameraView.isOpened()) {
+                // 开启才能执行别的事件, 如果已经有分段视频，则不允许拍照了
+                if (mViewHolder.cameraView.isOpened() && mVideoTimes.size() <= 0) {
                     // 判断数量
                     if (mPhotoAdapter.getItemCount() < currentMaxSelectable()) {
                         // 设置不能点击，防止多次点击报错
@@ -748,7 +748,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     FileUtil.deleteFile(mVideoFile);
                     mIsShort = false;
                 }
-                mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setTouchable(true);
+                mViewHolder.pvLayout.setEnabled(true);
             }
 
             @Override
@@ -756,7 +756,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 Log.d(TAG, "onVideoRecordingStart");
                 super.onVideoRecordingStart();
                 // 录制开始后，在没有结果之前，禁止第二次点击
-                mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setTouchable(false);
+                mViewHolder.pvLayout.setEnabled(false);
             }
 
             @Override
@@ -771,7 +771,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     Log.d(TAG, "onCameraError:" + exception.getMessage() + " " + exception.getReason());
                     mErrorListener.onError();
                 }
-                mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setTouchable(true);
+                mViewHolder.pvLayout.setEnabled(true);
             }
 
         });

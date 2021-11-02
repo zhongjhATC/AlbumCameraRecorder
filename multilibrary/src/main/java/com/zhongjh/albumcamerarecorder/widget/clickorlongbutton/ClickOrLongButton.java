@@ -73,6 +73,14 @@ public class ClickOrLongButton extends View {
      */
     private int mMInDurationAnimation = 1500;
     /**
+     * 记录当前录制的总共多长的时间秒
+     */
+    private long mRecordedTime;
+    /**
+     * 上一个记录当前录制的总共多长的时间秒
+     */
+    private long mRecordedTimeOld;
+    /**
      * 分段录制：当前最新的一段录制时间
      */
     private long mRecordedTimeSection;
@@ -160,12 +168,12 @@ public class ClickOrLongButton extends View {
                 mMInDurationAnimation = 0;
             }
             long timeLapse = System.currentTimeMillis() - btnPressTime;
-            mCurrentSumTime = (timeLapse - mMInDurationAnimation);
-            mRecordedTimeSection = mCurrentSumTime;
-            mCurrentSumTime = mCurrentSumTime + mCurrentSumTime;
-            float percent = mCurrentSumTime / timeLimitInMils;
+            mRecordedTime = (timeLapse - mMInDurationAnimation);
+            mRecordedTimeSection = mRecordedTime;
+            mRecordedTime = mRecordedTime + mCurrentSumTime;
+            float percent = mRecordedTime / timeLimitInMils;
             Log.d(TAG, "mCurrentSumTime " + mCurrentSumTime);
-            Log.d(TAG, "mRecordedTime " + mCurrentSumTime);
+            Log.d(TAG, "mRecordedTime " + mRecordedTime);
             if (!mActionDown && timeLapse >= 1) {
                 boolean actionDown = mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH);
                 if (actionDown) {
@@ -188,6 +196,7 @@ public class ClickOrLongButton extends View {
                                 // 如果禁止点击也不能触发该事件
                                 mClickOrLongListener.actionDown();
                                 mCurrentSumNumberDegreesOld = mCurrentSumNumberDegrees;
+                                mRecordedTimeOld = mRecordedTime;
                                 Log.d(TAG, "mCurrentSumNumberDegreesOld: " + mCurrentSumNumberDegreesOld);
                                 mActionDown = true;
                             }
@@ -405,7 +414,7 @@ public class ClickOrLongButton extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mCurrentSumTime / timeLimitInMils >= FULL_PROGRESS) {
+                if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
                     // 进度已满,不执行任何动作
                     return true;
                 }
@@ -439,16 +448,16 @@ public class ClickOrLongButton extends View {
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null) {
-                    Log.d(TAG,"时间短的比较：" + mCurrentSumTime + " " + mMinDuration + " " + mRecordedTimeSection);
+                    Log.d(TAG,"时间短的比较：" + mRecordedTime + " " + mMinDuration + " " + mRecordedTimeSection);
                     if (mIsSectionMode && mRecordedTimeSection < mMinDuration) {
                         // 如果处于分段录制并且录制时间过短
                         mClickOrLongListener.onLongClickShort(mRecordedTimeSection);
-                    } if (mCurrentSumTime < mMinDuration) {
+                    } if (mRecordedTime < mMinDuration) {
                         // 回调录制时间过短
-                        mClickOrLongListener.onLongClickShort(mCurrentSumTime);
+                        mClickOrLongListener.onLongClickShort(mRecordedTime);
                     } else {
                         // 回调录制结束
-                        mClickOrLongListener.onLongClickEnd(mCurrentSumTime);
+                        mClickOrLongListener.onLongClickEnd(mRecordedTime);
                     }
                 }
                 recordState = RECORD_ENDED;
@@ -456,6 +465,7 @@ public class ClickOrLongButton extends View {
                 // 回到初始状态
                 recordState = RECORD_NOT_STARTED;
             } else {
+                // 进度已满的状态是不允许点击时间的
                 if (mClickOrLongListener != null) {
                     // 拍照
                     mClickOrLongListener.onClick();
@@ -570,8 +580,8 @@ public class ClickOrLongButton extends View {
             // 数据设置规范,适合当前圆形
             mCurrentLocation.add(getNumberDegrees(numberDegrees));
             mCurrentSumNumberDegrees = numberDegrees;
-
             mCurrentSumTime = currentTimes.get(i);
+            mRecordedTime = currentTimes.get(i);
             Log.d(TAG, "setCurrentTime mCurrentSumTime " + mCurrentSumTime);
             Log.d(TAG, "setCurrentTime mCurrentSumNumberDegrees " + mCurrentSumNumberDegrees);
         }
@@ -611,6 +621,7 @@ public class ClickOrLongButton extends View {
      */
     public void selectionRecordRollBack() {
         mCurrentSumNumberDegrees = mCurrentSumNumberDegreesOld;
+        mRecordedTime = mRecordedTimeOld;
         invalidate();
     }
 
