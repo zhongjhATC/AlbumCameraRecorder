@@ -427,6 +427,7 @@ public class ClickOrLongButton extends View {
                 boolean longClick = mClickOrLongListener != null
                         && (mButtonState == BUTTON_STATE_ONLY_LONG_CLICK || mButtonState == BUTTON_STATE_BOTH);
                 if (longClick) {
+                    Log.d(TAG, "onTouchEvent: startTicking");
                     startTicking();
                 }
                 break;

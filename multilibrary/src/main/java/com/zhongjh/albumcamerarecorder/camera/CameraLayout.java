@@ -371,6 +371,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 最短录制时间
         mViewHolder.pvLayout.setMinDuration(mCameraSpec.minDuration);
 
+        initPvLayoutButtonFeatures();
+    }
+
+    /**
+     * 初始化中心按钮状态
+     */
+    private void initPvLayoutButtonFeatures() {
         // 判断点击和长按的权限
         if (mCameraSpec.onlySupportImages()) {
             // 禁用长按功能
@@ -1150,7 +1157,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         setState(Constants.STATE_PICTURE_PREVIEW);
 
         // 禁用长按事件，即禁止录像
-        mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
+        mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
     }
 
     /**
@@ -1308,7 +1315,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             // 恢复长按事件，即重新启用录像
             mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
-            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setButtonFeatures(BUTTON_STATE_BOTH);
+            initPvLayoutButtonFeatures();
 
             // 设置空闲状态
             setState(Constants.STATE_PREVIEW);
