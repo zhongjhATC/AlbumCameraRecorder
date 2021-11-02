@@ -100,7 +100,9 @@ public class MaskProgressLayout extends FrameLayout implements MaskProgressApi {
      */
     public void setMaxMediaCount(Integer maxMediaCount, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable) {
         // 计算最终呈现的总数，这个总数决定是否还能点击添加
-        if (maxMediaCount != null) {
+        boolean isMaxMediaCount = maxMediaCount != null &&
+                (maxImageSelectable == null || maxVideoSelectable == null || maxAudioSelectable == null);
+        if (isMaxMediaCount) {
             mPhotoAdapter.setMaxMediaCount(maxMediaCount);
         } else {
             mPhotoAdapter.setMaxMediaCount(maxImageSelectable + maxVideoSelectable + maxAudioSelectable);
