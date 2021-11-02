@@ -59,6 +59,8 @@
     <string name="other_api">其他API</string>
     <string name="obtain_the_cache_file_size">获取缓存文件大小</string>
     <string name="clear_the_cache_file_size">清空缓存文件大小</string>
+    <string name="viewing_the_file_path">查看文件路径</string>
+
 
 
 </resources>

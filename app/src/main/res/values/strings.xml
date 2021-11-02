@@ -59,4 +59,5 @@
     <string name="other_api">other api</string>
     <string name="obtain_the_cache_file_size">Obtain the cache file size </string>
     <string name="clear_the_cache_file_size">Clear the cache file size</string>
+    <string name="viewing_the_file_path">Viewing the File Path</string>
 </resources>

@@ -121,6 +121,14 @@ public class MainActivity extends BaseActivity {
 
         // 删除文件缓存 文件目录：context.getExternalCacheDir()
         mBinding.btnDeleteFileCache.setOnClickListener(v -> AlbumCameraRecorderApi.deleteCacheDirFile(getApplication()));
+
+        // 查看文件目录
+        mBinding.btnDialogFilePath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override

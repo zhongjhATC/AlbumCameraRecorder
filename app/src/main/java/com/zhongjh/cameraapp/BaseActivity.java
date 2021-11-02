@@ -103,7 +103,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     if (isBrowse) {
                         Toast.makeText(this, getString(R.string.you_can_turn_it_back_on), Toast.LENGTH_SHORT).show();
                     } else {
-                        openMain(0,0,0);
+                        openMain(0, 0, 0);
                     }
                 } else {
                     Toast.makeText(this, getString(R.string.please_open_it_in_settings_permission_management), Toast.LENGTH_SHORT).show();
@@ -176,21 +176,25 @@ public abstract class BaseActivity extends AppCompatActivity {
                 case MultimediaTypes.PICTURE:
                     // 图片，自从AndroidQ版本以后，Path只能访问本身app的文件，所以只能用uri方式控制
                     List<Uri> path = MultiMediaSetting.obtainResult(data);
+                    showToastUris(path);
                     getMaskProgressLayout().addImagesUriStartUpload(path);
                     break;
                 case MultimediaTypes.VIDEO:
                     // 录像
                     List<Uri> videoUris = MultiMediaSetting.obtainResult(data);
+                    showToastUris(videoUris);
                     getMaskProgressLayout().addVideoStartUpload(videoUris);
                     break;
                 case MultimediaTypes.AUDIO:
                     // 语音
                     RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
+                    Toast.makeText(getApplicationContext(), recordingItem.getFilePath(), Toast.LENGTH_LONG).show();
                     getMaskProgressLayout().addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
                     break;
                 case MultimediaTypes.BLEND:
                     // 混合类型，意思是图片可能跟录像在一起.
                     List<Uri> blends = MultiMediaSetting.obtainResult(data);
+                    showToastUris(blends);
                     List<Uri> images = new ArrayList<>();
                     List<Uri> videos = new ArrayList<>();
                     // 循环判断类型
@@ -210,6 +214,18 @@ public abstract class BaseActivity extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    /**
+     * 显示当前所有文件的地址
+     */
+    private void showToastUris(List<Uri> uris) {
+        StringBuilder content = new StringBuilder();
+        for (Uri item : uris) {
+            content.append(item.toString());
+            content.append("\n");
+        }
+        Toast.makeText(getApplicationContext(), content, Toast.LENGTH_LONG).show();
     }
 
     @Override
