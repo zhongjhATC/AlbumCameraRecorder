@@ -449,11 +449,12 @@ public class ClickOrLongButton extends View {
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null) {
-                    Log.d(TAG,"时间短的比较：" + mRecordedTime + " " + mMinDuration + " " + mRecordedTimeSection);
+                    Log.d(TAG, "时间短的比较：" + mRecordedTime + " " + mMinDuration + " " + mRecordedTimeSection);
                     if (mIsSectionMode && mRecordedTimeSection < mMinDuration) {
                         // 如果处于分段录制并且录制时间过短
                         mClickOrLongListener.onLongClickShort(mRecordedTimeSection);
-                    } if (mRecordedTime < mMinDuration) {
+                    }
+                    if (mRecordedTime < mMinDuration) {
                         // 回调录制时间过短
                         mClickOrLongListener.onLongClickShort(mRecordedTime);
                     } else {
@@ -466,8 +467,8 @@ public class ClickOrLongButton extends View {
                 // 回到初始状态
                 recordState = RECORD_NOT_STARTED;
             } else {
-                // 进度已满的状态是不允许点击时间的
-                if (mClickOrLongListener != null) {
+                // 如果只支持长按事件则不触发
+                if (mClickOrLongListener != null && mButtonState != BUTTON_STATE_ONLY_LONG_CLICK) {
                     // 拍照
                     mClickOrLongListener.onClick();
                 }
