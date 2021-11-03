@@ -76,7 +76,7 @@
     <string name="z_multi_library_choose_to_click_to_confirm_these">You can click to confirm these if you select them</string>
     <string name="z_multi_library_confirm">confirm</string>
 
-    <string name="z_multi_library_working_video_click_later">Working on the video, click later</string>
+    <string name="z_multi_library_working_video_click_later">Do not operate frequently</string>
     <string name="z_multi_library_recording_error_roll_back_previous_paragraph">Recording error, roll back previous paragraph</string>
 
     <!-- endregion -->

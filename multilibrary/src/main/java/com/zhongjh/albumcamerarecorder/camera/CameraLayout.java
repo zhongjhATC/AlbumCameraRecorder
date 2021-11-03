@@ -611,8 +611,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             @Override
             public void onBanClickTips() {
-                Toast.makeText(mContext, R.string.z_multi_library_working_video_click_later,
-                        Toast.LENGTH_SHORT).show();
+                // 判断如果是分段录制模式就提示
+                if (mIsSectionRecord) {
+                    Toast.makeText(mContext, R.string.z_multi_library_working_video_click_later,
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

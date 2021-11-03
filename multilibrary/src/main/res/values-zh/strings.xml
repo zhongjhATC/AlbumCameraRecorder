@@ -77,7 +77,7 @@
     <string name="z_multi_library_choose_to_click_to_confirm_these">选择了才可以点击确认这些</string>
     <string name="z_multi_library_confirm">确定</string>
 
-    <string name="z_multi_library_working_video_click_later">正在处理视频，稍后点击</string>
+    <string name="z_multi_library_working_video_click_later">请勿频繁操作</string>
     <string name="z_multi_library_recording_error_roll_back_previous_paragraph">录制出错，回滚上一段</string>
 
 
