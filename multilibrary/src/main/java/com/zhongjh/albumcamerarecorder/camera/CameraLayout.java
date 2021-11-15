@@ -872,6 +872,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 cancelOnReset();
             }
         } else {
+            // 清空图片资源
+            mBitmapData.clear();
+            mCaptureDatas.clear();
+            // 重置ui
             cancelOnReset();
         }
     }
@@ -998,6 +1002,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
     /**
      * 迁移图片文件，缓存文件迁移到配置目录
+     * 在 doInBackground 线程里面也执行了 runOnUiThread 跳转UI的最终事件
      */
     private void movePictureFile() {
         // 执行等待动画
