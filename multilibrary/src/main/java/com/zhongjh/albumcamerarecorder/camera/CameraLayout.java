@@ -128,9 +128,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private PhotoAdapter mPhotoAdapter;
     /**
-     * 拍照的图片-集合,单图也使用这个
+     * 拍照多图片-集合
      */
-    List<BitmapData> mCaptureData = new ArrayList<>();
+    List<BitmapData> mCaptureDatas = new ArrayList<>();
+    /**
+     * 单图片,虽然是个集合，但是只存放一条数据
+     */
+    List<BitmapData> mBitmapData = new ArrayList<>();
     /**
      * 拷贝文件是否拷贝完
      */
@@ -323,7 +327,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         this.mFragment = fragment;
 
         // 初始化多图适配器，先判断是不是多图配置
-        mPhotoAdapter = new PhotoAdapter(mContext, fragment, mGlobalSpec, mCaptureData, this);
+        mPhotoAdapter = new PhotoAdapter(mContext, fragment, mGlobalSpec, mCaptureDatas, this);
         mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
         mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
     }
@@ -815,8 +819,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 刷新多个图片
      */
     public void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas) {
-        mCaptureData = bitmapDatas;
-        mPhotoAdapter.setListData(mCaptureData);
+        mCaptureDatas = bitmapDatas;
+        mPhotoAdapter.setListData(mCaptureDatas);
     }
 
     /**
@@ -835,9 +839,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         Uri uri = mPictureMediaStoreCompat.getUri(mPhotoFile.getPath());
 
         // 重置mCaptureBitmaps
-        mCaptureData.clear();
+        mBitmapData.clear();
         BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri);
-        mCaptureData.add(bitmapData);
+        mBitmapData.add(bitmapData);
 
         mViewHolder.imgPhoto.canScroll();
         mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, uri);
@@ -1083,17 +1087,19 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
         // 加速回收机制
         System.gc();
-        // 添加入数据源
-        mCaptureData.add(bitmapData);
         // 判断是否多个图片
         if (SelectableUtils.getImageMaxCount() > 1) {
+            // 添加入数据源
+            mCaptureDatas.add(bitmapData);
             showMultiplePicture();
+            // 回调接口：添加图片后剩下的相关数据
+            mCaptureListener.add(mCaptureDatas);
         } else {
+            mBitmapData.add(bitmapData);
             showSinglePicture(bitmapData, file, uri);
+            // 回调接口：添加图片后剩下的相关数据
+            mCaptureListener.add(mBitmapData);
         }
-
-        // 回调接口：添加图片后剩下的相关数据
-        mCaptureListener.add(mCaptureData);
     }
 
     /**
@@ -1218,8 +1224,14 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private ArrayList<String> getPaths() {
         ArrayList<String> paths = new ArrayList<>();
-        for (BitmapData value : mCaptureData) {
-            paths.add(value.getPath());
+        if (mBitmapData.size() > 0) {
+            for (BitmapData value : mBitmapData) {
+                paths.add(value.getPath());
+            }
+        } else if (mCaptureDatas.size() > 0) {
+            for (BitmapData value : mCaptureDatas) {
+                paths.add(value.getPath());
+            }
         }
         return paths;
     }
@@ -1298,13 +1310,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     @Override
     public void onDelete(int position) {
         // 删除文件
-        FileUtil.deleteFile(mCaptureData.get(position).getPath());
+        FileUtil.deleteFile(mCaptureDatas.get(position).getPath());
 
         // 回调接口：删除图片后剩下的相关数据
-        mCaptureListener.remove(mCaptureData);
+        mCaptureListener.remove(mCaptureDatas);
 
         // 当列表全部删掉的话，就隐藏,为什么是 <= 1，因为是先删除实体，再删除数据源，所以这个判断结束后，就会删除数据源实际是0了
-        if (mCaptureData.size() <= 1) {
+        if (mCaptureDatas.size() <= 1) {
             // 隐藏横版列表
             mViewHolder.rlPhoto.setVisibility(View.GONE);
 
