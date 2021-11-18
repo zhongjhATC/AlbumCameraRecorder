@@ -5,7 +5,10 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.ViewSwitcher;
 
 import com.zhongjh.imageedit.core.ImageMode;
@@ -76,6 +79,12 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
         mLayoutOpSub = findViewById(R.id.layout_op_sub);
 
         mImageViewCustom.addListener(() -> mColorGroup.clearCheck());
+
+        // 设置顶部状态栏间距
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(getApplicationContext());
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mImageViewCustom.getLayoutParams();
+        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin + statusBarHeight,
+                layoutParams.rightMargin, layoutParams.bottomMargin);
     }
 
     @Override
@@ -169,12 +178,14 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
 
     /**
      * 获取数据源
+     *
      * @return 返回数据源
      */
     public abstract Bitmap getBitmap();
 
     /**
      * 点击了模式事件
+     *
      * @param mode 模式
      */
     public abstract void onModeClick(ImageMode mode);
@@ -216,12 +227,14 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
 
     /**
      * 改变颜色事件
+     *
      * @param checkedColor 选择的颜色
      */
     public abstract void onColorChanged(int checkedColor);
 
     /**
      * 添加文本
+     *
      * @param text 文本
      */
     @Override
