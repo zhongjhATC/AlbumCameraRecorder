@@ -57,19 +57,19 @@
 
 	dependencies {
 	     // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.32X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.33X'
 
 	     // 公共库，如果不使用上面的combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.32X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.33X'
 	     // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.32X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.33X'
          // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.32X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.33X'
 
          // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.32X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.33X'
 	     // 配套编辑视频使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.32X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.33X'
 	}
 
 ## 快照
