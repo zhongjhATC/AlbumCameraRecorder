@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 
+import static android.view.MotionEvent.ACTION_MOVE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONG_CLICK;
@@ -435,6 +436,12 @@ public class ClickOrLongButton extends View {
                 Log.d(TAG, "onTouchEvent: up");
                 reset();
                 break;
+            case MotionEvent.ACTION_MOVE:
+                if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
+                    reset();
+                    return true;
+                }
+                break;
             default:
                 break;
         }
@@ -444,7 +451,7 @@ public class ClickOrLongButton extends View {
     /**
      * 重置
      */
-    private void reset() {
+    public void reset() {
         Log.d(TAG, "reset: " + recordState);
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
@@ -477,6 +484,8 @@ public class ClickOrLongButton extends View {
         mActionDown = false;
         touchTimeHandler.clearMsg();
         percentInDegree = 0.0F;
+        mRecordedTime = 0;
+        mRecordedTimeOld = 0;
         centerCirclePaint.setColor(colorWhiteP60);
         outMostWhiteCirclePaint.setColor(colorRoundBorder);
         innerCircleRadiusToDraw = mInnerCircleRadius;

@@ -37,6 +37,10 @@ public class Constants {
      * 图片状态 - 拍照后，就修改成这个状态
      */
     public static final int STATE_RECORDER = 0x05;
+    /**
+     * 视频状态 - 录制视频中，就修改成这个状态
+     */
+    public static final int STATE_VIDEO_IN = 0x06;
 
     /**
      * 闪关灯自动

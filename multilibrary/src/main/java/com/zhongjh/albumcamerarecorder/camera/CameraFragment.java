@@ -114,6 +114,10 @@ public class CameraFragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
+            if (mCameraLayout.mState == Constants.STATE_VIDEO) {
+                // 如果是从视频界面回来，就重置状态
+                mCameraLayout.mState = Constants.STATE_PREVIEW;
+            }
             return;
         }
 
@@ -131,7 +135,7 @@ public class CameraFragment extends BaseFragment {
                     // 重新赋值
                     ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
                     for (MultiMedia item : selected) {
-                        BitmapData bitmapData = new BitmapData(item.getPath(),item.getUri());
+                        BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri());
                         bitmapDatas.add(bitmapData);
                     }
                     // 全部刷新
@@ -166,6 +170,9 @@ public class CameraFragment extends BaseFragment {
         // 判断当前状态是否休闲
         if (mCameraLayout.mState == Constants.STATE_PREVIEW) {
             return false;
+        } else if (mCameraLayout.mState == Constants.STATE_VIDEO_IN) {
+            // 录制视频中不能直接返回
+            return true;
         } else {
             // 与上次点击返回键时刻作差
             if ((System.currentTimeMillis() - mExitTime) > MILLISECOND) {

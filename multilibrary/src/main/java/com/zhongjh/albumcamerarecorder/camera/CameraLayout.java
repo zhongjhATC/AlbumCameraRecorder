@@ -67,6 +67,7 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONG_CLICK;
+import static com.zhongjh.albumcamerarecorder.camera.common.Constants.STATE_VIDEO_IN;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_DEFAULT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_SHORT;
@@ -374,8 +375,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mViewHolder.pvLayout.setDuration(mCameraSpec.duration * 1000);
         // 最短录制时间
         mViewHolder.pvLayout.setMinDuration(mCameraSpec.minDuration);
-
-        initPvLayoutButtonFeatures();
     }
 
     /**
@@ -447,6 +446,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         LogUtil.i("CameraLayout onResume");
         // 重置状态
         resetState(TYPE_DEFAULT);
+        mViewHolder.pvLayout.viewHolder.btnClickOrLong.reset();
+        initPvLayoutButtonFeatures();
         mViewHolder.cameraView.open();
     }
 
@@ -583,6 +584,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                         mVideoFile = mVideoMediaStoreCompat.createFile(1, true);
                     }
                     mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
+                    setState(STATE_VIDEO_IN);
                     // 开始录像
                     setSwitchVisibility(INVISIBLE);
                     mViewHolder.imgFlash.setVisibility(INVISIBLE);
