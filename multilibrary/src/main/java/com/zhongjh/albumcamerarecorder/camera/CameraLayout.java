@@ -454,8 +454,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public void onResume() {
         LogUtil.i("CameraLayout onResume");
         // 重置状态
-
         resetState(TYPE_DEFAULT);
+        // 清空进度，防止正在进度中突然按home键
+        mViewHolder.pvLayout.viewHolder.btnClickOrLong.reset();
+        // 重置当前按钮的功能
+        initPvLayoutButtonFeatures();
         mViewHolder.cameraView.open();
     }
 
@@ -951,9 +954,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     public void resetState() {
         mCameraStateManagement.resetState();
-        // 重置操作按钮
-        mViewHolder.pvLayout.reset();
-        initPvLayoutButtonFeatures();
         // 重置右上角菜单
         setSwitchVisibility(VISIBLE);
         mViewHolder.imgFlash.setVisibility(VISIBLE);
