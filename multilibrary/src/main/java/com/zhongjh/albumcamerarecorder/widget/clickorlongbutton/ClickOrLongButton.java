@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
 
-import static android.view.MotionEvent.ACTION_MOVE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONG_CLICK;
@@ -434,11 +433,11 @@ public class ClickOrLongButton extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d(TAG, "onTouchEvent: up");
-                reset();
+                refreshView();
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
-                    reset();
+                    refreshView();
                     return true;
                 }
                 break;
@@ -449,9 +448,9 @@ public class ClickOrLongButton extends View {
     }
 
     /**
-     * 重置
+     * 刷新view
      */
-    public void reset() {
+    public void refreshView() {
         Log.d(TAG, "reset: " + recordState);
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
@@ -481,6 +480,13 @@ public class ClickOrLongButton extends View {
                 }
             }
         }
+        reset();
+    }
+
+    /**
+     * 重置
+     */
+    public void reset() {
         mActionDown = false;
         touchTimeHandler.clearMsg();
         percentInDegree = 0.0F;

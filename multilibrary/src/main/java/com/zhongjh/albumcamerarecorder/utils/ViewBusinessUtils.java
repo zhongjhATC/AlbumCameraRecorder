@@ -17,13 +17,8 @@ public class ViewBusinessUtils {
      * @param isScroll 是否滑动
      */
     public static void setTabLayoutScroll(boolean isScroll, MainActivity mainActivity, BaseOperationLayout pvLayout) {
-        if (isScroll) {
-            // 母窗体启动滑动
-            mainActivity.setTabLayoutScroll(true);
-        } else {
-            // 母窗体禁止滑动
-            mainActivity.setTabLayoutScroll(false);
-        }
+        // 母窗体启动/禁止滑动
+        mainActivity.showHideTableLayout(isScroll);
     }
 
 }

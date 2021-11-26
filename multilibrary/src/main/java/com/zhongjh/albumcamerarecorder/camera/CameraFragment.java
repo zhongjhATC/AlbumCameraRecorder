@@ -114,9 +114,9 @@ public class CameraFragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
-            if (mCameraLayout.mState == Constants.STATE_VIDEO) {
+            if (mCameraLayout.getState() == Constants.STATE_VIDEO) {
                 // 如果是从视频界面回来，就重置状态
-                mCameraLayout.mState = Constants.STATE_PREVIEW;
+                mCameraLayout.setState(Constants.STATE_PREVIEW);
             }
             return;
         }
@@ -167,11 +167,12 @@ public class CameraFragment extends BaseFragment {
 
     @Override
     public boolean onBackPressed() {
-        // 判断当前状态是否休闲
-        if (mCameraLayout.mState == Constants.STATE_PREVIEW) {
+        // 判断当前状态是否预览
+        if (mCameraLayout.getState() == Constants.STATE_PREVIEW) {
             return false;
-        } else if (mCameraLayout.mState == Constants.STATE_VIDEO_IN) {
-            // 录制视频中不能直接返回
+        } else if (mCameraLayout.getState() == Constants.STATE_VIDEO_IN) {
+            // 暂停视频
+            mCameraLayout.onStopRecording();
             return true;
         } else {
             // 与上次点击返回键时刻作差
@@ -314,7 +315,7 @@ public class CameraFragment extends BaseFragment {
             public void remove(List<BitmapData> captureData) {
                 // 判断如果删除光图片的时候，母窗体启动滑动
                 if (captureData.size() <= 0) {
-                    ((MainActivity) mActivity).setTabLayoutScroll(true);
+                    ((MainActivity) mActivity).showHideTableLayout(true);
                 }
             }
 
@@ -322,7 +323,7 @@ public class CameraFragment extends BaseFragment {
             public void add(List<BitmapData> captureDatas) {
                 if (captureDatas.size() > 0) {
                     // 母窗体禁止滑动
-                    ((MainActivity) mActivity).setTabLayoutScroll(false);
+                    ((MainActivity) mActivity).showHideTableLayout(false);
                 }
             }
         });

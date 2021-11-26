@@ -18,7 +18,7 @@ public class Constants {
     public static final String SCREEN_HEIGHT = "ScreenHeight";
 
     /**
-     * 休闲状态 - 除了下面两个状态
+     * 纯预览状态 - 没有多图，没有多视频
      */
     public static final int STATE_PREVIEW = 0x01;
     /**
@@ -34,7 +34,7 @@ public class Constants {
      */
     public static final int STATE_PICTURE_PREVIEW = 0x04;
     /**
-     * 图片状态 - 拍照后，就修改成这个状态
+     * 录音状态 - 录音后，就修改成这个状态
      */
     public static final int STATE_RECORDER = 0x05;
     /**

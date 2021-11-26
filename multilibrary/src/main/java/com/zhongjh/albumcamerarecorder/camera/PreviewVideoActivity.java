@@ -70,6 +70,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         intent.putExtra("path", path);
         intent.setClass(fragment.getContext(), PreviewVideoActivity.class);
         fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_VIDEO);
+        fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
     }
 
     @Override

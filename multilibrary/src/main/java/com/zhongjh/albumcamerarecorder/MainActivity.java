@@ -362,37 +362,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (isShow) {
                 mTabLayout.setVisibility(View.VISIBLE);
-                setTabLayoutScroll(true);
-            } else {
-                mTabLayout.setVisibility(View.GONE);
-                setTabLayoutScroll(false);
-            }
-        }
-    }
-
-    /**
-     * 设置tabLayout是否可以滑动
-     *
-     * @param isScroll 是否滑动
-     */
-    public void setTabLayoutScroll(boolean isScroll) {
-        // 判断只有一个的时候
-        if (adapterViewPager.getCount() <= 1) {
-            // 则隐藏底部
-            mTabLayout.setVisibility(View.GONE);
-        } else {
-            if (isScroll) {
                 // 设置可以滑动
                 mVpPager.setScroll();
-                mTabLayout.setVisibility(View.VISIBLE);
             } else {
+                mTabLayout.setVisibility(View.GONE);
                 // 禁滑viewPager
                 mVpPager.setScroll();
-                mTabLayout.setVisibility(View.GONE);
             }
         }
     }
-
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
