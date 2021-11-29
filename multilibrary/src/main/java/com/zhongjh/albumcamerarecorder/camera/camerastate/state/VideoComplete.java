@@ -28,4 +28,14 @@ public class VideoComplete extends StateMode {
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
+
+    @Override
+    public Boolean onBackPressed() {
+        return null;
+    }
+
+    @Override
+    public void pvLayoutCommit() {
+
+    }
 }

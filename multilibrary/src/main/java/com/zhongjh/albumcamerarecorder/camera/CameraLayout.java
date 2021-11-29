@@ -35,6 +35,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.camerastate.StateInterface;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
@@ -65,6 +66,7 @@ import gaode.zhongjh.com.common.utils.StatusBarUtils;
 import gaode.zhongjh.com.common.utils.ThreadUtils;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
+import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONG_CLICK;
@@ -111,10 +113,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private CameraStateManagement mCameraStateManagement;
 
-    /**
-     * 当前活动状态，默认休闲
-     */
-    private int mState = Constants.STATE_PREVIEW;
+    public CameraStateManagement getCameraStateManagement() {
+        return mCameraStateManagement;
+    }
 
     /**
      * 闪关灯状态 默认关闭
@@ -223,6 +224,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 按钮的监听
      */
     private ClickOrLongListener mClickOrLongListener;
+
     /**
      * 确认跟返回的监听
      */
@@ -266,6 +268,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public void setOperateCameraListener(OperateCameraListener operateCameraListener) {
         this.mOperateCameraListener = operateCameraListener;
     }
+    public OperateCameraListener getOperateCameraListener() {
+        return mOperateCameraListener;
+    }
 
     /**
      * 拍摄后操作图片的事件
@@ -294,6 +299,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public CameraLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
+        mCameraStateManagement = new CameraStateManagement(this);
         initData();
         initView();
         initListener();
@@ -449,12 +455,29 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
+     * 返回true的时候即是纸条跳过了后面的ActivityResult事件
+     *
+     * @param resultCode Activity的返回码
+     * @return 返回true是跳过，返回false则是继续
+     */
+    public boolean onActivityResult(int resultCode) {
+        if (resultCode != RESULT_OK) {
+            if (getState().equals(mCameraStateManagement.getVideoComplete())) {
+                // 如果是从视频界面回来，就重置状态
+                mCameraStateManagement.setState(mCameraStateManagement.getPreview());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 生命周期onResume
      */
     public void onResume() {
         LogUtil.i("CameraLayout onResume");
         // 重置状态
-        resetState(TYPE_DEFAULT);
+        resetState();
         // 清空进度，防止正在进度中突然按home键
         mViewHolder.pvLayout.viewHolder.btnClickOrLong.reset();
         // 重置当前按钮的功能
@@ -878,7 +901,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 取消核心事件
      */
-    private synchronized void pvLayoutCancel() {
+    private void pvLayoutCancel() {
         // 判断是不是分段录制并且超过1个视频
         if (mIsSectionRecord && mVideoPaths.size() >= 1) {
             // 每次删除，后面都要重新合成,新合成的也删除
@@ -904,7 +927,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 提交核心事件
      */
-    private synchronized void pvLayoutCommit() {
+    private void pvLayoutCommit() {
         if (mIsSectionRecord && mVideoPaths.size() >= 1) {
             // 打开新的界面预览视频
             PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
@@ -950,7 +973,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
-     * 针对当前类型进行相关重置
+     * 重置状态
      */
     public void resetState() {
         mCameraStateManagement.resetState();
@@ -970,12 +993,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 // TODO 弃用，已经改用跳转到第二个界面播放视频了
                 break;
             case TYPE_PICTURE:
-                setUiEnableFalse();
-                // 拍照完成
-                if (mOperateCameraListener != null) {
-                    // 移动文件
-                    movePictureFile();
-                }
                 break;
             case TYPE_SHORT:
             case TYPE_DEFAULT:
@@ -985,10 +1002,17 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
+     * 打开预览视频界面
+     */
+    public void openPreviewVideoActivity() {
+        PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
+    }
+
+    /**
      * 迁移图片文件，缓存文件迁移到配置目录
      * 在 doInBackground 线程里面也执行了 runOnUiThread 跳转UI的最终事件
      */
-    private void movePictureFile() {
+    public void movePictureFile() {
         // 执行等待动画
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(1);
         // 开始迁移文件
@@ -1163,25 +1187,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      *
      * @return 状态
      */
-    public int getState() {
-        return mState;
-    }
-
-    /**
-     * 设置当前view的状态
-     *
-     * @param state 状态
-     */
-    public void setState(int state) {
-        // 如果当前是分段录制有多个视频或者多图的时候，不能强制改成预览状态
-        if (mIsSectionRecord && mVideoPaths.size() >= 1) {
-            return;
-        }
-        if (mCaptureDatas.size() >= 1) {
-            return;
-        }
-        this.mState = state;
-        Log.d(TAG, "mState: " + state);
+    public StateInterface getState() {
+        return mCameraStateManagement.getState();
     }
 
     /**
@@ -1272,7 +1279,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 设置界面的功能按钮禁止使用
      * 场景：确认图片时，压缩中途禁止某些功能使用
      */
-    private void setUiEnableFalse() {
+    public void setUiEnableFalse() {
         mViewHolder.imgFlash.setEnabled(false);
         mViewHolder.imgSwitch.setEnabled(false);
         mViewHolder.pvLayout.setEnabled(false);

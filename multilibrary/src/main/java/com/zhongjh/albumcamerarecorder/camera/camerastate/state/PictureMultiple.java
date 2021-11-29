@@ -5,35 +5,34 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 
 /**
- * 录像中的状态
+ * 多个图片模式
  *
  * @author zhongjh
- * @date 2021/11/25
+ * @date 2021/11/29
  */
-public class VideoIn extends StateMode {
+public class PictureMultiple extends StateMode {
+
     /**
      * @param cameraLayout          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoIn(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
+    public PictureMultiple(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
         super(cameraLayout, cameraStateManagement);
     }
 
     @Override
     public void resetState() {
-        // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+
     }
 
     @Override
     public Boolean onBackPressed() {
-        // 如果是录制中则暂停视频
-        getCameraLayout().onStopRecording();
-        return true;
+        return null;
     }
 
     @Override
     public void pvLayoutCommit() {
 
     }
+
 }

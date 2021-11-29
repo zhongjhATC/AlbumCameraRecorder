@@ -113,14 +113,10 @@ public class CameraFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) {
-            if (mCameraLayout.getState() == Constants.STATE_VIDEO) {
-                // 如果是从视频界面回来，就重置状态
-                mCameraLayout.setState(Constants.STATE_PREVIEW);
-            }
+        boolean isReturn = mCameraLayout.onActivityResult(resultCode);
+        if (isReturn) {
             return;
         }
-
         switch (requestCode) {
             case REQUEST_CODE_PREVIEW_CAMRRA:
                 // 如果在预览界面点击了确定
@@ -167,15 +163,11 @@ public class CameraFragment extends BaseFragment {
 
     @Override
     public boolean onBackPressed() {
-        // 判断当前状态是否预览
-        if (mCameraLayout.getState() == Constants.STATE_PREVIEW) {
-            return false;
-        } else if (mCameraLayout.getState() == Constants.STATE_VIDEO_IN) {
-            // 暂停视频
-            mCameraLayout.onStopRecording();
-            return true;
+        Boolean isTrue = mCameraLayout.getCameraStateManagement().onBackPressed();
+        if (isTrue != null) {
+            return isTrue;
         } else {
-            // 与上次点击返回键时刻作差
+            // 与上次点击返回键时刻作差，第一次不能立即退出
             if ((System.currentTimeMillis() - mExitTime) > MILLISECOND) {
                 // 大于2000ms则认为是误操作，使用Toast进行提示
                 Toast.makeText(mActivity.getApplicationContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
