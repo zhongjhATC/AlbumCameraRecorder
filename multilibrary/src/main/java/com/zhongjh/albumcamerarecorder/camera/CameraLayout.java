@@ -158,15 +158,17 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 是否短时间录像
      */
-    public boolean mIsShort;
-    /**
-     * 是否中断录像
-     */
-    private boolean mIsBreakOff;
+    private boolean mIsShort;
+
+
     /**
      * 是否分段录制
      */
-    public boolean mIsSectionRecord;
+    private boolean mIsSectionRecord;
+    /**
+     * 是否中断录像
+     */
+    public boolean mIsBreakOff;
     /**
      * 上一个分段录制的时间
      */
@@ -174,7 +176,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 处于分段录制模式下的视频的文件列表
      */
-    public final ArrayList<String> mVideoPaths = new ArrayList<>();
+    private final ArrayList<String> mVideoPaths = new ArrayList<>();
     /**
      * 处于分段录制模式下的视频的时间列表
      */
@@ -264,6 +266,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public void setOperateCameraListener(OperateCameraListener operateCameraListener) {
         this.mOperateCameraListener = operateCameraListener;
     }
+
     public OperateCameraListener getOperateCameraListener() {
         return mOperateCameraListener;
     }
@@ -472,8 +475,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     public void onResume() {
         LogUtil.i("CameraLayout onResume");
-        // 重置状态
-        resetState();
         // 清空进度，防止正在进度中突然按home键
         mViewHolder.pvLayout.viewHolder.btnClickOrLong.reset();
         // 重置当前按钮的功能
@@ -536,19 +537,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
-     * 中断录像中
-     */
-    public void onStopRecording() {
-        resetState();
-        mIsBreakOff = true;
-        mViewHolder.cameraView.stopVideo();
-        // 如果是分段录制则回退一节点
-        if (mIsSectionRecord) {
-            mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
-        }
-    }
-
-    /**
      * 切换闪光灯模式
      */
     private void initImgFlashListener() {
@@ -608,7 +596,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
                 setSwitchVisibility(VISIBLE);
                 mViewHolder.imgFlash.setVisibility(VISIBLE);
-                postDelayed(() -> mCameraStateManagement.stopRecord(true), mCameraSpec.minDuration - time);
+                postDelayed(() -> stopRecord(true), mCameraSpec.minDuration - time);
                 // 如果是分段录制情况中，则回滚上一个进度
                 if (mIsSectionRecord) {
                     mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
@@ -628,7 +616,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     }
                     mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
                     // 设置录制状态
-                    mCameraStateManagement.setState(mCameraStateManagement.getVideoIn());
+                    if (mIsSectionRecord) {
+                        mCameraStateManagement.setState(mCameraStateManagement.getVideoMultipleIn());
+                    } else {
+                        mCameraStateManagement.setState(mCameraStateManagement.getVideoIn());
+                    }
                     // 开始录像
                     setSwitchVisibility(INVISIBLE);
                     mViewHolder.imgFlash.setVisibility(INVISIBLE);
@@ -643,7 +635,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 Log.d(TAG, "onLongClickEnd " + time);
                 mSectionRecordTime = time;
                 // 录像结束
-                mCameraStateManagement.stopRecord(false);
+                stopRecord(false);
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClickEnd(time);
                 }
@@ -898,32 +890,36 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 取消核心事件
      */
     private void pvLayoutCancel() {
-        // 判断是不是分段录制并且超过1个视频
-        if (mIsSectionRecord && mVideoPaths.size() >= 1) {
-            // 每次删除，后面都要重新合成,新合成的也删除
-            mViewHolder.pvLayout.setProgressMode(true);
-            mViewHolder.pvLayout.resetConfim();
-            if (mNewSectionVideoPath != null) {
-                FileUtil.deleteFile(mNewSectionVideoPath);
-            }
-            // 删除最后一个视频和视频文件
-            FileUtil.deleteFile(mVideoPaths.get(mVideoPaths.size() - 1));
-            mVideoPaths.remove(mVideoPaths.size() - 1);
-            mVideoTimes.remove(mVideoTimes.size() - 1);
+        mCameraStateManagement.pvLayoutCancel();
+    }
 
-            // 显示当前进度
-            mViewHolder.pvLayout.setData(mVideoTimes);
-            mViewHolder.pvLayout.invalidateClickOrLongButton();
-        } else {
-            // 能点击这个按钮的，图片相关功能就必定是单图功能：清空图片资源，重置ui
-            cancelOnResetBySinglePicture();
+    /**
+     * 删除视频 - 多个模式
+     */
+    public void removeVideoMultiple() {
+        // 每次删除，后面都要重新合成,新合成的也删除
+        mViewHolder.pvLayout.setProgressMode(true);
+        mViewHolder.pvLayout.resetConfim();
+        if (mNewSectionVideoPath != null) {
+            FileUtil.deleteFile(mNewSectionVideoPath);
+        }
+        // 删除最后一个视频和视频文件
+        FileUtil.deleteFile(mVideoPaths.get(mVideoPaths.size() - 1));
+        mVideoPaths.remove(mVideoPaths.size() - 1);
+        mVideoTimes.remove(mVideoTimes.size() - 1);
+
+        // 显示当前进度
+        mViewHolder.pvLayout.setData(mVideoTimes);
+        mViewHolder.pvLayout.invalidateClickOrLongButton();
+        if (mVideoPaths.size() == 0) {
+            resetState();
         }
     }
 
     /**
      * 取消单图后的重置相关
      */
-    private void cancelOnResetBySinglePicture() {
+    public void cancelOnResetBySinglePicture() {
         mBitmapData.clear();
         mCaptureDatas.clear();
         // 如果启动视频编辑并且可录制数量>=0，便显示分段录制功能
@@ -944,7 +940,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
-     * 重置状态
+     * 结束所有当前活动，重置状态
+     * 一般指完成了当前活动，或者清除所有活动的时候调用
      */
     public void resetState() {
         mCameraStateManagement.resetState();
@@ -1203,6 +1200,30 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         return uris;
     }
 
+    /**
+     * 停止录像并且完成它，如果是因为视频过短则清除冗余数据
+     *
+     * @param isShort 是否因为视频过短而停止
+     */
+    public void stopRecord(boolean isShort) {
+        mIsShort = isShort;
+        mViewHolder.cameraView.stopVideo();
+        if (isShort) {
+            // 判断不是分段录制 并且 没有分段录制片段
+            if (!mIsSectionRecord && mVideoPaths.size() <= 0) {
+                // 如果视频过短就是录制不成功
+                mViewHolder.pvLayout.reset();
+            }
+        } else {
+            if (!mIsSectionRecord) {
+                // 如果不是分段录制模式，就设置成视频录制完的状态
+                mCameraStateManagement.setState(mCameraStateManagement.getVideoComplete());
+            } else {
+                // 设置成多个视频状态
+                mCameraStateManagement.setState(mCameraStateManagement.getVideoMultiple());
+            }
+        }
+    }
 
     /**
      * 设置闪光灯是否显示，如果不支持，是一直不会显示

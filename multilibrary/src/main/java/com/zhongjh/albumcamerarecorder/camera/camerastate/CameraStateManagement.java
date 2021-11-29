@@ -10,6 +10,7 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.state.Preview;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoComplete;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoIn;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoMultiple;
+import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoMultipleIn;
 
 /**
  * CameraLayout涉及到状态改变的事件都在这里
@@ -50,7 +51,10 @@ public class CameraStateManagement implements StateInterface {
      * 正在录制视频中的状态
      */
     StateInterface videoIn;
-
+    /**
+     * 正在录制多个视频中的状态
+     */
+    StateInterface videoMultipleIn;
 
     public CameraStateManagement(CameraLayout cameraLayout) {
         mCameraLayout = cameraLayout;
@@ -60,6 +64,7 @@ public class CameraStateManagement implements StateInterface {
         pictureMultiple = new PictureMultiple(cameraLayout, this);
         videoMultiple = new VideoMultiple(cameraLayout, this);
         videoIn = new VideoIn(cameraLayout, this);
+        videoMultipleIn = new VideoMultipleIn(cameraLayout, this);
         state = preview;
     }
 
@@ -78,25 +83,9 @@ public class CameraStateManagement implements StateInterface {
         state.pvLayoutCommit();
     }
 
-    /**
-     * 停止录像并且完成它，如果是因为视频过短则清除冗余数据
-     *
-     * @param isShort 是否因为视频过短而停止
-     */
-    public void stopRecord(boolean isShort) {
-        mCameraLayout.mIsShort = isShort;
-        mCameraLayout.mViewHolder.cameraView.stopVideo();
-        if (isShort) {
-            // 如果视频过短就是录制不成功
-            mCameraLayout.resetState();
-            // 判断不是分段录制 并且 没有分段录制片段
-            if (!mCameraLayout.mIsSectionRecord && mCameraLayout.mVideoPaths.size() <= 0) {
-                mCameraLayout.mViewHolder.pvLayout.reset();
-            }
-        } else {
-            // 设置成视频录制完的状态
-            setState(videoComplete);
-        }
+    @Override
+    public void pvLayoutCancel() {
+        state.pvLayoutCancel();
     }
 
 
@@ -105,6 +94,10 @@ public class CameraStateManagement implements StateInterface {
     }
 
     public void setState(StateInterface state) {
+        if (state.equals(getVideoIn())) {
+            this.state = state;
+            return;
+        }
         this.state = state;
         Log.d(TAG, state.toString());
     }
@@ -131,6 +124,10 @@ public class CameraStateManagement implements StateInterface {
 
     public StateInterface getVideoIn() {
         return videoIn;
+    }
+
+    public StateInterface getVideoMultipleIn() {
+        return videoMultipleIn;
     }
 
 }

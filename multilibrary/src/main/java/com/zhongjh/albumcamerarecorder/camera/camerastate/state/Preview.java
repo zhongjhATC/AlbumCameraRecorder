@@ -35,4 +35,9 @@ public class Preview extends StateMode {
     public void pvLayoutCommit() {
 
     }
+
+    @Override
+    public void pvLayoutCancel() {
+
+    }
 }

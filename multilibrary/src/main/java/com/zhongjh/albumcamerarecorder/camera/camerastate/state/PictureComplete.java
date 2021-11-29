@@ -43,6 +43,8 @@ public class PictureComplete extends StateMode {
 
         getCameraLayout().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
 
+        getCameraLayout().mViewHolder.pvLayout.reset();
+
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
@@ -63,5 +65,10 @@ public class PictureComplete extends StateMode {
 
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+    }
+
+    @Override
+    public void pvLayoutCancel() {
+        getCameraLayout().cancelOnResetBySinglePicture();
     }
 }

@@ -5,17 +5,18 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 
 /**
- * 正在录制视频中的状态
+ * 多个视频的状态录制中
  *
  * @author zhongjh
- * @date 2021/11/25
+ * @date 2021/11/29
  */
-public class VideoIn extends StateMode {
+public class VideoMultipleIn extends StateMode {
+
     /**
      * @param cameraLayout          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoIn(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
+    public VideoMultipleIn(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
         super(cameraLayout, cameraStateManagement);
     }
 
@@ -30,6 +31,7 @@ public class VideoIn extends StateMode {
         // 如果是录制中则暂停视频
         getCameraLayout().mIsBreakOff = true;
         getCameraLayout().mViewHolder.cameraView.stopVideo();
+        getCameraLayout().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
         return true;
     }
 

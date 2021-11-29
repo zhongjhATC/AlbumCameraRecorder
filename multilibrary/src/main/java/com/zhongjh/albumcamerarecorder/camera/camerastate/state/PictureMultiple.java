@@ -32,6 +32,16 @@ public class PictureMultiple extends StateMode {
 
     @Override
     public void pvLayoutCommit() {
+        getCameraLayout().setUiEnableFalse();
+        // 拍照完成
+        if (getCameraLayout().getOperateCameraListener() != null) {
+            // 移动文件
+            getCameraLayout().movePictureFile();
+        }
+    }
+
+    @Override
+    public void pvLayoutCancel() {
 
     }
 

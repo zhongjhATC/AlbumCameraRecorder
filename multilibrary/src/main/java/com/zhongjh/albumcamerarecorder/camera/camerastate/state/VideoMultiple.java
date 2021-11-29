@@ -22,7 +22,10 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void resetState() {
-
+        // 重置按钮
+        getCameraLayout().mViewHolder.pvLayout.reset();
+        // 恢复预览状态
+        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
 
     @Override
@@ -33,6 +36,11 @@ public class VideoMultiple extends StateMode {
     @Override
     public void pvLayoutCommit() {
         getCameraLayout().openPreviewVideoActivity();
+    }
+
+    @Override
+    public void pvLayoutCancel() {
+        getCameraLayout().removeVideoMultiple();
     }
 
 }
