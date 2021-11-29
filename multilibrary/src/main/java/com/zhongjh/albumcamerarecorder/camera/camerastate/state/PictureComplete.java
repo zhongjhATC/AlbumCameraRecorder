@@ -60,5 +60,8 @@ public class PictureComplete extends StateMode {
             // 移动文件
             getCameraLayout().movePictureFile();
         }
+
+        // 恢复预览状态
+        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
 }

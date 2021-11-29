@@ -5,7 +5,7 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 
 /**
- * 录像中的状态
+ * 正在录制视频中的状态
  *
  * @author zhongjh
  * @date 2021/11/25

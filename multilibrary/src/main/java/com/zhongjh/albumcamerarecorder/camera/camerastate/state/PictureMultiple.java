@@ -5,7 +5,7 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 
 /**
- * 多个图片模式
+ * 多个图片状态，至少有一张图片情况
  *
  * @author zhongjh
  * @date 2021/11/29

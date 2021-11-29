@@ -70,11 +70,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.BUTTON_STATE_ONLY_LONG_CLICK;
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.STATE_VIDEO_IN;
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_DEFAULT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_SHORT;
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
 
 /**
  * @author zhongjh
@@ -111,7 +107,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 状态管理
      */
-    private CameraStateManagement mCameraStateManagement;
+    private final CameraStateManagement mCameraStateManagement;
 
     public CameraStateManagement getCameraStateManagement() {
         return mCameraStateManagement;
@@ -632,7 +628,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     }
                     mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
                     // 设置录制状态
-                    setState(STATE_VIDEO_IN);
+                    mCameraStateManagement.setState(mCameraStateManagement.getVideoIn());
                     // 开始录像
                     setSwitchVisibility(INVISIBLE);
                     mViewHolder.imgFlash.setVisibility(INVISIBLE);
@@ -686,7 +682,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             @Override
             public void confirm() {
-                pvLayoutCommit();
+                mCameraStateManagement.pvLayoutCommit();
             }
 
             @Override
@@ -697,7 +693,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     mCameraSpec.videoEditCoordinator.merge(mNewSectionVideoPath, mVideoPaths,
                             mContext.getCacheDir().getPath() + File.separator + "cam.txt");
                 } else {
-                    pvLayoutCommit();
+                    mCameraStateManagement.pvLayoutCommit();
                 }
             }
 
@@ -925,31 +921,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
-     * 提交核心事件
-     */
-    private void pvLayoutCommit() {
-        if (mIsSectionRecord && mVideoPaths.size() >= 1) {
-            // 打开新的界面预览视频
-            PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
-        } else {
-            // 根据不同状态处理相应的事件
-            if (getState() == Constants.STATE_PICTURE) {
-                // 图片模式的提交
-                confirmState(TYPE_PICTURE);
-                // 设置空闲状态
-                setState(Constants.STATE_PREVIEW);
-            } else if (getState() == Constants.STATE_VIDEO) {
-                confirmState(TYPE_VIDEO);
-                // 设置空闲状态
-                setState(Constants.STATE_PREVIEW);
-            } else if (getState() == Constants.STATE_PICTURE_PREVIEW) {
-                // 图片模式的提交
-                confirmState(TYPE_PICTURE);
-            }
-        }
-    }
-
-    /**
      * 取消单图后的重置相关
      */
     private void cancelOnResetBySinglePicture() {
@@ -980,25 +951,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 重置右上角菜单
         setSwitchVisibility(VISIBLE);
         mViewHolder.imgFlash.setVisibility(VISIBLE);
-    }
-
-    /**
-     * 确认数据
-     *
-     * @param type 类型
-     */
-    private void confirmState(int type) {
-        switch (type) {
-            case TYPE_VIDEO:
-                // TODO 弃用，已经改用跳转到第二个界面播放视频了
-                break;
-            case TYPE_PICTURE:
-                break;
-            case TYPE_SHORT:
-            case TYPE_DEFAULT:
-            default:
-                break;
-        }
     }
 
     /**
@@ -1137,7 +1089,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mPhotoFile = file;
 
         // 设置当前模式是图片模式
-        setState(Constants.STATE_PICTURE);
+        mCameraStateManagement.setState(mCameraStateManagement.getPictureComplete());
 
         // 判断是否要编辑
         if (mGlobalSpec.isImageEdit) {
@@ -1176,7 +1128,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mViewHolder.imgFlash.setVisibility(View.VISIBLE);
 
         // 设置当前模式是图片休闲并存模式
-        setState(Constants.STATE_PICTURE_PREVIEW);
+        mCameraStateManagement.setState(mCameraStateManagement.getPictureMultiple());
 
         // 禁用长按事件，即禁止录像
         mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
@@ -1316,7 +1268,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             initPvLayoutButtonFeatures();
 
             // 设置空闲状态
-            setState(Constants.STATE_PREVIEW);
+            mCameraStateManagement.setState(mCameraStateManagement.getPreview());
 
             // 如果是单图编辑情况下
             mViewHolder.rlEdit.setVisibility(View.GONE);

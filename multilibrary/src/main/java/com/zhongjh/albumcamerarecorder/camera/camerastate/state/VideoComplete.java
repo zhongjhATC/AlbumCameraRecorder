@@ -36,6 +36,7 @@ public class VideoComplete extends StateMode {
 
     @Override
     public void pvLayoutCommit() {
-
+        // 恢复预览状态
+        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
 }

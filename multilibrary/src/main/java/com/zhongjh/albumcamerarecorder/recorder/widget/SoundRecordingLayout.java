@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.camerastate.StateInterface;
 import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
@@ -21,9 +22,18 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 public class SoundRecordingLayout extends BaseOperationLayout {
 
     /**
+     * 纯预览状态 - 没有多图，没有多视频
+     */
+    public static final int STATE_PREVIEW = 0x01;
+    /**
+     * 录音状态 - 录音后，就修改成这个状态
+     */
+    public static final int STATE_RECORDER = 0x02;
+
+    /**
      * 当前活动状态，默认休闲
      */
-    public int mState = Constants.STATE_PREVIEW;
+    public int mState = STATE_PREVIEW;
 
     public SoundRecordingLayout(@NonNull Context context) {
         super(context);
@@ -47,7 +57,7 @@ public class SoundRecordingLayout extends BaseOperationLayout {
         super.startShowLeftRightButtonsAnimator();
         // 显示播放的按钮
         ((ViewHolder) viewHolder).rlSoundRecording.setVisibility(VISIBLE);
-        mState = Constants.STATE_RECORDER;
+        mState = STATE_RECORDER;
     }
 
     /**

@@ -18,31 +18,6 @@ public class Constants {
     public static final String SCREEN_HEIGHT = "ScreenHeight";
 
     /**
-     * 纯预览状态 - 没有多图，没有多视频
-     */
-    public static final int STATE_PREVIEW = 0x01;
-    /**
-     * 图片状态 - 拍照后，就修改成这个状态
-     */
-    public static final int STATE_PICTURE = 0x02;
-    /**
-     * 视频状态 - 录制视频后，播放当前视频，就修改成这个状态
-     */
-    public static final int STATE_VIDEO = 0x03;
-    /**
-     * 图片休闲状态 - 拍照后，如果是多图情况，就修改成这个状态
-     */
-    public static final int STATE_PICTURE_PREVIEW = 0x04;
-    /**
-     * 录音状态 - 录音后，就修改成这个状态
-     */
-    public static final int STATE_RECORDER = 0x05;
-    /**
-     * 视频状态 - 录制视频中，就修改成这个状态
-     */
-    public static final int STATE_VIDEO_IN = 0x06;
-
-    /**
      * 闪关灯自动
      */
     public static final int TYPE_FLASH_AUTO = 0x101;
@@ -68,8 +43,6 @@ public class Constants {
      */
     public static final int BUTTON_STATE_BOTH = 0x203;
 
-    // region 拍照浏览时候的类型
-
     /**
      * 图片
      */
@@ -78,15 +51,6 @@ public class Constants {
      * 视频
      */
     public static final int TYPE_VIDEO = 0x002;
-    /**
-     * 短视频，无效的视频
-     */
-    public static final int TYPE_SHORT = 0x003;
-    /**
-     * 默认的
-     */
-    public static final int TYPE_DEFAULT = 0x004;
 
-    // endregion
 
 }
