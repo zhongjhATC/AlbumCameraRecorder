@@ -437,7 +437,14 @@ public abstract class BaseOperationLayout extends FrameLayout {
     }
 
     /**
-     * 重置本身
+     * 重置提交按钮
+     */
+    public void resetBtnConfirm() {
+        viewHolder.btnConfirm.reset();
+    }
+
+    /**
+     * 重置本身全部
      */
     public void reset() {
         viewHolder.btnClickOrLong.reset();

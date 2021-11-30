@@ -10,11 +10,6 @@ import gaode.zhongjh.com.common.listener.VideoEditListener;
  * @author zhongjh
  */
 public class VideoEditCoordinator {
-
-    /**
-     * 用于子类继承
-     */
-    protected VideoEditCoordinator mVideoEditManager;
     /**
      * 合并事件回调
      */
@@ -40,7 +35,6 @@ public class VideoEditCoordinator {
      * @param txtPath 多个视频的集合地址文本，用 ffmpeg 才能合并
      */
     public void merge(String newPath, ArrayList<String> paths, String txtPath) {
-        mVideoEditManager.merge(newPath, paths, txtPath);
     }
 
     /**
@@ -50,21 +44,30 @@ public class VideoEditCoordinator {
      * @param compressPath 压缩后的文件地址
      */
     public void compress(String oldPath, String compressPath) {
-        mVideoEditManager.compress(oldPath, compressPath);
     }
 
     /**
      * 销毁合并事件
      */
     public void onMergeDestroy() {
-        mVideoEditManager.onMergeDestroy();
     }
 
     /**
      * 销毁压缩事件
      */
     public void onCompressDestroy() {
-        mVideoEditManager.onCompressDestroy();
+    }
+
+    /**
+     * 停止合并事件
+     */
+    public void onMergeDispose() {
+    }
+
+    /**
+     * 停止压缩事件
+     */
+    public void onCompressDispose() {
     }
 
 }

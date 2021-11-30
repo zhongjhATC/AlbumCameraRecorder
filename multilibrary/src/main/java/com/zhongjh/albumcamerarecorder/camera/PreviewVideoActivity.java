@@ -95,10 +95,10 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (mCameraSpec.videoEditCoordinator != null) {
             mCameraSpec.videoEditCoordinator.onCompressDestroy();
         }
+        super.onDestroy();
     }
 
     /**

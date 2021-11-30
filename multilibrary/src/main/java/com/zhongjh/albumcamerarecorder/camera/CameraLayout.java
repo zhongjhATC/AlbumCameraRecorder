@@ -160,7 +160,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private boolean mIsShort;
 
-
     /**
      * 是否分段录制
      */
@@ -691,8 +690,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             @Override
             public void stopProgress() {
+                // 重置按钮
+                mViewHolder.pvLayout.resetBtnConfirm();
                 if (mCameraSpec.videoEditCoordinator != null) {
-                    mCameraSpec.videoEditCoordinator.onMergeDestroy();
+                    mCameraSpec.videoEditCoordinator.onMergeDispose();
                 }
             }
 

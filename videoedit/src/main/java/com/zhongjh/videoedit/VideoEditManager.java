@@ -71,6 +71,14 @@ public class VideoEditManager extends VideoEditCoordinator {
     }
 
     @Override
+    public void onCompressDestroy() {
+        if (mMyRxFfmpegCompressSubscriber != null) {
+            mMyRxFfmpegCompressSubscriber.dispose();
+            mVideoCompressListener = null;
+        }
+    }
+
+    @Override
     public void onMergeDestroy() {
         if (mMyRxFfmpegMergeSubscriber != null) {
             mMyRxFfmpegMergeSubscriber.dispose();
@@ -79,12 +87,20 @@ public class VideoEditManager extends VideoEditCoordinator {
     }
 
     @Override
-    public void onCompressDestroy() {
-        if (mMyRxFfmpegCompressSubscriber != null) {
-            mMyRxFfmpegCompressSubscriber.dispose();
-            mVideoCompressListener = null;
+    public void onMergeDispose() {
+        if (mMyRxFfmpegMergeSubscriber != null) {
+            mMyRxFfmpegMergeSubscriber.dispose();
         }
     }
+
+    @Override
+    public void onCompressDispose() {
+        if (mMyRxFfmpegCompressSubscriber != null) {
+            mMyRxFfmpegCompressSubscriber.dispose();
+        }
+    }
+
+
 
     public static class MyRxFfmpegSubscriber extends RxFFmpegSubscriber {
 
