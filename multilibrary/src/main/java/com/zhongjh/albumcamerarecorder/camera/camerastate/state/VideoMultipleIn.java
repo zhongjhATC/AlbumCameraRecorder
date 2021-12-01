@@ -1,8 +1,11 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
+import android.util.Log;
+
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 /**
  * 多个视频的状态录制中
@@ -44,4 +47,34 @@ public class VideoMultipleIn extends StateMode {
     public void pvLayoutCancel() {
 
     }
+
+    @Override
+    public void longClickShort(long time) {
+        getCameraLayout().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
+        if (getCameraLayout().mVideoPaths.size() <= 0) {
+            // 母窗体显示底部
+            ViewBusinessUtils.setTabLayoutScroll(true, getCameraLayout().mMainActivity,
+                    getCameraLayout().mViewHolder.pvLayout);
+        }
+    }
+
+    @Override
+    public void stopRecord(boolean isShort) {
+        if (isShort) {
+            // 如果没有视频数据
+            if (getCameraLayout().mVideoPaths.size() <= 0) {
+                // 则重置底部按钮
+                getCameraLayout().mViewHolder.pvLayout.reset();
+                // 恢复预览状态
+                getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+            } else {
+                // 设置成多个视频状态
+                getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
+            }
+        } else {
+            // 设置成多个视频状态
+            getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
+        }
+    }
+
 }

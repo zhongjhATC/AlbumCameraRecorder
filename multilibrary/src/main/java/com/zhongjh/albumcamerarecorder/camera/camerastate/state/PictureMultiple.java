@@ -45,4 +45,14 @@ public class PictureMultiple extends StateMode {
 
     }
 
+    @Override
+    public void longClickShort(long time) {
+
+    }
+
+    @Override
+    public void stopRecord(boolean isShort) {
+
+    }
+
 }

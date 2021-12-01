@@ -10,6 +10,8 @@ import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
  */
 public abstract class StateMode implements StateInterface {
 
+    protected final String TAG = CameraStateManagement.class.getSimpleName();
+
     CameraStateManagement cameraStateManagement;
     CameraLayout cameraLayout;
 

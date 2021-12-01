@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate;
 
 import android.util.Log;
+import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
@@ -14,6 +15,12 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoMultipleIn;
 
 /**
  * CameraLayout涉及到状态改变的事件都在这里
+ * 录制视频：
+ * 默认状态Preview - 录制中VideoIn - 录制完成VideoComplete - 关闭视频预览回到初始界面Preview
+ * 录制多个视频
+ * 默认状态Preview - 录制中VideoMultipleIn - 录制完一小节VideoMultiple - 回退节点至没有视频节点Preview,如果有节点则是VideoMultiple - 即使点击录制完成依然保持VideoMultiple
+ *
+ *
  *
  * @author zhongjh
  * @date 2021/11/25
@@ -70,22 +77,42 @@ public class CameraStateManagement implements StateInterface {
 
     @Override
     public void resetState() {
+        Log.d(TAG,"resetState");
         state.resetState();
     }
 
     @Override
     public Boolean onBackPressed() {
+        Log.d(TAG,"onBackPressed");
         return state.onBackPressed();
     }
 
     @Override
     public void pvLayoutCommit() {
+        Log.d(TAG,"pvLayoutCommit");
         state.pvLayoutCommit();
     }
 
     @Override
     public void pvLayoutCancel() {
+        Log.d(TAG,"pvLayoutCancel");
         state.pvLayoutCancel();
+    }
+
+    @Override
+    public void longClickShort(long time) {
+        Log.d(TAG,"longClickShort");
+        state.longClickShort(time);
+    }
+
+    @Override
+    public void stopRecord(boolean isShort) {
+        Log.d(TAG,"stopRecord");
+        mCameraLayout.mIsShort = isShort;
+        mCameraLayout.mViewHolder.cameraView.stopVideo();
+        // 显示菜单
+        mCameraLayout.setMenuVisibility(View.VISIBLE);
+        state.stopRecord(isShort);
     }
 
 
@@ -94,12 +121,8 @@ public class CameraStateManagement implements StateInterface {
     }
 
     public void setState(StateInterface state) {
-        if (state.equals(getVideoIn())) {
-            this.state = state;
-            return;
-        }
-        this.state = state;
         Log.d(TAG, state.toString());
+        this.state = state;
     }
 
     public StateInterface getPreview() {

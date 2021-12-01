@@ -52,7 +52,7 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
  */
 public class CameraFragment extends BaseFragment {
 
-    private Activity mActivity;
+    private MainActivity mActivity;
 
     private CameraLayout mCameraLayout;
     private final static int MILLISECOND = 2000;
@@ -77,7 +77,7 @@ public class CameraFragment extends BaseFragment {
     @Override
     public void onAttach(@NotNull Activity activity) {
         super.onAttach(activity);
-        this.mActivity = activity;
+        this.mActivity = (MainActivity) activity;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class CameraFragment extends BaseFragment {
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
 
         mCameraLayout = view.findViewById(R.id.cameraLayout);
-        mCameraLayout.init(this);
+        mCameraLayout.init(mActivity, this);
         mCameraLayout.setErrorListener(new ErrorListener() {
             @Override
             public void onError() {
@@ -102,7 +102,6 @@ public class CameraFragment extends BaseFragment {
         });
 
         initCameraLayoutCloseListener();
-        initCameraLayoutPhotoVideoListener();
         initCameraLayoutOperateCameraListener();
         initCameraLayoutCaptureListener();
         initCameraLayoutEditListener();
@@ -212,49 +211,6 @@ public class CameraFragment extends BaseFragment {
     }
 
     /**
-     * 拍摄按钮事件
-     */
-    private void initCameraLayoutPhotoVideoListener() {
-        mCameraLayout.setPhotoVideoListener(new ClickOrLongListener() {
-            @Override
-            public void actionDown() {
-                // 母窗体禁止滑动
-                ViewBusinessUtils.setTabLayoutScroll(false, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
-            }
-
-            @Override
-            public void onClick() {
-
-            }
-
-            @Override
-            public void onLongClickShort(long time) {
-                // 母窗体启动滑动
-                ViewBusinessUtils.setTabLayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
-            }
-
-            @Override
-            public void onLongClick() {
-            }
-
-            @Override
-            public void onLongClickEnd(long time) {
-
-            }
-
-            @Override
-            public void onLongClickError() {
-
-            }
-
-            @Override
-            public void onBanClickTips() {
-
-            }
-        });
-    }
-
-    /**
      * 确认取消事件
      */
     private void initCameraLayoutOperateCameraListener() {
@@ -262,7 +218,7 @@ public class CameraFragment extends BaseFragment {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTabLayoutScroll(true, ((MainActivity) mActivity), mCameraLayout.mViewHolder.pvLayout);
+                ViewBusinessUtils.setTabLayoutScroll(true, mActivity, mCameraLayout.mViewHolder.pvLayout);
             }
 
             @Override
@@ -307,7 +263,7 @@ public class CameraFragment extends BaseFragment {
             public void remove(List<BitmapData> captureData) {
                 // 判断如果删除光图片的时候，母窗体启动滑动
                 if (captureData.size() <= 0) {
-                    ((MainActivity) mActivity).showHideTableLayout(true);
+                    mActivity.showHideTableLayout(true);
                 }
             }
 
@@ -315,7 +271,7 @@ public class CameraFragment extends BaseFragment {
             public void add(List<BitmapData> captureDatas) {
                 if (captureDatas.size() > 0) {
                     // 母窗体禁止滑动
-                    ((MainActivity) mActivity).showHideTableLayout(false);
+                    mActivity.showHideTableLayout(false);
                 }
             }
         });

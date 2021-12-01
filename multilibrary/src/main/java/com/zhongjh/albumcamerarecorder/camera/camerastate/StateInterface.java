@@ -33,4 +33,17 @@ public interface StateInterface {
      */
     void pvLayoutCancel();
 
+    /**
+     * 录像时间过短，目前是单视频和多视频才会使用这个功能
+     * @param time 多短的时间
+     */
+    void longClickShort(final long time);
+
+    /**
+     * 停止录像并且完成它，如果是因为视频过短则清除冗余数据
+     *
+     * @param isShort 是否因为视频过短而停止
+     */
+    void stopRecord(boolean isShort);
+
 }

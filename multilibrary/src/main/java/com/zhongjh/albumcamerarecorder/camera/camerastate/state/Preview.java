@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
+import android.util.Log;
+
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
@@ -13,7 +15,7 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 public class Preview extends StateMode {
 
     /**
-     * @param cameraLayout       主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraLayout          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
     public Preview(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
@@ -38,6 +40,17 @@ public class Preview extends StateMode {
 
     @Override
     public void pvLayoutCancel() {
+
+
+    }
+
+    @Override
+    public void longClickShort(long time) {
+
+    }
+
+    @Override
+    public void stopRecord(boolean isShort) {
 
     }
 }

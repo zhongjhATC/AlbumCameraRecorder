@@ -459,8 +459,7 @@ public class ClickOrLongButton extends View {
                     if (mIsSectionMode && mRecordedTimeSection < mMinDuration) {
                         // 如果处于分段录制并且录制时间过短
                         mClickOrLongListener.onLongClickShort(mRecordedTimeSection);
-                    }
-                    if (mRecordedTime < mMinDuration) {
+                    } else if (mRecordedTime < mMinDuration) {
                         // 回调录制时间过短
                         mClickOrLongListener.onLongClickShort(mRecordedTime);
                     } else {

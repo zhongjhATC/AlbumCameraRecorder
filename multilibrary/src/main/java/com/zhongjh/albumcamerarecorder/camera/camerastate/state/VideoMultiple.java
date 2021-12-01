@@ -1,8 +1,11 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
+import android.util.Log;
+
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 /**
  * 多个视频模式
@@ -24,6 +27,8 @@ public class VideoMultiple extends StateMode {
     public void resetState() {
         // 重置按钮
         getCameraLayout().mViewHolder.pvLayout.reset();
+        // 重置所有
+        getCameraLayout().resetStateAll();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
@@ -41,6 +46,15 @@ public class VideoMultiple extends StateMode {
     @Override
     public void pvLayoutCancel() {
         getCameraLayout().removeVideoMultiple();
+    }
+
+    @Override
+    public void longClickShort(long time) {
+    }
+
+    @Override
+    public void stopRecord(boolean isShort) {
+
     }
 
 }

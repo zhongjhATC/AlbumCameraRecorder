@@ -71,4 +71,14 @@ public class PictureComplete extends StateMode {
     public void pvLayoutCancel() {
         getCameraLayout().cancelOnResetBySinglePicture();
     }
+
+    @Override
+    public void longClickShort(long time) {
+
+    }
+
+    @Override
+    public void stopRecord(boolean isShort) {
+
+    }
 }

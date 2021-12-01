@@ -1,9 +1,12 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
+import android.util.Log;
+
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 /**
  * 单视频完成状态的相关处理
@@ -27,6 +30,7 @@ public class VideoComplete extends StateMode {
         FileUtil.deleteFile(getCameraLayout().mVideoFile);
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+        getCameraLayout().resetStateAll();
     }
 
     @Override
@@ -42,6 +46,16 @@ public class VideoComplete extends StateMode {
 
     @Override
     public void pvLayoutCancel() {
+
+    }
+
+    @Override
+    public void longClickShort(long time) {
+
+    }
+
+    @Override
+    public void stopRecord(boolean isShort) {
 
     }
 }
