@@ -166,10 +166,21 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 是否分段录制
      */
     public boolean mIsSectionRecord;
+
+    public boolean isBreakOff() {
+        Log.d(TAG, "isBreakOff: " + mIsBreakOff);
+        return mIsBreakOff;
+    }
+
+    public void setBreakOff(boolean breakOff) {
+        Log.d(TAG, "setBreakOff: " + breakOff);
+        this.mIsBreakOff = breakOff;
+    }
+
     /**
      * 是否中断录像
      */
-    public boolean mIsBreakOff;
+    private boolean mIsBreakOff;
     /**
      * 上一个分段录制的时间
      */
@@ -451,14 +462,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * @return 返回true是跳过，返回false则是继续
      */
     public boolean onActivityResult(int resultCode) {
-        if (resultCode != RESULT_OK) {
-            if (getState().equals(mCameraStateManagement.getVideoComplete())) {
-                // 如果是从视频界面回来，就重置状态
-                mCameraStateManagement.setState(mCameraStateManagement.getPreview());
-            }
-            return true;
-        }
-        return false;
+        return mCameraStateManagement.onActivityResult(resultCode);
     }
 
     /**
@@ -750,7 +754,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 Log.d(TAG, "onVideoTaken");
                 super.onVideoTaken(result);
                 // 判断是否短时间结束
-                if (!mIsShort && !mIsBreakOff) {
+                if (!mIsShort && !isBreakOff()) {
                     if (!mIsSectionRecord) {
                         //  如果录制结束，打开该视频。打开底部菜单
                         PreviewVideoActivity.startActivity(mFragment, result.getFile().getPath());
@@ -778,9 +782,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 } else {
                     Log.d(TAG, "onVideoTaken delete " + mVideoFile.getPath());
                     FileUtil.deleteFile(mVideoFile);
-                    mIsShort = false;
-                    mIsBreakOff = false;
                 }
+                mIsShort = false;
+                setBreakOff(false);
                 mViewHolder.pvLayout.setEnabled(true);
             }
 
@@ -924,12 +928,25 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
 
         // 恢复底部
+        showBottomMenu();
+
+        // 隐藏大图
+        mViewHolder.flShow.setVisibility(View.GONE);
+
+        // 隐藏编辑按钮
+        mViewHolder.rlEdit.setVisibility(View.GONE);
+
+        // 恢复底部按钮
+        mViewHolder.pvLayout.reset();
+    }
+
+    /**
+     * 恢复底部菜单
+     */
+    public void showBottomMenu() {
         if (mOperateCameraListener != null) {
             mOperateCameraListener.cancel();
         }
-
-        // 隐藏大图
-        mViewHolder.rlEdit.setVisibility(View.GONE);
     }
 
     /**

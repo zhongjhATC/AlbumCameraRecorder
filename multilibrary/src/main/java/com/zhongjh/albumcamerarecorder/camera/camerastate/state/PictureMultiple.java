@@ -31,6 +31,11 @@ public class PictureMultiple extends StateMode {
     }
 
     @Override
+    public boolean onActivityResult(int resultCode) {
+        return true;
+    }
+
+    @Override
     public void pvLayoutCommit() {
         getCameraLayout().setUiEnableFalse();
         // 拍照完成

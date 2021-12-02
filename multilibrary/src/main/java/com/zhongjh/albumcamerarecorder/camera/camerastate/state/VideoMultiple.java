@@ -25,8 +25,6 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void resetState() {
-        // 重置按钮
-        getCameraLayout().mViewHolder.pvLayout.reset();
         // 重置所有
         getCameraLayout().resetStateAll();
         // 恢复预览状态
@@ -36,6 +34,11 @@ public class VideoMultiple extends StateMode {
     @Override
     public Boolean onBackPressed() {
         return null;
+    }
+
+    @Override
+    public boolean onActivityResult(int resultCode) {
+        return true;
     }
 
     @Override

@@ -34,6 +34,11 @@ public class Preview extends StateMode {
     }
 
     @Override
+    public boolean onActivityResult(int resultCode) {
+        return true;
+    }
+
+    @Override
     public void pvLayoutCommit() {
 
     }

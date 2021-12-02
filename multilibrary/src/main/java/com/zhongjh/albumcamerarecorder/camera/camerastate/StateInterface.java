@@ -24,6 +24,14 @@ public interface StateInterface {
     Boolean onBackPressed();
 
     /**
+     * 返回true的时候即是纸条跳过了后面的ActivityResult事件
+     *
+     * @param resultCode Activity的返回码
+     * @return 返回true是跳过，返回false则是继续
+     */
+    boolean onActivityResult(int resultCode);
+
+    /**
      * 提交核心事件
      */
     void pvLayoutCommit();

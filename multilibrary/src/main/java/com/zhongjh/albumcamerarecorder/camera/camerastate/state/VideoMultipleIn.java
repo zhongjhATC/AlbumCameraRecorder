@@ -32,9 +32,27 @@ public class VideoMultipleIn extends StateMode {
     @Override
     public Boolean onBackPressed() {
         // 如果是录制中则暂停视频
-        getCameraLayout().mIsBreakOff = true;
+        getCameraLayout().setBreakOff(true);
         getCameraLayout().mViewHolder.cameraView.stopVideo();
+        getCameraLayout().mViewHolder.pvLayout.resetBtnConfirm();
         getCameraLayout().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
+
+        if (getCameraLayout().mVideoPaths.size() <= 0) {
+            // 如果没有视频节点则重置所有按钮
+            getCameraLayout().mViewHolder.pvLayout.reset();
+            // 恢复预览状态
+            getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+        } else {
+            // 如果有视频节点则中断中心按钮
+            getCameraLayout().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.breakOff();
+            // 恢复预览状态
+            getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onActivityResult(int resultCode) {
         return true;
     }
 

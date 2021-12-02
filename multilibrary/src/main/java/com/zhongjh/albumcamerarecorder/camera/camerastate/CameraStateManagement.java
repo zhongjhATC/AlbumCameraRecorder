@@ -20,8 +20,6 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoMultipleIn;
  * 录制多个视频
  * 默认状态Preview - 录制中VideoMultipleIn - 录制完一小节VideoMultiple - 回退节点至没有视频节点Preview,如果有节点则是VideoMultiple - 即使点击录制完成依然保持VideoMultiple
  *
- *
- *
  * @author zhongjh
  * @date 2021/11/25
  */
@@ -77,37 +75,42 @@ public class CameraStateManagement implements StateInterface {
 
     @Override
     public void resetState() {
-        Log.d(TAG,"resetState");
+        Log.d(TAG, "resetState");
         state.resetState();
     }
 
     @Override
     public Boolean onBackPressed() {
-        Log.d(TAG,"onBackPressed");
+        Log.d(TAG, "onBackPressed");
         return state.onBackPressed();
     }
 
     @Override
+    public boolean onActivityResult(int resultCode) {
+        return state.onActivityResult(resultCode);
+    }
+
+    @Override
     public void pvLayoutCommit() {
-        Log.d(TAG,"pvLayoutCommit");
+        Log.d(TAG, "pvLayoutCommit");
         state.pvLayoutCommit();
     }
 
     @Override
     public void pvLayoutCancel() {
-        Log.d(TAG,"pvLayoutCancel");
+        Log.d(TAG, "pvLayoutCancel");
         state.pvLayoutCancel();
     }
 
     @Override
     public void longClickShort(long time) {
-        Log.d(TAG,"longClickShort");
+        Log.d(TAG, "longClickShort");
         state.longClickShort(time);
     }
 
     @Override
     public void stopRecord(boolean isShort) {
-        Log.d(TAG,"stopRecord");
+        Log.d(TAG, "stopRecord");
         mCameraLayout.mIsShort = isShort;
         mCameraLayout.mViewHolder.cameraView.stopVideo();
         // 显示菜单
@@ -117,11 +120,12 @@ public class CameraStateManagement implements StateInterface {
 
 
     public StateInterface getState() {
+        Log.d(TAG, "getState" + state.toString());
         return state;
     }
 
     public void setState(StateInterface state) {
-        Log.d(TAG, state.toString());
+        Log.d(TAG, "setState" + state.toString());
         this.state = state;
     }
 

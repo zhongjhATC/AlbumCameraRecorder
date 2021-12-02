@@ -134,6 +134,11 @@ public class ClickOrLongButton extends View {
     private long btnPressTime;
     private int outBlackCircleRadiusInc;
     /**
+     * 为了确保整个按钮的逻辑从按下-放开手都是流畅的，会用按下+1，放开手+1，最后等于2的方式执行
+     * 如果中间中断或者重置，那就直接减1，就说明
+     */
+    private int step;
+    /**
      * 当前状态
      */
     private int recordState;
@@ -414,6 +419,7 @@ public class ClickOrLongButton extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                step = 1;
                 if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
                     // 进度已满,不执行任何动作
                     return true;
@@ -432,6 +438,7 @@ public class ClickOrLongButton extends View {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                step++;
                 Log.d(TAG, "onTouchEvent: up");
                 refreshView();
                 break;
@@ -454,7 +461,7 @@ public class ClickOrLongButton extends View {
         Log.d(TAG, "reset: " + recordState);
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
-                if (mClickOrLongListener != null) {
+                if (mClickOrLongListener != null && step == 2) {
                     Log.d(TAG, "时间短的比较：" + mRecordedTime + " " + mMinDuration + " " + mRecordedTimeSection);
                     if (mIsSectionMode && mRecordedTimeSection < mMinDuration) {
                         // 如果处于分段录制并且录制时间过短
@@ -473,7 +480,7 @@ public class ClickOrLongButton extends View {
                 recordState = RECORD_NOT_STARTED;
             } else {
                 // 如果只支持长按事件则不触发
-                if (mClickOrLongListener != null && mButtonState != BUTTON_STATE_ONLY_LONG_CLICK) {
+                if (mClickOrLongListener != null && mButtonState != BUTTON_STATE_ONLY_LONG_CLICK && step == 2) {
                     // 拍照
                     mClickOrLongListener.onClick();
                 }
@@ -486,11 +493,36 @@ public class ClickOrLongButton extends View {
      * 重置
      */
     public void reset() {
+        step = 0;
         mActionDown = false;
         touchTimeHandler.clearMsg();
         percentInDegree = 0.0F;
         mRecordedTime = 0;
         mRecordedTimeOld = 0;
+        mCurrentSumNumberDegreesOld = 0F;
+        centerCirclePaint.setColor(colorWhiteP60);
+        outMostWhiteCirclePaint.setColor(colorRoundBorder);
+        innerCircleRadiusToDraw = mInnerCircleRadius;
+        outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
+        translucentCircleRadius = 0;
+        processBarPaint.setStrokeWidth(mOutCircleWidth);
+        outProcessCirclePaint.setStrokeWidth(mOutCircleWidth);
+        outMostWhiteCirclePaint.setStrokeWidth(mOutCircleWidth);
+        outProcessIntervalCirclePaint.setStrokeWidth(mOutCircleWidth);
+        outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
+        outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);
+        invalidate();
+    }
+
+    /**
+     * 中断当前操作
+     */
+    public void breakOff() {
+        step = 0;
+        mActionDown = false;
+        touchTimeHandler.clearMsg();
+        percentInDegree = 0.0F;
+        mRecordedTime = 0;
         centerCirclePaint.setColor(colorWhiteP60);
         outMostWhiteCirclePaint.setColor(colorRoundBorder);
         innerCircleRadiusToDraw = mInnerCircleRadius;

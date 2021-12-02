@@ -8,6 +8,8 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * 单视频完成状态的相关处理
  *
@@ -17,7 +19,7 @@ import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 public class VideoComplete extends StateMode {
 
     /**
-     * @param cameraLayout       主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraLayout          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
     public VideoComplete(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
@@ -36,6 +38,17 @@ public class VideoComplete extends StateMode {
     @Override
     public Boolean onBackPressed() {
         return null;
+    }
+
+    @Override
+    public boolean onActivityResult(int resultCode) {
+        if (resultCode != RESULT_OK) {
+            getCameraLayout().showBottomMenu();
+            // 如果是从视频界面回来，就重置状态
+            getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+            return true;
+        }
+        return false;
     }
 
     @Override

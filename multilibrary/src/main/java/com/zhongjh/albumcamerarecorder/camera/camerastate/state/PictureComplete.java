@@ -55,6 +55,11 @@ public class PictureComplete extends StateMode {
     }
 
     @Override
+    public boolean onActivityResult(int resultCode) {
+        return true;
+    }
+
+    @Override
     public void pvLayoutCommit() {
         getCameraLayout().setUiEnableFalse();
         // 拍照完成
@@ -70,6 +75,9 @@ public class PictureComplete extends StateMode {
     @Override
     public void pvLayoutCancel() {
         getCameraLayout().cancelOnResetBySinglePicture();
+        getCameraLayout().mViewHolder.cameraView.open();
+        // 恢复预览状态
+        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
 
     @Override
