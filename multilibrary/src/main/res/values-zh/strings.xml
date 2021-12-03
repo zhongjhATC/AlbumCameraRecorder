@@ -62,6 +62,9 @@
     <string name="z_multi_library_light_touch_take_long_press_camera">轻触拍照，长按摄像</string>
     <string name="z_multi_library_light_touch_take">轻触拍照</string>
     <string name="z_multi_library_long_press_camera">长按摄像</string>
+    <string name="z_multi_library_light_touch_camera">轻触摄像</string>
+    <string name="z_multi_library_touch_your_suspension">轻触暂停</string>
+    <string name="z_multi_library_touch_your_end">轻触结束</string>
     <string name="z_multi_library_long_press_sound_recording">长按录音</string>
     <string name="z_multi_library_the_recording_time_is_too_short">录制时间过短</string>
     <string name="z_multi_library_video_can_only_exist_in_n">视频只可存在 %1$d 个</string>

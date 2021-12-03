@@ -262,6 +262,10 @@ public class MainActivity extends BaseActivity {
             // 启动这个即可开启视频编辑功能
             cameraSetting.videoEdit(new VideoEditManager());
         }
+
+        // 开启点击即开启录制(失去点击拍照功能)
+        cameraSetting.isClickRecord(mBinding.cbClickRecord.isChecked());
+
         return cameraSetting;
     }
 

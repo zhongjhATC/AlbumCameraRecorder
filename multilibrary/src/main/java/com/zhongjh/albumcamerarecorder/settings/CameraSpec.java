@@ -92,8 +92,10 @@ public class CameraSpec {
      * 水印资源id
      */
     public int watermarkResource = -1;
-
-
+    /**
+     * 是否点击即录制（点击拍摄图片功能则失效）
+     */
+    public boolean isClickRecord;
     /**
      * 仅支持图片
      */

@@ -30,18 +30,7 @@ public class Constants {
      */
     public static final int TYPE_FLASH_OFF = 0x103;
 
-    /**
-     * 按钮只能点击
-     */
-    public static final int BUTTON_STATE_ONLY_CLICK = 0x201;
-    /**
-     * 按钮只能长按
-     */
-    public static final int BUTTON_STATE_ONLY_LONG_CLICK = 0x202;
-    /**
-     * 按钮点击或者长按两者都可以
-     */
-    public static final int BUTTON_STATE_BOTH = 0x203;
+
 
     /**
      * 图片

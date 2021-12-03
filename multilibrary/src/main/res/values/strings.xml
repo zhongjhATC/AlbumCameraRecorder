@@ -61,6 +61,9 @@
     <string name="z_multi_library_light_touch_take_long_press_camera">Tap the camera, long press the camera</string>
     <string name="z_multi_library_light_touch_take">Touch your photo</string>
     <string name="z_multi_library_long_press_camera">Long press camera</string>
+    <string name="z_multi_library_light_touch_camera">Touch your camera</string>
+    <string name="z_multi_library_touch_your_suspension">Touch your suspension</string>
+    <string name="z_multi_library_touch_your_end">Touch your end</string>
     <string name="z_multi_library_long_press_sound_recording">Long press the tape</string>
     <string name="z_multi_library_the_recording_time_is_too_short">The recording time is too short</string>
     <string name="z_multi_library_video_can_only_exist_in_n">Only %1$d video can exist</string>

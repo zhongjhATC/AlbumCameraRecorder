@@ -50,6 +50,12 @@ public class CameraSetting implements CameraSettingApi {
     }
 
     @Override
+    public CameraSetting isClickRecord(boolean isClickRecord) {
+        mCameraSpec.isClickRecord = isClickRecord;
+        return this;
+    }
+
+    @Override
     public CameraSetting videoEdit(VideoEditCoordinator videoEditManager) {
         mCameraSpec.videoEditCoordinator = videoEditManager;
         return this;

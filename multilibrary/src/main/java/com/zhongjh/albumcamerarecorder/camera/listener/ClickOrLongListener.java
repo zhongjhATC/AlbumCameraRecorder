@@ -45,4 +45,9 @@ public interface ClickOrLongListener {
      */
     void onBanClickTips();
 
+    /**
+     * 可以点击结束的提示
+     */
+    void onClickStopTips();
+
 }

@@ -35,6 +35,7 @@
     <string name="the_recording_configuration">录制配置</string>
     <string name="turn_on_the_shooting_function">开启拍摄功能</string>
     <string name="enable_segmented_recording">开启分段录制功能</string>
+    <string name="click_to_start_recording_lose_the_click_to_take_photos_function">开启点击即开启录制(失去点击拍照功能)</string>
     <string name="maximum_recording_time">最长录制时间</string>
     <string name="minimum_recording_time_milliseconds">最短录制时间(毫秒)</string>
     <string name="enable_recording">开启录音功能</string>

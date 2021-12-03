@@ -250,6 +250,13 @@ public abstract class BaseOperationLayout extends FrameLayout {
                     mClickOrLongListener.onBanClickTips();
                 }
             }
+
+            @Override
+            public void onClickStopTips() {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onClickStopTips();
+                }
+            }
         });
     }
 
@@ -459,9 +466,9 @@ public abstract class BaseOperationLayout extends FrameLayout {
     /**
      * 设置按钮支持的功能：
      *
-     * @param buttonStateBoth {@link Constants#BUTTON_STATE_ONLY_CLICK 只能点击
-     * @link Constants#BUTTON_STATE_ONLY_LONG_CLICK 只能长按
-     * @link Constants#BUTTON_STATE_BOTH 两者皆可
+     * @param buttonStateBoth {@link com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton#BUTTON_STATE_ONLY_CLICK 只能点击
+     * @link com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton#BUTTON_STATE_ONLY_LONG_CLICK 只能长按
+     * @link com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton#BUTTON_STATE_BOTH 两者皆可
      * }
      */
     public void setButtonFeatures(int buttonStateBoth) {
