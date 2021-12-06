@@ -17,7 +17,7 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoMultipleIn;
  * CameraLayout涉及到状态改变的事件都在这里
  * 录制视频：
  * 默认状态Preview - 录制中VideoIn - 录制完成VideoComplete - 关闭视频预览回到初始界面Preview
- * 录制多个视频
+ * 录制多个视频：
  * 默认状态Preview - 录制中VideoMultipleIn - 录制完一小节VideoMultiple - 回退节点至没有视频节点Preview,如果有节点则是VideoMultiple - 即使点击录制完成依然保持VideoMultiple
  *
  * @author zhongjh
@@ -63,6 +63,7 @@ public class CameraStateManagement implements StateInterface {
 
     public CameraStateManagement(CameraLayout cameraLayout) {
         mCameraLayout = cameraLayout;
+        // 初始化相关状态逻辑
         preview = new Preview(cameraLayout, this);
         videoComplete = new VideoComplete(cameraLayout, this);
         pictureComplete = new PictureComplete(cameraLayout, this);
@@ -70,6 +71,7 @@ public class CameraStateManagement implements StateInterface {
         videoMultiple = new VideoMultiple(cameraLayout, this);
         videoIn = new VideoIn(cameraLayout, this);
         videoMultipleIn = new VideoMultipleIn(cameraLayout, this);
+        // 设置当前默认状态
         state = preview;
     }
 
@@ -118,12 +120,17 @@ public class CameraStateManagement implements StateInterface {
         state.stopRecord(isShort);
     }
 
-
+    /**
+     * @return 当前状态
+     */
     public StateInterface getState() {
         Log.d(TAG, "getState" + state.toString());
         return state;
     }
 
+    /**
+     * 赋值当前状态
+     */
     public void setState(StateInterface state) {
         Log.d(TAG, "setState" + state.toString());
         this.state = state;
