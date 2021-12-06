@@ -450,13 +450,13 @@ public class ClickOrLongButton extends View {
                         return true;
                     }
                     Log.d(TAG, "onTouchEvent: down");
+                    step = 1;
                     // 是否支持长按
                     boolean longClick = mClickOrLongListener != null
                             && (mButtonState == BUTTON_STATE_ONLY_LONG_CLICK ||
                             mButtonState == BUTTON_STATE_BOTH);
                     if (longClick) {
                         Log.d(TAG, "onTouchEvent: startTicking");
-                        step = 1;
                         startTicking();
                     }
                 }
