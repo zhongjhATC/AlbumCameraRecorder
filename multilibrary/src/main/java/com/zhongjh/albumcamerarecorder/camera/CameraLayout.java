@@ -852,6 +852,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private void initImgCloseListener() {
         mViewHolder.imgClose.setOnClickListener(v -> {
             if (mCloseListener != null) {
+                setBreakOff(true);
                 mCloseListener.onClose();
             }
         });
