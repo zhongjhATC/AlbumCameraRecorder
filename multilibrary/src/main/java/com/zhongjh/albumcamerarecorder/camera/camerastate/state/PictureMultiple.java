@@ -32,7 +32,7 @@ public class PictureMultiple extends StateMode {
 
     @Override
     public boolean onActivityResult(int resultCode) {
-        return true;
+        return false;
     }
 
     @Override

@@ -56,7 +56,7 @@ public class PictureComplete extends StateMode {
 
     @Override
     public boolean onActivityResult(int resultCode) {
-        return true;
+        return false;
     }
 
     @Override

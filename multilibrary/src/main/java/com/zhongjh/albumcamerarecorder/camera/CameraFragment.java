@@ -138,6 +138,7 @@ public class CameraFragment extends BaseFragment {
                 }
                 break;
             case REQUEST_CODE_PREVIEW_VIDEO:
+                // 视频界面
                 ArrayList<String> arrayList = new ArrayList<>();
                 arrayList.add(data.getStringExtra("path"));
                 ArrayList<Uri> arrayListUri = new ArrayList<>();
@@ -153,6 +154,7 @@ public class CameraFragment extends BaseFragment {
                 mActivity.finish();
                 break;
             case REQ_IMAGE_EDIT:
+                // 编辑图片界面
                 mCameraLayout.refreshEditPhoto();
                 break;
             default:
