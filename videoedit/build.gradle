@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.ext.androidCompileSdkVersion
@@ -30,9 +31,15 @@ android {
 
 dependencies {
 
+
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
 
     compileOnly project(':common')
     implementation 'com.github.microshow:RxFFmpeg:4.9.0'
+    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }

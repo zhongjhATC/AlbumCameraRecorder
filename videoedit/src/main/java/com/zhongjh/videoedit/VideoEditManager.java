@@ -35,16 +35,25 @@ public class VideoEditManager implements VideoEditCoordinator {
 
     @Override
     public void merge(String newPath, ArrayList<String> paths,String txtPath) {
+        boolean isMerge = false;
         // 创建文本文件
         File file = new File(txtPath);
         if (!file.exists()) {
-            File dir = new File(file.getParent());
-            dir.mkdirs();
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (file.getParent() != null) {
+                File dir = new File(file.getParent());
+                isMerge = dir.mkdirs();
+                if (isMerge) {
+                    try {
+                        isMerge = file.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+        }
+
+        if (!isMerge && !file.exists()) {
+            return;
         }
 
         StringBuilder stringBuilderFile = new StringBuilder();
