@@ -40,7 +40,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.StatusBarUtils;
 
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;

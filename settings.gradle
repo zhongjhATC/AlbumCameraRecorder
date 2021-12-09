@@ -2,5 +2,4 @@ include ':combined'
 include ':videoedit'
 include ':imageedit'
 include ':app', ':multilibrary', ':progresslibrary'
-include ':albumCameraRecorderCommon'
-project(':albumCameraRecorderCommon').projectDir = new File('common/');
+include ':common'

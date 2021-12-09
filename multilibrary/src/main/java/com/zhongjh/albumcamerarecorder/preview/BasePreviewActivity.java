@@ -33,13 +33,12 @@ import com.zhongjh.imageedit.ImageEditActivity;
 
 import java.io.File;
 
-import gaode.zhongjh.com.common.entity.IncapableCause;
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.utils.FileUtil;
-import gaode.zhongjh.com.common.utils.MediaStoreCompat;
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
-import gaode.zhongjh.com.common.widget.IncapableDialog;
+import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MultimediaTypes;
+import com.zhongjh.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.widget.IncapableDialog;
 
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
@@ -129,17 +128,16 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK, true);
         mIsAlbumUri = getIntent().getBooleanExtra(IS_ALBUM_URI, false);
 
-        mPictureMediaStoreCompat = new MediaStoreCompat(this);
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.pictureStrategy);
+            mPictureMediaStoreCompat = new MediaStoreCompat(this,mGlobalSpec.pictureStrategy);
         } else {
             // 否则使用全局的
             if (mGlobalSpec.saveStrategy == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.saveStrategy);
+                mPictureMediaStoreCompat = new MediaStoreCompat(this,mGlobalSpec.saveStrategy);
             }
         }
 
@@ -207,7 +205,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                         if (multiMedia.getPath() != null) {
                             File file = new File(multiMedia.getPath());
                             // 加入相册库
-                            Uri editMediaUri = BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
+                            Uri editMediaUri = BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
                             multiMedia.setUri(null);
                             multiMedia.setMediaUri(editMediaUri);
                         }
@@ -469,7 +467,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         for (int i = 0; i < selectedCount; i++) {
             MultiMedia item = mSelectedCollection.asList().get(i);
             if (item.isImage()) {
-                float size = PhotoMetadataUtils.getSizeInMb(item.size);
+                float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
                 if (size > mAlbumSpec.originalMaxSize) {
                     count++;
                 }
@@ -488,7 +486,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected void updateSize(MultiMedia item) {
         if (item.isGif()) {
             mViewHolder.size.setVisibility(View.VISIBLE);
-            mViewHolder.size.setText(PhotoMetadataUtils.getSizeInMb(item.size) + "M");
+            mViewHolder.size.setText(PhotoMetadataUtils.getSizeInMb(item.getSize()) + "M");
         } else {
             mViewHolder.size.setVisibility(View.GONE);
         }

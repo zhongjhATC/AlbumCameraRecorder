@@ -21,7 +21,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import gaode.zhongjh.com.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.MediaStoreCompat;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;

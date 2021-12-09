@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import gaode.zhongjh.com.common.entity.SaveStrategy;
-import gaode.zhongjh.com.common.enums.MimeType;
+import com.zhongjh.common.entity.SaveStrategy;
+import com.zhongjh.common.enums.MimeType;
 
 /**
  * 这是一个超级简单代码就完成的示例

@@ -29,8 +29,8 @@ import android.widget.ImageView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.base.BaseRecyclerViewCursorAdapter;
-import gaode.zhongjh.com.common.entity.IncapableCause;
-import gaode.zhongjh.com.common.entity.MultiMedia;
+import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.MultiMedia;
 
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;

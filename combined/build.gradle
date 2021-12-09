@@ -33,5 +33,5 @@ dependencies {
 
     api project(path: ':multilibrary')
     api project(path: ':progresslibrary')
-    api project(':albumCameraRecorderCommon')
+    api project(path: ':common')
 }

@@ -36,10 +36,10 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import java.io.File;
 import java.io.IOException;
 
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.utils.MediaStoreCompat;
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
-import gaode.zhongjh.com.common.utils.ThreadUtils;
+import com.zhongjh.common.enums.MultimediaTypes;
+import com.zhongjh.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.ThreadUtils;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
@@ -491,8 +491,8 @@ public class SoundRecordingFragment extends BaseFragment {
         // 根据配置创建文件配置
         GlobalSpec globalSpec = GlobalSpec.getInstance();
         // 音频文件配置路径
-        mAudioMediaStoreCompat = new MediaStoreCompat(getContext());
-        mAudioMediaStoreCompat.setSaveStrategy(globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
+        mAudioMediaStoreCompat = new MediaStoreCompat(mContext,
+                globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
         mFile = mAudioMediaStoreCompat.createFile(2, true);
 
         mRecorder = new MediaRecorder();

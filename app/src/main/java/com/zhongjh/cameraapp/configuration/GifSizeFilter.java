@@ -19,9 +19,9 @@ import android.content.Context;
 import android.graphics.Point;
 
 
-import gaode.zhongjh.com.common.entity.IncapableCause;
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MimeType;
+import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
@@ -32,9 +32,9 @@ import java.util.Set;
 
 public class GifSizeFilter extends BaseFilter {
 
-    private int mMinWidth;
-    private int mMinHeight;
-    private int mMaxSize;
+    private final int mMinWidth;
+    private final int mMinHeight;
+    private final int mMaxSize;
 
     public GifSizeFilter(int minWidth, int minHeight, int maxSizeInBytes) {
         mMinWidth = minWidth;
@@ -56,7 +56,7 @@ public class GifSizeFilter extends BaseFilter {
         }
 
         Point size = PhotoMetadataUtils.getBitmapBound(context.getContentResolver(), item.getMediaUri());
-        if (size.x < mMinWidth || size.y < mMinHeight || item.size > mMaxSize) {
+        if (size.x < mMinWidth || size.y < mMinHeight || item.getSize() > mMaxSize) {
             return new IncapableCause(IncapableCause.DIALOG, context.getString(R.string.error_gif, mMinWidth,
                     String.valueOf(PhotoMetadataUtils.getSizeInMb(mMaxSize))));
         }

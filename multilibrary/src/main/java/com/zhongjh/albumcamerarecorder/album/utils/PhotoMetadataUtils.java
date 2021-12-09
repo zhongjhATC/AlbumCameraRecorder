@@ -13,15 +13,15 @@ import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
 
-import gaode.zhongjh.com.common.entity.IncapableCause;
+import com.zhongjh.common.entity.IncapableCause;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MimeType;
-import gaode.zhongjh.com.common.utils.BasePhotoMetadataUtils;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.BasePhotoMetadataUtils;
 
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 

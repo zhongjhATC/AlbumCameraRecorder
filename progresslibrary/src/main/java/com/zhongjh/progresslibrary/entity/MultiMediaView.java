@@ -2,12 +2,10 @@ package com.zhongjh.progresslibrary.entity;
 
 import android.view.View;
 
-import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.progresslibrary.widget.MaskProgressView;
 import com.zhongjh.progresslibrary.widget.PlayProgressView;
-
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
 
 /**
  * 多媒体实体类,包含着view
@@ -69,9 +67,9 @@ public class MultiMediaView extends MultiMedia {
      * 给予进度，根据类型设置相应进度动作
      */
     public void setPercentage(int percent) {
-        if (type == MultimediaTypes.PICTURE || type == MultimediaTypes.VIDEO) {
+        if (getType() == MultimediaTypes.PICTURE || getType() == MultimediaTypes.VIDEO) {
             this.maskProgressView.setPercentage(percent);
-        } else if (type == MultimediaTypes.AUDIO) {
+        } else if (getType() == MultimediaTypes.AUDIO) {
             // 隐藏显示音频的设置一系列动作
             this.playProgressView.mViewHolder.numberProgressBar.setProgress(percent);
             if (percent == FULL_PERCENT) {
@@ -98,11 +96,5 @@ public class MultiMediaView extends MultiMedia {
     public int hashCode() {
         // 父类已重写
         return super.hashCode();
-    }
-
-    /**
-     * 无视防抖动的影响
-     */
-    public void onClick(View view) {
     }
 }

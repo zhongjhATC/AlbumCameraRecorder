@@ -29,8 +29,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
-import gaode.zhongjh.com.common.listener.OnMoreClickListener;
+import com.zhongjh.common.enums.MultimediaTypes;
+import com.zhongjh.common.listener.OnMoreClickListener;
 
 /**
  * 九宫展示数据

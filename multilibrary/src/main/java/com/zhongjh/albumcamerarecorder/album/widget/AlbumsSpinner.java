@@ -31,7 +31,7 @@ import androidx.appcompat.widget.ListPopupWindow;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 
-import gaode.zhongjh.com.common.utils.ColorFilterUtil;
+import com.zhongjh.common.utils.ColorFilterUtil;
 
 /**
  * 专辑下拉框控件

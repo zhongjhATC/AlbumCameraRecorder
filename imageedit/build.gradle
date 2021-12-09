@@ -34,5 +34,5 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintlayoutSdkVersion"
-    implementation project(path: ':albumCameraRecorderCommon')
+    implementation project(path: ':common')
 }

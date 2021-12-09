@@ -32,9 +32,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.entity.SaveStrategy;
-import gaode.zhongjh.com.common.enums.MimeType;
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import com.zhongjh.common.entity.SaveStrategy;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.enums.MultimediaTypes;
 
 /**
  * 这是用于设置加载数据的

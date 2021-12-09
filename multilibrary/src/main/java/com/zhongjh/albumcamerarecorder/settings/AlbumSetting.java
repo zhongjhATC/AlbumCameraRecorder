@@ -3,7 +3,7 @@ package com.zhongjh.albumcamerarecorder.settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import gaode.zhongjh.com.common.enums.MimeType;
+import com.zhongjh.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener;

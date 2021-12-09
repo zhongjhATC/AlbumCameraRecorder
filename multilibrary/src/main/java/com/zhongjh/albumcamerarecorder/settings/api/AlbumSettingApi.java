@@ -12,7 +12,7 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 
 import java.util.Set;
 
-import gaode.zhongjh.com.common.enums.MimeType;
+import com.zhongjh.common.enums.MimeType;
 
 /**
  * 相册设置接口

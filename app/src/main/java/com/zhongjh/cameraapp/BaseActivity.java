@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MultimediaTypes;
 
 /**
  * 父类，包含下面几部分操作：

@@ -13,7 +13,7 @@ import com.zhongjh.imageedit.core.ImageText;
 import com.zhongjh.imageedit.view.ImageColorGroup;
 import com.zhongjh.imageedit.view.ImageViewCustom;
 
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.StatusBarUtils;
 
 /**
  * Created by felix on 2017/12/5 下午3:08.

@@ -22,7 +22,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 
 import java.util.ArrayList;
 
-import gaode.zhongjh.com.common.utils.DisplayMetricsUtils;
+import com.zhongjh.common.utils.DisplayMetricsUtils;
 
 
 /**

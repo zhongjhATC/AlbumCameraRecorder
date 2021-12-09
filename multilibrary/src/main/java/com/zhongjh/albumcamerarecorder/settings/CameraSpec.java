@@ -2,8 +2,8 @@ package com.zhongjh.albumcamerarecorder.settings;
 
 import com.zhongjh.albumcamerarecorder.R;
 
-import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
-import gaode.zhongjh.com.common.enums.MimeType;
+import com.zhongjh.common.coordinator.VideoEditCoordinator;
+import com.zhongjh.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;

@@ -12,8 +12,8 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 
 import java.util.Set;
 
-import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
-import gaode.zhongjh.com.common.enums.MimeType;
+import com.zhongjh.common.coordinator.VideoEditCoordinator;
+import com.zhongjh.common.enums.MimeType;
 
 /**
  * 有关拍摄界面的动态设置

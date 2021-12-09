@@ -61,10 +61,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.listener.VideoEditListener;
-import gaode.zhongjh.com.common.utils.MediaStoreCompat;
-import gaode.zhongjh.com.common.utils.StatusBarUtils;
-import gaode.zhongjh.com.common.utils.ThreadUtils;
+import com.zhongjh.common.listener.VideoEditListener;
+import com.zhongjh.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.ThreadUtils;
+
+import org.jetbrains.annotations.NotNull;
+
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
 import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
@@ -310,21 +313,20 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 初始化设置
         mCameraSpec = CameraSpec.getInstance();
         mGlobalSpec = GlobalSpec.getInstance();
-        mPictureMediaStoreCompat = new MediaStoreCompat(getContext());
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.pictureStrategy);
+            mPictureMediaStoreCompat = new MediaStoreCompat(getContext(),mGlobalSpec.pictureStrategy);
         } else {
             // 否则使用全局的
             if (mGlobalSpec.saveStrategy == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat.setSaveStrategy(mGlobalSpec.saveStrategy);
+                mPictureMediaStoreCompat = new MediaStoreCompat(getContext(),mGlobalSpec.saveStrategy);
             }
         }
-        mVideoMediaStoreCompat = new MediaStoreCompat(getContext());
-        mVideoMediaStoreCompat.setSaveStrategy(mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
+        mVideoMediaStoreCompat = new MediaStoreCompat(getContext(),
+                mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 
         // 默认图片
         TypedArray ta = mContext.getTheme().obtainStyledAttributes(
@@ -757,7 +759,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 }
 
                 @Override
-                public void onError(String message) {
+                public void onError(@NotNull String message) {
                     Log.d(TAG, "onError" + message);
                 }
             });
@@ -1038,7 +1040,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                                     ArrayList<Uri> uris = getUris(newPaths);
                                     // 加入图片到android系统库里面
                                     for (String path : newPaths) {
-                                        BitmapUtils.displayToGallery(getContext(), new File(path), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().directory, mPictureMediaStoreCompat);
+                                        BitmapUtils.displayToGallery(getContext(), new File(path), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
                                     }
                                     // 执行完成
                                     mOperateCameraListener.captureSuccess(newPaths, uris);

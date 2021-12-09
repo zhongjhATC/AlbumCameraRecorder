@@ -21,8 +21,8 @@ import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
-import gaode.zhongjh.com.common.enums.MultimediaTypes;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MultimediaTypes;
 
 /**
  * 协调多个控件之间代码，更加简化代码

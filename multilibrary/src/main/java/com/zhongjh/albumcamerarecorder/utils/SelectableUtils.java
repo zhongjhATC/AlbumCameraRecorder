@@ -3,9 +3,9 @@ package com.zhongjh.albumcamerarecorder.utils;
 import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
-import static gaode.zhongjh.com.common.enums.Constant.IMAGE;
-import static gaode.zhongjh.com.common.enums.Constant.IMAGE_VIDEO;
-import static gaode.zhongjh.com.common.enums.Constant.VIDEO;
+import static com.zhongjh.common.enums.Constant.IMAGE;
+import static com.zhongjh.common.enums.Constant.IMAGE_VIDEO;
+import static com.zhongjh.common.enums.Constant.VIDEO;
 
 /**
  * 这是一个判断能选择xx个图片、视频、音频的判断逻辑封装

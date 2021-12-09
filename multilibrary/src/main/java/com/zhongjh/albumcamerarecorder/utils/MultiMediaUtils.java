@@ -4,7 +4,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 
 import java.util.List;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
+import com.zhongjh.common.entity.MultiMedia;
 
 /**
  * @author zhongjh

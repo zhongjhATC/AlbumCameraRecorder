@@ -13,8 +13,8 @@ import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
 
 import java.util.ArrayList;
 
-import gaode.zhongjh.com.common.entity.SaveStrategy;
-import gaode.zhongjh.com.common.enums.MimeType;
+import com.zhongjh.common.entity.SaveStrategy;
+import com.zhongjh.common.enums.MimeType;
 
 /**
  * list配置

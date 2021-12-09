@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
+import com.zhongjh.common.entity.MultiMedia;
 
 /**
  * @author zhongjh
@@ -156,7 +156,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     private void setVideoDuration() {
         if (mMedia.isVideo()) {
             mVideoDuration.setVisibility(VISIBLE);
-            mVideoDuration.setText(DateUtils.formatElapsedTime(mMedia.duration / 1000));
+            mVideoDuration.setText(DateUtils.formatElapsedTime(mMedia.getDuration() / 1000));
         } else {
             mVideoDuration.setVisibility(GONE);
         }

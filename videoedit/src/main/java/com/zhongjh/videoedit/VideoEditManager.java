@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-import gaode.zhongjh.com.common.coordinator.VideoEditCoordinator;
-import gaode.zhongjh.com.common.listener.VideoEditListener;
+import com.zhongjh.common.coordinator.VideoEditCoordinator;
+import com.zhongjh.common.listener.VideoEditListener;
 import io.microshow.rxffmpeg.RxFFmpegInvoke;
 import io.microshow.rxffmpeg.RxFFmpegSubscriber;
 
@@ -15,10 +15,23 @@ import io.microshow.rxffmpeg.RxFFmpegSubscriber;
  * 视频编辑管理
  * @author zhongjh
  */
-public class VideoEditManager extends VideoEditCoordinator {
+public class VideoEditManager implements VideoEditCoordinator {
 
     MyRxFfmpegSubscriber mMyRxFfmpegMergeSubscriber;
     MyRxFfmpegSubscriber mMyRxFfmpegCompressSubscriber;
+
+    VideoEditListener mVideoMergeListener;
+    VideoEditListener mVideoCompressListener;
+
+    @Override
+    public void setVideoMergeListener(VideoEditListener videoMergeListener) {
+        mVideoMergeListener = videoMergeListener;
+    }
+
+    @Override
+    public void setVideoCompressListener(VideoEditListener videoCompressListener) {
+        mVideoCompressListener = videoCompressListener;
+    }
 
     @Override
     public void merge(String newPath, ArrayList<String> paths,String txtPath) {
@@ -99,6 +112,7 @@ public class VideoEditManager extends VideoEditCoordinator {
             mMyRxFfmpegCompressSubscriber.dispose();
         }
     }
+
 
 
 

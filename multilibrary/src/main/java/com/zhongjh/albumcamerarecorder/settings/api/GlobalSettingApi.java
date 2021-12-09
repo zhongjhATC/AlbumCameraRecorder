@@ -18,7 +18,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 
-import gaode.zhongjh.com.common.entity.SaveStrategy;
+import com.zhongjh.common.entity.SaveStrategy;
 
 /**
  * 用于构建媒体具体公共设置 API。

@@ -1,32 +1,33 @@
-package gaode.zhongjh.com.common.listener;
+package com.zhongjh.common.listener
 
 /**
  * 视频编辑的回调
  * @author zhongjh
+ * @date 2021/12/9
  */
-public interface VideoEditListener {
+interface VideoEditListener {
 
     /**
      * 完成
      */
-    void onFinish();
+    fun onFinish()
 
     /**
      * 进度
      * @param progress 进度百分比
      * @param progressTime 进度时间
      */
-    void onProgress(int progress, long progressTime);
+    fun onProgress(progress: Int, progressTime: Long);
 
     /**
      * 取消
      */
-    void onCancel();
+    fun onCancel();
 
     /**
      * 异常
      * @param message 信息
      */
-    void onError(String message);
+    fun onError(message: String);
 
 }

@@ -29,7 +29,7 @@ import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
+import com.zhongjh.common.entity.MultiMedia;
 
 /**
  * @author zhongjh

@@ -8,7 +8,7 @@ import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 
 import java.util.List;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
+import com.zhongjh.common.entity.MultiMedia;
 
 /**
  * 点击左下角的预览按钮进入的界面

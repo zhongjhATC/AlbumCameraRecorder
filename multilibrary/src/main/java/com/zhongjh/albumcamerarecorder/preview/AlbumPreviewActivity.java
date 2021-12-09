@@ -30,7 +30,7 @@ import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import gaode.zhongjh.com.common.entity.MultiMedia;
+import com.zhongjh.common.entity.MultiMedia;
 
 /**
  * 点击相册图片或者视频进来的
