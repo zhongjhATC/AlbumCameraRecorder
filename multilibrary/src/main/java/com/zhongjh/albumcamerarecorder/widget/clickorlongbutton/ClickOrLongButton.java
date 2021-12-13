@@ -149,7 +149,7 @@ public class ClickOrLongButton extends View {
     private int outBlackCircleRadiusInc;
     /**
      * 为了确保整个按钮的逻辑从按下-放开手都是流畅的，会用按下+1，放开手+1，最后等于2的方式执行
-     * 如果中间中断或者重置，那就直接减1，就说明
+     * 如果中间中断或者重置，那就直接减1，就说明中断流程
      */
     private int step;
     /**
@@ -484,6 +484,7 @@ public class ClickOrLongButton extends View {
             case MotionEvent.ACTION_MOVE:
                 if (mButtonState != BUTTON_STATE_CLICK_AND_HOLD) {
                     if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
+                        step++;
                         Log.d(TAG, "onTouchEvent: move");
                         refreshView();
                         return true;
