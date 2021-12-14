@@ -58,7 +58,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.37X'
 
 	     // Public library, if not using the combined library above
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:albumCameraRecorderCommon:1.1.37X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.37X'
 	     // core lib, call display album, screen recording, recording, etc
          implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.37X'
          // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
