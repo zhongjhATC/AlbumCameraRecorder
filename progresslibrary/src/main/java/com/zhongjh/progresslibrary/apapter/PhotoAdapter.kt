@@ -44,7 +44,7 @@ import java.util.*
  * @param addDrawable        添加的图片资源
  */
 class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage: GridLayoutManager, private val maskProgressLayout: MaskProgressLayout,
-                   private val imageEngine: ImageEngine, private val placeholder: Drawable, var isOperation: Boolean, private val maxMediaCount: Int,
+                   private val imageEngine: ImageEngine, private val placeholder: Drawable, var isOperation: Boolean, var maxMediaCount: Int,
                    private val maskingColor: Int, private val maskingTextSize: Int, private val maskingTextColor: Int, private val maskingTextContent: String,
                    private val deleteColor: Int, private val deleteImage: Drawable?, private val addDrawable: Drawable?) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 

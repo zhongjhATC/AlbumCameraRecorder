@@ -331,6 +331,27 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     }
 
     /**
+     * @return 最多显示多少个图片/视频/语音
+     */
+    fun getMaxMediaCount(): Int {
+        return mPhotoAdapter.maxMediaCount
+    }
+
+    /**
+     * 设置最多显示多少个图片/视频/语音
+     */
+    fun setMaxMediaCount(maxMediaCount: Int?, maxImageSelectable: Int?, maxVideoSelectable: Int?, maxAudioSelectable: Int?) {
+        // 计算最终呈现的总数，这个总数决定是否还能点击添加
+        val isMaxMediaCount = maxMediaCount != null &&
+                (maxImageSelectable == null || maxVideoSelectable == null || maxAudioSelectable == null)
+        if (isMaxMediaCount) {
+            mPhotoAdapter.maxMediaCount = maxMediaCount!!
+        } else {
+            mPhotoAdapter.maxMediaCount = maxImageSelectable!! + maxVideoSelectable!! + maxAudioSelectable!!
+        }
+    }
+
+    /**
      * 递归、有序的创建并且加入音频控件
      */
     private fun createPlayProgressView(audioMultiMediaViews: List<MultiMediaView>, position: Int) {
