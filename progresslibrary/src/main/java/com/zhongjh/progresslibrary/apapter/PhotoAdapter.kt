@@ -58,7 +58,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     /**
      * 相关事件
      */
-    private val listener: MaskProgressLayoutListener? = null
+    var listener: MaskProgressLayoutListener? = null
 
     /**
      * 数据源（包括视频和图片）
@@ -198,7 +198,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     /**
      * 获取图片的数据
      */
-    fun getImageData(): MutableList<MultiMediaView> {
+    fun getImageData(): ArrayList<MultiMediaView> {
         val imageDates = ArrayList<MultiMediaView>()
         for (multiMediaView in list) {
             if (multiMediaView.type == MultimediaTypes.PICTURE) {
@@ -211,7 +211,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     /**
      * 获取视频的数据
      */
-    fun getVideoData(): MutableList<MultiMediaView> {
+    fun getVideoData(): ArrayList<MultiMediaView> {
         val videoDates = ArrayList<MultiMediaView>()
         for (multiMediaView in list) {
             if (multiMediaView.type == MultimediaTypes.VIDEO) {

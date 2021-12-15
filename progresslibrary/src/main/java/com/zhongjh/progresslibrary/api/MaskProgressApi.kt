@@ -95,28 +95,28 @@ interface MaskProgressApi {
      *
      * @return 返回当前包含url的图片、视频数据
      */
-    fun getImagesAndVideos(): MutableList<MultiMediaView>
+    fun getImagesAndVideos(): ArrayList<MultiMediaView>
 
     /**
      * 获取图片数据
      *
      * @return 返回当前包含url的图片数据
      */
-    fun getImages(): MutableList<MultiMediaView>
+    fun getImages(): ArrayList<MultiMediaView>
 
     /**
      * 获取视频数据
      *
      * @return 返回当前包含url的视频数据
      */
-    fun getVideos(): MutableList<MultiMediaView>
+    fun getVideos(): ArrayList<MultiMediaView>
 
     /**
      * 获取音频数据
      *
      * @return 返回当前包含url的音频数据
      */
-    fun getAudios(): MutableList<MultiMediaView>
+    fun getAudios(): ArrayList<MultiMediaView>
 
     /**
      * 语音点击

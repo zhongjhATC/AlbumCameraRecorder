@@ -80,7 +80,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 点击事件(这里只针对音频)
      */
-    private var listener: MaskProgressLayoutListener? = null
+    var maskProgressLayoutListener: MaskProgressLayoutListener? = null
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -248,7 +248,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     }
 
     override fun setAudioUrls(audioUrls: List<String>) {
-        val multiMediaViews: MutableList<MultiMediaView> = ArrayList()
+        val multiMediaViews: ArrayList<MultiMediaView> = ArrayList()
         for (item in audioUrls) {
             val multiMediaView = MultiMediaView(MultimediaTypes.AUDIO)
             multiMediaView.url = item
@@ -285,15 +285,15 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mPhotoAdapter.clearAll()
     }
 
-    override fun getImagesAndVideos(): MutableList<MultiMediaView> {
+    override fun getImagesAndVideos(): ArrayList<MultiMediaView> {
         return mPhotoAdapter.getData()
     }
 
-    override fun getImages(): MutableList<MultiMediaView> {
+    override fun getImages(): ArrayList<MultiMediaView> {
         return mPhotoAdapter.getImageData()
     }
 
-    override fun getVideos(): MutableList<MultiMediaView> {
+    override fun getVideos(): ArrayList<MultiMediaView> {
         return mPhotoAdapter.getVideoData()
     }
 
@@ -321,13 +321,13 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     }
 
     override fun onDestroy() {
-        mPhotoAdapter.removeListener()
+        mPhotoAdapter.listener = null
         for (i in 0 until mViewHolder.llContent.childCount) {
             val item = mViewHolder.llContent.getChildAt(i) as PlayProgressView
             item.mViewHolder.playView.onDestroy()
             item.mViewHolder.playView.listener = null
         }
-        this.listener = null
+        this.maskProgressLayoutListener = null
     }
 
     /**
@@ -408,14 +408,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         this.audioList.add(multiMediaView)
         if (audioList.size > 0) {
             // 显示音频的进度条
-            this.listener?.onItemStartUploading(multiMediaView)
+            this.maskProgressLayoutListener?.onItemStartUploading(multiMediaView)
         }
         val playProgressView = newPlayProgressView(multiMediaView)
         mViewHolder.llContent.addView(playProgressView)
         // 初始化播放控件
         val recordingItem = RecordingItem()
         recordingItem.filePath = filePath
-        recordingItem.setLength(length)
+        recordingItem.length = length
         playProgressView.setData(recordingItem, audioProgressColor)
         // 添加音频后重置所有当前播放中的音频
         for (i in 0 until mViewHolder.llContent.childCount) {
@@ -436,7 +436,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             override fun onRemoveRecorder() {
                 if (audioList.size > 0) {
                     // 需要判断，防止是网址状态未提供实体数据的
-                    listener?.onItemClose(this@MaskProgressLayout, multiMediaView)
+                    maskProgressLayoutListener?.onItemClose(this@MaskProgressLayout, multiMediaView)
                 }
                 audioList.remove(multiMediaView)
                 mPhotoAdapter.notifyDataSetChanged()
@@ -444,7 +444,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         }
         playProgressView.initStyle(audioDeleteColor, audioProgressColor, audioPlayColor)
         multiMediaView.playProgressView = playProgressView
-        playProgressView.setListener(listener)
+        playProgressView.setListener(maskProgressLayoutListener)
         return playProgressView
     }
 

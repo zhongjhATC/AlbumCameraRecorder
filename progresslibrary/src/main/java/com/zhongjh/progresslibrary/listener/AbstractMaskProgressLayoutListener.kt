@@ -8,7 +8,7 @@ import com.zhongjh.progresslibrary.entity.MultiMediaView
  * @author zhongjh
  * @date 2021/9/7
  */
-class AbstractMaskProgressLayoutListener : MaskProgressLayoutListener {
+open class AbstractMaskProgressLayoutListener : MaskProgressLayoutListener {
 
     override fun onItemAdd(view: View, multiMediaView: MultiMediaView,
                            alreadyImageCount: Int, alreadyVideoCount: Int, alreadyAudioCount: Int) {}
