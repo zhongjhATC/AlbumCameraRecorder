@@ -174,7 +174,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             // 获取类型，根据类型设置不同的事情
             switch (MultiMediaSetting.obtainMultimediaType(data)) {
                 case MultimediaTypes.PICTURE:
-                    // 图片，自从AndroidQ版本以后，Path只能访问本身app的文件，所以只能用uri方式控制
+                    // 图片，自从AndroidQ版本以后，Path只能访问本身app的文件，所以只能用uri方式控制 obtainPathResult该方法能获取绝对路径，但是对于获取相册的图片来说，只能取到uri
                     List<Uri> path = MultiMediaSetting.obtainResult(data);
                     showToastUris(path);
                     getMaskProgressLayout().addImagesUriStartUpload(path);
