@@ -311,7 +311,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun setOperation(isOperation: Boolean) {
         this.isOperation = isOperation
-        mPhotoAdapter.setOperation(isOperation)
+        mPhotoAdapter.isOperation = isOperation
         // 添加音频后重置所有当前播放中的音频
         for (i in 0 until mViewHolder.llContent.childCount) {
             val item = mViewHolder.llContent.getChildAt(i) as PlayProgressView

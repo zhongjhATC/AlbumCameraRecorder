@@ -44,7 +44,7 @@ import java.util.*
  * @param addDrawable        添加的图片资源
  */
 class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage: GridLayoutManager, private val maskProgressLayout: MaskProgressLayout,
-                   private val imageEngine: ImageEngine, private val placeholder: Drawable, private val isOperation: Boolean, private val maxMediaCount: Int,
+                   private val imageEngine: ImageEngine, private val placeholder: Drawable, var isOperation: Boolean, private val maxMediaCount: Int,
                    private val maskingColor: Int, private val maskingTextSize: Int, private val maskingTextColor: Int, private val maskingTextContent: String,
                    private val deleteColor: Int, private val deleteImage: Drawable?, private val addDrawable: Drawable?) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
@@ -54,22 +54,27 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
 
     private val mInflater: LayoutInflater = LayoutInflater.from(mContext)
     private val mMultiMediaViewAdd = MultiMediaView(MultimediaTypes.ADD)
+
     /**
      * 相关事件
      */
     private val listener: MaskProgressLayoutListener? = null
+
     /**
      * 数据源（包括视频和图片）
      */
     private val list = ArrayList<MultiMediaView>()
+
     /**
      * 每次添加数据增长的id，用于在相同地址的情况下区分两张图等
      */
     private var mId: Long = 0
+
     /**
      * 图片数据数量
      */
     private var mImageCount = 0
+
     /**
      * 视频数据数量
      */
@@ -390,7 +395,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
          * 加载图片
          */
         internal fun loadImage(context: Context, imageEngine: ImageEngine,
-                              placeholder: Drawable, multiMediaView: MultiMediaView, height: Int) {
+                               placeholder: Drawable, multiMediaView: MultiMediaView, height: Int) {
             // 加载图片
             if (!TextUtils.isEmpty(multiMediaView.path)) {
                 imageEngine.loadThumbnail(context, height, placeholder,
