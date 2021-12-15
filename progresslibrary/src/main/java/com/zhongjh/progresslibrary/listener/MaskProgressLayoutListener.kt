@@ -1,8 +1,7 @@
-package com.zhongjh.progresslibrary.listener;
+package com.zhongjh.progresslibrary.listener
 
-import android.view.View;
-
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
+import android.view.View
+import com.zhongjh.progresslibrary.entity.MultiMediaView
 
 /**
  * MaskProgressLayout的有关事件
@@ -10,8 +9,7 @@ import com.zhongjh.progresslibrary.entity.MultiMediaView;
  * @author zhongjh
  * @date 2018/10/18
  */
-public interface MaskProgressLayoutListener {
-
+interface MaskProgressLayoutListener {
     /**
      * 点击➕号的事件
      *
@@ -21,7 +19,7 @@ public interface MaskProgressLayoutListener {
      * @param alreadyVideoCount 目前已经显示的几个视频数量
      * @param alreadyAudioCount 目前已经显示的几个音频数量
      */
-    void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount);
+    fun onItemAdd(view: View, multiMediaView: MultiMediaView, alreadyImageCount: Int, alreadyVideoCount: Int, alreadyAudioCount: Int)
 
     /**
      * 点击item的事件
@@ -29,14 +27,14 @@ public interface MaskProgressLayoutListener {
      * @param view           点击的view
      * @param multiMediaView 传递的多媒体
      */
-    void onItemClick(View view, MultiMediaView multiMediaView);
+    fun onItemClick(view: View, multiMediaView: MultiMediaView)
 
     /**
      * 开始上传 - 指刚添加后的
      *
      * @param multiMediaView 传递的多媒体
      */
-    void onItemStartUploading(MultiMediaView multiMediaView);
+    fun onItemStartUploading(multiMediaView: MultiMediaView)
 
     /**
      * 回调删除事件
@@ -44,7 +42,7 @@ public interface MaskProgressLayoutListener {
      * @param view           点击的view
      * @param multiMediaView 传递的多媒体
      */
-    void onItemClose(View view, MultiMediaView multiMediaView);
+    fun onItemClose(view: View, multiMediaView: MultiMediaView)
 
     /**
      * 开始下载音频
@@ -52,7 +50,7 @@ public interface MaskProgressLayoutListener {
      * @param view 点击的view
      * @param url  网址
      */
-    void onItemAudioStartDownload(View view, String url);
+    fun onItemAudioStartDownload(view: View, url: String)
 
     /**
      * 开始下载视频
@@ -62,6 +60,5 @@ public interface MaskProgressLayoutListener {
      *
      * @return 是否触发后面的事件
      */
-    boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView);
-
+    fun onItemVideoStartDownload(view: View, multiMediaView: MultiMediaView): Boolean
 }
