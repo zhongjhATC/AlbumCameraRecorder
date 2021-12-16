@@ -316,13 +316,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(getContext(),mGlobalSpec.pictureStrategy);
+            mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.pictureStrategy);
         } else {
             // 否则使用全局的
             if (mGlobalSpec.saveStrategy == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(getContext(),mGlobalSpec.saveStrategy);
+                mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.saveStrategy);
             }
         }
         mVideoMediaStoreCompat = new MediaStoreCompat(getContext(),
@@ -636,12 +636,22 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             if (mPhotoAdapter.getItemCount() < currentMaxSelectable()) {
                 // 设置不能点击，防止多次点击报错
                 mViewHolder.rlMain.setChildClickable(false);
-                mViewHolder.cameraView.takePictureSnapshot();
+                // 判断如果是自动闪光灯模式便开启闪光灯
+                if (mFlashType == Constants.TYPE_FLASH_AUTO) {
+                    mViewHolder.cameraView.setFlash(Flash.TORCH);
+                    // 延迟1秒拍照
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        mViewHolder.cameraView.takePictureSnapshot();
+                    }, 1000);
+                } else {
+                    mViewHolder.cameraView.takePictureSnapshot();
+                }
             } else {
                 Toast.makeText(mContext, getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached), Toast.LENGTH_SHORT).show();
             }
         }
     }
+
 
     /**
      * 录制视频
@@ -774,6 +784,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
+                // 如果是自动闪光灯模式便关闭闪光灯
+                if (mFlashType == Constants.TYPE_FLASH_AUTO) {
+                    mViewHolder.cameraView.setFlash(Flash.OFF);
+                }
                 result.toBitmap(bitmap -> {
                     // 显示图片
                     addCaptureData(bitmap);
