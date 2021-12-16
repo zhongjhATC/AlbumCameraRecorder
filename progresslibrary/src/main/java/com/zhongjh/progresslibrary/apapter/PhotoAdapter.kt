@@ -158,6 +158,42 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             } else {
                 holder.vClose.visibility = View.GONE
             }
+            // 设置条目的点击事件
+            holder.itemView.setOnClickListener(object : OnMoreClickListener() {
+                override fun onMoreClickListener(v: View) {
+                    if (listener != null) {
+                        // 点击
+                        if (multiMediaView.type == MultimediaTypes.PICTURE) {
+                            // 如果是图片，直接跳转详情
+                            listener!!.onItemClick(v, multiMediaView)
+                        } else {
+                            // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
+                            if (TextUtils.isEmpty(multiMediaView.path) && multiMediaView.uri == null) {
+                                // 执行下载事件
+                                val isContinue = listener!!.onItemVideoStartDownload(v, multiMediaView)
+                                if (isContinue) {
+                                    // 点击事件
+                                    listener!!.onItemClick(v, multiMediaView)
+                                }
+                            } else {
+                                // 点击事件
+                                listener!!.onItemClick(v, multiMediaView)
+                            }
+                        }
+                    }
+                }
+            })
+
+            // 是否上传
+            if (multiMediaView.isUploading) {
+                // 设置该对象已经上传请求过了
+                multiMediaView.isUploading = false
+                listener?.onItemStartUploading(multiMediaView)
+            } else {
+                // 取消上传动画
+                holder.mpvImage.reset()
+            }
+
         }
     }
 
