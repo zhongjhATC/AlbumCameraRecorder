@@ -155,8 +155,8 @@ class PlayProgressView : ConstraintLayout {
     class ViewHolder(rootView: View) {
         val numberProgressBar: NumberProgressBar = rootView.findViewById(R.id.numberProgressBar)
         val imgRemoveRecorder: ImageView = rootView.findViewById(R.id.imgRemoveRecorder)
-        val groupRecorderProgress: Group = rootView.findViewById(R.id.playView)
-        val playView: PlayView = rootView.findViewById(R.id.groupRecorderProgress)
+        val groupRecorderProgress: Group = rootView.findViewById(R.id.groupRecorderProgress)
+        val playView: PlayView = rootView.findViewById(R.id.playView)
         val tvRecorderTip: TextView = rootView.findViewById(R.id.tvRecorderTip)
     }
 
