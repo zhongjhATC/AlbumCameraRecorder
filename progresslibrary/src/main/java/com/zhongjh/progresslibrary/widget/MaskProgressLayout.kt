@@ -364,8 +364,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         }
         ThreadUtils.executeByIo(object : BaseSimpleBaseTask<PlayProgressView>() {
             override fun doInBackground(): PlayProgressView {
-                val playProgressView: PlayProgressView
-                playProgressView = newPlayProgressView(audioMultiMediaViews[position])
+                val playProgressView: PlayProgressView = newPlayProgressView(audioMultiMediaViews[position])
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 playProgressView.mViewHolder.playView.visibility = View.VISIBLE
                 // 隐藏上传进度
