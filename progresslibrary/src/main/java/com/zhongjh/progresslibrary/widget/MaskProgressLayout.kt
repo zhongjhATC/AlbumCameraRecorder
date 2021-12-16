@@ -81,6 +81,10 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
      * 点击事件(这里只针对音频)
      */
     var maskProgressLayoutListener: MaskProgressLayoutListener? = null
+        set(value) {
+            field = value
+            mPhotoAdapter.listener = value
+        }
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
