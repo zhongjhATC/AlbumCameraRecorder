@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <ImageButton
+            android:id="@+id/ibtnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="关闭按钮"
+            android:onClick="onClick"
+            android:padding="10dp"
+            android:src="@drawable/image_ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
+
+        <ImageButton
+            android:id="@+id/ibtnDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="完成"
+            android:onClick="onClick"
+            android:padding="10dp"
+            android:src="@drawable/image_ic_baseline_done_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:id="@+id/layout_op_sub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        tools:visibility="visible">
+
+        <ViewSwitcher
+            android:id="@+id/vs_op_sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:measureAllChildren="true">
+
+            <com.zhongjh.imageedit.view.ImageColorGroup
+                android:id="@+id/cg_colors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:checkedButton="@+id/cr_red"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.zhongjh.imageedit.view.ImageColorRadio
+                    android:id="@+id/cr_red"
+                    android:layout_width="@dimen/image_color"
+                    android:layout_height="@dimen/image_color"
+                    android:layout_margin="@dimen/image_color_margin"
+                    android:button="@null"
+                    app:image_color="@color/image_color_red" />
+
+                <com.zhongjh.imageedit.view.ImageColorRadio
+                    android:layout_width="@dimen/image_color"
+                    android:layout_height="@dimen/image_color"
+                    android:layout_margin="@dimen/image_color_margin"
+                    app:image_color="@color/image_color_black" />
+
+                <com.zhongjh.imageedit.view.ImageColorRadio
+                    android:layout_width="@dimen/image_color"
+                    android:layout_height="@dimen/image_color"
+                    android:layout_margin="@dimen/image_color_margin"
+
+                    app:image_color="@color/image_color_white" />
+
+                <com.zhongjh.imageedit.view.ImageColorRadio
+                    android:layout_width="@dimen/image_color"
+                    android:layout_height="@dimen/image_color"
+                    android:layout_margin="@dimen/image_color_margin"
+                    app:image_color="@color/image_color_cyan" />
+
+                <com.zhongjh.imageedit.view.ImageColorRadio
+                    android:layout_width="@dimen/image_color"
+                    android:layout_height="@dimen/image_color"
+                    android:layout_margin="@dimen/image_color_margin"
+                    app:image_color="@color/image_color_yellow" />
+
+                <com.zhongjh.imageedit.view.ImageColorRadio
+                    android:layout_width="@dimen/image_color"
+                    android:layout_height="@dimen/image_color"
+                    android:layout_margin="@dimen/image_color_margin"
+                    app:image_color="@color/image_color_blue" />
+
+            </com.zhongjh.imageedit.view.ImageColorGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/image_mosaic_tip"
+                android:textColor="@color/image_color_white"
+                android:textSize="12sp" />
+
+        </ViewSwitcher>
+
+        <ImageButton
+            android:id="@+id/btn_undo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="@string/image_undo"
+            android:onClick="onClick"
+            android:src="@drawable/image_btn_undo" />
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rg_modes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/image_bg_bottom"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <RadioButton
+            android:id="@+id/rb_doodle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@drawable/image_btn_doodle"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:textColor="#FFF" />
+
+        <Space
+            android:layout_width="@dimen/image_mode_space"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/btn_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="@string/image_text"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:src="@drawable/image_btn_text"
+            android:textColor="#FFF" />
+
+        <Space
+            android:layout_width="@dimen/image_mode_space"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rb_mosaic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@drawable/image_btn_mosaic"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:textColor="#FFF" />
+
+        <Space
+            android:layout_width="@dimen/image_mode_space"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/btn_clip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="@string/image_clip"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:src="@drawable/image_btn_clip"
+            android:textColor="#FFF" />
+
+    </RadioGroup>
+
+</LinearLayout>
