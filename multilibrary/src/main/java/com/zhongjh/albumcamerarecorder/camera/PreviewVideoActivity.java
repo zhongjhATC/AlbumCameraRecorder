@@ -75,6 +75,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setRequestedOrientation(GlobalSpec.getInstance().requestedOrientation);
         StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_video);

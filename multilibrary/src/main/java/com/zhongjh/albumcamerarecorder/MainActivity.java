@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         mSpec = GlobalSpec.getInstance();
         setTheme(mSpec.themeId);
         StatusBarUtils.initStatusBar(MainActivity.this);
+        setRequestedOrientation(mSpec.requestedOrientation);
         super.onCreate(savedInstanceState);
         // @@确认是否进行了配置
         if (!mSpec.hasInited) {

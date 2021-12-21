@@ -61,9 +61,7 @@ public final class GlobalSetting implements GlobalSettingApi {
     private final MultiMediaSetting mMultiMediaSetting;
     private final GlobalSpec mGlobalSpec;
 
-    // www.代替枚举的@IntDef用法
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    @IntDef({
+    @IntDef( value = {
             SCREEN_ORIENTATION_UNSPECIFIED,
             SCREEN_ORIENTATION_LANDSCAPE,
             SCREEN_ORIENTATION_PORTRAIT,
@@ -82,8 +80,7 @@ public final class GlobalSetting implements GlobalSettingApi {
             SCREEN_ORIENTATION_LOCKED
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface ScreenOrientation {
-    }
+    public @interface ScreenOrientation {}
 
     @Override
     public void onDestroy() {
@@ -106,6 +103,7 @@ public final class GlobalSetting implements GlobalSettingApi {
         mMultiMediaSetting = multiMediaSetting;
         mGlobalSpec = GlobalSpec.getCleanInstance();
         mGlobalSpec.setMimeTypeSet(mimeTypes);
+
 //        mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
@@ -235,6 +233,12 @@ public final class GlobalSetting implements GlobalSettingApi {
     @Override
     public GlobalSetting isCutscenes(boolean isCutscenes) {
         mGlobalSpec.isCutscenes = isCutscenes;
+        return this;
+    }
+
+    @Override
+    public GlobalSetting setRequestedOrientation(@ScreenOrientation int requestedOrientation) {
+        mGlobalSpec.requestedOrientation = requestedOrientation;
         return this;
     }
 

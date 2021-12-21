@@ -1,0 +1,96 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.android.peter.menudemo.MenuDemoActivity">
+    <item
+        android:id="@+id/actionUnspecified"
+        android:orderInCategory="100"
+        android:title="UNSPECIFIED"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionLandscape"
+        android:orderInCategory="100"
+        android:title="LANDSCAPE"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionPortrait"
+        android:orderInCategory="100"
+        android:title="PORTRAIT"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionUser"
+        android:orderInCategory="100"
+        android:title="USER"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionBehind"
+        android:orderInCategory="100"
+        android:title="BEHIND"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionSensor"
+        android:orderInCategory="100"
+        android:title="SENSOR"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionNosensor"
+        android:orderInCategory="100"
+        android:title="NOSENSOR"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionSensorLandscape"
+        android:orderInCategory="100"
+        android:title="SENSOR_LANDSCAPE"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionReverseLandscape"
+        android:orderInCategory="100"
+        android:title="REVERSE_LANDSCAPE"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionReversePortrait"
+        android:orderInCategory="100"
+        android:title="REVERSE_PORTRAIT"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionFullSensor"
+        android:orderInCategory="100"
+        android:title="FULL_SENSOR"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionUserLandscape"
+        android:orderInCategory="100"
+        android:title="USER_LANDSCAPE"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionUserPortrait"
+        android:orderInCategory="100"
+        android:title="USER_PORTRAIT"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionFullUser"
+        android:orderInCategory="100"
+        android:title="FULL_USER"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/actionLocked"
+        android:orderInCategory="100"
+        android:title="LOCKED"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+
+</menu>

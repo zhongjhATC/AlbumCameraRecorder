@@ -20,6 +20,7 @@
         When the number of images, videos, and audio is specified, the rendering total is the sum of them; otherwise, it is the value currently set</string>
     <string name="you_can_set_up_to_several_images">You can set up to several images:</string>
     <string name="you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one">You can set up to several audio :</string>
+    <string name="horizontal_and_vertical_settings">Horizontal and vertical Settings：</string>
     <string name="open_the_album_function">Open the album function</string>
     <string name="if_these_are_checked_the_album_functionality_is_based_on_the_following">If checked, the album functionality is based on the following:</string>
     <string name="if_the_selected_media_has_images_or_video_whether_both_can_be_selected">If the selected media has images or video, whether both can be selected</string>

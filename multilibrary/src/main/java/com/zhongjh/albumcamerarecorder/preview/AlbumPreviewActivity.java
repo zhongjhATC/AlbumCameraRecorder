@@ -25,6 +25,7 @@ import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setRequestedOrientation(GlobalSpec.getInstance().requestedOrientation);
         super.onCreate(savedInstanceState);
         mCollection.onCreate(this, this);
         Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);

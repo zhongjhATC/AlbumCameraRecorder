@@ -530,7 +530,6 @@ public class ImageCustom {
         if (!isInitialHoming) {
             onInitialHoming(width, height);
         } else {
-
             // Pivot to fit window.
             mMatrix.setTranslate(mWindow.centerX() - mClipFrame.centerX(), mWindow.centerY() - mClipFrame.centerY());
             mMatrix.mapRect(mFrame);

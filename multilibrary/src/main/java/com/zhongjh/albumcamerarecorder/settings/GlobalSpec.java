@@ -1,16 +1,17 @@
 package com.zhongjh.albumcamerarecorder.settings;
+
+import android.content.pm.ActivityInfo;
+
 import androidx.annotation.StyleRes;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
-
-import com.zhongjh.common.entity.SaveStrategy;
-import com.zhongjh.common.enums.MimeType;
-
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
-import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
+import com.zhongjh.common.entity.SaveStrategy;
+import com.zhongjh.common.enums.MimeType;
 
 import java.util.Set;
 
@@ -88,6 +89,11 @@ public class GlobalSpec {
      * 是否启动过场动画，只包括开始打开界面和关闭界面的过场动画
      */
     public boolean isCutscenes;
+
+    /**
+     * 横竖屏设置,默认强制竖屏
+     */
+    public int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
     /**
      * 图片是否开启编辑功能，涉及功能：预览、拍照
      */
@@ -139,6 +145,7 @@ public class GlobalSpec {
         hasInited = true;
         imageEngine = new GlideEngine();
         isCutscenes = true;
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         isImageEdit = true;
         compressionInterface = null;
         requestCode = 0;

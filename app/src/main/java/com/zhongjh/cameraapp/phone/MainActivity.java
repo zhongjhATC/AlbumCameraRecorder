@@ -1,13 +1,17 @@
 package com.zhongjh.cameraapp.phone;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 
+import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -47,6 +51,9 @@ public class MainActivity extends BaseActivity {
 
     GlobalSetting mGlobalSetting;
 
+    @GlobalSetting.ScreenOrientation
+    int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+
     /**
      * @param activity 要跳转的activity
      */
@@ -59,6 +66,8 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        mBinding.llScreenOrientation.setOnClickListener(v -> showPopupMenu());
 
         // 设置九宫格的最大呈现数据
         mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
@@ -189,6 +198,9 @@ public class MainActivity extends BaseActivity {
         {
             mGlobalSetting.recorderSetting(recorderSetting);
         }
+
+        // 设置横竖屏
+        mGlobalSetting.setRequestedOrientation(requestedOrientation);
 
         mGlobalSetting.setOnCompressionInterface(new CompressionLuBan());
 
@@ -393,6 +405,81 @@ public class MainActivity extends BaseActivity {
         }
 
         return true;
+    }
+
+    @SuppressLint({"NonConstantResourceId", "SetTextI18n"})
+    private void showPopupMenu() {
+        PopupMenu popupMenu = new PopupMenu(this, mBinding.llScreenOrientation);
+        popupMenu.inflate(R.menu.menu_screenorientation);
+        popupMenu.setOnMenuItemClickListener(menuItem -> {
+            switch (menuItem.getItemId()) {
+                case R.id.actionUnspecified:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_UNSPECIFIED");
+                    break;
+                case R.id.actionLandscape:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_LANDSCAPE");
+                    break;
+                case R.id.actionPortrait:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_PORTRAIT");
+                    break;
+                case R.id.actionUser:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER");
+                    break;
+                case R.id.actionBehind:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_BEHIND;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_BEHIND");
+                    break;
+                case R.id.actionSensor:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_SENSOR");
+                    break;
+                case R.id.actionNosensor:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_NOSENSOR");
+                    break;
+                case R.id.actionSensorLandscape:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_SENSOR_LANDSCAPE");
+                    break;
+                case R.id.actionReverseLandscape:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_REVERSE_LANDSCAPE");
+                    break;
+                case R.id.actionReversePortrait:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_REVERSE_PORTRAIT");
+                    break;
+                case R.id.actionFullSensor:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_FULL_SENSOR");
+                    break;
+                case R.id.actionUserLandscape:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER_LANDSCAPE");
+                    break;
+                case R.id.actionUserPortrait:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER_PORTRAIT");
+                    break;
+                case R.id.actionFullUser:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_USER;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_FULL_USER");
+                    break;
+                case R.id.actionLocked:
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
+                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_LOCKED");
+                    break;
+                default:
+                    //do nothing
+            }
+
+            return false;
+        });
+        popupMenu.show();
     }
 
 }

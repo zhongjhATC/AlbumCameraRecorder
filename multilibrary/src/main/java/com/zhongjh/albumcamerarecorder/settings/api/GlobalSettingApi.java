@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
-import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
@@ -17,7 +16,6 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-
 import com.zhongjh.common.entity.SaveStrategy;
 
 /**
@@ -163,6 +161,13 @@ public interface GlobalSettingApi {
      * @return {@link GlobalSetting} this
      */
     GlobalSetting isCutscenes(boolean isCutscenes);
+
+    /**
+     * 横竖屏设置,默认强制竖屏
+     * @param requestedOrientation {@link GlobalSetting.ScreenOrientation}
+     * @return {@link GlobalSetting} this
+     */
+    GlobalSetting setRequestedOrientation(@GlobalSetting.ScreenOrientation int requestedOrientation);
 
     /**
      * 设置图片是否开启编辑功能，涉及功能：预览、拍照
