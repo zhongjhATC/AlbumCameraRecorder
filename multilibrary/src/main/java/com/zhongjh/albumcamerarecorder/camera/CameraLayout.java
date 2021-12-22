@@ -957,7 +957,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mBitmapData.clear();
         mCaptureDatas.clear();
 
-        // 根据不同状态处理相应的事件,多图不需要取消事件（关闭所有图片就自动恢复了）。
+        // 根据不同状态处理相应的事件
         resetStateAll();
     }
 
@@ -1301,6 +1301,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
     }
 
+    /**
+     * 多图进行删除的时候
+     * @param position 数据的索引
+     */
     @Override
     public void onDelete(int position) {
         // 删除文件
@@ -1331,6 +1335,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             // 如果是单图编辑情况下
             mViewHolder.rlEdit.setVisibility(View.GONE);
+
+            // 恢复底部
+            showBottomMenu();
         }
     }
 

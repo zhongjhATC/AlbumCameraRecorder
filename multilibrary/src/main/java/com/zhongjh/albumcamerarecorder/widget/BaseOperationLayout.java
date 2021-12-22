@@ -5,17 +5,15 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.util.DisplayMetricsSpUtils;
 import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton;
@@ -23,6 +21,8 @@ import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.circularprogressview.CircularProgressListener;
 
 import java.util.ArrayList;
+
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 /**
  * 集成各个控件的布局
@@ -97,15 +97,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
     public ViewHolder viewHolder;
 
     /**
-     * 该布局宽度
-     */
-    private final int mLayoutWidth;
-    /**
-     * 该布局高度
-     */
-    private final int mLayoutHeight;
-
-    /**
      * 是否第一次
      */
     private boolean mIsFirst = true;
@@ -117,7 +108,17 @@ public abstract class BaseOperationLayout extends FrameLayout {
     ObjectAnimator mAnimatorCancel;
 
     /**
+     * 屏幕宽度
+     */
+    int mScreenWidth;
+    /**
+     * 屏幕高度
+     */
+    int mScreenHeight;
+
+    /**
      * 创建
+     *
      * @return ViewHolder
      */
     protected abstract ViewHolder newViewHolder();
@@ -132,18 +133,32 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
     public BaseOperationLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        mLayoutWidth = DisplayMetricsSpUtils.getScreenWidth(context);
-        // 中心的按钮大小
-        int mButtonSize = (int) (mLayoutWidth / 4.5f);
-        mLayoutHeight = mButtonSize + (mButtonSize / 5) * 2 + 100;
+        mScreenWidth = DisplayMetricsSpUtils.getScreenWidth(context);
+        mScreenHeight = DisplayMetricsSpUtils.getScreenHeight(context);
         initView();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(mLayoutWidth, mLayoutHeight);
+
+        int Width;
+        int height = 0;
+        // 判断是横向还是竖向
+        if (getContext().getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
+            // 横向，获取手机高度作为控件宽度
+            Width = mScreenHeight;
+            height = mScreenWidth;
+        } else {
+            // 竖向，获取手机宽度作为控件宽度
+            Width = mScreenWidth;
+            height = mScreenHeight;
+        }
+        height = height / 4;
+        mAnimatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -Width / 4F, 0);
+        mAnimatorCancel = ObjectAnimator.ofFloat(viewHolder.btnCancel, "translationX", Width / 4F, 0);
+
+        setMeasuredDimension(Width, height);
     }
 
     /**
@@ -154,9 +169,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
         setWillNotDraw(false);
 
         viewHolder = newViewHolder();
-
-        mAnimatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -mLayoutWidth / 4F, 0);
-        mAnimatorCancel = ObjectAnimator.ofFloat(viewHolder.btnCancel, "translationX", mLayoutWidth / 4F, 0);
 
         // 默认隐藏
         viewHolder.btnCancel.setVisibility(GONE);
@@ -374,9 +386,8 @@ public abstract class BaseOperationLayout extends FrameLayout {
             viewHolder.btnConfirm.setClickable(false);
 
             // 显示动画
-            ObjectAnimator animatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -mLayoutWidth / 4F, 0);
             AnimatorSet set = new AnimatorSet();
-            set.playTogether(animatorConfirm);
+            set.playTogether(mAnimatorConfirm);
             set.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {

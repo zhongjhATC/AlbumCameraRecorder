@@ -9,15 +9,6 @@ package com.zhongjh.albumcamerarecorder.camera.common;
 public class Constants {
 
     /**
-     * 屏幕宽度
-     */
-    public static final String SCREEN_WIDTH = "ScreenWidth";
-    /**
-     * 屏幕高度
-     */
-    public static final String SCREEN_HEIGHT = "ScreenHeight";
-
-    /**
      * 闪关灯自动
      */
     public static final int TYPE_FLASH_AUTO = 0x101;
