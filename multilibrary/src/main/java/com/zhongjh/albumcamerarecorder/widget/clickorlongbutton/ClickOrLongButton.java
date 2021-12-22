@@ -402,6 +402,11 @@ public class ClickOrLongButton extends View {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        setMeasuredDimension(mBoundingBoxSize,mBoundingBoxSize);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawCircle(centerX, centerY, translucentCircleRadius, translucentPaint);
@@ -428,11 +433,6 @@ public class ClickOrLongButton extends View {
 
         canvas.drawCircle(centerX, centerY, outBlackCircleRadius, outBlackCirclePaint);
         canvas.drawCircle(centerX, centerY, outMostBlackCircleRadius, outMostBlackCirclePaint);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(mBoundingBoxSize, mBoundingBoxSize);
     }
 
     @Override

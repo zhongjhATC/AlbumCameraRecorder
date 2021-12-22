@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -30,6 +31,7 @@ public class PhotoVideoLayoutBase extends BaseOperationLayout {
 
         /**
          * 切换录制模式
+         *
          * @param tag 0代表当前是快拍默认录制模式，1代表当前是分段录制模式
          */
         void sectionRecord(String tag);
@@ -54,7 +56,9 @@ public class PhotoVideoLayoutBase extends BaseOperationLayout {
 
     @Override
     public ViewHolder newViewHolder() {
-        return new ViewHolder(View.inflate(getContext(), R.layout.layout_photovideo_operate, this));
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View view = inflater.inflate(R.layout.layout_photovideo_operate, this, true);
+        return new ViewHolder(view);
     }
 
     @Override

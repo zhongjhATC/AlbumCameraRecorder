@@ -140,25 +140,27 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        int Width;
-        int height = 0;
+        int specModeWidth = MeasureSpec.getMode(widthMeasureSpec);
+        int specModeHeight = MeasureSpec.getMode(heightMeasureSpec);
+        int width;
+        int height;
         // 判断是横向还是竖向
         if (getContext().getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
             // 横向，获取手机高度作为控件宽度
-            Width = mScreenHeight;
+            width = mScreenHeight;
             height = mScreenWidth;
         } else {
             // 竖向，获取手机宽度作为控件宽度
-            Width = mScreenWidth;
+            width = mScreenWidth;
             height = mScreenHeight;
         }
-        height = height / 4;
-        mAnimatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -Width / 4F, 0);
-        mAnimatorCancel = ObjectAnimator.ofFloat(viewHolder.btnCancel, "translationX", Width / 4F, 0);
+        height = height / 3;
+        mAnimatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -width / 4F, 0);
+        mAnimatorCancel = ObjectAnimator.ofFloat(viewHolder.btnCancel, "translationX", width / 4F, 0);
 
-        setMeasuredDimension(Width, height);
+        setMeasuredDimension(width, height);
+        // 传递新创建的宽高给子控件
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width, specModeWidth), MeasureSpec.makeMeasureSpec(height, specModeHeight));
     }
 
     /**

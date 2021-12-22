@@ -2,7 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
     android:background="#00000020">
 
     <!-- 假如360的屏幕宽度 144的左右边距 126 38 -->
@@ -62,22 +65,24 @@
     <!-- 中间的操作按钮 -->
     <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
         android:id="@+id/btnClickOrLong"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:focusable="true"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTip" />
 
     <RelativeLayout
         android:id="@+id/rlEdit"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:contentDescription="拍照后显示的编辑按钮，只有一张的时候才会这样"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTip"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
+        app:layout_constraintEnd_toEndOf="@+id/btnClickOrLong"
+        app:layout_constraintStart_toStartOf="@+id/btnClickOrLong"
+        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
         tools:ignore="HardcodedText">
 
         <ImageView
