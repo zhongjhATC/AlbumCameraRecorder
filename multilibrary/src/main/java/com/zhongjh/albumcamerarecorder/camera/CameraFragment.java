@@ -116,49 +116,51 @@ public class CameraFragment extends BaseFragment {
         if (isReturn) {
             return;
         }
-        switch (requestCode) {
-            case REQUEST_CODE_PREVIEW_CAMRRA:
-                // 如果在预览界面点击了确定
-                if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                    // 请求的预览界面
-                    Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
-                    // 获取选择的数据
-                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                    if (selected == null) {
-                        return;
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_CODE_PREVIEW_CAMRRA:
+                    // 如果在预览界面点击了确定
+                    if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                        // 请求的预览界面
+                        Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+                        // 获取选择的数据
+                        ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                        if (selected == null) {
+                            return;
+                        }
+                        // 重新赋值
+                        ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
+                        for (MultiMedia item : selected) {
+                            BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri());
+                            bitmapDatas.add(bitmapData);
+                        }
+                        // 全部刷新
+                        mCameraLayout.refreshMultiPhoto(bitmapDatas);
                     }
-                    // 重新赋值
-                    ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
-                    for (MultiMedia item : selected) {
-                        BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri());
-                        bitmapDatas.add(bitmapData);
-                    }
-                    // 全部刷新
-                    mCameraLayout.refreshMultiPhoto(bitmapDatas);
-                }
-                break;
-            case REQUEST_CODE_PREVIEW_VIDEO:
-                // 视频界面
-                ArrayList<String> arrayList = new ArrayList<>();
-                arrayList.add(data.getStringExtra("path"));
-                ArrayList<Uri> arrayListUri = new ArrayList<>();
-                arrayListUri.add(data.getParcelableExtra("uri"));
-                // 获取视频路径
-                Intent result = new Intent();
-                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
-                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
-                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
-                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
-                mActivity.setResult(RESULT_OK, result);
-                mIsCommit = true;
-                mActivity.finish();
-                break;
-            case REQ_IMAGE_EDIT:
-                // 编辑图片界面
-                mCameraLayout.refreshEditPhoto();
-                break;
-            default:
-                break;
+                    break;
+                case REQUEST_CODE_PREVIEW_VIDEO:
+                    // 视频界面
+                    ArrayList<String> arrayList = new ArrayList<>();
+                    arrayList.add(data.getStringExtra("path"));
+                    ArrayList<Uri> arrayListUri = new ArrayList<>();
+                    arrayListUri.add(data.getParcelableExtra("uri"));
+                    // 获取视频路径
+                    Intent result = new Intent();
+                    result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
+                    result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
+                    result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
+                    result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
+                    mActivity.setResult(RESULT_OK, result);
+                    mIsCommit = true;
+                    mActivity.finish();
+                    break;
+                case REQ_IMAGE_EDIT:
+                    // 编辑图片界面
+                    mCameraLayout.refreshEditPhoto();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
