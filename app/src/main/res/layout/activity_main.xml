@@ -611,7 +611,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/horizontal_and_vertical_settings" />
+                        android:text="@string/flash_settings" />
 
                     <TextView
                         android:id="@+id/tvFlashModel"
@@ -631,7 +631,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:checked="true"
                         android:text="@string/start_flash_memory_model" />
 
                 </LinearLayout>
