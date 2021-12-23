@@ -334,6 +334,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
             Intent intent = new Intent();
             intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION,getRequestedOrientation());
             if (item.getMediaUri() != null) {
                 intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
             } else {

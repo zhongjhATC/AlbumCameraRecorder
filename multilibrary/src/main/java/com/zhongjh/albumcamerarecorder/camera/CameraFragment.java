@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -285,6 +286,7 @@ public class CameraFragment extends BaseFragment {
         mCameraLayout.setEditListener((uri, newPath) -> {
             Intent intent = new Intent();
             intent.setClass(getContext(), ImageEditActivity.class);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION,getActivity().getRequestedOrientation());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri);
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
             this.startActivityForResult(intent, REQ_IMAGE_EDIT);

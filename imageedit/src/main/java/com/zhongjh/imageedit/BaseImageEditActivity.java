@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.ViewSwitcher;
 
+import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.imageedit.core.ImageMode;
 import com.zhongjh.imageedit.core.ImageText;
 import com.zhongjh.imageedit.view.ImageColorGroup;
 import com.zhongjh.imageedit.view.ImageViewCustom;
 
-import com.zhongjh.common.utils.StatusBarUtils;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION;
 
 /**
  * Created by felix on 2017/12/5 下午3:08.
@@ -44,8 +46,11 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
 
     public static final int OP_SUB_MOSAIC = 1;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 默认竖型
+        setRequestedOrientation(getIntent().getIntExtra(EXTRA_IMAGE_SCREEN_ORIENTATION,SCREEN_ORIENTATION_PORTRAIT));
         StatusBarUtils.initStatusBar(BaseImageEditActivity.this);
         super.onCreate(savedInstanceState);
         Bitmap bitmap = getBitmap();

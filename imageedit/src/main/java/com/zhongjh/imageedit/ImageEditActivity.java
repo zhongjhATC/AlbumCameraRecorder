@@ -33,6 +33,8 @@ public class ImageEditActivity extends BaseImageEditActivity {
 
     public static final String EXTRA_IMAGE_SAVE_PATH = "IMAGE_SAVE_PATH";
 
+    public static final String EXTRA_IMAGE_SCREEN_ORIENTATION = "EXTRA_SCREEN_ORIENTATION";
+
     @Override
     public void onCreated() {
 
