@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="image_color">28dp</dimen>
+
+    <dimen name="image_color_margin">6dp</dimen>
+
+    <dimen name="image_mode_space">32dp</dimen>
+
+</resources>

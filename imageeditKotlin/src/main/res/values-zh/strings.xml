@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="image_enable_storage_permission">Enable storage permissions</string>
+    <string name="image_enable_storage_tips">Album function needs to use the storage permissions, please in the Settings to enable the storage permissions of this application</string>
+
+</resources>
