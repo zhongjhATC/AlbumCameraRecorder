@@ -36,7 +36,6 @@ import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateInterface;
-import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
@@ -55,12 +54,6 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -68,9 +61,17 @@ import com.zhongjh.common.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
+import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
+import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
@@ -120,7 +121,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 闪关灯状态 默认关闭
      */
-    private int mFlashType = Constants.TYPE_FLASH_OFF;
+    private int mFlashType = TYPE_FLASH_OFF;
 
     /**
      * 当前界面的所有控件
@@ -544,8 +545,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private void initImgFlashListener() {
         mViewHolder.imgFlash.setOnClickListener(v -> {
             mFlashType++;
-            if (mFlashType > Constants.TYPE_FLASH_OFF) {
-                mFlashType = Constants.TYPE_FLASH_AUTO;
+            if (mFlashType > TYPE_FLASH_OFF) {
+                mFlashType = TYPE_FLASH_AUTO;
             }
             // 重新设置当前闪光灯模式
             setFlashLamp();
@@ -637,7 +638,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 // 设置不能点击，防止多次点击报错
                 mViewHolder.rlMain.setChildClickable(false);
                 // 判断如果是自动闪光灯模式便开启闪光灯
-                if (mFlashType == Constants.TYPE_FLASH_AUTO) {
+                if (mFlashType == TYPE_FLASH_AUTO) {
                     mViewHolder.cameraView.setFlash(Flash.TORCH);
                     // 延迟1秒拍照
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -785,7 +786,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
                 // 如果是自动闪光灯模式便关闭闪光灯
-                if (mFlashType == Constants.TYPE_FLASH_AUTO) {
+                if (mFlashType == TYPE_FLASH_AUTO) {
                     mViewHolder.cameraView.setFlash(Flash.OFF);
                 }
                 result.toBitmap(bitmap -> {
@@ -1191,15 +1192,15 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private void setFlashLamp() {
         switch (mFlashType) {
-            case Constants.TYPE_FLASH_AUTO:
+            case TYPE_FLASH_AUTO:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashAuto);
                 mViewHolder.cameraView.setFlash(Flash.AUTO);
                 break;
-            case Constants.TYPE_FLASH_ON:
+            case TYPE_FLASH_ON:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOn);
                 mViewHolder.cameraView.setFlash(Flash.TORCH);
                 break;
-            case Constants.TYPE_FLASH_OFF:
+            case TYPE_FLASH_OFF:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOff);
                 mViewHolder.cameraView.setFlash(Flash.OFF);
                 break;

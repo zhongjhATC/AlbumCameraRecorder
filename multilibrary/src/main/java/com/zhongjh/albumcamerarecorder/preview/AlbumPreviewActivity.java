@@ -49,7 +49,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setRequestedOrientation(GlobalSpec.getInstance().requestedOrientation);
+        setRequestedOrientation(GlobalSpec.getInstance().orientation);
         super.onCreate(savedInstanceState);
         mCollection.onCreate(this, this);
         Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);

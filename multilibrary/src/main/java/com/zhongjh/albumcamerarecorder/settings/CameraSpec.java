@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.settings;
 
 import com.zhongjh.albumcamerarecorder.R;
 
+import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.common.coordinator.VideoEditCoordinator;
 import com.zhongjh.common.enums.MimeType;
 
@@ -45,6 +46,8 @@ public class CameraSpec {
         imageFlashOff = R.drawable.ic_flash_off;
         // 闪光灯自动状态图标
         imageFlashAuto = R.drawable.ic_flash_auto;
+        flashModel = FlashModels.TYPE_FLASH_OFF;
+        enableFlashMemoryModel = false;
         // 最长录制时间
         duration = 10;
         // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
@@ -76,6 +79,16 @@ public class CameraSpec {
      * 闪光灯自动状态图标
      */
     public int imageFlashAuto = R.drawable.ic_flash_auto;
+    /**
+     * 闪光灯模式
+     * 默认闪光灯关闭模式
+     */
+    public int flashModel = FlashModels.TYPE_FLASH_OFF;
+    /**
+     * 是否开启闪光灯记忆模式
+     * 在开启闪光某个模式（例如闪光灯开启模式）后，在界面结束时，会自动记录当前模式（例如闪光灯开启模式），下次再打开时，依然是这个模式（例如闪光灯开启模式）
+     */
+    public boolean enableFlashMemoryModel = false;
     /**
      * 最长录制时间
      */

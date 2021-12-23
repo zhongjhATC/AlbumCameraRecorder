@@ -3,14 +3,12 @@ package com.zhongjh.albumcamerarecorder.preview;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 
-import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 
 import java.util.List;
 
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.utils.StatusBarUtils;
 
 /**
  * 点击左下角的预览按钮进入的界面
@@ -20,7 +18,7 @@ public class SelectedPreviewActivity extends BasePreviewActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setRequestedOrientation(GlobalSpec.getInstance().requestedOrientation);
+        setRequestedOrientation(GlobalSpec.getInstance().orientation);
         super.onCreate(savedInstanceState);
         if (!GlobalSpec.getInstance().hasInited) {
             setResult(RESULT_CANCELED);

@@ -1,9 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.util;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 
-import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
 
 /**

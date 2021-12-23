@@ -27,7 +27,7 @@ import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
+import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
 
 /**
@@ -75,7 +75,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setRequestedOrientation(GlobalSpec.getInstance().requestedOrientation);
+        setRequestedOrientation(GlobalSpec.getInstance().orientation);
         StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_video);

@@ -3,9 +3,9 @@ package com.zhongjh.albumcamerarecorder;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,9 +34,6 @@ import com.zhongjh.albumcamerarecorder.utils.AppUtils;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private int mDefaultPosition;
 
-    GlobalSpec mSpec;
+    GlobalSpec mSpec= GlobalSpec.getInstance();
     /**
      * 是否初始化完毕
      */
@@ -92,10 +89,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mSpec = GlobalSpec.getInstance();
+        Log.d("MainActivity", "setRequestedOrientation");
+        if (mSpec.needOrientationRestriction()) {
+            setRequestedOrientation(mSpec.orientation);
+        }
         setTheme(mSpec.themeId);
         StatusBarUtils.initStatusBar(MainActivity.this);
-        setRequestedOrientation(mSpec.requestedOrientation);
         super.onCreate(savedInstanceState);
         // @@确认是否进行了配置
         if (!mSpec.hasInited) {

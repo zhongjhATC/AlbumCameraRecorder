@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
+import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -105,6 +106,24 @@ public interface CameraSettingApi {
      * @return {@link CameraSetting} for fluent API.
      */
     CameraSetting imageFlashAuto(int imageFlashAuto);
+
+    /**
+     * 更换 闪光灯默认模式，默认是闪光灯关闭模式
+     *
+     * @param flashModel 闪光灯默认模式
+     * @return {@link CameraSetting} for fluent API.
+     */
+    CameraSetting flashModel(@FlashModels int flashModel);
+
+    /**
+     * 是否开启闪光灯记忆模式，默认关闭
+     * 在开启闪光某个模式（例如闪光灯开启模式）后，在界面结束时，会自动记录当前模式（例如闪光灯开启模式）
+     * 下次再打开时，依然是这个模式（例如闪光灯开启模式）
+     *
+     * @param enableFlashMemoryModel 是否开启
+     * @return {@link CameraSetting} for fluent API.
+     */
+    CameraSetting enableFlashMemoryModel(boolean enableFlashMemoryModel);
 
     /**
      * 有关CameraView事件

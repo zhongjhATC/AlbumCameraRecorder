@@ -92,6 +92,18 @@ public class CameraSetting implements CameraSettingApi {
     }
 
     @Override
+    public CameraSetting flashModel(int flashModel) {
+        mCameraSpec.flashModel = flashModel;
+        return this;
+    }
+
+    @Override
+    public CameraSetting enableFlashMemoryModel(boolean enableFlashMemoryModel) {
+        mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel;
+        return this;
+    }
+
+    @Override
     public CameraSetting setOnCameraViewListener(@Nullable OnCameraViewListener listener) {
         mCameraSpec.onCameraViewListener = listener;
         return this;

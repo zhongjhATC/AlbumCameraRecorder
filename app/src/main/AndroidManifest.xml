@@ -17,8 +17,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- 视频权限 begin -->
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <!-- 视频权限 end -->
 
@@ -32,8 +34,7 @@
 
 
         <activity
-            android:name=".phone.MainListActivity"
-            android:screenOrientation="portrait">
+            android:name=".phone.MainListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,36 +43,29 @@
         </activity>
 
         <activity
-            android:name=".phone.MainSimpleActivity"
-            android:screenOrientation="portrait" />
+            android:name=".phone.MainSimpleActivity"/>
 
         <activity
-            android:name=".phone.MainThemeActivity"
-            android:screenOrientation="portrait" />
+            android:name=".phone.MainThemeActivity" />
 
         <activity
             android:name=".phone.MainActivity"
-            android:screenOrientation="portrait" />
+            android:configChanges="orientation|keyboardHidden|navigation" />
 
         <activity
-            android:name=".phone.MainSeeActivity"
-            android:screenOrientation="portrait" />
+            android:name=".phone.MainSeeActivity" />
 
         <activity
-            android:name=".phone.MainUpperLimitActivity"
-            android:screenOrientation="portrait" />
+            android:name=".phone.MainUpperLimitActivity" />
 
         <activity
-            android:name=".phone.RecyclerViewActivity"
-            android:screenOrientation="portrait" />
+            android:name=".phone.RecyclerViewActivity" />
 
         <activity
-            android:name=".phone.MainCustomCameraViewActivity"
-            android:screenOrientation="portrait" />
+            android:name=".phone.MainCustomCameraViewActivity" />
 
         <activity
-            android:name=".phone.MainSuperSimpleActivity"
-            android:screenOrientation="portrait" />
+            android:name=".phone.MainSuperSimpleActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

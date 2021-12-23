@@ -9,8 +9,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.StateInterface;
-import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 /**

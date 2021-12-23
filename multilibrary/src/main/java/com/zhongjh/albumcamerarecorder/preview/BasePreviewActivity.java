@@ -29,19 +29,17 @@ import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
+import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.widget.IncapableDialog;
 import com.zhongjh.imageedit.ImageEditActivity;
 
 import java.io.File;
 
-import com.zhongjh.common.entity.IncapableCause;
-import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MultimediaTypes;
-import com.zhongjh.common.utils.MediaStoreCompat;
-import com.zhongjh.common.utils.StatusBarUtils;
-import com.zhongjh.common.widget.IncapableDialog;
-
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE;
 
 /**
  * 预览的基类

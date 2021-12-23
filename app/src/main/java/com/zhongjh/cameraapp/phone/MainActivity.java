@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
+import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
@@ -53,6 +54,8 @@ public class MainActivity extends BaseActivity {
 
     @GlobalSetting.ScreenOrientation
     int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    @FlashModels
+    int flashModel = FlashModels.TYPE_FLASH_OFF;
 
     /**
      * @param activity 要跳转的activity
@@ -64,10 +67,13 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         mBinding.llScreenOrientation.setOnClickListener(v -> showPopupMenu());
+
+        mBinding.llFlashModel.setOnClickListener(v -> showFlashPopupMenu());
 
         // 设置九宫格的最大呈现数据
         mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
@@ -275,6 +281,12 @@ public class MainActivity extends BaseActivity {
             cameraSetting.videoEdit(new VideoEditManager());
         }
 
+        // 是否启用闪光灯记忆模式
+        cameraSetting.enableFlashMemoryModel(mBinding.cbFlashMemoryModel.isChecked());
+
+        // 闪光灯默认模式
+        cameraSetting.flashModel(flashModel);
+
         // 开启点击即开启录制(失去点击拍照功能)
         cameraSetting.isClickRecord(mBinding.cbClickRecord.isChecked());
 
@@ -472,6 +484,33 @@ public class MainActivity extends BaseActivity {
                 case R.id.actionLocked:
                     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
                     mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_LOCKED");
+                    break;
+                default:
+                    //do nothing
+            }
+
+            return false;
+        });
+        popupMenu.show();
+    }
+
+    /**
+     * 弹窗闪光灯选项
+     */
+    @SuppressLint("NonConstantResourceId")
+    private void showFlashPopupMenu() {
+        PopupMenu popupMenu = new PopupMenu(this, mBinding.llFlashModel);
+        popupMenu.inflate(R.menu.menu_flash);
+        popupMenu.setOnMenuItemClickListener(menuItem -> {
+            switch (menuItem.getItemId()) {
+                case R.id.actionFlashOff:
+                    flashModel = FlashModels.TYPE_FLASH_OFF;
+                    break;
+                case R.id.actionFlashOn:
+                    flashModel = FlashModels.TYPE_FLASH_ON;
+                    break;
+                case R.id.actionFlashAuto:
+                    flashModel = FlashModels.TYPE_FLASH_AUTO;
                     break;
                 default:
                     //do nothing

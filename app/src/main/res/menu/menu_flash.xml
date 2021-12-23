@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.android.peter.menudemo.MenuDemoActivity">
+
+    <item
+        android:id="@+id/actionFlashOff"
+        android:orderInCategory="100"
+        android:title="@string/flash_off"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/actionFlashOn"
+        android:orderInCategory="100"
+        android:title="@string/flash_on"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/actionFlashAuto"
+        android:orderInCategory="100"
+        android:title="@string/flash_auto"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+
+
+</menu>

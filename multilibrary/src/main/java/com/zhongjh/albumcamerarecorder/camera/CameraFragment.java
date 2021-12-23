@@ -17,14 +17,14 @@ import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.camera.common.Constants;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
-import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.imageedit.ImageEditActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,17 +32,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MultimediaTypes;
-
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity.REQ_IMAGE_EDIT;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
+import static com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity.REQ_IMAGE_EDIT;
 
 /**
  * 拍摄视频

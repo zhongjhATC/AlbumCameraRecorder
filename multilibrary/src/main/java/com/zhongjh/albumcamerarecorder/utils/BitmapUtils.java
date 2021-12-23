@@ -23,8 +23,8 @@ import java.util.Locale;
 
 import com.zhongjh.common.utils.MediaStoreCompat;
 
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_PICTURE;
-import static com.zhongjh.albumcamerarecorder.camera.common.Constants.TYPE_VIDEO;
+import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO;
 
 /**
  * Bitmap操作常用工具类

@@ -93,7 +93,7 @@ public class GlobalSpec {
     /**
      * 横竖屏设置,默认强制竖屏
      */
-    public int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    public int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
     /**
      * 图片是否开启编辑功能，涉及功能：预览、拍照
      */
@@ -145,10 +145,14 @@ public class GlobalSpec {
         hasInited = true;
         imageEngine = new GlideEngine();
         isCutscenes = true;
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         isImageEdit = true;
         compressionInterface = null;
         requestCode = 0;
+    }
+
+    public boolean needOrientationRestriction() {
+        return orientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
     private static final class InstanceHolder {

@@ -1,14 +1,11 @@
 package com.zhongjh.albumcamerarecorder.settings;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.fragment.app.Fragment;
 
@@ -20,15 +17,12 @@ import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.utils.MediaStoreCompat;
 
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 
-import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
@@ -238,7 +232,7 @@ public final class GlobalSetting implements GlobalSettingApi {
 
     @Override
     public GlobalSetting setRequestedOrientation(@ScreenOrientation int requestedOrientation) {
-        mGlobalSpec.requestedOrientation = requestedOrientation;
+        mGlobalSpec.orientation = requestedOrientation;
         return this;
     }
 
