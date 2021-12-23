@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.common.util.SharedPreferencesUtils;
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
@@ -36,6 +37,7 @@ import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateInterface;
+import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
@@ -90,8 +92,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
     private final String TAG = CameraLayout.class.getSimpleName();
     private final static int PROGRESS_MAX = 100;
-
-    private final Context mContext;
     /**
      * 图片
      */
@@ -121,7 +121,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 闪关灯状态 默认关闭
      */
-    private int mFlashType = TYPE_FLASH_OFF;
+    private int mFlashModel = TYPE_FLASH_OFF;
 
     /**
      * 当前界面的所有控件
@@ -300,11 +300,26 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
     public CameraLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
         mCameraStateManagement = new CameraStateManagement(this);
         initData();
         initView();
         initListener();
+    }
+
+    /**
+     * 初始化
+     *
+     * @param mainActivity {@link com.zhongjh.albumcamerarecorder.MainActivity }
+     * @param fragment     设置fragment
+     */
+    public void init(MainActivity mainActivity, CameraFragment fragment) {
+        this.mMainActivity = mainActivity;
+        this.mFragment = fragment;
+
+        // 初始化多图适配器，先判断是不是多图配置
+        mPhotoAdapter = new PhotoAdapter(getContext(), fragment, mGlobalSpec, mCaptureDatas, this);
+        mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+        mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
     }
 
     /**
@@ -330,25 +345,14 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 
         // 默认图片
-        TypedArray ta = mContext.getTheme().obtainStyledAttributes(
+        TypedArray ta = getContext().getTheme().obtainStyledAttributes(
                 new int[]{R.attr.album_thumbnail_placeholder});
         mPlaceholder = ta.getDrawable(0);
-    }
 
-    /**
-     * 初始化
-     *
-     * @param mainActivity {@link com.zhongjh.albumcamerarecorder.MainActivity }
-     * @param fragment     设置fragment
-     */
-    public void init(MainActivity mainActivity, CameraFragment fragment) {
-        this.mMainActivity = mainActivity;
-        this.mFragment = fragment;
-
-        // 初始化多图适配器，先判断是不是多图配置
-        mPhotoAdapter = new PhotoAdapter(mContext, fragment, mGlobalSpec, mCaptureDatas, this);
-        mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-        mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
+        // 闪光灯修改默认模式
+        mFlashModel = mCameraSpec.flashModel;
+        // 记忆模式
+        flashGetCache();
     }
 
     /**
@@ -357,11 +361,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private void initView() {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false);
-        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_camera_main_view_zjh, this);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
 
         if (mCameraSpec.watermarkResource != -1) {
-            LayoutInflater.from(mContext).inflate(mCameraSpec.watermarkResource, mViewHolder.cameraView, true);
+            LayoutInflater.from(getContext()).inflate(mCameraSpec.watermarkResource, mViewHolder.cameraView, true);
         }
 
         // 回调cameraView可以自定义相关参数
@@ -370,7 +374,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
 
         // 兼容沉倾状态栏
-        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mContext);
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(getContext());
         mViewHolder.clMenu.setPadding(0, statusBarHeight, 0, 0);
         ViewGroup.LayoutParams layoutParams = mViewHolder.clMenu.getLayoutParams();
         layoutParams.height = layoutParams.height + statusBarHeight;
@@ -537,6 +541,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
         mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
         mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
+        // 记忆模式
+        flashSaveCache();
     }
 
     /**
@@ -544,9 +550,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private void initImgFlashListener() {
         mViewHolder.imgFlash.setOnClickListener(v -> {
-            mFlashType++;
-            if (mFlashType > TYPE_FLASH_OFF) {
-                mFlashType = TYPE_FLASH_AUTO;
+            mFlashModel++;
+            if (mFlashModel > TYPE_FLASH_OFF) {
+                mFlashModel = TYPE_FLASH_AUTO;
             }
             // 重新设置当前闪光灯模式
             setFlashLamp();
@@ -611,7 +617,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             public void onBanClickTips() {
                 // 判断如果是分段录制模式就提示
                 if (mIsSectionRecord) {
-                    Toast.makeText(mContext, R.string.z_multi_library_working_video_click_later,
+                    Toast.makeText(getContext(), R.string.z_multi_library_working_video_click_later,
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -638,7 +644,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 // 设置不能点击，防止多次点击报错
                 mViewHolder.rlMain.setChildClickable(false);
                 // 判断如果是自动闪光灯模式便开启闪光灯
-                if (mFlashType == TYPE_FLASH_AUTO) {
+                if (mFlashModel == TYPE_FLASH_AUTO) {
                     mViewHolder.cameraView.setFlash(Flash.TORCH);
                     // 延迟1秒拍照
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -648,11 +654,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     mViewHolder.cameraView.takePictureSnapshot();
                 }
             } else {
-                Toast.makeText(mContext, getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached), Toast.LENGTH_SHORT).show();
             }
         }
     }
-
 
     /**
      * 录制视频
@@ -711,7 +716,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     // 合并视频
                     mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true).getPath();
                     mCameraSpec.videoEditCoordinator.merge(mNewSectionVideoPath, mVideoPaths,
-                            mContext.getCacheDir().getPath() + File.separator + "cam.txt");
+                            getContext().getCacheDir().getPath() + File.separator + "cam.txt");
                 } else {
                     mCameraStateManagement.pvLayoutCommit();
                 }
@@ -786,7 +791,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
                 // 如果是自动闪光灯模式便关闭闪光灯
-                if (mFlashType == TYPE_FLASH_AUTO) {
+                if (mFlashModel == TYPE_FLASH_AUTO) {
                     mViewHolder.cameraView.setFlash(Flash.OFF);
                 }
                 result.toBitmap(bitmap -> {
@@ -850,7 +855,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 Log.d(TAG, "onCameraError");
                 super.onCameraError(exception);
                 if (mIsSectionRecord) {
-                    Toast.makeText(mContext, R.string.z_multi_library_recording_error_roll_back_previous_paragraph, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.z_multi_library_recording_error_roll_back_previous_paragraph, Toast.LENGTH_SHORT).show();
                     mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
                 }
                 if (!TextUtils.isEmpty(exception.getMessage())) {
@@ -1030,7 +1035,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     File compressionFile = null;
                     if (mGlobalSpec.compressionInterface != null) {
                         try {
-                            compressionFile = mGlobalSpec.compressionInterface.compressionFile(mContext, oldFile);
+                            compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -1075,7 +1080,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             @Override
             public void onFail(Throwable t) {
                 super.onFail(t);
-                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 setUiEnableTrue();
             }
         });
@@ -1191,7 +1196,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 设置闪关灯
      */
     private void setFlashLamp() {
-        switch (mFlashType) {
+        switch (mFlashModel) {
             case TYPE_FLASH_AUTO:
                 mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashAuto);
                 mViewHolder.cameraView.setFlash(Flash.AUTO);
@@ -1268,7 +1273,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 设置闪光灯是否显示，如果不支持，是一直不会显示
      */
     private void setSwitchVisibility(int viewVisibility) {
-        if (!PackageManagerUtils.isSupportCameraLedFlash(mContext.getPackageManager())) {
+        if (!PackageManagerUtils.isSupportCameraLedFlash(getContext().getPackageManager())) {
             mViewHolder.imgSwitch.setVisibility(View.GONE);
         } else {
             mViewHolder.imgSwitch.setVisibility(viewVisibility);
@@ -1304,6 +1309,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
     /**
      * 多图进行删除的时候
+     *
      * @param position 数据的索引
      */
     @Override
@@ -1339,6 +1345,26 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             // 恢复底部
             showBottomMenu();
+        }
+    }
+
+    /**
+     * 记忆模式下获取闪光灯缓存的模式
+     */
+    private void flashGetCache() {
+        // 判断闪光灯是否记忆模式，如果是记忆模式则使用上个闪光灯模式
+        if (mCameraSpec.enableFlashMemoryModel) {
+            mFlashModel = FlashCacheUtils.getFlashModel(getContext());
+        }
+    }
+
+    /**
+     * 记忆模式下缓存闪光灯模式
+     */
+    private void flashSaveCache() {
+        // 判断闪光灯是否记忆模式，如果是记忆模式则存储当前闪光灯模式
+        if (mCameraSpec.enableFlashMemoryModel) {
+            FlashCacheUtils.saveFlashModel(getContext(), mFlashModel);
         }
     }
 

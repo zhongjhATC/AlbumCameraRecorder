@@ -505,12 +505,15 @@ public class MainActivity extends BaseActivity {
             switch (menuItem.getItemId()) {
                 case R.id.actionFlashOff:
                     flashModel = FlashModels.TYPE_FLASH_OFF;
+                    mBinding.tvFlashModel.setText(getResources().getString(R.string.flash_off));
                     break;
                 case R.id.actionFlashOn:
                     flashModel = FlashModels.TYPE_FLASH_ON;
+                    mBinding.tvFlashModel.setText(getResources().getString(R.string.flash_on));
                     break;
                 case R.id.actionFlashAuto:
                     flashModel = FlashModels.TYPE_FLASH_AUTO;
+                    mBinding.tvFlashModel.setText(getResources().getString(R.string.flash_auto));
                     break;
                 default:
                     //do nothing
