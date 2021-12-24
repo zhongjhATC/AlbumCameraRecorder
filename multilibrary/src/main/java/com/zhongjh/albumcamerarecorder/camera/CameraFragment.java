@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -139,9 +138,9 @@ public class CameraFragment extends BaseFragment {
                 case REQUEST_CODE_PREVIEW_VIDEO:
                     // 视频界面
                     ArrayList<String> arrayList = new ArrayList<>();
-                    arrayList.add(data.getStringExtra("path"));
+                    arrayList.add(data.getStringExtra(PreviewVideoActivity.PATH));
                     ArrayList<Uri> arrayListUri = new ArrayList<>();
-                    arrayListUri.add(data.getParcelableExtra("uri"));
+                    arrayListUri.add(data.getParcelableExtra(PreviewVideoActivity.URI));
                     // 获取视频路径
                     Intent result = new Intent();
                     result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);

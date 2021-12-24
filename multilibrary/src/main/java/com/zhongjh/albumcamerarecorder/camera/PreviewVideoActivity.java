@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -38,6 +39,8 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
 public class PreviewVideoActivity extends AppCompatActivity {
 
     private static final String TAG = PreviewVideoActivity.class.getSimpleName();
+    static final String PATH = "PATH";
+    static final String URI = "URI";
 
     VideoView mVideoViewPreview;
     ImageView mImgClose;
@@ -67,7 +70,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     public static void startActivity(Fragment fragment, String path) {
         Intent intent = new Intent();
-        intent.putExtra("path", path);
+        intent.putExtra(PATH, path);
         intent.setClass(fragment.getContext(), PreviewVideoActivity.class);
         fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_VIDEO);
         fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
@@ -79,7 +82,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_video);
-        mPath = getIntent().getStringExtra("path");
+        mPath = getIntent().getStringExtra(PATH);
         // 初始化设置
         mCameraSpec = CameraSpec.getInstance();
         initView();
@@ -256,9 +259,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
     private void confirm(File newFile) {
         Intent intent = new Intent();
         // 加入视频到android系统库里面
+        LocalFile localFile = new LocalFile();
+
         Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mDuration, mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
-        intent.putExtra("path", newFile.getPath());
-        intent.putExtra("uri", mediaUri);
+        intent.putExtra(PATH, newFile.getPath());
+        intent.putExtra(URI, mediaUri);
         setResult(RESULT_OK, intent);
         PreviewVideoActivity.this.finish();
     }

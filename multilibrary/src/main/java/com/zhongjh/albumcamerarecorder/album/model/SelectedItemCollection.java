@@ -14,6 +14,7 @@ import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 
 import java.util.ArrayList;
@@ -240,9 +241,17 @@ public class SelectedItemCollection {
             } else if (item.getUrl() != null) {
                 paths.add(item.getUrl());
             }
-
         }
         return paths;
+    }
+
+    /**
+     * 获取LocalFile的集合
+     *
+     * @return list<LocalFile>
+     */
+    public ArrayList<LocalFile> asListOfLocalFile() {
+        return new ArrayList<>(mItems);
     }
 
     /**

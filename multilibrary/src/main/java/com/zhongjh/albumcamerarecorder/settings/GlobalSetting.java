@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.settings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -9,22 +10,21 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.fragment.app.Fragment;
 
-import android.widget.Toast;
-
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
-
+import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
+import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
+import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
+import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 
-import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
-import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
-import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
-import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.util.Set;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_BEHIND;
@@ -55,7 +55,7 @@ public final class GlobalSetting implements GlobalSettingApi {
     private final MultiMediaSetting mMultiMediaSetting;
     private final GlobalSpec mGlobalSpec;
 
-    @IntDef( value = {
+    @IntDef(value = {
             SCREEN_ORIENTATION_UNSPECIFIED,
             SCREEN_ORIENTATION_LANDSCAPE,
             SCREEN_ORIENTATION_PORTRAIT,
@@ -74,11 +74,13 @@ public final class GlobalSetting implements GlobalSettingApi {
             SCREEN_ORIENTATION_LOCKED
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ScreenOrientation {}
+    public @interface ScreenOrientation {
+    }
 
     @Override
     public void onDestroy() {
         mGlobalSpec.onMainListener = null;
+        mGlobalSpec.onResultCallbackListener = null;
         if (mGlobalSpec.albumSetting != null) {
             mGlobalSpec.albumSetting.onDestroy();
         }
@@ -258,6 +260,17 @@ public final class GlobalSetting implements GlobalSettingApi {
     @Override
     public void forResult(int requestCode) {
         mGlobalSpec.requestCode = requestCode;
+        openMain(requestCode);
+    }
+
+    @Override
+    public void forResult(OnResultCallbackListener<LocalFile> listener) {
+        // 绑定回调监听
+        mGlobalSpec.onResultCallbackListener = new WeakReference<>(listener).get();
+        openMain(null);
+    }
+
+    private void openMain(Integer requestCode) {
         Activity activity = mMultiMediaSetting.getActivity();
         if (activity == null) {
             return;
@@ -290,14 +303,21 @@ public final class GlobalSetting implements GlobalSettingApi {
 
         Fragment fragment = mMultiMediaSetting.getFragment();
         if (fragment != null) {
-            fragment.startActivityForResult(intent, requestCode);
+            if (requestCode != null) {
+                fragment.startActivityForResult(intent, requestCode);
+            } else {
+                fragment.startActivity(intent);
+            }
         } else {
-            activity.startActivityForResult(intent, requestCode);
+            if (requestCode != null) {
+                activity.startActivityForResult(intent, requestCode);
+            } else {
+                activity.startActivity(intent);
+            }
             if (mGlobalSpec.isCutscenes) {
                 activity.overridePendingTransition(R.anim.activity_open, 0);
             }
         }
-
     }
 
 }

@@ -41,11 +41,14 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PathUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.enums.MultimediaTypes;
@@ -58,6 +61,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
@@ -173,7 +177,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         int color = ta.getColor(0, 0);
         ta.recycle();
         if (navigationIcon != null) {
-            ColorFilterUtil.setColorFilterSrcIn(navigationIcon,color);
+            ColorFilterUtil.setColorFilterSrcIn(navigationIcon, color);
         }
         mSelectedCollection.onCreate(savedInstanceState, false);
         if (savedInstanceState != null) {
@@ -228,17 +232,15 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         // 确认当前选择的图片
         mViewHolder.buttonApply.setOnClickListener(view -> {
-            Intent result = new Intent();
-            // 获取选择的图片的url集合
-            ArrayList<Uri> selectedUris = (ArrayList<Uri>) mSelectedCollection.asListOfUri();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
-            ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
-            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
-            result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(selectedUris));
-            result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
-            // 是否启用原图
-            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            mActivity.setResult(RESULT_OK, result);
+            ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
+            if (mGlobalSpec.onResultCallbackListener == null) {
+                ArrayList<Uri> selectedUris = (ArrayList<Uri>) mSelectedCollection.asListOfUri();
+                ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
+                setResultOK(localFiles, selectedUris, selectedPaths);
+            } else {
+                mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                mActivity.setResult(RESULT_OK);
+            }
             mActivity.finish();
         });
 
@@ -344,23 +346,22 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     SelectedItemCollection.COLLECTION_UNDEFINED);
             // 如果在预览界面点击了确定
             if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                Intent result = new Intent();
                 ArrayList<Uri> selectedUris = new ArrayList<>();
                 ArrayList<String> selectedPaths = new ArrayList<>();
                 if (selected != null) {
+                    ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
                     for (MultiMedia item : selected) {
                         // 添加uri和path
                         selectedUris.add(item.getMediaUri());
                         selectedPaths.add(PathUtils.getPath(getContext(), item.getMediaUri()));
                     }
+                    if (mGlobalSpec.onResultCallbackListener == null) {
+                        setResultOK(localFiles, selectedUris, selectedPaths);
+                    } else {
+                        mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                        mActivity.setResult(RESULT_OK);
+                    }
                 }
-                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
-                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
-                result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(selectedUris));
-                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
-                // 是否启用原图
-                result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-                mActivity.setResult(RESULT_OK, result);
                 mActivity.finish();
             } else {
                 // 点击了返回
@@ -494,8 +495,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumCollection.restartLoadAlbums();
     }
 
-
-
     /**
      * 选择某个专辑的时候
      *
@@ -574,6 +573,27 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 隐藏母窗体的table
             ((MainActivity) mActivity).showHideTableLayout(true);
         }
+    }
+
+    /**
+     * 关闭Activity回调相关数值
+     *
+     * @param localFiles 本地数据包含别的参数
+     * @param uris       单纯uris的数据
+     * @param paths      单纯paths的数据
+     */
+    private void setResultOK(ArrayList<LocalFile> localFiles, ArrayList<Uri> uris, ArrayList<String> paths) {
+        // 获取选择的图片的url集合
+        Intent result = new Intent();
+        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
+        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+        result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+        result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(uris));
+        result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
+        // 是否启用原图
+        result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+        mActivity.setResult(RESULT_OK, result);
+
     }
 
     public static class ViewHolder {

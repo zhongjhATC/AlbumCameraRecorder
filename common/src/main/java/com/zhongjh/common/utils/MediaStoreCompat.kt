@@ -35,7 +35,7 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
     fun createFile(type: Int, isCache: Boolean): File {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmssS", Locale.getDefault()).format(Date())
         val fileName = when (type) {
-            0 -> String.format("JPEG_%s.jpg", timeStamp)
+            0 -> String.format("PICTURE_%s.jpg", timeStamp)
             1 -> String.format("VIDEO_%s.mp4", timeStamp)
             2 -> String.format("AUDIO_%s.mp3", timeStamp)
             else -> throw RuntimeException("The type must be 2-0.")

@@ -17,17 +17,12 @@ import com.zhongjh.common.enums.MultimediaTypes
  * @author zhongjh
  * @date 2019/1/22
  */
-open class MultiMedia : Parcelable {
+open class MultiMedia : LocalFile, Parcelable {
 
     /**
      * 用于区分，因为九宫数据是允许选择重复的
      */
     var id: Long = 0
-
-    /**
-     * 真实路径
-     */
-    var path: String? = null
 
     /**
      * 在线网址
@@ -37,49 +32,12 @@ open class MultiMedia : Parcelable {
     /**
      * 图片资源id
      */
-    var drawableId : Int = -1
+    var drawableId: Int = -1
 
     /**
      * 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
      */
-    var mediaUri : Uri? = null
-
-    /**
-     * 以路径转换成的uri，专用于提供给progresslibrary使用
-     */
-    var uri: Uri? = null
-
-    /**
-     * 范围类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
-     */
-    @MultimediaTypes
-    var type = 0
-
-    /**
-     * 具体类型，jpg,png,mp3等等
-     */
-    var mimeType: String? = null
-    var size: Long = 0
-
-    /**
-     * only for video, in ms
-     */
-    var duration: Long = 0
-
-    /**
-     * 编辑前的真实路径
-     */
-    var oldPath: String? = null
-
-    /**
-     * 编辑前的相册URI
-     */
-    var oldMediaUri: Uri? = null
-
-    /**
-     * 编辑前的URI
-     */
-    var oldUri: Uri? = null
+    var mediaUri: Uri? = null
 
     constructor()
 
@@ -175,7 +133,7 @@ open class MultiMedia : Parcelable {
         return super.hashCode()
     }
 
-    fun isImage() : Boolean {
+    fun isImage(): Boolean {
         if (mimeType == null) {
             return false
         }
@@ -186,21 +144,21 @@ open class MultiMedia : Parcelable {
                 || mimeType.equals(MimeType.WEBP.toString())
     }
 
-    fun isGif() : Boolean {
+    fun isGif(): Boolean {
         if (mimeType == null) {
             return false
         }
         return mimeType.equals(MimeType.GIF.toString())
     }
 
-    fun isMp3() : Boolean {
+    fun isMp3(): Boolean {
         if (mimeType == null) {
             return false
         }
         return mimeType.equals(MimeType.MP3.toString())
     }
 
-    fun isVideo() : Boolean {
+    fun isVideo(): Boolean {
         if (mimeType != null) {
             return mimeType.equals(MimeType.MPEG.toString())
                     || mimeType.equals(MimeType.MP4.toString())
@@ -222,22 +180,17 @@ open class MultiMedia : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
+        super.writeToParcel(dest, flags)
         dest.writeLong(id)
-        dest.writeString(path)
         dest.writeString(url)
         dest.writeInt(drawableId)
         dest.writeParcelable(mediaUri, flags)
-        dest.writeParcelable(uri, flags)
-        dest.writeInt(type)
-        dest.writeString(mimeType)
-        dest.writeLong(size)
-        dest.writeLong(duration)
     }
 
     companion object {
 
         @JvmField
-        val CREATOR : Creator<MultiMedia> = object : Creator<MultiMedia> {
+        val CREATOR: Creator<MultiMedia> = object : Creator<MultiMedia> {
             override fun createFromParcel(source: Parcel): MultiMedia {
                 return MultiMedia(source)
             }
@@ -250,7 +203,7 @@ open class MultiMedia : Parcelable {
 
         @JvmStatic
         @SuppressLint("Range")
-        fun valueOf(cursor : Cursor) : MultiMedia{
+        fun valueOf(cursor: Cursor): MultiMedia {
             return MultiMedia(cursor.getLong(cursor.getColumnIndex(Files.FileColumns._ID)),
                     cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE)),
                     cursor.getLong(cursor.getColumnIndex(MediaColumns.SIZE)),
@@ -259,10 +212,6 @@ open class MultiMedia : Parcelable {
 
 
     }
-
-
-
-
 
 
 }
