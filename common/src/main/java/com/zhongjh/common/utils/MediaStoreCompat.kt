@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Environment
 import androidx.core.content.FileProvider
 import com.zhongjh.common.entity.SaveStrategy
+import com.zhongjh.common.enums.MimeType
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -30,14 +31,16 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
      *
      * @param type    0是图片 1是视频 2是音频
      * @param isCache 是否缓存文件夹
+     * @param format 后缀名格式
      * @return 文件
      */
     fun createFile(type: Int, isCache: Boolean): File {
+        val format: String = ""
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmssS", Locale.getDefault()).format(Date())
         val fileName = when (type) {
-            0 -> String.format("PICTURE_%s.jpg", timeStamp)
-            1 -> String.format("VIDEO_%s.mp4", timeStamp)
-            2 -> String.format("AUDIO_%s.mp3", timeStamp)
+            0 -> String.format("IMAGE_%s.$format", timeStamp)
+            1 -> String.format("VIDEO_%s.$format", timeStamp)
+            2 -> String.format("AUDIO_%s.$format", timeStamp)
             else -> throw RuntimeException("The type must be 2-0.")
         }
         return createFile(fileName, type, isCache)

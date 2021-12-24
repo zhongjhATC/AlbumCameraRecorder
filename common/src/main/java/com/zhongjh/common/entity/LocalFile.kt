@@ -10,7 +10,7 @@ import com.zhongjh.common.enums.MultimediaTypes
  * @author zhongjh
  * @date 2021/12/24
  */
-open class LocalFile() : Parcelable {
+open class LocalFile : Parcelable {
 
     /**
      * 真实路径
@@ -54,7 +54,9 @@ open class LocalFile() : Parcelable {
      */
     var oldUri: Uri? = null
 
-    private constructor(input: Parcel) {
+    constructor()
+
+    constructor(input: Parcel) {
         path = input.readString()
         uri = input.readParcelable(Uri::class.java.classLoader)
         type = input.readInt()

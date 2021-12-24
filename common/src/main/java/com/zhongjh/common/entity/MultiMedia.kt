@@ -39,53 +39,32 @@ open class MultiMedia : LocalFile, Parcelable {
      */
     var mediaUri: Uri? = null
 
-    constructor()
+    constructor() : super()
 
-    constructor(mediaUri: Uri) {
-        id = -1
-        mimeType = MimeType.JPEG.toString()
-        this.mediaUri = mediaUri
-        size = -1
-        duration = -1
-    }
-
-    constructor(mediaUri: Uri, url: String) {
-        id = -1
-        mimeType = MimeType.JPEG.toString()
-        this.mediaUri = mediaUri
-        this.url = url
-        size = -1
-        duration = -1
-    }
-
-    constructor(id: Long, mimeType: String, size: Long, duration: Long) {
+    constructor(id: Long, mimeType: String, size: Long, duration: Long) : super() {
         this.id = id
         this.mimeType = mimeType
-        val contentUri: Uri
-        contentUri =
-                if (isImage()) {
-                    Images.Media.EXTERNAL_CONTENT_URI
-                } else if (isVideo()) {
-                    Video.Media.EXTERNAL_CONTENT_URI
-                } else {
-                    Files.getContentUri("external")
-                }
+        val contentUri: Uri = when {
+            isImage() -> {
+                Images.Media.EXTERNAL_CONTENT_URI
+            }
+            isVideo() -> {
+                Video.Media.EXTERNAL_CONTENT_URI
+            }
+            else -> {
+                Files.getContentUri("external")
+            }
+        }
         mediaUri = ContentUris.withAppendedId(contentUri, id)
         this.size = size
         this.duration = duration
     }
 
-    private constructor(input: Parcel) {
+    constructor(input: Parcel) : super(input) {
         id = input.readLong()
-        path = input.readString()
-        url = input.readString()
         drawableId = input.readInt()
         mediaUri = input.readParcelable(Uri::class.java.classLoader)
         uri = input.readParcelable(Uri::class.java.classLoader)
-        type = input.readInt()
-        mimeType = input.readString()
-        size = input.readLong()
-        duration = input.readLong()
     }
 
     /**
