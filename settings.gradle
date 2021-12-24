@@ -1,4 +1,3 @@
-include ':imageeditKotlin'
 include ':combined'
 include ':videoedit'
 include ':imageedit'
