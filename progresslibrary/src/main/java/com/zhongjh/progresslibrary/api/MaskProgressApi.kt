@@ -68,7 +68,7 @@ interface MaskProgressApi {
      * @param filePath 音频文件地址
      * @param length   音频文件长度
      */
-    fun addAudioStartUpload(filePath: String, length: Int)
+    fun addAudioStartUpload(filePath: String, length: Long)
 
     /**
      * 添加音频网址数据

@@ -40,6 +40,7 @@ import java.io.File;
 
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE;
+import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
 
 /**
  * 预览的基类
@@ -49,7 +50,6 @@ import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_
 public class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener, PreviewListener {
 
-    public static final int REQ_IMAGE_EDIT = 1;
     public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
     public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
@@ -129,13 +129,13 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(this,mGlobalSpec.pictureStrategy);
+            mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.pictureStrategy);
         } else {
             // 否则使用全局的
             if (mGlobalSpec.saveStrategy == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(this,mGlobalSpec.saveStrategy);
+                mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.saveStrategy);
             }
         }
 
@@ -329,12 +329,12 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
             File file;
 
-            file = mPictureMediaStoreCompat.createFile(0, true);
+            file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
             mEditImageFile = file;
 
             Intent intent = new Intent();
             intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION,getRequestedOrientation());
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getRequestedOrientation());
             if (item.getMediaUri() != null) {
                 intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
             } else {

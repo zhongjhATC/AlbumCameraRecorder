@@ -34,8 +34,7 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
      * @param format 后缀名格式
      * @return 文件
      */
-    fun createFile(type: Int, isCache: Boolean): File {
-        val format: String = ""
+    fun createFile(type: Int, isCache: Boolean, format: String): File {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmssS", Locale.getDefault()).format(Date())
         val fileName = when (type) {
             0 -> String.format("IMAGE_%s.$format", timeStamp)
@@ -97,7 +96,7 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
      * @return 返回file的路径
      */
     fun saveFileByBitmap(bitmap: Bitmap, isCache: Boolean): File {
-        val file = createFile(0, isCache)
+        val file = createFile(0, isCache, "jpg")
         try {
             val out = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)

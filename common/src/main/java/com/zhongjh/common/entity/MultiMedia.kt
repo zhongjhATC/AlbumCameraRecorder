@@ -64,7 +64,7 @@ open class MultiMedia : LocalFile, Parcelable {
         id = input.readLong()
         drawableId = input.readInt()
         mediaUri = input.readParcelable(Uri::class.java.classLoader)
-        uri = input.readParcelable(Uri::class.java.classLoader)
+        url = input.readString()
     }
 
     /**

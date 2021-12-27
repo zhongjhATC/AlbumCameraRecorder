@@ -16,7 +16,7 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import com.zhongjh.progresslibrary.R
-import com.zhongjh.progresslibrary.entity.RecordingItem
+import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener
 import java.io.File
 import java.io.IOException
@@ -113,25 +113,25 @@ class PlayView : FrameLayout {
         val filter = LightingColorFilter(audioProgressColor, audioProgressColor)
         mViewHolder.seekBar.progressDrawable.colorFilter = filter
         mViewHolder.seekBar.thumb.colorFilter = filter
-        mViewHolder.seekBar.isEnabled = !TextUtils.isEmpty(recordingItem.filePath)
+        mViewHolder.seekBar.isEnabled = !TextUtils.isEmpty(recordingItem.path)
 
         // 当前时间
         mViewHolder.tvCurrentProgress.text = "00:00/"
         // 总计时间
-        if (recordingItem.length <= 0) {
+        if (recordingItem.duration <= 0) {
             mViewHolder.tvTotalProgress.text = resources.getString(R.string.z_progress_click_download_to_open_the_audio)
         } else {
-            mViewHolder.tvTotalProgress.text = generateTime(recordingItem.length.toLong(), 0)
+            mViewHolder.tvTotalProgress.text = generateTime(recordingItem.duration, 0)
         }
         // 设置进度条
-        mViewHolder.seekBar.max = recordingItem.length
+        mViewHolder.seekBar.max = recordingItem.duration.toInt()
     }
 
     /**
      * 更新总数
      */
     fun updateTotal() {
-        mViewHolder.tvTotalProgress.text = generateTime(mRecordingItem.length.toLong(), 0)
+        mViewHolder.tvTotalProgress.text = generateTime(mRecordingItem.duration, 0)
     }
 
     /**
@@ -175,7 +175,7 @@ class PlayView : FrameLayout {
         mViewHolder.imgPlay.setOnClickListener {
             Log.d(TAG, "setOnClickListener")
             // 判断该音频是否有文件地址，如果没有则请求下载
-            if (!TextUtils.isEmpty(mRecordingItem.filePath)) {
+            if (!TextUtils.isEmpty(mRecordingItem.path)) {
                 onPlay()
             } else {
                 // 调用下载
@@ -230,7 +230,7 @@ class PlayView : FrameLayout {
             // 判断如果是结束了就是重新播放，否则就是继续播放
             if (mIsCompletion) {
                 try {
-                    mMediaPlayer.setDataSource(mRecordingItem.filePath)
+                    mMediaPlayer.setDataSource(mRecordingItem.path)
                     mMediaPlayer.prepare()
                 } catch (e: IOException) {
                     e.printStackTrace()

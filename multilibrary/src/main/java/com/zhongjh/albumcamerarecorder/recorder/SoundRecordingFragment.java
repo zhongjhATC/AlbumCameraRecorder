@@ -26,7 +26,6 @@ import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayout;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
@@ -35,7 +34,9 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -61,9 +62,17 @@ public class SoundRecordingFragment extends BaseFragment {
      * 再次确定的2秒时间
      */
     private final static int AGAIN_TIME = 2000;
+    /**
+     * 满进度
+     */
+    private final static int FULL = 100;
     protected Activity mActivity;
     private Context mContext;
 
+    /**
+     * 公共配置
+     */
+    private GlobalSpec mGlobalSpec;
     RecordeSpec mRecordSpec;
     MediaStoreCompat mAudioMediaStoreCompat;
 
@@ -82,7 +91,7 @@ public class SoundRecordingFragment extends BaseFragment {
     /**
      * 存储的数据
      */
-    RecordingItem recordingItem;
+    LocalFile localFile;
 
     /**
      * 声明一个long类型变量：用于存放上一点击“返回键”的时刻
@@ -124,6 +133,7 @@ public class SoundRecordingFragment extends BaseFragment {
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(true);
 
         // 初始化设置
+        mGlobalSpec = GlobalSpec.getInstance();
         mRecordSpec = RecordeSpec.getInstance();
         // 提示文本
         mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_sound_recording));
@@ -289,12 +299,12 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void initAudio() {
         // 获取service存储的数据
-        recordingItem = new RecordingItem();
+        localFile = new LocalFile();
         SharedPreferences sharePreferences = mActivity.getSharedPreferences("sp_name_audio", MODE_PRIVATE);
         final String filePath = sharePreferences.getString("audio_path", "");
         long elapsed = sharePreferences.getLong("elapsed", 0);
-        recordingItem.setFilePath(filePath);
-        recordingItem.setLength((int) elapsed);
+        localFile.setPath(filePath);
+        localFile.setDuration(elapsed);
     }
 
     @Override
@@ -381,7 +391,7 @@ public class SoundRecordingFragment extends BaseFragment {
 
         try {
             // 文件地址
-            mMediaPlayer.setDataSource(recordingItem.getFilePath());
+            mMediaPlayer.setDataSource(localFile.getPath());
             mMediaPlayer.prepare();
 
             mMediaPlayer.setOnPreparedListener(mp -> mMediaPlayer.start());
@@ -449,28 +459,36 @@ public class SoundRecordingFragment extends BaseFragment {
         ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
             @Override
             public Void doInBackground() {
-                // 初始化保存好的音频文件
-                initAudio();
-                // 获取文件名称
-                String newFileName = recordingItem.getFilePath().substring(recordingItem.getFilePath().lastIndexOf(File.separator));
-                File newFile = mAudioMediaStoreCompat.createFile(newFileName, 2, false);
-                Log.d(TAG, "newFile" + newFile.getAbsolutePath());
-                FileUtil.copy(new File(recordingItem.getFilePath()), newFile, null, (ioProgress, file) -> {
-                    int progress = (int) (ioProgress * 100);
-                    ThreadUtils.runOnUiThread(() -> {
-                        mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
-                        recordingItem.setFilePath(newFile.getPath());
-                        if (progress >= 100) {
-                            // 完成 获取音频路径
-                            Intent result = new Intent();
-                            result.putExtra(EXTRA_RESULT_RECORDING_ITEM, recordingItem);
-                            result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.AUDIO);
-                            result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
-                            mActivity.setResult(RESULT_OK, result);
-                            mActivity.finish();
-                        }
+                if (localFile.getPath() != null) {
+                    // 初始化保存好的音频文件
+                    initAudio();
+                    // 获取文件名称
+                    String newFileName = localFile.getPath().substring(localFile.getPath().lastIndexOf(File.separator));
+                    File newFile = mAudioMediaStoreCompat.createFile(newFileName, 2, false);
+                    Log.d(TAG, "newFile" + newFile.getAbsolutePath());
+                    FileUtil.copy(new File(localFile.getPath()), newFile, null, (ioProgress, file) -> {
+                        int progress = (int) (ioProgress * FULL);
+                        ThreadUtils.runOnUiThread(() -> {
+                            mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
+                            localFile.setPath(newFile.getPath());
+                            if (progress >= FULL) {
+                                if (mGlobalSpec.onResultCallbackListener == null) {
+                                    Intent result = new Intent();
+                                    result.putExtra(EXTRA_RESULT_RECORDING_ITEM, localFile);
+                                    result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.AUDIO);
+                                    result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
+                                    mActivity.setResult(RESULT_OK, result);
+                                } else {
+                                    ArrayList<LocalFile> localFiles = new ArrayList<>();
+                                    localFiles.add(localFile);
+                                    mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                                    mActivity.setResult(RESULT_OK);
+                                }
+                                mActivity.finish();
+                            }
+                        });
                     });
-                });
+                }
                 return null;
             }
 
@@ -493,7 +511,7 @@ public class SoundRecordingFragment extends BaseFragment {
         // 音频文件配置路径
         mAudioMediaStoreCompat = new MediaStoreCompat(mContext,
                 globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
-        mFile = mAudioMediaStoreCompat.createFile(2, true);
+        mFile = mAudioMediaStoreCompat.createFile(2, true, "mp4");
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);

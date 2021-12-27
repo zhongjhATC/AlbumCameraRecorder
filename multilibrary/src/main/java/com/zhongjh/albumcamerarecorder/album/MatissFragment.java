@@ -586,8 +586,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 获取选择的图片的url集合
         Intent result = new Intent();
         result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
-        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
         result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
         result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(uris));
         result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
         // 是否启用原图

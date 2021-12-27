@@ -25,6 +25,8 @@ import java.io.IOException;
  */
 public class ImageEditActivity extends BaseImageEditActivity {
 
+    public static final int REQ_IMAGE_EDIT = 1;
+
     private static final int MAX_WIDTH = 1024;
 
     private static final int MAX_HEIGHT = 1024;

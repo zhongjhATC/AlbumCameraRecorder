@@ -9,7 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import com.daimajia.numberprogressbar.NumberProgressBar
 import com.zhongjh.progresslibrary.R
-import com.zhongjh.progresslibrary.entity.RecordingItem
+import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener
 
 /**

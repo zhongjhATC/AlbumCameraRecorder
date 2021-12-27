@@ -10,9 +10,9 @@ import androidx.documentfile.provider.DocumentFile;
 
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.AbstractMaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -141,8 +141,8 @@ public class Combined {
                     break;
                 case MultimediaTypes.AUDIO:
                     // 语音
-                    RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    this.maskProgressLayout.addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
+                    LocalFile recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
+                    this.maskProgressLayout.addAudioStartUpload(recordingItem.getPath(), (int) recordingItem.getDuration());
                     break;
                 case MultimediaTypes.BLEND:
                     // 混合类型，意思是图片可能跟录像在一起.

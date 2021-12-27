@@ -9,10 +9,6 @@ public class Constant {
      * 录制的预览
      */
     public static final int REQUEST_CODE_PREVIEW_CAMRRA = 25;
-    /**
-     * 合成视频录制的预览
-     */
-    public static final int REQUEST_CODE_PREVIEW_VIDEO = 26;
 
     /**
      * 返回的多媒体类型
@@ -24,11 +20,15 @@ public class Constant {
     public static final String EXTRA_MULTIMEDIA_CHOICE = "extra_multimedia_choice";
     /**
      * Uri的数据
+     * 新版优化后建议使用EXTRA_RESULT_SELECTION_LOCAL_FILE
      */
+    @Deprecated
     public static final String EXTRA_RESULT_SELECTION = "extra_result_selection";
     /**
      * path的数据
+     * 新版优化后建议使用EXTRA_RESULT_SELECTION_LOCAL_FILE
      */
+    @Deprecated
     public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";
     /**
      * LocalFile的数据

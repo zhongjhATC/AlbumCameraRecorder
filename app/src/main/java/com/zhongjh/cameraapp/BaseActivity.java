@@ -18,9 +18,9 @@ import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
+import com.zhongjh.common.entity.RecordingItem;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import java.util.ArrayList;
@@ -189,8 +189,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 case MultimediaTypes.AUDIO:
                     // 语音
                     RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    Toast.makeText(getApplicationContext(), recordingItem.getFilePath(), Toast.LENGTH_LONG).show();
-                    getMaskProgressLayout().addAudioStartUpload(recordingItem.getFilePath(), recordingItem.getLength());
+                    Toast.makeText(getApplicationContext(), recordingItem.getPath(), Toast.LENGTH_LONG).show();
+                    getMaskProgressLayout().addAudioStartUpload(recordingItem.getPath(), recordingItem.getDuration());
                     break;
                 case MultimediaTypes.BLEND:
                     // 混合类型，意思是图片可能跟录像在一起.

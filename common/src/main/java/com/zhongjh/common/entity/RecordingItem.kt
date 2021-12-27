@@ -1,4 +1,4 @@
-package com.zhongjh.progresslibrary.entity
+package com.zhongjh.common.entity
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -7,33 +7,22 @@ import android.os.Parcelable
  * 音频文件的存储
  * @author zhongjh
  */
-class RecordingItem() : Parcelable {
-
-    /**
-     * 路径
-     */
-    var filePath: String? = null
+class RecordingItem : LocalFile, Parcelable {
 
     /**
      * 网址
      */
     var url: String? = null
 
-    /**
-     * 长度，单位秒
-     */
-    var length = 0
+    constructor() : super()
 
-    constructor(parcel: Parcel) : this() {
-        this.filePath = parcel.readString()
-        this.url = parcel.readString()
-        this.length = parcel.readInt()
+    constructor(input: Parcel) : super(input) {
+        url = input.readString()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(filePath)
+        super.writeToParcel(dest, flags)
         dest.writeString(url)
-        dest.writeInt(length)
     }
 
     override fun describeContents(): Int {

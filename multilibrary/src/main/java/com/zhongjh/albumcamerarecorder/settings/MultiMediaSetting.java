@@ -8,7 +8,6 @@ import android.os.Bundle;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.recorder.db.RecordingItem;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -18,7 +17,9 @@ import java.util.Set;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.entity.RecordingItem;
 import com.zhongjh.common.enums.MimeType;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
@@ -162,10 +163,10 @@ public final class MultiMediaSetting {
     /**
      * 调用打开图片、视频预览 - 主要用于配合九宫图
      *
-     * @param activity 窗体
+     * @param activity    窗体
      * @param requestCode 请求码
-     * @param list     数据源
-     * @param position 当前数据的索引
+     * @param list        数据源
+     * @param position    当前数据的索引
      */
     public static void openPreviewData(Activity activity, int requestCode, ArrayList<? extends MultiMedia> list, int position) {
         Bundle bundle = new Bundle();

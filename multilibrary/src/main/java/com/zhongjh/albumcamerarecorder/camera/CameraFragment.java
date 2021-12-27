@@ -22,8 +22,11 @@ import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.imageedit.ImageEditActivity;
 
@@ -33,13 +36,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.albumcamerarecorder.camera.PreviewVideoActivity.REQUEST_CODE_PREVIEW_VIDEO;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
-import static com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity.REQ_IMAGE_EDIT;
+import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
 
 /**
  * 拍摄视频
@@ -49,11 +53,15 @@ import static com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity.REQ_IM
  */
 public class CameraFragment extends BaseFragment {
 
-    private MainActivity mActivity;
 
-    private CameraLayout mCameraLayout;
     private final static int MILLISECOND = 2000;
+    private MainActivity mActivity;
+    private CameraLayout mCameraLayout;
 
+    /**
+     * 公共配置
+     */
+    private GlobalSpec mGlobalSpec;
     /**
      * 声明一个long类型变量：用于存放上一点击“返回键”的时刻
      */
@@ -80,8 +88,8 @@ public class CameraFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mGlobalSpec = GlobalSpec.getInstance();
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
-
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
 
         mCameraLayout = view.findViewById(R.id.cameraLayout);
@@ -136,19 +144,34 @@ public class CameraFragment extends BaseFragment {
                     }
                     break;
                 case REQUEST_CODE_PREVIEW_VIDEO:
-                    // 视频界面
-                    ArrayList<String> arrayList = new ArrayList<>();
-                    arrayList.add(data.getStringExtra(PreviewVideoActivity.PATH));
-                    ArrayList<Uri> arrayListUri = new ArrayList<>();
-                    arrayListUri.add(data.getParcelableExtra(PreviewVideoActivity.URI));
-                    // 获取视频路径
-                    Intent result = new Intent();
-                    result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
-                    result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
-                    result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
-                    result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
-                    mActivity.setResult(RESULT_OK, result);
+                    // 从视频预览界面回来
+                    ArrayList<LocalFile> localFiles = new ArrayList<>();
+                    LocalFile localFile = new LocalFile();
+                    localFile.setUri(data.getParcelableExtra(PreviewVideoActivity.URI));
+                    localFile.setPath(data.getStringExtra(PreviewVideoActivity.PATH));
+                    localFile.setMimeType(MimeType.MP4.getMMimeTypeName());
+                    localFile.setType(MultimediaTypes.VIDEO);
+                    localFile.setSize(data.getLongExtra(PreviewVideoActivity.SIZE, -1));
+                    localFile.setDuration(data.getIntExtra(PreviewVideoActivity.DURATION, -1));
+                    localFiles.add(localFile);
                     mIsCommit = true;
+                    if (mGlobalSpec.onResultCallbackListener == null) {
+                        ArrayList<String> arrayList = new ArrayList<>();
+                        arrayList.add(data.getStringExtra(PreviewVideoActivity.PATH));
+                        ArrayList<Uri> arrayListUri = new ArrayList<>();
+                        arrayListUri.add(data.getParcelableExtra(PreviewVideoActivity.URI));
+                        // 获取视频路径
+                        Intent result = new Intent();
+                        result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
+                        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
+                        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+                        result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
+                        result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
+                        mActivity.setResult(RESULT_OK, result);
+                    } else {
+                        mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                        mActivity.setResult(RESULT_OK);
+                    }
                     mActivity.finish();
                     break;
                 case REQ_IMAGE_EDIT:
@@ -223,33 +246,26 @@ public class CameraFragment extends BaseFragment {
             }
 
             @Override
-            public void captureSuccess(ArrayList<String> paths, ArrayList<Uri> uris) {
-                Intent result = new Intent();
-                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
-                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
-                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
-                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
-                mActivity.setResult(RESULT_OK, result);
+            public void captureSuccess(ArrayList<String> paths, ArrayList<Uri> uris, ArrayList<LocalFile> localFiles) {
+                mIsCommit = true;
+                if (mGlobalSpec.onResultCallbackListener == null) {
+                    Intent result = new Intent();
+                    result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+                    result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
+                    result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
+                    result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
+                    result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
+                    mActivity.setResult(RESULT_OK, result);
+                } else {
+                    mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                    mActivity.setResult(RESULT_OK);
+                }
                 mIsCommit = true;
                 mActivity.finish();
-
             }
 
             @Override
             public void recordSuccess(String path, Uri uri) {
-                ArrayList<String> arrayList = new ArrayList<>();
-                arrayList.add(path);
-                ArrayList<Uri> arrayListUri = new ArrayList<>();
-                arrayListUri.add(uri);
-                // 获取视频路径
-                Intent result = new Intent();
-                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
-                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
-                result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
-                result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
-                mActivity.setResult(RESULT_OK, result);
-                mIsCommit = true;
-                mActivity.finish();
             }
 
         });
@@ -285,7 +301,7 @@ public class CameraFragment extends BaseFragment {
         mCameraLayout.setEditListener((uri, newPath) -> {
             Intent intent = new Intent();
             intent.setClass(getContext(), ImageEditActivity.class);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION,getActivity().getRequestedOrientation());
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getActivity().getRequestedOrientation());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri);
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
             this.startActivityForResult(intent, REQ_IMAGE_EDIT);

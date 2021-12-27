@@ -56,6 +56,9 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
+import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -667,7 +670,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         if (mViewHolder.cameraView.isOpened()) {
             // 用于播放的视频file
             if (mVideoFile == null) {
-                mVideoFile = mVideoMediaStoreCompat.createFile(1, true);
+                mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
             }
             mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
             // 设置录制状态
@@ -714,7 +717,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             public void startProgress() {
                 if (mIsSectionRecord) {
                     // 合并视频
-                    mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true).getPath();
+                    mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true, "mp4").getPath();
                     mCameraSpec.videoEditCoordinator.merge(mNewSectionVideoPath, mVideoPaths,
                             getContext().getCacheDir().getPath() + File.separator + "cam.txt");
                 } else {
@@ -826,7 +829,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                         // 显示当前进度
                         mViewHolder.pvLayout.setData(mVideoTimes);
                         // 创建新的file
-                        mVideoFile = mVideoMediaStoreCompat.createFile(1, true);
+                        mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
                         // 如果是在已经合成的情况下继续拍摄，那就重置状态
                         if (!mViewHolder.pvLayout.getProgressMode()) {
                             mViewHolder.pvLayout.setProgressMode(true);
@@ -886,7 +889,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private void initPhotoEditListener() {
         mViewHolder.rlEdit.setOnClickListener(view -> {
             Uri uri = (Uri) view.getTag();
-            mPhotoEditFile = mPictureMediaStoreCompat.createFile(0, true);
+            mPhotoEditFile = mPictureMediaStoreCompat.createFile(0, true, "jpg");
             if (mEditListener != null) {
                 mEditListener.onImageEdit(uri, mPhotoEditFile.getAbsolutePath());
             }
@@ -1024,10 +1027,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             public Void doInBackground() {
                 ArrayList<String> paths = getPaths();
                 ArrayList<String> newPaths = new ArrayList<>();
-                // 总长度
-                int maxCount = paths.size();
+                ArrayList<Long> sizes = new ArrayList<>();
+                // 文件总数量
+                int pathSum = paths.size();
                 // 计算每个文件的进度Progress
-                int progress = 100 / maxCount;
+                int progress = 100 / pathSum;
                 // 将 缓存文件 拷贝到 配置目录
                 for (String item : paths) {
                     File oldFile = new File(item);
@@ -1049,21 +1053,30 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
                         if (ioProgress >= 1) {
                             newPaths.add(file.getAbsolutePath());
+                            sizes.add(file.length());
                             Log.d(TAG, file.getAbsolutePath());
                             ThreadUtils.runOnUiThread(() -> {
                                 mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
                                 // 是否拷贝完所有文件
                                 currentCount++;
-                                if (currentCount >= maxCount) {
+                                if (currentCount >= pathSum) {
                                     currentCount = 0;
                                     // 拷贝完毕，进行加入相册库等操作
                                     ArrayList<Uri> uris = getUris(newPaths);
-                                    // 加入图片到android系统库里面
-                                    for (String path : newPaths) {
-                                        BitmapUtils.displayToGallery(getContext(), new File(path), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                                    ArrayList<LocalFile> localFiles = new ArrayList<>();
+                                    for (int i = 0; i < newPaths.size() - 1; i++) {
+                                        // 加入图片到android系统库里面
+                                        BitmapUtils.displayToGallery(getContext(), new File(newPaths.get(i)), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                                        LocalFile localFile = new LocalFile();
+                                        localFile.setPath(newPaths.get(i));
+                                        localFile.setMimeType(MimeType.JPEG.getMMimeTypeName());
+                                        localFile.setUri(uris.get(i));
+                                        localFile.setType(MultimediaTypes.PICTURE);
+                                        localFile.setSize(sizes.get(i));
+                                        localFiles.add(localFile);
                                     }
                                     // 执行完成
-                                    mOperateCameraListener.captureSuccess(newPaths, uris);
+                                    mOperateCameraListener.captureSuccess(newPaths, uris, localFiles);
                                 }
                             });
                         }

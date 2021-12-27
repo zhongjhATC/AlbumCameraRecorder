@@ -20,7 +20,7 @@ import com.zhongjh.progresslibrary.apapter.PhotoAdapter
 import com.zhongjh.progresslibrary.api.MaskProgressApi
 import com.zhongjh.progresslibrary.engine.ImageEngine
 import com.zhongjh.progresslibrary.entity.MultiMediaView
-import com.zhongjh.progresslibrary.entity.RecordingItem
+import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener
 import java.util.*
 
@@ -241,7 +241,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mPhotoAdapter.setVideoData(multiMediaViews)
     }
 
-    override fun addAudioStartUpload(filePath: String, length: Int) {
+    override fun addAudioStartUpload(filePath: String, length: Long) {
         isAuthority()
         val multiMediaView = MultiMediaView(MultimediaTypes.AUDIO)
         multiMediaView.path = filePath
@@ -267,7 +267,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mmr.setDataSource(file)
 
         // ms,时长
-        val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+                ?: -1
         val multiMediaView = MultiMediaView(MultimediaTypes.AUDIO)
         multiMediaView.path = file
 
@@ -275,8 +276,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         view.visibility = View.VISIBLE
         isShowRemoveRecorder()
         val recordingItem = RecordingItem()
-        recordingItem.filePath = file
-        recordingItem.length = duration!!.toInt()
+        recordingItem.path = file
+        recordingItem.duration = duration
         (view as PlayView).setData(recordingItem, audioProgressColor)
     }
 
@@ -428,7 +429,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
      * @param filePath       音频文件地址
      * @param length         音频文件长度
      */
-    private fun addAudioData(multiMediaView: MultiMediaView, filePath: String, length: Int) {
+    private fun addAudioData(multiMediaView: MultiMediaView, filePath: String, length: Long) {
         this.audioList.add(multiMediaView)
         if (audioList.size > 0) {
             // 显示音频的进度条
@@ -438,8 +439,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mViewHolder.llContent.addView(playProgressView)
         // 初始化播放控件
         val recordingItem = RecordingItem()
-        recordingItem.filePath = filePath
-        recordingItem.length = length
+        recordingItem.path = filePath
+        recordingItem.duration = length
         playProgressView.setData(recordingItem, audioProgressColor)
         // 添加音频后重置所有当前播放中的音频
         for (i in 0 until mViewHolder.llContent.childCount) {

@@ -29,7 +29,6 @@ import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_VIDEO;
 
 /**
  * 一个预览合成分段录制的视频
@@ -39,8 +38,14 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PR
 public class PreviewVideoActivity extends AppCompatActivity {
 
     private static final String TAG = PreviewVideoActivity.class.getSimpleName();
+    /**
+     * 合成视频录制的预览
+     */
+    public static final int REQUEST_CODE_PREVIEW_VIDEO = 26;
     static final String PATH = "PATH";
     static final String URI = "URI";
+    static final String DURATION = "DURATION";
+    static final String SIZE = "SIZE";
 
     VideoView mVideoViewPreview;
     ImageView mImgClose;
@@ -218,7 +223,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 迁移视频文件，缓存文件迁移到配置目录
      */
     private void moveVideoFile() {
-        Log.d(TAG,"moveVideoFile");
+        Log.d(TAG, "moveVideoFile");
         // 执行等待动画
         mBtnConfirm.setProgress(50);
         // 开始迁移文件，将 缓存文件 拷贝到 配置目录
@@ -258,12 +263,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void confirm(File newFile) {
         Intent intent = new Intent();
-        // 加入视频到android系统库里面
-        LocalFile localFile = new LocalFile();
-
         Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mDuration, mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
         intent.putExtra(PATH, newFile.getPath());
         intent.putExtra(URI, mediaUri);
+        intent.putExtra(DURATION, mDuration);
+        intent.putExtra(SIZE, newFile.length());
         setResult(RESULT_OK, intent);
         PreviewVideoActivity.this.finish();
     }
