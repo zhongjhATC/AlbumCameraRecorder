@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -38,6 +39,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 
 import com.zhongjh.common.entity.MultiMedia;
+
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
@@ -87,9 +89,7 @@ public class PreviewItemFragment extends Fragment {
                 // 申请权限
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 Uri uri = null;
-                if (item.getMediaUri() != null) {
-                    uri = item.getMediaUri();
-                }else if(item.getUri() != null) {
+                if (item.getUri() != null) {
                     uri = item.getUri();
                 }
                 // 如果uri为null并且url有值，那就用播放器播放网址
@@ -109,19 +109,16 @@ public class PreviewItemFragment extends Fragment {
 
         image.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
 
-        if (item.getMediaUri() != null) {
-            Point size = PhotoMetadataUtils.getBitmapSize(item.getMediaUri(), getActivity());
+        if (item.getUri() != null) {
+            Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), getActivity());
             if (item.isGif()) {
                 GlobalSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y, image,
-                        item.getMediaUri());
+                        item.getUri());
             } else {
                 GlobalSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y, image,
-                        item.getMediaUri());
+                        item.getUri());
 
             }
-        } else if (item.getUri() != null) {
-            GlobalSpec.getInstance().imageEngine.loadUriImage(getContext(), image,
-                    item.getUri());
         } else if (item.getUrl() != null) {
             GlobalSpec.getInstance().imageEngine.loadUrlImage(getContext(), image,
                     item.getUrl());

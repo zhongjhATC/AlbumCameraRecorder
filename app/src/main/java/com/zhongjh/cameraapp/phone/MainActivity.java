@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
+import com.zhongjh.albumcamerarecorder.camera.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -51,6 +52,8 @@ import com.zhongjh.common.enums.MultimediaTypes;
  * @author zhongjh
  */
 public class MainActivity extends BaseActivity {
+
+    private static final String TAG = "MainActivityTESA";
 
     ActivityMainBinding mBinding;
 
@@ -256,6 +259,15 @@ public class MainActivity extends BaseActivity {
 
                 @Override
                 public void onResult(List<LocalFile> result, boolean fromPreview) {
+                    for (LocalFile localFile : result) {
+                        Log.i(TAG, "绝对路径(AndroidQ无效):" + localFile.getPath());
+                        Log.i(TAG, "Uri:" + localFile.getUri());
+                        Log.i(TAG, "文件大小: " + localFile.getSize());
+                        Log.i(TAG, "视频音频长度: " + localFile.getDuration());
+                        Log.i(TAG, "类型:" + localFile.getType());
+                        Log.i(TAG, "具体类型:" + localFile.getMimeType());
+//                        Log.i(TAG, "宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
+                    }
                     if (fromPreview) {
                         // 循环判断，如果不存在，则删除
                         for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {

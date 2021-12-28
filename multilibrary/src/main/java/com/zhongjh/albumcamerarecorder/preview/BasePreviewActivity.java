@@ -60,7 +60,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String ENABLE_OPERATION = "enable_operation";
     public static final String IS_SELECTED_LISTENER = "is_selected_listener";
     public static final String IS_SELECTED_CHECK = "is_selected_check";
-    public static final String IS_ALBUM_URI = "is_album_uri";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected GlobalSpec mGlobalSpec;
@@ -72,10 +71,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 是否原图
      */
     protected boolean mOriginalEnable;
-    /**
-     * 是否返回相册的uri，否则是普通文件的uri
-     */
-    private boolean mIsAlbumUri;
     /**
      * 是否编辑了图片
      */
@@ -124,7 +119,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
         mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER, true);
         mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK, true);
-        mIsAlbumUri = getIntent().getBooleanExtra(IS_ALBUM_URI, false);
 
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
@@ -177,11 +171,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         Uri editUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
         // 获取当前查看的multimedia
         MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-        item.setOldMediaUri(item.getMediaUri());
         item.setOldUri(item.getUri());
         item.setOldPath(item.getPath());
         // 更新当前fragment
-        item.setMediaUri(null);
         item.setUri(editUri);
         item.setPath(mEditImageFile.getPath());
         mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
@@ -198,27 +190,17 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 循环当前所有图片进行处理
         {
             for (MultiMedia multiMedia : mAdapter.getmItems()) {
-                if (mIsAlbumUri) {
-                    if (apply) {
-                        if (multiMedia.getPath() != null) {
-                            File file = new File(multiMedia.getPath());
-                            // 加入相册库
-                            Uri editMediaUri = BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-                            multiMedia.setUri(null);
-                            multiMedia.setMediaUri(editMediaUri);
-                        }
-                    } else {
-                        multiMedia.setUri(null);
-                        multiMedia.setMediaUri(multiMedia.getOldMediaUri());
-                        multiMedia.setPath(multiMedia.getOldPath());
+                if (apply) {
+                    if (multiMedia.getPath() != null) {
+                        File file = new File(multiMedia.getPath());
+                        // 加入相册库
+                        Uri editMediaUri = BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                        multiMedia.setUri(editMediaUri);
                     }
                 } else {
-                    if (!apply) {
-                        // 更新回旧的数据
-                        multiMedia.setUri(multiMedia.getOldUri());
-                        multiMedia.setMediaUri(null);
-                        multiMedia.setPath(multiMedia.getOldPath());
-                    }
+                    // 更新回旧的数据
+                    multiMedia.setUri(multiMedia.getOldUri());
+                    multiMedia.setPath(multiMedia.getOldPath());
                 }
             }
         }
@@ -335,11 +317,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             Intent intent = new Intent();
             intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getRequestedOrientation());
-            if (item.getMediaUri() != null) {
-                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getMediaUri());
-            } else {
-                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
-            }
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
             startActivityForResult(intent, REQ_IMAGE_EDIT);
         }

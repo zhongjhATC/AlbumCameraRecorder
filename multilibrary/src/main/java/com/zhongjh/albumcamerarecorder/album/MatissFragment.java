@@ -221,7 +221,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 预览事件
         mViewHolder.buttonPreview.setOnClickListener(view -> {
             Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
-            intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, true);
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             startActivityForResult(intent, mGlobalSpec.requestCode);
@@ -352,8 +351,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
                     for (MultiMedia item : selected) {
                         // 添加uri和path
-                        selectedUris.add(item.getMediaUri());
-                        selectedPaths.add(PathUtils.getPath(getContext(), item.getMediaUri()));
+                        selectedUris.add(item.getUri());
+                        // 相册是只有uri没有path的，此时确定后转换
+                        selectedPaths.add(PathUtils.getPath(getContext(), item.getUri()));
                     }
                     if (mGlobalSpec.onResultCallbackListener == null) {
                         setResultOK(localFiles, selectedUris, selectedPaths);
@@ -542,7 +542,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, true);
         startActivityForResult(intent, mGlobalSpec.requestCode);
         if (mGlobalSpec.isCutscenes) {
             mActivity.overridePendingTransition(R.anim.activity_open, 0);

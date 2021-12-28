@@ -34,13 +34,11 @@ open class MultiMedia : LocalFile, Parcelable {
      */
     var drawableId: Int = -1
 
-    /**
-     * 这是一个封装在共享数据库ContentResolver的一个uri，只能通过ContentResolver.query查找相关信息
-     */
-    var mediaUri: Uri? = null
-
     constructor() : super()
 
+    /**
+     * 相册初始化调用
+     */
     constructor(id: Long, mimeType: String, size: Long, duration: Long) : super() {
         this.id = id
         this.mimeType = mimeType
@@ -55,7 +53,7 @@ open class MultiMedia : LocalFile, Parcelable {
                 Files.getContentUri("external")
             }
         }
-        mediaUri = ContentUris.withAppendedId(contentUri, id)
+        this.uri = ContentUris.withAppendedId(contentUri, id)
         this.size = size
         this.duration = duration
     }
@@ -63,7 +61,6 @@ open class MultiMedia : LocalFile, Parcelable {
     constructor(input: Parcel) : super(input) {
         id = input.readLong()
         drawableId = input.readInt()
-        mediaUri = input.readParcelable(Uri::class.java.classLoader)
         url = input.readString()
     }
 
@@ -76,7 +73,6 @@ open class MultiMedia : LocalFile, Parcelable {
         }
         val multiMedia: MultiMedia = other
         return id == multiMedia.id && (mimeType != null && mimeType.equals(multiMedia.mimeType) || (mimeType == null && multiMedia.mimeType == null))
-                && (mediaUri != null && mediaUri!! == multiMedia.mediaUri || (mediaUri == null && multiMedia.mediaUri == null))
                 && (uri != null && uri!! == multiMedia.uri || (uri == null && multiMedia.uri == null))
                 && size == multiMedia.size
                 && duration == multiMedia.duration
@@ -95,9 +91,6 @@ open class MultiMedia : LocalFile, Parcelable {
         result = 31 * result + java.lang.Long.valueOf(id).hashCode()
         if (mimeType != null) {
             result = 31 * result + mimeType.hashCode()
-        }
-        if (mediaUri != null) {
-            result = 31 * result + mediaUri.hashCode()
         }
         if (uri != null) {
             result = 31 * result + uri.hashCode()
@@ -163,7 +156,6 @@ open class MultiMedia : LocalFile, Parcelable {
         dest.writeLong(id)
         dest.writeString(url)
         dest.writeInt(drawableId)
-        dest.writeParcelable(mediaUri, flags)
     }
 
     companion object {

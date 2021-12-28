@@ -64,7 +64,7 @@ public abstract class BaseFilter {
      */
     protected boolean needFiltering(Context context, MultiMedia item) {
         for (MimeType type : constraintTypes()) {
-            if (type.checkType(context.getContentResolver(), item.getMediaUri())) {
+            if (type.checkType(context.getContentResolver(), item.getUri())) {
                 return true;
             }
         }

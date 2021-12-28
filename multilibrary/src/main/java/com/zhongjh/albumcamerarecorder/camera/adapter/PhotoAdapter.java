@@ -119,7 +119,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        intent.putExtra(BasePreviewActivity.IS_ALBUM_URI, false);
         mFragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
         if (mGlobalSpec.isCutscenes) {
             if (mFragment.getActivity() != null) {

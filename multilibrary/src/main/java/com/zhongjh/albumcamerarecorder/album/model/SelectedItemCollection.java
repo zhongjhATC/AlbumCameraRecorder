@@ -217,11 +217,7 @@ public class SelectedItemCollection {
     public List<Uri> asListOfUri() {
         List<Uri> uris = new ArrayList<>();
         for (MultiMedia item : mItems) {
-            if (item.getMediaUri() != null) {
-                uris.add(item.getMediaUri());
-            } else {
-                uris.add(item.getUri());
-            }
+            uris.add(item.getUri());
         }
         return uris;
     }
@@ -234,9 +230,8 @@ public class SelectedItemCollection {
     public List<String> asListOfString() {
         List<String> paths = new ArrayList<>();
         for (MultiMedia item : mItems) {
-            if (item.getMediaUri() != null) {
-                paths.add(PathUtils.getPath(mContext, item.getMediaUri()));
-            } else if (item.getUri() != null) {
+            if (item.getUri() != null) {
+                // 相册是只有uri没有path的，此时确定后转换
                 paths.add(PathUtils.getPath(mContext, item.getUri()));
             } else if (item.getUrl() != null) {
                 paths.add(item.getUrl());
@@ -252,16 +247,10 @@ public class SelectedItemCollection {
      */
     public ArrayList<LocalFile> asListOfLocalFile() {
         ArrayList<LocalFile> localFiles = new ArrayList<>();
-        for(MultiMedia item : mItems){
-            LocalFile localFile = new LocalFile();
-            localFile.setDuration(item.getDuration());
-            localFile.setPath(item.getPath());
-            localFile.setSize(item.getSize());
-            localFile.setType(item.getType());
-            localFile.setMimeType(item.getMimeType());
-            localFile.setOldMediaUri(item.getOldMediaUri());
-            localFile.setOldPath(item.getOldPath());
-            localFile.setOldUri(item.getOldUri());
+        for (MultiMedia item : mItems) {
+            // 相册是只有uri没有path的，此时确定后转换
+            item.setPath(PathUtils.getPath(mContext, item.getUri()));
+            LocalFile localFile = new LocalFile(item);
             localFiles.add(localFile);
         }
         return localFiles;

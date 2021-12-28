@@ -151,7 +151,7 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
         // 循环当前类型配置
         for (MimeType type : GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM)) {
             // 如果当前类型配置 相等 当前数据
-            if (type.checkType(resolver, item.getMediaUri())) {
+            if (type.checkType(resolver, item.getUri())) {
                 return true;
             }
         }

@@ -20,15 +20,7 @@ public class MultiMediaUtils {
      */
     public static int checkedNumOf(List<MultiMedia> items, MultiMedia item) {
         int index = -1;
-        if (item.getMediaUri() != null) {
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getMediaUri() != null && items.get(i).getMediaUri().equals(item.getMediaUri())
-                        && items.get(i).getId() == item.getId()) {
-                    index = i;
-                    break;
-                }
-            }
-        } else if (item.getUri() != null) {
+        if (item.getUri() != null) {
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getUri() != null && items.get(i).getUri().equals(item.getUri())
                         && items.get(i).getId() == item.getId()) {
@@ -66,14 +58,7 @@ public class MultiMediaUtils {
      */
     public static MultiMedia checkedMultiMediaOf(List<MultiMedia> items, MultiMedia item) {
         MultiMedia multiMedia = null;
-        if (item.getMediaUri() != null) {
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getMediaUri().equals(item.getMediaUri())) {
-                    multiMedia = items.get(i);
-                    break;
-                }
-            }
-        } else if (item.getUri() != null) {
+        if (item.getUri() != null) {
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getUri().equals(item.getUri())) {
                     multiMedia = items.get(i);

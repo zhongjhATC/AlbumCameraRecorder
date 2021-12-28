@@ -1046,6 +1046,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     } else {
                         compressionFile = oldFile;
                     }
+                    sizes.add(compressionFile != null ? compressionFile.length() : 0);
                     // 获取文件名称
                     String newFileName = item.substring(item.lastIndexOf(File.separator));
                     File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
@@ -1053,7 +1054,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
                         if (ioProgress >= 1) {
                             newPaths.add(file.getAbsolutePath());
-                            sizes.add(file.length());
                             Log.d(TAG, file.getAbsolutePath());
                             ThreadUtils.runOnUiThread(() -> {
                                 mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
@@ -1064,7 +1064,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                                     // 拷贝完毕，进行加入相册库等操作
                                     ArrayList<Uri> uris = getUris(newPaths);
                                     ArrayList<LocalFile> localFiles = new ArrayList<>();
-                                    for (int i = 0; i < newPaths.size() - 1; i++) {
+                                    for (int i = 0; i < newPaths.size(); i++) {
                                         // 加入图片到android系统库里面
                                         BitmapUtils.displayToGallery(getContext(), new File(newPaths.get(i)), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
                                         LocalFile localFile = new LocalFile();

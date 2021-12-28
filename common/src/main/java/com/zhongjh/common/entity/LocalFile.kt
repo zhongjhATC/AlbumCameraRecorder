@@ -45,11 +45,6 @@ open class LocalFile : Parcelable {
     var oldPath: String? = null
 
     /**
-     * 编辑前的相册URI
-     */
-    var oldMediaUri: Uri? = null
-
-    /**
      * 编辑前的URI
      */
     var oldUri: Uri? = null
@@ -63,6 +58,17 @@ open class LocalFile : Parcelable {
         mimeType = input.readString()
         size = input.readLong()
         duration = input.readLong()
+    }
+
+    constructor(multiMedia: MultiMedia) {
+        path = multiMedia.path
+        uri = multiMedia.uri
+        type = multiMedia.type
+        mimeType = multiMedia.mimeType
+        size = multiMedia.size
+        duration = multiMedia.duration
+        oldPath = multiMedia.oldPath
+        oldUri = multiMedia.oldUri
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
