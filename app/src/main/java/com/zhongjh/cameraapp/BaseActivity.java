@@ -33,6 +33,8 @@ import java.util.TimerTask;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MultimediaTypes;
 
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
+
 /**
  * 父类，包含下面几部分操作：
  * 1.权限控制
@@ -176,6 +178,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 case MultimediaTypes.PICTURE:
                     // 图片，自从AndroidQ版本以后，Path只能访问本身app的文件，所以只能用uri方式控制
                     // obtainPathResult该方法能获取绝对路径，只适用于拍照并且存储的路径在自身app目录下（功能本身会把拍照后的图片复制到相册）
+                    data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE);
                     List<Uri> path = MultiMediaSetting.obtainResult(data);
                     showToastUris(path);
                     getMaskProgressLayout().addImagesUriStartUpload(path);

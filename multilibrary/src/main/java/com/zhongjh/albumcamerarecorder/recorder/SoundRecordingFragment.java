@@ -481,7 +481,7 @@ public class SoundRecordingFragment extends BaseFragment {
                                 } else {
                                     ArrayList<LocalFile> localFiles = new ArrayList<>();
                                     localFiles.add(localFile);
-                                    mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                                    mGlobalSpec.onResultCallbackListener.onResult(localFiles, false);
                                     mActivity.setResult(RESULT_OK);
                                 }
                                 mActivity.finish();

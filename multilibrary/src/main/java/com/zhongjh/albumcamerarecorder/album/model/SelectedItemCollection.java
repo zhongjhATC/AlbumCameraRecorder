@@ -251,7 +251,20 @@ public class SelectedItemCollection {
      * @return list<LocalFile>
      */
     public ArrayList<LocalFile> asListOfLocalFile() {
-        return new ArrayList<>(mItems);
+        ArrayList<LocalFile> localFiles = new ArrayList<>();
+        for(MultiMedia item : mItems){
+            LocalFile localFile = new LocalFile();
+            localFile.setDuration(item.getDuration());
+            localFile.setPath(item.getPath());
+            localFile.setSize(item.getSize());
+            localFile.setType(item.getType());
+            localFile.setMimeType(item.getMimeType());
+            localFile.setOldMediaUri(item.getOldMediaUri());
+            localFile.setOldPath(item.getOldPath());
+            localFile.setOldUri(item.getOldUri());
+            localFiles.add(localFile);
+        }
+        return localFiles;
     }
 
     /**

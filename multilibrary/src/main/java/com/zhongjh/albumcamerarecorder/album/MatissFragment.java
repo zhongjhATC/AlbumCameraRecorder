@@ -238,7 +238,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
                 setResultOK(localFiles, selectedUris, selectedPaths);
             } else {
-                mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                mGlobalSpec.onResultCallbackListener.onResult(localFiles,false);
                 mActivity.setResult(RESULT_OK);
             }
             mActivity.finish();
@@ -358,7 +358,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     if (mGlobalSpec.onResultCallbackListener == null) {
                         setResultOK(localFiles, selectedUris, selectedPaths);
                     } else {
-                        mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                        mGlobalSpec.onResultCallbackListener.onResult(localFiles, true);
                         mActivity.setResult(RESULT_OK);
                     }
                 }
@@ -585,9 +585,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private void setResultOK(ArrayList<LocalFile> localFiles, ArrayList<Uri> uris, ArrayList<String> paths) {
         // 获取选择的图片的url集合
         Intent result = new Intent();
+        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
         result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
         result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
-        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
         result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(uris));
         result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
         // 是否启用原图

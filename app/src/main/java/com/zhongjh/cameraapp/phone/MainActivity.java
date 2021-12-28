@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
+import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
@@ -29,12 +30,15 @@ import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
+import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.videoedit.VideoEditManager;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.zhongjh.common.entity.SaveStrategy;
@@ -244,8 +248,37 @@ public class MainActivity extends BaseActivity {
                         getAudioCount(),
                         alreadyImageCount,
                         alreadyVideoCount,
-                        alreadyAudioCount)
-                .forResult(REQUEST_CODE_CHOOSE);
+                        alreadyAudioCount);
+        if (mBinding.cbIsActivityResult.isChecked()) {
+            mGlobalSetting.forResult(REQUEST_CODE_CHOOSE);
+        } else {
+            mGlobalSetting.forResult(new OnResultCallbackListener<LocalFile>() {
+
+                @Override
+                public void onResult(List<LocalFile> result, boolean fromPreview) {
+                    if (fromPreview) {
+                        // 循环判断，如果不存在，则删除
+                        for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
+                            int k = 0;
+                            for (LocalFile localFile : result) {
+                                if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localFile)) {
+                                    k++;
+                                }
+                            }
+                            if (k == result.size()) {
+                                // 所有都不符合，则删除
+                                getMaskProgressLayout().removePosition(i);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
+        }
     }
 
     /**
