@@ -40,6 +40,16 @@ open class LocalFile : Parcelable {
     var duration: Long = 0
 
     /**
+     * 宽度,只针对图片、视频
+     */
+    var width : Int = 0
+
+    /**
+     * 高度
+     */
+    var height : Int = 0
+
+    /**
      * 编辑前的真实路径
      */
     var oldPath: String? = null
@@ -58,6 +68,8 @@ open class LocalFile : Parcelable {
         mimeType = input.readString()
         size = input.readLong()
         duration = input.readLong()
+        height = input.readInt()
+        width = input.readInt()
     }
 
     constructor(multiMedia: MultiMedia) {
@@ -69,6 +81,8 @@ open class LocalFile : Parcelable {
         duration = multiMedia.duration
         oldPath = multiMedia.oldPath
         oldUri = multiMedia.oldUri
+        height = multiMedia.height
+        width = multiMedia.height
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -78,6 +92,8 @@ open class LocalFile : Parcelable {
         dest.writeString(mimeType)
         dest.writeLong(size)
         dest.writeLong(duration)
+        dest.writeInt(width)
+        dest.writeInt(height)
     }
 
     override fun describeContents(): Int {

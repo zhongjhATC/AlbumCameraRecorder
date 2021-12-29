@@ -53,7 +53,7 @@ import com.zhongjh.common.enums.MultimediaTypes;
  */
 public class MainActivity extends BaseActivity {
 
-    private static final String TAG = "MainActivityTESA";
+    private static final String TAG = "MainActivityTEST";
 
     ActivityMainBinding mBinding;
 
@@ -266,7 +266,7 @@ public class MainActivity extends BaseActivity {
                         Log.i(TAG, "视频音频长度: " + localFile.getDuration());
                         Log.i(TAG, "类型:" + localFile.getType());
                         Log.i(TAG, "具体类型:" + localFile.getMimeType());
-//                        Log.i(TAG, "宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
+                        Log.i(TAG, "宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
                     }
                     if (fromPreview) {
                         // 循环判断，如果不存在，则删除

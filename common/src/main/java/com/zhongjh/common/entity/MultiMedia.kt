@@ -39,7 +39,7 @@ open class MultiMedia : LocalFile, Parcelable {
     /**
      * 相册初始化调用
      */
-    constructor(id: Long, mimeType: String, size: Long, duration: Long) : super() {
+    constructor(id: Long, mimeType: String, size: Long, duration: Long,width : Int,height : Int) : super() {
         this.id = id
         this.mimeType = mimeType
         val contentUri: Uri = when {
@@ -178,7 +178,9 @@ open class MultiMedia : LocalFile, Parcelable {
             return MultiMedia(cursor.getLong(cursor.getColumnIndex(Files.FileColumns._ID)),
                     cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE)),
                     cursor.getLong(cursor.getColumnIndex(MediaColumns.SIZE)),
-                    cursor.getLong(cursor.getColumnIndex("duration")))
+                    cursor.getLong(cursor.getColumnIndex("duration")),
+                    cursor.getInt(cursor.getColumnIndex(MediaColumns.WIDTH)),
+                    cursor.getInt(cursor.getColumnIndex(MediaColumns.HEIGHT)))
         }
 
 

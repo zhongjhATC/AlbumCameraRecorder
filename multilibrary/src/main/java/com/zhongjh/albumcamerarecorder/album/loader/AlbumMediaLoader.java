@@ -38,10 +38,12 @@ public class AlbumMediaLoader extends CursorLoader {
     private static final String[] PROJECTION = {
             MediaStore.Files.FileColumns._ID,
             MediaStore.MediaColumns.DISPLAY_NAME,
-            MediaStore.MediaColumns.DATE_TAKEN,
+            "datetaken",
             MediaStore.MediaColumns.DATE_ADDED,
             MediaStore.MediaColumns.MIME_TYPE,
             MediaStore.MediaColumns.SIZE,
+            MediaStore.MediaColumns.WIDTH,
+            MediaStore.MediaColumns.HEIGHT,
             "duration"};
 
     // === params for album ALL && showSingleMediaType: false ===
@@ -80,6 +82,7 @@ public class AlbumMediaLoader extends CursorLoader {
                     + " bucket_id=?"
                     + " AND " + MediaStore.MediaColumns.SIZE + ">0";
 
+
     private static String[] getSelectionAlbumArgs(String albumId) {
         return new String[]{
                 String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
@@ -104,9 +107,9 @@ public class AlbumMediaLoader extends CursorLoader {
 
     // ===============================================================
 
-    private static final String ORDER_BY = "case ifnull(" + MediaStore.Images.Media.DATE_TAKEN + ",0)" +
+    private static final String ORDER_BY = "case ifnull( datetaken ,0)" +
             " when 0 then " + MediaStore.Images.Media.DATE_MODIFIED + "*1000" +
-            " else " + MediaStore.Images.Media.DATE_TAKEN +
+            " else datetaken "  +
             " end" + " DESC , " + MediaStore.Images.ImageColumns._ID + " DESC";
 
     private AlbumMediaLoader(Context context, String selection, String[] selectionArgs) {
@@ -122,8 +125,6 @@ public class AlbumMediaLoader extends CursorLoader {
     public static CursorLoader newInstance(Context context, Album album) {
         String selection;
         String[] selectionArgs;
-        boolean enableCapture;
-
         if (album.isAll()) {
             if (AlbumSpec.getInstance().onlyShowImages()) {
                 selection = SELECTION_ALL_FOR_SINGLE_MEDIA_TYPE;
