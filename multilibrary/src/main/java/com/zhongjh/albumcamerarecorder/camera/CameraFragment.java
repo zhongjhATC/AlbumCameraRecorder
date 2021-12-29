@@ -43,6 +43,8 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SE
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
 
 /**
@@ -136,7 +138,7 @@ public class CameraFragment extends BaseFragment {
                         // 重新赋值
                         ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
                         for (MultiMedia item : selected) {
-                            BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri());
+                            BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri(), item.getWidth(), item.getHeight());
                             bitmapDatas.add(bitmapData);
                         }
                         // 全部刷新
@@ -146,13 +148,7 @@ public class CameraFragment extends BaseFragment {
                 case REQUEST_CODE_PREVIEW_VIDEO:
                     // 从视频预览界面回来
                     ArrayList<LocalFile> localFiles = new ArrayList<>();
-                    LocalFile localFile = new LocalFile();
-                    localFile.setUri(data.getParcelableExtra(PreviewVideoActivity.URI));
-                    localFile.setPath(data.getStringExtra(PreviewVideoActivity.PATH));
-                    localFile.setMimeType(MimeType.MP4.getMMimeTypeName());
-                    localFile.setType(MultimediaTypes.VIDEO);
-                    localFile.setSize(data.getLongExtra(PreviewVideoActivity.SIZE, -1));
-                    localFile.setDuration(data.getIntExtra(PreviewVideoActivity.DURATION, -1));
+                    LocalFile localFile = data.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
                     localFiles.add(localFile);
                     mIsCommit = true;
                     if (mGlobalSpec.onResultCallbackListener == null) {
@@ -169,14 +165,15 @@ public class CameraFragment extends BaseFragment {
                         result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                         mActivity.setResult(RESULT_OK, result);
                     } else {
-                        mGlobalSpec.onResultCallbackListener.onResult(localFiles,false);
+                        mGlobalSpec.onResultCallbackListener.onResult(localFiles, false);
                         mActivity.setResult(RESULT_OK);
                     }
                     mActivity.finish();
                     break;
                 case REQ_IMAGE_EDIT:
                     // 编辑图片界面
-                    mCameraLayout.refreshEditPhoto();
+                    mCameraLayout.refreshEditPhoto(data.getIntExtra(EXTRA_WIDTH, 0),
+                            data.getIntExtra(EXTRA_HEIGHT, 0));
                     break;
                 default:
                     break;
@@ -257,7 +254,7 @@ public class CameraFragment extends BaseFragment {
                     result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                     mActivity.setResult(RESULT_OK, result);
                 } else {
-                    mGlobalSpec.onResultCallbackListener.onResult(localFiles,false);
+                    mGlobalSpec.onResultCallbackListener.onResult(localFiles, false);
                     mActivity.setResult(RESULT_OK);
                 }
                 mIsCommit = true;

@@ -24,7 +24,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.util.SharedPreferencesUtils;
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
@@ -140,11 +139,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private PhotoAdapter mPhotoAdapter;
     /**
-     * 拍照多图片-集合
-     */
-    List<BitmapData> mCaptureDatas = new ArrayList<>();
-    /**
-     * 单图片,虽然是个集合，但是只存放一条数据
+     * 图片,单图或者多图都会加入该列表
      */
     List<BitmapData> mBitmapData = new ArrayList<>();
     /**
@@ -320,9 +315,14 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         this.mFragment = fragment;
 
         // 初始化多图适配器，先判断是不是多图配置
-        mPhotoAdapter = new PhotoAdapter(getContext(), fragment, mGlobalSpec, mCaptureDatas, this);
-        mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-        mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
+        mPhotoAdapter = new PhotoAdapter(getContext(), fragment, mGlobalSpec, mBitmapData, this);
+        if (SelectableUtils.getImageMaxCount() > 1) {
+            mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+            mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
+            mViewHolder.rlPhoto.setVisibility(View.VISIBLE);
+        } else {
+            mViewHolder.rlPhoto.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -650,9 +650,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 if (mFlashModel == TYPE_FLASH_AUTO) {
                     mViewHolder.cameraView.setFlash(Flash.TORCH);
                     // 延迟1秒拍照
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        mViewHolder.cameraView.takePictureSnapshot();
-                    }, 1000);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> mViewHolder.cameraView.takePictureSnapshot(), 1000);
                 } else {
                     mViewHolder.cameraView.takePictureSnapshot();
                 }
@@ -793,6 +791,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
+
                 // 如果是自动闪光灯模式便关闭闪光灯
                 if (mFlashModel == TYPE_FLASH_AUTO) {
                     mViewHolder.cameraView.setFlash(Flash.OFF);
@@ -900,14 +899,17 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 刷新多个图片
      */
     public void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas) {
-        mCaptureDatas = bitmapDatas;
-        mPhotoAdapter.setListData(mCaptureDatas);
+        mBitmapData = bitmapDatas;
+        mPhotoAdapter.setListData(mBitmapData);
     }
 
     /**
      * 刷新编辑后的单图
+     *
+     * @param width  图片宽
+     * @param height 图片高
      */
-    public void refreshEditPhoto() {
+    public void refreshEditPhoto(int width, int height) {
         // 删除旧图
         if (mPhotoFile.exists()) {
             boolean wasSuccessful = mPhotoFile.delete();
@@ -921,7 +923,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
         // 重置mCaptureBitmaps
         mBitmapData.clear();
-        BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri);
+        BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri, width, height);
         mBitmapData.add(bitmapData);
 
         mViewHolder.imgPhoto.canScroll();
@@ -964,7 +966,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     public void cancelOnResetBySinglePicture() {
         mBitmapData.clear();
-        mCaptureDatas.clear();
 
         // 根据不同状态处理相应的事件
         resetStateAll();
@@ -1025,16 +1026,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
             @Override
             public Void doInBackground() {
-                ArrayList<String> paths = getPaths();
-                ArrayList<String> newPaths = new ArrayList<>();
-                ArrayList<Long> sizes = new ArrayList<>();
-                // 文件总数量
-                int pathSum = paths.size();
-                // 计算每个文件的进度Progress
-                int progress = 100 / pathSum;
+                // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
+                ArrayList<LocalFile> newFiles = new ArrayList<>();
                 // 将 缓存文件 拷贝到 配置目录
-                for (String item : paths) {
-                    File oldFile = new File(item);
+                for (BitmapData item : mBitmapData) {
+                    File oldFile = new File(item.getPath());
                     // 压缩图片
                     File compressionFile = null;
                     if (mGlobalSpec.compressionInterface != null) {
@@ -1046,41 +1042,17 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     } else {
                         compressionFile = oldFile;
                     }
-                    sizes.add(compressionFile != null ? compressionFile.length() : 0);
                     // 获取文件名称
-                    String newFileName = item.substring(item.lastIndexOf(File.separator));
+                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
                     File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
-                    Log.d(TAG, "newFile" + newFile.getAbsolutePath());
-                    FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
-                        if (ioProgress >= 1) {
-                            newPaths.add(file.getAbsolutePath());
-                            Log.d(TAG, file.getAbsolutePath());
-                            ThreadUtils.runOnUiThread(() -> {
-                                mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
-                                // 是否拷贝完所有文件
-                                currentCount++;
-                                if (currentCount >= pathSum) {
-                                    currentCount = 0;
-                                    // 拷贝完毕，进行加入相册库等操作
-                                    ArrayList<Uri> uris = getUris(newPaths);
-                                    ArrayList<LocalFile> localFiles = new ArrayList<>();
-                                    for (int i = 0; i < newPaths.size(); i++) {
-                                        // 加入图片到android系统库里面
-                                        BitmapUtils.displayToGallery(getContext(), new File(newPaths.get(i)), TYPE_PICTURE, -1, mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-                                        LocalFile localFile = new LocalFile();
-                                        localFile.setPath(newPaths.get(i));
-                                        localFile.setMimeType(MimeType.JPEG.getMMimeTypeName());
-                                        localFile.setUri(uris.get(i));
-                                        localFile.setType(MultimediaTypes.PICTURE);
-                                        localFile.setSize(sizes.get(i));
-                                        localFiles.add(localFile);
-                                    }
-                                    // 执行完成
-                                    mOperateCameraListener.captureSuccess(newPaths, uris, localFiles);
-                                }
-                            });
-                        }
-                    });
+                    // new localFile
+                    LocalFile localFile = new LocalFile();
+                    localFile.setPath(newFile.getAbsolutePath());
+                    localFile.setWidth(item.getWidth());
+                    localFile.setHeight(item.getHeight());
+                    localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
+                    newFiles.add(localFile);
+                    movePictureFileByCopy(compressionFile, newFile, newFiles);
                 }
                 return null;
             }
@@ -1100,6 +1072,57 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
+     * 处理复制文件
+     *
+     * @param compressionFile 循环中被复制的文件
+     * @param newFile         循环中复制后的文件
+     * @param newFiles        拷贝完的文件列表
+     */
+    private void movePictureFileByCopy(File compressionFile, File newFile, ArrayList<LocalFile> newFiles) {
+        FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
+            if (ioProgress >= 1) {
+                Log.d(TAG, file.getAbsolutePath());
+                movePictureFileByUi(newFiles);
+            }
+        });
+    }
+
+    /**
+     * UI线程上处理图片并且加入相册库
+     * @param newFiles        拷贝完的文件列表
+     */
+    private void movePictureFileByUi(ArrayList<LocalFile> newFiles) {
+        // 文件总数量
+        int pathSum = mBitmapData.size();
+        // 每次迁移完一个文件的进度
+        int progress = 100 / pathSum;
+        ThreadUtils.runOnUiThread(() -> {
+            mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
+            // 拷贝完一次++
+            currentCount++;
+            // 判断是否拷贝完所有文件
+            if (currentCount >= pathSum) {
+                currentCount = 0;
+                // 拷贝完毕，进行加入相册库等操作
+                ArrayList<String> newPaths = new ArrayList<>();
+                ArrayList<Uri> newUris = new ArrayList<>();
+                for (LocalFile item : newFiles) {
+                    // 加入图片到android系统库里面
+                    Uri uri = BitmapUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                            mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                    item.setMimeType(MimeType.JPEG.getMMimeTypeName());
+                    item.setUri(uri);
+                    item.setType(MultimediaTypes.PICTURE);
+                    newPaths.add(item.getPath());
+                    newUris.add(item.getUri());
+                }
+                // 执行完成
+                mOperateCameraListener.captureSuccess(newPaths, newUris, newFiles);
+            }
+        });
+    }
+
+    /**
      * 添加入数据源
      *
      * @param bitmap bitmap
@@ -1108,7 +1131,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 初始化数据并且存储进file
         File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
         Uri uri = mPictureMediaStoreCompat.getUri(file.getPath());
-        BitmapData bitmapData = new BitmapData(file.getPath(), uri);
+        BitmapData bitmapData = new BitmapData(file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
         // 回收bitmap
         if (bitmap.isRecycled()) {
             // 回收并且置为null
@@ -1119,16 +1142,14 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 判断是否多个图片
         if (SelectableUtils.getImageMaxCount() > 1) {
             // 添加入数据源
-            mCaptureDatas.add(bitmapData);
+            mBitmapData.add(bitmapData);
             showMultiplePicture();
-            // 回调接口：添加图片后剩下的相关数据
-            mCaptureListener.add(mCaptureDatas);
         } else {
             mBitmapData.add(bitmapData);
             showSinglePicture(bitmapData, file, uri);
-            // 回调接口：添加图片后剩下的相关数据
-            mCaptureListener.add(mBitmapData);
         }
+        // 回调接口：添加图片后剩下的相关数据
+        mCaptureListener.add(mBitmapData);
     }
 
     /**
@@ -1238,34 +1259,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
-     * 返回当前所有图片的路径 paths
-     */
-    private ArrayList<String> getPaths() {
-        ArrayList<String> paths = new ArrayList<>();
-        if (mBitmapData.size() > 0) {
-            for (BitmapData value : mBitmapData) {
-                paths.add(value.getPath());
-            }
-        } else if (mCaptureDatas.size() > 0) {
-            for (BitmapData value : mCaptureDatas) {
-                paths.add(value.getPath());
-            }
-        }
-        return paths;
-    }
-
-    /**
-     * 返回当前所有图片的路径 uris
-     */
-    private ArrayList<Uri> getUris(ArrayList<String> paths) {
-        ArrayList<Uri> uris = new ArrayList<>();
-        for (int i = 0; i < paths.size(); i++) {
-            uris.add(mPictureMediaStoreCompat.getUri(paths.get(i)));
-        }
-        return uris;
-    }
-
-    /**
      * 停止录像并且完成它，如果是因为视频过短则清除冗余数据
      *
      * @param isShort 是否因为视频过短而停止
@@ -1328,13 +1321,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     @Override
     public void onDelete(int position) {
         // 删除文件
-        FileUtil.deleteFile(mCaptureDatas.get(position).getPath());
+        FileUtil.deleteFile(mBitmapData.get(position).getPath());
 
         // 回调接口：删除图片后剩下的相关数据
-        mCaptureListener.remove(mCaptureDatas);
+        mCaptureListener.remove(mBitmapData);
 
         // 当列表全部删掉的话，就隐藏,为什么是 <= 1，因为是先删除实体，再删除数据源，所以这个判断结束后，就会删除数据源实际是0了
-        if (mCaptureDatas.size() <= 1) {
+        if (mBitmapData.size() <= 1) {
             // 隐藏横版列表
             mViewHolder.rlPhoto.setVisibility(View.GONE);
 

@@ -19,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- *
  * @author felix
  * @date 2017/11/14 下午2:26
  */
@@ -36,6 +35,9 @@ public class ImageEditActivity extends BaseImageEditActivity {
     public static final String EXTRA_IMAGE_SAVE_PATH = "IMAGE_SAVE_PATH";
 
     public static final String EXTRA_IMAGE_SCREEN_ORIENTATION = "EXTRA_SCREEN_ORIENTATION";
+
+    public static final String EXTRA_WIDTH = "EXTRA_WIDTH";
+    public static final String EXTRA_HEIGHT = "EXTRA_HEIGHT";
 
     @Override
     public void onCreated() {
@@ -148,7 +150,10 @@ public class ImageEditActivity extends BaseImageEditActivity {
                         }
                     }
                 }
-                setResult(RESULT_OK);
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_WIDTH, bitmap.getWidth());
+                intent.putExtra(EXTRA_HEIGHT, bitmap.getHeight());
+                setResult(RESULT_OK, intent);
                 finish();
                 return;
             }

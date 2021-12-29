@@ -260,7 +260,7 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void onResult(List<LocalFile> result, boolean fromPreview) {
                     for (LocalFile localFile : result) {
-                        Log.i(TAG, "绝对路径(AndroidQ无效):" + localFile.getPath());
+                        Log.i(TAG, "绝对路径(AndroidQ如果存在不属于自己App下面的文件夹则无效):" + localFile.getPath());
                         Log.i(TAG, "Uri:" + localFile.getUri());
                         Log.i(TAG, "文件大小: " + localFile.getSize());
                         Log.i(TAG, "视频音频长度: " + localFile.getDuration());

@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.FileUtils;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import androidx.exifinterface.media.ExifInterface;
 
@@ -40,12 +41,17 @@ public class BitmapUtils {
     /**
      * 插入图片、视频到图库
      *
-     * @param context  上下文
-     * @param file     要保存的文件
-     * @param type     mp4 jpeg
-     * @param duration video专属的时长,图片传-1即可
+     * @param context          上下文
+     * @param file             要保存的文件
+     * @param type             mp4 jpeg
+     * @param duration         video专属的时长,图片传-1即可
+     * @param width            宽
+     * @param height           高
+     * @param directory        子文件目录
+     * @param mediaStoreCompat mediaStoreCompat
      */
-    public static Uri displayToGallery(Context context, File file, int type, int duration, String directory, MediaStoreCompat mediaStoreCompat) {
+    public static Uri displayToGallery(Context context, File file, int type, long duration, int width, int height,
+                                       String directory, MediaStoreCompat mediaStoreCompat) {
         if (file == null || !file.exists()) {
             return null;
         }
@@ -58,6 +64,8 @@ public class BitmapUtils {
             values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
             values.put(MediaStore.Images.Media.ORIENTATION, 0);
             values.put(MediaStore.Images.Media.SIZE, file.length());
+            values.put(MediaStore.Images.Media.WIDTH, width);
+            values.put(MediaStore.Images.Media.HEIGHT, height);
             Uri external = null;
             switch (type) {
                 case TYPE_VIDEO:
@@ -77,9 +85,11 @@ public class BitmapUtils {
             // 需要增加这个，不然AndroidQ识别不到TAG_DATETIME_ORIGINAL创建时间
             try {
                 ExifInterface exif = new ExifInterface(file.getPath());
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
-                exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(System.currentTimeMillis()));
-                exif.saveAttributes();
+                if (TextUtils.isEmpty(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
+                    exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(System.currentTimeMillis()));
+                    exif.saveAttributes();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -105,6 +115,8 @@ public class BitmapUtils {
             values.put(MediaStore.Images.Media.TITLE, AppUtils.getAppName(context));
             values.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
             values.put(MediaStore.Images.Media.SIZE, file.length());
+            values.put(MediaStore.Images.Media.WIDTH, width);
+            values.put(MediaStore.Images.Media.HEIGHT, height);
             switch (type) {
                 case TYPE_VIDEO:
                     values.put(MediaStore.Images.Media.MIME_TYPE, "video/mp4");

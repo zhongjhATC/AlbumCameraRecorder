@@ -39,23 +39,29 @@ open class MultiMedia : LocalFile, Parcelable {
     /**
      * 相册初始化调用
      */
-    constructor(id: Long, mimeType: String, size: Long, duration: Long,width : Int,height : Int) : super() {
+    constructor(id: Long, mimeType: String, size: Long, duration: Long, width: Int, height: Int) : super() {
         this.id = id
         this.mimeType = mimeType
-        val contentUri: Uri = when {
+        val contentUri: Uri
+        when {
             isImage() -> {
-                Images.Media.EXTERNAL_CONTENT_URI
+                contentUri = Images.Media.EXTERNAL_CONTENT_URI
+                this.type = MultimediaTypes.PICTURE
             }
             isVideo() -> {
-                Video.Media.EXTERNAL_CONTENT_URI
+                contentUri = Video.Media.EXTERNAL_CONTENT_URI
+                this.type = MultimediaTypes.VIDEO
             }
             else -> {
-                Files.getContentUri("external")
+                contentUri = Files.getContentUri("external")
             }
         }
         this.uri = ContentUris.withAppendedId(contentUri, id)
         this.size = size
         this.duration = duration
+        this.width = width
+        this.height = height
+
     }
 
     constructor(input: Parcel) : super(input) {

@@ -23,10 +23,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO;
 
@@ -42,17 +46,17 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 合成视频录制的预览
      */
     public static final int REQUEST_CODE_PREVIEW_VIDEO = 26;
+    static final String LOCAL_FILE = "LOCAL_FILE";
     static final String PATH = "PATH";
     static final String URI = "URI";
-    static final String DURATION = "DURATION";
-    static final String SIZE = "SIZE";
 
     VideoView mVideoViewPreview;
     ImageView mImgClose;
     CircularProgressButton mBtnConfirm;
-    String mPath;
-    File mFile;
-    int mDuration;
+    /**
+     * 该视频的相关参数
+     */
+    LocalFile mLocalFile = new LocalFile();
     /**
      * 按钮事件运行中，因为该自定义控件如果通过setEnabled控制会导致动画不起效果，所以需要该变量控制按钮事件是否生效
      */
@@ -87,7 +91,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_video);
-        mPath = getIntent().getStringExtra(PATH);
+        mLocalFile.setPath(getIntent().getStringExtra(PATH));
         // 初始化设置
         mCameraSpec = CameraSpec.getInstance();
         initView();
@@ -140,8 +144,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
         mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this,
                 mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 
-        mFile = new File(mPath);
-        playVideo(mFile);
+        File file = new File(mLocalFile.getPath());
+        playVideo(file);
     }
 
     /**
@@ -163,8 +167,10 @@ public class PreviewVideoActivity extends AppCompatActivity {
             mVideoViewPreview.start();
         }
         mVideoViewPreview.setOnPreparedListener(mp -> {
-            // 获取时长
-            mDuration = mVideoViewPreview.getDuration();
+            // 获取相关参数
+            mLocalFile.setDuration(mVideoViewPreview.getDuration());
+            mLocalFile.setWidth(mVideoViewPreview.getWidth());
+            mLocalFile.setHeight(mVideoViewPreview.getHeight());
         });
         mVideoViewPreview.setOnCompletionListener(mediaPlayer -> {
             // 循环播放
@@ -193,7 +199,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void compress() {
         // 获取文件名称
-        String newFileName = mPath.substring(mPath.lastIndexOf(File.separator));
+        String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
         File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
         mCameraSpec.videoEditCoordinator.setVideoCompressListener(new VideoEditListener() {
             @Override
@@ -212,11 +218,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onError(String message) {
+            public void onError(@NotNull String message) {
                 mIsRun = false;
             }
         });
-        mCameraSpec.videoEditCoordinator.compress(mPath, newFile.getPath());
+        mCameraSpec.videoEditCoordinator.compress(mLocalFile.getPath(), newFile.getPath());
     }
 
     /**
@@ -231,9 +237,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
             @Override
             public Void doInBackground() {
                 // 获取文件名称
-                String newFileName = mPath.substring(mPath.lastIndexOf(File.separator));
+                String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
                 File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-                FileUtil.copy(new File(mPath), newFile, null, (ioProgress, file) -> {
+                FileUtil.copy(new File(mLocalFile.getPath()), newFile, null, (ioProgress, file) -> {
                     if (ioProgress >= 1) {
                         ThreadUtils.runOnUiThread(() -> {
                             mBtnConfirm.setProgress(100);
@@ -263,11 +269,15 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void confirm(File newFile) {
         Intent intent = new Intent();
-        Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mDuration, mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
-        intent.putExtra(PATH, newFile.getPath());
-        intent.putExtra(URI, mediaUri);
-        intent.putExtra(DURATION, mDuration);
-        intent.putExtra(SIZE, newFile.length());
+        Uri mediaUri = BitmapUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
+                mLocalFile.getWidth(), mLocalFile.getHeight(),
+                mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
+        mLocalFile.setPath(newFile.getPath());
+        mLocalFile.setUri(mediaUri);
+        mLocalFile.setSize(newFile.length());
+        mLocalFile.setMimeType(MimeType.MP4.getMMimeTypeName());
+        mLocalFile.setType(MultimediaTypes.VIDEO);
+        intent.putExtra(LOCAL_FILE, mLocalFile);
         setResult(RESULT_OK, intent);
         PreviewVideoActivity.this.finish();
     }
