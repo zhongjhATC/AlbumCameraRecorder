@@ -38,7 +38,8 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public boolean onActivityResult(int resultCode) {
-        return true;
+        // 返回false处理视频
+        return false;
     }
 
     @Override
