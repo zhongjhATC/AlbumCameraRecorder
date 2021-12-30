@@ -35,8 +35,8 @@ enum class MimeType(val mMimeTypeName: String, val mExtensions: Set<String>) {
             "webp"
     ))),
     // ============== 音频 ==============
-    MP3("video/mp3", ArraySet(listOf(
-            "mp3"
+    AAC("video/aac", ArraySet(listOf(
+            "aac"
     ))),
     // ============== 视频 ==============
     MPEG("video/mpeg", ArraySet(listOf(

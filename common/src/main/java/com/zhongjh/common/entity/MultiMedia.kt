@@ -129,28 +129,26 @@ open class MultiMedia : LocalFile, Parcelable {
         return mimeType.equals(MimeType.GIF.toString())
     }
 
-    fun isMp3(): Boolean {
+    fun isAudio(): Boolean {
         if (mimeType == null) {
             return false
         }
-        return mimeType.equals(MimeType.MP3.toString())
+        return mimeType.equals(MimeType.AAC.toString())
     }
 
     fun isVideo(): Boolean {
-        if (mimeType != null) {
-            return mimeType.equals(MimeType.MPEG.toString())
-                    || mimeType.equals(MimeType.MP4.toString())
-                    || mimeType.equals(MimeType.QUICKTIME.toString())
-                    || mimeType.equals(MimeType.THREEGPP.toString())
-                    || mimeType.equals(MimeType.THREEGPP2.toString())
-                    || mimeType.equals(MimeType.MKV.toString())
-                    || mimeType.equals(MimeType.WEBM.toString())
-                    || mimeType.equals(MimeType.TS.toString())
-                    || mimeType.equals(MimeType.AVI.toString())
-        } else if (type != -1) {
-            return type == MultimediaTypes.VIDEO
+        if (mimeType == null) {
+            return false
         }
-        return false
+        return mimeType.equals(MimeType.MPEG.toString())
+                || (mimeType.equals(MimeType.MP4.toString()))
+                || mimeType.equals(MimeType.QUICKTIME.toString())
+                || mimeType.equals(MimeType.THREEGPP.toString())
+                || mimeType.equals(MimeType.THREEGPP2.toString())
+                || mimeType.equals(MimeType.MKV.toString())
+                || mimeType.equals(MimeType.WEBM.toString())
+                || mimeType.equals(MimeType.TS.toString())
+                || mimeType.equals(MimeType.AVI.toString())
     }
 
     override fun describeContents(): Int {

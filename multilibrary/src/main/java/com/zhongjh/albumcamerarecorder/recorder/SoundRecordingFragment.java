@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -305,6 +306,10 @@ public class SoundRecordingFragment extends BaseFragment {
         long elapsed = sharePreferences.getLong("elapsed", 0);
         localFile.setPath(filePath);
         localFile.setDuration(elapsed);
+        localFile.setSize(new File(filePath).length());
+        localFile.setMimeType(MimeType.AAC.getMMimeTypeName());
+        localFile.setType(MultimediaTypes.AUDIO);
+        localFile.setUri(mAudioMediaStoreCompat.getUri(filePath));
     }
 
     @Override
@@ -459,6 +464,9 @@ public class SoundRecordingFragment extends BaseFragment {
         ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
             @Override
             public Void doInBackground() {
+                if (localFile == null) {
+                    initAudio();
+                }
                 if (localFile.getPath() != null) {
                     // 初始化保存好的音频文件
                     initAudio();
@@ -511,11 +519,11 @@ public class SoundRecordingFragment extends BaseFragment {
         // 音频文件配置路径
         mAudioMediaStoreCompat = new MediaStoreCompat(mContext,
                 globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
-        mFile = mAudioMediaStoreCompat.createFile(2, true, "mp4");
+        mFile = mAudioMediaStoreCompat.createFile(2, true, "aac");
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
         mRecorder.setOutputFile(mFile.getPath());
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);

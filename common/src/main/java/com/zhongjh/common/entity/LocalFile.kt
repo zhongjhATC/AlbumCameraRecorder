@@ -3,6 +3,7 @@ package com.zhongjh.common.entity
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MultimediaTypes
 
 /**
@@ -30,6 +31,7 @@ open class LocalFile : Parcelable {
 
     /**
      * 具体类型，jpg,png,mp3等等
+     * {@link MimeType }
      */
     var mimeType: String? = null
     var size: Long = 0
