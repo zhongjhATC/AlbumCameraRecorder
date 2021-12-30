@@ -8,11 +8,13 @@ import java.util.ArrayList;
 
 import com.zhongjh.common.coordinator.VideoEditCoordinator;
 import com.zhongjh.common.listener.VideoEditListener;
+
 import io.microshow.rxffmpeg.RxFFmpegInvoke;
 import io.microshow.rxffmpeg.RxFFmpegSubscriber;
 
 /**
  * 视频编辑管理
+ *
  * @author zhongjh
  */
 public class VideoEditManager implements VideoEditCoordinator {
@@ -34,15 +36,25 @@ public class VideoEditManager implements VideoEditCoordinator {
     }
 
     @Override
-    public void merge(String newPath, ArrayList<String> paths,String txtPath) {
+    public void merge(String newPath, ArrayList<String> paths, String txtPath) {
         boolean isMerge = false;
         // 创建文本文件
         File file = new File(txtPath);
         if (!file.exists()) {
             if (file.getParent() != null) {
                 File dir = new File(file.getParent());
-                isMerge = dir.mkdirs();
-                if (isMerge) {
+                // 判断父目录是否存在
+                if (!dir.exists()) {
+                    isMerge = dir.mkdirs();
+                    if (isMerge) {
+                        try {
+                            isMerge = file.createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    // 如果存在直接创建文件
                     try {
                         isMerge = file.createNewFile();
                     } catch (IOException e) {
@@ -52,7 +64,10 @@ public class VideoEditManager implements VideoEditCoordinator {
             }
         }
 
+        mMyRxFfmpegMergeSubscriber = new MyRxFfmpegSubscriber(mVideoMergeListener);
+
         if (!isMerge && !file.exists()) {
+            mMyRxFfmpegMergeSubscriber.onCancel();
             return;
         }
 
@@ -72,7 +87,6 @@ public class VideoEditManager implements VideoEditCoordinator {
 
         String commands = "ffmpeg -y -f concat -safe 0 -i " + file.getPath() + " -c copy " + newPath;
 
-        mMyRxFfmpegMergeSubscriber = new MyRxFfmpegSubscriber(mVideoMergeListener);
 
         // 开始执行FFmpeg命令
         RxFFmpegInvoke.getInstance()
@@ -81,7 +95,7 @@ public class VideoEditManager implements VideoEditCoordinator {
     }
 
     @Override
-    public void compress(String oldPath,String compressPath) {
+    public void compress(String oldPath, String compressPath) {
         String commands = "ffmpeg -y -i " + oldPath + " -b 2097k -r 30 -vcodec libx264 -preset superfast " + compressPath;
 
         mMyRxFfmpegCompressSubscriber = new MyRxFfmpegSubscriber(mVideoCompressListener);
@@ -121,8 +135,6 @@ public class VideoEditManager implements VideoEditCoordinator {
             mMyRxFfmpegCompressSubscriber.dispose();
         }
     }
-
-
 
 
     public static class MyRxFfmpegSubscriber extends RxFFmpegSubscriber {

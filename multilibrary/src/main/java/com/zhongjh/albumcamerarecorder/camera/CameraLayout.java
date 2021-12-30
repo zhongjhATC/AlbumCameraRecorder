@@ -772,11 +772,15 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 @Override
                 public void onCancel() {
                     Log.d(TAG, "onCancel");
+                    // 重置按钮
+                    mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
                 }
 
                 @Override
                 public void onError(@NotNull String message) {
                     Log.d(TAG, "onError" + message);
+                    // 重置按钮
+                    mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
                 }
             });
         }
