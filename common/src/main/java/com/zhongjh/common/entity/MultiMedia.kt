@@ -129,6 +129,18 @@ open class MultiMedia : LocalFile, Parcelable {
         return mimeType.equals(MimeType.GIF.toString())
     }
 
+    fun isImageOrGif() : Boolean {
+        if (mimeType == null) {
+            return false
+        }
+        return mimeType.equals(MimeType.JPEG.toString())
+                || mimeType.equals(MimeType.PNG.toString())
+                || mimeType.equals(MimeType.GIF.toString())
+                || mimeType.equals(MimeType.BMP.toString())
+                || mimeType.equals(MimeType.WEBP.toString())
+                || mimeType.equals(MimeType.GIF.toString())
+    }
+
     fun isAudio(): Boolean {
         if (mimeType == null) {
             return false

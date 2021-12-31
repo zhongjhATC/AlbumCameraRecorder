@@ -2,7 +2,9 @@ package com.zhongjh.progresslibrary.api
 
 import android.net.Uri
 import android.view.View
+import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.progresslibrary.entity.MultiMediaView
+import java.nio.file.Files
 import java.util.*
 
 /**
@@ -18,6 +20,12 @@ interface MaskProgressApi {
      * @param authority provider的authorities属性
      */
     fun setAuthority(authority: String)
+
+    /**
+     * 添加LocalFile,根据自身类型进行相应的显示
+     * @param localFiles 文件实体数据集
+     */
+    fun addLocalFileStartUpload(localFiles: List<LocalFile>)
 
     /**
      * 添加图片Uri并且启动上传(一般用于刚确认了哪些数据后)

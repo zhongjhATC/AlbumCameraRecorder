@@ -12,6 +12,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sdsmdg.harjot.vectormaster.VectorMasterView
+import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.enums.MultimediaTypes
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.progresslibrary.R
@@ -256,6 +257,15 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         }
         return videoDates
     }
+
+//    fun addLocalFileData(localFiles: List<LocalFile>) {
+//        Log.d("$TAG Test", "addLocalFileData")
+//        List<MultiMediaView>
+//        // 抽出图片跟视频分开添加
+//        for (localFile in localFiles) {
+//
+//        }
+//    }
 
     /**
      * 添加图片数据

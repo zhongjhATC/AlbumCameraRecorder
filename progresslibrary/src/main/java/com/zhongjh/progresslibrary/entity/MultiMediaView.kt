@@ -1,6 +1,7 @@
 package com.zhongjh.progresslibrary.entity
 
 import android.view.View
+import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.MultiMedia
 import com.zhongjh.common.enums.MultimediaTypes
 import com.zhongjh.progresslibrary.widget.MaskProgressView
@@ -12,7 +13,7 @@ import com.zhongjh.progresslibrary.widget.PlayProgressView
  * @author zhongjh
  * @date 2021/12/13
  */
-class MultiMediaView(@MultimediaTypes multiMediaState: Int) : MultiMedia() {
+class MultiMediaView : MultiMedia {
 
     companion object {
 
@@ -40,8 +41,23 @@ class MultiMediaView(@MultimediaTypes multiMediaState: Int) : MultiMedia() {
      */
     var isUploading = false
 
-    init {
+    constructor()
+
+    constructor(@MultimediaTypes multiMediaState: Int) {
         type = multiMediaState
+    }
+
+    constructor(localFile: LocalFile) {
+        path = localFile.path
+        uri = localFile.uri
+        type = localFile.type
+        mimeType = localFile.mimeType
+        size = localFile.size
+        duration = localFile.duration
+        oldPath = localFile.oldPath
+        oldUri = localFile.oldUri
+        height = localFile.height
+        width = localFile.width
     }
 
     /**

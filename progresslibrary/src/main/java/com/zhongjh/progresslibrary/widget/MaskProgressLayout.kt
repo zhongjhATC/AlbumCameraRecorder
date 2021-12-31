@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MultimediaTypes
 import com.zhongjh.common.utils.MediaStoreCompat
@@ -187,6 +188,37 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mMediaStoreCompat.saveStrategy = saveStrategy
     }
 
+    override fun addLocalFileStartUpload(localFiles: List<LocalFile>) {
+        isAuthority()
+        // 图片的
+        val multiMediaViewImages = ArrayList<MultiMediaView>()
+        // 视频的
+        val multiMediaViewVideos = ArrayList<MultiMediaView>()
+        for (localFile in localFiles) {
+            val multiMediaView = MultiMediaView(localFile)
+            multiMediaView.isUploading = true
+            // 处理图片
+            if (multiMediaView.isImageOrGif()) {
+                multiMediaViewImages.add(multiMediaView)
+            }
+            // 处理视频
+            if (multiMediaView.isVideo()) {
+                multiMediaViewVideos.add(multiMediaView)
+            }
+//            // 处理音频
+//            if (multiMediaView.isAudio()) {
+//                addAudioData(multiMediaView, multiMediaView.path, multiMediaView.duration)
+//            }
+        }
+//        mPhotoAdapter.addLocalFileData(multiMediaViewImages, multiMediaViewVideos)
+
+//        mPhotoAdapter.addVideoData(multiMediaViews)
+//        mPhotoAdapter.addImageData(localFiles)
+
+//        // 检测添加多媒体上限
+//        mPhotoAdapter.notifyDataSetChanged()
+    }
+
     override fun addImagesUriStartUpload(uris: List<Uri>) {
         isAuthority()
         val multiMediaViews = ArrayList<MultiMediaView>()
@@ -223,7 +255,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     }
 
     override fun addVideoStartUpload(videoUris: List<Uri>) {
-        addVideo(videoUris, false, true)
+        addVideo(videoUris, icClean = false, isUploading = true)
     }
 
     override fun setVideoCover(multiMediaView: MultiMediaView, videoPath: String) {

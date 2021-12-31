@@ -84,7 +84,7 @@ open class LocalFile : Parcelable {
         oldPath = multiMedia.oldPath
         oldUri = multiMedia.oldUri
         height = multiMedia.height
-        width = multiMedia.height
+        width = multiMedia.width
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
