@@ -197,6 +197,13 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         for (localFile in localFiles) {
             val multiMediaView = MultiMediaView(localFile)
             multiMediaView.isUploading = true
+            // 直接处理音频
+            if (multiMediaView.isAudio()) {
+                addAudioData(multiMediaView)
+                // 检测添加多媒体上限
+                mPhotoAdapter.notifyDataSetChanged()
+                return
+            }
             // 处理图片
             if (multiMediaView.isImageOrGif()) {
                 multiMediaViewImages.add(multiMediaView)
@@ -205,18 +212,9 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             if (multiMediaView.isVideo()) {
                 multiMediaViewVideos.add(multiMediaView)
             }
-//            // 处理音频
-//            if (multiMediaView.isAudio()) {
-//                addAudioData(multiMediaView, multiMediaView.path, multiMediaView.duration)
-//            }
         }
-//        mPhotoAdapter.addLocalFileData(multiMediaViewImages, multiMediaViewVideos)
-
-//        mPhotoAdapter.addVideoData(multiMediaViews)
-//        mPhotoAdapter.addImageData(localFiles)
-
-//        // 检测添加多媒体上限
-//        mPhotoAdapter.notifyDataSetChanged()
+        mPhotoAdapter.addImageData(multiMediaViewImages)
+        mPhotoAdapter.addVideoData(multiMediaViewVideos)
     }
 
     override fun addImagesUriStartUpload(uris: List<Uri>) {
@@ -278,7 +276,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         val multiMediaView = MultiMediaView(MultimediaTypes.AUDIO)
         multiMediaView.path = filePath
         multiMediaView.uri = mMediaStoreCompat.getUri(filePath)
-        addAudioData(multiMediaView, filePath, length)
+        multiMediaView.duration = length
+        addAudioData(multiMediaView)
         // 检测添加多媒体上限
         mPhotoAdapter.notifyDataSetChanged()
     }
@@ -458,10 +457,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
      * 添加音频数据
      *
      * @param multiMediaView 数据
-     * @param filePath       音频文件地址
-     * @param length         音频文件长度
      */
-    private fun addAudioData(multiMediaView: MultiMediaView, filePath: String, length: Long) {
+    private fun addAudioData(multiMediaView: MultiMediaView) {
         this.audioList.add(multiMediaView)
         if (audioList.size > 0) {
             // 显示音频的进度条
@@ -471,8 +468,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mViewHolder.llContent.addView(playProgressView)
         // 初始化播放控件
         val recordingItem = RecordingItem()
-        recordingItem.path = filePath
-        recordingItem.duration = length
+        recordingItem.path = multiMediaView.path
+        recordingItem.duration = multiMediaView.duration
         playProgressView.setData(recordingItem, audioProgressColor)
         // 添加音频后重置所有当前播放中的音频
         for (i in 0 until mViewHolder.llContent.childCount) {

@@ -96,6 +96,18 @@ public final class MultiMediaSetting {
         return data.getBooleanExtra(EXTRA_MULTIMEDIA_CHOICE, false);
     }
 
+    EXTRA_RESULT_SELECTION_LOCAL_FILE
+
+    /**
+     * 获取用户确认后的多媒体类型
+     *
+     * @param data 通过以下方法获取 onActivityResult
+     * @return 用户确认后的多媒体类型
+     */
+    public static int obtainMultimediaType(Intent data) {
+        return data.getIntExtra(EXTRA_MULTIMEDIA_TYPES, -1);
+    }
+
     /**
      * 获取用户确认后的多媒体类型
      *

@@ -12,7 +12,6 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sdsmdg.harjot.vectormaster.VectorMasterView
-import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.enums.MultimediaTypes
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.progresslibrary.R
@@ -258,15 +257,6 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         return videoDates
     }
 
-//    fun addLocalFileData(localFiles: List<LocalFile>) {
-//        Log.d("$TAG Test", "addLocalFileData")
-//        List<MultiMediaView>
-//        // 抽出图片跟视频分开添加
-//        for (localFile in localFiles) {
-//
-//        }
-//    }
-
     /**
      * 添加图片数据
      *
@@ -443,15 +433,15 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         internal fun loadImage(context: Context, imageEngine: ImageEngine,
                                placeholder: Drawable, multiMediaView: MultiMediaView, height: Int) {
             // 加载图片
-            if (!TextUtils.isEmpty(multiMediaView.path)) {
+            if (multiMediaView.uri != null) {
+                imageEngine.loadThumbnail(context, height, placeholder,
+                        mpvImage, multiMediaView.uri!!)
+            } else if (!TextUtils.isEmpty(multiMediaView.path)) {
                 imageEngine.loadThumbnail(context, height, placeholder,
                         mpvImage, Uri.fromFile(File(multiMediaView.path!!)))
             } else if (!TextUtils.isEmpty(multiMediaView.url)) {
                 imageEngine.loadUrlThumbnail(context, height, placeholder,
                         mpvImage, multiMediaView.url!!)
-            } else if (multiMediaView.uri != null) {
-                imageEngine.loadThumbnail(context, height, placeholder,
-                        mpvImage, multiMediaView.uri!!)
             }
         }
 

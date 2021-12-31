@@ -85,10 +85,6 @@ open class MultiMedia : LocalFile, Parcelable {
                 && drawableId == multiMedia.drawableId
     }
 
-    fun anyEquals(other: Any?): Boolean {
-        return super.equals(other)
-    }
-
     /**
      * 重写hashCode，所以如果修改以下这些值，那么将会它存于的hashmap找不到它
      */
@@ -105,10 +101,6 @@ open class MultiMedia : LocalFile, Parcelable {
         result = 31 * result + java.lang.Long.valueOf(duration).hashCode()
         result = 31 * result + java.lang.Long.valueOf(drawableId.toLong()).hashCode()
         return result
-    }
-
-    fun anyHashCode(): Int {
-        return super.hashCode()
     }
 
     fun isImage(): Boolean {

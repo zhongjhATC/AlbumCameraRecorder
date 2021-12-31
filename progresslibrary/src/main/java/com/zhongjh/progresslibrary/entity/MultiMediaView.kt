@@ -74,12 +74,4 @@ class MultiMediaView : MultiMedia {
             }
         }
     }
-
-    override fun equals(other: Any?): Boolean {
-        return super.anyEquals(other)
-    }
-
-    override fun hashCode(): Int {
-        return super.anyHashCode()
-    }
 }

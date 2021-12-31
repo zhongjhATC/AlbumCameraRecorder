@@ -283,6 +283,8 @@ public class MainActivity extends BaseActivity {
                                 getMaskProgressLayout().removePosition(i);
                             }
                         }
+                    } else {
+                        getMaskProgressLayout().addLocalFileStartUpload(result);
                     }
                 }
 
