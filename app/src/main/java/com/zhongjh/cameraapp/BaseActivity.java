@@ -6,21 +6,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.documentfile.provider.DocumentFile;
-
+import android.util.Log;
 import android.widget.Toast;
 
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
+import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.common.entity.RecordingItem;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import java.util.ArrayList;
@@ -29,11 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MultimediaTypes;
-
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
 
 /**
  * 父类，包含下面几部分操作：
@@ -46,6 +39,7 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SE
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
+    private static final String TAG = "BaseActivity";
     protected static final int REQUEST_CODE_CHOOSE = 236;
 
     /**
@@ -151,10 +145,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_CHOOSE) {
             // 如果是在预览界面点击了确定
             if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                // 请求的预览界面
-                Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
                 // 获取选择的数据
-                ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                ArrayList<MultiMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
                 if (selected == null) {
                     return;
                 }
@@ -171,51 +163,19 @@ public abstract class BaseActivity extends AppCompatActivity {
                         getMaskProgressLayout().removePosition(i);
                     }
                 }
-                return;
-            }
-            // 获取类型，根据类型设置不同的事情
-            switch (MultiMediaSetting.obtainMultimediaType(data)) {
-                case MultimediaTypes.PICTURE:
-                    // 图片，自从AndroidQ版本以后，Path只能访问本身app的文件，所以只能用uri方式控制
-                    // obtainPathResult该方法能获取绝对路径，只适用于拍照并且存储的路径在自身app目录下（功能本身会把拍照后的图片复制到相册）
-                    data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE);
-                    List<Uri> path = MultiMediaSetting.obtainResult(data);
-                    showToastUris(path);
-                    getMaskProgressLayout().addImagesUriStartUpload(path);
-                    break;
-                case MultimediaTypes.VIDEO:
-                    // 录像
-                    List<Uri> videoUris = MultiMediaSetting.obtainResult(data);
-                    showToastUris(videoUris);
-                    getMaskProgressLayout().addVideoStartUpload(videoUris);
-                    break;
-                case MultimediaTypes.AUDIO:
-                    // 语音
-                    RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    Toast.makeText(getApplicationContext(), recordingItem.getPath(), Toast.LENGTH_LONG).show();
-                    getMaskProgressLayout().addAudioStartUpload(recordingItem.getPath(), recordingItem.getDuration());
-                    break;
-                case MultimediaTypes.BLEND:
-                    // 混合类型，意思是图片可能跟录像在一起.
-                    List<Uri> blends = MultiMediaSetting.obtainResult(data);
-                    showToastUris(blends);
-                    List<Uri> images = new ArrayList<>();
-                    List<Uri> videos = new ArrayList<>();
-                    // 循环判断类型
-                    for (Uri uri : blends) {
-                        DocumentFile documentFile = DocumentFile.fromSingleUri(getBaseContext(), uri);
-                        if (documentFile.getType().startsWith("image")) {
-                            images.add(uri);
-                        } else if (documentFile.getType().startsWith("video")) {
-                            videos.add(uri);
-                        }
-                    }
-                    // 分别上传图片和视频
-                    getMaskProgressLayout().addImagesUriStartUpload(images);
-                    getMaskProgressLayout().addVideoStartUpload(videos);
-                    break;
-                default:
-                    break;
+            } else {
+                List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
+                for (LocalFile localFile : result) {
+                    // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
+                    Log.i(TAG, "onResult 绝对路径:" + localFile.getPath());
+                    Log.i(TAG, "onResult Uri:" + localFile.getUri());
+                    Log.i(TAG, "onResult 文件大小: " + localFile.getSize());
+                    Log.i(TAG, "onResult 视频音频长度: " + localFile.getDuration());
+                    Log.i(TAG, "onResult 类型:" + localFile.getType());
+                    Log.i(TAG, "onResult 具体类型:" + localFile.getMimeType());
+                    Log.i(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
+                }
+                getMaskProgressLayout().addLocalFileStartUpload(result);
             }
         }
     }

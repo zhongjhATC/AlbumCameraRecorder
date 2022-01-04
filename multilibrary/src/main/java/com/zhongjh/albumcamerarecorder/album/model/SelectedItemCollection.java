@@ -209,36 +209,36 @@ public class SelectedItemCollection {
         return mItems;
     }
 
-    /**
-     * 获取uri的集合
-     *
-     * @return list<Uri>
-     */
-    public List<Uri> asListOfUri() {
-        List<Uri> uris = new ArrayList<>();
-        for (MultiMedia item : mItems) {
-            uris.add(item.getUri());
-        }
-        return uris;
-    }
-
-    /**
-     * 获取path的集合
-     *
-     * @return list<path>
-     */
-    public List<String> asListOfString() {
-        List<String> paths = new ArrayList<>();
-        for (MultiMedia item : mItems) {
-            if (item.getUri() != null) {
-                // 相册是只有uri没有path的，此时确定后转换
-                paths.add(PathUtils.getPath(mContext, item.getUri()));
-            } else if (item.getUrl() != null) {
-                paths.add(item.getUrl());
-            }
-        }
-        return paths;
-    }
+//    /**
+//     * 获取uri的集合
+//     *
+//     * @return list<Uri>
+//     */
+//    public List<Uri> asListOfUri() {
+//        List<Uri> uris = new ArrayList<>();
+//        for (MultiMedia item : mItems) {
+//            uris.add(item.getUri());
+//        }
+//        return uris;
+//    }
+//
+//    /**
+//     * 获取path的集合
+//     *
+//     * @return list<path>
+//     */
+//    public List<String> asListOfString() {
+//        List<String> paths = new ArrayList<>();
+//        for (MultiMedia item : mItems) {
+//            if (item.getUri() != null) {
+//                // 相册是只有uri没有path的，此时确定后转换
+//                paths.add(PathUtils.getPath(mContext, item.getUri()));
+//            } else if (item.getUrl() != null) {
+//                paths.add(item.getUrl());
+//            }
+//        }
+//        return paths;
+//    }
 
     /**
      * 获取LocalFile的集合

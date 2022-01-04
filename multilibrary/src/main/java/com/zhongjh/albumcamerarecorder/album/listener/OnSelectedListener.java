@@ -19,6 +19,8 @@ package com.zhongjh.albumcamerarecorder.album.listener;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 
+import com.zhongjh.common.entity.LocalFile;
+
 import java.util.List;
 
 /**
@@ -29,9 +31,8 @@ public interface OnSelectedListener {
 
     /**
      * 每次选择的事件
-     * @param uriList 所选项目{@link Uri} 列表.
-     * @param pathList 所选项目文件路径列表.
+     * @param localFiles 所选项目{@link com.zhongjh.common.entity.LocalFile} 列表.
      */
-    void onSelected(@NonNull List<Uri> uriList, @NonNull List<String> pathList);
+    void onSelected(@NonNull List<LocalFile> localFiles);
 
 }

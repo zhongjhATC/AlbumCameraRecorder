@@ -26,8 +26,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.imageedit.ImageEditActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -37,11 +35,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.PreviewVideoActivity.REQUEST_CODE_PREVIEW_VIDEO;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
@@ -152,17 +146,9 @@ public class CameraFragment extends BaseFragment {
                     localFiles.add(localFile);
                     mIsCommit = true;
                     if (mGlobalSpec.onResultCallbackListener == null) {
-                        ArrayList<String> arrayList = new ArrayList<>();
-                        arrayList.add(data.getStringExtra(PreviewVideoActivity.PATH));
-                        ArrayList<Uri> arrayListUri = new ArrayList<>();
-                        arrayListUri.add(data.getParcelableExtra(PreviewVideoActivity.URI));
                         // 获取视频路径
                         Intent result = new Intent();
-                        result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, arrayList);
-                        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, arrayListUri);
                         result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
-                        result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.VIDEO);
-                        result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                         mActivity.setResult(RESULT_OK, result);
                     } else {
                         mGlobalSpec.onResultCallbackListener.onResult(localFiles);
@@ -242,15 +228,11 @@ public class CameraFragment extends BaseFragment {
             }
 
             @Override
-            public void captureSuccess(ArrayList<String> paths, ArrayList<Uri> uris, ArrayList<LocalFile> localFiles) {
+            public void captureSuccess(ArrayList<LocalFile> localFiles) {
                 mIsCommit = true;
                 if (mGlobalSpec.onResultCallbackListener == null) {
                     Intent result = new Intent();
                     result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
-                    result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
-                    result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
-                    result.putExtra(EXTRA_MULTIMEDIA_TYPES, MultimediaTypes.PICTURE);
-                    result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                     mActivity.setResult(RESULT_OK, result);
                 } else {
                     mGlobalSpec.onResultCallbackListener.onResult(localFiles);

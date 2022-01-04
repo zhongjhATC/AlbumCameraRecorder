@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.documentfile.provider.DocumentFile;
@@ -108,10 +109,8 @@ public class Combined {
         if (this.requestCode == requestCode) {
             // 如果是在预览界面点击了确定
             if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                // 请求的预览界面
-                Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
                 // 获取选择的数据
-                ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                ArrayList<MultiMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
                 if (selected == null) {
                     return;
                 }
@@ -128,47 +127,9 @@ public class Combined {
                         this.maskProgressLayout.removePosition(i);
                     }
                 }
-                return;
-            }
-            // 获取类型，根据类型设置不同的事情
-            switch (MultiMediaSetting.obtainMultimediaType(data)) {
-                case MultimediaTypes.PICTURE:
-                    // 图片，自动AndroidQ版本以后，使用除了本身app的文件，最好是用uri方式控制
-                    List<Uri> path = MultiMediaSetting.obtainResult(data);
-                    this.maskProgressLayout.addImagesUriStartUpload(path);
-                    break;
-                case MultimediaTypes.VIDEO:
-                    // 录像
-                    List<Uri> videoUris = MultiMediaSetting.obtainResult(data);
-                    this.maskProgressLayout.addVideoStartUpload(videoUris);
-                    break;
-                case MultimediaTypes.AUDIO:
-                    // 语音
-                    LocalFile recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                    this.maskProgressLayout.addAudioStartUpload(recordingItem.getPath(), (int) recordingItem.getDuration());
-                    break;
-                case MultimediaTypes.BLEND:
-                    // 混合类型，意思是图片可能跟录像在一起.
-                    List<Uri> blends = MultiMediaSetting.obtainResult(data);
-                    List<Uri> images = new ArrayList<>();
-                    List<Uri> videos = new ArrayList<>();
-                    // 循环判断类型
-                    for (Uri uri : blends) {
-                        DocumentFile documentFile = DocumentFile.fromSingleUri(this.activity.getApplication(), uri);
-                        if (documentFile != null && documentFile.getType() != null) {
-                            if (documentFile.getType().startsWith("image")) {
-                                images.add(uri);
-                            } else if (documentFile.getType().startsWith("video")) {
-                                videos.add(uri);
-                            }
-                        }
-                    }
-                    // 分别上传图片和视频
-                    this.maskProgressLayout.addImagesUriStartUpload(images);
-                    this.maskProgressLayout.addVideoStartUpload(videos);
-                    break;
-                default:
-                    break;
+            } else {
+                List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
+                this.maskProgressLayout.addLocalFileStartUpload(result);
             }
         }
     }

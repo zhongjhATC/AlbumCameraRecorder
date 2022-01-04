@@ -2,13 +2,11 @@ package com.zhongjh.albumcamerarecorder.album;
 
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +20,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
@@ -38,31 +41,16 @@ import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.PathUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.utils.ColorFilterUtil;
-import com.zhongjh.common.utils.DisplayMetricsUtils;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 
+import java.util.ArrayList;
+
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * 相册
@@ -233,9 +221,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mViewHolder.buttonApply.setOnClickListener(view -> {
             ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
             if (mGlobalSpec.onResultCallbackListener == null) {
-                ArrayList<Uri> selectedUris = (ArrayList<Uri>) mSelectedCollection.asListOfUri();
-                ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
-                setResultOK(localFiles, selectedUris, selectedPaths);
+                setResultOK(localFiles);
             } else {
                 mGlobalSpec.onResultCallbackListener.onResult(localFiles);
             }
@@ -267,43 +253,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             }
         });
 
-    }
-
-    /**
-     * 根据uri列表返回当前全部的类型
-     *
-     * @param selectedUris uri列表
-     * @return 返回当前全部的类型
-     */
-    private int getMultimediaType(ArrayList<Uri> selectedUris) {
-        // 图片类型的数量
-        int isImageSize = 0;
-        // 视频的数量
-        int isVideoSize = 0;
-        ContentResolver resolver = mContext.getContentResolver();
-        // 循环判断类型
-        for (Uri uri : selectedUris) {
-            for (MimeType type : MimeType.ofImage()) {
-                if (type.checkType(resolver, uri)) {
-                    isImageSize++;
-                    break;
-                }
-            }
-            for (MimeType type : MimeType.ofVideo()) {
-                if (type.checkType(resolver, uri)) {
-                    isVideoSize++;
-                    break;
-                }
-            }
-        }
-        // 判断是纯图片还是纯视频
-        if (selectedUris.size() == isImageSize) {
-            return MultimediaTypes.PICTURE;
-        }
-        if (selectedUris.size() == isVideoSize) {
-            return MultimediaTypes.VIDEO;
-        }
-        return MultimediaTypes.BLEND;
     }
 
     @Override
@@ -344,18 +293,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     SelectedItemCollection.COLLECTION_UNDEFINED);
             // 如果在预览界面点击了确定
             if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                ArrayList<Uri> selectedUris = new ArrayList<>();
-                ArrayList<String> selectedPaths = new ArrayList<>();
                 if (selected != null) {
                     ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
-                    for (MultiMedia item : selected) {
-                        // 添加uri和path
-                        selectedUris.add(item.getUri());
-                        // 相册是只有uri没有path的，此时确定后转换
-                        selectedPaths.add(PathUtils.getPath(getContext(), item.getUri()));
-                    }
                     if (mGlobalSpec.onResultCallbackListener == null) {
-                        setResultOK(localFiles, selectedUris, selectedPaths);
+                        setResultOK(localFiles);
                     } else {
                         mGlobalSpec.onResultCallbackListener.onResult(localFiles);
                     }
@@ -528,8 +469,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         updateBottomToolbar();
         // 触发选择的接口事件
         if (mAlbumSpec.onSelectedListener != null) {
-            mAlbumSpec.onSelectedListener.onSelected(
-                    mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
+            mAlbumSpec.onSelectedListener.onSelected(mSelectedCollection.asListOfLocalFile());
         }
     }
 
@@ -576,17 +516,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 关闭Activity回调相关数值
      *
      * @param localFiles 本地数据包含别的参数
-     * @param uris       单纯uris的数据
-     * @param paths      单纯paths的数据
      */
-    private void setResultOK(ArrayList<LocalFile> localFiles, ArrayList<Uri> uris, ArrayList<String> paths) {
+    private void setResultOK(ArrayList<LocalFile> localFiles) {
         // 获取选择的图片的url集合
         Intent result = new Intent();
         result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
-        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, uris);
-        result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, paths);
-        result.putExtra(EXTRA_MULTIMEDIA_TYPES, getMultimediaType(uris));
-        result.putExtra(EXTRA_MULTIMEDIA_CHOICE, true);
         // 是否启用原图
         result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         mActivity.setResult(RESULT_OK, result);

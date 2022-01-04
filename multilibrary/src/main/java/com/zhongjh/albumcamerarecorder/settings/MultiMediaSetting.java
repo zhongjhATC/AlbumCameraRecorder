@@ -2,37 +2,24 @@ package com.zhongjh.albumcamerarecorder.settings;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
-import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.RecordingItem;
 import com.zhongjh.common.enums.MimeType;
 
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_VIDEO;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_CHOICE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_MULTIMEDIA_TYPES;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Set;
+
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * 多媒体的设置 - Matisse
@@ -81,53 +68,26 @@ public final class MultiMediaSetting {
     }
 
     /**
-     * 获取用户确认后的是否选择标记
-     *
-     * @param data 通过以下方法获取 onActivityResult
-     * @return 用户确认后的是否选择标记
-     */
-    public static boolean obtainMultimediaChoice(Intent data) {
-        return data.getBooleanExtra(EXTRA_MULTIMEDIA_CHOICE, false);
-    }
-
-    /**
-     * 获取用户确认后的多媒体类型
-     *
-     * @param data 通过以下方法获取 onActivityResult
-     * @return 用户确认后的多媒体类型
-     */
-    public static int obtainMultimediaType(Intent data) {
-        return data.getIntExtra(EXTRA_MULTIMEDIA_TYPES, -1);
-    }
-
-    /**
      * 获取用户确认后的LocalFile多媒体数据
      *
      * @param data 通过onActivityResult方法获取
      * @return 用户选择/拍照的媒体数据. {@link LocalFile}
      */
-    public static boolean obtainLocalFileResult(Intent data) {
-        return data.getBooleanExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, false);
+    public static ArrayList<LocalFile> obtainLocalFileResult(Intent data) {
+        return data.getParcelableExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE);
     }
 
     /**
-     * 获取用户选择/拍照的媒体路径列表 {@link Uri}
+     * 获取用户确认后的MultiMedia多媒体数据
      *
-     * @param data 通过以下方法获取 onActivityResult
-     * @return 用户选择/拍照的媒体路径列表. {@link Uri}
+     * @param data 通过onActivityResult方法获取
+     * @return 用户通过直接调用预览界面然后返回的媒体数据. {@link MultiMedia}
      */
-    public static List<Uri> obtainResult(Intent data) {
-        return data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION);
-    }
-
-    /**
-     * 获取用户选择/拍照的媒体路径列表
-     *
-     * @param data 通过以下方法获取 onActivityResult
-     * @return 用户选择/拍照的媒体路径列表.
-     */
-    public static List<String> obtainPathResult(Intent data) {
-        return data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH);
+    public static ArrayList<MultiMedia> obtainMultiMediaResult(Intent data) {
+        // 请求的预览界面
+        Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+        // 获取选择的数据
+        return resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
     }
 
     /**

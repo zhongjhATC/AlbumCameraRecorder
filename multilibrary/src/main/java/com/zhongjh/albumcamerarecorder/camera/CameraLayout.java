@@ -1107,9 +1107,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             // 判断是否拷贝完所有文件
             if (currentCount >= pathSum) {
                 currentCount = 0;
-                // 拷贝完毕，进行加入相册库等操作
-                ArrayList<String> newPaths = new ArrayList<>();
-                ArrayList<Uri> newUris = new ArrayList<>();
                 for (LocalFile item : newFiles) {
                     // 加入图片到android系统库里面
                     Uri uri = BitmapUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
@@ -1117,11 +1114,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     item.setMimeType(MimeType.JPEG.getMMimeTypeName());
                     item.setUri(uri);
                     item.setType(MultimediaTypes.PICTURE);
-                    newPaths.add(item.getPath());
-                    newUris.add(item.getUri());
                 }
                 // 执行完成
-                mOperateCameraListener.captureSuccess(newPaths, newUris, newFiles);
+                mOperateCameraListener.captureSuccess( newFiles);
             }
         });
     }

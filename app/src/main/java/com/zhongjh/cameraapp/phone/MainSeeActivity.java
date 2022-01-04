@@ -195,9 +195,9 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
                 // 图片缩放比例
                 .thumbnailScale(0.85f)
-                .setOnSelectedListener((uriList, pathList) -> {
+                .setOnSelectedListener(localFiles -> {
                     // 每次选择的事件
-                    Log.d("onSelected", "onSelected: pathList=" + pathList);
+                    Log.d("onSelected", "onSelected: localFiles.size()=" + localFiles.size());
                 })
                 // 开启原图
                 .originalEnable(true)

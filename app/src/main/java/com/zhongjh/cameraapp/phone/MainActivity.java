@@ -10,11 +10,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
+import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -385,9 +387,9 @@ public class MainActivity extends BaseActivity {
                 .gridExpectedSize(dip2px(Integer.parseInt(mBinding.etGridExpectedSize.getText().toString())))
                 // 图片缩放比例
                 .thumbnailScale(0.85f)
-                .setOnSelectedListener((uriList, pathList) -> {
+                .setOnSelectedListener(localFiles -> {
                     // 每次选择的事件
-                    Log.d("onSelected", "onSelected: pathList=" + pathList);
+                    Log.d("onSelected", "onSelected: localFiles.size()=" + localFiles.size());
                 })
                 // 开启原图
                 .originalEnable(mBinding.cbOriginalEnableTrue.isChecked())

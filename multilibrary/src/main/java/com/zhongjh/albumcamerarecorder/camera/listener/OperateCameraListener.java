@@ -22,11 +22,9 @@ public interface OperateCameraListener {
     /**
      * 拍照成功后点击确认事件
      *
-     * @param paths      文件地址
-     * @param uris       文件uri
      * @param localFiles 包含文件地址、uri和丰富其他属性
      */
-    void captureSuccess(ArrayList<String> paths, ArrayList<Uri> uris, ArrayList<LocalFile> localFiles);
+    void captureSuccess(ArrayList<LocalFile> localFiles);
 
     /**
      * 录像成功后点击确认事件

@@ -48,7 +48,6 @@ public class PreviewVideoActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_PREVIEW_VIDEO = 26;
     static final String LOCAL_FILE = "LOCAL_FILE";
     static final String PATH = "PATH";
-    static final String URI = "URI";
 
     VideoView mVideoViewPreview;
     ImageView mImgClose;
