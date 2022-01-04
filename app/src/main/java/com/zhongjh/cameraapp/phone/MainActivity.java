@@ -3,21 +3,18 @@ package com.zhongjh.cameraapp.phone;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-
-import androidx.appcompat.widget.PopupMenu;
-import androidx.databinding.DataBindingUtil;
-
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.DataBindingUtil;
+
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.camera.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -26,25 +23,25 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.CompressionLuBan;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
-import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.entity.SaveStrategy;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.videoedit.VideoEditManager;
 
-import java.util.ArrayList;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Set;
-
-import com.zhongjh.common.entity.SaveStrategy;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 
 /**
  * 配置版
@@ -58,6 +55,7 @@ public class MainActivity extends BaseActivity {
     ActivityMainBinding mBinding;
 
     GlobalSetting mGlobalSetting;
+    AlbumSetting mAlbumSetting;
 
     @GlobalSetting.ScreenOrientation
     int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
@@ -89,7 +87,7 @@ public class MainActivity extends BaseActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
                 if (isOk) {
@@ -98,18 +96,17 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            @SuppressWarnings({"unchecked", "rawtypes"})
-            public void onItemClick(View view, MultiMediaView multiMediaView) {
+            public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
-                    MultiMediaSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
+                    mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
                             mBinding.mplImageList.getImagesAndVideos(),
                             mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
             @Override
-            public void onItemStartUploading(MultiMediaView multiMediaView) {
+            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
                 MyTask timer = new MyTask(multiMediaView);
                 timers.put(multiMediaView, timer);
@@ -117,7 +114,7 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemClose(View view, MultiMediaView multiMediaView) {
+            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 停止上传
                 MyTask myTask = timers.get(multiMediaView);
                 if (myTask != null) {
@@ -127,12 +124,12 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartDownload(View view, String url) {
+            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
             }
 
             @Override
-            public boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 return false;
             }
 
@@ -174,7 +171,7 @@ public class MainActivity extends BaseActivity {
         CameraSetting cameraSetting = initCameraSetting();
 
         // 相册设置
-        AlbumSetting albumSetting = initAlbumSetting();
+        mAlbumSetting = initAlbumSetting();
 
         // 录音机设置
         RecorderSetting recorderSetting = new RecorderSetting();
@@ -199,7 +196,7 @@ public class MainActivity extends BaseActivity {
         if (mBinding.cbAlbum.isChecked())
         // 开启相册功能
         {
-            mGlobalSetting.albumSetting(albumSetting);
+            mGlobalSetting.albumSetting(mAlbumSetting);
         }
         if (mBinding.cbCamera.isChecked())
         // 开启拍摄功能
@@ -255,45 +252,61 @@ public class MainActivity extends BaseActivity {
         if (mBinding.cbIsActivityResult.isChecked()) {
             mGlobalSetting.forResult(REQUEST_CODE_CHOOSE);
         } else {
-            mGlobalSetting.forResult(new OnResultCallbackListener<LocalFile>() {
-
-                @Override
-                public void onResult(List<LocalFile> result, boolean fromPreview) {
-                    for (LocalFile localFile : result) {
-                        // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
-                        Log.i(TAG, "绝对路径:" + localFile.getPath());
-                        Log.i(TAG, "Uri:" + localFile.getUri());
-                        Log.i(TAG, "文件大小: " + localFile.getSize());
-                        Log.i(TAG, "视频音频长度: " + localFile.getDuration());
-                        Log.i(TAG, "类型:" + localFile.getType());
-                        Log.i(TAG, "具体类型:" + localFile.getMimeType());
-                        Log.i(TAG, "宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
-                    }
-                    if (fromPreview) {
-                        // 循环判断，如果不存在，则删除
-                        for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
-                            int k = 0;
-                            for (LocalFile localFile : result) {
-                                if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localFile)) {
-                                    k++;
-                                }
-                            }
-                            if (k == result.size()) {
-                                // 所有都不符合，则删除
-                                getMaskProgressLayout().removePosition(i);
-                            }
-                        }
-                    } else {
-                        getMaskProgressLayout().addLocalFileStartUpload(result);
-                    }
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            });
+            initForResult();
         }
+    }
+
+    private void initForResult() {
+        mGlobalSetting.forResult(new OnResultCallbackListener() {
+
+            @Override
+            public void onResult(List<LocalFile> result) {
+                for (LocalFile localFile : result) {
+                    // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
+                    Log.i(TAG, "onResult 绝对路径:" + localFile.getPath());
+                    Log.i(TAG, "onResult Uri:" + localFile.getUri());
+                    Log.i(TAG, "onResult 文件大小: " + localFile.getSize());
+                    Log.i(TAG, "onResult 视频音频长度: " + localFile.getDuration());
+                    Log.i(TAG, "onResult 类型:" + localFile.getType());
+                    Log.i(TAG, "onResult 具体类型:" + localFile.getMimeType());
+                    Log.i(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
+                }
+                getMaskProgressLayout().addLocalFileStartUpload(result);
+            }
+
+            @Override
+            public void onResultFromPreview(List<MultiMedia> result, boolean apply) {
+                for (MultiMedia multiMedia : result) {
+                    // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
+                    Log.i(TAG, "onResult id:" + multiMedia.getId());
+                    Log.i(TAG, "onResult 绝对路径:" + multiMedia.getPath());
+                    Log.i(TAG, "onResult Uri:" + multiMedia.getUri());
+                    Log.i(TAG, "onResult 文件大小: " + multiMedia.getSize());
+                    Log.i(TAG, "onResult 视频音频长度: " + multiMedia.getDuration());
+                    Log.i(TAG, "onResult 类型:" + multiMedia.getType());
+                    Log.i(TAG, "onResult 具体类型:" + multiMedia.getMimeType());
+                    Log.i(TAG, "onResult 宽高: " + multiMedia.getWidth() + "x" + multiMedia.getHeight());
+                }
+                // 倒数循环判断，如果不存在，则删除
+                for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
+                    int k = 0;
+                    for (LocalFile localFile : result) {
+                        if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localFile)) {
+                            k++;
+                        }
+                    }
+                    if (k == result.size()) {
+                        // 所有都不符合，则删除
+                        getMaskProgressLayout().removePosition(i);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
     }
 
     /**

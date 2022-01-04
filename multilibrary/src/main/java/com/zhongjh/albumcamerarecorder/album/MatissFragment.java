@@ -237,8 +237,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
                 setResultOK(localFiles, selectedUris, selectedPaths);
             } else {
-                mGlobalSpec.onResultCallbackListener.onResult(localFiles,false);
-                mActivity.setResult(RESULT_OK);
+                mGlobalSpec.onResultCallbackListener.onResult(localFiles);
             }
             mActivity.finish();
         });
@@ -358,8 +357,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     if (mGlobalSpec.onResultCallbackListener == null) {
                         setResultOK(localFiles, selectedUris, selectedPaths);
                     } else {
-                        mGlobalSpec.onResultCallbackListener.onResult(localFiles, true);
-                        mActivity.setResult(RESULT_OK);
+                        mGlobalSpec.onResultCallbackListener.onResult(localFiles);
                     }
                 }
                 mActivity.finish();

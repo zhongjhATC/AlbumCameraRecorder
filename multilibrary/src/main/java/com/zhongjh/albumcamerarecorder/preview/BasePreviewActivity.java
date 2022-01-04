@@ -60,6 +60,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String ENABLE_OPERATION = "enable_operation";
     public static final String IS_SELECTED_LISTENER = "is_selected_listener";
     public static final String IS_SELECTED_CHECK = "is_selected_check";
+    public static final String IS_EXTERNAL_USERS = "is_external_users";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected GlobalSpec mGlobalSpec;
@@ -93,6 +94,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 设置右上角是否检测类型
      */
     protected boolean mIsSelectedCheck = true;
+    /**
+     * 是否外部直接调用该预览窗口，如果是外部直接调用，那么可以启用回调接口，内部统一使用onActivityResult方式回调
+     */
+    protected boolean mIsExternalUsers = false;
 
     /**
      * 图片存储器
@@ -119,6 +124,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
         mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER, true);
         mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK, true);
+        mIsExternalUsers = getIntent().getBooleanExtra(IS_EXTERNAL_USERS, false);
 
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
@@ -489,12 +495,20 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      */
     protected void sendBackResult(boolean apply) {
         refreshMultiMediaItem(apply);
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-        intent.putExtra(EXTRA_RESULT_APPLY, apply);
-        intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
-        intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        setResult(Activity.RESULT_OK, intent);
+        if (mGlobalSpec.onResultCallbackListener == null || !mIsExternalUsers) {
+            Intent intent = new Intent();
+            intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+            intent.putExtra(EXTRA_RESULT_APPLY, apply);
+            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
+            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+            setResult(RESULT_OK, intent);
+        } else {
+            if (apply) {
+                mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
+            } else {
+                mGlobalSpec.onResultCallbackListener.onCancel();
+            }
+        }
     }
 
     /**

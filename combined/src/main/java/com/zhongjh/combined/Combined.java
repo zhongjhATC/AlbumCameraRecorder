@@ -24,6 +24,8 @@ import java.util.List;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MultimediaTypes;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * 协调多个控件之间代码，更加简化代码
  *
@@ -46,7 +48,8 @@ public class Combined {
      * @param listener           事件
      */
     public Combined(Activity activity, int requestCode,
-                    GlobalSetting globalSetting, MaskProgressLayout maskProgressLayout,
+                    GlobalSetting globalSetting,
+                    MaskProgressLayout maskProgressLayout,
                     AbstractMaskProgressLayoutListener listener) {
         this.activity = activity;
         this.requestCode = requestCode;
@@ -54,7 +57,7 @@ public class Combined {
         maskProgressLayout.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击Add
                 globalSetting.alreadyCount(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
                 globalSetting.forResult(requestCode);
@@ -62,11 +65,11 @@ public class Combined {
             }
 
             @Override
-            public void onItemClick(View view, MultiMediaView multiMediaView) {
+            public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
                     // 预览
-                    MultiMediaSetting.openPreviewData(activity, requestCode,
+                    globalSetting.openPreviewData(activity, requestCode,
                             maskProgressLayout.getImagesAndVideos(),
                             maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
                 }
@@ -74,22 +77,22 @@ public class Combined {
             }
 
             @Override
-            public void onItemStartUploading(MultiMediaView multiMediaView) {
+            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
                 listener.onItemStartUploading(multiMediaView);
             }
 
             @Override
-            public void onItemClose(View view, MultiMediaView multiMediaView) {
+            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 listener.onItemClose(view, multiMediaView);
             }
 
             @Override
-            public void onItemAudioStartDownload(View view, String url) {
+            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
                 listener.onItemAudioStartDownload(view, url);
             }
 
             @Override
-            public boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 return listener.onItemVideoStartDownload(view, multiMediaView);
             }
         });

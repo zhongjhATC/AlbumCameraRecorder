@@ -165,8 +165,7 @@ public class CameraFragment extends BaseFragment {
                         result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                         mActivity.setResult(RESULT_OK, result);
                     } else {
-                        mGlobalSpec.onResultCallbackListener.onResult(localFiles, false);
-                        mActivity.setResult(RESULT_OK);
+                        mGlobalSpec.onResultCallbackListener.onResult(localFiles);
                     }
                     mActivity.finish();
                     break;
@@ -254,8 +253,7 @@ public class CameraFragment extends BaseFragment {
                     result.putExtra(EXTRA_MULTIMEDIA_CHOICE, false);
                     mActivity.setResult(RESULT_OK, result);
                 } else {
-                    mGlobalSpec.onResultCallbackListener.onResult(localFiles, false);
-                    mActivity.setResult(RESULT_OK);
+                    mGlobalSpec.onResultCallbackListener.onResult(localFiles);
                 }
                 mIsCommit = true;
                 mActivity.finish();

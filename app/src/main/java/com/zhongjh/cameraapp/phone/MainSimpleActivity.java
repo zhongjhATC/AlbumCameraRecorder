@@ -2,14 +2,12 @@ package com.zhongjh.cameraapp.phone;
 
 import android.app.Activity;
 import android.content.Intent;
-
-import androidx.databinding.DataBindingUtil;
-
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -18,19 +16,18 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.cameraapp.BaseActivity;
+import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
-import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
+import com.zhongjh.common.entity.SaveStrategy;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
-import java.util.ArrayList;
-
-import com.zhongjh.common.entity.SaveStrategy;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 简单版
@@ -61,7 +58,7 @@ public class MainSimpleActivity extends BaseActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
                 if (isOk) {
@@ -70,18 +67,17 @@ public class MainSimpleActivity extends BaseActivity {
             }
 
             @Override
-            @SuppressWarnings({"unchecked", "rawtypes"})
-            public void onItemClick(View view, MultiMediaView multiMediaView) {
+            public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
-                    MultiMediaSetting.openPreviewData(MainSimpleActivity.this, REQUEST_CODE_CHOOSE,
+                    mGlobalSetting.openPreviewData(MainSimpleActivity.this, REQUEST_CODE_CHOOSE,
                             mBinding.mplImageList.getImagesAndVideos(),
                             mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
             @Override
-            public void onItemStartUploading(MultiMediaView multiMediaView) {
+            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
                 MyTask timer = new MyTask(multiMediaView);
                 timers.put(multiMediaView, timer);
@@ -89,7 +85,7 @@ public class MainSimpleActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemClose(View view, MultiMediaView multiMediaView) {
+            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 停止上传
                 MyTask myTask = timers.get(multiMediaView);
                 if (myTask != null) {
@@ -99,12 +95,12 @@ public class MainSimpleActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartDownload(View view, String url) {
+            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
             }
 
             @Override
-            public boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 return false;
             }
 

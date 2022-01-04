@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
+import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
@@ -18,7 +19,10 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.SaveStrategy;
+
+import java.util.ArrayList;
 
 /**
  * 用于构建媒体具体公共设置 API。
@@ -211,6 +215,34 @@ public interface GlobalSettingApi {
      *
      * @param listener 回调事件
      */
-    void forResult(OnResultCallbackListener<LocalFile> listener);
+    void forResult(OnResultCallbackListener listener);
 
+    /**
+     * 调用打开图片、视频预览 - 主要用于配合九宫图
+     *
+     * @param activity    窗体
+     * @param requestCode 请求码
+     * @param list        数据源
+     * @param position    当前数据的索引
+     */
+    void openPreviewData(Activity activity, int requestCode,
+                         ArrayList<? extends MultiMedia> list, int position);
+
+    /**
+     * 调用打开图片预览 - 纯浏览不可操作
+     *
+     * @param activity 窗体
+     * @param list     资源id数据源
+     * @param position 当前数据的索引
+     */
+    void openPreviewResourceId(Activity activity, ArrayList<Integer> list, int position);
+
+    /**
+     * 调用打开图片预览 - 纯浏览不可操作
+     *
+     * @param activity 窗体
+     * @param list     文件地址的数据源
+     * @param position 当前数据的索引
+     */
+    void openPreviewPath(Activity activity, ArrayList<String> list, int position);
 }

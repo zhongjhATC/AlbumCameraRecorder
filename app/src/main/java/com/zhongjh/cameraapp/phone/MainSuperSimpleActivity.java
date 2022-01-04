@@ -29,6 +29,8 @@ import java.util.TimerTask;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * 这是一个超级简单代码就完成的示例
  * 主要优化了onActivityResult、setMaskProgressLayoutListener方面的代码
@@ -42,6 +44,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
     ActivityMainSuperSimpleBinding mBinding;
     GlobalSetting mGlobalSetting;
+    AlbumSetting mAlbumSetting;
     Combined mCombined;
 
     /**
@@ -98,7 +101,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
         // 相册
-        AlbumSetting albumSetting = new AlbumSetting(false);
+        mAlbumSetting = new AlbumSetting(false);
 
         // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
@@ -107,7 +110,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         mGlobalSetting = MultiMediaSetting.from(MainSuperSimpleActivity.this).choose(MimeType.ofAll());
 
         // 开启相册功能
-        mGlobalSetting.albumSetting(albumSetting);
+        mGlobalSetting.albumSetting(mAlbumSetting);
         // 开启拍摄功能
         mGlobalSetting.cameraSetting(cameraSetting);
         // 开启录音功能
@@ -131,9 +134,9 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
                 mGlobalSetting, mBinding.mplImageList, new AbstractMaskProgressLayoutListener() {
             @Override
-            public void onItemStartUploading(MultiMediaView multiMediaView) {
+            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
                 super.onItemStartUploading(multiMediaView);
-                Log.d("onItemStartUploading","onItemStartUploading");
+                Log.d("onItemStartUploading", "onItemStartUploading");
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
                 MyTask timer = new MyTask(multiMediaView);
                 timers.put(multiMediaView, timer);
@@ -141,12 +144,12 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemClose(View view, MultiMediaView multiMediaView) {
+            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 super.onItemClose(view, multiMediaView);
                 // 停止上传
                 MyTask myTask = timers.get(multiMediaView);
                 if (myTask != null) {
-                    Log.d("onItemClose","取消");
+                    Log.d("onItemClose", "取消");
                     myTask.cancel();
                     timers.remove(multiMediaView);
                 }
@@ -171,7 +174,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         percentage++;
                         multiMedia.setPercentage(percentage);
-                        Log.d("MyTask",multiMedia.getUri().toString() + "进度： " + percentage);
+                        Log.d("MyTask", multiMedia.getUri().toString() + "进度： " + percentage);
                         if (percentage == 100) {
                             this.cancel();
                         }

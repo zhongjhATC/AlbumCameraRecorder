@@ -11,7 +11,6 @@ import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
-import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 
@@ -115,7 +114,7 @@ public class GlobalSpec {
     /**
      * 回调监听
      */
-    public OnResultCallbackListener<LocalFile> onResultCallbackListener;
+    public OnResultCallbackListener onResultCallbackListener;
 
     private GlobalSpec() {
     }

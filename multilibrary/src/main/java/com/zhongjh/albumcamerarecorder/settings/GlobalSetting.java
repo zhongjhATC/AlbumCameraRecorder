@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.settings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.IntDef;
@@ -16,15 +17,19 @@ import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Set;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_BEHIND;
@@ -43,6 +48,9 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
 
 /**
  * 用于构建媒体具体公共设置 API。
@@ -260,14 +268,81 @@ public final class GlobalSetting implements GlobalSettingApi {
     @Override
     public void forResult(int requestCode) {
         mGlobalSpec.requestCode = requestCode;
+        // 回调监听设置null
+        mGlobalSpec.onResultCallbackListener = null;
         openMain(requestCode);
     }
 
     @Override
-    public void forResult(OnResultCallbackListener<LocalFile> listener) {
+    public void forResult(OnResultCallbackListener listener) {
         // 绑定回调监听
         mGlobalSpec.onResultCallbackListener = new WeakReference<>(listener).get();
         openMain(null);
+    }
+
+    /**
+     * 调用打开图片、视频预览 - 主要用于配合九宫图
+     *
+     * @param activity    窗体
+     * @param requestCode 请求码
+     * @param list        数据源
+     * @param position    当前数据的索引
+     */
+    @Override
+    public void openPreviewData(Activity activity, int requestCode,
+                                ArrayList<? extends MultiMedia> list, int position) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, list);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+
+        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(position));
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+        intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true);
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        activity.startActivityForResult(intent, requestCode);
+        if (globalSpec.isCutscenes) {
+            activity.overridePendingTransition(R.anim.activity_open, 0);
+        }
+    }
+
+    /**
+     * 调用打开图片预览 - 纯浏览不可操作
+     *
+     * @param activity 窗体
+     * @param list     资源id数据源
+     * @param position 当前数据的索引
+     */
+    @Override
+    public void openPreviewResourceId(Activity activity, ArrayList<Integer> list, int position) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        for (Integer item : list) {
+            MultiMedia multiMedia = new MultiMedia();
+            multiMedia.setDrawableId(item);
+            multiMedias.add(multiMedia);
+        }
+        openPreview(activity, multiMedias, position);
+    }
+
+    /**
+     * 调用打开图片预览 - 纯浏览不可操作
+     *
+     * @param activity 窗体
+     * @param list     文件地址的数据源
+     * @param position 当前数据的索引
+     */
+    @Override
+    public void openPreviewPath(Activity activity, ArrayList<String> list, int position) {
+        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
+        for (String item : list) {
+            MultiMedia multiMedia = new MultiMedia();
+            multiMedia.setUrl(item);
+            multiMedias.add(multiMedia);
+        }
+        openPreview(activity, multiMedias, position);
     }
 
     private void openMain(Integer requestCode) {
@@ -317,6 +392,33 @@ public final class GlobalSetting implements GlobalSettingApi {
             if (mGlobalSpec.isCutscenes) {
                 activity.overridePendingTransition(R.anim.activity_open, 0);
             }
+        }
+    }
+
+    /**
+     * 提供给 {@link #openPreviewResourceId} 和 {@link #openPreviewPath} 共用的方法
+     *
+     * @param activity    窗体
+     * @param multiMedias 数据源
+     * @param position    当前数据的索引
+     */
+    private static void openPreview(Activity activity, ArrayList<MultiMedia> multiMedias, int position) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, multiMedias);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+
+        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, multiMedias.get(position));
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+        intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
+        intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true);
+        GlobalSpec globalSpec = GlobalSpec.getInstance();
+        activity.startActivityForResult(intent, globalSpec.requestCode);
+        if (globalSpec.isCutscenes) {
+            activity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
 
