@@ -11,14 +11,12 @@ import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.entity.RecordingItem;
 import com.zhongjh.common.enums.MimeType;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Set;
 
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
 
 /**
@@ -74,7 +72,7 @@ public final class MultiMediaSetting {
      * @return 用户选择/拍照的媒体数据. {@link LocalFile}
      */
     public static ArrayList<LocalFile> obtainLocalFileResult(Intent data) {
-        return data.getParcelableExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE);
+        return data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE);
     }
 
     /**
@@ -88,16 +86,6 @@ public final class MultiMediaSetting {
         Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
         // 获取选择的数据
         return resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-    }
-
-    /**
-     * 获取用户录音的数据
-     *
-     * @param data 通过以下方法获取 onActivityResult
-     * @return 用户录音的数据
-     */
-    public static RecordingItem obtainRecordingItemResult(Intent data) {
-        return data.getParcelableExtra(EXTRA_RESULT_RECORDING_ITEM);
     }
 
     /**

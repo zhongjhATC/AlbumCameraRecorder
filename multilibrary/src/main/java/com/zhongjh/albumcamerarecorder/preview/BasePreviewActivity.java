@@ -495,12 +495,17 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected void sendBackResult(boolean apply) {
         refreshMultiMediaItem(apply);
         if (mGlobalSpec.onResultCallbackListener == null || !mIsExternalUsers) {
+            // 如果是外部使用并且不同意，则不执行RESULT_OK
             Intent intent = new Intent();
             intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(EXTRA_RESULT_APPLY, apply);
             intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
             intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            setResult(RESULT_OK, intent);
+            if (mIsExternalUsers && !apply) {
+                setResult(RESULT_CANCELED, intent);
+            } else {
+                setResult(RESULT_OK, intent);
+            }
         } else {
             if (apply) {
                 mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);

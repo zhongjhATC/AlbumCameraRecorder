@@ -45,7 +45,7 @@ import com.zhongjh.common.utils.ThreadUtils;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_RECORDING_ITEM;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
 
 /**
@@ -480,7 +480,9 @@ public class SoundRecordingFragment extends BaseFragment {
                             if (progress >= FULL) {
                                 if (mGlobalSpec.onResultCallbackListener == null) {
                                     Intent result = new Intent();
-                                    result.putExtra(EXTRA_RESULT_RECORDING_ITEM, localFile);
+                                    ArrayList<LocalFile> localFiles = new ArrayList<>();
+                                    localFiles.add(localFile);
+                                    result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
                                     mActivity.setResult(RESULT_OK, result);
                                 } else {
                                     ArrayList<LocalFile> localFiles = new ArrayList<>();

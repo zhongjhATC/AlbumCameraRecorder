@@ -221,7 +221,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mViewHolder.buttonApply.setOnClickListener(view -> {
             ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
             if (mGlobalSpec.onResultCallbackListener == null) {
-                setResultOK(localFiles);
+                setResultOk(localFiles);
             } else {
                 mGlobalSpec.onResultCallbackListener.onResult(localFiles);
             }
@@ -296,7 +296,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 if (selected != null) {
                     ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
                     if (mGlobalSpec.onResultCallbackListener == null) {
-                        setResultOK(localFiles);
+                        setResultOk(localFiles);
                     } else {
                         mGlobalSpec.onResultCallbackListener.onResult(localFiles);
                     }
@@ -517,14 +517,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      *
      * @param localFiles 本地数据包含别的参数
      */
-    private void setResultOK(ArrayList<LocalFile> localFiles) {
+    private void setResultOk(ArrayList<LocalFile> localFiles) {
         // 获取选择的图片的url集合
         Intent result = new Intent();
         result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
         // 是否启用原图
         result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         mActivity.setResult(RESULT_OK, result);
-
     }
 
     public static class ViewHolder {
