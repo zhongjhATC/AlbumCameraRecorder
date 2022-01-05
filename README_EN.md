@@ -146,31 +146,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK)
             return;
-        switch (requestCode) {
-            case REQUEST_CODE_PREVIEW:
-                ```
-            case REQUEST_CODE_CHOOSE:
-                // Gets the type and sets different things according to the type
-                switch (MultiMediaSetting.obtainMultimediaType(data)) {
-                    case MultimediaTypes.PICTURE:
-                        // picture
-                        List<String> path = MultiMediaSetting.obtainResult(data);
-                        break;
-                    case MultimediaTypes.VIDEO:
-                        // video
-                        List<String> videoPath = MultiMediaSetting.obtainResult(data);
-                        break;
-                    case MultimediaTypes.AUDIO:
-                        // voice
-                        RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                        break;
-                    case MultimediaTypes.BLEND:
-                        // Mixed type, which means the image may accompany the video.
-                        List<Uri> blends = MultiMediaSetting.obtainResult(data);
-                        break;
-                }
-                break;
-        }
+        List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
     }
 
 #### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java) for details.

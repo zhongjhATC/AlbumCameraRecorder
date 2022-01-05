@@ -149,31 +149,7 @@
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK)
             return;
-        switch (requestCode) {
-            case REQUEST_CODE_PREVIEW:
-                ```
-            case REQUEST_CODE_CHOOSE:
-                // 获取类型，根据类型设置不同的事情
-                switch (MultiMediaSetting.obtainMultimediaType(data)) {
-                    case MultimediaTypes.PICTURE:
-                        // 图片
-                        List<String> path = MultiMediaSetting.obtainResult(data);
-                        break;
-                    case MultimediaTypes.VIDEO:
-                        // 录像
-                        List<String> videoPath = MultiMediaSetting.obtainResult(data);
-                        break;
-                    case MultimediaTypes.AUDIO:
-                        // 语音
-                        RecordingItem recordingItem = MultiMediaSetting.obtainRecordingItemResult(data);
-                        break;
-                    case MultimediaTypes.BLEND:
-                        // 混合类型，意思是图片可能跟录像在一起.
-                        List<Uri> blends = MultiMediaSetting.obtainResult(data);
-                        break;
-                }
-                break;
-        }
+        List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
     }
 
 #### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
