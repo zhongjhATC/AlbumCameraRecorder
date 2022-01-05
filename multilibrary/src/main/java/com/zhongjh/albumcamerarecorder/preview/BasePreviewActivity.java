@@ -28,7 +28,7 @@ import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.BitmapUtils;
+import com.zhongjh.albumcamerarecorder.utils.AlbumUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.utils.MediaStoreCompat;
@@ -200,7 +200,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     if (multiMedia.getPath() != null) {
                         File file = new File(multiMedia.getPath());
                         // 加入相册库
-                        Uri editMediaUri = BitmapUtils.displayToGallery(this, file, TYPE_PICTURE, -1, 0, 0,
+                        Uri editMediaUri = AlbumUtils.displayToGallery(this, file, TYPE_PICTURE, -1, 0, 0,
                                 mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
                         multiMedia.setUri(editMediaUri);
                     }

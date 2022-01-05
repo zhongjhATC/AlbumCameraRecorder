@@ -45,6 +45,7 @@ import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.utils.ColorFilterUtil;
 import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 
 import java.util.ArrayList;
@@ -524,6 +525,28 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 是否启用原图
         result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         mActivity.setResult(RESULT_OK, result);
+    }
+
+    /**
+     * 判断是否压缩，如果要压缩先要迁移复制再压缩
+     */
+    private void a() {
+        // 判断是否需要压缩
+        if (mGlobalSpec.compressionInterface != null) {
+            // 复制相册的文件
+            ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
+
+                @Override
+                public void onSuccess(Void result) {
+
+                }
+
+                @Override
+                public Void doInBackground() {
+                    return null;
+                }
+            });
+        }
     }
 
     public static class ViewHolder {

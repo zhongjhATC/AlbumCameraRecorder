@@ -32,7 +32,6 @@ public class PathUtils {
      * @param uri     The Uri to query.
      * @author paulburke
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static String getPath(final Context context, final Uri uri) {
         // DocumentProvider
         if (DocumentsContract.isDocumentUri(context, uri)) {
