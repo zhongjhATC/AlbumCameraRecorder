@@ -278,35 +278,32 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onResultFromPreview(List<MultiMedia> result, boolean apply) {
-                for (MultiMedia multiMedia : result) {
-                    // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
-                    Log.i(TAG, "onResult id:" + multiMedia.getId());
-                    Log.i(TAG, "onResult 绝对路径:" + multiMedia.getPath());
-                    Log.i(TAG, "onResult Uri:" + multiMedia.getUri());
-                    Log.i(TAG, "onResult 文件大小: " + multiMedia.getSize());
-                    Log.i(TAG, "onResult 视频音频长度: " + multiMedia.getDuration());
-                    Log.i(TAG, "onResult 类型:" + multiMedia.getType());
-                    Log.i(TAG, "onResult 具体类型:" + multiMedia.getMimeType());
-                    Log.i(TAG, "onResult 宽高: " + multiMedia.getWidth() + "x" + multiMedia.getHeight());
-                }
-                // 倒数循环判断，如果不存在，则删除
-                for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
-                    int k = 0;
-                    for (LocalFile localFile : result) {
-                        if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localFile)) {
-                            k++;
+                if (apply) {
+                    for (MultiMedia multiMedia : result) {
+                        // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
+                        Log.i(TAG, "onResult id:" + multiMedia.getId());
+                        Log.i(TAG, "onResult 绝对路径:" + multiMedia.getPath());
+                        Log.i(TAG, "onResult Uri:" + multiMedia.getUri());
+                        Log.i(TAG, "onResult 文件大小: " + multiMedia.getSize());
+                        Log.i(TAG, "onResult 视频音频长度: " + multiMedia.getDuration());
+                        Log.i(TAG, "onResult 类型:" + multiMedia.getType());
+                        Log.i(TAG, "onResult 具体类型:" + multiMedia.getMimeType());
+                        Log.i(TAG, "onResult 宽高: " + multiMedia.getWidth() + "x" + multiMedia.getHeight());
+                    }
+                    // 倒数循环判断，如果不存在，则删除
+                    for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
+                        int k = 0;
+                        for (LocalFile localFile : result) {
+                            if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localFile)) {
+                                k++;
+                            }
+                        }
+                        if (k == result.size()) {
+                            // 所有都不符合，则删除
+                            getMaskProgressLayout().removePosition(i);
                         }
                     }
-                    if (k == result.size()) {
-                        // 所有都不符合，则删除
-                        getMaskProgressLayout().removePosition(i);
-                    }
                 }
-            }
-
-            @Override
-            public void onCancel() {
-
             }
         });
     }

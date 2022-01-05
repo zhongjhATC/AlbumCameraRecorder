@@ -26,9 +26,4 @@ public interface OnResultCallbackListener {
      * @param apply  是否预览界面点击了同意
      */
     void onResultFromPreview(List<MultiMedia> result, boolean apply);
-
-    /**
-     * Cancel
-     */
-    void onCancel();
 }

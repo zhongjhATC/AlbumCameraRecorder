@@ -507,11 +507,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 setResult(RESULT_OK, intent);
             }
         } else {
-            if (apply) {
-                mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
-            } else {
-                mGlobalSpec.onResultCallbackListener.onCancel();
-            }
+            mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
         }
     }
 
