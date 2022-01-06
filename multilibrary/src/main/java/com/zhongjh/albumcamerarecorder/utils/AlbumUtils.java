@@ -28,6 +28,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -246,9 +248,43 @@ public class AlbumUtils {
                 return Environment.getExternalStorageDirectory() + "/" + split[1];
             } else {
                 // 下面的逻辑是外部存储如何为文档构建URI http://stackoverflow.com/questions/28605278/android-5-sd-card-label
-                StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+                StorageManager storageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
                 try {
                     Class<?> storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+                    Method getVolumeList = storageManager.getClass().getMethod("getVolumeList");
+                    Method getUuid = storageVolumeClazz.getMethod("getUuid");
+                    Method getState = storageVolumeClazz.getMethod("getState");
+                    Method getPath = storageVolumeClazz.getMethod("getPath");
+                    Method isPrimary = storageVolumeClazz.getMethod("isPrimary");
+                    Method isEmulated = storageVolumeClazz.getMethod("isEmulated");
+                    Object result = getVolumeList.invoke(storageManager);
+
+                    if (result != null) {
+                        final int length = Array.getLength(result);
+                        for (int i = 0; i < length; i++) {
+                            Object storageVolumeElement = Array.get(result, i);
+
+                            final boolean mounted = Environment.MEDIA_MOUNTED.equals(getState.invoke(storageVolumeElement))
+                                    || Environment.MEDIA_MOUNTED_READ_ONLY.equals(getState.invoke(storageVolumeElement));
+
+                            // if the media is not mounted, we need not get the volume details
+                            if (!mounted) {
+                                continue;
+                            }
+
+                            // Primary storage is already handled.
+                            if ((Boolean) isPrimary.invoke(storageVolumeElement)
+                                    && (Boolean) isEmulated.invoke(storageVolumeElement)) {
+                                continue;
+                            }
+
+                            String uuid = (String) getUuid.invoke(storageVolumeElement);
+
+                            if (uuid != null && uuid.equals(type)) {
+                                return getPath.invoke(storageVolumeElement) + "/" + split[1];
+                            }
+                        }
+                    }
                 } catch (Exception ex) {
                     Log.d(TAG, uri.toString() + " parse failed. " + ex.toString() + " -> uriToFileAndroidKitkat - isExternalStorageDocument");
                 }
