@@ -2,7 +2,6 @@ package com.zhongjh.albumcamerarecorder.album.model;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -11,12 +10,13 @@ import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
-import com.zhongjh.albumcamerarecorder.utils.PathUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.utils.UriUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -209,37 +209,6 @@ public class SelectedItemCollection {
         return mItems;
     }
 
-//    /**
-//     * 获取uri的集合
-//     *
-//     * @return list<Uri>
-//     */
-//    public List<Uri> asListOfUri() {
-//        List<Uri> uris = new ArrayList<>();
-//        for (MultiMedia item : mItems) {
-//            uris.add(item.getUri());
-//        }
-//        return uris;
-//    }
-//
-//    /**
-//     * 获取path的集合
-//     *
-//     * @return list<path>
-//     */
-//    public List<String> asListOfString() {
-//        List<String> paths = new ArrayList<>();
-//        for (MultiMedia item : mItems) {
-//            if (item.getUri() != null) {
-//                // 相册是只有uri没有path的，此时确定后转换
-//                paths.add(PathUtils.getPath(mContext, item.getUri()));
-//            } else if (item.getUrl() != null) {
-//                paths.add(item.getUrl());
-//            }
-//        }
-//        return paths;
-//    }
-
     /**
      * 获取LocalFile的集合
      *
@@ -249,7 +218,10 @@ public class SelectedItemCollection {
         ArrayList<LocalFile> localFiles = new ArrayList<>();
         for (MultiMedia item : mItems) {
             // 相册是只有uri没有path的，此时确定后转换
-            item.setPath(PathUtils.getPath(mContext, item.getUri()));
+            File file = UriUtils.uriToFile(mContext, item.getUri());
+            if (file != null && file.exists()) {
+                item.setPath(file.getPath());
+            }
             LocalFile localFile = new LocalFile(item);
             localFiles.add(localFile);
         }

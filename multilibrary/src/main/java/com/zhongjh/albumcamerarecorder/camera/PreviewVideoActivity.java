@@ -13,7 +13,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.AlbumUtils;
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
 
 import java.io.File;
@@ -268,7 +268,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void confirm(File newFile) {
         Intent intent = new Intent();
-        Uri mediaUri = AlbumUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
+        Uri mediaUri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
                 mLocalFile.getWidth(), mLocalFile.getHeight(),
                 mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
         mLocalFile.setPath(newFile.getPath());

@@ -49,7 +49,7 @@ import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayoutBase;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.AlbumUtils;
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
@@ -1109,7 +1109,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 currentCount = 0;
                 for (LocalFile item : newFiles) {
                     // 加入图片到android系统库里面
-                    Uri uri = AlbumUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                    Uri uri = MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
                             mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
                     item.setMimeType(MimeType.JPEG.getMMimeTypeName());
                     item.setUri(uri);

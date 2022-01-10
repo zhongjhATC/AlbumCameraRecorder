@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.utils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.zhongjh.common.entity.MultiMedia;
 
@@ -22,7 +23,7 @@ public class MultiMediaUtils {
         int index = -1;
         if (item.getUri() != null) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUri() != null && items.get(i).getUri().equals(item.getUri())
+                if (items.get(i).getUri() != null && Objects.equals(items.get(i).getUri(), item.getUri())
                         && items.get(i).getId() == item.getId()) {
                     index = i;
                     break;
@@ -38,7 +39,7 @@ public class MultiMediaUtils {
             }
         } else if (item.getUrl() != null) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUrl() != null && items.get(i).getUrl().equals(item.getUrl())
+                if (items.get(i).getUrl() != null && Objects.equals(items.get(i).getUrl(), item.getUrl())
                         && items.get(i).getId() == item.getId()) {
                     index = i;
                     break;
@@ -60,7 +61,7 @@ public class MultiMediaUtils {
         MultiMedia multiMedia = null;
         if (item.getUri() != null) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUri().equals(item.getUri())) {
+                if (Objects.equals(items.get(i).getUri(), item.getUri())) {
                     multiMedia = items.get(i);
                     break;
                 }
@@ -74,7 +75,7 @@ public class MultiMediaUtils {
             }
         } else if (item.getUrl() != null) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getUrl().equals(item.getUrl())) {
+                if (Objects.equals(items.get(i).getUrl(), item.getUrl())) {
                     multiMedia = items.get(i);
                     break;
                 }

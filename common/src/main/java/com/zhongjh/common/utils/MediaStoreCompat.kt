@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Environment
 import androidx.core.content.FileProvider
 import com.zhongjh.common.entity.SaveStrategy
-import com.zhongjh.common.enums.MimeType
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -109,7 +108,11 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
     }
 
     fun getUri(path: String): Uri {
-        return FileProvider.getUriForFile(context, saveStrategy.authority!!, File(path))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return FileProvider.getUriForFile(context, saveStrategy.authority!!, File(path))
+        } else {
+            return Uri.fromFile(File(path))
+        }
     }
 
     fun getUri(): Uri {

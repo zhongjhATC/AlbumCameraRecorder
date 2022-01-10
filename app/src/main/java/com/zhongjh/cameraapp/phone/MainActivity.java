@@ -35,6 +35,7 @@ import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.enums.MultimediaTypes;
+import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -265,13 +266,14 @@ public class MainActivity extends BaseActivity {
             public void onResult(List<LocalFile> result) {
                 for (LocalFile localFile : result) {
                     // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
-                    Log.i(TAG, "onResult 绝对路径:" + localFile.getPath());
-                    Log.i(TAG, "onResult Uri:" + localFile.getUri());
-                    Log.i(TAG, "onResult 文件大小: " + localFile.getSize());
-                    Log.i(TAG, "onResult 视频音频长度: " + localFile.getDuration());
-                    Log.i(TAG, "onResult 类型:" + localFile.getType());
-                    Log.i(TAG, "onResult 具体类型:" + localFile.getMimeType());
-                    Log.i(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
+                    Log.d(TAG, "onResult 绝对路径:" + localFile.getPath());
+                    Log.d(TAG, "onResult Uri:" + localFile.getUri());
+                    Log.d(TAG, "onResult 文件大小: " + localFile.getSize());
+                    Log.d(TAG, "onResult 视频音频长度: " + localFile.getDuration());
+                    Log.d(TAG, "onResult 类型:" + localFile.getType());
+                    Log.d(TAG, "onResult 具体类型:" + localFile.getMimeType());
+                    Log.d(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
+                    Log.d(TAG, UriUtils.uriToFile(getApplicationContext(),localFile.getUri()).getPath());
                 }
                 getMaskProgressLayout().addLocalFileStartUpload(result);
             }
