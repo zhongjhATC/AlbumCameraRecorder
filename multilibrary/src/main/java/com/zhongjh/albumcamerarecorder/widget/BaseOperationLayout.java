@@ -142,13 +142,15 @@ public abstract class BaseOperationLayout extends FrameLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specModeWidth = MeasureSpec.getMode(widthMeasureSpec);
         int specModeHeight = MeasureSpec.getMode(heightMeasureSpec);
-        mScreenHeight = mScreenHeight / 3;
-        mAnimatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -mScreenWidth / 4F, 0);
-        mAnimatorCancel = ObjectAnimator.ofFloat(viewHolder.btnCancel, "translationX", mScreenWidth / 4F, 0);
+        int height = mScreenHeight;
+        int width = mScreenWidth;
+        height = height / 3;
+        mAnimatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -width / 4F, 0);
+        mAnimatorCancel = ObjectAnimator.ofFloat(viewHolder.btnCancel, "translationX", width / 4F, 0);
 
-        setMeasuredDimension(mScreenWidth, mScreenHeight);
+        setMeasuredDimension(width, height);
         // 传递新创建的宽高给子控件
-        super.onMeasure(MeasureSpec.makeMeasureSpec(mScreenWidth, specModeWidth), MeasureSpec.makeMeasureSpec(mScreenHeight, specModeHeight));
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width, specModeWidth), MeasureSpec.makeMeasureSpec(height, specModeHeight));
     }
 
     /**
