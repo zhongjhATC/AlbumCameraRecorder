@@ -29,6 +29,7 @@ import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.VideoResult;
+import com.otaliastudios.cameraview.controls.Audio;
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
@@ -392,7 +393,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 处理图片、视频等需要进度显示
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(true);
 
-        // 初始化cameraView
+        // 初始化cameraView,判断是否开启录制视频，如果开启就开启声音
+        if (!SelectableUtils.videoValid()) {
+            mViewHolder.cameraView.setAudio(Audio.OFF);
+        }
 
         setFlashLamp(); // 设置闪光灯模式
         mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);

@@ -19,7 +19,6 @@
         tools:text="提示文本" />
 
     <!-- 左侧的取消按钮  -->
-    <!-- 左侧的取消按钮  -->
     <com.zhongjh.circularprogressview.CircularProgress
         android:id="@+id/btnCancel"
         android:layout_width="0dp"

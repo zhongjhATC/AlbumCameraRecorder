@@ -1,7 +1,9 @@
 package com.zhongjh.albumcamerarecorder.utils;
 
 import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage;
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.common.enums.MimeType;
 
 import static com.zhongjh.common.enums.Constant.IMAGE;
 import static com.zhongjh.common.enums.Constant.IMAGE_VIDEO;
@@ -40,7 +42,7 @@ public class SelectableUtils {
     }
 
     /**
-     * 拍摄是否有效启动
+     * 拍摄(拍照、录像)是否有效启动
      *
      * @return 是否有效
      */
@@ -53,6 +55,21 @@ public class SelectableUtils {
             } else if (GlobalSpec.getInstance().maxVideoSelectable != null && GlobalSpec.getInstance().maxVideoSelectable > 0) {
                 return true;
             } else {
+                return GlobalSpec.getInstance().maxSelectable != null && GlobalSpec.getInstance().maxSelectable > 0;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 录像是否有效启动
+     *
+     * @return 是否有效
+     */
+    public static boolean videoValid() {
+        if (GlobalSpec.getInstance().cameraSetting != null) {
+            if (GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.CAMERA).containsAll(MimeType.ofVideo())) {
+                // 是否激活视频并且总数量大于1
                 return GlobalSpec.getInstance().maxSelectable != null && GlobalSpec.getInstance().maxSelectable > 0;
             }
         }
@@ -88,7 +105,7 @@ public class SelectableUtils {
         boolean isMaxCount;
         SelectedCountMessage selectedCountMessage = new SelectedCountMessage();
         // 先判断最大值
-        isMaxCount = isImageVideoMaxCount(imageCount,videoCount);
+        isMaxCount = isImageVideoMaxCount(imageCount, videoCount);
         if (!isMaxCount) {
             // 再判断本身
             if (GlobalSpec.getInstance().maxImageSelectable != null) {
@@ -100,7 +117,7 @@ public class SelectableUtils {
             selectedCountMessage.setMaxCount(imageCount);
         } else {
             selectedCountMessage.setType(IMAGE_VIDEO);
-            selectedCountMessage.setMaxCount(imageCount+videoCount);
+            selectedCountMessage.setMaxCount(imageCount + videoCount);
         }
         selectedCountMessage.setMaxSelectableReached(isMaxCount);
         return selectedCountMessage;
@@ -118,7 +135,7 @@ public class SelectableUtils {
         boolean isMaxCount;
         SelectedCountMessage selectedCountMessage = new SelectedCountMessage();
         // 先判断最大值
-        isMaxCount = isImageVideoMaxCount(imageCount,videoCount);
+        isMaxCount = isImageVideoMaxCount(imageCount, videoCount);
         if (!isMaxCount) {
             // 再判断本身
             if (GlobalSpec.getInstance().maxVideoSelectable != null) {
@@ -130,7 +147,7 @@ public class SelectableUtils {
             selectedCountMessage.setMaxCount(videoCount);
         } else {
             selectedCountMessage.setType(IMAGE_VIDEO);
-            selectedCountMessage.setMaxCount(imageCount+videoCount);
+            selectedCountMessage.setMaxCount(imageCount + videoCount);
         }
         selectedCountMessage.setMaxSelectableReached(isMaxCount);
         return selectedCountMessage;
@@ -145,7 +162,7 @@ public class SelectableUtils {
      */
     private static boolean isImageVideoMaxCount(int imageCount, int videoCount) {
         if (GlobalSpec.getInstance().maxSelectable != null) {
-            return (imageCount+videoCount) == GlobalSpec.getInstance().maxSelectable;
+            return (imageCount + videoCount) == GlobalSpec.getInstance().maxSelectable;
         }
         return false;
     }
@@ -168,6 +185,7 @@ public class SelectableUtils {
 
     /**
      * 拍摄界面使用的场景
+     *
      * @return 返回最多能选择的图片
      */
     public static int getImageMaxCount() {
