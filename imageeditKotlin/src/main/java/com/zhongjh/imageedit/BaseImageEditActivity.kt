@@ -8,8 +8,7 @@ import android.view.View
  * @author zhongjh
  * @date 2021/12/16
  */
-abstract class BaseImageEditActivity : Activity(),
-        View.OnClickListener, ImageTextEditDialog.Callback,{
+abstract class BaseImageEditActivity {
 
 
 
