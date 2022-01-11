@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
                 permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
             // 判断如果有录音功能则验证录音
-            if (SelectableUtils.recorderValid()) {
+            if (SelectableUtils.recorderValid() || SelectableUtils.videoValid()) {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager
                         .PERMISSION_GRANTED) {
                     if (!permissions.contains(Manifest.permission.RECORD_AUDIO)) {
@@ -322,12 +322,6 @@ public class MainActivity extends AppCompatActivity {
             }
             // 判断如果有录制功能则验证录音、录制
             if (SelectableUtils.cameraValid()) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager
-                        .PERMISSION_GRANTED) {
-                    if (!permissions.contains(Manifest.permission.RECORD_AUDIO)) {
-                        permissions.add(Manifest.permission.RECORD_AUDIO);
-                    }
-                }
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager
                         .PERMISSION_GRANTED) {
                     if (!permissions.contains(Manifest.permission.CAMERA)) {
@@ -345,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
      * @param permissions 权限
      */
     private void requestPermissions2(ArrayList<String> permissions) {
-        ActivityCompat.requestPermissions(MainActivity.this, (String[]) permissions.toArray(new String[0]), GET_PERMISSION_REQUEST);
+        ActivityCompat.requestPermissions(MainActivity.this, permissions.toArray(new String[0]), GET_PERMISSION_REQUEST);
     }
 
     /**
