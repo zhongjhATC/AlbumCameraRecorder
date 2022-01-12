@@ -29,13 +29,9 @@ import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayout;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.enums.MultimediaTypes;
@@ -43,9 +39,14 @@ import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_AUDIO;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
 
 /**
@@ -307,7 +308,6 @@ public class SoundRecordingFragment extends BaseFragment {
         localFile.setSize(new File(filePath).length());
         localFile.setMimeType(MimeType.AAC.getMMimeTypeName());
         localFile.setType(MultimediaTypes.AUDIO);
-        localFile.setUri(mAudioMediaStoreCompat.getUri(filePath));
     }
 
     @Override
@@ -477,6 +477,7 @@ public class SoundRecordingFragment extends BaseFragment {
                         ThreadUtils.runOnUiThread(() -> {
                             mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
                             localFile.setPath(newFile.getPath());
+                            localFile.setUri(mAudioMediaStoreCompat.getUri(newFile.getPath()));
                             if (progress >= FULL) {
                                 if (mGlobalSpec.onResultCallbackListener == null) {
                                     Intent result = new Intent();
@@ -489,6 +490,11 @@ public class SoundRecordingFragment extends BaseFragment {
                                     localFiles.add(localFile);
                                     mGlobalSpec.onResultCallbackListener.onResult(localFiles);
                                 }
+
+                                MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_AUDIO, localFile.getDuration(),
+                                        localFile.getWidth(), localFile.getHeight(),
+                                        mAudioMediaStoreCompat.getSaveStrategy().getDirectory(), mAudioMediaStoreCompat);
+
                                 mActivity.finish();
                             }
                         });

@@ -24,6 +24,7 @@ import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.BasePhotoMetadataUtils;
 
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
+import com.zhongjh.common.utils.UriUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -61,7 +62,7 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
         int w = imageSize.x;
         int h = imageSize.y;
         // 判断图片是否旋转了
-        if (PhotoMetadataUtils.shouldRotate(resolver, uri)) {
+        if (PhotoMetadataUtils.shouldRotate(activity, uri)) {
             w = imageSize.y;
             h = imageSize.x;
         }
@@ -161,15 +162,15 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
     /**
      * 是否应该纠正旋转
      *
-     * @param resolver ContentResolver共享数据库
+     * @param context 上下文
      * @param uri      图片uri
      * @return 如果图片本身旋转了90或者270就返回是，需要纠正，否则否
      */
-    private static boolean shouldRotate(ContentResolver resolver, Uri uri) {
+    private static boolean shouldRotate(Context context, Uri uri) {
         // 获取 ExifInterface,实际上Exif格式就是在JPEG格式头部插入了数码照片的信息，包括拍摄时的光圈、快门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、色彩编码、拍摄时录制的声音以及GPS全球定位系统数据、缩略图等。
         ExifInterface exif;
         try {
-            exif = ExifInterfaceCompat.newInstance(BasePhotoMetadataUtils.getPath(resolver, uri));
+            exif = ExifInterfaceCompat.newInstance(UriUtils.uriToFile(context, uri).getParent());
         } catch (IOException e) {
             Log.e(TAG, "could not read exif info of the image: " + uri);
             return false;

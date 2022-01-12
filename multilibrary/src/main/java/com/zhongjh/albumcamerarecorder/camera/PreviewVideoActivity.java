@@ -32,7 +32,8 @@ import com.zhongjh.common.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
+
 
 /**
  * 一个预览合成分段录制的视频
@@ -268,11 +269,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void confirm(File newFile) {
         Intent intent = new Intent();
-        Uri mediaUri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
+        MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
                 mLocalFile.getWidth(), mLocalFile.getHeight(),
                 mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
         mLocalFile.setPath(newFile.getPath());
-        mLocalFile.setUri(mediaUri);
+        mLocalFile.setUri(mVideoMediaStoreCompat.getUri(newFile.getPath()));
         mLocalFile.setSize(newFile.length());
         mLocalFile.setMimeType(MimeType.MP4.getMMimeTypeName());
         mLocalFile.setType(MultimediaTypes.VIDEO);

@@ -77,11 +77,13 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
                 }
             } else {
                 if (saveStrategy.isPublic) {
+                    // sd卡外部目录
                     storageDir = Environment.getExternalStoragePublicDirectory(saveStrategy.directory)
                     if (!storageDir.exists()) {
                         storageDir.mkdirs()
                     }
                 } else {
+                    // sd卡外部目录下，app卸载后会清除掉
                     storageDir = context.getExternalFilesDir(saveStrategy.directory)!!
                 }
             }
@@ -108,10 +110,10 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
     }
 
     fun getUri(path: String): Uri {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return FileProvider.getUriForFile(context, saveStrategy.authority!!, File(path))
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            FileProvider.getUriForFile(context, saveStrategy.authority!!, File(path))
         } else {
-            return Uri.fromFile(File(path))
+            Uri.fromFile(File(path))
         }
     }
 

@@ -39,7 +39,7 @@ import com.zhongjh.imageedit.ImageEditActivity;
 import java.io.File;
 
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
-import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
 
 /**
@@ -138,7 +138,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.saveStrategy);
             }
         }
-
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);

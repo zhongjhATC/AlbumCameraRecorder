@@ -19,7 +19,7 @@ open class LocalFile : Parcelable {
     var path: String? = null
 
     /**
-     * 以路径转换成的uri
+     * 真实路径转换成的uri
      */
     var uri: Uri? = null
 
@@ -44,12 +44,12 @@ open class LocalFile : Parcelable {
     /**
      * 宽度,只针对图片、视频
      */
-    var width : Int = 0
+    var width: Int = 0
 
     /**
      * 高度
      */
-    var height : Int = 0
+    var height: Int = 0
 
     /**
      * 编辑前的真实路径
@@ -70,6 +70,8 @@ open class LocalFile : Parcelable {
         mimeType = input.readString()
         size = input.readLong()
         duration = input.readLong()
+        oldPath = input.readString()
+        oldUri = input.readParcelable(Uri::class.java.classLoader)
         height = input.readInt()
         width = input.readInt()
     }
@@ -94,6 +96,8 @@ open class LocalFile : Parcelable {
         dest.writeString(mimeType)
         dest.writeLong(size)
         dest.writeLong(duration)
+        dest.writeString(oldPath)
+        dest.writeParcelable(oldUri, flags)
         dest.writeInt(width)
         dest.writeInt(height)
     }

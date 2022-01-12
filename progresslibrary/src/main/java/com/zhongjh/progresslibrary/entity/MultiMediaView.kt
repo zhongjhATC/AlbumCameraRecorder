@@ -1,5 +1,10 @@
 package com.zhongjh.progresslibrary.entity
 
+import android.annotation.SuppressLint
+import android.database.Cursor
+import android.os.Parcel
+import android.os.Parcelable
+import android.provider.MediaStore
 import android.view.View
 import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.MultiMedia
@@ -41,7 +46,9 @@ class MultiMediaView : MultiMedia {
      */
     var isUploading = false
 
-    constructor()
+    constructor() : super()
+
+    constructor(input: Parcel) : super(input)
 
     constructor(@MultimediaTypes multiMediaState: Int) {
         type = multiMediaState
@@ -74,4 +81,5 @@ class MultiMediaView : MultiMedia {
             }
         }
     }
+
 }

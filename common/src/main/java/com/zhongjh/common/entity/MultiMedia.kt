@@ -64,10 +64,25 @@ open class MultiMedia : LocalFile, Parcelable {
 
     }
 
+    /**
+     * 这个实现的方法，成员变量的写入顺序必须和成员变量的声明顺序
+     * 保持一致，不然会导致传递后数据为Null或者闪退
+     */
     constructor(input: Parcel) : super(input) {
         id = input.readLong()
         drawableId = input.readInt()
         url = input.readString()
+    }
+
+    /**
+     * 这个实现的方法，成员变量的写入顺序必须和成员变量的声明顺序
+     * 保持一致，不然会导致传递后数据为Null或者闪退
+     */
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        super.writeToParcel(dest, flags)
+        dest.writeLong(id)
+        dest.writeInt(drawableId)
+        dest.writeString(url)
     }
 
     /**
@@ -80,6 +95,7 @@ open class MultiMedia : LocalFile, Parcelable {
         val multiMedia: MultiMedia = other
         return id == multiMedia.id && (mimeType != null && mimeType.equals(multiMedia.mimeType) || (mimeType == null && multiMedia.mimeType == null))
                 && (uri != null && uri!! == multiMedia.uri || (uri == null && multiMedia.uri == null))
+                && (url != null && url!! == multiMedia.url || (url == null && multiMedia.url == null))
                 && size == multiMedia.size
                 && duration == multiMedia.duration
                 && drawableId == multiMedia.drawableId
@@ -96,6 +112,9 @@ open class MultiMedia : LocalFile, Parcelable {
         }
         if (uri != null) {
             result = 31 * result + uri.hashCode()
+        }
+        if (url != null) {
+            result = 31 * result + url.hashCode()
         }
         result = 31 * result + java.lang.Long.valueOf(size).hashCode()
         result = 31 * result + java.lang.Long.valueOf(duration).hashCode()
@@ -121,7 +140,7 @@ open class MultiMedia : LocalFile, Parcelable {
         return mimeType.equals(MimeType.GIF.toString())
     }
 
-    fun isImageOrGif() : Boolean {
+    fun isImageOrGif(): Boolean {
         if (mimeType == null) {
             return false
         }
@@ -159,25 +178,14 @@ open class MultiMedia : LocalFile, Parcelable {
         return 0
     }
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        super.writeToParcel(dest, flags)
-        dest.writeLong(id)
-        dest.writeString(url)
-        dest.writeInt(drawableId)
-    }
 
-    companion object {
+    companion object CREATOR : Creator<MultiMedia> {
+        override fun createFromParcel(parcel: Parcel): MultiMedia {
+            return MultiMedia(parcel)
+        }
 
-        @JvmField
-        val CREATOR: Creator<MultiMedia> = object : Creator<MultiMedia> {
-            override fun createFromParcel(source: Parcel): MultiMedia {
-                return MultiMedia(source)
-            }
-
-            override fun newArray(size: Int): Array<MultiMedia?> {
-                return arrayOfNulls(size)
-            }
-
+        override fun newArray(size: Int): Array<MultiMedia?> {
+            return arrayOfNulls(size)
         }
 
         @JvmStatic
@@ -190,8 +198,6 @@ open class MultiMedia : LocalFile, Parcelable {
                     cursor.getInt(cursor.getColumnIndex(MediaColumns.WIDTH)),
                     cursor.getInt(cursor.getColumnIndex(MediaColumns.HEIGHT)))
         }
-
-
     }
 
 

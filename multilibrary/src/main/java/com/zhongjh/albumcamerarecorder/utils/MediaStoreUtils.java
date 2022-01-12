@@ -12,6 +12,7 @@ import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.exifinterface.media.ExifInterface;
 
@@ -21,11 +22,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE;
-import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_AUDIO;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
+
 
 /**
  * 相册操作常用工具类
@@ -36,6 +41,30 @@ import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_
  * @date 2022/01/05
  */
 public class MediaStoreUtils {
+
+    @IntDef({
+            TYPE_PICTURE,
+            TYPE_VIDEO,
+            TYPE_AUDIO
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MediaTypes {
+
+        /**
+         * 图片
+         */
+        int TYPE_PICTURE = 0x001;
+        /**
+         * 视频
+         */
+        int TYPE_VIDEO = 0x002;
+        /**
+         * 音频
+         */
+        int TYPE_AUDIO = 0x003;
+
+    }
+
 
     /**
      * 插入图片、视频到图库
@@ -49,16 +78,16 @@ public class MediaStoreUtils {
      * @param directory        子文件目录
      * @param mediaStoreCompat mediaStoreCompat
      */
-    public static Uri displayToGallery(Context context, File file, int type, long duration, int width, int height,
+    public static Uri displayToGallery(Context context, File file, @MediaTypes int type, long duration, int width, int height,
                                        String directory, MediaStoreCompat mediaStoreCompat) {
         if (file == null || !file.exists()) {
             return null;
         }
         Uri uri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            uri = displayToGalleryAndroidQ(context, file, type, width, height, directory);
+            uri = displayToGalleryAndroidQ(context, file, type, duration, width, height, directory, mediaStoreCompat);
         } else {
-            String photoPath = file.getAbsolutePath();
+            String photoPath = file.getPath();
             uri = mediaStoreCompat.getUri(photoPath);
             // 添加到图库数据库
             ContentValues values = new ContentValues();
@@ -84,6 +113,17 @@ public class MediaStoreUtils {
                     values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
                     uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                     break;
+                case TYPE_AUDIO:
+                    values.put(MediaStore.Audio.Media.MIME_TYPE, "video/aac");
+                    // 计算时间
+                    if (duration == 0) {
+                        MediaPlayer mp = MediaPlayer.create(context, uri);
+                        duration = mp.getDuration();
+                        mp.release();
+                    }
+                    values.put("duration", duration);
+                    uri = context.getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
+                    break;
                 default:
                     break;
             }
@@ -98,8 +138,8 @@ public class MediaStoreUtils {
      * 兼容AndroidQ
      */
     @RequiresApi(Build.VERSION_CODES.Q)
-    private static Uri displayToGalleryAndroidQ(Context context, File file, int type, int width, int height,
-                                                String directory) {
+    private static Uri displayToGalleryAndroidQ(Context context, File file, @MediaTypes int type, long duration, int width, int height,
+                                                String directory, MediaStoreCompat mediaStoreCompat) {
         // 插入file数据到相册
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, AppUtils.getAppName(context));
@@ -112,14 +152,36 @@ public class MediaStoreUtils {
         Uri external = null;
         switch (type) {
             case TYPE_VIDEO:
-                values.put(MediaStore.Images.Media.MIME_TYPE, "video/mp4");
-                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + File.separator + directory);
+                values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+                // 计算时间
+                if (duration == 0) {
+                    String photoPath = file.getPath();
+                    Uri uri = mediaStoreCompat.getUri(photoPath);
+                    MediaPlayer mp = MediaPlayer.create(context, uri);
+                    duration = mp.getDuration();
+                    mp.release();
+                }
+                values.put("duration", duration);
+                values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + File.separator + directory);
                 external = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
                 break;
             case TYPE_PICTURE:
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
                 values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + directory);
                 external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                break;
+            case TYPE_AUDIO:
+                values.put(MediaStore.Audio.Media.MIME_TYPE, "video/aac");
+                // 计算时间
+                if (duration == 0) {
+                    String photoPath = file.getPath();
+                    Uri uri = mediaStoreCompat.getUri(photoPath);
+                    MediaPlayer mp = MediaPlayer.create(context, uri);
+                    duration = mp.getDuration();
+                    mp.release();
+                }
+                values.put("duration", duration);
+                external = context.getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
                 break;
             default:
                 break;

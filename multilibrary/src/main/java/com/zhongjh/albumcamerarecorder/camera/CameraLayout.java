@@ -73,10 +73,10 @@ import java.util.List;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
-import static com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
@@ -1097,7 +1097,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
     /**
      * UI线程上处理图片并且加入相册库
-     * @param newFiles        拷贝完的文件列表
+     *
+     * @param newFiles 拷贝完的文件列表
      */
     private void movePictureFileByUi(ArrayList<LocalFile> newFiles) {
         // 文件总数量
@@ -1113,14 +1114,14 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 currentCount = 0;
                 for (LocalFile item : newFiles) {
                     // 加入图片到android系统库里面
-                    Uri uri = MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                    MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
                             mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
                     item.setMimeType(MimeType.JPEG.getMMimeTypeName());
-                    item.setUri(uri);
+                    item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
                     item.setType(MultimediaTypes.PICTURE);
                 }
                 // 执行完成
-                mOperateCameraListener.captureSuccess( newFiles);
+                mOperateCameraListener.captureSuccess(newFiles);
             }
         });
     }
