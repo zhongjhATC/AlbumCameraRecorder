@@ -265,7 +265,6 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onResult(List<LocalFile> result) {
                 for (LocalFile localFile : result) {
-                    // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
                     Log.d(TAG, "onResult 绝对路径:" + localFile.getPath());
                     Log.d(TAG, "onResult Uri:" + localFile.getUri());
                     Log.d(TAG, "onResult 文件大小: " + localFile.getSize());

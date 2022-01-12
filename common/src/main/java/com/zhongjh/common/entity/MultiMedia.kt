@@ -160,11 +160,9 @@ open class MultiMedia : LocalFile, Parcelable {
     }
 
     fun isVideo(): Boolean {
-        if (mimeType == null) {
-            return false
-        }
-        return mimeType.equals(MimeType.MPEG.toString())
-                || (mimeType.equals(MimeType.MP4.toString()))
+        return type == MultimediaTypes.VIDEO
+                || mimeType.equals(MimeType.MPEG.toString())
+                || mimeType.equals(MimeType.MP4.toString())
                 || mimeType.equals(MimeType.QUICKTIME.toString())
                 || mimeType.equals(MimeType.THREEGPP.toString())
                 || mimeType.equals(MimeType.THREEGPP2.toString())
@@ -174,10 +172,24 @@ open class MultiMedia : LocalFile, Parcelable {
                 || mimeType.equals(MimeType.AVI.toString())
     }
 
+//    fun inita() {
+//        //    // ms,时长
+////    val mmr = MediaMetadataRetriever()
+////    mmr.setDataSource(multiMediaView.url, HashMap<String, String>())
+////    //            mmr.setDataSource(multiMediaView.url)
+////    val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toLong()
+////    multiMediaView.duration = duration
+////    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+////        multiMediaView.size = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_EXIF_LENGTH)!!.toLong()
+////    }
+////    multiMediaView.width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt()
+////    multiMediaView.height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)!!.toInt()
+////    multiMediaView.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
+//    }
+
     override fun describeContents(): Int {
         return 0
     }
-
 
     companion object CREATOR : Creator<MultiMedia> {
         override fun createFromParcel(parcel: Parcel): MultiMedia {

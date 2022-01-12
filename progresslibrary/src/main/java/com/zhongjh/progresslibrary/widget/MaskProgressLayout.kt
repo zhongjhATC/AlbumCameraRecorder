@@ -3,6 +3,7 @@ package com.zhongjh.progresslibrary.widget
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -11,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalFile
+import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MultimediaTypes
 import com.zhongjh.common.utils.MediaStoreCompat
@@ -21,7 +23,6 @@ import com.zhongjh.progresslibrary.apapter.PhotoAdapter
 import com.zhongjh.progresslibrary.api.MaskProgressApi
 import com.zhongjh.progresslibrary.engine.ImageEngine
 import com.zhongjh.progresslibrary.entity.MultiMediaView
-import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener
 import java.util.*
 
@@ -302,6 +303,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
                 ?: -1
         val multiMediaView = MultiMediaView(MultimediaTypes.AUDIO)
         multiMediaView.path = file
+        multiMediaView.uri = mMediaStoreCompat.getUri(file)
+        multiMediaView.duration = duration
 
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         view.visibility = View.VISIBLE

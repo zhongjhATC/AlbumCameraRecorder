@@ -24,6 +24,7 @@ import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.enums.MultimediaTypes;
+import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -45,6 +46,8 @@ import java.util.List;
  * @date 2019/2/21
  */
 public class MainSeeActivity extends BaseActivity implements DownloadListener {
+
+    private static final String TAG = MainSeeActivity.class.getSimpleName();
 
     ActivityMainSeeBinding mBinding;
     /**
@@ -93,6 +96,13 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                    Log.d(TAG, "onResult 绝对路径:" + multiMediaView.getPath());
+                    Log.d(TAG, "onResult Uri:" + multiMediaView.getUri());
+                    Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
+                    Log.d(TAG, "onResult 视频音频长度: " + multiMediaView.getDuration());
+                    Log.d(TAG, "onResult 类型:" + multiMediaView.getType());
+                    Log.d(TAG, "onResult 具体类型:" + multiMediaView.getMimeType());
+                    Log.d(TAG, "onResult 宽高: " + multiMediaView.getWidth() + "x" + multiMediaView.getHeight());
                     mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
                             mBinding.mplImageList.getImagesAndVideos(),
                             mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));

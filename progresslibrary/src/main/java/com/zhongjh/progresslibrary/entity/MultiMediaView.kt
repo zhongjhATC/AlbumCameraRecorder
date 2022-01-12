@@ -2,6 +2,7 @@ package com.zhongjh.progresslibrary.entity
 
 import android.annotation.SuppressLint
 import android.database.Cursor
+import android.media.MediaMetadataRetriever
 import android.os.Parcel
 import android.os.Parcelable
 import android.provider.MediaStore
@@ -81,5 +82,7 @@ class MultiMediaView : MultiMedia {
             }
         }
     }
+
+
 
 }

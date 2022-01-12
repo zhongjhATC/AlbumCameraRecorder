@@ -3,7 +3,6 @@ package com.zhongjh.common.entity
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
-import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MultimediaTypes
 
 /**
