@@ -172,19 +172,20 @@ open class MultiMedia : LocalFile, Parcelable {
                 || mimeType.equals(MimeType.AVI.toString())
     }
 
-//    fun inita() {
-//        //    // ms,时长
-////    val mmr = MediaMetadataRetriever()
-////    mmr.setDataSource(multiMediaView.url, HashMap<String, String>())
-////    //            mmr.setDataSource(multiMediaView.url)
-////    val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toLong()
-////    multiMediaView.duration = duration
-////    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-////        multiMediaView.size = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_EXIF_LENGTH)!!.toLong()
-////    }
-////    multiMediaView.width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt()
-////    multiMediaView.height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)!!.toInt()
-////    multiMediaView.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
+//    fun initDataByPath() {
+//        if (TextUtils.isEmpty(this.mimeType)) {
+//            // 获取相关属性
+//            val mmr = MediaMetadataRetriever()
+//            mmr.setDataSource(url, HashMap<String, String>())
+//            val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()?: 0
+//            this.duration = duration
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    this.size = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_EXIF_LENGTH)?.toLong()?: 0
+//            }
+//            this.width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt()?: 0
+//            this.height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toInt()?: 0
+//            this.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
+//        }
 //    }
 
     override fun describeContents(): Int {

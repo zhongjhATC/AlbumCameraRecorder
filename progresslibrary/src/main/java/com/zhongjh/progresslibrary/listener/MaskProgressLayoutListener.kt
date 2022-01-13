@@ -61,4 +61,9 @@ interface MaskProgressLayoutListener {
      * @return 是否触发后面的事件
      */
     fun onItemVideoStartDownload(view: View, multiMediaView: MultiMediaView): Boolean
+
+    /**
+     * 加载数据完毕
+     */
+    fun onAddDataSuccess(multiMediaViews: List<MultiMediaView>)
 }

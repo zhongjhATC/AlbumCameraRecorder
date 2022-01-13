@@ -25,4 +25,6 @@ open class AbstractMaskProgressLayoutListener : MaskProgressLayoutListener {
         return false
     }
 
+    override fun onAddDataSuccess(multiMediaViews: List<MultiMediaView>) {}
+
 }

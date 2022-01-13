@@ -18,32 +18,22 @@ package com.zhongjh.albumcamerarecorder.preview.previewitem;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Point;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
-import android.widget.Toast;
-
-
 import com.zhongjh.albumcamerarecorder.R;
-
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
-import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.utils.MediaStoreCompat;
-
-import java.io.File;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;

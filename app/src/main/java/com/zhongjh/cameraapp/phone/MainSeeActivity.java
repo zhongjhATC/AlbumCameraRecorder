@@ -24,6 +24,7 @@ import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.enums.MultimediaTypes;
+import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -82,6 +83,10 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         progressDialog = new ProgressDialog(MainSeeActivity.this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_see);
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+
+            @Override
+            public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
+            }
 
             @Override
             public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
@@ -170,6 +175,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         });
         initConfig();
         initData();
+        initListener();
         findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
         findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
     }
@@ -269,6 +275,13 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         mBinding.mplImageList.setImageUrls(imageUrls);
+    }
+
+    /**
+     * 通过url加入的
+     */
+    private void initListener() {
+
     }
 
     @Override

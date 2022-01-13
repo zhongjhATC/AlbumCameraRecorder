@@ -90,12 +90,16 @@ public class MainActivity extends BaseActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-                // 点击添加
-//                boolean isOk = getPermissions(false);
-//                if (isOk) {
-                    openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+            public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
+//                // 如果需要其他参数的话，循环数据初始化相关数值，这个读取时间会较长，建议异步线程执行
+//                for (MultiMediaView item : multiMediaViews) {
+//                    item.initDataByPath();
 //                }
+            }
+
+            @Override
+            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+                openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
@@ -272,7 +276,7 @@ public class MainActivity extends BaseActivity {
                     Log.d(TAG, "onResult 类型:" + localFile.getType());
                     Log.d(TAG, "onResult 具体类型:" + localFile.getMimeType());
                     Log.d(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
-                    Log.d(TAG, UriUtils.uriToFile(getApplicationContext(),localFile.getUri()).getPath());
+                    Log.d(TAG, UriUtils.uriToFile(getApplicationContext(), localFile.getUri()).getPath());
                 }
                 getMaskProgressLayout().addLocalFileStartUpload(result);
             }

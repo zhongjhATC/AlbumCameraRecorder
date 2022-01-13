@@ -14,6 +14,8 @@ import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,6 +88,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             holder.mplImageList.setVideoUrls(datas.get(position).getVideoUrls());
         }
         holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+            @Override
+            public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
+
+            }
+
             @Override
             public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 Toast.makeText(mContext, "这边写跳转相册代码获取到的数据填充该RecyclerView即可", Toast.LENGTH_SHORT).show();

@@ -927,7 +927,7 @@ object ThreadUtils {
      *
      * @param deliver The deliver.
      */
-    fun setDeliver(deliver: Executor?) {
+    fun setDeliver(deliver: Executor) {
         sDeliver = deliver
     }
 
@@ -1022,13 +1022,12 @@ object ThreadUtils {
         }
     }
 
-    private val globalDeliver: Executor?
-        get() {
-            if (sDeliver == null) {
-                sDeliver = Executor { command -> runOnUiThread(command) }
-            }
-            return sDeliver
+    private fun getGlobalDeliver(): Executor? {
+        if (sDeliver == null) {
+            sDeliver = Executor { command -> runOnUiThread(command) }
         }
+        return sDeliver
+    }
 
     /**
      * 创建线程池
@@ -1063,7 +1062,7 @@ object ThreadUtils {
         /**
          * 执行
          */
-        override fun execute(command: Runnable) {
+        override fun execute(command: Runnable?) {
             // 如果被中断就直接返回
             if (this.isShutdown) {
                 return
@@ -1406,7 +1405,7 @@ object ThreadUtils {
 
         private fun getDeliver(): Executor? {
             return if (deliver == null) {
-                globalDeliver
+                getGlobalDeliver()
             } else {
                 deliver
             }

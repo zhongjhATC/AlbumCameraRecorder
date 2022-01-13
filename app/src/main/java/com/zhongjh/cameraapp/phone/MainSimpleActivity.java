@@ -29,6 +29,8 @@ import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * 简单版
  *
@@ -56,6 +58,14 @@ public class MainSimpleActivity extends BaseActivity {
 
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+
+            @Override
+            public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
+                //                // 如果需要其他参数的话，循环数据初始化相关数值，这个读取时间会较长，建议异步线程执行
+//                for (MultiMediaView item : multiMediaViews) {
+//                    item.initDataByPath();
+//                }
+            }
 
             @Override
             public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {

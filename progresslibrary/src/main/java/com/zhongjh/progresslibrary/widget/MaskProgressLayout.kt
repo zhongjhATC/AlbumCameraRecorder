@@ -3,7 +3,6 @@ package com.zhongjh.progresslibrary.widget
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -251,6 +250,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             multiMediaViews.add(multiMediaView)
         }
         mPhotoAdapter.setImageData(multiMediaViews)
+        maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
     }
 
     override fun addVideoStartUpload(videoUris: List<Uri>) {
@@ -270,6 +270,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             multiMediaViews.add(multiMediaView)
         }
         mPhotoAdapter.setVideoData(multiMediaViews)
+        maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
     }
 
     override fun addAudioStartUpload(filePath: String, length: Long) {
@@ -395,6 +396,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
      */
     private fun createPlayProgressView(audioMultiMediaViews: List<MultiMediaView>, position: Int) {
         if (position >= audioMultiMediaViews.size) {
+            // 加载完毕
+            maskProgressLayoutListener?.onAddDataSuccess(audioMultiMediaViews)
             return
         }
         ThreadUtils.executeByIo(object : BaseSimpleBaseTask<PlayProgressView>() {
