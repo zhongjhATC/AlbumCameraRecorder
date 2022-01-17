@@ -15,14 +15,12 @@ import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
-import com.zhongjh.albumcamerarecorder.camera.util.DisplayMetricsSpUtils;
 import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton;
 import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.circularprogressview.CircularProgressListener;
+import com.zhongjh.common.utils.DisplayMetricsUtils;
 
 import java.util.ArrayList;
-
-import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 /**
  * 集成各个控件的布局
@@ -133,8 +131,9 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
     public BaseOperationLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mScreenWidth = DisplayMetricsSpUtils.getScreenWidth(context);
-        mScreenHeight = DisplayMetricsSpUtils.getScreenHeight(context);
+        int[] widthAndHeight = DisplayMetricsUtils.getScreenWidthAndHeight(context);
+        mScreenWidth = widthAndHeight[0];
+        mScreenHeight = widthAndHeight[1];
         initView();
     }
 
