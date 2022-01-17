@@ -18,6 +18,7 @@
     <string name="start_the_animation">Start the animation</string>
     <string name="str_on_activity_result_tips">Use onActivityResult to accept callback data</string>
     <string name="support_for_editing_images">Support for editing images</string>
+    <string name="support_compression">Support compression</string>
     <string name="save_all_file_paths">Save all file paths</string>
     <string name="save_the_image_path">Save the image path</string>
     <string name="save_the_path_to_the_video_file">Save the path to the video file</string>

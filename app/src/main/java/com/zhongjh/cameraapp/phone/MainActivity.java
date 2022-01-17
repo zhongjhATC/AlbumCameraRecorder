@@ -219,7 +219,12 @@ public class MainActivity extends BaseActivity {
         // 设置横竖屏
         mGlobalSetting.setRequestedOrientation(requestedOrientation);
 
-        mGlobalSetting.setOnCompressionInterface(new CompressionLuBan());
+        // 是否压缩
+        if (mBinding.cbIsCompress.isChecked()) {
+            mGlobalSetting.setOnCompressionInterface(new CompressionLuBan());
+        } else {
+            mGlobalSetting.setOnCompressionInterface(null);
+        }
 
         // 自定义失败信息
         mGlobalSetting.setOnMainListener(errorMessage -> Toast.makeText(MainActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show());

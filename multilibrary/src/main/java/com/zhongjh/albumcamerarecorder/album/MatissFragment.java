@@ -44,10 +44,13 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.utils.ColorFilterUtil;
+import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
@@ -79,6 +82,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 公共配置
      */
     private GlobalSpec mGlobalSpec;
+    /**
+     * 图片配置
+     */
+    private MediaStoreCompat mPictureMediaStoreCompat;
+    /**
+     * 录像文件配置路径
+     */
+    private MediaStoreCompat mVideoMediaStoreCompat;
 
     /**
      * 专辑下拉数据源
@@ -134,8 +145,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mAlbumSpec = AlbumSpec.getInstance();
-        mGlobalSpec = GlobalSpec.getInstance();
         super.onCreate(savedInstanceState);
     }
 
@@ -145,9 +154,33 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
 
         mViewHolder = new ViewHolder(view);
+        initConfig();
         initView(savedInstanceState);
         initListener();
         return view;
+    }
+
+    /**
+     * 初始化配置
+     */
+    private void initConfig() {
+        // 初始化设置
+        mAlbumSpec = AlbumSpec.getInstance();
+        mGlobalSpec = GlobalSpec.getInstance();
+        // 设置图片路径
+        if (mGlobalSpec.pictureStrategy != null) {
+            // 如果设置了视频的文件夹路径，就使用它的
+            mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.pictureStrategy);
+        } else {
+            // 否则使用全局的
+            if (mGlobalSpec.saveStrategy == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
+            } else {
+                mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.saveStrategy);
+            }
+        }
+        mVideoMediaStoreCompat = new MediaStoreCompat(getContext(),
+                mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
     }
 
     /**
@@ -222,11 +255,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mViewHolder.buttonApply.setOnClickListener(view -> {
             ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
             if (mGlobalSpec.onResultCallbackListener == null) {
-                setResultOk(localFiles);
+                setResultOkByIsCompress(localFiles);
             } else {
                 mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                mActivity.finish();
             }
-            mActivity.finish();
         });
 
         // 点击原图
@@ -297,12 +330,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 if (selected != null) {
                     ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
                     if (mGlobalSpec.onResultCallbackListener == null) {
-                        setResultOk(localFiles);
+                        setResultOkByIsCompress(localFiles);
                     } else {
                         mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                        mActivity.finish();
                     }
                 }
-                mActivity.finish();
             } else {
                 // 点击了返回
                 mSelectedCollection.overwrite(selected, collectionType);
@@ -514,6 +547,67 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     /**
+     * 关闭Activity回调相关数值,如果需要压缩，另外弄一套压缩逻辑
+     *
+     * @param localFiles 本地数据包含别的参数
+     */
+    private void setResultOkByIsCompress(ArrayList<LocalFile> localFiles) {
+        // 判断是否需要压缩
+        if (mGlobalSpec.compressionInterface != null) {
+            compressFile(localFiles);
+        } else {
+            setResultOk(localFiles);
+        }
+    }
+
+    /**
+     * 判断是否压缩，如果要压缩先要迁移复制再压缩
+     */
+    private void compressFile(ArrayList<LocalFile> localFiles) {
+        // 复制相册的文件
+        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>>() {
+
+            @Override
+            public ArrayList<LocalFile> doInBackground() {
+                // 将 缓存文件 拷贝到 配置目录
+                ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
+                for (LocalFile item : localFiles) {
+                    File oldFile = new File(item.getPath());
+                    // 压缩图片
+                    File compressionFile = null;
+                    if (mGlobalSpec.compressionInterface != null) {
+                        try {
+                            compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        compressionFile = oldFile;
+                    }
+                    // 获取文件名称
+//                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
+//                    File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
+                    // new localFile
+                    LocalFile localFile = new LocalFile();
+                    localFile.setPath(compressionFile.getAbsolutePath());
+                    localFile.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
+                    localFile.setWidth(item.getWidth());
+                    localFile.setHeight(item.getHeight());
+                    localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
+                    newLocalFiles.add(localFile);
+                }
+                return newLocalFiles;
+            }
+
+            @Override
+            public void onSuccess(ArrayList<LocalFile> result) {
+                setResultOk(localFiles);
+            }
+
+        });
+    }
+
+    /**
      * 关闭Activity回调相关数值
      *
      * @param localFiles 本地数据包含别的参数
@@ -525,28 +619,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 是否启用原图
         result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         mActivity.setResult(RESULT_OK, result);
-    }
-
-    /**
-     * 判断是否压缩，如果要压缩先要迁移复制再压缩
-     */
-    private void a() {
-        // 判断是否需要压缩
-        if (mGlobalSpec.compressionInterface != null) {
-            // 复制相册的文件
-            ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
-
-                @Override
-                public void onSuccess(Void result) {
-
-                }
-
-                @Override
-                public Void doInBackground() {
-                    return null;
-                }
-            });
-        }
+        mActivity.finish();
     }
 
     public static class ViewHolder {

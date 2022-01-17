@@ -18,6 +18,7 @@
     <string name="start_the_animation">启动动画</string>
     <string name="str_on_activity_result_tips">使用onActivityResult接受回调数据</string>
     <string name="support_for_editing_images">支持编辑图片</string>
+    <string name="support_compression">支持压缩</string>
     <string name="save_all_file_paths">保存所有文件路径</string>
     <string name="save_the_image_path">保存图片路径</string>
     <string name="save_the_path_to_the_video_file">保存视频文件路径</string>
