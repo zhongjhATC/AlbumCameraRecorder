@@ -72,4 +72,9 @@ public class VideoIn extends StateMode {
             getCameraStateManagement().setState(getCameraStateManagement().getVideoComplete());
         }
     }
+
+    @Override
+    public void stopProgress() {
+
+    }
 }

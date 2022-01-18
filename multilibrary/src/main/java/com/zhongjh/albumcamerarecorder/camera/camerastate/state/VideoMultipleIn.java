@@ -95,4 +95,9 @@ public class VideoMultipleIn extends StateMode {
         }
     }
 
+    @Override
+    public void stopProgress() {
+
+    }
+
 }

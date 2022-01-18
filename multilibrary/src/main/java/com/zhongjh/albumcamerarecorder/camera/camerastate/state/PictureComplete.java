@@ -89,4 +89,9 @@ public class PictureComplete extends StateMode {
     public void stopRecord(boolean isShort) {
 
     }
+
+    @Override
+    public void stopProgress() {
+
+    }
 }

@@ -120,6 +120,11 @@ public class CameraStateManagement implements StateInterface {
         state.stopRecord(isShort);
     }
 
+    @Override
+    public void stopProgress() {
+        state.stopProgress();
+    }
+
     /**
      * @return 当前状态
      */

@@ -1,7 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
-
 /**
  * 事件接口
  *
@@ -53,5 +51,10 @@ public interface StateInterface {
      * @param isShort 是否因为视频过短而停止
      */
     void stopRecord(boolean isShort);
+
+    /**
+     * 中止提交
+     */
+    void stopProgress();
 
 }

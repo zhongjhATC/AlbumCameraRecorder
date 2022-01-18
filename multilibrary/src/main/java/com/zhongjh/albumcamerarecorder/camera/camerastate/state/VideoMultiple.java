@@ -1,11 +1,8 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
-import android.util.Log;
-
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
-import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 /**
  * 多个视频模式
@@ -59,6 +56,11 @@ public class VideoMultiple extends StateMode {
     @Override
     public void stopRecord(boolean isShort) {
 
+    }
+
+    @Override
+    public void stopProgress() {
+        getCameraLayout().stopVideoMultiple();
     }
 
 }

@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -41,6 +42,7 @@ import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.utils.ColorFilterUtil;
@@ -148,15 +150,19 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         super.onCreate(savedInstanceState);
     }
 
+    View view;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
-
+        this.view = view;
         mViewHolder = new ViewHolder(view);
         initConfig();
         initView(savedInstanceState);
         initListener();
+
+
         return view;
     }
 
@@ -254,12 +260,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 确认当前选择的图片
         mViewHolder.buttonApply.setOnClickListener(view -> {
             ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
-            if (mGlobalSpec.onResultCallbackListener == null) {
-                setResultOkByIsCompress(localFiles);
-            } else {
-                mGlobalSpec.onResultCallbackListener.onResult(localFiles);
-                mActivity.finish();
-            }
+            setResultOkByIsCompress(localFiles);
         });
 
         // 点击原图
@@ -329,12 +330,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
                 if (selected != null) {
                     ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
-                    if (mGlobalSpec.onResultCallbackListener == null) {
-                        setResultOkByIsCompress(localFiles);
-                    } else {
-                        mGlobalSpec.onResultCallbackListener.onResult(localFiles);
-                        mActivity.finish();
-                    }
+                    setResultOkByIsCompress(localFiles);
                 }
             } else {
                 // 点击了返回
@@ -538,6 +534,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
             // 隐藏母窗体的table
             ((MainActivity) mActivity).showHideTableLayout(false);
+
+
+            view.findViewById(R.id.flView).setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
         } else {
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.GONE);
@@ -564,6 +568,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 判断是否压缩，如果要压缩先要迁移复制再压缩
      */
     private void compressFile(ArrayList<LocalFile> localFiles) {
+        // 显示loading动画
+
+
         // 复制相册的文件
         ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>>() {
 
@@ -572,36 +579,40 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 // 将 缓存文件 拷贝到 配置目录
                 ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
                 for (LocalFile item : localFiles) {
-                    File oldFile = new File(item.getPath());
-                    // 压缩图片
-                    File compressionFile = null;
-                    if (mGlobalSpec.compressionInterface != null) {
-                        try {
-                            compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    if (item.getPath() != null) {
+                        File oldFile = new File(item.getPath());
+                        // 压缩图片
+                        File compressionFile;
+                        if (mGlobalSpec.compressionInterface != null) {
+                            try {
+                                compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
+                            } catch (IOException e) {
+                                compressionFile = oldFile;
+                                e.printStackTrace();
+                            }
+                        } else {
+                            compressionFile = oldFile;
                         }
-                    } else {
-                        compressionFile = oldFile;
+                        // new localFile
+                        LocalFile localFile = new LocalFile();
+                        localFile.setPath(compressionFile.getAbsolutePath());
+                        localFile.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
+                        int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());
+                        localFile.setWidth(imageWidthAndHeight[0]);
+                        localFile.setHeight(imageWidthAndHeight[1]);
+                        localFile.setSize(compressionFile.length());
+                        localFile.setType(item.getType());
+                        localFile.setMimeType(item.getMimeType());
+                        localFile.setDuration(item.getDuration());
+                        newLocalFiles.add(localFile);
                     }
-                    // 获取文件名称
-//                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
-//                    File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
-                    // new localFile
-                    LocalFile localFile = new LocalFile();
-                    localFile.setPath(compressionFile.getAbsolutePath());
-                    localFile.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
-                    localFile.setWidth(item.getWidth());
-                    localFile.setHeight(item.getHeight());
-                    localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
-                    newLocalFiles.add(localFile);
                 }
                 return newLocalFiles;
             }
 
             @Override
             public void onSuccess(ArrayList<LocalFile> result) {
-                setResultOk(localFiles);
+                setResultOk(result);
             }
 
         });
@@ -613,13 +624,18 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * @param localFiles 本地数据包含别的参数
      */
     private void setResultOk(ArrayList<LocalFile> localFiles) {
-        // 获取选择的图片的url集合
-        Intent result = new Intent();
-        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
-        // 是否启用原图
-        result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        mActivity.setResult(RESULT_OK, result);
-        mActivity.finish();
+        if (mGlobalSpec.onResultCallbackListener == null) {
+            // 获取选择的图片的url集合
+            Intent result = new Intent();
+            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+            // 是否启用原图
+            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+            mActivity.setResult(RESULT_OK, result);
+            mActivity.finish();
+        } else {
+            mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+            mActivity.finish();
+        }
     }
 
     public static class ViewHolder {

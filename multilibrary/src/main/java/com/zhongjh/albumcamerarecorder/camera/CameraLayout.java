@@ -707,39 +707,35 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mViewHolder.pvLayout.setOperateListener(new BaseOperationLayout.OperateListener() {
             @Override
             public void cancel() {
+                Log.d(TAG, "cancel " + getState().toString());
                 pvLayoutCancel();
             }
 
             @Override
             public void confirm() {
+                Log.d(TAG, "confirm " + getState().toString());
                 mCameraStateManagement.pvLayoutCommit();
+                mViewHolder.pvLayout.getProgressMode();
             }
 
             @Override
             public void startProgress() {
-                if (mIsSectionRecord) {
-                    // 合并视频
-                    mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true, "mp4").getPath();
-                    mCameraSpec.videoEditCoordinator.merge(mNewSectionVideoPath, mVideoPaths,
-                            getContext().getCacheDir().getPath() + File.separator + "cam.txt");
-                } else {
-                    mCameraStateManagement.pvLayoutCommit();
-                }
+                Log.d(TAG, "startProgress " + getState().toString());
+                mCameraStateManagement.pvLayoutCommit();
             }
 
             @Override
             public void stopProgress() {
+                // 不同模式下处理
+                Log.d(TAG, "stopProgress" + getState().toString());
+                mCameraStateManagement.stopProgress();
                 // 重置按钮
                 mViewHolder.pvLayout.resetBtnConfirm();
-                if (mCameraSpec.videoEditCoordinator != null) {
-                    mCameraSpec.videoEditCoordinator.onMergeDispose();
-                }
             }
 
             @Override
             public void doneProgress() {
-                // 取消进度模式
-                mViewHolder.pvLayout.setProgressMode(false);
+                Log.d(TAG, "doneProgress " + getState().toString());
             }
         });
     }
@@ -839,7 +835,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                         mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
                         // 如果是在已经合成的情况下继续拍摄，那就重置状态
                         if (!mViewHolder.pvLayout.getProgressMode()) {
-                            mViewHolder.pvLayout.setProgressMode(true);
                             mViewHolder.pvLayout.resetConfim();
                         }
                     }
@@ -951,7 +946,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     public void removeVideoMultiple() {
         // 每次删除，后面都要重新合成,新合成的也删除
-        mViewHolder.pvLayout.setProgressMode(true);
         mViewHolder.pvLayout.resetConfim();
         if (mNewSectionVideoPath != null) {
             FileUtil.deleteFile(mNewSectionVideoPath);
@@ -1020,6 +1014,12 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 打开预览视频界面
      */
     public void openPreviewVideoActivity() {
+        if (mIsSectionRecord) {
+            // 合并视频
+            mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true, "mp4").getPath();
+            mCameraSpec.videoEditCoordinator.merge(mNewSectionVideoPath, mVideoPaths,
+                    getContext().getCacheDir().getPath() + File.separator + "cam.txt");
+        }
         PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
     }
 
@@ -1033,7 +1033,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 开始迁移文件
         ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
             @Override
-            public Void doInBackground() {
+            public Void doInBackground() throws InterruptedException {
+                // 等待10秒测试
+                Thread.sleep(10000);
                 // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
                 ArrayList<LocalFile> newFiles = new ArrayList<>();
                 // 将 缓存文件 拷贝到 配置目录
@@ -1309,7 +1311,17 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public void setUiEnableFalse() {
         mViewHolder.imgFlash.setEnabled(false);
         mViewHolder.imgSwitch.setEnabled(false);
+        // 设置提交按钮不能点击，不能中断
         mViewHolder.pvLayout.setEnabled(false);
+    }
+
+    /**
+     * 多视频分段录制中止提交
+     */
+    public void stopVideoMultiple() {
+        if (mCameraSpec.videoEditCoordinator != null) {
+            mCameraSpec.videoEditCoordinator.onMergeDispose();
+        }
     }
 
     @Override
@@ -1415,4 +1427,5 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
 
     }
+
 }

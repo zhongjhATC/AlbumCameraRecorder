@@ -58,4 +58,9 @@ public class Preview extends StateMode {
     public void stopRecord(boolean isShort) {
 
     }
+
+    @Override
+    public void stopProgress() {
+
+    }
 }

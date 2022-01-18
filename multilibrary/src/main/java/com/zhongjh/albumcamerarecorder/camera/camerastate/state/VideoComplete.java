@@ -71,4 +71,9 @@ public class VideoComplete extends StateMode {
     public void stopRecord(boolean isShort) {
 
     }
+
+    @Override
+    public void stopProgress() {
+
+    }
 }

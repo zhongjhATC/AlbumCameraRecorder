@@ -60,4 +60,9 @@ public class PictureMultiple extends StateMode {
 
     }
 
+    @Override
+    public void stopProgress() {
+
+    }
+
 }

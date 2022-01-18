@@ -62,7 +62,6 @@
 
         </RelativeLayout>
 
-
     </androidx.appcompat.widget.Toolbar>
 
     <FrameLayout
@@ -117,7 +116,6 @@
 
         </LinearLayout>
 
-
         <TextView
             android:id="@+id/buttonApply"
             android:layout_width="wrap_content"
@@ -127,6 +125,7 @@
             android:padding="16dp"
             android:textColor="?attr/bottomToolbar.apply.textColor"
             android:textSize="16sp" />
+
     </FrameLayout>
 
     <FrameLayout
@@ -156,4 +155,13 @@
             android:textSize="16sp" />
 
     </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/flView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar">
+
+    </FrameLayout>
+
 </RelativeLayout>
