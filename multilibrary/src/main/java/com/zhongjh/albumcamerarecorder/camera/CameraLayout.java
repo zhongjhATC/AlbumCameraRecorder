@@ -548,6 +548,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
         mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
         mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
+        movePictureFileTask.cancel();
         // 记忆模式
         flashSaveCache();
     }
@@ -727,7 +728,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             @Override
             public void stopProgress() {
                 // 不同模式下处理
-                Log.d(TAG, "stopProgress" + getState().toString());
+                Log.d(TAG, "stopProgress " + getState().toString());
                 mCameraStateManagement.stopProgress();
                 // 重置按钮
                 mViewHolder.pvLayout.resetBtnConfirm();
@@ -1031,55 +1032,60 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 执行等待动画
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(1);
         // 开始迁移文件
-        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
-            @Override
-            public Void doInBackground() throws InterruptedException {
-                // 等待10秒测试
-                Thread.sleep(10000);
-                // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
-                ArrayList<LocalFile> newFiles = new ArrayList<>();
-                // 将 缓存文件 拷贝到 配置目录
-                for (BitmapData item : mBitmapData) {
-                    File oldFile = new File(item.getPath());
-                    // 压缩图片
-                    File compressionFile = null;
-                    if (mGlobalSpec.compressionInterface != null) {
-                        try {
-                            compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        compressionFile = oldFile;
-                    }
-                    // 获取文件名称
-                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
-                    File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
-                    // new localFile
-                    LocalFile localFile = new LocalFile();
-                    localFile.setPath(newFile.getAbsolutePath());
-                    localFile.setWidth(item.getWidth());
-                    localFile.setHeight(item.getHeight());
-                    localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
-                    newFiles.add(localFile);
-                    movePictureFileByCopy(compressionFile, newFile, newFiles);
-                }
-                return null;
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-                setUiEnableTrue();
-            }
-
-            @Override
-            public void onFail(Throwable t) {
-                super.onFail(t);
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                setUiEnableTrue();
-            }
-        });
+        ThreadUtils.executeByIo(movePictureFileTask);
     }
+
+    /**
+     * 迁移图片的线程
+     */
+    public ThreadUtils.BaseSimpleBaseTask<Void> movePictureFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
+        @Override
+        public Void doInBackground() throws InterruptedException {
+            // 等待10秒测试
+            Thread.sleep(10000);
+            // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
+            ArrayList<LocalFile> newFiles = new ArrayList<>();
+            // 将 缓存文件 拷贝到 配置目录
+            for (BitmapData item : mBitmapData) {
+                File oldFile = new File(item.getPath());
+                // 压缩图片
+                File compressionFile = null;
+                if (mGlobalSpec.compressionInterface != null) {
+                    try {
+                        compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    compressionFile = oldFile;
+                }
+                // 获取文件名称
+                String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
+                File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
+                // new localFile
+                LocalFile localFile = new LocalFile();
+                localFile.setPath(newFile.getAbsolutePath());
+                localFile.setWidth(item.getWidth());
+                localFile.setHeight(item.getHeight());
+                localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
+                newFiles.add(localFile);
+                movePictureFileByCopy(compressionFile, newFile, newFiles);
+            }
+            return null;
+        }
+
+        @Override
+        public void onSuccess(Void result) {
+            setUiEnableTrue();
+        }
+
+        @Override
+        public void onFail(Throwable t) {
+            super.onFail(t);
+            Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+            setUiEnableTrue();
+        }
+    };
 
     /**
      * 处理复制文件
@@ -1299,7 +1305,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private void setUiEnableTrue() {
         mViewHolder.imgFlash.setEnabled(true);
         mViewHolder.imgSwitch.setEnabled(true);
-        mViewHolder.pvLayout.setEnabled(true);
         // 重置按钮进度
         mViewHolder.pvLayout.viewHolder.btnConfirm.reset();
     }
@@ -1311,8 +1316,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public void setUiEnableFalse() {
         mViewHolder.imgFlash.setEnabled(false);
         mViewHolder.imgSwitch.setEnabled(false);
-        // 设置提交按钮不能点击，不能中断
-        mViewHolder.pvLayout.setEnabled(false);
     }
 
     /**
