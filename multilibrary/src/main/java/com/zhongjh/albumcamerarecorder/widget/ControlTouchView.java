@@ -30,6 +30,6 @@ public class ControlTouchView extends View {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        return super.dispatchTouchEvent(event);
+        return true;
     }
 }

@@ -545,13 +545,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 隐藏母窗体的table
             ((MainActivity) mActivity).showHideTableLayout(false);
 
-            view.findViewById(R.id.flControlTouch).setOnTouchListener(new View.OnTouchListener() {
-                @SuppressLint("ClickableViewAccessibility")
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    return true;
-                }
-            });
+//            view.findViewById(R.id.flControlTouch).setOnTouchListener(new View.OnTouchListener() {
+//                @SuppressLint("ClickableViewAccessibility")
+//                @Override
+//                public boolean onTouch(View v, MotionEvent event) {
+//                    return true;
+//                }
+//            });
         } else {
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.GONE);
