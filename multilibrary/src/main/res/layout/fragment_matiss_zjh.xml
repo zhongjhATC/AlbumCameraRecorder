@@ -157,11 +157,9 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/flView"
+        android:id="@+id/flControlTouch"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar">
-
-    </FrameLayout>
+        android:layout_below="@id/toolbar"/>
 
 </RelativeLayout>
