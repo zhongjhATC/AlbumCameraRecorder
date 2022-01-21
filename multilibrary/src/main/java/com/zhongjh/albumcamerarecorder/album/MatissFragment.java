@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -528,6 +529,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         return mSelectedCollection;
     }
 
+
+
     /**
      * 显示本身的底部
      * 隐藏母窗体的table
@@ -542,8 +545,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 隐藏母窗体的table
             ((MainActivity) mActivity).showHideTableLayout(false);
 
-
-            view.findViewById(R.id.flView).setOnTouchListener(new View.OnTouchListener() {
+            view.findViewById(R.id.flControlTouch).setOnTouchListener(new View.OnTouchListener() {
+                @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     return true;
