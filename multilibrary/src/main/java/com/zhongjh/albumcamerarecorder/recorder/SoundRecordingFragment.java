@@ -107,6 +107,11 @@ public class SoundRecordingFragment extends BaseFragment {
     private long mStartingTimeMillis = 0;
     // endregion
 
+    /**
+     * 停止录音时的异步线程
+     */
+    ThreadUtils.BaseSimpleBaseTask<Boolean> mStopRecordingTask;
+
     public static SoundRecordingFragment newInstance() {
         return new SoundRecordingFragment();
     }
@@ -320,10 +325,14 @@ public class SoundRecordingFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (mMediaPlayer != null) {
             stopPlaying();
         }
+        mMoveRecordFileTask.cancel();
+        if (mStopRecordingTask != null) {
+            mStopRecordingTask.cancel();
+        }
+        super.onDestroy();
     }
 
 
@@ -459,56 +468,61 @@ public class SoundRecordingFragment extends BaseFragment {
         // 执行等待动画
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(1);
         // 开始迁移文件
-        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
-            @Override
-            public Void doInBackground() {
-                if (localFile == null) {
-                    initAudio();
-                }
-                if (localFile.getPath() != null) {
-                    // 初始化保存好的音频文件
-                    initAudio();
-                    // 获取文件名称
-                    String newFileName = localFile.getPath().substring(localFile.getPath().lastIndexOf(File.separator));
-                    File newFile = mAudioMediaStoreCompat.createFile(newFileName, 2, false);
-                    Log.d(TAG, "newFile" + newFile.getAbsolutePath());
-                    FileUtil.copy(new File(localFile.getPath()), newFile, null, (ioProgress, file) -> {
-                        int progress = (int) (ioProgress * FULL);
-                        ThreadUtils.runOnUiThread(() -> {
-                            mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
-                            localFile.setPath(newFile.getPath());
-                            localFile.setUri(mAudioMediaStoreCompat.getUri(newFile.getPath()));
-                            if (progress >= FULL) {
-                                if (mGlobalSpec.onResultCallbackListener == null) {
-                                    Intent result = new Intent();
-                                    ArrayList<LocalFile> localFiles = new ArrayList<>();
-                                    localFiles.add(localFile);
-                                    result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
-                                    mActivity.setResult(RESULT_OK, result);
-                                } else {
-                                    ArrayList<LocalFile> localFiles = new ArrayList<>();
-                                    localFiles.add(localFile);
-                                    mGlobalSpec.onResultCallbackListener.onResult(localFiles);
-                                }
-
-                                MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_AUDIO, localFile.getDuration(),
-                                        localFile.getWidth(), localFile.getHeight(),
-                                        mAudioMediaStoreCompat.getSaveStrategy().getDirectory(), mAudioMediaStoreCompat);
-
-                                mActivity.finish();
-                            }
-                        });
-                    });
-                }
-                return null;
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-
-            }
-        });
+        ThreadUtils.executeByIo(mMoveRecordFileTask);
     }
+
+    /**
+     * 迁移语音的异步线程
+     */
+    private final ThreadUtils.BaseSimpleBaseTask<Void> mMoveRecordFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
+        @Override
+        public Void doInBackground() {
+            if (localFile == null) {
+                initAudio();
+            }
+            if (localFile.getPath() != null) {
+                // 初始化保存好的音频文件
+                initAudio();
+                // 获取文件名称
+                String newFileName = localFile.getPath().substring(localFile.getPath().lastIndexOf(File.separator));
+                File newFile = mAudioMediaStoreCompat.createFile(newFileName, 2, false);
+                Log.d(TAG, "newFile" + newFile.getAbsolutePath());
+                FileUtil.copy(new File(localFile.getPath()), newFile, null, (ioProgress, file) -> {
+                    int progress = (int) (ioProgress * FULL);
+                    ThreadUtils.runOnUiThread(() -> {
+                        mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
+                        localFile.setPath(newFile.getPath());
+                        localFile.setUri(mAudioMediaStoreCompat.getUri(newFile.getPath()));
+                        if (progress >= FULL) {
+                            if (mGlobalSpec.onResultCallbackListener == null) {
+                                Intent result = new Intent();
+                                ArrayList<LocalFile> localFiles = new ArrayList<>();
+                                localFiles.add(localFile);
+                                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+                                mActivity.setResult(RESULT_OK, result);
+                            } else {
+                                ArrayList<LocalFile> localFiles = new ArrayList<>();
+                                localFiles.add(localFile);
+                                mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                            }
+
+                            MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_AUDIO, localFile.getDuration(),
+                                    localFile.getWidth(), localFile.getHeight(),
+                                    mAudioMediaStoreCompat.getSaveStrategy().getDirectory(), mAudioMediaStoreCompat);
+
+                            mActivity.finish();
+                        }
+                    });
+                });
+            }
+            return null;
+        }
+
+        @Override
+        public void onSuccess(Void result) {
+
+        }
+    };
 
     // region 有关录音相关方法
 
@@ -551,8 +565,16 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void stopRecording(boolean isShort) {
         mViewHolder.pvLayout.setEnabled(false);
+        ThreadUtils.executeByIo(getStopRecordingTask(isShort));
+    }
 
-        ThreadUtils.executeByIo(new ThreadUtils.BaseTask<Boolean>() {
+    /**
+     * 停止录音的异步线程
+     *
+     * @param isShort 短时结束不算
+     */
+    private ThreadUtils.BaseSimpleBaseTask<Boolean> getStopRecordingTask(boolean isShort) {
+        mStopRecordingTask = new ThreadUtils.BaseSimpleBaseTask<Boolean>() {
             @Override
             public Boolean doInBackground() {
                 if (isShort) {
@@ -590,18 +612,10 @@ public class SoundRecordingFragment extends BaseFragment {
                     mViewHolder.pvLayout.setEnabled(true);
                 }
             }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onFail(Throwable t) {
-
-            }
-        });
+        };
+        return mStopRecordingTask;
     }
+
 
     // endregion
 

@@ -111,6 +111,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         if (mCameraSpec.videoEditCoordinator != null) {
             mCameraSpec.videoEditCoordinator.onCompressDestroy();
         }
+        mMoveVideoFileTask.cancel();
         super.onDestroy();
     }
 
@@ -233,36 +234,44 @@ public class PreviewVideoActivity extends AppCompatActivity {
         // 执行等待动画
         mBtnConfirm.setProgress(50);
         // 开始迁移文件，将 缓存文件 拷贝到 配置目录
-        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<Void>() {
-            @Override
-            public Void doInBackground() {
-                // 获取文件名称
-                String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
-                File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-                FileUtil.copy(new File(mLocalFile.getPath()), newFile, null, (ioProgress, file) -> {
-                    if (ioProgress >= 1) {
-                        ThreadUtils.runOnUiThread(() -> {
-                            mBtnConfirm.setProgress(100);
-                            mIsRun = false;
-                            confirm(newFile);
-                        });
-                    }
-                });
+        ThreadUtils.executeByIo(mMoveVideoFileTask);
+    }
+
+    /**
+     * 迁移视频的异步线程
+     */
+    private final ThreadUtils.BaseSimpleBaseTask<Void> mMoveVideoFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
+        @Override
+        public Void doInBackground() {
+            if (mLocalFile.getPath() == null) {
                 return null;
             }
+            // 获取文件名称
+            String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
+            File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
+            FileUtil.copy(new File(mLocalFile.getPath()), newFile, null, (ioProgress, file) -> {
+                if (ioProgress >= 1) {
+                    ThreadUtils.runOnUiThread(() -> {
+                        mBtnConfirm.setProgress(100);
+                        mIsRun = false;
+                        confirm(newFile);
+                    });
+                }
+            });
+            return null;
+        }
 
-            @Override
-            public void onSuccess(Void result) {
+        @Override
+        public void onSuccess(Void result) {
 
-            }
+        }
 
-            @Override
-            public void onFail(Throwable t) {
-                super.onFail(t);
-                mIsRun = false;
-            }
-        });
-    }
+        @Override
+        public void onFail(Throwable t) {
+            super.onFail(t);
+            mIsRun = false;
+        }
+    };
 
     /**
      * 确定该视频

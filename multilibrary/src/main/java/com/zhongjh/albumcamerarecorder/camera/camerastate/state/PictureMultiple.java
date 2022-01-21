@@ -62,7 +62,7 @@ public class PictureMultiple extends StateMode {
 
     @Override
     public void stopProgress() {
-        getCameraLayout().movePictureFileTask.cancel();
+        getCameraLayout().mMovePictureFileTask.cancel();
     }
 
 }

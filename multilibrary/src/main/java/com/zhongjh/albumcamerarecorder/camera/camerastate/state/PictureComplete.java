@@ -92,6 +92,6 @@ public class PictureComplete extends StateMode {
 
     @Override
     public void stopProgress() {
-        getCameraLayout().movePictureFileTask.cancel();
+        getCameraLayout().mMovePictureFileTask.cancel();
     }
 }

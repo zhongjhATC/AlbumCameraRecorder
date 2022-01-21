@@ -118,6 +118,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private boolean mIsRefresh;
 
+    /**
+     * 压缩异步线程
+     */
+    ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>> mCompressFileTask;
+
     private ViewHolder mViewHolder;
 
     /**
@@ -161,10 +166,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         initConfig();
         initView(savedInstanceState);
         initListener();
-
-
         return view;
     }
+
 
     /**
      * 初始化配置
@@ -301,6 +305,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         super.onDestroy();
         // 销毁相册model
         mAlbumCollection.onDestroy();
+        if (mCompressFileTask != null) {
+            ThreadUtils.cancel(mCompressFileTask);
+        }
 //        mAlbumSpec.onCheckedListener = null;
 //        mAlbumSpec.onSelectedListener = null;
     }
@@ -570,9 +577,17 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private void compressFile(ArrayList<LocalFile> localFiles) {
         // 显示loading动画
 
-
         // 复制相册的文件
-        ThreadUtils.executeByIo(new ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>>() {
+        ThreadUtils.executeByIo(getCompressFileTask(localFiles));
+    }
+
+    /**
+     * 压缩的异步线程
+     *
+     * @param localFiles 需要压缩的数据源
+     */
+    private ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>> getCompressFileTask(ArrayList<LocalFile> localFiles) {
+        mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>>() {
 
             @Override
             public ArrayList<LocalFile> doInBackground() {
@@ -615,7 +630,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 setResultOk(result);
             }
 
-        });
+        };
+        return mCompressFileTask;
     }
 
     /**

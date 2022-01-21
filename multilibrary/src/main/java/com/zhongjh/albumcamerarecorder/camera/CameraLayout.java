@@ -548,7 +548,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
         mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
         mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
-        movePictureFileTask.cancel();
+        mMovePictureFileTask.cancel();
         // 记忆模式
         flashSaveCache();
     }
@@ -1032,13 +1032,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 执行等待动画
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(1);
         // 开始迁移文件
-        ThreadUtils.executeByIo(movePictureFileTask);
+        ThreadUtils.executeByIo(mMovePictureFileTask);
     }
 
     /**
      * 迁移图片的线程
      */
-    public ThreadUtils.BaseSimpleBaseTask<Void> movePictureFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
+    public ThreadUtils.BaseSimpleBaseTask<Void> mMovePictureFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
         @Override
         public Void doInBackground() throws InterruptedException {
             // 等待10秒测试

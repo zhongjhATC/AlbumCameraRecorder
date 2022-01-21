@@ -11,8 +11,10 @@ import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.ThreadUtils;
 
 import java.util.Set;
 

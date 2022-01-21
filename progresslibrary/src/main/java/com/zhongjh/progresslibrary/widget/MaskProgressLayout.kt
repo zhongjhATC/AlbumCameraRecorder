@@ -87,6 +87,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             mPhotoAdapter.listener = value
         }
 
+    /**
+     * 创建view的异步线程
+     */
+    var mCreatePlayProgressViewTask: BaseSimpleBaseTask<PlayProgressView>? = null
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
@@ -368,6 +373,9 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             item.mViewHolder.playView.listener = null
         }
         this.maskProgressLayoutListener = null
+        if (mCreatePlayProgressViewTask != null) {
+            ThreadUtils.cancel(mCreatePlayProgressViewTask)
+        }
     }
 
     /**
@@ -400,7 +408,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             maskProgressLayoutListener?.onAddDataSuccess(audioMultiMediaViews)
             return
         }
-        ThreadUtils.executeByIo(object : BaseSimpleBaseTask<PlayProgressView>() {
+        ThreadUtils.executeByIo(getCreatePlayProgressViewTask(audioMultiMediaViews, position))
+    }
+
+    /**
+     * 创建音频控件的线程
+     */
+    private fun getCreatePlayProgressViewTask(audioMultiMediaViews: List<MultiMediaView>, position: Int): BaseSimpleBaseTask<PlayProgressView> {
+        mCreatePlayProgressViewTask = object : BaseSimpleBaseTask<PlayProgressView>() {
             override fun doInBackground(): PlayProgressView {
                 val playProgressView: PlayProgressView = newPlayProgressView(audioMultiMediaViews[position])
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
@@ -422,9 +437,10 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
                 val newPosition = position + 1
                 createPlayProgressView(audioMultiMediaViews, newPosition)
             }
-
-        })
+        }
+        return mCreatePlayProgressViewTask as BaseSimpleBaseTask<PlayProgressView>
     }
+
 
     /**
      * 设置是否显示删除音频按钮
