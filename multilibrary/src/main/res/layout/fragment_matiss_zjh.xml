@@ -31,9 +31,9 @@
         tools:targetApi="lollipop">
 
         <RelativeLayout
-            android:gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:gravity="center_vertical">
 
             <ImageView
                 android:id="@+id/imgClose"
@@ -126,9 +126,18 @@
             android:textColor="?attr/bottomToolbar.apply.textColor"
             android:textSize="16sp" />
 
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:visibility="gone" />
+
     </FrameLayout>
 
-    <FrameLayout
+    <com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -155,11 +164,5 @@
             android:textSize="16sp" />
 
     </FrameLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/flControlTouch"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"/>
 
 </RelativeLayout>

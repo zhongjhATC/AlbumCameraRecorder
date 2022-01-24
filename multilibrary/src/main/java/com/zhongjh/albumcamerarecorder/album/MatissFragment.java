@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder.album;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,13 +12,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -44,6 +43,7 @@ import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
+import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.utils.ColorFilterUtil;
@@ -529,8 +529,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         return mSelectedCollection;
     }
 
-
-
     /**
      * 显示本身的底部
      * 隐藏母窗体的table
@@ -544,14 +542,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
             // 隐藏母窗体的table
             ((MainActivity) mActivity).showHideTableLayout(false);
-
-//            view.findViewById(R.id.flControlTouch).setOnTouchListener(new View.OnTouchListener() {
-//                @SuppressLint("ClickableViewAccessibility")
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    return true;
-//                }
-//            });
         } else {
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.GONE);
@@ -579,6 +569,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private void compressFile(ArrayList<LocalFile> localFiles) {
         // 显示loading动画
+        setControlTouchEnable(false);
 
         // 复制相册的文件
         ThreadUtils.executeByIo(getCompressFileTask(localFiles));
@@ -594,6 +585,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
             @Override
             public ArrayList<LocalFile> doInBackground() {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 // 将 缓存文件 拷贝到 配置目录
                 ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
                 for (LocalFile item : localFiles) {
@@ -631,6 +627,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             @Override
             public void onSuccess(ArrayList<LocalFile> result) {
                 setResultOk(result);
+                setControlTouchEnable(true);
             }
 
         };
@@ -657,6 +654,19 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
     }
 
+    /**
+     * 设置是否启用界面触摸，不可禁止中断、退出
+     */
+    private void setControlTouchEnable(boolean enable) {
+        mViewHolder.container.setEnabled(enable);
+        // 如果不可用就显示 加载中 view,否则隐藏
+        if (!enable) {
+            mViewHolder.pbLoading.setVisibility(View.VISIBLE);
+        } else {
+            mViewHolder.pbLoading.setVisibility(View.GONE);
+        }
+    }
+
     public static class ViewHolder {
         public View rootView;
         public TextView selectedAlbum;
@@ -666,11 +676,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public LinearLayout originalLayout;
         public TextView buttonApply;
         public FrameLayout bottomToolbar;
-        public FrameLayout container;
+        public ControlTouchFrameLayout container;
         public TextView emptyViewContent;
         public FrameLayout emptyView;
         public RelativeLayout root;
         public ImageView imgClose;
+        public ProgressBar pbLoading;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -686,6 +697,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             this.emptyView = rootView.findViewById(R.id.emptyView);
             this.root = rootView.findViewById(R.id.root);
             this.imgClose = rootView.findViewById(R.id.imgClose);
+            this.pbLoading = rootView.findViewById(R.id.pbLoading);
         }
 
     }

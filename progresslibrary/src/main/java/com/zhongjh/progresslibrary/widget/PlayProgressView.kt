@@ -23,9 +23,7 @@ class PlayProgressView : ConstraintLayout {
     /**
      * 控件集合
      */
-    val mViewHolder: ViewHolder by lazy {
-        ViewHolder(View.inflate(context, R.layout.layout_play_progress, this))
-    }
+    lateinit var mViewHolder: ViewHolder
 
     /**
      * 是否允许操作(一般只用于展览作用)
@@ -131,6 +129,9 @@ class PlayProgressView : ConstraintLayout {
      * 添加后的初始化
      */
     private fun addInit() {
+        val view = inflate(context, R.layout.layout_play_progress, this)
+        mViewHolder = ViewHolder(view)
+
         // 显示上传中的音频
         mViewHolder.groupRecorderProgress.visibility = View.VISIBLE
         mViewHolder.playView.visibility = View.GONE

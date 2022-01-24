@@ -1041,8 +1041,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public ThreadUtils.BaseSimpleBaseTask<Void> mMovePictureFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
         @Override
         public Void doInBackground() throws InterruptedException {
-            // 等待10秒测试
-            Thread.sleep(10000);
             // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
             ArrayList<LocalFile> newFiles = new ArrayList<>();
             // 将 缓存文件 拷贝到 配置目录

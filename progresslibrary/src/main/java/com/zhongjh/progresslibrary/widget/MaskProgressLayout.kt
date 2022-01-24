@@ -39,9 +39,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 控件集合
      */
-    private val mViewHolder: ViewHolder by lazy {
-        ViewHolder(View.inflate(context, R.layout.layout_mask_progress, this))
-    }
+    private lateinit var mViewHolder: ViewHolder
 
     /**
      * 图片加载方式
@@ -176,6 +174,10 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         if (maskingTextContent == null) {
             maskingTextContent = ""
         }
+
+        val view = inflate(context, R.layout.layout_mask_progress, this)
+        mViewHolder = ViewHolder(view)
+
         // 初始化九宫格的控件
         mViewHolder.rlGrid.layoutManager = GridLayoutManager(context, columnNumber)
         mPhotoAdapter = PhotoAdapter(context, (mViewHolder.rlGrid.layoutManager as GridLayoutManager?)!!, this,

@@ -43,9 +43,7 @@ class PlayView : FrameLayout {
     /**
      * 控件集合
      */
-    val mViewHolder: ViewHolder by lazy {
-        ViewHolder(View.inflate(context, R.layout.layout_play, this))
-    }
+    lateinit var mViewHolder: ViewHolder
 
     /**
      * 相关事件
@@ -94,6 +92,9 @@ class PlayView : FrameLayout {
     }
 
     private fun initView() {
+        val view = View.inflate(context, R.layout.layout_play, this)
+        mViewHolder = ViewHolder(view)
+
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false)
         mViewHolder.seekBar.isEnabled = false

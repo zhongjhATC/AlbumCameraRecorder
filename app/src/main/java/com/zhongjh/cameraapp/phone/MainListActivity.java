@@ -51,6 +51,7 @@ public class MainListActivity extends AppCompatActivity {
         mBinding.btnPreview.setOnClickListener(v -> {
             GlobalSetting globalSetting = MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll());
             globalSetting.allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "preview"));
+            globalSetting.imageEngine(new Glide4Engine());
             ArrayList<Integer> list = new ArrayList<>();
             list.add(R.drawable.ic_camera_enhance_black_24dp);
             list.add(R.drawable.ic_play_arrow_white_24dp);
