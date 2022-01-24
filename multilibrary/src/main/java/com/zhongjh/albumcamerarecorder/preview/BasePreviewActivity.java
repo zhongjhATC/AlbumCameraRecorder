@@ -24,7 +24,6 @@ import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
-import com.zhongjh.albumcamerarecorder.listener.PreviewListener;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -53,7 +52,7 @@ import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
  * @author zhongjh
  */
 public class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
-        ViewPager.OnPageChangeListener, PreviewListener {
+        ViewPager.OnPageChangeListener {
 
     public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
@@ -232,7 +231,91 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 多图时滑动事件
         mViewHolder.pager.addOnPageChangeListener(this);
         // 右上角选择事件
-        mViewHolder.checkView.setOnClickListener(v -> {
+        mViewHolder.checkView.setOnClickListener(this);
+        // 点击原图事件
+        mViewHolder.originalLayout.setOnClickListener(v -> {
+            int count = countOverMaxSize();
+            if (count > 0) {
+                IncapableDialog incapableDialog = IncapableDialog.newInstance("",
+                        getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.originalMaxSize));
+                incapableDialog.show(getSupportFragmentManager(),
+                        IncapableDialog.class.getName());
+                return;
+            }
+
+            mOriginalEnable = !mOriginalEnable;
+            mViewHolder.original.setChecked(mOriginalEnable);
+            if (!mOriginalEnable) {
+                mViewHolder.original.setColor(Color.WHITE);
+            }
+
+            if (mAlbumSpec.onCheckedListener != null) {
+                mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);
+            }
+        });
+        // 点击Loading停止
+        mViewHolder.pbLoading.setOnClickListener(v -> {
+            // 中断线程
+            mCompressFileTask.cancel();
+            // 恢复界面可用
+            setControlTouchEnable(true);
+        });
+
+        updateApplyButton();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        mSelectedCollection.onSaveInstanceState(outState);
+        outState.putBoolean("checkState", mOriginalEnable);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResultOkByIsCompress(false);
+        super.onBackPressed();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        if (mGlobalSpec.isCutscenes)
+        //关闭窗体动画显示
+        {
+            this.overridePendingTransition(0, R.anim.activity_close);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mCompressFileTask != null) {
+            ThreadUtils.cancel(mCompressFileTask);
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.ibtnBack) {
+            onBackPressed();
+        } else if (v.getId() == R.id.buttonApply) {
+            setResultOkByIsCompress(true);
+        } else if (v.getId() == R.id.tvEdit) {
+            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+
+            File file;
+
+            file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
+            mEditImageFile = file;
+
+            Intent intent = new Intent();
+            intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getRequestedOrientation());
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
+            startActivityForResult(intent, REQ_IMAGE_EDIT);
+        } else if(v.getId() == R.id.checkView) {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
                 mSelectedCollection.remove(item);
@@ -261,75 +344,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 // 触发选择的接口事件
                 mAlbumSpec.onSelectedListener.onSelected(mSelectedCollection.asListOfLocalFile());
             }
-        });
-        // 点击原图事件
-        mViewHolder.originalLayout.setOnClickListener(v -> {
-            int count = countOverMaxSize();
-            if (count > 0) {
-                IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.originalMaxSize));
-                incapableDialog.show(getSupportFragmentManager(),
-                        IncapableDialog.class.getName());
-                return;
-            }
-
-            mOriginalEnable = !mOriginalEnable;
-            mViewHolder.original.setChecked(mOriginalEnable);
-            if (!mOriginalEnable) {
-                mViewHolder.original.setColor(Color.WHITE);
-            }
-
-            if (mAlbumSpec.onCheckedListener != null) {
-                mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);
-            }
-        });
-        updateApplyButton();
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        mSelectedCollection.onSaveInstanceState(outState);
-        outState.putBoolean("checkState", mOriginalEnable);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onBackPressed() {
-        sendBackResult(false);
-        super.onBackPressed();
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        if (mGlobalSpec.isCutscenes)
-        //关闭窗体动画显示
-        {
-            this.overridePendingTransition(0, R.anim.activity_close);
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.ibtnBack) {
-            onBackPressed();
-        } else if (v.getId() == R.id.buttonApply) {
-            sendBackResult(true);
-            finish();
-        } else if (v.getId() == R.id.tvEdit) {
-            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-
-            File file;
-
-            file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
-            mEditImageFile = file;
-
-            Intent intent = new Intent();
-            intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getRequestedOrientation());
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
-            startActivityForResult(intent, REQ_IMAGE_EDIT);
         }
     }
 
@@ -503,10 +517,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 compressFile();
             } else {
                 // 不压缩就直接返回值
-                sendBackResult(apply);
+                setResultOk(apply, null);
             }
         } else {
-            sendBackResult(apply);
+            setResultOk(apply, null);
         }
     }
 
@@ -521,17 +535,17 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         ThreadUtils.executeByIo(mCompressFileTask);
     }
 
-    ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>> mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>>() {
+    ThreadUtils.BaseSimpleBaseTask<ArrayList<MultiMedia>> mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<ArrayList<MultiMedia>>() {
 
         @Override
-        public ArrayList<LocalFile> doInBackground() {
+        public ArrayList<MultiMedia> doInBackground() {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             // 将 缓存文件 拷贝到 配置目录
-            ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
+            ArrayList<MultiMedia> newLocalFiles = new ArrayList<>();
             for (LocalFile item : mSelectedCollection.asList()) {
                 if (item.getPath() != null) {
                     File oldFile = new File(item.getPath());
@@ -548,25 +562,25 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                         compressionFile = oldFile;
                     }
                     // new localFile
-                    LocalFile localFile = new LocalFile();
-                    localFile.setPath(compressionFile.getAbsolutePath());
-                    localFile.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
+                    MultiMedia multiMedia = new MultiMedia();
+                    multiMedia.setPath(compressionFile.getAbsolutePath());
+                    multiMedia.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
                     int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());
-                    localFile.setWidth(imageWidthAndHeight[0]);
-                    localFile.setHeight(imageWidthAndHeight[1]);
-                    localFile.setSize(compressionFile.length());
-                    localFile.setType(item.getType());
-                    localFile.setMimeType(item.getMimeType());
-                    localFile.setDuration(item.getDuration());
-                    newLocalFiles.add(localFile);
+                    multiMedia.setWidth(imageWidthAndHeight[0]);
+                    multiMedia.setHeight(imageWidthAndHeight[1]);
+                    multiMedia.setSize(compressionFile.length());
+                    multiMedia.setType(item.getType());
+                    multiMedia.setMimeType(item.getMimeType());
+                    multiMedia.setDuration(item.getDuration());
+                    newLocalFiles.add(multiMedia);
                 }
             }
             return newLocalFiles;
         }
 
         @Override
-        public void onSuccess(ArrayList<LocalFile> result) {
-            setResultOk(result);
+        public void onSuccess(ArrayList<MultiMedia> result) {
+            setResultOk(true, result);
             setControlTouchEnable(true);
         }
 
@@ -575,14 +589,19 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     /**
      * 设置返回值
      *
-     * @param apply 是否同意
+     * @param apply  是否同意
+     * @param result 数据源
      */
-    protected void sendBackResult(boolean apply) {
+    protected void setResultOk(boolean apply, ArrayList<MultiMedia> result) {
         refreshMultiMediaItem(apply);
         if (mGlobalSpec.onResultCallbackListener == null || !mIsExternalUsers) {
             // 如果是外部使用并且不同意，则不执行RESULT_OK
             Intent intent = new Intent();
-            intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+            if (result == null) {
+                intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+            } else {
+                intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle(result));
+            }
             intent.putExtra(EXTRA_RESULT_APPLY, apply);
             intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
             intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
@@ -592,8 +611,13 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 setResult(RESULT_OK, intent);
             }
         } else {
-            mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
+            if (result == null) {
+                mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
+            } else {
+                mGlobalSpec.onResultCallbackListener.onResultFromPreview(result, apply);
+            }
         }
+        finish();
     }
 
     /**
@@ -605,12 +629,14 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             mViewHolder.pbLoading.setVisibility(View.VISIBLE);
             mViewHolder.buttonApply.setVisibility(View.GONE);
             mViewHolder.checkView.setEnabled(false);
+            mViewHolder.checkView.setOnClickListener(null);
             mViewHolder.tvEdit.setEnabled(false);
             mViewHolder.originalLayout.setEnabled(false);
         } else {
             mViewHolder.pbLoading.setVisibility(View.GONE);
             mViewHolder.buttonApply.setVisibility(View.VISIBLE);
             mViewHolder.checkView.setEnabled(true);
+            mViewHolder.checkView.setOnClickListener(this);
             mViewHolder.tvEdit.setEnabled(true);
             mViewHolder.originalLayout.setEnabled(true);
         }
@@ -626,11 +652,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         IncapableCause cause = mSelectedCollection.isAcceptable(item);
         IncapableCause.handleCause(this, cause);
         return cause == null;
-    }
-
-    @Override
-    public void test() {
-
     }
 
     public static class ViewHolder {

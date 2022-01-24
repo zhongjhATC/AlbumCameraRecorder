@@ -591,7 +591,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             @Override
             public ArrayList<LocalFile> doInBackground() {
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
