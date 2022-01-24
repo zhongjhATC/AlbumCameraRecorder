@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -173,7 +174,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     /**
-     * 刷新MultiMedia TODO
+     * 刷新MultiMedia
      */
     private void refreshMultiMediaItem() {
         // 未加入相册时候的uri
@@ -209,8 +210,13 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     }
                 } else {
                     // 更新回旧的数据
-                    multiMedia.setUri(multiMedia.getOldUri());
-                    multiMedia.setPath(multiMedia.getOldPath());
+                    if (multiMedia.getOldUri() != null) {
+                        multiMedia.setUri(multiMedia.getOldUri());
+                    }
+                    if (!TextUtils.isEmpty(multiMedia.getOldPath())) {
+                        multiMedia.setPath(multiMedia.getOldPath());
+                    }
+
                 }
             }
         }
