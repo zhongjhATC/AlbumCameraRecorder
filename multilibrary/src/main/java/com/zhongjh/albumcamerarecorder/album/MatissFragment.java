@@ -293,6 +293,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             }
         });
 
+        // 点击Loading停止
+        mViewHolder.pbLoading.setOnClickListener(v -> {
+            // 中断线程
+            mCompressFileTask.cancel();
+            // 恢复界面可用
+            setControlTouchEnable(true);
+        });
     }
 
     @Override
@@ -309,13 +316,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
-//        mAlbumSpec.onCheckedListener = null;
-//        mAlbumSpec.onSelectedListener = null;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //            onBackPressed(); // TODO
         return item.getItemId() == android.R.id.home || super.onOptionsItemSelected(item);
     }
 
@@ -338,7 +342,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
                 if (selected != null) {
                     ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
-                    setResultOkByIsCompress(localFiles);
+                    // 不用处理压缩，压缩处理已经在预览界面处理了
+                    setResultOk(localFiles);
                 }
             } else {
                 // 点击了返回
@@ -662,8 +667,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 如果不可用就显示 加载中 view,否则隐藏
         if (!enable) {
             mViewHolder.pbLoading.setVisibility(View.VISIBLE);
+            mViewHolder.buttonApply.setVisibility(View.GONE);
+            mViewHolder.buttonPreview.setEnabled(false);
         } else {
             mViewHolder.pbLoading.setVisibility(View.GONE);
+            mViewHolder.buttonApply.setVisibility(View.VISIBLE);
+            mViewHolder.buttonPreview.setEnabled(true);
         }
     }
 

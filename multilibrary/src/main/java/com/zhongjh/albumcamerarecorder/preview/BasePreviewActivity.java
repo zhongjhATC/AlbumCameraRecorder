@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,13 +31,17 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 import com.zhongjh.imageedit.ImageEditActivity;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
@@ -487,6 +492,87 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     /**
+     * 关闭Activity回调相关数值,如果需要压缩，另外弄一套压缩逻辑
+     *
+     * @param apply 是否同意
+     */
+    private void setResultOkByIsCompress(boolean apply) {
+        // 判断是否需要压缩
+        if (mGlobalSpec.compressionInterface != null) {
+            if (apply) {
+                compressFile();
+            } else {
+                // 不压缩就直接返回值
+                sendBackResult(apply);
+            }
+        } else {
+            sendBackResult(apply);
+        }
+    }
+
+    /**
+     * 判断是否压缩，如果要压缩先要迁移复制再压缩
+     */
+    private void compressFile() {
+        // 显示loading动画
+        setControlTouchEnable(false);
+
+        // 复制相册的文件
+        ThreadUtils.executeByIo(mCompressFileTask);
+    }
+
+    ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>> mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>>() {
+
+        @Override
+        public ArrayList<LocalFile> doInBackground() {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // 将 缓存文件 拷贝到 配置目录
+            ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
+            for (LocalFile item : mSelectedCollection.asList()) {
+                if (item.getPath() != null) {
+                    File oldFile = new File(item.getPath());
+                    // 压缩图片
+                    File compressionFile;
+                    if (mGlobalSpec.compressionInterface != null) {
+                        try {
+                            compressionFile = mGlobalSpec.compressionInterface.compressionFile(getApplicationContext(), oldFile);
+                        } catch (IOException e) {
+                            compressionFile = oldFile;
+                            e.printStackTrace();
+                        }
+                    } else {
+                        compressionFile = oldFile;
+                    }
+                    // new localFile
+                    LocalFile localFile = new LocalFile();
+                    localFile.setPath(compressionFile.getAbsolutePath());
+                    localFile.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
+                    int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());
+                    localFile.setWidth(imageWidthAndHeight[0]);
+                    localFile.setHeight(imageWidthAndHeight[1]);
+                    localFile.setSize(compressionFile.length());
+                    localFile.setType(item.getType());
+                    localFile.setMimeType(item.getMimeType());
+                    localFile.setDuration(item.getDuration());
+                    newLocalFiles.add(localFile);
+                }
+            }
+            return newLocalFiles;
+        }
+
+        @Override
+        public void onSuccess(ArrayList<LocalFile> result) {
+            setResultOk(result);
+            setControlTouchEnable(true);
+        }
+
+    };
+
+    /**
      * 设置返回值
      *
      * @param apply 是否同意
@@ -507,6 +593,26 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             }
         } else {
             mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
+        }
+    }
+
+    /**
+     * 设置是否启用界面触摸，不可禁止中断、退出
+     */
+    private void setControlTouchEnable(boolean enable) {
+        // 如果不可用就显示 加载中 view,否则隐藏
+        if (!enable) {
+            mViewHolder.pbLoading.setVisibility(View.VISIBLE);
+            mViewHolder.buttonApply.setVisibility(View.GONE);
+            mViewHolder.checkView.setEnabled(false);
+            mViewHolder.tvEdit.setEnabled(false);
+            mViewHolder.originalLayout.setEnabled(false);
+        } else {
+            mViewHolder.pbLoading.setVisibility(View.GONE);
+            mViewHolder.buttonApply.setVisibility(View.VISIBLE);
+            mViewHolder.checkView.setEnabled(true);
+            mViewHolder.tvEdit.setEnabled(true);
+            mViewHolder.originalLayout.setEnabled(true);
         }
     }
 
@@ -538,6 +644,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         public TextView buttonApply;
         public FrameLayout bottomToolbar;
         public CheckView checkView;
+        public ProgressBar pbLoading;
 
         ViewHolder(Activity activity) {
             this.activity = activity;
@@ -550,6 +657,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             this.buttonApply = activity.findViewById(R.id.buttonApply);
             this.bottomToolbar = activity.findViewById(R.id.bottomToolbar);
             this.checkView = activity.findViewById(R.id.checkView);
+            this.pbLoading = activity.findViewById(R.id.pbLoading);
         }
 
     }

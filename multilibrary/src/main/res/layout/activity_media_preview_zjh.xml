@@ -14,7 +14,7 @@
     <FrameLayout
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:background="@color/preview_bottom_toolbar_bg"
         android:elevation="4dp"
@@ -23,9 +23,12 @@
         <TextView
             android:id="@+id/tvEdit"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="start"
+            android:gravity="center"
             android:padding="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:text="@string/z_multi_library_button_edit"
             android:textColor="?attr/preview.bottomToolbar.back.textColor"
             android:textSize="16sp" />
@@ -34,7 +37,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <LinearLayout
                 android:id="@+id/originalLayout"
@@ -84,11 +89,27 @@
         <TextView
             android:id="@+id/buttonApply"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:padding="16dp"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:textColor="?attr/preview.bottomToolbar.apply.textColor"
             android:textSize="16sp" />
+
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="8dp"
+            android:indeterminateTintMode="src_atop"
+            android:indeterminateTint="?attr/bottomToolbar.apply.textColor"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </FrameLayout>
 
@@ -103,9 +124,9 @@
             android:id="@+id/ibtnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:background="@null"
             android:contentDescription="关闭按钮"
+            android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

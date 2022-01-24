@@ -67,19 +67,21 @@
     <FrameLayout
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:background="?attr/bottomToolbar.bg"
         android:elevation="4dp"
         tools:targetApi="lollipop">
 
         <TextView
+            android:gravity="center"
             android:id="@+id/buttonPreview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="start"
             android:foreground="?selectableItemBackground"
-            android:padding="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:text="@string/z_multi_library_button_preview"
             android:textColor="?attr/bottomToolbar.preview.textColor"
             android:textSize="16sp" />
@@ -87,11 +89,12 @@
         <LinearLayout
             android:id="@+id/originalLayout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:foreground="?selectableItemBackground"
             android:orientation="horizontal"
-            android:padding="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:visibility="visible"
             tools:showIn="@layout/fragment_matiss_zjh">
 
@@ -117,23 +120,30 @@
         </LinearLayout>
 
         <TextView
+            android:gravity="center"
             android:id="@+id/buttonApply"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
             android:foreground="?selectableItemBackground"
-            android:padding="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:textColor="?attr/bottomToolbar.apply.textColor"
             android:textSize="16sp" />
 
         <ProgressBar
             android:id="@+id/pbLoading"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
             android:paddingLeft="16dp"
+            android:paddingTop="8dp"
             android:paddingRight="16dp"
-            android:visibility="gone" />
+            android:paddingBottom="8dp"
+            android:indeterminateTintMode="src_atop"
+            android:indeterminateTint="?attr/bottomToolbar.apply.textColor"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </FrameLayout>
 

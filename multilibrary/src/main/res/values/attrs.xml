@@ -5,7 +5,7 @@
     <attr name="album.element.color" format="reference|color" /> <!-- title文本颜色 -->
     <attr name="bottomToolbar.bg" format="reference|color" /> <!-- 底部背景颜色 -->
     <attr name="bottomToolbar.preview.textColor" format="reference|color" /> <!-- 预览文本颜色 -->
-    <attr name="bottomToolbar.apply.textColor" format="reference|color" /> <!-- 原图文本颜色 -->
+    <attr name="bottomToolbar.apply.textColor" format="reference|color" /> <!-- 同意文本颜色 -->
     <attr name="album.emptyView" format="reference" /> <!-- 还没有图片或视频 -->
     <attr name="album.emptyView.textColor" format="reference|color" /> <!-- 还没有图片或视频 -->
     <attr name="album.dropdown.title.color" format="reference|color" />
