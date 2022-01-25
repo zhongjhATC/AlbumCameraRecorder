@@ -36,6 +36,7 @@ import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
+import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 import com.zhongjh.imageedit.ImageEditActivity;
 
@@ -545,16 +546,20 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         @Override
         public ArrayList<MultiMedia> doInBackground() {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             // 将 缓存文件 拷贝到 配置目录
             ArrayList<MultiMedia> newLocalFiles = new ArrayList<>();
             for (LocalFile item : mSelectedCollection.asList()) {
-                if (item.getPath() != null) {
-                    File oldFile = new File(item.getPath());
+                String path = null;
+                if (item.getPath() == null) {
+                    File file = UriUtils.uriToFile(getApplicationContext(), item.getUri());
+                    if (file != null) {
+                        path = file.getAbsolutePath();
+                    }
+                } else {
+                    path = item.getPath();
+                }
+                if (path != null) {
+                    File oldFile = new File(path);
                     // 压缩图片
                     File compressionFile;
                     if (mGlobalSpec.compressionInterface != null) {
