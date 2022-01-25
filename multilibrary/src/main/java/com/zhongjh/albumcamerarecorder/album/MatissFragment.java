@@ -257,6 +257,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+            intent.putExtra(BasePreviewActivity.IS_MOVE_FILE,true);
             startActivityForResult(intent, mGlobalSpec.requestCode);
             if (mGlobalSpec.isCutscenes) {
                 mActivity.overridePendingTransition(R.anim.activity_open, 0);
@@ -524,6 +525,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+        intent.putExtra(BasePreviewActivity.IS_MOVE_FILE,true);
         startActivityForResult(intent, mGlobalSpec.requestCode);
         if (mGlobalSpec.isCutscenes) {
             mActivity.overridePendingTransition(R.anim.activity_open, 0);

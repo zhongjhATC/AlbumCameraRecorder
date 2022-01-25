@@ -34,7 +34,7 @@ import java.util.List;
 import com.zhongjh.common.entity.MultiMedia;
 
 /**
- * 点击相册图片或者视频进来的
+ * 点击相册图片或者视频、九宫格、编辑处都可以进来
  * @author zhongjh
  */
 public class AlbumPreviewActivity extends BasePreviewActivity implements

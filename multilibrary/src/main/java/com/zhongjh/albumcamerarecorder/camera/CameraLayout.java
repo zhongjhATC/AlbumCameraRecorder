@@ -1040,7 +1040,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     public ThreadUtils.BaseSimpleBaseTask<Void> mMovePictureFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
         @Override
-        public Void doInBackground() throws InterruptedException {
+        public Void doInBackground() {
             // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
             ArrayList<LocalFile> newFiles = new ArrayList<>();
             // 将 缓存文件 拷贝到 配置目录
@@ -1057,7 +1057,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 } else {
                     compressionFile = oldFile;
                 }
-                // 获取文件名称
+                // 移动文件,获取文件名称
                 String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
                 File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
                 // new localFile
@@ -1103,33 +1103,32 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
     /**
      * UI线程上处理图片并且加入相册库
+     * 只有复制完所有文件才一次性执行成功
      *
      * @param newFiles 拷贝完的文件列表
      */
-    private void movePictureFileByUi(ArrayList<LocalFile> newFiles) {
+    private synchronized void movePictureFileByUi(ArrayList<LocalFile> newFiles) {
         // 文件总数量
         int pathSum = mBitmapData.size();
         // 每次迁移完一个文件的进度
         int progress = 100 / pathSum;
-        ThreadUtils.runOnUiThread(() -> {
-            mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
-            // 拷贝完一次++
-            currentCount++;
-            // 判断是否拷贝完所有文件
-            if (currentCount >= pathSum) {
-                currentCount = 0;
-                for (LocalFile item : newFiles) {
-                    // 加入图片到android系统库里面
-                    MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
-                            mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-                    item.setMimeType(MimeType.JPEG.getMMimeTypeName());
-                    item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
-                    item.setType(MultimediaTypes.PICTURE);
-                }
-                // 执行完成
-                mOperateCameraListener.captureSuccess(newFiles);
+        mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
+        // 拷贝完一次++
+        currentCount++;
+        // 判断是否拷贝完所有文件
+        if (currentCount >= pathSum) {
+            currentCount = 0;
+            for (LocalFile item : newFiles) {
+                // 加入图片到android系统库里面
+                MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                        mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                item.setMimeType(MimeType.JPEG.getMMimeTypeName());
+                item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
+                item.setType(MultimediaTypes.PICTURE);
             }
-        });
+            // 执行完成
+            mOperateCameraListener.captureSuccess(newFiles);
+        }
     }
 
     /**

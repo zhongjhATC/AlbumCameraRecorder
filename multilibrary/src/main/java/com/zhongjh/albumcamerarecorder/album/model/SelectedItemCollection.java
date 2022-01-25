@@ -124,18 +124,6 @@ public class SelectedItemCollection {
     }
 
     /**
-     * 将数据保存进Bundle并且返回
-     *
-     * @return Bundle
-     */
-    public Bundle getDataWithBundle(ArrayList<MultiMedia> multiMediaArrayList) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, multiMediaArrayList);
-        bundle.putInt(STATE_COLLECTION_TYPE, mCollectionType);
-        return bundle;
-    }
-
-    /**
      * 将资源对象添加到已选中集合
      *
      * @param item 数据

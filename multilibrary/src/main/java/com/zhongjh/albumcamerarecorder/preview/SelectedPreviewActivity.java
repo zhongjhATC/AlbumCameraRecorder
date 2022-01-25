@@ -11,7 +11,7 @@ import java.util.List;
 import com.zhongjh.common.entity.MultiMedia;
 
 /**
- * 点击左下角的预览按钮进入的界面
+ * 点击相册的预览按钮进入的界面
  * @author zhongjh
  */
 public class SelectedPreviewActivity extends BasePreviewActivity {

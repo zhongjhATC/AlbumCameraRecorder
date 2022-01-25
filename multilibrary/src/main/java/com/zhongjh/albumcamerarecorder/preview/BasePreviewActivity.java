@@ -42,7 +42,6 @@ import com.zhongjh.imageedit.ImageEditActivity;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
@@ -67,6 +66,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String IS_SELECTED_LISTENER = "is_selected_listener";
     public static final String IS_SELECTED_CHECK = "is_selected_check";
     public static final String IS_EXTERNAL_USERS = "is_external_users";
+    public static final String IS_MOVE_FILE = "is_move_file";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected GlobalSpec mGlobalSpec;
@@ -104,6 +104,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 是否外部直接调用该预览窗口，如果是外部直接调用，那么可以启用回调接口，内部统一使用onActivityResult方式回调
      */
     protected boolean mIsExternalUsers = false;
+    /**
+     * 是否改变目录，如果是从相册界面进入的该预览界面，则点击确定后直接改变目录，其他地方进来的不变
+     */
+    protected boolean mIsMoveFile = false;
 
     /**
      * 图片存储器
@@ -131,6 +135,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER, true);
         mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK, true);
         mIsExternalUsers = getIntent().getBooleanExtra(IS_EXTERNAL_USERS, false);
+        mIsMoveFile = getIntent().getBooleanExtra(IS_MOVE_FILE, false);
 
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
@@ -197,9 +202,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param apply 是否同意 TODO
      */
     private void refreshMultiMediaItem(boolean apply) {
-        if (mIsEdit)
-        // 循环当前所有图片进行处理
-        {
+        if (mIsEdit) {
+            // 循环当前所有图片进行处理
             for (MultiMedia multiMedia : mAdapter.getmItems()) {
                 if (apply) {
                     if (multiMedia.getPath() != null) {
@@ -221,8 +225,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         }
-
-
     }
 
     /**
@@ -322,7 +324,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
             startActivityForResult(intent, REQ_IMAGE_EDIT);
-        } else if(v.getId() == R.id.checkView) {
+        } else if (v.getId() == R.id.checkView) {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
                 mSelectedCollection.remove(item);
@@ -518,16 +520,20 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param apply 是否同意
      */
     private void setResultOkByIsCompress(boolean apply) {
+        // 判断是否需要迁移文件
+        if (mIsMoveFile) {
+
+        }
         // 判断是否需要压缩
         if (mGlobalSpec.compressionInterface != null) {
             if (apply) {
                 compressFile();
             } else {
                 // 不压缩就直接返回值
-                setResultOk(apply, null);
+                setResultOk(false);
             }
         } else {
-            setResultOk(apply, null);
+            setResultOk(apply);
         }
     }
 
@@ -542,12 +548,11 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         ThreadUtils.executeByIo(mCompressFileTask);
     }
 
-    ThreadUtils.BaseSimpleBaseTask<ArrayList<MultiMedia>> mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<ArrayList<MultiMedia>>() {
+    ThreadUtils.BaseSimpleBaseTask<Void> mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
 
         @Override
-        public ArrayList<MultiMedia> doInBackground() {
+        public Void doInBackground() {
             // 将 缓存文件 拷贝到 配置目录
-            ArrayList<MultiMedia> newLocalFiles = new ArrayList<>();
             for (LocalFile item : mSelectedCollection.asList()) {
                 String path = null;
                 if (item.getPath() == null) {
@@ -572,26 +577,27 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     } else {
                         compressionFile = oldFile;
                     }
+                    // 移动文件,获取文件名称
+                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
+                    File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
                     // new localFile
-                    MultiMedia multiMedia = new MultiMedia();
-                    multiMedia.setPath(compressionFile.getAbsolutePath());
-                    multiMedia.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
+                    item.setPath(compressionFile.getAbsolutePath());
+                    item.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
                     int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());
-                    multiMedia.setWidth(imageWidthAndHeight[0]);
-                    multiMedia.setHeight(imageWidthAndHeight[1]);
-                    multiMedia.setSize(compressionFile.length());
-                    multiMedia.setType(item.getType());
-                    multiMedia.setMimeType(item.getMimeType());
-                    multiMedia.setDuration(item.getDuration());
-                    newLocalFiles.add(multiMedia);
+                    item.setWidth(imageWidthAndHeight[0]);
+                    item.setHeight(imageWidthAndHeight[1]);
+                    item.setSize(compressionFile.length());
+                    item.setType(item.getType());
+                    item.setMimeType(item.getMimeType());
+                    item.setDuration(item.getDuration());
                 }
             }
-            return newLocalFiles;
+            return null;
         }
 
         @Override
-        public void onSuccess(ArrayList<MultiMedia> result) {
-            setResultOk(true, result);
+        public void onSuccess(Void result) {
+            setResultOk(true);
             setControlTouchEnable(true);
         }
 
@@ -600,19 +606,14 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     /**
      * 设置返回值
      *
-     * @param apply  是否同意
-     * @param result 数据源
+     * @param apply 是否同意
      */
-    protected void setResultOk(boolean apply, ArrayList<MultiMedia> result) {
+    protected void setResultOk(boolean apply) {
         refreshMultiMediaItem(apply);
         if (mGlobalSpec.onResultCallbackListener == null || !mIsExternalUsers) {
             // 如果是外部使用并且不同意，则不执行RESULT_OK
             Intent intent = new Intent();
-            if (result == null) {
-                intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-            } else {
-                intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle(result));
-            }
+            intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(EXTRA_RESULT_APPLY, apply);
             intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
             intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
@@ -622,11 +623,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 setResult(RESULT_OK, intent);
             }
         } else {
-            if (result == null) {
-                mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
-            } else {
-                mGlobalSpec.onResultCallbackListener.onResultFromPreview(result, apply);
-            }
+            mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
         }
         finish();
     }
