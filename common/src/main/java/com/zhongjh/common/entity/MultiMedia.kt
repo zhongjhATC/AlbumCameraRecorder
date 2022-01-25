@@ -20,11 +20,6 @@ import com.zhongjh.common.enums.MultimediaTypes
 open class MultiMedia : LocalFile, Parcelable {
 
     /**
-     * 用于区分，因为九宫数据是允许选择重复的
-     */
-    var id: Long = 0
-
-    /**
      * 在线网址
      */
     var url: String? = null

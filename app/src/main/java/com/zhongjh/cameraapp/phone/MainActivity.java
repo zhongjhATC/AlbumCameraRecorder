@@ -274,6 +274,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onResult(List<LocalFile> result) {
                 for (LocalFile localFile : result) {
+                    Log.i(TAG, "onResult id:" + localFile.getId());
                     Log.d(TAG, "onResult 绝对路径:" + localFile.getPath());
                     Log.d(TAG, "onResult Uri:" + localFile.getUri());
                     Log.d(TAG, "onResult 文件大小: " + localFile.getSize());

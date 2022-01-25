@@ -13,6 +13,11 @@ import com.zhongjh.common.enums.MultimediaTypes
 open class LocalFile : Parcelable {
 
     /**
+     * 用于区分，因为九宫数据是允许选择重复的
+     */
+    var id: Long = 0
+
+    /**
      * 真实路径
      */
     var path: String? = null
@@ -63,6 +68,7 @@ open class LocalFile : Parcelable {
     constructor()
 
     constructor(input: Parcel) {
+        id = input.readLong()
         path = input.readString()
         uri = input.readParcelable(Uri::class.java.classLoader)
         type = input.readInt()
@@ -76,6 +82,7 @@ open class LocalFile : Parcelable {
     }
 
     constructor(multiMedia: MultiMedia) {
+        id = multiMedia.id
         path = multiMedia.path
         uri = multiMedia.uri
         type = multiMedia.type
@@ -89,6 +96,7 @@ open class LocalFile : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeLong(id)
         dest.writeString(path)
         dest.writeParcelable(uri, flags)
         dest.writeInt(type)

@@ -101,6 +101,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                    Log.i(TAG, "onResult id:" + multiMediaView.getId());
                     Log.d(TAG, "onResult 绝对路径:" + multiMediaView.getPath());
                     Log.d(TAG, "onResult Uri:" + multiMediaView.getUri());
                     Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
