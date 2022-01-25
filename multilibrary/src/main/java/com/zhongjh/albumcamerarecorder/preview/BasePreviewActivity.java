@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -25,6 +26,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
+import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -42,6 +44,7 @@ import com.zhongjh.imageedit.ImageEditActivity;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
@@ -54,6 +57,8 @@ import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
  */
 public class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener {
+
+    private final String TAG = BasePreviewActivity.this.getClass().getSimpleName();
 
     public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
@@ -206,7 +211,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             // 循环当前所有图片进行处理
             for (MultiMedia multiMedia : mAdapter.getmItems()) {
                 if (apply) {
-                    if (multiMedia.getPath() != null) {
+                    // 判断有old才说明编辑过
+                    if (multiMedia.getPath() != null && !TextUtils.isEmpty(multiMedia.getOldPath())) {
                         File file = new File(multiMedia.getPath());
                         // 加入相册库
                         Uri editMediaUri = MediaStoreUtils.displayToGallery(this, file, TYPE_PICTURE, -1, 0, 0,
@@ -520,10 +526,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param apply 是否同意
      */
     private void setResultOkByIsCompress(boolean apply) {
-        // 判断是否需要迁移文件
-        if (mIsMoveFile) {
-
-        }
         // 判断是否需要压缩
         if (mGlobalSpec.compressionInterface != null) {
             if (apply) {
@@ -548,6 +550,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         ThreadUtils.executeByIo(mCompressFileTask);
     }
 
+    /**
+     * 完成压缩-复制的异步线程
+     */
     ThreadUtils.BaseSimpleBaseTask<Void> mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
 
         @Override
@@ -577,12 +582,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     } else {
                         compressionFile = oldFile;
                     }
-                    // 移动文件,获取文件名称
-                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
-                    File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
-                    // new localFile
-                    item.setPath(compressionFile.getAbsolutePath());
-                    item.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
                     int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());
                     item.setWidth(imageWidthAndHeight[0]);
                     item.setHeight(imageWidthAndHeight[1]);
@@ -590,17 +589,31 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     item.setType(item.getType());
                     item.setMimeType(item.getMimeType());
                     item.setDuration(item.getDuration());
+                    // 判断是否需要迁移文件
+                    if (mIsMoveFile) {
+                        // 移动文件,获取文件名称
+                        String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
+                        File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
+                        item.setPath(newFile.getAbsolutePath());
+                        item.setUri(mPictureMediaStoreCompat.getUri(newFile.getAbsolutePath()));
+                        boolean isCopy = FileUtil.copy(compressionFile, newFile);
+                        Log.d(TAG, "mCompressFileTask isCopy: " + isCopy);
+                        Log.d(TAG, "mCompressFileTask 压缩前原文件 oldFile: " + oldFile);
+                        Log.d(TAG, "mCompressFileTask 压缩后文件 compressionFile: " + compressionFile);
+                        Log.d(TAG, "mCompressFileTask 最新的文件 newFile: " + newFile);
+                    } else {
+                        item.setPath(compressionFile.getAbsolutePath());
+                        item.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
+                    }
                 }
             }
+            setResultOk(true);
             return null;
         }
 
         @Override
         public void onSuccess(Void result) {
-            setResultOk(true);
-            setControlTouchEnable(true);
         }
-
     };
 
     /**
@@ -608,7 +621,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      *
      * @param apply 是否同意
      */
-    protected void setResultOk(boolean apply) {
+    protected synchronized void setResultOk(boolean apply) {
+        Log.d(TAG, "setResultOk");
         refreshMultiMediaItem(apply);
         if (mGlobalSpec.onResultCallbackListener == null || !mIsExternalUsers) {
             // 如果是外部使用并且不同意，则不执行RESULT_OK
