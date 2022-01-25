@@ -257,7 +257,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            intent.putExtra(BasePreviewActivity.IS_MOVE_FILE,true);
+            intent.putExtra(BasePreviewActivity.IS_MOVE_FILE, true);
             startActivityForResult(intent, mGlobalSpec.requestCode);
             if (mGlobalSpec.isCutscenes) {
                 mActivity.overridePendingTransition(R.anim.activity_open, 0);
@@ -525,7 +525,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        intent.putExtra(BasePreviewActivity.IS_MOVE_FILE,true);
+        intent.putExtra(BasePreviewActivity.IS_MOVE_FILE, true);
         startActivityForResult(intent, mGlobalSpec.requestCode);
         if (mGlobalSpec.isCutscenes) {
             mActivity.overridePendingTransition(R.anim.activity_open, 0);
@@ -573,7 +573,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     /**
-     * 判断是否压缩，如果要压缩先要迁移复制再压缩
+     * 压缩文件开始
      */
     private void compressFile(ArrayList<LocalFile> localFiles) {
         // 显示loading动画
@@ -584,7 +584,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     /**
-     * 压缩的异步线程
+     * 压缩并且复制的异步线程
      *
      * @param localFiles 需要压缩的数据源
      */
