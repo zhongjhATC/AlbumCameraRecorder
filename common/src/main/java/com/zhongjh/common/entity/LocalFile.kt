@@ -4,6 +4,9 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.common.enums.MultimediaTypes
+import com.zhongjh.common.utils.MediaStoreCompat
+import com.zhongjh.common.utils.MediaStoreUtils
+import java.io.File
 
 /**
  * 文件地址
@@ -66,6 +69,49 @@ open class LocalFile : Parcelable {
     var oldUri: Uri? = null
 
     constructor()
+
+    /**
+     * 从localFile赋值到另外一个新的localFile
+     * 之所以这样做是因为Parcelable如果使用的是看似父类其实是子类就会出问题
+     */
+    constructor(localFile: LocalFile) : super() {
+        id = localFile.id
+        path = localFile.path
+        uri = localFile.uri
+        type = localFile.type
+        mimeType = localFile.mimeType
+        size = localFile.size
+        duration = localFile.duration
+        oldPath = localFile.oldPath
+        oldUri = localFile.oldUri
+        height = localFile.height
+        width = localFile.width
+    }
+
+    /**
+     * 赋值一个新的path，借由这个新的path，修改相关参数
+     */
+    constructor(mediaStoreCompat: MediaStoreCompat, localFile: LocalFile, compressionFile: File) : super() {
+        updateFile(mediaStoreCompat, localFile, compressionFile)
+    }
+
+    /**
+     * 修改新的file
+     */
+    fun updateFile(mediaStoreCompat: MediaStoreCompat, localFile: LocalFile, compressionFile: File) {
+        id = localFile.id
+        this.path = compressionFile.absolutePath
+        this.uri = mediaStoreCompat.getUri(compressionFile.absolutePath)
+        type = localFile.type
+        mimeType = localFile.mimeType
+        size = compressionFile.length()
+        duration = localFile.duration
+        oldPath = localFile.oldPath
+        oldUri = localFile.oldUri
+        val imageWidthAndHeight: IntArray = MediaStoreUtils.getImageWidthAndHeight(compressionFile.absolutePath)
+        height = imageWidthAndHeight[1]
+        width = imageWidthAndHeight[0]
+    }
 
     constructor(input: Parcel) {
         id = input.readLong()

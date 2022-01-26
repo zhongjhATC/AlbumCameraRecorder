@@ -92,6 +92,44 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
     }
 
     /**
+     * 通过名字new文件，并不新建
+     *
+     * @param fileName 文件名
+     * @param type     0是图片 1是视频 2是音频
+     * @param isCache  是否缓存文件夹
+     * @return 文件
+     */
+    fun fineFile(fileName: String, type: Int, isCache: Boolean): File {
+        val storageDir: File
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // 29以上的版本都必须是私有的或者公共目录
+            if (isCache) {
+                storageDir = File(context.externalCacheDir!!.path + File.separator + saveStrategy.directory)
+            } else {
+                storageDir = when (type) {
+                    0 -> context.getExternalFilesDir(Environment.DIRECTORY_PICTURES + File.separator + saveStrategy.directory)!!
+                    1 -> context.getExternalFilesDir(Environment.DIRECTORY_MOVIES + File.separator + saveStrategy.directory)!!
+                    2 -> context.getExternalFilesDir(Environment.DIRECTORY_MUSIC + File.separator + saveStrategy.directory)!!
+                    else -> throw RuntimeException("The type must be 2-0.")
+                }
+            }
+        } else {
+            if (isCache) {
+                storageDir = File(context.externalCacheDir!!.path + File.separator + saveStrategy.directory)
+            } else {
+                if (saveStrategy.isPublic) {
+                    // sd卡外部目录
+                    storageDir = Environment.getExternalStoragePublicDirectory(saveStrategy.directory)
+                } else {
+                    // sd卡外部目录下，app卸载后会清除掉
+                    storageDir = context.getExternalFilesDir(saveStrategy.directory)!!
+                }
+            }
+        }
+        return File(storageDir, fileName)
+    }
+
+    /**
      * @param bitmap  保存bitmap到file
      * @param isCache 是否缓存文件夹
      * @return 返回file的路径

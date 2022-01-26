@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.utils;
+package com.zhongjh.common.utils;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

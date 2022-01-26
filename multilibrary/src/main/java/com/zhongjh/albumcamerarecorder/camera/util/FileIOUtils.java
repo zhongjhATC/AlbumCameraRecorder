@@ -66,6 +66,7 @@ public class FileIOUtils {
                     listener.onProgressUpdate(curSize / totalSize, file);
                 }
             }
+            Log.e("FileIOUtils", "return true");
             return true;
         } catch (IOException e) {
             e.printStackTrace();

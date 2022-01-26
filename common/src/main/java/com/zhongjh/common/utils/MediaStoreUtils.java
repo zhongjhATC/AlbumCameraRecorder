@@ -1,10 +1,11 @@
-package com.zhongjh.albumcamerarecorder.utils;
+package com.zhongjh.common.utils;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -15,10 +16,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
-import androidx.exifinterface.media.ExifInterface;
-
-import com.zhongjh.common.utils.AppUtils;
-import com.zhongjh.common.utils.MediaStoreCompat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,10 +25,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_AUDIO;
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 
 
 /**
@@ -45,9 +38,9 @@ import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.T
 public class MediaStoreUtils {
 
     @IntDef({
-            TYPE_PICTURE,
-            TYPE_VIDEO,
-            TYPE_AUDIO
+            MediaTypes.TYPE_PICTURE,
+            MediaTypes.TYPE_VIDEO,
+            MediaTypes.TYPE_AUDIO
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MediaTypes {
@@ -100,7 +93,7 @@ public class MediaStoreUtils {
             values.put(MediaStore.Images.Media.WIDTH, width);
             values.put(MediaStore.Images.Media.HEIGHT, height);
             switch (type) {
-                case TYPE_VIDEO:
+                case MediaTypes.TYPE_VIDEO:
                     values.put(MediaStore.Images.Media.MIME_TYPE, "video/mp4");
                     // 计算时间
                     if (duration == 0) {
@@ -111,11 +104,11 @@ public class MediaStoreUtils {
                     values.put("duration", duration);
                     uri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
                     break;
-                case TYPE_PICTURE:
+                case MediaTypes.TYPE_PICTURE:
                     values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
                     uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                     break;
-                case TYPE_AUDIO:
+                case MediaTypes.TYPE_AUDIO:
                     values.put(MediaStore.Audio.Media.MIME_TYPE, "video/aac");
                     // 计算时间
                     if (duration == 0) {
@@ -153,7 +146,7 @@ public class MediaStoreUtils {
         values.put(MediaStore.Images.Media.HEIGHT, height);
         Uri external = null;
         switch (type) {
-            case TYPE_VIDEO:
+            case MediaTypes.TYPE_VIDEO:
                 values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
                 // 计算时间
                 if (duration == 0) {
@@ -167,12 +160,12 @@ public class MediaStoreUtils {
                 values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + File.separator + directory);
                 external = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
                 break;
-            case TYPE_PICTURE:
+            case MediaTypes.TYPE_PICTURE:
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
                 values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + directory);
                 external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 break;
-            case TYPE_AUDIO:
+            case MediaTypes.TYPE_AUDIO:
                 values.put(MediaStore.Audio.Media.MIME_TYPE, "video/aac");
                 // 计算时间
                 if (duration == 0) {

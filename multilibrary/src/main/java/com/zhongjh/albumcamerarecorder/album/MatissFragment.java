@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,12 +38,12 @@ import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMedi
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
+import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
@@ -69,6 +70,8 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SE
 public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks,
         MediaSelectionFragment.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
+
+    private final String TAG = MatissFragment.this.getClass().getSimpleName();
 
     private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     public static final String ARGUMENTS_MARGIN_BOTTOM = "arguments_margin_bottom";
@@ -257,7 +260,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            intent.putExtra(BasePreviewActivity.IS_MOVE_FILE, true);
+            intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
             startActivityForResult(intent, mGlobalSpec.requestCode);
             if (mGlobalSpec.isCutscenes) {
                 mActivity.overridePendingTransition(R.anim.activity_open, 0);
@@ -525,7 +528,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        intent.putExtra(BasePreviewActivity.IS_MOVE_FILE, true);
+        intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
         startActivityForResult(intent, mGlobalSpec.requestCode);
         if (mGlobalSpec.isCutscenes) {
             mActivity.overridePendingTransition(R.anim.activity_open, 0);
@@ -584,7 +587,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     /**
-     * 压缩并且复制的异步线程
+     * 完成压缩-复制的异步线程
      *
      * @param localFiles 需要压缩的数据源
      */
@@ -596,6 +599,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 // 将 缓存文件 拷贝到 配置目录
                 ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
                 for (LocalFile item : localFiles) {
+                    // 获取真实路径
                     String path = null;
                     if (item.getPath() == null) {
                         File file = UriUtils.uriToFile(mContext, item.getUri());
@@ -606,32 +610,43 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                         path = item.getPath();
                     }
 
-                    if (path != null) {
-                        File oldFile = new File(path);
-                        // 压缩图片
-                        File compressionFile;
-                        if (mGlobalSpec.compressionInterface != null) {
-                            try {
-                                compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
-                            } catch (IOException e) {
-                                compressionFile = oldFile;
-                                e.printStackTrace();
-                            }
-                        } else {
-                            compressionFile = oldFile;
-                        }
-                        // new localFile
-                        LocalFile localFile = new LocalFile();
-                        localFile.setPath(compressionFile.getAbsolutePath());
-                        localFile.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
-                        int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());
-                        localFile.setWidth(imageWidthAndHeight[0]);
-                        localFile.setHeight(imageWidthAndHeight[1]);
-                        localFile.setSize(compressionFile.length());
-                        localFile.setType(item.getType());
-                        localFile.setMimeType(item.getMimeType());
-                        localFile.setDuration(item.getDuration());
+                    // 移动文件,获取文件名称
+                    String newFileName = path.substring(path.lastIndexOf(File.separator));
+
+                    String[] newFileNames = newFileName.split("\\.");
+                    // 设置压缩后的照片名称，id_CMP
+                    newFileName = item.getId() + "_CMP";
+                    if (newFileNames.length > 1) {
+                        // 设置后缀名
+                        newFileName = newFileName + "." + newFileNames[1];
+                    }
+                    File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                    if (newFile.exists()) {
+                        LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
                         newLocalFiles.add(localFile);
+                        Log.d(TAG, "存在直接使用");
+                    } else {
+                        if (path != null) {
+                            File oldFile = new File(path);
+                            // 压缩图片
+                            File compressionFile;
+                            if (mGlobalSpec.compressionInterface != null) {
+                                try {
+                                    compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
+                                } catch (IOException e) {
+                                    compressionFile = oldFile;
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                compressionFile = oldFile;
+                            }
+                            // 移动到新的文件夹
+                            newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
+                            FileUtil.copy(compressionFile, newFile);
+                            LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
+                            newLocalFiles.add(localFile);
+                            Log.d(TAG, "不存在新建文件");
+                        }
                     }
                 }
                 return newLocalFiles;
@@ -640,7 +655,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             @Override
             public void onSuccess(ArrayList<LocalFile> result) {
                 setResultOk(result);
-                setControlTouchEnable(true);
             }
 
         };
@@ -653,6 +667,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * @param localFiles 本地数据包含别的参数
      */
     private void setResultOk(ArrayList<LocalFile> localFiles) {
+        Log.d(TAG, "setResultOk");
         if (mGlobalSpec.onResultCallbackListener == null) {
             // 获取选择的图片的url集合
             Intent result = new Intent();
