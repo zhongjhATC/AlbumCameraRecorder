@@ -494,7 +494,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      */
     private void setResultOkByIsCompress(boolean apply) {
         // 判断是否需要压缩
-        if (mGlobalSpec.compressionInterface != null) {
+        if (mGlobalSpec.imageCompressionInterface != null) {
             if (apply) {
                 compressFile();
             } else {
@@ -590,9 +590,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             File oldFile = new File(path);
             // 压缩图片
             File compressionFile;
-            if (mGlobalSpec.compressionInterface != null) {
+            if (mGlobalSpec.imageCompressionInterface != null) {
                 try {
-                    compressionFile = mGlobalSpec.compressionInterface.compressionFile(getApplicationContext(), oldFile);
+                    compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getApplicationContext(), oldFile);
                 } catch (IOException e) {
                     compressionFile = oldFile;
                     e.printStackTrace();

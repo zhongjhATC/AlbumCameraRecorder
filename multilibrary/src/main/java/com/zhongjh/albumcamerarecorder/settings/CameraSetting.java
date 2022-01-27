@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi;
 
-import com.zhongjh.common.coordinator.VideoEditCoordinator;
+import com.zhongjh.common.coordinator.VideoMergeCoordinator;
 import com.zhongjh.common.enums.MimeType;
 
 import java.util.Set;
@@ -56,8 +56,8 @@ public class CameraSetting implements CameraSettingApi {
     }
 
     @Override
-    public CameraSetting videoEdit(VideoEditCoordinator videoEditManager) {
-        mCameraSpec.videoEditCoordinator = videoEditManager;
+    public CameraSetting videoMerge(VideoMergeCoordinator videoEditManager) {
+        mCameraSpec.videoMergeCoordinator = videoEditManager;
         return this;
     }
 

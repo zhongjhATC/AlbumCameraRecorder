@@ -38,6 +38,7 @@ import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMedi
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
+import com.zhongjh.albumcamerarecorder.camera.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -47,12 +48,16 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MultimediaTypes;
+import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.ColorFilterUtil;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.common.widget.IncapableDialog;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -315,12 +320,16 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        if (mGlobalSpec.isCompressEnable()) {
+            mGlobalSpec.videoCompressCoordinator.onCompressDestroy(MatissFragment.this.getClass());
+            mGlobalSpec.videoCompressCoordinator = null;
+        }
         // 销毁相册model
         mAlbumCollection.onDestroy();
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
+        super.onDestroy();
     }
 
     @Override
@@ -568,7 +577,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private void setResultOkByIsCompress(ArrayList<LocalFile> localFiles) {
         // 判断是否需要压缩
-        if (mGlobalSpec.compressionInterface != null) {
+        if (mGlobalSpec.imageCompressionInterface != null) {
             compressFile(localFiles);
         } else {
             setResultOk(localFiles);
@@ -627,24 +636,54 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                             Log.d(TAG, "存在直接使用");
                         } else {
                             File oldFile = new File(path);
-                            // 压缩图片
+                            // 根据类型压缩
                             File compressionFile;
-                            if (mGlobalSpec.compressionInterface != null) {
-                                try {
-                                    compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
-                                } catch (IOException e) {
+                            if (item.getType() == MultimediaTypes.PICTURE) {
+                                if (mGlobalSpec.imageCompressionInterface != null) {
+                                    // 压缩图片
+                                    try {
+                                        compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getContext(), oldFile);
+                                    } catch (IOException e) {
+                                        compressionFile = oldFile;
+                                        e.printStackTrace();
+                                    }
+                                } else {
                                     compressionFile = oldFile;
-                                    e.printStackTrace();
                                 }
+                                // 移动到新的文件夹
+                                newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
+                                FileUtil.copy(compressionFile, newFile);
+                                LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
+                                newLocalFiles.add(localFile);
                             } else {
-                                compressionFile = oldFile;
+                                if (mGlobalSpec.isCompressEnable()) {
+                                    // 压缩视频
+                                    newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
+                                    File finalNewFile = newFile;
+                                    mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(MatissFragment.this.getClass(), new VideoEditListener() {
+                                        @Override
+                                        public void onFinish() {
+                                            LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, finalNewFile);
+                                            newLocalFiles.add(localFile);
+                                            Log.d(TAG, "不存在新建文件");
+                                        }
+
+                                        @Override
+                                        public void onProgress(int progress, long progressTime) {
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+
+                                        }
+
+                                        @Override
+                                        public void onError(@NotNull String message) {
+                                        }
+                                    });
+                                    mGlobalSpec.videoCompressCoordinator.compressAsync(MatissFragment.this.getClass(), path, newFile.getPath());
+                                }
                             }
-                            // 移动到新的文件夹
-                            newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
-                            FileUtil.copy(compressionFile, newFile);
-                            LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
-                            newLocalFiles.add(localFile);
-                            Log.d(TAG, "不存在新建文件");
                         }
                     }
                 }

@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
 import android.app.Activity;
-import android.content.Intent;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
@@ -9,16 +8,15 @@ import androidx.annotation.StyleRes;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine;
-import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
+import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.coordinator.VideoCompressCoordinator;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 
@@ -187,21 +185,27 @@ public interface GlobalSettingApi {
     /**
      * 有关压缩操作的接口
      *
-     * @param listener 接口 {@link CompressionInterface}
+     * @param listener 接口 {@link ImageCompressionInterface}
      * @return {@link GlobalSetting} for fluent API.
      */
-    GlobalSetting setOnCompressionInterface(@Nullable CompressionInterface listener);
+    GlobalSetting setOnImageCompressionInterface(@Nullable ImageCompressionInterface listener);
 
     /**
      * 有关首页的一些事件
      * <p>
-     * 这是一个冗余的api {@link MultiMediaSetting#obtainResult(Intent)},
-     * 我们只建议您在需要立即执行某些操作时使用此API。
+     * 这是一个冗余的api ,我们只建议您在需要立即执行某些操作时使用此API。
      *
      * @param listener {@link OnMainListener}
      * @return {@link GlobalSetting} for fluent API.
      */
     GlobalSetting setOnMainListener(@Nullable OnMainListener listener);
+
+    /**
+     *
+     * @param videoCompressManager 视频压缩处理管理
+     * @return {@link GlobalSetting} for fluent API.
+     */
+    GlobalSetting videoCompress(VideoCompressCoordinator videoCompressManager);
 
     /**
      * 开始进行多媒体操作并等待结果.

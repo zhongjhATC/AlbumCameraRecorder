@@ -151,10 +151,30 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/support_compression" />
+                        android:text="@string/support_compression_images" />
 
                     <CheckBox
-                        android:id="@+id/cbIsCompress"
+                        android:id="@+id/cb_is_compress_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_compression_videos" />
+
+                    <CheckBox
+                        android:id="@+id/cb_is_compress_video"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -590,7 +610,7 @@
                     android:text="@string/turn_on_the_shooting_function" />
 
                 <CheckBox
-                    android:id="@+id/cbVideoEdit"
+                    android:id="@+id/cb_video_merge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"

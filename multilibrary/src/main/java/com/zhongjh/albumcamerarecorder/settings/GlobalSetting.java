@@ -14,14 +14,14 @@ import androidx.fragment.app.Fragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
-import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
+import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
-import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.coordinator.VideoCompressCoordinator;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
@@ -253,8 +253,14 @@ public final class GlobalSetting implements GlobalSettingApi {
     }
 
     @Override
-    public GlobalSetting setOnCompressionInterface(@Nullable CompressionInterface listener) {
-        mGlobalSpec.compressionInterface = listener;
+    public GlobalSetting setOnImageCompressionInterface(@Nullable ImageCompressionInterface listener) {
+        mGlobalSpec.imageCompressionInterface = listener;
+        return this;
+    }
+
+    @Override
+    public GlobalSetting videoCompress(VideoCompressCoordinator videoCompressManager) {
+        mGlobalSpec.videoCompressCoordinator = videoCompressManager;
         return this;
     }
 

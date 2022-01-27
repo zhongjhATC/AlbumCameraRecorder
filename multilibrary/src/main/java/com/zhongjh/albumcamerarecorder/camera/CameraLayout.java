@@ -543,8 +543,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mViewHolder.cameraView.destroy();
         mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
         if (mCameraSpec.isMergeEnable()) {
-            mCameraSpec.videoEditCoordinator.onMergeDestroy();
-            mCameraSpec.videoEditCoordinator = null;
+            mCameraSpec.videoMergeCoordinator.onMergeDestroy(CameraLayout.this.getClass());
+            mCameraSpec.videoMergeCoordinator = null;
         }
         mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
         mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
@@ -756,7 +756,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private void initVideoEditListener() {
         if (mCameraSpec.isMergeEnable()) {
-            mCameraSpec.videoEditCoordinator.setVideoMergeListener(new VideoEditListener() {
+            mCameraSpec.videoMergeCoordinator.setVideoMergeListener(CameraLayout.this.getClass(), new VideoEditListener() {
                 @Override
                 public void onFinish() {
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(100);
@@ -1018,7 +1018,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         if (mIsSectionRecord) {
             // 合并视频
             mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true, "mp4").getPath();
-            mCameraSpec.videoEditCoordinator.merge(mNewSectionVideoPath, mVideoPaths,
+            mCameraSpec.videoMergeCoordinator.merge(CameraLayout.this.getClass(), mNewSectionVideoPath, mVideoPaths,
                     getContext().getCacheDir().getPath() + File.separator + "cam.txt");
         }
         PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
@@ -1048,9 +1048,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 File oldFile = new File(item.getPath());
                 // 压缩图片
                 File compressionFile = null;
-                if (mGlobalSpec.compressionInterface != null) {
+                if (mGlobalSpec.imageCompressionInterface != null) {
                     try {
-                        compressionFile = mGlobalSpec.compressionInterface.compressionFile(getContext(), oldFile);
+                        compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getContext(), oldFile);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -1320,7 +1320,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     public void stopVideoMultiple() {
         if (mCameraSpec.isMergeEnable()) {
-            mCameraSpec.videoEditCoordinator.onMergeDispose();
+            mCameraSpec.videoMergeCoordinator.onMergeDispose(CameraLayout.this.getClass());
         }
     }
 

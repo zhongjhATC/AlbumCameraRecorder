@@ -10,13 +10,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -26,7 +24,7 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.R;
-import com.zhongjh.cameraapp.configuration.CompressionLuBan;
+import com.zhongjh.cameraapp.configuration.ImageCompressionLuBan;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
@@ -39,7 +37,8 @@ import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
-import com.zhongjh.videoedit.VideoEditManager;
+import com.zhongjh.videoedit.VideoCompressManager;
+import com.zhongjh.videoedit.VideoMergeManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -219,11 +218,16 @@ public class MainActivity extends BaseActivity {
         // 设置横竖屏
         mGlobalSetting.setRequestedOrientation(requestedOrientation);
 
-        // 是否压缩
-        if (mBinding.cbIsCompress.isChecked()) {
-            mGlobalSetting.setOnCompressionInterface(new CompressionLuBan());
+        // 是否压缩图片
+        if (mBinding.cbIsCompressImage.isChecked()) {
+            mGlobalSetting.setOnImageCompressionInterface(new ImageCompressionLuBan());
         } else {
-            mGlobalSetting.setOnCompressionInterface(null);
+            mGlobalSetting.setOnImageCompressionInterface(null);
+        }
+
+        // 是否压缩视频
+        if (mBinding.cbIsCompressVideo.isChecked()) {
+            mGlobalSetting.videoCompress(new VideoCompressManager());
         }
 
         // 自定义失败信息
@@ -347,9 +351,9 @@ public class MainActivity extends BaseActivity {
             cameraSetting.watermarkResource(R.layout.watermark);
         }
 
-        if (mBinding.cbVideoEdit.isChecked()) {
-            // 启动这个即可开启视频编辑功能
-            cameraSetting.videoEdit(new VideoEditManager());
+        if (mBinding.cbVideoMerge.isChecked()) {
+            // 启动这个即可开启视频分段录制合并功能
+            cameraSetting.videoMerge(new VideoMergeManager());
         }
 
         // 是否启用闪光灯记忆模式

@@ -1,16 +1,13 @@
 package com.zhongjh.cameraapp.configuration;
 
 import android.content.Context;
-import android.graphics.Picture;
 
-import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
+import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface;
 
 import java.io.File;
 import java.io.IOException;
 
 import top.zibin.luban.Luban;
-
-import static android.os.Environment.DIRECTORY_PICTURES;
 
 /**
  * luban压缩
@@ -18,7 +15,7 @@ import static android.os.Environment.DIRECTORY_PICTURES;
  * @author zhongjh
  * @date 2021/9/26
  */
-public class CompressionLuBan implements CompressionInterface {
+public class ImageCompressionLuBan implements ImageCompressionInterface {
 
     @Override
     public File compressionFile(Context context, File file) throws IOException {

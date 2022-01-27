@@ -8,13 +8,12 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
-import com.zhongjh.albumcamerarecorder.listener.CompressionInterface;
+import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface;
 import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
-import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.coordinator.VideoCompressCoordinator;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.utils.ThreadUtils;
 
 import java.util.Set;
 
@@ -102,9 +101,13 @@ public class GlobalSpec {
      */
     public boolean isImageEdit;
     /**
-     * 压缩接口
+     * 压缩图片接口
      */
-    public CompressionInterface compressionInterface;
+    public ImageCompressionInterface imageCompressionInterface;
+    /**
+     * 视频压缩功能
+     */
+    public VideoCompressCoordinator videoCompressCoordinator;
     /**
      * 主界面的有关事件
      */
@@ -154,7 +157,7 @@ public class GlobalSpec {
         isCutscenes = true;
         orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         isImageEdit = true;
-        compressionInterface = null;
+        imageCompressionInterface = null;
         requestCode = 0;
     }
 
@@ -193,6 +196,13 @@ public class GlobalSpec {
 
     public void setMimeTypeSet(Set<MimeType> mimeTypeSet) {
         this.mimeTypeSet = mimeTypeSet;
+    }
+
+    /**
+     * @return 是否开启了视频压缩功能
+     */
+    public boolean isCompressEnable() {
+        return videoCompressCoordinator != null;
     }
 
 }

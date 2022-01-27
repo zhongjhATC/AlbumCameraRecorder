@@ -9,19 +9,16 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
-import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
-
-import java.io.File;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
+import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
+import com.zhongjh.common.coordinator.VideoCompressCoordinator;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.enums.MultimediaTypes;
@@ -31,6 +28,8 @@ import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 
@@ -69,7 +68,12 @@ public class PreviewVideoActivity extends AppCompatActivity {
     /**
      * 拍摄配置
      */
-    private CameraSpec mCameraSpec;
+    private GlobalSpec mGlobalSpec;
+
+    /**
+     * 视频压缩功能
+     */
+    public VideoCompressCoordinator videoCompressCoordinator;
 
     /**
      * 打开activity
@@ -93,7 +97,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_preview_video);
         mLocalFile.setPath(getIntent().getStringExtra(PATH));
         // 初始化设置
-        mCameraSpec = CameraSpec.getInstance();
+        mGlobalSpec = GlobalSpec.getInstance();
         initView();
         initListener();
         initData();
@@ -108,8 +112,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (mCameraSpec.isCompressEnable()) {
-            mCameraSpec.videoEditCoordinator.onCompressDestroy();
+        if (mGlobalSpec.isCompressEnable()) {
+            mGlobalSpec.videoCompressCoordinator.onCompressDestroy(PreviewVideoActivity.this.getClass());
+            mGlobalSpec.videoCompressCoordinator = null;
         }
         mMoveVideoFileTask.cancel();
         super.onDestroy();
@@ -141,7 +146,6 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void initData() {
         // 公共配置
-        GlobalSpec mGlobalSpec = GlobalSpec.getInstance();
         mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this,
                 mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 
@@ -185,8 +189,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 提交
      */
     private void confirm() {
-        // 判断是否开启了视频编辑功能
-        if (mCameraSpec.isCompressEnable()) {
+        // 判断是否开启了视频压缩功能
+        if (mGlobalSpec.isCompressEnable()) {
             // 如果开启了直接压缩
             compress();
         } else {
@@ -202,7 +206,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         // 获取文件名称
         String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
         File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-        mCameraSpec.videoEditCoordinator.setVideoCompressListener(new VideoEditListener() {
+        mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
             @Override
             public void onFinish() {
                 confirm(newFile);
@@ -223,7 +227,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
                 mIsRun = false;
             }
         });
-        mCameraSpec.videoEditCoordinator.compress(mLocalFile.getPath(), newFile.getPath());
+        mGlobalSpec.videoCompressCoordinator.compressRxJava(PreviewVideoActivity.this.getClass(), mLocalFile.getPath(), newFile.getPath());
     }
 
     /**

@@ -3,17 +3,14 @@ package com.zhongjh.albumcamerarecorder.settings.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 
 import java.util.Set;
 
-import com.zhongjh.common.coordinator.VideoEditCoordinator;
+import com.zhongjh.common.coordinator.VideoMergeCoordinator;
 import com.zhongjh.common.enums.MimeType;
 
 /**
@@ -66,7 +63,7 @@ public interface CameraSettingApi {
      * @param videoEditManager 视频编辑协调者
      * @return {@link CameraSetting} for fluent API.
      */
-    CameraSetting videoEdit(VideoEditCoordinator videoEditManager);
+    CameraSetting videoMerge(VideoMergeCoordinator videoEditManager);
 
     /**
      * 水印资源,可通过layout赋值水印，所处于的位置等等都可通过layout本身来处理

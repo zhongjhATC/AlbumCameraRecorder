@@ -3,7 +3,7 @@ package com.zhongjh.albumcamerarecorder.settings;
 import com.zhongjh.albumcamerarecorder.R;
 
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
-import com.zhongjh.common.coordinator.VideoEditCoordinator;
+import com.zhongjh.common.coordinator.VideoMergeCoordinator;
 import com.zhongjh.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
@@ -52,7 +52,7 @@ public class CameraSpec {
         duration = 10;
         // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
         minDuration = 1500;
-        videoEditCoordinator = null;
+        videoMergeCoordinator = null;
         watermarkResource = -1;
     }
 
@@ -98,9 +98,9 @@ public class CameraSpec {
      */
     public int minDuration = 1500;
     /**
-     * 视频编辑功能
+     * 视频分段录制合并功能
      */
-    public VideoEditCoordinator videoEditCoordinator;
+    public VideoMergeCoordinator videoMergeCoordinator;
     /**
      * 水印资源id
      */
@@ -128,14 +128,7 @@ public class CameraSpec {
      * @return 是否开启了分段录制视频合并功能
      */
     public boolean isMergeEnable() {
-        return videoEditCoordinator != null && videoEditCoordinator.isMergeEnable();
-    }
-
-    /**
-     * @return 是否开启了视频压缩功能
-     */
-    public boolean isCompressEnable() {
-        return videoEditCoordinator != null && videoEditCoordinator.isCompressEnable();
+        return videoMergeCoordinator != null;
     }
 
     // endregion 属性
