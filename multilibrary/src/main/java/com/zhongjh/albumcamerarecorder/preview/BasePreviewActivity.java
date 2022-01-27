@@ -537,35 +537,36 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 } else {
                     path = item.getPath();
                 }
-
-                // 先判断是不是来自相册，因为来自相册的图片可能不需要压缩
-                if (mIsByAlbum) {
-                    // 判断是否编辑过（有old说明编辑过），如果编辑过就要重新压缩和迁移
-                    if (path != null && !TextUtils.isEmpty(item.getOldPath())) {
-                        handleCompress(item, path);
-                    } else {
-                        // 如果没编辑过，需要判断是否存在图片，移动文件,获取文件名称
-                        String newFileName = path.substring(path.lastIndexOf(File.separator));
-
-                        String[] newFileNames = newFileName.split("\\.");
-                        // 设置压缩后的照片名称，id_CMP
-                        newFileName = item.getId() + "_CMP";
-                        if (newFileNames.length > 1) {
-                            // 设置后缀名
-                            newFileName = newFileName + "." + newFileNames[1];
-                        }
-                        File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
-                        if (newFile.exists()) {
-                            item.updateFile(mPictureMediaStoreCompat, item, newFile);
-                            Log.d(TAG, "存在直接使用");
-                        } else {
-                            // 不存在就压缩和迁移
+                if (path != null) {
+                    // 先判断是不是来自相册，因为来自相册的图片可能不需要压缩
+                    if (mIsByAlbum) {
+                        // 判断是否编辑过（有old说明编辑过），如果编辑过就要重新压缩和迁移
+                        if (!TextUtils.isEmpty(item.getOldPath())) {
                             handleCompress(item, path);
+                        } else {
+                            // 如果没编辑过，需要判断是否存在图片，移动文件,获取文件名称
+                            String newFileName = path.substring(path.lastIndexOf(File.separator));
+
+                            String[] newFileNames = newFileName.split("\\.");
+                            // 设置压缩后的照片名称，id_CMP
+                            newFileName = item.getId() + "_CMP";
+                            if (newFileNames.length > 1) {
+                                // 设置后缀名
+                                newFileName = newFileName + "." + newFileNames[1];
+                            }
+                            File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                            if (newFile.exists()) {
+                                item.updateFile(mPictureMediaStoreCompat, item, newFile);
+                                Log.d(TAG, "存在直接使用");
+                            } else {
+                                // 不存在就压缩和迁移
+                                handleCompress(item, path);
+                            }
                         }
+                    } else {
+                        // 来自别的界面都要压缩和迁移
+                        handleCompress(item, path);
                     }
-                } else {
-                    // 来自别的界面都要压缩和迁移
-                    handleCompress(item, path);
                 }
             }
             setResultOk(true);

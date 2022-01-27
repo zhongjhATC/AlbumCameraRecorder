@@ -384,7 +384,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         layoutParams.height = layoutParams.height + statusBarHeight;
 
         // 如果启动视频编辑并且可录制数量>=0，便显示分段录制功能
-        if (SelectableUtils.getVideoMaxCount() <= 0 || mCameraSpec.videoEditCoordinator == null) {
+        if (SelectableUtils.getVideoMaxCount() <= 0 || !mCameraSpec.isMergeEnable()) {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
         } else {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
@@ -542,7 +542,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
         mViewHolder.cameraView.destroy();
         mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
-        if (mCameraSpec.videoEditCoordinator != null) {
+        if (mCameraSpec.isMergeEnable()) {
             mCameraSpec.videoEditCoordinator.onMergeDestroy();
             mCameraSpec.videoEditCoordinator = null;
         }
@@ -755,7 +755,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 视频编辑后的事件，目前 有分段录制后合并、压缩视频
      */
     private void initVideoEditListener() {
-        if (mCameraSpec.videoEditCoordinator != null) {
+        if (mCameraSpec.isMergeEnable()) {
             mCameraSpec.videoEditCoordinator.setVideoMergeListener(new VideoEditListener() {
                 @Override
                 public void onFinish() {
@@ -983,7 +983,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         setMenuVisibility(VISIBLE);
 
         // 重置分段录制按钮 如果启动视频编辑并且可录制数量>=0，便显示分段录制功能
-        if (SelectableUtils.getVideoMaxCount() <= 0 || mCameraSpec.videoEditCoordinator == null) {
+        if (SelectableUtils.getVideoMaxCount() <= 0 || !mCameraSpec.isMergeEnable()) {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.GONE);
         } else {
             mViewHolder.pvLayout.getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
@@ -1319,7 +1319,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 多视频分段录制中止提交
      */
     public void stopVideoMultiple() {
-        if (mCameraSpec.videoEditCoordinator != null) {
+        if (mCameraSpec.isMergeEnable()) {
             mCameraSpec.videoEditCoordinator.onMergeDispose();
         }
     }

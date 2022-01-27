@@ -108,7 +108,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (mCameraSpec.videoEditCoordinator != null) {
+        if (mCameraSpec.isCompressEnable()) {
             mCameraSpec.videoEditCoordinator.onCompressDestroy();
         }
         mMoveVideoFileTask.cancel();
@@ -186,7 +186,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void confirm() {
         // 判断是否开启了视频编辑功能
-        if (mCameraSpec.videoEditCoordinator != null) {
+        if (mCameraSpec.isCompressEnable()) {
             // 如果开启了直接压缩
             compress();
         } else {

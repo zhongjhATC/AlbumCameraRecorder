@@ -9,6 +9,17 @@ import java.util.*
  * @author zhongjh
  */
 interface VideoEditCoordinator {
+
+    /**
+     * 是否开启分段录制合并视频功能
+     */
+    fun isMergeEnable(): Boolean
+
+    /**
+     * 是否开启压缩视频功能
+     */
+    fun isCompressEnable(): Boolean
+
     /**
      * 赋值事件
      *

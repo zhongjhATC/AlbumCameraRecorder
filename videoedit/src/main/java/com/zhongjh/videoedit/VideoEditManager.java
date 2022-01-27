@@ -25,14 +25,37 @@ public class VideoEditManager implements VideoEditCoordinator {
     VideoEditListener mVideoMergeListener;
     VideoEditListener mVideoCompressListener;
 
+    boolean mMergeEnable;
+    boolean mCompressEnable;
+
+    public VideoEditManager() {
+        mMergeEnable = true;
+        mCompressEnable = true;
+    }
+
+    /**
+     * 通过这个区分是否开启视频其他功能
+     *
+     * @param mergeEnable     是否启动视频分段录制
+     * @param compressEnable 是否启动视频压缩
+     */
+    public VideoEditManager(boolean mergeEnable, boolean compressEnable) {
+        mMergeEnable = mergeEnable;
+        mCompressEnable = compressEnable;
+    }
+
     @Override
     public void setVideoMergeListener(VideoEditListener videoMergeListener) {
-        mVideoMergeListener = videoMergeListener;
+        if (mMergeEnable) {
+            mVideoMergeListener = videoMergeListener;
+        }
     }
 
     @Override
     public void setVideoCompressListener(VideoEditListener videoCompressListener) {
-        mVideoCompressListener = videoCompressListener;
+        if (mCompressEnable) {
+            mVideoCompressListener = videoCompressListener;
+        }
     }
 
     @Override
@@ -134,6 +157,16 @@ public class VideoEditManager implements VideoEditCoordinator {
         if (mMyRxFfmpegCompressSubscriber != null) {
             mMyRxFfmpegCompressSubscriber.dispose();
         }
+    }
+
+    @Override
+    public boolean isMergeEnable() {
+        return mMergeEnable;
+    }
+
+    @Override
+    public boolean isCompressEnable() {
+        return mCompressEnable;
     }
 
 

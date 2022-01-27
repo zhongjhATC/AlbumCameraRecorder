@@ -109,6 +109,7 @@ public class CameraSpec {
      * 是否点击即录制（点击拍摄图片功能则失效）
      */
     public boolean isClickRecord;
+
     /**
      * 仅支持图片
      */
@@ -121,6 +122,20 @@ public class CameraSpec {
      */
     public boolean onlySupportVideos() {
         return MimeType.ofVideo().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.CAMERA));
+    }
+
+    /**
+     * @return 是否开启了分段录制视频合并功能
+     */
+    public boolean isMergeEnable() {
+        return videoEditCoordinator != null && videoEditCoordinator.isMergeEnable();
+    }
+
+    /**
+     * @return 是否开启了视频压缩功能
+     */
+    public boolean isCompressEnable() {
+        return videoEditCoordinator != null && videoEditCoordinator.isCompressEnable();
     }
 
     // endregion 属性

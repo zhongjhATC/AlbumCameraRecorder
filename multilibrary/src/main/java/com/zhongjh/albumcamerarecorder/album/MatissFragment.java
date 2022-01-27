@@ -609,24 +609,23 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     } else {
                         path = item.getPath();
                     }
+                    if (path != null) {
+                        // 移动文件,获取文件名称
+                        String newFileName = path.substring(path.lastIndexOf(File.separator));
 
-                    // 移动文件,获取文件名称
-                    String newFileName = path.substring(path.lastIndexOf(File.separator));
-
-                    String[] newFileNames = newFileName.split("\\.");
-                    // 设置压缩后的照片名称，id_CMP
-                    newFileName = item.getId() + "_CMP";
-                    if (newFileNames.length > 1) {
-                        // 设置后缀名
-                        newFileName = newFileName + "." + newFileNames[1];
-                    }
-                    File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
-                    if (newFile.exists()) {
-                        LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
-                        newLocalFiles.add(localFile);
-                        Log.d(TAG, "存在直接使用");
-                    } else {
-                        if (path != null) {
+                        String[] newFileNames = newFileName.split("\\.");
+                        // 设置压缩后的照片名称，id_CMP
+                        newFileName = item.getId() + "_CMP";
+                        if (newFileNames.length > 1) {
+                            // 设置后缀名
+                            newFileName = newFileName + "." + newFileNames[1];
+                        }
+                        File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                        if (newFile.exists()) {
+                            LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
+                            newLocalFiles.add(localFile);
+                            Log.d(TAG, "存在直接使用");
+                        } else {
                             File oldFile = new File(path);
                             // 压缩图片
                             File compressionFile;

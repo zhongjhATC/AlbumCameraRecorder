@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * 压缩接口
+ * 压缩图片接口
  *
  * @author zhongjh
  * @date 2021/9/26
