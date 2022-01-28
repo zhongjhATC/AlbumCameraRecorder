@@ -629,7 +629,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                             // 设置后缀名
                             newFileName = newFileName + "." + newFileNames[1];
                         }
-                        File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                        File newFile;
+                        if (item.getType() == MultimediaTypes.PICTURE) {
+                            newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                        } else if (item.getType() == MultimediaTypes.VIDEO) {
+                            newFile = mVideoMediaStoreCompat.fineFile(newFileName, 1, false);
+                        } else {
+                            newFile = new File(path);
+                        }
                         if (newFile.exists()) {
                             LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
                             newLocalFiles.add(localFile);
@@ -655,7 +662,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                                 FileUtil.copy(compressionFile, newFile);
                                 LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
                                 newLocalFiles.add(localFile);
-                            } else {
+                            } else if (item.getType() == MultimediaTypes.VIDEO) {
                                 if (mGlobalSpec.isCompressEnable()) {
                                     // 压缩视频
                                     newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
