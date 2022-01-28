@@ -3,6 +3,7 @@ package com.zhongjh.common.entity
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MultimediaTypes
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaStoreUtils
@@ -167,6 +168,56 @@ open class LocalFile : Parcelable {
         override fun newArray(size: Int): Array<LocalFile?> {
             return arrayOfNulls(size)
         }
+    }
+
+    fun isImage(): Boolean {
+        if (mimeType == null) {
+            return false
+        }
+        return mimeType.equals(MimeType.JPEG.toString())
+                || mimeType.equals(MimeType.PNG.toString())
+                || mimeType.equals(MimeType.GIF.toString())
+                || mimeType.equals(MimeType.BMP.toString())
+                || mimeType.equals(MimeType.WEBP.toString())
+    }
+
+    fun isGif(): Boolean {
+        if (mimeType == null) {
+            return false
+        }
+        return mimeType.equals(MimeType.GIF.toString())
+    }
+
+    fun isImageOrGif(): Boolean {
+        if (mimeType == null) {
+            return false
+        }
+        return mimeType.equals(MimeType.JPEG.toString())
+                || mimeType.equals(MimeType.PNG.toString())
+                || mimeType.equals(MimeType.GIF.toString())
+                || mimeType.equals(MimeType.BMP.toString())
+                || mimeType.equals(MimeType.WEBP.toString())
+                || mimeType.equals(MimeType.GIF.toString())
+    }
+
+    fun isAudio(): Boolean {
+        if (mimeType == null) {
+            return false
+        }
+        return mimeType.equals(MimeType.AAC.toString())
+    }
+
+    fun isVideo(): Boolean {
+        return type == MultimediaTypes.VIDEO
+                || mimeType.equals(MimeType.MPEG.toString())
+                || mimeType.equals(MimeType.MP4.toString())
+                || mimeType.equals(MimeType.QUICKTIME.toString())
+                || mimeType.equals(MimeType.THREEGPP.toString())
+                || mimeType.equals(MimeType.THREEGPP2.toString())
+                || mimeType.equals(MimeType.MKV.toString())
+                || mimeType.equals(MimeType.WEBM.toString())
+                || mimeType.equals(MimeType.TS.toString())
+                || mimeType.equals(MimeType.AVI.toString())
     }
 
 }

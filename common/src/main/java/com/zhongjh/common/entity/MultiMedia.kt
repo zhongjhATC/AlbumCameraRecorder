@@ -8,7 +8,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
 import android.provider.MediaStore.*
-import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MultimediaTypes
 
 /**
@@ -116,72 +115,6 @@ open class MultiMedia : LocalFile, Parcelable {
         result = 31 * result + java.lang.Long.valueOf(drawableId.toLong()).hashCode()
         return result
     }
-
-    fun isImage(): Boolean {
-        if (mimeType == null) {
-            return false
-        }
-        return mimeType.equals(MimeType.JPEG.toString())
-                || mimeType.equals(MimeType.PNG.toString())
-                || mimeType.equals(MimeType.GIF.toString())
-                || mimeType.equals(MimeType.BMP.toString())
-                || mimeType.equals(MimeType.WEBP.toString())
-    }
-
-    fun isGif(): Boolean {
-        if (mimeType == null) {
-            return false
-        }
-        return mimeType.equals(MimeType.GIF.toString())
-    }
-
-    fun isImageOrGif(): Boolean {
-        if (mimeType == null) {
-            return false
-        }
-        return mimeType.equals(MimeType.JPEG.toString())
-                || mimeType.equals(MimeType.PNG.toString())
-                || mimeType.equals(MimeType.GIF.toString())
-                || mimeType.equals(MimeType.BMP.toString())
-                || mimeType.equals(MimeType.WEBP.toString())
-                || mimeType.equals(MimeType.GIF.toString())
-    }
-
-    fun isAudio(): Boolean {
-        if (mimeType == null) {
-            return false
-        }
-        return mimeType.equals(MimeType.AAC.toString())
-    }
-
-    fun isVideo(): Boolean {
-        return type == MultimediaTypes.VIDEO
-                || mimeType.equals(MimeType.MPEG.toString())
-                || mimeType.equals(MimeType.MP4.toString())
-                || mimeType.equals(MimeType.QUICKTIME.toString())
-                || mimeType.equals(MimeType.THREEGPP.toString())
-                || mimeType.equals(MimeType.THREEGPP2.toString())
-                || mimeType.equals(MimeType.MKV.toString())
-                || mimeType.equals(MimeType.WEBM.toString())
-                || mimeType.equals(MimeType.TS.toString())
-                || mimeType.equals(MimeType.AVI.toString())
-    }
-
-//    fun initDataByPath() {
-//        if (TextUtils.isEmpty(this.mimeType)) {
-//            // 获取相关属性
-//            val mmr = MediaMetadataRetriever()
-//            mmr.setDataSource(url, HashMap<String, String>())
-//            val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()?: 0
-//            this.duration = duration
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//                    this.size = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_EXIF_LENGTH)?.toLong()?: 0
-//            }
-//            this.width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt()?: 0
-//            this.height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toInt()?: 0
-//            this.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
-//        }
-//    }
 
     override fun describeContents(): Int {
         return 0

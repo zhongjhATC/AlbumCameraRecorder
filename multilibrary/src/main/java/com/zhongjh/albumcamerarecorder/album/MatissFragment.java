@@ -631,7 +631,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                         }
                         File newFile;
                         if (item.getType() == MultimediaTypes.PICTURE) {
-                            newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                            if (item.isImage()) {
+                                newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                            } else {
+                                newFile = new File(path);
+                            }
                         } else if (item.getType() == MultimediaTypes.VIDEO) {
                             newFile = mVideoMediaStoreCompat.fineFile(newFileName, 1, false);
                         } else {
@@ -645,7 +649,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                             File oldFile = new File(path);
                             // 根据类型压缩
                             File compressionFile;
-                            if (item.getType() == MultimediaTypes.PICTURE) {
+                            if (item.isImage()) {
                                 if (mGlobalSpec.imageCompressionInterface != null) {
                                     // 压缩图片
                                     try {
@@ -662,7 +666,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                                 FileUtil.copy(compressionFile, newFile);
                                 LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
                                 newLocalFiles.add(localFile);
-                            } else if (item.getType() == MultimediaTypes.VIDEO) {
+                            } else if (item.isVideo()) {
                                 if (mGlobalSpec.isCompressEnable()) {
                                     // 压缩视频
                                     newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);

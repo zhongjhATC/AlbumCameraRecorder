@@ -387,6 +387,15 @@
                         android:text="@string/support_image" />
 
                     <CheckBox
+                        android:id="@+id/cbAlbumGif"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:checked="true"
+                        android:visibility="gone"
+                        android:text="@string/support_gif" />
+
+                    <CheckBox
                         android:id="@+id/cbAlbumVideo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
