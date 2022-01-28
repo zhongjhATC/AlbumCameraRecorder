@@ -2,30 +2,22 @@ package com.zhongjh.combined;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-import androidx.documentfile.provider.DocumentFile;
-
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.AbstractMaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MultimediaTypes;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 协调多个控件之间代码，更加简化代码
@@ -76,7 +68,7 @@ public class Combined {
             @Override
             public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
                     // 预览
                     globalSetting.openPreviewData(activity, requestCode,
                             maskProgressLayout.getImagesAndVideos(),

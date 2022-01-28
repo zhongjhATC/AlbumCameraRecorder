@@ -604,7 +604,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             item.setWidth(imageWidthAndHeight[0]);
             item.setHeight(imageWidthAndHeight[1]);
             item.setSize(compressionFile.length());
-            item.setType(item.getType());
             item.setMimeType(item.getMimeType());
             item.setDuration(item.getDuration());
             // 判断是否需要迁移文件

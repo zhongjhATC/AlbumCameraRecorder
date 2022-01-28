@@ -4,7 +4,6 @@ import android.os.Parcel
 import android.view.View
 import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.MultiMedia
-import com.zhongjh.common.enums.MultimediaTypes
 import com.zhongjh.progresslibrary.widget.MaskProgressView
 import com.zhongjh.progresslibrary.widget.PlayProgressView
 
@@ -46,14 +45,13 @@ class MultiMediaView : MultiMedia {
 
     constructor(input: Parcel) : super(input)
 
-    constructor(@MultimediaTypes multiMediaState: Int) {
-        type = multiMediaState
+    constructor(mimeType: String) {
+        this.mimeType = mimeType
     }
 
     constructor(localFile: LocalFile) {
         path = localFile.path
         uri = localFile.uri
-        type = localFile.type
         mimeType = localFile.mimeType
         size = localFile.size
         duration = localFile.duration
@@ -67,9 +65,9 @@ class MultiMediaView : MultiMedia {
      * 给予进度，根据类型设置相应进度动作
      */
     fun setPercentage(percent: Int) {
-        if (type == MultimediaTypes.PICTURE || type == MultimediaTypes.VIDEO) {
+        if (isImageOrGif() || isVideo()) {
             this.maskProgressView.setPercentage(percent)
-        } else if (type == MultimediaTypes.AUDIO) {
+        } else if (isAudio()) {
             // 隐藏显示音频的设置一系列动作
             playProgressView.mViewHolder.numberProgressBar.progress = percent
             if (percent == FULL_PERCENT) {
@@ -77,7 +75,6 @@ class MultiMediaView : MultiMedia {
             }
         }
     }
-
 
 
 }

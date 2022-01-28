@@ -32,7 +32,6 @@ import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -104,7 +103,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
                     mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
                             mBinding.mplImageList.getImagesAndVideos(),
                             mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
@@ -283,7 +282,17 @@ public class MainActivity extends BaseActivity {
                     Log.d(TAG, "onResult Uri:" + localFile.getUri());
                     Log.d(TAG, "onResult 文件大小: " + localFile.getSize());
                     Log.d(TAG, "onResult 视频音频长度: " + localFile.getDuration());
-                    Log.d(TAG, "onResult 类型:" + localFile.getType());
+                    if (localFile.isImageOrGif()) {
+                        if (localFile.isImage()) {
+                            Log.d(TAG, "onResult 图片类型");
+                        } else if (localFile.isImage()) {
+                            Log.d(TAG, "onResult 图片类型");
+                        }
+                    } else if (localFile.isVideo()) {
+                        Log.d(TAG, "onResult 视频类型");
+                    }else if (localFile.isAudio()) {
+                        Log.d(TAG, "onResult 音频类型");
+                    }
                     Log.d(TAG, "onResult 具体类型:" + localFile.getMimeType());
                     Log.d(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
                     Log.d(TAG, UriUtils.uriToFile(getApplicationContext(), localFile.getUri()).getPath());
@@ -301,7 +310,17 @@ public class MainActivity extends BaseActivity {
                         Log.i(TAG, "onResult Uri:" + multiMedia.getUri());
                         Log.i(TAG, "onResult 文件大小: " + multiMedia.getSize());
                         Log.i(TAG, "onResult 视频音频长度: " + multiMedia.getDuration());
-                        Log.i(TAG, "onResult 类型:" + multiMedia.getType());
+                        if (multiMedia.isImageOrGif()) {
+                            if (multiMedia.isImage()) {
+                                Log.d(TAG, "onResult 图片类型");
+                            } else if (multiMedia.isImage()) {
+                                Log.d(TAG, "onResult 图片类型");
+                            }
+                        } else if (multiMedia.isVideo()) {
+                            Log.d(TAG, "onResult 视频类型");
+                        }else if (multiMedia.isAudio()) {
+                            Log.d(TAG, "onResult 音频类型");
+                        }
                         Log.i(TAG, "onResult 具体类型:" + multiMedia.getMimeType());
                         Log.i(TAG, "onResult 宽高: " + multiMedia.getWidth() + "x" + multiMedia.getHeight());
                     }

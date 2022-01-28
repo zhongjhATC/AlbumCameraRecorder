@@ -262,7 +262,7 @@ public class AlbumLoader extends CursorLoader {
                 cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE));
         Uri contentUri;
 
-        if (MimeType.isImage(mimeType)) {
+        if (MimeType.isImageOrGif(mimeType)) {
             contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         } else if (MimeType.isVideo(mimeType)) {
             contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;

@@ -34,7 +34,6 @@ import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -311,8 +310,7 @@ public class SoundRecordingFragment extends BaseFragment {
         localFile.setPath(filePath);
         localFile.setDuration(elapsed);
         localFile.setSize(new File(filePath).length());
-        localFile.setMimeType(MimeType.AAC.getMMimeTypeName());
-        localFile.setType(MultimediaTypes.AUDIO);
+        localFile.setMimeType(MimeType.AAC.getMimeTypeName());
     }
 
     @Override

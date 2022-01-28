@@ -48,7 +48,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.ColorFilterUtil;
 import com.zhongjh.common.utils.MediaStoreCompat;
@@ -630,17 +629,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                             newFileName = newFileName + "." + newFileNames[1];
                         }
                         File newFile;
-                        if (item.getType() == MultimediaTypes.PICTURE) {
-                            if (item.isImage()) {
-                                newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
-                            } else {
-                                newFile = new File(path);
-                            }
-                        } else if (item.getType() == MultimediaTypes.VIDEO) {
+                        if (item.isImage()) {
+                            newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                        } else if (item.isVideo()) {
                             newFile = mVideoMediaStoreCompat.fineFile(newFileName, 1, false);
                         } else {
                             newFile = new File(path);
                         }
+
                         if (newFile.exists()) {
                             LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
                             newLocalFiles.add(localFile);

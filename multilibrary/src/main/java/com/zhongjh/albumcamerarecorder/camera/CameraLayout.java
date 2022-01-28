@@ -58,7 +58,6 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -1122,9 +1121,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 // 加入图片到android系统库里面
                 MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
                         mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-                item.setMimeType(MimeType.JPEG.getMMimeTypeName());
+                item.setMimeType(MimeType.JPEG.getMimeTypeName());
                 item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
-                item.setType(MultimediaTypes.PICTURE);
             }
             // 执行完成
             mOperateCameraListener.captureSuccess(newFiles);

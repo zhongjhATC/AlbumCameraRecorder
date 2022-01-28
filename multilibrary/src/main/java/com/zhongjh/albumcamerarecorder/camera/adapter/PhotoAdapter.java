@@ -14,19 +14,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MimeType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
@@ -96,7 +92,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             MultiMedia multiMedia = new MultiMedia();
             multiMedia.setUri(item.getUri());
             multiMedia.setPath(item.getPath());
-            multiMedia.setType(MultimediaTypes.PICTURE);
             multiMedia.setMimeType(MimeType.JPEG.toString());
             items.add(multiMedia);
         }
@@ -110,7 +105,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         MultiMedia item = new MultiMedia();
         item.setUri(mListData.get(position).getUri());
         item.setPath(mListData.get(position).getPath());
-        item.setType(MultimediaTypes.PICTURE);
         item.setMimeType(MimeType.JPEG.toString());
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 

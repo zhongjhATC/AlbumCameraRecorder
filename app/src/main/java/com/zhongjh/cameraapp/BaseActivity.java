@@ -172,7 +172,17 @@ public abstract class BaseActivity extends AppCompatActivity {
                     Log.i(TAG, "onResult Uri:" + localFile.getUri());
                     Log.i(TAG, "onResult 文件大小: " + localFile.getSize());
                     Log.i(TAG, "onResult 视频音频长度: " + localFile.getDuration());
-                    Log.i(TAG, "onResult 类型:" + localFile.getType());
+                    if (localFile.isImageOrGif()) {
+                        if (localFile.isImage()) {
+                            Log.d(TAG, "onResult 图片类型");
+                        } else if (localFile.isImage()) {
+                            Log.d(TAG, "onResult 图片类型");
+                        }
+                    } else if (localFile.isVideo()) {
+                        Log.d(TAG, "onResult 视频类型");
+                    } else if (localFile.isAudio()) {
+                        Log.d(TAG, "onResult 音频类型");
+                    }
                     Log.i(TAG, "onResult 具体类型:" + localFile.getMimeType());
                     Log.i(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
                 }

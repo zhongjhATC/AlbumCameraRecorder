@@ -12,7 +12,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sdsmdg.harjot.vectormaster.VectorMasterView
-import com.zhongjh.common.enums.MultimediaTypes
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.progresslibrary.R
 import com.zhongjh.progresslibrary.engine.ImageEngine
@@ -53,7 +53,11 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     }
 
     private val mInflater: LayoutInflater = LayoutInflater.from(mContext)
-    private val mMultiMediaViewAdd = MultiMediaView(MultimediaTypes.ADD)
+
+    /**
+     * 这是个用于添加的九宫格
+     */
+    private val mMultiMediaViewAdd = MultiMediaView()
 
     /**
      * 相关事件
@@ -135,17 +139,16 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             holder.mpvImage.reset()
         } else {
             val multiMediaView = list[position]
-            if (multiMediaView.type == MultimediaTypes.PICTURE || multiMediaView.type == MultimediaTypes.VIDEO) {
+            if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
                 multiMediaView.maskProgressView = holder.mpvImage
                 multiMediaView.itemView = holder.itemView
             }
 
             // 根据类型做相关设置
-            if (multiMediaView.type == MultimediaTypes.VIDEO) {
-                // 判断是否显示播放按钮
+            if (multiMediaView.isVideo()) {
+                // 视频处理，判断是否显示播放按钮
                 holder.imgPlay.visibility = View.VISIBLE
-                // 视频处理
-            } else if (multiMediaView.type == MultimediaTypes.PICTURE) {
+            } else if (multiMediaView.isImageOrGif()) {
                 holder.imgPlay.visibility = View.GONE
             }
 
@@ -163,7 +166,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
                 override fun onMoreClickListener(v: View) {
                     if (listener != null) {
                         // 点击
-                        if (multiMediaView.type == MultimediaTypes.PICTURE) {
+                        if (multiMediaView.isImageOrGif()) {
                             // 如果是图片，直接跳转详情
                             listener!!.onItemClick(v, multiMediaView)
                         } else {
@@ -202,9 +205,9 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         mImageCount = 0
         mVideoCount = 0
         for (item in list) {
-            if (item.type == MultimediaTypes.PICTURE) {
+            if (item.isImageOrGif()) {
                 mImageCount++
-            } else if (item.type == MultimediaTypes.VIDEO) {
+            } else if (item.isVideo()) {
                 mVideoCount++
             }
         }
@@ -237,7 +240,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     fun getImageData(): ArrayList<MultiMediaView> {
         val imageDates = ArrayList<MultiMediaView>()
         for (multiMediaView in list) {
-            if (multiMediaView.type == MultimediaTypes.PICTURE) {
+            if (multiMediaView.isImageOrGif()) {
                 imageDates.add(multiMediaView)
             }
         }
@@ -250,7 +253,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     fun getVideoData(): ArrayList<MultiMediaView> {
         val videoDates = ArrayList<MultiMediaView>()
         for (multiMediaView in list) {
-            if (multiMediaView.type == MultimediaTypes.VIDEO) {
+            if (multiMediaView.isVideo()) {
                 videoDates.add(multiMediaView)
             }
         }
@@ -264,7 +267,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
      */
     fun addImageData(multiMediaViews: List<MultiMediaView>) {
         Log.d("$TAG Test", "addImageData")
-        val position: Int = getNeedAddPosition(MultimediaTypes.PICTURE)
+        val position: Int = getNeedAddPosition(MimeType.JPEG.mimeTypeName)
         for (item in multiMediaViews) {
             item.id = mId++
         }
@@ -282,7 +285,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         Log.d("$TAG Test", "setImageData")
         // 删除当前所有图片
         for (i in list.indices.reversed()) {
-            if (list[i].type == MultimediaTypes.PICTURE) {
+            if (list[i].isImageOrGif()) {
                 list.removeAt(i)
                 notifyItemRemoved(i)
             }
@@ -305,7 +308,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
      */
     fun addVideoData(multiMediaViews: List<MultiMediaView>) {
         Log.d("$TAG Test", "addVideoData")
-        val position = getNeedAddPosition(MultimediaTypes.VIDEO)
+        val position = getNeedAddPosition(MimeType.MP4.mimeTypeName)
         for (item in multiMediaViews) {
             item.id = mId++
         }
@@ -323,7 +326,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         Log.d("$TAG Test", "setVideoData")
         // 删除当前所有视频
         for (i in list.indices.reversed()) {
-            if (list[i].type == MultimediaTypes.VIDEO) {
+            if (list[i].isVideo()) {
                 list.removeAt(i)
                 notifyItemRemoved(i)
             }
@@ -378,13 +381,13 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     /**
      * 根据类型获取当前要添加的位置，新增的图片在最后一个，新增的视频在图片的前面
      *
-     * @param type 数据类型
+     * @param mimeType 数据类型
      * @return 索引
      */
-    private fun getNeedAddPosition(type: Int): Int {
-        if (type == MultimediaTypes.PICTURE) {
+    private fun getNeedAddPosition(mimeType: String): Int {
+        if (MimeType.isImageOrGif(mimeType)) {
             return list.size.coerceAtLeast(0)
-        } else if (type == MultimediaTypes.VIDEO) {
+        } else if (MimeType.isVideo(mimeType)) {
             // 获取图片第一个索引
             return getImageFirstPosition()
         }
@@ -401,7 +404,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             return 0
         }
         for (item in list) {
-            if (item.type == MultimediaTypes.PICTURE) {
+            if (item.isImageOrGif()) {
                 return list.indexOf(item)
             }
         }

@@ -12,10 +12,10 @@ import java.util.*
  *
  * @author zhongjh
  * @date 2021/11/12
- * @param mMimeTypeName 类型名称
- * @param mExtensions 保存所有类型
+ * @param mimeTypeName 类型名称
+ * @param extensions 保存所有类型
  */
-enum class MimeType(val mMimeTypeName: String, val mExtensions: Set<String>) {
+enum class MimeType(val mimeTypeName: String, private val extensions: Set<String>) {
 
     // ============== 图片 ==============
     JPEG("image/jpeg", ArraySet(listOf(
@@ -34,10 +34,12 @@ enum class MimeType(val mMimeTypeName: String, val mExtensions: Set<String>) {
     WEBP("image/webp", ArraySet(listOf(
             "webp"
     ))),
+
     // ============== 音频 ==============
     AAC("video/aac", ArraySet(listOf(
             "aac"
     ))),
+
     // ============== 视频 ==============
     MPEG("video/mpeg", ArraySet(listOf(
             "mpeg",
@@ -72,7 +74,7 @@ enum class MimeType(val mMimeTypeName: String, val mExtensions: Set<String>) {
     )));
 
     override fun toString(): String {
-        return mMimeTypeName
+        return mimeTypeName
     }
 
     fun checkType(resolver: ContentResolver, uri: Uri?): Boolean {
@@ -84,7 +86,7 @@ enum class MimeType(val mMimeTypeName: String, val mExtensions: Set<String>) {
         val type = map.getExtensionFromMimeType(resolver.getType(uri))
         var path: String? = null
         var pathParsed = false
-        for (extension in mExtensions) {
+        for (extension in extensions) {
             if (extension == type) {
                 // 如果有符合的类型，直接返回true
                 return true
@@ -106,7 +108,6 @@ enum class MimeType(val mMimeTypeName: String, val mExtensions: Set<String>) {
         // 如果类型或者地址后缀都不一样则范围false
         return false
     }
-
 
 
     companion object {
@@ -132,7 +133,7 @@ enum class MimeType(val mMimeTypeName: String, val mExtensions: Set<String>) {
         }
 
         @JvmStatic
-        fun isImage(mimeType: String?): Boolean {
+        fun isImageOrGif(mimeType: String?): Boolean {
             return mimeType?.startsWith("image") ?: false
         }
 
@@ -140,16 +141,6 @@ enum class MimeType(val mMimeTypeName: String, val mExtensions: Set<String>) {
         fun isVideo(mimeType: String?): Boolean {
             return mimeType?.startsWith("video") ?: false
         }
-
-        @JvmStatic
-        fun isGif(mimeType: String?): Boolean {
-            if (mimeType == null) {
-                return false
-            } else {
-                return mimeType == GIF.toString()
-            }
-        }
-
 
     }
 }

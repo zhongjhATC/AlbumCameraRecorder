@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.enums.MultimediaTypes
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaStoreUtils
 import java.io.File
@@ -30,12 +29,6 @@ open class LocalFile : Parcelable {
      * 真实路径转换成的uri
      */
     var uri: Uri? = null
-
-    /**
-     * 范围类型,0是图片,1是视频,2是音频,-1是添加功能 MultimediaTypes
-     */
-    @MultimediaTypes
-    var type = 0
 
     /**
      * 具体类型，jpg,png,mp3等等
@@ -79,7 +72,6 @@ open class LocalFile : Parcelable {
         id = localFile.id
         path = localFile.path
         uri = localFile.uri
-        type = localFile.type
         mimeType = localFile.mimeType
         size = localFile.size
         duration = localFile.duration
@@ -103,7 +95,6 @@ open class LocalFile : Parcelable {
         id = localFile.id
         this.path = compressionFile.absolutePath
         this.uri = mediaStoreCompat.getUri(compressionFile.absolutePath)
-        type = localFile.type
         mimeType = localFile.mimeType
         size = compressionFile.length()
         duration = localFile.duration
@@ -118,7 +109,6 @@ open class LocalFile : Parcelable {
         id = input.readLong()
         path = input.readString()
         uri = input.readParcelable(Uri::class.java.classLoader)
-        type = input.readInt()
         mimeType = input.readString()
         size = input.readLong()
         duration = input.readLong()
@@ -132,7 +122,6 @@ open class LocalFile : Parcelable {
         id = multiMedia.id
         path = multiMedia.path
         uri = multiMedia.uri
-        type = multiMedia.type
         mimeType = multiMedia.mimeType
         size = multiMedia.size
         duration = multiMedia.duration
@@ -146,7 +135,6 @@ open class LocalFile : Parcelable {
         dest.writeLong(id)
         dest.writeString(path)
         dest.writeParcelable(uri, flags)
-        dest.writeInt(type)
         dest.writeString(mimeType)
         dest.writeLong(size)
         dest.writeLong(duration)
@@ -170,17 +158,22 @@ open class LocalFile : Parcelable {
         }
     }
 
+    /**
+     * 不包含gif
+     */
     fun isImage(): Boolean {
         if (mimeType == null) {
             return false
         }
         return mimeType.equals(MimeType.JPEG.toString())
                 || mimeType.equals(MimeType.PNG.toString())
-                || mimeType.equals(MimeType.GIF.toString())
                 || mimeType.equals(MimeType.BMP.toString())
                 || mimeType.equals(MimeType.WEBP.toString())
     }
 
+    /**
+     * 单纯gif
+     */
     fun isGif(): Boolean {
         if (mimeType == null) {
             return false
@@ -188,6 +181,9 @@ open class LocalFile : Parcelable {
         return mimeType.equals(MimeType.GIF.toString())
     }
 
+    /**
+     * 包含gif
+     */
     fun isImageOrGif(): Boolean {
         if (mimeType == null) {
             return false
@@ -197,7 +193,6 @@ open class LocalFile : Parcelable {
                 || mimeType.equals(MimeType.GIF.toString())
                 || mimeType.equals(MimeType.BMP.toString())
                 || mimeType.equals(MimeType.WEBP.toString())
-                || mimeType.equals(MimeType.GIF.toString())
     }
 
     fun isAudio(): Boolean {
@@ -208,8 +203,10 @@ open class LocalFile : Parcelable {
     }
 
     fun isVideo(): Boolean {
-        return type == MultimediaTypes.VIDEO
-                || mimeType.equals(MimeType.MPEG.toString())
+        if (mimeType == null) {
+            return false
+        }
+        return  mimeType.equals(MimeType.MPEG.toString())
                 || mimeType.equals(MimeType.MP4.toString())
                 || mimeType.equals(MimeType.QUICKTIME.toString())
                 || mimeType.equals(MimeType.THREEGPP.toString())

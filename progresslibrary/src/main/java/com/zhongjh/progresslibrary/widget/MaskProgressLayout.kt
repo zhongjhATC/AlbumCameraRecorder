@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.entity.SaveStrategy
-import com.zhongjh.common.enums.MultimediaTypes
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.BaseSimpleBaseTask
@@ -228,7 +228,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         isAuthority()
         val multiMediaViews = ArrayList<MultiMediaView>()
         for (uri in uris) {
-            val multiMediaView = MultiMediaView(MultimediaTypes.PICTURE)
+            val multiMediaView = MultiMediaView(MimeType.JPEG.mimeTypeName)
             multiMediaView.uri = uri
             multiMediaView.isUploading = true
             multiMediaViews.add(multiMediaView)
@@ -240,7 +240,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         isAuthority()
         val multiMediaViews = ArrayList<MultiMediaView>()
         for (string in imagePaths) {
-            val multiMediaView = MultiMediaView(MultimediaTypes.PICTURE)
+            val multiMediaView = MultiMediaView(MimeType.JPEG.mimeTypeName)
             multiMediaView.path = string
             multiMediaView.uri = mMediaStoreCompat.getUri(string)
             multiMediaView.isUploading = true
@@ -252,7 +252,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     override fun setImageUrls(imagesUrls: List<String>) {
         val multiMediaViews = ArrayList<MultiMediaView>()
         for (string in imagesUrls) {
-            val multiMediaView = MultiMediaView(MultimediaTypes.PICTURE)
+            val multiMediaView = MultiMediaView(MimeType.JPEG.mimeTypeName)
             multiMediaView.url = string
             multiMediaViews.add(multiMediaView)
         }
@@ -271,7 +271,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     override fun setVideoUrls(videoUrls: List<String>) {
         val multiMediaViews = ArrayList<MultiMediaView>()
         for (i in videoUrls.indices) {
-            val multiMediaView = MultiMediaView(MultimediaTypes.VIDEO)
+            val multiMediaView = MultiMediaView(MimeType.MP4.mimeTypeName)
             multiMediaView.isUploading = false
             multiMediaView.url = videoUrls[i]
             multiMediaViews.add(multiMediaView)
@@ -282,7 +282,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun addAudioStartUpload(filePath: String, length: Long) {
         isAuthority()
-        val multiMediaView = MultiMediaView(MultimediaTypes.AUDIO)
+        val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
         multiMediaView.path = filePath
         multiMediaView.uri = mMediaStoreCompat.getUri(filePath)
         multiMediaView.duration = length
@@ -294,7 +294,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     override fun setAudioUrls(audioUrls: List<String>) {
         val multiMediaViews: ArrayList<MultiMediaView> = ArrayList()
         for (item in audioUrls) {
-            val multiMediaView = MultiMediaView(MultimediaTypes.AUDIO)
+            val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
             multiMediaView.url = item
             audioList.add(multiMediaView)
             multiMediaViews.add(multiMediaView)
@@ -309,10 +309,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         // ms,时长
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
                 ?: -1
-        val multiMediaView = MultiMediaView(MultimediaTypes.AUDIO)
+        val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
         multiMediaView.path = file
         multiMediaView.uri = mMediaStoreCompat.getUri(file)
         multiMediaView.duration = duration
+        multiMediaView.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
 
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         view.visibility = View.VISIBLE
@@ -465,7 +466,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         isAuthority()
         val multiMediaViews = ArrayList<MultiMediaView>()
         for (i in videoUris.indices) {
-            val multiMediaView = MultiMediaView(MultimediaTypes.VIDEO)
+            val multiMediaView = MultiMediaView(MimeType.MP4.mimeTypeName)
             multiMediaView.uri = videoUris[i]
             multiMediaView.isUploading = isUploading
             multiMediaViews.add(multiMediaView)

@@ -8,7 +8,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
 import android.provider.MediaStore.*
-import com.zhongjh.common.enums.MultimediaTypes
 
 /**
  * 多媒体实体类
@@ -40,11 +39,9 @@ open class MultiMedia : LocalFile, Parcelable {
         when {
             isImage() -> {
                 contentUri = Images.Media.EXTERNAL_CONTENT_URI
-                this.type = MultimediaTypes.PICTURE
             }
             isVideo() -> {
                 contentUri = Video.Media.EXTERNAL_CONTENT_URI
-                this.type = MultimediaTypes.VIDEO
             }
             else -> {
                 contentUri = Files.getContentUri("external")

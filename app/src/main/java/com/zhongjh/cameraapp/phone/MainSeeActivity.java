@@ -23,9 +23,6 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
-import com.zhongjh.common.utils.ThreadUtils;
-import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -99,16 +96,27 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
             @Override
             public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                // 点击详情
-                if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
-                    Log.i(TAG, "onResult id:" + multiMediaView.getId());
-                    Log.d(TAG, "onResult 绝对路径:" + multiMediaView.getPath());
-                    Log.d(TAG, "onResult Uri:" + multiMediaView.getUri());
-                    Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
-                    Log.d(TAG, "onResult 视频音频长度: " + multiMediaView.getDuration());
-                    Log.d(TAG, "onResult 类型:" + multiMediaView.getType());
-                    Log.d(TAG, "onResult 具体类型:" + multiMediaView.getMimeType());
-                    Log.d(TAG, "onResult 宽高: " + multiMediaView.getWidth() + "x" + multiMediaView.getHeight());
+                // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
+                Log.i(TAG, "onResult id:" + multiMediaView.getId());
+                Log.i(TAG, "onResult url:" + multiMediaView.getUrl());
+                Log.d(TAG, "onResult 绝对路径:" + multiMediaView.getPath());
+                Log.d(TAG, "onResult Uri:" + multiMediaView.getUri());
+                Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
+                Log.d(TAG, "onResult 视频音频长度: " + multiMediaView.getDuration());
+                if (multiMediaView.isImageOrGif()) {
+                    if (multiMediaView.isImage()) {
+                        Log.d(TAG, "onResult 图片类型");
+                    } else if (multiMediaView.isImage()) {
+                        Log.d(TAG, "onResult 图片类型");
+                    }
+                } else if (multiMediaView.isVideo()) {
+                    Log.d(TAG, "onResult 视频类型");
+                } else if (multiMediaView.isAudio()) {
+                    Log.d(TAG, "onResult 音频类型");
+                }
+                Log.d(TAG, "onResult 具体类型:" + multiMediaView.getMimeType());
+                Log.d(TAG, "onResult 宽高: " + multiMediaView.getWidth() + "x" + multiMediaView.getHeight());
+                if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
                     mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
                             mBinding.mplImageList.getImagesAndVideos(),
                             mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));

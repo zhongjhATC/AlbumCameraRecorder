@@ -18,10 +18,8 @@ import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
-import com.zhongjh.common.coordinator.VideoCompressCoordinator;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -69,11 +67,6 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 拍摄配置
      */
     private GlobalSpec mGlobalSpec;
-
-    /**
-     * 视频压缩功能
-     */
-    public VideoCompressCoordinator videoCompressCoordinator;
 
     /**
      * 打开activity
@@ -288,8 +281,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         mLocalFile.setPath(newFile.getPath());
         mLocalFile.setUri(mVideoMediaStoreCompat.getUri(newFile.getPath()));
         mLocalFile.setSize(newFile.length());
-        mLocalFile.setMimeType(MimeType.MP4.getMMimeTypeName());
-        mLocalFile.setType(MultimediaTypes.VIDEO);
+        mLocalFile.setMimeType(MimeType.MP4.getMimeTypeName());
         intent.putExtra(LOCAL_FILE, mLocalFile);
         setResult(RESULT_OK, intent);
         PreviewVideoActivity.this.finish();

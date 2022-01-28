@@ -22,7 +22,6 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.enums.MultimediaTypes;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -79,7 +78,7 @@ public class MainSimpleActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
-                if (multiMediaView.getType() == MultimediaTypes.PICTURE || multiMediaView.getType() == MultimediaTypes.VIDEO) {
+                if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
                     mGlobalSetting.openPreviewData(MainSimpleActivity.this, REQUEST_CODE_CHOOSE,
                             mBinding.mplImageList.getImagesAndVideos(),
                             mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
