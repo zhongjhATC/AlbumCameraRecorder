@@ -100,9 +100,15 @@ open class LocalFile : Parcelable {
         duration = localFile.duration
         oldPath = localFile.oldPath
         oldUri = localFile.oldUri
-        val imageWidthAndHeight: IntArray = MediaStoreUtils.getImageWidthAndHeight(compressionFile.absolutePath)
-        height = imageWidthAndHeight[1]
-        width = imageWidthAndHeight[0]
+        if (isImageOrGif()) {
+            val imageWidthAndHeight: IntArray = MediaStoreUtils.getImageWidthAndHeight(compressionFile.absolutePath)
+            height = imageWidthAndHeight[1]
+            width = imageWidthAndHeight[0]
+        } else if (isVideo()) {
+            height = localFile.height
+            width = localFile.width
+        }
+
     }
 
     constructor(input: Parcel) {
