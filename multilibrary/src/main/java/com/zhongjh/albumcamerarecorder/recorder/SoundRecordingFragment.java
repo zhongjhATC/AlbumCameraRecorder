@@ -109,7 +109,7 @@ public class SoundRecordingFragment extends BaseFragment {
     /**
      * 停止录音时的异步线程
      */
-    ThreadUtils.BaseSimpleBaseTask<Boolean> mStopRecordingTask;
+    ThreadUtils.SimpleTask<Boolean> mStopRecordingTask;
 
     public static SoundRecordingFragment newInstance() {
         return new SoundRecordingFragment();
@@ -472,7 +472,7 @@ public class SoundRecordingFragment extends BaseFragment {
     /**
      * 迁移语音的异步线程
      */
-    private final ThreadUtils.BaseSimpleBaseTask<Void> mMoveRecordFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
+    private final ThreadUtils.SimpleTask<Void> mMoveRecordFileTask = new ThreadUtils.SimpleTask<Void>() {
         @Override
         public Void doInBackground() {
             if (localFile == null) {
@@ -571,8 +571,8 @@ public class SoundRecordingFragment extends BaseFragment {
      *
      * @param isShort 短时结束不算
      */
-    private ThreadUtils.BaseSimpleBaseTask<Boolean> getStopRecordingTask(boolean isShort) {
-        mStopRecordingTask = new ThreadUtils.BaseSimpleBaseTask<Boolean>() {
+    private ThreadUtils.SimpleTask<Boolean> getStopRecordingTask(boolean isShort) {
+        mStopRecordingTask = new ThreadUtils.SimpleTask<Boolean>() {
             @Override
             public Boolean doInBackground() {
                 if (isShort) {

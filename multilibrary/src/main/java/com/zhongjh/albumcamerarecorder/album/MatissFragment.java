@@ -38,7 +38,6 @@ import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMedi
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
-import com.zhongjh.albumcamerarecorder.camera.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -130,7 +129,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     /**
      * 压缩异步线程
      */
-    ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>> mCompressFileTask;
+    ThreadUtils.SimpleTask<ArrayList<LocalFile>> mCompressFileTask;
 
     private ViewHolder mViewHolder;
 
@@ -599,8 +598,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      *
      * @param localFiles 需要压缩的数据源
      */
-    private ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>> getCompressFileTask(ArrayList<LocalFile> localFiles) {
-        mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<ArrayList<LocalFile>>() {
+    private ThreadUtils.SimpleTask<ArrayList<LocalFile>> getCompressFileTask(ArrayList<LocalFile> localFiles) {
+        mCompressFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
 
             @Override
             public ArrayList<LocalFile> doInBackground() {

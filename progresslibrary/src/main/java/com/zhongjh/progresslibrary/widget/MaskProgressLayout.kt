@@ -16,7 +16,7 @@ import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.ThreadUtils
-import com.zhongjh.common.utils.ThreadUtils.BaseSimpleBaseTask
+import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.progresslibrary.R
 import com.zhongjh.progresslibrary.apapter.PhotoAdapter
 import com.zhongjh.progresslibrary.api.MaskProgressApi
@@ -88,7 +88,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 创建view的异步线程
      */
-    var mCreatePlayProgressViewTask: BaseSimpleBaseTask<PlayProgressView>? = null
+    var mCreatePlayProgressViewTask: SimpleTask<PlayProgressView>? = null
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -417,8 +417,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 创建音频控件的线程
      */
-    private fun getCreatePlayProgressViewTask(audioMultiMediaViews: List<MultiMediaView>, position: Int): BaseSimpleBaseTask<PlayProgressView> {
-        mCreatePlayProgressViewTask = object : BaseSimpleBaseTask<PlayProgressView>() {
+    private fun getCreatePlayProgressViewTask(audioMultiMediaViews: List<MultiMediaView>, position: Int): SimpleTask<PlayProgressView> {
+        mCreatePlayProgressViewTask = object : SimpleTask<PlayProgressView>() {
             override fun doInBackground(): PlayProgressView {
                 val playProgressView: PlayProgressView = newPlayProgressView(audioMultiMediaViews[position])
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
@@ -441,7 +441,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
                 createPlayProgressView(audioMultiMediaViews, newPosition)
             }
         }
-        return mCreatePlayProgressViewTask as BaseSimpleBaseTask<PlayProgressView>
+        return mCreatePlayProgressViewTask as SimpleTask<PlayProgressView>
     }
 
 

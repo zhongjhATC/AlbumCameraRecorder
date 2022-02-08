@@ -237,7 +237,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     /**
      * 迁移视频的异步线程
      */
-    private final ThreadUtils.BaseSimpleBaseTask<Void> mMoveVideoFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
+    private final ThreadUtils.SimpleTask<Void> mMoveVideoFileTask = new ThreadUtils.SimpleTask<Void>() {
         @Override
         public Void doInBackground() {
             if (mLocalFile.getPath() == null) {

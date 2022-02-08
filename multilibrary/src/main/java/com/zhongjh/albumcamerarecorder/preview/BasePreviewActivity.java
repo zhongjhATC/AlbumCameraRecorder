@@ -520,7 +520,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     /**
      * 完成压缩-复制的异步线程
      */
-    ThreadUtils.BaseSimpleBaseTask<Void> mCompressFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
+    ThreadUtils.SimpleTask<Void> mCompressFileTask = new ThreadUtils.SimpleTask<Void>() {
 
         @Override
         public Void doInBackground() {

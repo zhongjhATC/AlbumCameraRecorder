@@ -1037,7 +1037,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 迁移图片的线程
      */
-    public ThreadUtils.BaseSimpleBaseTask<Void> mMovePictureFileTask = new ThreadUtils.BaseSimpleBaseTask<Void>() {
+    public ThreadUtils.SimpleTask<Void> mMovePictureFileTask = new ThreadUtils.SimpleTask<Void>() {
         @Override
         public Void doInBackground() {
             // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
