@@ -556,7 +556,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                             }
                             File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
                             if (newFile.exists()) {
-                                item.updateFile(mPictureMediaStoreCompat, item, newFile);
+                                item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile);
                                 Log.d(TAG, "存在直接使用");
                             } else {
                                 // 不存在就压缩和迁移

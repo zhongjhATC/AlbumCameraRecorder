@@ -1,11 +1,13 @@
 package com.zhongjh.common.entity
 
+import android.content.Context
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaStoreUtils
+import com.zhongjh.common.utils.MediaUtils
 import java.io.File
 
 /**
@@ -84,14 +86,14 @@ open class LocalFile : Parcelable {
     /**
      * 赋值一个新的path，借由这个新的path，修改相关参数
      */
-    constructor(mediaStoreCompat: MediaStoreCompat, localFile: LocalFile, compressionFile: File) : super() {
-        updateFile(mediaStoreCompat, localFile, compressionFile)
+    constructor(context: Context, mediaStoreCompat: MediaStoreCompat, localFile: LocalFile, compressionFile: File) : super() {
+        updateFile(context, mediaStoreCompat, localFile, compressionFile)
     }
 
     /**
      * 修改新的file
      */
-    fun updateFile(mediaStoreCompat: MediaStoreCompat, localFile: LocalFile, compressionFile: File) {
+    fun updateFile(context: Context, mediaStoreCompat: MediaStoreCompat, localFile: LocalFile, compressionFile: File) {
         id = localFile.id
         this.path = compressionFile.absolutePath
         this.uri = mediaStoreCompat.getUri(compressionFile.absolutePath)
@@ -105,10 +107,17 @@ open class LocalFile : Parcelable {
             height = imageWidthAndHeight[1]
             width = imageWidthAndHeight[0]
         } else if (isVideo()) {
-            height = localFile.height
-            width = localFile.width
+            // 有些手机视频拍照没有宽高的
+            if (localFile.width == 0) {
+                val mediaExtraInfo = MediaUtils.getVideoSize(context, this.path)
+                height = mediaExtraInfo.height
+                width = mediaExtraInfo.width
+                duration = mediaExtraInfo.duration
+            } else {
+                height = localFile.height
+                width = localFile.width
+            }
         }
-
     }
 
     constructor(input: Parcel) {
@@ -212,7 +221,7 @@ open class LocalFile : Parcelable {
         if (mimeType == null) {
             return false
         }
-        return  mimeType.equals(MimeType.MPEG.toString())
+        return mimeType.equals(MimeType.MPEG.toString())
                 || mimeType.equals(MimeType.MP4.toString())
                 || mimeType.equals(MimeType.QUICKTIME.toString())
                 || mimeType.equals(MimeType.THREEGPP.toString())

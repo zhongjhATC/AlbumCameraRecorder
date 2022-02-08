@@ -370,7 +370,7 @@ object ThreadUtils {
                                      period: Long,
                                      unit: TimeUnit,
                                      @IntRange(from = 1, to = 10) priority: Int) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_SINGLE.toInt(), priority), baseTask, 0, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_SINGLE, priority), baseTask, 0, period, unit)
     }
 
     /**
@@ -387,7 +387,7 @@ object ThreadUtils {
                                      initialDelay: Long,
                                      period: Long,
                                      unit: TimeUnit) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_SINGLE.toInt()), baseTask, initialDelay, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_SINGLE), baseTask, initialDelay, period, unit)
     }
 
     /**
@@ -407,7 +407,7 @@ object ThreadUtils {
                                      unit: TimeUnit,
                                      @IntRange(from = 1, to = 10) priority: Int) {
         executeAtFixedRate(
-                getPoolByTypeAndPriority(TYPE_SINGLE.toInt(), priority), baseTask, initialDelay, period, unit
+                getPoolByTypeAndPriority(TYPE_SINGLE, priority), baseTask, initialDelay, period, unit
         )
     }
 
@@ -419,7 +419,7 @@ object ThreadUtils {
     </T> */
     @JvmStatic
     fun <T> executeByCached(baseTask: BaseTask<T>) {
-        execute(getPoolByTypeAndPriority(TYPE_CACHED.toInt()), baseTask)
+        execute(getPoolByTypeAndPriority(TYPE_CACHED), baseTask)
     }
 
     /**
@@ -432,7 +432,7 @@ object ThreadUtils {
     @JvmStatic
     fun <T> executeByCached(baseTask: BaseTask<T>,
                             @IntRange(from = 1, to = 10) priority: Int) {
-        execute(getPoolByTypeAndPriority(TYPE_CACHED.toInt(), priority), baseTask)
+        execute(getPoolByTypeAndPriority(TYPE_CACHED, priority), baseTask)
     }
 
     /**
@@ -447,7 +447,7 @@ object ThreadUtils {
     fun <T> executeByCachedWithDelay(baseTask: BaseTask<T>,
                                      delay: Long,
                                      unit: TimeUnit) {
-        executeWithDelay(getPoolByTypeAndPriority(TYPE_CACHED.toInt()), baseTask, delay, unit)
+        executeWithDelay(getPoolByTypeAndPriority(TYPE_CACHED), baseTask, delay, unit)
     }
 
     /**
@@ -464,7 +464,7 @@ object ThreadUtils {
                                      delay: Long,
                                      unit: TimeUnit,
                                      @IntRange(from = 1, to = 10) priority: Int) {
-        executeWithDelay(getPoolByTypeAndPriority(TYPE_CACHED.toInt(), priority), baseTask, delay, unit)
+        executeWithDelay(getPoolByTypeAndPriority(TYPE_CACHED, priority), baseTask, delay, unit)
     }
 
     /**
@@ -479,7 +479,7 @@ object ThreadUtils {
     fun <T> executeByCachedAtFixRate(baseTask: BaseTask<T>,
                                      period: Long,
                                      unit: TimeUnit) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CACHED.toInt()), baseTask, 0, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CACHED), baseTask, 0, period, unit)
     }
 
     /**
@@ -496,7 +496,7 @@ object ThreadUtils {
                                      period: Long,
                                      unit: TimeUnit,
                                      @IntRange(from = 1, to = 10) priority: Int) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CACHED.toInt(), priority), baseTask, 0, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CACHED, priority), baseTask, 0, period, unit)
     }
 
     /**
@@ -513,7 +513,7 @@ object ThreadUtils {
                                      initialDelay: Long,
                                      period: Long,
                                      unit: TimeUnit) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CACHED.toInt()), baseTask, initialDelay, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CACHED), baseTask, initialDelay, period, unit)
     }
 
     /**
@@ -533,7 +533,7 @@ object ThreadUtils {
                                      unit: TimeUnit,
                                      @IntRange(from = 1, to = 10) priority: Int) {
         executeAtFixedRate(
-                getPoolByTypeAndPriority(TYPE_CACHED.toInt(), priority), baseTask, initialDelay, period, unit
+                getPoolByTypeAndPriority(TYPE_CACHED, priority), baseTask, initialDelay, period, unit
         )
     }
 
@@ -545,7 +545,7 @@ object ThreadUtils {
     </T> */
     @JvmStatic
     fun <T> executeByIo(baseTask: BaseTask<T>) {
-        execute(getPoolByTypeAndPriority(TYPE_IO.toInt()), baseTask)
+        execute(getPoolByTypeAndPriority(TYPE_IO), baseTask)
     }
 
     /**
@@ -573,7 +573,7 @@ object ThreadUtils {
     fun <T> executeByIoWithDelay(baseTask: BaseTask<T>,
                                  delay: Long,
                                  unit: TimeUnit) {
-        executeWithDelay(getPoolByTypeAndPriority(TYPE_IO.toInt()), baseTask, delay, unit)
+        executeWithDelay(getPoolByTypeAndPriority(TYPE_IO), baseTask, delay, unit)
     }
 
     /**
@@ -590,7 +590,7 @@ object ThreadUtils {
                                  delay: Long,
                                  unit: TimeUnit,
                                  @IntRange(from = 1, to = 10) priority: Int) {
-        executeWithDelay(getPoolByTypeAndPriority(TYPE_IO.toInt(), priority), baseTask, delay, unit)
+        executeWithDelay(getPoolByTypeAndPriority(TYPE_IO, priority), baseTask, delay, unit)
     }
 
     /**
@@ -605,7 +605,7 @@ object ThreadUtils {
     fun <T> executeByIoAtFixRate(baseTask: BaseTask<T>,
                                  period: Long,
                                  unit: TimeUnit) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_IO.toInt()), baseTask, 0, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_IO), baseTask, 0, period, unit)
     }
 
     /**
@@ -622,7 +622,7 @@ object ThreadUtils {
                                  period: Long,
                                  unit: TimeUnit,
                                  @IntRange(from = 1, to = 10) priority: Int) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_IO.toInt(), priority), baseTask, 0, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_IO, priority), baseTask, 0, period, unit)
     }
 
     /**
@@ -639,7 +639,7 @@ object ThreadUtils {
                                  initialDelay: Long,
                                  period: Long,
                                  unit: TimeUnit) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_IO.toInt()), baseTask, initialDelay, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_IO), baseTask, initialDelay, period, unit)
     }
 
     /**
@@ -659,7 +659,7 @@ object ThreadUtils {
                                  unit: TimeUnit,
                                  @IntRange(from = 1, to = 10) priority: Int) {
         executeAtFixedRate(
-                getPoolByTypeAndPriority(TYPE_IO.toInt(), priority), baseTask, initialDelay, period, unit
+                getPoolByTypeAndPriority(TYPE_IO, priority), baseTask, initialDelay, period, unit
         )
     }
 
@@ -671,7 +671,7 @@ object ThreadUtils {
     </T> */
     @JvmStatic
     fun <T> executeByCpu(baseTask: BaseTask<T>) {
-        execute(getPoolByTypeAndPriority(TYPE_CPU.toInt()), baseTask)
+        execute(getPoolByTypeAndPriority(TYPE_CPU), baseTask)
     }
 
     /**
@@ -684,7 +684,7 @@ object ThreadUtils {
     @JvmStatic
     fun <T> executeByCpu(baseTask: BaseTask<T>,
                          @IntRange(from = 1, to = 10) priority: Int) {
-        execute(getPoolByTypeAndPriority(TYPE_CPU.toInt(), priority), baseTask)
+        execute(getPoolByTypeAndPriority(TYPE_CPU, priority), baseTask)
     }
 
     /**
@@ -699,7 +699,7 @@ object ThreadUtils {
     fun <T> executeByCpuWithDelay(baseTask: BaseTask<T>,
                                   delay: Long,
                                   unit: TimeUnit) {
-        executeWithDelay(getPoolByTypeAndPriority(TYPE_CPU.toInt()), baseTask, delay, unit)
+        executeWithDelay(getPoolByTypeAndPriority(TYPE_CPU), baseTask, delay, unit)
     }
 
     /**
@@ -716,7 +716,7 @@ object ThreadUtils {
                                   delay: Long,
                                   unit: TimeUnit,
                                   @IntRange(from = 1, to = 10) priority: Int) {
-        executeWithDelay(getPoolByTypeAndPriority(TYPE_CPU.toInt(), priority), baseTask, delay, unit)
+        executeWithDelay(getPoolByTypeAndPriority(TYPE_CPU, priority), baseTask, delay, unit)
     }
 
     /**
@@ -731,7 +731,7 @@ object ThreadUtils {
     fun <T> executeByCpuAtFixRate(baseTask: BaseTask<T>,
                                   period: Long,
                                   unit: TimeUnit) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CPU.toInt()), baseTask, 0, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CPU), baseTask, 0, period, unit)
     }
 
     /**
@@ -748,7 +748,7 @@ object ThreadUtils {
                                   period: Long,
                                   unit: TimeUnit,
                                   @IntRange(from = 1, to = 10) priority: Int) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CPU.toInt(), priority), baseTask, 0, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CPU, priority), baseTask, 0, period, unit)
     }
 
     /**
@@ -765,7 +765,7 @@ object ThreadUtils {
                                   initialDelay: Long,
                                   period: Long,
                                   unit: TimeUnit) {
-        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CPU.toInt()), baseTask, initialDelay, period, unit)
+        executeAtFixedRate(getPoolByTypeAndPriority(TYPE_CPU), baseTask, initialDelay, period, unit)
     }
 
     /**
@@ -785,7 +785,7 @@ object ThreadUtils {
                                   unit: TimeUnit,
                                   @IntRange(from = 1, to = 10) priority: Int) {
         executeAtFixedRate(
-                getPoolByTypeAndPriority(TYPE_CPU.toInt(), priority), baseTask, initialDelay, period, unit
+                getPoolByTypeAndPriority(TYPE_CPU, priority), baseTask, initialDelay, period, unit
         )
     }
 
@@ -1432,8 +1432,8 @@ object ThreadUtils {
             return super.hashCode()
         }
 
-        override fun equals(obj: Any?): Boolean {
-            return super.equals(obj)
+        override fun equals(other: Any?): Boolean {
+            return super.equals(other)
         }
 
     }

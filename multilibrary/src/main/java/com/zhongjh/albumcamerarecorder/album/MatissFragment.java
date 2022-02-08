@@ -638,7 +638,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                         }
 
                         if (newFile.exists()) {
-                            LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
+                            LocalFile localFile = new LocalFile(getContext(), mPictureMediaStoreCompat, item, newFile);
                             newLocalFiles.add(localFile);
                             Log.d(TAG, "存在直接使用");
                         } else {
@@ -660,7 +660,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                                 // 移动到新的文件夹
                                 newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
                                 FileUtil.copy(compressionFile, newFile);
-                                LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, newFile);
+                                LocalFile localFile = new LocalFile(getContext(), mPictureMediaStoreCompat, item, newFile);
                                 newLocalFiles.add(localFile);
                             } else if (item.isVideo()) {
                                 if (mGlobalSpec.isCompressEnable()) {
@@ -670,7 +670,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                                     mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(MatissFragment.this.getClass(), new VideoEditListener() {
                                         @Override
                                         public void onFinish() {
-                                            LocalFile localFile = new LocalFile(mPictureMediaStoreCompat, item, finalNewFile);
+                                            LocalFile localFile = new LocalFile(getContext(), mPictureMediaStoreCompat, item, finalNewFile);
                                             newLocalFiles.add(localFile);
                                             Log.d(TAG, "不存在新建文件");
                                         }
