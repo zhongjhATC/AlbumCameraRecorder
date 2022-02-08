@@ -273,7 +273,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 确认当前选择的图片
         mViewHolder.buttonApply.setOnClickListener(view -> {
             ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
-            setResultOkByIsCompress(localFiles);
+            compressFile(localFiles);
         });
 
         // 点击原图
@@ -569,21 +569,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     /**
-     * 关闭Activity回调相关数值,如果需要压缩，另外弄一套压缩逻辑
+     * 压缩文件开始
      *
      * @param localFiles 本地数据包含别的参数
-     */
-    private void setResultOkByIsCompress(ArrayList<LocalFile> localFiles) {
-        // 判断是否需要压缩
-        if (mGlobalSpec.imageCompressionInterface != null) {
-            compressFile(localFiles);
-        } else {
-            setResultOk(localFiles);
-        }
-    }
-
-    /**
-     * 压缩文件开始
      */
     private void compressFile(ArrayList<LocalFile> localFiles) {
         // 显示loading动画
@@ -606,7 +594,19 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 // 将 缓存文件 拷贝到 配置目录
                 ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
                 for (LocalFile item : localFiles) {
-                    // 获取真实路径
+                    // 判断是否需要压缩
+                    if (item.isVideo() && mGlobalSpec.videoCompressCoordinator == null) {
+                        newLocalFiles.add(item);
+                        continue;
+                    } else if (item.isGif()) {
+                        newLocalFiles.add(item);
+                        continue;
+                    } else if (item.isImage() && mGlobalSpec.imageCompressionInterface == null) {
+                        newLocalFiles.add(item);
+                        continue;
+                    }
+
+                    // 开始压缩逻辑，获取真实路径
                     String path = null;
                     if (item.getPath() == null) {
                         File file = UriUtils.uriToFile(mContext, item.getUri());
@@ -616,6 +616,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     } else {
                         path = item.getPath();
                     }
+
                     if (path != null) {
                         // 移动文件,获取文件名称
                         String newFileName = path.substring(path.lastIndexOf(File.separator));

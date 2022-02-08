@@ -17,7 +17,9 @@ import androidx.core.content.ContextCompat;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
@@ -184,6 +186,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                         Log.d(TAG, "onResult 音频类型");
                     }
                     Log.i(TAG, "onResult 具体类型:" + localFile.getMimeType());
+                    // 某些手机拍摄没有自带宽高，那么我们可以自己获取
+                    if (localFile.getWidth() == 0 && localFile.isVideo()) {
+                        MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localFile.getPath());
+                        localFile.setWidth(mediaExtraInfo.getWidth());
+                        localFile.setHeight(mediaExtraInfo.getHeight());
+                        localFile.setDuration(mediaExtraInfo.getDuration());
+                    }
                     Log.i(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
                 }
                 getMaskProgressLayout().addLocalFileStartUpload(result);

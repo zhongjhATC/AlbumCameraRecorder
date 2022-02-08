@@ -275,9 +275,16 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void confirm(File newFile) {
         Intent intent = new Intent();
-        MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
+        Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
                 mLocalFile.getWidth(), mLocalFile.getHeight(),
                 mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
+        // 加入相册后的最后是id，直接使用该id
+        String uriPath = uri.getPath();
+        try {
+            mLocalFile.setId(Long.parseLong(uriPath.substring(uriPath.lastIndexOf("/") + 1)));
+        } catch (Exception exception) {
+            mLocalFile.setId(0);
+        }
         mLocalFile.setPath(newFile.getPath());
         mLocalFile.setUri(mVideoMediaStoreCompat.getUri(newFile.getPath()));
         mLocalFile.setSize(newFile.length());

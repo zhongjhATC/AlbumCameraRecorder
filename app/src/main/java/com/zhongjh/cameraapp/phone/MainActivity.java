@@ -29,9 +29,11 @@ import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -172,6 +174,9 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
+        // 刷新九宫格的最大呈现数据
+        mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
+
         // 拍摄有关设置
         CameraSetting cameraSetting = initCameraSetting();
 
@@ -227,6 +232,8 @@ public class MainActivity extends BaseActivity {
         // 是否压缩视频
         if (mBinding.cbIsCompressVideo.isChecked()) {
             mGlobalSetting.videoCompress(new VideoCompressManager());
+        } else {
+            mGlobalSetting.videoCompress(null);
         }
 
         // 自定义失败信息
@@ -290,10 +297,17 @@ public class MainActivity extends BaseActivity {
                         }
                     } else if (localFile.isVideo()) {
                         Log.d(TAG, "onResult 视频类型");
-                    }else if (localFile.isAudio()) {
+                    } else if (localFile.isAudio()) {
                         Log.d(TAG, "onResult 音频类型");
                     }
                     Log.d(TAG, "onResult 具体类型:" + localFile.getMimeType());
+                    // 某些手机拍摄没有自带宽高，那么我们可以自己获取
+                    if (localFile.getWidth() == 0 && localFile.isVideo()) {
+                        MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localFile.getPath());
+                        localFile.setWidth(mediaExtraInfo.getWidth());
+                        localFile.setHeight(mediaExtraInfo.getHeight());
+                        localFile.setDuration(mediaExtraInfo.getDuration());
+                    }
                     Log.d(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
                     Log.d(TAG, UriUtils.uriToFile(getApplicationContext(), localFile.getUri()).getPath());
                 }
@@ -318,7 +332,7 @@ public class MainActivity extends BaseActivity {
                             }
                         } else if (multiMedia.isVideo()) {
                             Log.d(TAG, "onResult 视频类型");
-                        }else if (multiMedia.isAudio()) {
+                        } else if (multiMedia.isAudio()) {
                             Log.d(TAG, "onResult 音频类型");
                         }
                         Log.i(TAG, "onResult 具体类型:" + multiMedia.getMimeType());

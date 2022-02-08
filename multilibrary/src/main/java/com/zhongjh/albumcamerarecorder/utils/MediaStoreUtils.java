@@ -131,6 +131,7 @@ public class MediaStoreUtils {
             }
             // 这个判断AndroidQ的就是用来解决ACTION_MEDIA_SCANNER_SCAN_FILE过时的方式
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+            values.clear();
         }
         return uri;
     }
@@ -203,6 +204,7 @@ public class MediaStoreUtils {
 
         ContentResolver resolver = context.getContentResolver();
         Uri uri = resolver.insert(external, values);
+        values.clear();
 
         try {
             OutputStream out = resolver.openOutputStream(uri);

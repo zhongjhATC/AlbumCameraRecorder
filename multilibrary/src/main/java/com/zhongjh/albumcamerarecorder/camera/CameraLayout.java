@@ -121,6 +121,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
+     * 一个迁移图片的异步线程
+     */
+    public ThreadUtils.SimpleTask<Void> mMovePictureFileTask;
+
+    /**
      * 闪关灯状态 默认关闭
      */
     private int mFlashModel = TYPE_FLASH_OFF;
@@ -547,7 +552,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
         mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
         mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
-        mMovePictureFileTask.cancel();
+        if (mMovePictureFileTask != null) {
+            mMovePictureFileTask.cancel();
+        }
         // 记忆模式
         flashSaveCache();
     }
@@ -1031,58 +1038,62 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 执行等待动画
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(1);
         // 开始迁移文件
-        ThreadUtils.executeByIo(mMovePictureFileTask);
+        ThreadUtils.executeByIo(getMovePictureFileTask());
     }
 
     /**
      * 迁移图片的线程
      */
-    public ThreadUtils.SimpleTask<Void> mMovePictureFileTask = new ThreadUtils.SimpleTask<Void>() {
-        @Override
-        public Void doInBackground() {
-            // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
-            ArrayList<LocalFile> newFiles = new ArrayList<>();
-            // 将 缓存文件 拷贝到 配置目录
-            for (BitmapData item : mBitmapData) {
-                File oldFile = new File(item.getPath());
-                // 压缩图片
-                File compressionFile = null;
-                if (mGlobalSpec.imageCompressionInterface != null) {
-                    try {
-                        compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getContext(), oldFile);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+    private ThreadUtils.SimpleTask<Void> getMovePictureFileTask() {
+        mMovePictureFileTask = new ThreadUtils.SimpleTask<Void>() {
+            @Override
+            public Void doInBackground() {
+                // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
+                ArrayList<LocalFile> newFiles = new ArrayList<>();
+                // 将 缓存文件 拷贝到 配置目录
+                for (BitmapData item : mBitmapData) {
+                    File oldFile = new File(item.getPath());
+                    // 压缩图片
+                    File compressionFile = null;
+                    if (mGlobalSpec.imageCompressionInterface != null) {
+                        try {
+                            compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getContext(), oldFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        compressionFile = oldFile;
                     }
-                } else {
-                    compressionFile = oldFile;
+                    // 移动文件,获取文件名称
+                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
+                    File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
+                    // new localFile
+                    LocalFile localFile = new LocalFile();
+                    localFile.setPath(newFile.getAbsolutePath());
+                    localFile.setWidth(item.getWidth());
+                    localFile.setHeight(item.getHeight());
+                    localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
+                    newFiles.add(localFile);
+                    movePictureFileByCopy(compressionFile, newFile, newFiles);
                 }
-                // 移动文件,获取文件名称
-                String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
-                File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
-                // new localFile
-                LocalFile localFile = new LocalFile();
-                localFile.setPath(newFile.getAbsolutePath());
-                localFile.setWidth(item.getWidth());
-                localFile.setHeight(item.getHeight());
-                localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
-                newFiles.add(localFile);
-                movePictureFileByCopy(compressionFile, newFile, newFiles);
+                return null;
             }
-            return null;
-        }
 
-        @Override
-        public void onSuccess(Void result) {
-            setUiEnableTrue();
-        }
+            @Override
+            public void onSuccess(Void result) {
+                setUiEnableTrue();
+            }
 
-        @Override
-        public void onFail(Throwable t) {
-            super.onFail(t);
-            Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-            setUiEnableTrue();
-        }
-    };
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                Log.e(TAG, t.getMessage());
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                setUiEnableTrue();
+            }
+        };
+        return mMovePictureFileTask;
+    }
 
     /**
      * 处理复制文件
@@ -1095,7 +1106,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
             if (ioProgress >= 1) {
                 Log.d(TAG, file.getAbsolutePath());
-                movePictureFileByUi(newFiles);
+                ThreadUtils.runOnUiThread(() -> movePictureFileByUi(newFiles));
             }
         });
     }
