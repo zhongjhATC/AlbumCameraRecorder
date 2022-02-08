@@ -34,8 +34,7 @@ import java.util.TimerTask;
  * 父类，包含下面几部分操作：
  * 1.权限控制
  * 2.打开多媒体操作
- * 3.多媒体返回数据有关操作
- * test
+ * 3.多媒体返回数据有关操作\
  *
  * @author zhongjh
  * @date 2019/5/10
