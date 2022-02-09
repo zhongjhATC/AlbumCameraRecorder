@@ -21,8 +21,8 @@ public class VideoCompressManager implements VideoCompressCoordinator {
     HashMap<Class<?>, VideoEditListener> mVideoCompressListener = new HashMap<>();
 
     @Override
-    public void setVideoCompressListener(@NotNull Class<?> cls, @NotNull VideoEditListener videoCompressListener) {
-        mVideoCompressListener.put(cls, videoCompressListener);
+    public void setVideoCompressListener(@NotNull Class<?> clsKey, @NotNull VideoEditListener videoCompressListener) {
+        mVideoCompressListener.put(clsKey, videoCompressListener);
     }
 
     @Override

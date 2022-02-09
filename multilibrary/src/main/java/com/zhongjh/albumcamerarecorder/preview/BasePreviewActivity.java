@@ -121,6 +121,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 当前编辑完的图片文件
      */
     private File mEditImageFile;
+    /**
+     * 完成压缩-复制的异步线程
+     */
+    ThreadUtils.SimpleTask<Void> mCompressFileTask;
 
     protected ViewHolder mViewHolder;
 
@@ -238,7 +242,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 点击Loading停止
         mViewHolder.pbLoading.setOnClickListener(v -> {
             // 中断线程
-            mCompressFileTask.cancel();
+            if (mCompressFileTask != null) {
+                mCompressFileTask.cancel();
+            }
             // 恢复界面可用
             setControlTouchEnable(true);
         });
@@ -514,69 +520,69 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         setControlTouchEnable(false);
 
         // 复制相册的文件
-        ThreadUtils.executeByIo(mCompressFileTask);
+        ThreadUtils.executeByIo(getCompressFileTask());
     }
 
-    /**
-     * 完成压缩-复制的异步线程
-     */
-    ThreadUtils.SimpleTask<Void> mCompressFileTask = new ThreadUtils.SimpleTask<Void>() {
+    private ThreadUtils.SimpleTask<Void> getCompressFileTask() {
+        mCompressFileTask = new ThreadUtils.SimpleTask<Void>() {
 
-        @Override
-        public Void doInBackground() {
-            // 将 缓存文件 拷贝到 配置目录
-            for (LocalFile item : mSelectedCollection.asList()) {
-                Log.d(TAG, "item " + item.getId());
-                // 获取真实路径
-                String path = null;
-                if (item.getPath() == null) {
-                    File file = UriUtils.uriToFile(getApplicationContext(), item.getUri());
-                    if (file != null) {
-                        path = file.getAbsolutePath();
-                    }
-                } else {
-                    path = item.getPath();
-                }
-                if (path != null) {
-                    // 先判断是不是来自相册，因为来自相册的图片可能不需要压缩
-                    if (mIsByAlbum) {
-                        // 判断是否编辑过（有old说明编辑过），如果编辑过就要重新压缩和迁移
-                        if (!TextUtils.isEmpty(item.getOldPath())) {
-                            handleCompress(item, path);
-                        } else {
-                            // 如果没编辑过，需要判断是否存在图片，移动文件,获取文件名称
-                            String newFileName = path.substring(path.lastIndexOf(File.separator));
-
-                            String[] newFileNames = newFileName.split("\\.");
-                            // 设置压缩后的照片名称，id_CMP
-                            newFileName = item.getId() + "_CMP";
-                            if (newFileNames.length > 1) {
-                                // 设置后缀名
-                                newFileName = newFileName + "." + newFileNames[1];
-                            }
-                            File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
-                            if (newFile.exists()) {
-                                item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile);
-                                Log.d(TAG, "存在直接使用");
-                            } else {
-                                // 不存在就压缩和迁移
-                                handleCompress(item, path);
-                            }
+            @Override
+            public Void doInBackground() {
+                // 将 缓存文件 拷贝到 配置目录
+                for (LocalFile item : mSelectedCollection.asList()) {
+                    Log.d(TAG, "item " + item.getId());
+                    // 获取真实路径
+                    String path = null;
+                    if (item.getPath() == null) {
+                        File file = UriUtils.uriToFile(getApplicationContext(), item.getUri());
+                        if (file != null) {
+                            path = file.getAbsolutePath();
                         }
                     } else {
-                        // 来自别的界面都要压缩和迁移
-                        handleCompress(item, path);
+                        path = item.getPath();
+                    }
+                    if (path != null) {
+                        // 先判断是不是来自相册，因为来自相册的图片可能不需要压缩
+                        if (mIsByAlbum) {
+                            // 判断是否编辑过（有old说明编辑过），如果编辑过就要重新压缩和迁移
+                            if (!TextUtils.isEmpty(item.getOldPath())) {
+                                handleCompress(item, path);
+                            } else {
+                                // 如果没编辑过，需要判断是否存在图片，移动文件,获取文件名称
+                                String newFileName = path.substring(path.lastIndexOf(File.separator));
+
+                                String[] newFileNames = newFileName.split("\\.");
+                                // 设置压缩后的照片名称，id_CMP
+                                newFileName = item.getId() + "_CMP";
+                                if (newFileNames.length > 1) {
+                                    // 设置后缀名
+                                    newFileName = newFileName + "." + newFileNames[1];
+                                }
+                                File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                                if (newFile.exists()) {
+                                    item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile);
+                                    Log.d(TAG, "存在直接使用");
+                                } else {
+                                    // 不存在就压缩和迁移
+                                    handleCompress(item, path);
+                                }
+                            }
+                        } else {
+                            // 来自别的界面都要压缩和迁移
+                            handleCompress(item, path);
+                        }
                     }
                 }
+                return null;
             }
-            setResultOk(true);
-            return null;
-        }
 
-        @Override
-        public void onSuccess(Void result) {
-        }
-    };
+            @Override
+            public void onSuccess(Void result) {
+                setResultOk(true);
+            }
+        };
+        return mCompressFileTask;
+    }
 
     /**
      * 处理压缩和迁移的核心逻辑

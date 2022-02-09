@@ -123,7 +123,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 一个迁移图片的异步线程
      */
-    public ThreadUtils.SimpleTask<Void> mMovePictureFileTask;
+    public ThreadUtils.SimpleTask<ArrayList<LocalFile>> mMovePictureFileTask;
 
     /**
      * 闪关灯状态 默认关闭
@@ -147,10 +147,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 图片,单图或者多图都会加入该列表
      */
     List<BitmapData> mBitmapData = new ArrayList<>();
-    /**
-     * 拷贝文件是否拷贝完
-     */
-    private int currentCount = 0;
     /**
      * 视频File,用于后面能随时删除
      */
@@ -708,7 +704,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     }
 
     /**
-     * 左右确认和取消
+     * 左右两个按钮：确认和取消
      */
     private void initPvLayoutOperateListener() {
         mViewHolder.pvLayout.setOperateListener(new BaseOperationLayout.OperateListener() {
@@ -1044,10 +1040,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 迁移图片的线程
      */
-    private ThreadUtils.SimpleTask<Void> getMovePictureFileTask() {
-        mMovePictureFileTask = new ThreadUtils.SimpleTask<Void>() {
+    private ThreadUtils.SimpleTask<ArrayList<LocalFile>> getMovePictureFileTask() {
+        mMovePictureFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
             @Override
-            public Void doInBackground() {
+            public ArrayList<LocalFile> doInBackground() {
                 // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
                 ArrayList<LocalFile> newFiles = new ArrayList<>();
                 // 将 缓存文件 拷贝到 配置目录
@@ -1074,13 +1070,40 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     localFile.setHeight(item.getHeight());
                     localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
                     newFiles.add(localFile);
-                    movePictureFileByCopy(compressionFile, newFile, newFiles);
+                    FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
+                        if (ioProgress >= 1) {
+                            Log.d(TAG, file.getAbsolutePath());
+                            // 每次迁移完一个文件的进度
+                            int progress = 100 / mBitmapData.size();
+                            ThreadUtils.runOnUiThread(() ->
+                                    mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress)
+                            );
+                        }
+                    });
                 }
-                return null;
+                for (LocalFile item : newFiles) {
+                    // 加入图片到android系统库里面
+                    Uri uri = MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                            mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                    // 加入相册后的最后是id，直接使用该id
+                    String uriPath = uri.getPath();
+                    try {
+                        item.setId(Long.parseLong(uriPath.substring(uriPath.lastIndexOf("/") + 1)));
+                    } catch (Exception exception) {
+                        item.setId(0);
+                    }
+                    item.setMimeType(MimeType.JPEG.getMimeTypeName());
+                    item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
+                }
+                // 执行完成
+                Log.d(TAG, "captureSuccess");
+                return newFiles;
             }
 
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(ArrayList<LocalFile> newFiles) {
+                Log.d(TAG, "mMovePictureFileTask onSuccess");
+                mOperateCameraListener.captureSuccess(newFiles);
                 setUiEnableTrue();
             }
 
@@ -1093,51 +1116,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             }
         };
         return mMovePictureFileTask;
-    }
-
-    /**
-     * 处理复制文件
-     *
-     * @param compressionFile 循环中被复制的文件
-     * @param newFile         循环中复制后的文件
-     * @param newFiles        拷贝完的文件列表
-     */
-    private void movePictureFileByCopy(File compressionFile, File newFile, ArrayList<LocalFile> newFiles) {
-        FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
-            if (ioProgress >= 1) {
-                Log.d(TAG, file.getAbsolutePath());
-                ThreadUtils.runOnUiThread(() -> movePictureFileByUi(newFiles));
-            }
-        });
-    }
-
-    /**
-     * UI线程上处理图片并且加入相册库
-     * 只有复制完所有文件才一次性执行成功
-     *
-     * @param newFiles 拷贝完的文件列表
-     */
-    private synchronized void movePictureFileByUi(ArrayList<LocalFile> newFiles) {
-        // 文件总数量
-        int pathSum = mBitmapData.size();
-        // 每次迁移完一个文件的进度
-        int progress = 100 / pathSum;
-        mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
-        // 拷贝完一次++
-        currentCount++;
-        // 判断是否拷贝完所有文件
-        if (currentCount >= pathSum) {
-            currentCount = 0;
-            for (LocalFile item : newFiles) {
-                // 加入图片到android系统库里面
-                MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
-                        mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-                item.setMimeType(MimeType.JPEG.getMimeTypeName());
-                item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
-            }
-            // 执行完成
-            mOperateCameraListener.captureSuccess(newFiles);
-        }
     }
 
     /**

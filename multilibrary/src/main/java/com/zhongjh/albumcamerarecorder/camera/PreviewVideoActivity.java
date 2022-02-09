@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
@@ -67,6 +68,10 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 拍摄配置
      */
     private GlobalSpec mGlobalSpec;
+    /**
+     * 迁移视频的异步线程
+     */
+    private ThreadUtils.SimpleTask<File> mMoveVideoFileTask;
 
     /**
      * 打开activity
@@ -109,7 +114,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
             mGlobalSpec.videoCompressCoordinator.onCompressDestroy(PreviewVideoActivity.this.getClass());
             mGlobalSpec.videoCompressCoordinator = null;
         }
-        mMoveVideoFileTask.cancel();
+        if (mMoveVideoFileTask != null) {
+            mMoveVideoFileTask.cancel();
+        }
         super.onDestroy();
     }
 
@@ -231,44 +238,45 @@ public class PreviewVideoActivity extends AppCompatActivity {
         // 执行等待动画
         mBtnConfirm.setProgress(50);
         // 开始迁移文件，将 缓存文件 拷贝到 配置目录
-        ThreadUtils.executeByIo(mMoveVideoFileTask);
+        ThreadUtils.executeByIo(getMoveVideoFileTask());
     }
 
     /**
      * 迁移视频的异步线程
      */
-    private final ThreadUtils.SimpleTask<Void> mMoveVideoFileTask = new ThreadUtils.SimpleTask<Void>() {
-        @Override
-        public Void doInBackground() {
-            if (mLocalFile.getPath() == null) {
-                return null;
-            }
-            // 获取文件名称
-            String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
-            File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-            FileUtil.copy(new File(mLocalFile.getPath()), newFile, null, (ioProgress, file) -> {
-                if (ioProgress >= 1) {
-                    ThreadUtils.runOnUiThread(() -> {
-                        mBtnConfirm.setProgress(100);
-                        mIsRun = false;
-                        confirm(newFile);
-                    });
+    private ThreadUtils.SimpleTask<File> getMoveVideoFileTask() {
+        mMoveVideoFileTask = new ThreadUtils.SimpleTask<File>() {
+            @Override
+            public File doInBackground() {
+                if (mLocalFile.getPath() == null) {
+                    return null;
                 }
-            });
-            return null;
-        }
+                // 获取文件名称
+                String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
+                File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
+                FileUtil.copy(new File(mLocalFile.getPath()), newFile);
+                return newFile;
+            }
 
-        @Override
-        public void onSuccess(Void result) {
+            @Override
+            public void onSuccess(File newFile) {
+                if (newFile.exists()) {
+                    mBtnConfirm.setProgress(100);
+                    confirm(newFile);
+                } else {
+                    mBtnConfirm.setProgress(0);
+                }
+                mIsRun = false;
+            }
 
-        }
-
-        @Override
-        public void onFail(Throwable t) {
-            super.onFail(t);
-            mIsRun = false;
-        }
-    };
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                mIsRun = false;
+            }
+        };
+        return mMoveVideoFileTask;
+    }
 
     /**
      * 确定该视频
