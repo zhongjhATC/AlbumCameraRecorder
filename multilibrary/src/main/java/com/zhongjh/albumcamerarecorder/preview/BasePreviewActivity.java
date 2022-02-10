@@ -600,26 +600,16 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param path 当前文件地址
      */
     private void handleCompress(LocalFile item, String path) {
+
         if (item.isImage()) {
+            // 压缩图片
+            File compressionFile = mAlbumCompressFileTask.handleImage(path);
 
         }
 
 
 
         File oldFile = new File(path);
-
-        // 压缩图片
-        File compressionFile;
-        if (mGlobalSpec.imageCompressionInterface != null) {
-            try {
-                compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getApplicationContext(), oldFile);
-            } catch (IOException e) {
-                compressionFile = oldFile;
-                e.printStackTrace();
-            }
-        } else {
-            compressionFile = oldFile;
-        }
 
         // 赋值新值
         int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());

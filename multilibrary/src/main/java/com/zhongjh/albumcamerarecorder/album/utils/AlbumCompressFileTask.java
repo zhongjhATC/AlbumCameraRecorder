@@ -74,7 +74,9 @@ public class AlbumCompressFileTask {
                     Log.d(mTag, "存在直接使用");
                 } else {
                     if (item.isImage()) {
-                        handleImage(path, newFile);
+                        File compressionFile = handleImage(path);
+                        // 移动到新的文件夹
+                        FileUtil.copy(compressionFile, newFile);
                         newLocalFiles.add(new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile));
                     } else if (item.isVideo()) {
                         if (mGlobalSpec.isCompressEnable()) {
@@ -114,10 +116,10 @@ public class AlbumCompressFileTask {
     /**
      * 处理图片
      *
-     * @param path    图片真实路径
-     * @param newFile 新创建的文件
+     * @param path 图片真实路径
+     * @return 压缩后的文件
      */
-    private void handleImage(String path, File newFile) {
+    public File handleImage(String path) {
         File oldFile = new File(path);
         // 根据类型压缩
         File compressionFile;
@@ -132,12 +134,12 @@ public class AlbumCompressFileTask {
         } else {
             compressionFile = oldFile;
         }
-        // 移动到新的文件夹
-        FileUtil.copy(compressionFile, newFile);
+        return compressionFile;
     }
 
     /**
      * 判断是否需要压缩
+     *
      * @return 返回对象为null就需要压缩，否则不需要压缩
      */
     public LocalFile isCompress(LocalFile item) {
