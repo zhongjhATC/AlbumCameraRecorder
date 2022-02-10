@@ -21,7 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
@@ -118,6 +120,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      */
     private MediaStoreCompat mPictureMediaStoreCompat;
     /**
+     * 录像文件配置路径
+     */
+    private MediaStoreCompat mVideoMediaStoreCompat;
+    /**
      * 当前编辑完的图片文件
      */
     private File mEditImageFile;
@@ -125,6 +131,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 完成压缩-复制的异步线程
      */
     ThreadUtils.SimpleTask<Void> mCompressFileTask;
+    /**
+     * 异步线程的逻辑
+     */
+    private AlbumCompressFileTask mAlbumCompressFileTask;
 
     protected ViewHolder mViewHolder;
 
@@ -157,6 +167,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.saveStrategy);
             }
         }
+        mVideoMediaStoreCompat = new MediaStoreCompat(getApplicationContext(),
+                mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
@@ -172,6 +184,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mAdapter = new PreviewPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, null);
         mViewHolder.pager.setAdapter(mAdapter);
         mViewHolder.checkView.setCountable(mAlbumSpec.countable);
+
+        mAlbumCompressFileTask = new AlbumCompressFileTask(getApplicationContext(), TAG,
+                BasePreviewActivity.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
+
 
         initListener();
     }
@@ -531,16 +547,16 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 // 将 缓存文件 拷贝到 配置目录
                 for (LocalFile item : mSelectedCollection.asList()) {
                     Log.d(TAG, "item " + item.getId());
-                    // 获取真实路径
-                    String path = null;
-                    if (item.getPath() == null) {
-                        File file = UriUtils.uriToFile(getApplicationContext(), item.getUri());
-                        if (file != null) {
-                            path = file.getAbsolutePath();
-                        }
-                    } else {
-                        path = item.getPath();
+
+                    // 判断是否需要压缩
+                    LocalFile isCompressItem = mAlbumCompressFileTask.isCompress(item);
+                    if (isCompressItem != null) {
+                        continue;
                     }
+
+                    // 开始压缩逻辑，获取真实路径
+                    String path = mAlbumCompressFileTask.getPath(item);
+
                     if (path != null) {
                         // 先判断是不是来自相册，因为来自相册的图片可能不需要压缩
                         if (mIsByAlbum) {
@@ -549,16 +565,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                                 handleCompress(item, path);
                             } else {
                                 // 如果没编辑过，需要判断是否存在图片，移动文件,获取文件名称
-                                String newFileName = path.substring(path.lastIndexOf(File.separator));
+                                String newFileName = mAlbumCompressFileTask.getNewFileName(item, path);
 
-                                String[] newFileNames = newFileName.split("\\.");
-                                // 设置压缩后的照片名称，id_CMP
-                                newFileName = item.getId() + "_CMP";
-                                if (newFileNames.length > 1) {
-                                    // 设置后缀名
-                                    newFileName = newFileName + "." + newFileNames[1];
-                                }
-                                File newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+                                File newFile = mAlbumCompressFileTask.getNewFile(item, path, newFileName);
                                 if (newFile.exists()) {
                                     item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile);
                                     Log.d(TAG, "存在直接使用");
@@ -591,43 +600,50 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param path 当前文件地址
      */
     private void handleCompress(LocalFile item, String path) {
-        Log.d(TAG, "不存在新建文件");
-        if (path != null) {
-            File oldFile = new File(path);
-            // 压缩图片
-            File compressionFile;
-            if (mGlobalSpec.imageCompressionInterface != null) {
-                try {
-                    compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getApplicationContext(), oldFile);
-                } catch (IOException e) {
-                    compressionFile = oldFile;
-                    e.printStackTrace();
-                }
-            } else {
+        if (item.isImage()) {
+
+        }
+
+
+
+        File oldFile = new File(path);
+
+        // 压缩图片
+        File compressionFile;
+        if (mGlobalSpec.imageCompressionInterface != null) {
+            try {
+                compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getApplicationContext(), oldFile);
+            } catch (IOException e) {
                 compressionFile = oldFile;
+                e.printStackTrace();
             }
-            int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());
-            item.setWidth(imageWidthAndHeight[0]);
-            item.setHeight(imageWidthAndHeight[1]);
-            item.setSize(compressionFile.length());
-            item.setMimeType(item.getMimeType());
-            item.setDuration(item.getDuration());
-            // 判断是否需要迁移文件
-            if (mIsByAlbum) {
-                // 移动文件,获取文件名称
-                String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
-                File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
-                item.setPath(newFile.getAbsolutePath());
-                item.setUri(mPictureMediaStoreCompat.getUri(newFile.getAbsolutePath()));
-                boolean isCopy = FileUtil.copy(compressionFile, newFile);
-                Log.d(TAG, "mCompressFileTask isCopy: " + isCopy);
-                Log.d(TAG, "mCompressFileTask 压缩前原文件 oldFile: " + oldFile);
-                Log.d(TAG, "mCompressFileTask 压缩后文件 compressionFile: " + compressionFile);
-                Log.d(TAG, "mCompressFileTask 最新的文件 newFile: " + newFile);
-            } else {
-                item.setPath(compressionFile.getAbsolutePath());
-                item.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
-            }
+        } else {
+            compressionFile = oldFile;
+        }
+
+        // 赋值新值
+        int[] imageWidthAndHeight = MediaStoreUtils.getImageWidthAndHeight(compressionFile.getAbsolutePath());
+        item.setWidth(imageWidthAndHeight[0]);
+        item.setHeight(imageWidthAndHeight[1]);
+        item.setSize(compressionFile.length());
+        item.setMimeType(item.getMimeType());
+        item.setDuration(item.getDuration());
+
+        // 判断是否需要迁移文件
+        if (mIsByAlbum) {
+            // 移动文件,获取文件名称
+            String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
+            File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
+            item.setPath(newFile.getAbsolutePath());
+            item.setUri(mPictureMediaStoreCompat.getUri(newFile.getAbsolutePath()));
+            boolean isCopy = FileUtil.copy(compressionFile, newFile);
+            Log.d(TAG, "mCompressFileTask isCopy: " + isCopy);
+            Log.d(TAG, "mCompressFileTask 压缩前原文件 oldFile: " + oldFile);
+            Log.d(TAG, "mCompressFileTask 压缩后文件 compressionFile: " + compressionFile);
+            Log.d(TAG, "mCompressFileTask 最新的文件 newFile: " + newFile);
+        } else {
+            item.setPath(compressionFile.getAbsolutePath());
+            item.setUri(mPictureMediaStoreCompat.getUri(compressionFile.getAbsolutePath()));
         }
     }
 

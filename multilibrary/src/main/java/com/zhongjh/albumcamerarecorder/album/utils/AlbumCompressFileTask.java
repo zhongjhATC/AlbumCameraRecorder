@@ -55,47 +55,18 @@ public class AlbumCompressFileTask {
         ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
         for (LocalFile item : localFiles) {
             // 判断是否需要压缩
-            if (item.isVideo() && mGlobalSpec.videoCompressCoordinator == null) {
-                newLocalFiles.add(item);
-                continue;
-            } else if (item.isGif()) {
-                newLocalFiles.add(item);
-                continue;
-            } else if (item.isImage() && mGlobalSpec.imageCompressionInterface == null) {
-                newLocalFiles.add(item);
+            LocalFile isCompressItem = isCompress(item);
+            if (isCompressItem != null) {
+                newLocalFiles.add(isCompressItem);
                 continue;
             }
 
             // 开始压缩逻辑，获取真实路径
-            String path = null;
-            if (item.getPath() == null) {
-                File file = UriUtils.uriToFile(mContext, item.getUri());
-                if (file != null) {
-                    path = file.getAbsolutePath();
-                }
-            } else {
-                path = item.getPath();
-            }
+            String path = getPath(item);
 
             if (path != null) {
-                // 移动文件,获取文件名称
-                String newFileName = path.substring(path.lastIndexOf(File.separator));
-
-                String[] newFileNames = newFileName.split("\\.");
-                // 设置压缩后的照片名称，id_CMP
-                newFileName = item.getId() + "_CMP";
-                if (newFileNames.length > 1) {
-                    // 设置后缀名
-                    newFileName = newFileName + "." + newFileNames[1];
-                }
-                File newFile;
-                if (item.isImage()) {
-                    newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
-                } else if (item.isVideo()) {
-                    newFile = mVideoMediaStoreCompat.fineFile(newFileName, 1, false);
-                } else {
-                    newFile = new File(path);
-                }
+                String newFileName = getNewFileName(item, path);
+                File newFile = getNewFile(item, path, newFileName);
 
                 if (newFile.exists()) {
                     LocalFile localFile = new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile);
@@ -103,7 +74,8 @@ public class AlbumCompressFileTask {
                     Log.d(mTag, "存在直接使用");
                 } else {
                     if (item.isImage()) {
-                        newLocalFiles.add(handleImage(path, newFile, item));
+                        handleImage(path, newFile);
+                        newLocalFiles.add(new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile));
                     } else if (item.isVideo()) {
                         if (mGlobalSpec.isCompressEnable()) {
                             // 压缩视频
@@ -144,10 +116,8 @@ public class AlbumCompressFileTask {
      *
      * @param path    图片真实路径
      * @param newFile 新创建的文件
-     * @param item    当前需要处理的LocalFile
-     * @return 压缩后新的LocalFile
      */
-    private LocalFile handleImage(String path, File newFile, LocalFile item) {
+    private void handleImage(String path, File newFile) {
         File oldFile = new File(path);
         // 根据类型压缩
         File compressionFile;
@@ -164,9 +134,83 @@ public class AlbumCompressFileTask {
         }
         // 移动到新的文件夹
         FileUtil.copy(compressionFile, newFile);
-        return new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile);
     }
 
-//    private
+    /**
+     * 判断是否需要压缩
+     * @return 返回对象为null就需要压缩，否则不需要压缩
+     */
+    public LocalFile isCompress(LocalFile item) {
+        // 判断是否需要压缩
+        if (item.isVideo() && mGlobalSpec.videoCompressCoordinator == null) {
+            return item;
+        } else if (item.isGif()) {
+            return item;
+        } else if (item.isImage() && mGlobalSpec.imageCompressionInterface == null) {
+            return item;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 返回当前处理的LocalFile的真实路径
+     *
+     * @param item 当前处理的LocalFile
+     * @return 真实路径
+     */
+    public String getPath(LocalFile item) {
+        String path = null;
+        if (item.getPath() == null) {
+            File file = UriUtils.uriToFile(mContext, item.getUri());
+            if (file != null) {
+                path = file.getAbsolutePath();
+            }
+        } else {
+            path = item.getPath();
+        }
+        return path;
+    }
+
+    /**
+     * 返回迁移后的file的名称
+     *
+     * @param item 当前处理的LocalFile
+     * @param path 真实路径
+     * @return 返回迁移后的file的名称
+     */
+    public String getNewFileName(LocalFile item, String path) {
+        // 移动文件,获取文件名称
+        String newFileName = path.substring(path.lastIndexOf(File.separator));
+
+        String[] newFileNames = newFileName.split("\\.");
+        // 设置压缩后的照片名称，id_CMP
+        newFileName = item.getId() + "_CMP";
+        if (newFileNames.length > 1) {
+            // 设置后缀名
+            newFileName = newFileName + "." + newFileNames[1];
+        }
+        return newFileName;
+    }
+
+    /**
+     * 返回迁移后的file
+     *
+     * @param item        当前处理的LocalFile
+     * @param path        真实路径
+     * @param newFileName 迁移后的file的名称
+     * @return 返回迁移后的file
+     */
+    public File getNewFile(LocalFile item, String path, String newFileName) {
+        File newFile;
+        if (item.isImage()) {
+            newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+        } else if (item.isVideo()) {
+            newFile = mVideoMediaStoreCompat.fineFile(newFileName, 1, false);
+        } else {
+            newFile = new File(path);
+        }
+        return newFile;
+    }
 
 }
