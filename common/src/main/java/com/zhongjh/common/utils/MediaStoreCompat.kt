@@ -34,7 +34,7 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
      * @return 文件
      */
     fun createFile(type: Int, isCache: Boolean, format: String): File {
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmssS", Locale.getDefault()).format(Date())
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmssSSS", Locale.getDefault()).format(Date())
         val fileName = when (type) {
             0 -> String.format("IMAGE_%s.$format", timeStamp)
             1 -> String.format("VIDEO_%s.$format", timeStamp)

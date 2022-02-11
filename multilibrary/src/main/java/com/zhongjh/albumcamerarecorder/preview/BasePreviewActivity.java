@@ -570,6 +570,12 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             public void onSuccess(Void result) {
                 setResultOk(true);
             }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                Log.d(TAG, "getCompressFileTask onFail " + t.getMessage());
+            }
         };
         return mCompressFileTask;
     }
