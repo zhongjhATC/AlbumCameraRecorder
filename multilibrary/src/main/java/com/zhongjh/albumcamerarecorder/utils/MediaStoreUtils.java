@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
@@ -82,6 +83,7 @@ public class MediaStoreUtils {
      */
     public static Uri displayToGallery(Context context, File file, @MediaTypes int type, long duration, int width, int height,
                                        String directory, MediaStoreCompat mediaStoreCompat) {
+        Log.d("displayToGallery",file.getPath());
         if (file == null || !file.exists()) {
             return null;
         }
@@ -230,6 +232,21 @@ public class MediaStoreUtils {
         opts.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, opts);
         return new int[]{opts.outWidth, opts.outHeight};
+    }
+
+    /**
+     * 根据uri获取里面的id
+     * @param uri uri
+     * @return id
+     */
+    public static Long getId(Uri uri) {
+        // 加入相册后的最后是id，直接使用该id
+        String uriPath = uri.getPath();
+        try {
+            return Long.parseLong(uriPath.substring(uriPath.lastIndexOf("/") + 1));
+        } catch (Exception exception) {
+            return 0L;
+        }
     }
 
 }

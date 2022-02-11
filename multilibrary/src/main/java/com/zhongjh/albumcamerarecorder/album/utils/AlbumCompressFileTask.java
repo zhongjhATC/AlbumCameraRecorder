@@ -69,24 +69,29 @@ public class AlbumCompressFileTask {
                 File newFile = getNewFile(item, path, newFileName);
 
                 if (newFile.exists()) {
-                    LocalFile localFile = new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile);
+                    LocalFile localFile;
+                    if (item.isImage()) {
+                        localFile = new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile);
+                    } else {
+                        localFile = new LocalFile(mContext, mVideoMediaStoreCompat, item, newFile);
+                    }
                     newLocalFiles.add(localFile);
                     Log.d(mTag, "存在直接使用");
                 } else {
                     if (item.isImage()) {
+                        // 处理是否压缩图片
                         File compressionFile = handleImage(path);
                         // 移动到新的文件夹
                         FileUtil.copy(compressionFile, newFile);
                         newLocalFiles.add(new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile));
+                        Log.d(mTag, "不存在新建文件");
                     } else if (item.isVideo()) {
                         if (mGlobalSpec.isCompressEnable()) {
                             // 压缩视频
-                            newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-                            File finalNewFile = newFile;
                             mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(mClsKey, new VideoEditListener() {
                                 @Override
                                 public void onFinish() {
-                                    LocalFile localFile = new LocalFile(mContext, mPictureMediaStoreCompat, item, finalNewFile);
+                                    LocalFile localFile = new LocalFile(mContext, mVideoMediaStoreCompat, item, newFile);
                                     newLocalFiles.add(localFile);
                                     Log.d(mTag, "不存在新建文件");
                                 }
@@ -193,6 +198,20 @@ public class AlbumCompressFileTask {
             newFileName = newFileName + "." + newFileNames[1];
         }
         return newFileName;
+    }
+
+    /**
+     * @return 获取后缀名
+     */
+    public String getNameSuffix(String path) {
+        // 获取文件名称
+        String newFileName = path.substring(path.lastIndexOf(File.separator));
+        String[] newFileNames = newFileName.split("\\.");
+        if (newFileNames.length > 1) {
+            // 返回后缀名
+            return newFileNames[1];
+        }
+        return "";
     }
 
     /**

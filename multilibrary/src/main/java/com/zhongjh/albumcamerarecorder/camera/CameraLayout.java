@@ -1086,12 +1086,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     Uri uri = MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
                             mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
                     // 加入相册后的最后是id，直接使用该id
-                    String uriPath = uri.getPath();
-                    try {
-                        item.setId(Long.parseLong(uriPath.substring(uriPath.lastIndexOf("/") + 1)));
-                    } catch (Exception exception) {
-                        item.setId(0);
-                    }
+                    item.setId(MediaStoreUtils.getId(uri));
                     item.setMimeType(MimeType.JPEG.getMimeTypeName());
                     item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
                 }

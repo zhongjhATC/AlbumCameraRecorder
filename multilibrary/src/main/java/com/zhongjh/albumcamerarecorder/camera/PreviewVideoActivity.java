@@ -254,7 +254,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
                 // 获取文件名称
                 String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
                 File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-                FileUtil.copy(new File(mLocalFile.getPath()), newFile);
+                FileUtil.move(new File(mLocalFile.getPath()), newFile);
                 return newFile;
             }
 
@@ -287,12 +287,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
                 mLocalFile.getWidth(), mLocalFile.getHeight(),
                 mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
         // 加入相册后的最后是id，直接使用该id
-        String uriPath = uri.getPath();
-        try {
-            mLocalFile.setId(Long.parseLong(uriPath.substring(uriPath.lastIndexOf("/") + 1)));
-        } catch (Exception exception) {
-            mLocalFile.setId(0);
-        }
+        mLocalFile.setId(MediaStoreUtils.getId(uri));
         mLocalFile.setPath(newFile.getPath());
         mLocalFile.setUri(mVideoMediaStoreCompat.getUri(newFile.getPath()));
         mLocalFile.setSize(newFile.length());

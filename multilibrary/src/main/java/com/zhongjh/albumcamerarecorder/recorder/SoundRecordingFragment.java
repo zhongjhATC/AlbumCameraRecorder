@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -504,10 +505,10 @@ public class SoundRecordingFragment extends BaseFragment {
                                 mGlobalSpec.onResultCallbackListener.onResult(localFiles);
                             }
 
-                            MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_AUDIO, localFile.getDuration(),
+                            Uri uri = MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_AUDIO, localFile.getDuration(),
                                     localFile.getWidth(), localFile.getHeight(),
                                     mAudioMediaStoreCompat.getSaveStrategy().getDirectory(), mAudioMediaStoreCompat);
-
+                            localFile.setId(MediaStoreUtils.getId(uri));
                             mActivity.finish();
                         }
                     });

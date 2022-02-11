@@ -40,6 +40,18 @@ public class FileUtil {
     }
 
     /**
+     * Move the directory or file.
+     *
+     * @param src  The source.
+     * @param dest The destination.
+     * @return {@code true}: success<br>{@code false}: fail
+     */
+    public static boolean move(final File src,
+                               final File dest) {
+        return move(src, dest, null, null);
+    }
+
+    /**
      * Copy the directory or file.
      *
      * @param src      The source.
@@ -61,6 +73,27 @@ public class FileUtil {
     }
 
     /**
+     * Move the directory or file.
+     *
+     * @param src      The source.
+     * @param dest     The destination.
+     * @param listener The replace listener.
+     * @return {@code true}: success<br>{@code false}: fail
+     */
+    public static boolean move(final File src,
+                               final File dest,
+                               final OnReplaceListener listener,
+                               final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
+        if (src == null) {
+            return false;
+        }
+        if (src.isDirectory()) {
+            return moveDir(src, dest, listener, onProgressUpdateListener);
+        }
+        return moveFile(src, dest, listener, onProgressUpdateListener);
+    }
+
+    /**
      * Copy the directory.
      *
      * @param srcDir   The source directory.
@@ -72,7 +105,7 @@ public class FileUtil {
                                    final File destDir,
                                    final OnReplaceListener listener,
                                    final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
-        return copyOrMoveDir(srcDir, destDir, listener, onProgressUpdateListener, true);
+        return copyOrMoveDir(srcDir, destDir, listener, onProgressUpdateListener, false);
     }
 
     /**
@@ -87,6 +120,36 @@ public class FileUtil {
                                     final File destFile,
                                     final OnReplaceListener listener,
                                     final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
+        return copyOrMoveFile(srcFile, destFile, listener, onProgressUpdateListener, false);
+    }
+
+    /**
+     * Move the directory.
+     *
+     * @param srcDir   The source directory.
+     * @param destDir  The destination directory.
+     * @param listener The replace listener.
+     * @return {@code true}: success<br>{@code false}: fail
+     */
+    public static boolean moveDir(final File srcDir,
+                                  final File destDir,
+                                  final OnReplaceListener listener,
+                                  final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
+        return copyOrMoveDir(srcDir, destDir, listener, onProgressUpdateListener, true);
+    }
+
+    /**
+     * Move the file.
+     *
+     * @param srcFile  The source file.
+     * @param destFile The destination file.
+     * @param listener The replace listener.
+     * @return {@code true}: success<br>{@code false}: fail
+     */
+    public static boolean moveFile(final File srcFile,
+                                   final File destFile,
+                                   final OnReplaceListener listener,
+                                   final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
         return copyOrMoveFile(srcFile, destFile, listener, onProgressUpdateListener, true);
     }
 
