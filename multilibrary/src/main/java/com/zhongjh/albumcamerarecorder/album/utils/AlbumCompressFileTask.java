@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.utils;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
@@ -175,6 +176,21 @@ public class AlbumCompressFileTask {
             }
         } else {
             path = item.getPath();
+        }
+        // 判断是否Android 29
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // 29以上的版本都必须是私有的或者公共目录
+            File cacheFile = null;
+            if (item.isImage()) {
+                cacheFile = mPictureMediaStoreCompat.createFile(0, true, getNameSuffix(path));
+            } else if (item.isVideo()) {
+                cacheFile = mVideoMediaStoreCompat.createFile(1, true, getNameSuffix(path));
+            }
+            // >=29 的需要通过uri获取公共目录的文件，并且拷贝到私有目录
+            if (cacheFile != null) {
+                FileUtil.copy(mContext, item.getUri(), cacheFile);
+                path = cacheFile.getAbsolutePath();
+            }
         }
         return path;
     }

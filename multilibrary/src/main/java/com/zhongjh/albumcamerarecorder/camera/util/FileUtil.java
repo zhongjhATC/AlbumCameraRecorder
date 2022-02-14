@@ -1,9 +1,14 @@
 package com.zhongjh.albumcamerarecorder.camera.util;
 
+import android.content.Context;
+import android.net.Uri;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * 文件工具类
@@ -40,6 +45,19 @@ public class FileUtil {
     }
 
     /**
+     * Copy the directory or file.
+     *
+     * @param src  The source.
+     * @param dest The destination.
+     * @return {@code true}: success<br>{@code false}: fail
+     */
+    public static boolean copy(final Context context,
+                               final Uri src,
+                               final File dest) {
+        return copy(context, src, dest, null, null);
+    }
+
+    /**
      * Move the directory or file.
      *
      * @param src  The source.
@@ -70,6 +88,25 @@ public class FileUtil {
             return copyDir(src, dest, listener, onProgressUpdateListener);
         }
         return copyFile(src, dest, listener, onProgressUpdateListener);
+    }
+
+    /**
+     * Copy the directory or file.
+     *
+     * @param src      The source.
+     * @param dest     The destination.
+     * @param listener The replace listener.
+     * @return {@code true}: success<br>{@code false}: fail
+     */
+    public static boolean copy(final Context context,
+                               final Uri src,
+                               final File dest,
+                               final OnReplaceListener listener,
+                               final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
+        if (src == null) {
+            return false;
+        }
+        return copyFile(context, src, dest, listener, onProgressUpdateListener);
     }
 
     /**
@@ -121,6 +158,22 @@ public class FileUtil {
                                     final OnReplaceListener listener,
                                     final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
         return copyOrMoveFile(srcFile, destFile, listener, onProgressUpdateListener, false);
+    }
+
+    /**
+     * Copy the file.
+     *
+     * @param srcFile  The source file.
+     * @param destFile The destination file.
+     * @param listener The replace listener.
+     * @return {@code true}: success<br>{@code false}: fail
+     */
+    private static boolean copyFile(final Context context,
+                                    final Uri srcFile,
+                                    final File destFile,
+                                    final OnReplaceListener listener,
+                                    final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener) {
+        return copyOrMoveFile(context, srcFile, destFile, listener, onProgressUpdateListener, false);
     }
 
     /**
@@ -224,6 +277,39 @@ public class FileUtil {
         try {
             return FileIOUtils.writeFileFromIS(destFile, new FileInputStream(srcFile), false, onProgressUpdateListener)
                     && !(isMove && !deleteFile(srcFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static boolean copyOrMoveFile(final Context context,
+                                          final Uri srcFile,
+                                          final File destFile,
+                                          final OnReplaceListener listener,
+                                          final FileIOUtils.OnProgressUpdateListener onProgressUpdateListener,
+                                          final boolean isMove) {
+        if (srcFile == null || destFile == null) {
+            return false;
+        }
+        if (destFile.exists()) {
+            // require delete the old file
+            if (listener == null) {
+                // unsuccessfully delete then return false
+                if (!destFile.delete()) {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+        if (!createOrExistsDir(destFile.getParentFile())) {
+            return false;
+        }
+        try {
+            InputStream os = context.getContentResolver().openInputStream(srcFile);
+            return FileIOUtils.writeFileFromIS(destFile, os, false, onProgressUpdateListener)
+                    && !isMove;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;

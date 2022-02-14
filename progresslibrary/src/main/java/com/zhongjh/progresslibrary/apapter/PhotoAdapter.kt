@@ -362,6 +362,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
      * @param multiMediaView 集合里面的某个对象
      */
     private fun removePosition(multiMediaView: MultiMediaView) {
+        Log.d(TAG, "multiMediaView.path：" + multiMediaView.path)
         val position = list.indexOf(multiMediaView)
         removePosition(position)
     }

@@ -58,9 +58,6 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
             // 29以上的版本都必须是私有的或者公共目录
             if (isCache) {
                 storageDir = File(context.externalCacheDir!!.path + File.separator + saveStrategy.directory)
-                if (!storageDir.exists()) {
-                    storageDir.mkdirs()
-                }
             } else {
                 storageDir = when (type) {
                     0 -> context.getExternalFilesDir(Environment.DIRECTORY_PICTURES + File.separator + saveStrategy.directory)!!
@@ -68,6 +65,9 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
                     2 -> context.getExternalFilesDir(Environment.DIRECTORY_MUSIC + File.separator + saveStrategy.directory)!!
                     else -> throw RuntimeException("The type must be 2-0.")
                 }
+            }
+            if (!storageDir.exists()) {
+                storageDir.mkdirs()
             }
         } else {
             if (isCache) {
