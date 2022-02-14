@@ -263,6 +263,10 @@ public class ClickOrLongButton extends View {
                         innerCircleRadiusToDraw = calPercent * innerCircleRadiusWhenRecord;
                     }
                     invalidate();
+                } else {
+                    Log.d(TAG, "满足100" + (mRecordedTime / timeLimitInMils >= FULL_PROGRESS));
+                    step++;
+                    refreshView();
                 }
             }
         }

@@ -157,7 +157,11 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             // 显示close
             if (isOperation) {
                 holder.vClose.visibility = View.VISIBLE
-                holder.vClose.setOnClickListener { removePosition(multiMediaView) }
+                holder.vClose.setOnClickListener(object : OnMoreClickListener() {
+                    override fun onMoreClickListener(v: View) {
+                        removePosition(multiMediaView)
+                    }
+                })
             } else {
                 holder.vClose.visibility = View.GONE
             }
