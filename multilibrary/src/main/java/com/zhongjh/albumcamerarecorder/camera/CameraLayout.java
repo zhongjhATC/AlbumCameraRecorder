@@ -1020,6 +1020,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         if (mIsSectionRecord) {
             // 合并视频
             mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true, "mp4").getPath();
+            Log.d(TAG,"新的合并视频：" + mNewSectionVideoPath);
+            for (String item : mVideoPaths) {
+                Log.d(TAG,"新的合并视频素材：" + item);
+            }
             mCameraSpec.videoMergeCoordinator.merge(CameraLayout.this.getClass(), mNewSectionVideoPath, mVideoPaths,
                     getContext().getCacheDir().getPath() + File.separator + "cam.txt");
         }
