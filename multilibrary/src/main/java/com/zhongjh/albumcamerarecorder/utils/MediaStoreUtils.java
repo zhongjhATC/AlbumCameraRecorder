@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -44,6 +43,8 @@ import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.T
  * @date 2022/01/05
  */
 public class MediaStoreUtils {
+
+    private static final String TAG = MediaStoreUtils.class.getSimpleName();
 
     @IntDef({
             TYPE_PICTURE,
@@ -174,6 +175,19 @@ public class MediaStoreUtils {
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
                 values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + directory);
                 external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+                // 需要增加这个，不然AndroidQ识别不到TAG_DATETIME_ORIGINAL创建时间
+                try {
+                    ExifInterface exif = new ExifInterface(file.getPath());
+                    if (TextUtils.isEmpty(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))) {
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
+                        exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(System.currentTimeMillis()));
+                        exif.saveAttributes();
+                    }
+                } catch (IOException e) {
+                    Log.d(TAG,e.getMessage());
+                    e.printStackTrace();
+                }
                 break;
             case TYPE_AUDIO:
                 values.put(MediaStore.Audio.Media.MIME_TYPE, "video/aac");
@@ -192,18 +206,6 @@ public class MediaStoreUtils {
                 break;
         }
 
-        // 需要增加这个，不然AndroidQ识别不到TAG_DATETIME_ORIGINAL创建时间
-        try {
-            ExifInterface exif = new ExifInterface(file.getPath());
-            if (TextUtils.isEmpty(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
-                exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(System.currentTimeMillis()));
-                exif.saveAttributes();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         ContentResolver resolver = context.getContentResolver();
         Uri uri = resolver.insert(external, values);
         values.clear();
@@ -218,20 +220,6 @@ public class MediaStoreUtils {
             e.printStackTrace();
         }
         return uri;
-    }
-
-    /**
-     * 获取图片的宽和高度
-     *
-     * @param pathName 图片文件地址
-     * @return 宽高合成的数组
-     */
-    public static int[] getImageWidthAndHeight(String pathName) {
-        BitmapFactory.Options opts = new BitmapFactory.Options();
-        // 只请求图片宽高，不解析图片像素(请求图片属性但不申请内存，解析bitmap对象，该对象不占内存)
-        opts.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(pathName, opts);
-        return new int[]{opts.outWidth, opts.outHeight};
     }
 
     /**

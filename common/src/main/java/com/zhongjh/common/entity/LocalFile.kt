@@ -6,7 +6,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
-import com.zhongjh.common.utils.MediaStoreUtils
 import com.zhongjh.common.utils.MediaUtils
 import java.io.File
 
@@ -18,7 +17,7 @@ import java.io.File
 open class LocalFile : Parcelable {
 
     /**
-     * 用于区分，因为九宫数据是允许选择重复的
+     * 相册的id数据
      */
     var id: Long = 0
 
@@ -103,7 +102,7 @@ open class LocalFile : Parcelable {
         oldPath = localFile.oldPath
         oldUri = localFile.oldUri
         if (isImageOrGif()) {
-            val imageWidthAndHeight: IntArray = MediaStoreUtils.getImageWidthAndHeight(compressionFile.absolutePath)
+            val imageWidthAndHeight: IntArray = MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
             height = imageWidthAndHeight[1]
             width = imageWidthAndHeight[0]
         } else if (isVideo()) {

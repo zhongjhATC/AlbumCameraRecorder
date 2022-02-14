@@ -24,7 +24,7 @@ public class MultiMediaUtils {
         if (item.getUri() != null) {
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getUri() != null && Objects.equals(items.get(i).getUri(), item.getUri())
-                        && items.get(i).getId() == item.getId()) {
+                        && items.get(i).getMultiMediaId() == item.getMultiMediaId()) {
                     index = i;
                     break;
                 }
@@ -32,7 +32,7 @@ public class MultiMediaUtils {
         } else if (item.getDrawableId() != -1) {
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getDrawableId() != -1 && items.get(i).getDrawableId() == item.getDrawableId()
-                        && items.get(i).getId() == item.getId()) {
+                        && items.get(i).getMultiMediaId() == item.getMultiMediaId()) {
                     index = i;
                     break;
                 }
@@ -40,7 +40,7 @@ public class MultiMediaUtils {
         } else if (item.getUrl() != null) {
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getUrl() != null && Objects.equals(items.get(i).getUrl(), item.getUrl())
-                        && items.get(i).getId() == item.getId()) {
+                        && items.get(i).getMultiMediaId() == item.getMultiMediaId()) {
                     index = i;
                     break;
                 }

@@ -18,6 +18,11 @@ import android.provider.MediaStore.*
 open class MultiMedia : LocalFile, Parcelable {
 
     /**
+     * 用于区分，因为九宫数据是允许选择重复的
+     */
+    var multiMediaId: Long = 0
+
+    /**
      * 在线网址
      */
     var url: String? = null
@@ -28,6 +33,8 @@ open class MultiMedia : LocalFile, Parcelable {
     var drawableId: Int = -1
 
     constructor() : super()
+
+    constructor(localFile: LocalFile) : super(localFile)
 
     /**
      * 相册初始化调用
@@ -61,6 +68,7 @@ open class MultiMedia : LocalFile, Parcelable {
      */
     constructor(input: Parcel) : super(input) {
         id = input.readLong()
+        multiMediaId = input.readLong()
         drawableId = input.readInt()
         url = input.readString()
     }
@@ -72,6 +80,7 @@ open class MultiMedia : LocalFile, Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
         dest.writeLong(id)
+        dest.writeLong(multiMediaId)
         dest.writeInt(drawableId)
         dest.writeString(url)
     }
@@ -84,7 +93,9 @@ open class MultiMedia : LocalFile, Parcelable {
             return false
         }
         val multiMedia: MultiMedia = other
-        return id == multiMedia.id && (mimeType != null && mimeType.equals(multiMedia.mimeType) || (mimeType == null && multiMedia.mimeType == null))
+        return id == multiMedia.id
+                && multiMediaId == multiMedia.multiMediaId
+                && (mimeType != null && mimeType.equals(multiMedia.mimeType) || (mimeType == null && multiMedia.mimeType == null))
                 && (uri != null && uri!! == multiMedia.uri || (uri == null && multiMedia.uri == null))
                 && (url != null && url!! == multiMedia.url || (url == null && multiMedia.url == null))
                 && size == multiMedia.size
@@ -98,6 +109,7 @@ open class MultiMedia : LocalFile, Parcelable {
     override fun hashCode(): Int {
         var result = 1
         result = 31 * result + java.lang.Long.valueOf(id).hashCode()
+        result = 31 * result + java.lang.Long.valueOf(multiMediaId).hashCode()
         if (mimeType != null) {
             result = 31 * result + mimeType.hashCode()
         }

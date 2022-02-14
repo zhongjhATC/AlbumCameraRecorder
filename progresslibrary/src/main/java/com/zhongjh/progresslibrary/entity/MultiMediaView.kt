@@ -49,17 +49,7 @@ class MultiMediaView : MultiMedia {
         this.mimeType = mimeType
     }
 
-    constructor(localFile: LocalFile) {
-        path = localFile.path
-        uri = localFile.uri
-        mimeType = localFile.mimeType
-        size = localFile.size
-        duration = localFile.duration
-        oldPath = localFile.oldPath
-        oldUri = localFile.oldUri
-        height = localFile.height
-        width = localFile.width
-    }
+    constructor(localFile: LocalFile) : super(localFile)
 
     /**
      * 给予进度，根据类型设置相应进度动作

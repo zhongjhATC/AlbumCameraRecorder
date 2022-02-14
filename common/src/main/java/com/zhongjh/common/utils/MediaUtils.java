@@ -1,6 +1,7 @@
 package com.zhongjh.common.utils;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -117,5 +118,20 @@ public class MediaUtils {
         return mediaExtraInfo;
     }
 
+
+
+    /**
+     * 获取图片的宽和高度
+     *
+     * @param pathName 图片文件地址
+     * @return 宽高合成的数组
+     */
+    public static int[] getImageWidthAndHeight(String pathName) {
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        // 只请求图片宽高，不解析图片像素(请求图片属性但不申请内存，解析bitmap对象，该对象不占内存)
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(pathName, opts);
+        return new int[]{opts.outWidth, opts.outHeight};
+    }
 
 }

@@ -273,7 +273,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         Log.d("$TAG Test", "addImageData")
         val position: Int = getNeedAddPosition(MimeType.JPEG.mimeTypeName)
         for (item in multiMediaViews) {
-            item.id = mId++
+            item.multiMediaId = mId++
         }
         list.addAll(position, multiMediaViews)
         // 刷新ui
@@ -297,7 +297,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         // 增加新的图片数据
         val position = list.size - 1
         for (item in multiMediaViews) {
-            item.id = mId++
+            item.multiMediaId = mId++
         }
         list.addAll(multiMediaViews)
         notifyItemRangeInserted(position, multiMediaViews.size)
@@ -314,7 +314,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         Log.d("$TAG Test", "addVideoData")
         val position = getNeedAddPosition(MimeType.MP4.mimeTypeName)
         for (item in multiMediaViews) {
-            item.id = mId++
+            item.multiMediaId = mId++
         }
         list.addAll(position, multiMediaViews)
         // 刷新ui
@@ -338,7 +338,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
 
         // 增加新的视频数据
         for (item in multiMediaViews) {
-            item.id = mId++
+            item.multiMediaId = mId++
         }
         list.addAll(0, multiMediaViews)
         notifyItemRangeInserted(0, multiMediaViews.size)

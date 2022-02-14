@@ -4,6 +4,8 @@
 
     <!-- 访问网络连接权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 访问网络连接权限bugly所需 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 语音权限，录制声音通过手机或耳机的麦克  -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- 修改声音设置信息 -->
@@ -33,8 +35,7 @@
         android:theme="@style/AppTheme">
 
 
-        <activity
-            android:name=".phone.MainListActivity">
+        <activity android:name=".phone.MainListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,30 +43,23 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".phone.MainSimpleActivity"/>
+        <activity android:name=".phone.MainSimpleActivity" />
 
-        <activity
-            android:name=".phone.MainThemeActivity" />
+        <activity android:name=".phone.MainThemeActivity" />
 
         <activity
             android:name=".phone.MainActivity"
             android:configChanges="orientation|keyboardHidden|navigation" />
 
-        <activity
-            android:name=".phone.MainSeeActivity" />
+        <activity android:name=".phone.MainSeeActivity" />
 
-        <activity
-            android:name=".phone.MainUpperLimitActivity" />
+        <activity android:name=".phone.MainUpperLimitActivity" />
 
-        <activity
-            android:name=".phone.RecyclerViewActivity" />
+        <activity android:name=".phone.RecyclerViewActivity" />
 
-        <activity
-            android:name=".phone.MainCustomCameraViewActivity" />
+        <activity android:name=".phone.MainCustomCameraViewActivity" />
 
-        <activity
-            android:name=".phone.MainSuperSimpleActivity" />
+        <activity android:name=".phone.MainSuperSimpleActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
