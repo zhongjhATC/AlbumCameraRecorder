@@ -29,7 +29,7 @@ public class VideoMergeManager implements VideoMergeCoordinator {
     }
 
     @Override
-    public void merge(@NotNull Class<?> cls, String newPath,@NotNull  ArrayList<String> paths,@NotNull String txtPath) {
+    public void merge(@NotNull Class<?> cls, @NotNull String newPath, @NotNull  ArrayList<String> paths, @NotNull String txtPath) {
         boolean isMerge = false;
         // 创建文本文件
         File file = new File(txtPath);

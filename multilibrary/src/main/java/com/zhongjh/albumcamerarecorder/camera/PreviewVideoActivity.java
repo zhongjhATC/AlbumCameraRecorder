@@ -103,9 +103,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-        super.finish();
         //关闭窗体动画显示
         this.overridePendingTransition(0, R.anim.activity_close);
+        super.finish();
     }
 
     @Override
@@ -150,6 +150,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
                 mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 
         File file = new File(mLocalFile.getPath());
+        Log.d(TAG, "exists:" + file.exists() + " length:" + file.length());
         playVideo(file);
     }
 

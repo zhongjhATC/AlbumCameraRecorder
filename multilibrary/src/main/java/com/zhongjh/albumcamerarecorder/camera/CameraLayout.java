@@ -761,11 +761,14 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             mCameraSpec.videoMergeCoordinator.setVideoMergeListener(CameraLayout.this.getClass(), new VideoEditListener() {
                 @Override
                 public void onFinish() {
+                    Log.d(TAG, "videoMergeCoordinator onFinish");
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(100);
+                    PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
                 }
 
                 @Override
                 public void onProgress(int progress, long progressTime) {
+                    Log.d(TAG, "videoMergeCoordinator onProgress progress: " + progress + " progressTime: " + progressTime);
                     if (progress >= PROGRESS_MAX) {
                         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(99);
                     } else {
@@ -775,14 +778,14 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
                 @Override
                 public void onCancel() {
-                    Log.d(TAG, "onCancel");
+                    Log.d(TAG, "videoMergeCoordinator onCancel");
                     // 重置按钮
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
                 }
 
                 @Override
                 public void onError(@NotNull String message) {
-                    Log.d(TAG, "onError" + message);
+                    Log.d(TAG, "videoMergeCoordinator onError" + message);
                     // 重置按钮
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
                 }
@@ -1020,14 +1023,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         if (mIsSectionRecord) {
             // 合并视频
             mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true, "mp4").getPath();
-            Log.d(TAG,"新的合并视频：" + mNewSectionVideoPath);
+            Log.d(TAG, "新的合并视频：" + mNewSectionVideoPath);
             for (String item : mVideoPaths) {
-                Log.d(TAG,"新的合并视频素材：" + item);
+                Log.d(TAG, "新的合并视频素材：" + item);
             }
             mCameraSpec.videoMergeCoordinator.merge(CameraLayout.this.getClass(), mNewSectionVideoPath, mVideoPaths,
                     getContext().getCacheDir().getPath() + File.separator + "cam.txt");
         }
-        PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
     }
 
     /**
