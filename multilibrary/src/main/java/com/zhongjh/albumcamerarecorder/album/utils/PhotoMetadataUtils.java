@@ -170,7 +170,7 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
         // 获取 ExifInterface,实际上Exif格式就是在JPEG格式头部插入了数码照片的信息，包括拍摄时的光圈、快门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、色彩编码、拍摄时录制的声音以及GPS全球定位系统数据、缩略图等。
         ExifInterface exif;
         try {
-            exif = ExifInterfaceCompat.newInstance(UriUtils.uriToFile(context, uri).getParent());
+            exif = ExifInterfaceCompat.newInstance(UriUtils.uriToFile(context, uri).getAbsolutePath());
         } catch (IOException e) {
             Log.e(TAG, "could not read exif info of the image: " + uri);
             return false;
