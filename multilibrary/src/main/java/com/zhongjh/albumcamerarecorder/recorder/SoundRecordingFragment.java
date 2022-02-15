@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,7 +29,6 @@ import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayout;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
-import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalFile;
@@ -46,7 +44,6 @@ import java.util.ArrayList;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_AUDIO;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
 
 /**
@@ -504,11 +501,6 @@ public class SoundRecordingFragment extends BaseFragment {
                                 localFiles.add(localFile);
                                 mGlobalSpec.onResultCallbackListener.onResult(localFiles);
                             }
-
-                            Uri uri = MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_AUDIO, localFile.getDuration(),
-                                    localFile.getWidth(), localFile.getHeight(),
-                                    mAudioMediaStoreCompat.getSaveStrategy().getDirectory(), mAudioMediaStoreCompat);
-                            localFile.setId(MediaStoreUtils.getId(uri));
                             mActivity.finish();
                         }
                     });

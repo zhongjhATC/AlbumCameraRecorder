@@ -85,7 +85,7 @@ public class MediaStoreUtils {
     public static Uri displayToGallery(Context context, File file, @MediaTypes int type, long duration, int width, int height,
                                        String directory, MediaStoreCompat mediaStoreCompat) {
         Log.d("displayToGallery",file.getPath());
-        if (file == null || !file.exists()) {
+        if (!file.exists()) {
             return null;
         }
         Uri uri;
@@ -190,18 +190,6 @@ public class MediaStoreUtils {
                 }
                 break;
             case TYPE_AUDIO:
-                values.put(MediaStore.Audio.Media.MIME_TYPE, "video/aac");
-                // 计算时间
-                if (duration == 0) {
-                    String photoPath = file.getPath();
-                    Uri uri = mediaStoreCompat.getUri(photoPath);
-                    MediaPlayer mp = MediaPlayer.create(context, uri);
-                    duration = mp.getDuration();
-                    mp.release();
-                }
-                values.put("duration", duration);
-                external = context.getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
-                break;
             default:
                 break;
         }
