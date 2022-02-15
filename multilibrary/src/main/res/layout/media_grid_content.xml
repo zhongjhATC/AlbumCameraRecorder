@@ -36,9 +36,9 @@
         android:layout_gravity="end|bottom"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:contentDescription="@string/z_multi_library_gif_label"
         android:src="@drawable/ic_gif"
+        tools:visibility="visible"
         android:visibility="gone" />
 
     <TextView
@@ -48,9 +48,10 @@
         android:layout_gravity="end|bottom"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"
+        tools:text="12333222222222"
+        tools:visibility="visible"
         android:visibility="gone" />
 
 </merge>

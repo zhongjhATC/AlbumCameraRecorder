@@ -4,11 +4,13 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.TextUtils
+import android.text.format.DateUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sdsmdg.harjot.vectormaster.VectorMasterView
@@ -126,7 +128,8 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             // 隐藏close
             holder.vClose.visibility = View.GONE
             holder.vClose.setOnClickListener(null)
-            holder.imgPlay.visibility = View.GONE
+            holder.imgGif.visibility = View.GONE
+            holder.tvVideoDuration.visibility = View.GONE
             // 设置条目的点击事件
             holder.itemView.setOnClickListener(object : OnMoreClickListener() {
                 override fun onMoreClickListener(v: View) {
@@ -147,9 +150,16 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             // 根据类型做相关设置
             if (multiMediaView.isVideo()) {
                 // 视频处理，判断是否显示播放按钮
-                holder.imgPlay.visibility = View.VISIBLE
+                holder.tvVideoDuration.visibility = View.VISIBLE
+                holder.tvVideoDuration.text = DateUtils.formatElapsedTime(multiMediaView.duration / 1000)
             } else if (multiMediaView.isImageOrGif()) {
-                holder.imgPlay.visibility = View.GONE
+                holder.tvVideoDuration.visibility = View.GONE
+            }
+
+            if (multiMediaView.isGif()) {
+                holder.imgGif.visibility = View.VISIBLE
+            } else {
+                holder.imgGif.visibility = View.GONE
             }
 
             holder.loadImage(mContext, imageEngine, placeholder, multiMediaView, mItemHeight)
@@ -431,7 +441,8 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
 
         lateinit var vClose: View
         val mpvImage: MaskProgressView = itemView.findViewById(R.id.mpvImage)
-        val imgPlay: ImageView = itemView.findViewById(R.id.imgPlay)
+        val imgGif: ImageView = itemView.findViewById(R.id.imgGif)
+        val tvVideoDuration: TextView = itemView.findViewById(R.id.tvVideoDuration)
         val vmvClose: VectorMasterView = itemView.findViewById(R.id.vmvClose)
         val imgClose: ImageView = itemView.findViewById(R.id.imgClose)
 

@@ -15,20 +15,11 @@
         android:scaleType="fitCenter"
         android:src="@drawable/selector_image_add" />
 
-    <ImageView
-        android:id="@+id/imgPlay"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_gravity="center"
-        android:contentDescription="@string/z_progress_library_play_button"
-        android:src="@drawable/ic_play_circle_outline_black_48dp"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
     <com.sdsmdg.harjot.vectormaster.VectorMasterView
         android:id="@+id/vmvClose"
         android:layout_width="32dp"
-        android:paddingRight="8dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         android:paddingBottom="8dp"
         android:layout_height="32dp"
         android:contentDescription="@string/z_progress_library_delete_button"
@@ -46,5 +37,31 @@
         android:visibility="gone"
         app:srcCompat="@drawable/ic_twotone_highlight_off_24dp"
         tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/imgGif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_gif"
+        tools:visibility="visible"
+        android:visibility="gone"
+        android:contentDescription="标识是否gif"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tvVideoDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        tools:text="12333222222222"
+        tools:visibility="visible"
+        android:visibility="gone" />
 
 </FrameLayout>
