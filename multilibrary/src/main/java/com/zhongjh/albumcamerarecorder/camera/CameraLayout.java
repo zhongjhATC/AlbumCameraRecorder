@@ -540,7 +540,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 FileUtil.deleteFile(item);
             }
         }
-        mViewHolder.cameraView.destroy();
         mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
         if (mCameraSpec.isMergeEnable()) {
             mCameraSpec.videoMergeCoordinator.onMergeDestroy(CameraLayout.this.getClass());
@@ -551,6 +550,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         if (mMovePictureFileTask != null) {
             mMovePictureFileTask.cancel();
         }
+        mViewHolder.cameraView.destroy();
         // 记忆模式
         flashSaveCache();
     }
@@ -671,7 +671,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 录制视频
      */
     private void recordVideo() {
-        // 开启才能执行别的事件
+        // 开启录制功能才能执行别的事件
         if (mViewHolder.cameraView.isOpened()) {
             // 用于播放的视频file
             if (mVideoFile == null) {
@@ -733,12 +733,13 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 Log.d(TAG, "stopProgress " + getState().toString());
                 mCameraStateManagement.stopProgress();
                 // 重置按钮
-                mViewHolder.pvLayout.resetBtnConfirm();
+                mViewHolder.pvLayout.resetConfirm();
             }
 
             @Override
             public void doneProgress() {
                 Log.d(TAG, "doneProgress " + getState().toString());
+                mViewHolder.pvLayout.resetConfirm();
             }
         });
     }
@@ -841,7 +842,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                         mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
                         // 如果是在已经合成的情况下继续拍摄，那就重置状态
                         if (!mViewHolder.pvLayout.getProgressMode()) {
-                            mViewHolder.pvLayout.resetConfim();
+                            mViewHolder.pvLayout.resetConfirm();
                         }
                     }
                 } else {
@@ -952,7 +953,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     public void removeVideoMultiple() {
         // 每次删除，后面都要重新合成,新合成的也删除
-        mViewHolder.pvLayout.resetConfim();
+        mViewHolder.pvLayout.resetConfirm();
         if (mNewSectionVideoPath != null) {
             FileUtil.deleteFile(mNewSectionVideoPath);
         }

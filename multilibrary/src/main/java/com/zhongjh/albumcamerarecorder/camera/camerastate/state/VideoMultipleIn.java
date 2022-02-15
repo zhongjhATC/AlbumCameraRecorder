@@ -1,7 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
-import android.util.Log;
-
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
@@ -34,7 +32,7 @@ public class VideoMultipleIn extends StateMode {
         // 如果是录制中则暂停视频
         getCameraLayout().setBreakOff(true);
         getCameraLayout().mViewHolder.cameraView.stopVideo();
-        getCameraLayout().mViewHolder.pvLayout.resetBtnConfirm();
+        getCameraLayout().mViewHolder.pvLayout.resetConfirm();
         getCameraLayout().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
 
         if (getCameraLayout().mVideoPaths.size() <= 0) {

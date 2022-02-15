@@ -449,6 +449,10 @@ public class ClickOrLongButton extends View {
                         // 进度已满,不执行任何动作
                         return true;
                     }
+                    if (mCurrentSumTime / timeLimitInMils >= FULL_PROGRESS) {
+                        // 进度已满,不执行任何动作
+                        return true;
+                    }
                     if (!touchable) {
                         mClickOrLongListener.onBanClickTips();
                         return true;
