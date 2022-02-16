@@ -1,3 +1,4 @@
+include ':videoedit2'
 include ':combined'
 include ':videoedit'
 include ':imageedit'
