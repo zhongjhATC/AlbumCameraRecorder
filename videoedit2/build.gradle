@@ -2,6 +2,9 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
 }
+//============================== JitPack 上传插件配置 =====================
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.zhongjhATC'
 
 android {
     compileSdkVersion 31
