@@ -1,7 +1,7 @@
 //============================== JitPack 上传插件配置 =====================
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin:'maven'
-//组名 com.github是固定的
+// 组名 com.github是固定的
 group='com.github.zhongjhATC'
 
 buildscript {
