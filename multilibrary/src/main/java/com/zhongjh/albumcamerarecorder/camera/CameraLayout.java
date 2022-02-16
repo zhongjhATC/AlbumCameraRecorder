@@ -936,7 +936,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri, width, height);
         mBitmapData.add(bitmapData);
 
-        mViewHolder.imgPhoto.canScroll();
+        // 重置位置
+        mViewHolder.imgPhoto.resetMatrix();
         mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, uri);
         mViewHolder.rlEdit.setTag(uri);
     }
@@ -1160,8 +1161,8 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private void showSinglePicture(BitmapData bitmapData, File file, Uri uri) {
         // 拍照  隐藏 闪光灯、右上角的切换摄像头
         setMenuVisibility(View.INVISIBLE);
-        // 如果只有单个图片，就显示相应的提示结果等等
-        mViewHolder.imgPhoto.canScroll();
+        // 重置位置
+        mViewHolder.imgPhoto.resetMatrix();
         mViewHolder.imgPhoto.setVisibility(VISIBLE);
         mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
         mViewHolder.cameraView.close();
