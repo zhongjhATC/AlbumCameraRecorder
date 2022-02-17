@@ -392,8 +392,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:checked="true"
-                        android:visibility="gone"
-                        android:text="@string/support_gif" />
+                        android:text="@string/support_gif"
+                        android:visibility="gone" />
 
                     <CheckBox
                         android:id="@+id/cbAlbumVideo"
@@ -618,21 +618,6 @@
                     android:checked="true"
                     android:text="@string/turn_on_the_shooting_function" />
 
-                <CheckBox
-                    android:id="@+id/cb_video_merge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/enable_segmented_recording" />
-
-                <CheckBox
-                    android:id="@+id/cbClickRecord"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/click_to_start_recording_lose_the_click_to_take_photos_function" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -655,6 +640,36 @@
                         android:text="@string/support_video" />
 
                 </LinearLayout>
+
+                <CheckBox
+                    android:id="@+id/cb_video_merge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:checked="true"
+                    android:text="@string/enable_segmented_recording" />
+
+                <CheckBox
+                    android:id="@+id/cbClickRecord"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/click_to_start_recording_lose_the_click_to_take_photos_function" />
+
+                <CheckBox
+                    android:id="@+id/cbPictureHD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/take_pictures_in_hd" />
+
+                <CheckBox
+                    android:id="@+id/cbVideoHD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/take_video_in_hd" />
+
 
                 <LinearLayout
                     android:layout_width="match_parent"

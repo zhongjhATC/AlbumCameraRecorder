@@ -75,7 +75,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
@@ -91,10 +90,6 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
-//                // 如果需要其他参数的话，循环数据初始化相关数值，这个读取时间会较长，建议异步线程执行
-//                for (MultiMediaView item : multiMediaViews) {
-//                    item.initDataByPath();
-//                }
             }
 
             @Override
@@ -368,11 +363,11 @@ public class MainActivity extends BaseActivity {
             cameraSetting.mimeTypeSet(mimeTypeCameras);
         } else if (mBinding.cbCameraImage.isChecked()) {
             mimeTypeCameras = MimeType.ofImage();
-            // 支持的类型：图片，视频
+            // 支持的类型：图片
             cameraSetting.mimeTypeSet(mimeTypeCameras);
         } else if (mBinding.cbCameraVideo.isChecked()) {
             mimeTypeCameras = MimeType.ofVideo();
-            // 支持的类型：图片，视频
+            // 支持的类型：视频
             cameraSetting.mimeTypeSet(mimeTypeCameras);
         }
         // 最长录制时间
@@ -397,6 +392,12 @@ public class MainActivity extends BaseActivity {
 
         // 开启点击即开启录制(失去点击拍照功能)
         cameraSetting.isClickRecord(mBinding.cbClickRecord.isChecked());
+
+        // 开启高清拍照(失去录像功能)
+        cameraSetting.enableImageHighDefinition(mBinding.cbPictureHD.isChecked());
+
+        // 开启高清录像(失去拍照功能)
+        cameraSetting.enableVideoHighDefinition(mBinding.cbVideoHD.isChecked());
 
         return cameraSetting;
     }

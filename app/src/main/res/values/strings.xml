@@ -46,6 +46,8 @@
     <string name="turn_on_the_shooting_function">Turn on the shooting function</string>
     <string name="enable_segmented_recording">Enable segmented recording</string>
     <string name="click_to_start_recording_lose_the_click_to_take_photos_function">Click to start recording (lose the click to take photos function)</string>
+    <string name="take_pictures_in_hd">Take pictures in HD(Lost video recording function)</string>
+    <string name="take_video_in_hd">Take video in HD(Losing the ability to take pictures)</string>
     <string name="maximum_recording_time">Maximum recording time</string>
     <string name="minimum_recording_time_milliseconds">Minimum recording time (milliseconds)</string>
     <string name="enable_recording">Enable recording</string>

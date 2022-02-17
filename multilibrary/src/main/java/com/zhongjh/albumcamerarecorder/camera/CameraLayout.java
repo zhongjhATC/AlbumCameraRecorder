@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Picture;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -72,6 +73,8 @@ import java.util.List;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
+import static com.otaliastudios.cameraview.controls.Mode.PICTURE;
+import static com.otaliastudios.cameraview.controls.Mode.VIDEO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
@@ -207,6 +210,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 用于延迟显示的事件，如果不用延迟，会有短暂闪屏现象
      */
     private final Handler mCameraViewVisibleHandler = new Handler(Looper.getMainLooper());
+    /**
+     * 延迟拍摄，用于打开闪光灯再拍摄
+     */
+    private final Handler mCameraTakePictureHandler = new Handler(Looper.getMainLooper());
     private final Runnable mCameraViewGoneRunnable = new Runnable() {
         @Override
         public void run() {
@@ -218,6 +225,16 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         @Override
         public void run() {
             mViewHolder.cameraView.open();
+        }
+    };
+    private final Runnable mCameraTakePictureRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mCameraSpec.enableImageHighDefinition) {
+                mViewHolder.cameraView.takePicture();
+            } else {
+                mViewHolder.cameraView.takePictureSnapshot();
+            }
         }
     };
 
@@ -367,6 +384,15 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         setWillNotDraw(false);
         View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_camera_main_view_zjh, this);
         mViewHolder = new ViewHolder(view);
+
+        // 如果有设置高清模式，则根据相应高清模式更改模式
+        if (mCameraSpec.enableImageHighDefinition) {
+            mViewHolder.cameraView.setMode(PICTURE);
+        } else if (mCameraSpec.enableVideoHighDefinition) {
+            mViewHolder.cameraView.setMode(VIDEO);
+        } else {
+            mViewHolder.cameraView.setMode(VIDEO);
+        }
 
         if (mCameraSpec.watermarkResource != -1) {
             LayoutInflater.from(getContext()).inflate(mCameraSpec.watermarkResource, mViewHolder.cameraView, true);
@@ -547,6 +573,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
         mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
         mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
+        mCameraTakePictureHandler.removeCallbacks(mCameraTakePictureRunnable);
         if (mMovePictureFileTask != null) {
             mMovePictureFileTask.cancel();
         }
@@ -657,9 +684,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 if (mFlashModel == TYPE_FLASH_AUTO) {
                     mViewHolder.cameraView.setFlash(Flash.TORCH);
                     // 延迟1秒拍照
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> mViewHolder.cameraView.takePictureSnapshot(), 1000);
+                    mCameraTakePictureHandler.postDelayed(mCameraTakePictureRunnable, 1000);
                 } else {
-                    mViewHolder.cameraView.takePictureSnapshot();
+                    mCameraTakePictureRunnable.run();
                 }
             } else {
                 Toast.makeText(getContext(), getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached), Toast.LENGTH_SHORT).show();
@@ -677,7 +704,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             if (mVideoFile == null) {
                 mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
             }
-            mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
+            if (mCameraSpec.enableVideoHighDefinition) {
+                mViewHolder.cameraView.takeVideo(mVideoFile);
+            } else {
+                mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
+            }
             // 设置录制状态
             if (mIsSectionRecord) {
                 mCameraStateManagement.setState(mCameraStateManagement.getVideoMultipleIn());
@@ -802,7 +833,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
-
                 // 如果是自动闪光灯模式便关闭闪光灯
                 if (mFlashModel == TYPE_FLASH_AUTO) {
                     mViewHolder.cameraView.setFlash(Flash.OFF);
@@ -1130,6 +1160,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 初始化数据并且存储进file
         File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
         Uri uri = mPictureMediaStoreCompat.getUri(file.getPath());
+        Log.d(TAG, "file:" + file.getAbsolutePath());
         BitmapData bitmapData = new BitmapData(file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
         // 回收bitmap
         if (bitmap.isRecycled()) {

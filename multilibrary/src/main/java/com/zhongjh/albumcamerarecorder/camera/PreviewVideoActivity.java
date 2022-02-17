@@ -7,23 +7,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
@@ -68,7 +68,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     /**
      * 拍摄配置
      */
-    GlobalSpec mGlobalSpec= GlobalSpec.getInstance();
+    GlobalSpec mGlobalSpec = GlobalSpec.getInstance();
     /**
      * 迁移视频的异步线程
      */
@@ -175,8 +175,6 @@ public class PreviewVideoActivity extends AppCompatActivity {
         mVideoViewPreview.setOnPreparedListener(mp -> {
             // 获取相关参数
             mLocalFile.setDuration(mVideoViewPreview.getDuration());
-            mLocalFile.setWidth(mVideoViewPreview.getWidth());
-            mLocalFile.setHeight(mVideoViewPreview.getHeight());
         });
         mVideoViewPreview.setOnCompletionListener(mediaPlayer -> {
             // 循环播放
@@ -284,6 +282,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void confirm(File newFile) {
         Intent intent = new Intent();
+        MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplicationContext(), newFile.getPath());
+        mLocalFile.setWidth(mediaExtraInfo.getWidth());
+        mLocalFile.setHeight(mediaExtraInfo.getHeight());
         Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
                 mLocalFile.getWidth(), mLocalFile.getHeight(),
                 mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);

@@ -33,7 +33,31 @@ public class CameraSetting implements CameraSettingApi {
 
     @Override
     public CameraSetting mimeTypeSet(@NonNull Set<MimeType> mimeTypes) {
-        mCameraSpec.mimeTypeSet = mimeTypes;
+        // 如果设置了高清模式，则优先以高清模式为准
+        if (!mCameraSpec.enableImageHighDefinition && !mCameraSpec.enableVideoHighDefinition) {
+            mCameraSpec.mimeTypeSet = mimeTypes;
+        }
+        return this;
+    }
+
+    @Override
+    public CameraSetting enableImageHighDefinition(boolean enable) {
+        mCameraSpec.enableImageHighDefinition = enable;
+        // 如果启用图片高清，就禁用录制视频
+        if (enable) {
+            mCameraSpec.mimeTypeSet = MimeType.ofImage();
+        }
+        return this;
+    }
+
+    @Override
+    public CameraSetting enableVideoHighDefinition(boolean enable) {
+        mCameraSpec.enableVideoHighDefinition = enable;
+        // 如果启用视频高清，就禁用拍摄图片,并且单击就能录制
+        if (enable) {
+            mCameraSpec.mimeTypeSet = MimeType.ofVideo();
+            mCameraSpec.isClickRecord = true;
+        }
         return this;
     }
 

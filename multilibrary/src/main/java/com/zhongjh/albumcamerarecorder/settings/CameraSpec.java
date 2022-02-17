@@ -64,6 +64,16 @@ public class CameraSpec {
      */
     public Set<MimeType> mimeTypeSet;
     /**
+     * 是否开启图片高清拍摄
+     * 注意开启该模式后，录制界面不能同时存在拍摄图片功能和录制视频功能
+     */
+    public boolean enableImageHighDefinition = false;
+    /**
+     * 是否开启视频高清录制
+     * 注意开启该模式后，录制界面不能同时存在拍摄图片功能和录制视频功能
+     */
+    public boolean enableVideoHighDefinition = false;
+    /**
      * 切换前置/后置摄像头图标资源
      */
     public int imageSwitch = R.drawable.ic_camera_zjh;
