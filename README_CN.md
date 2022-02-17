@@ -58,19 +58,19 @@
 
 	dependencies {
 	     // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.47X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.48X'
 
 	     // 公共库，如果不使用上面的combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.47X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.48X'
 	     // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.47X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.48X'
          // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.47X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.48X'
 
          // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.47X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.48X'
 	     // 配套编辑视频使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.47X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.48X'
 	}
 
 ## 快照
@@ -83,7 +83,7 @@
 100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/WeTest.md).
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/androidx/wetest/5.jpg)
 
-## 使用
+## 使用(更多功能建议下载Demo了解)
 #### 启动多媒体相关功能
 
         // 拍摄有关设置
@@ -108,28 +108,14 @@
         RecorderSetting recorderSetting = new RecorderSetting();
 
         // 全局
-        mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
+        GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(MimeType.ofAll());
+        globalSetting.cameraSetting(cameraSetting);
+        globalSetting.albumSetting(albumSetting);
+        globalSetting.recorderSetting(recorderSetting);
 
-        if (mBinding.cbAlbum.isChecked()){
-            // 开启相册功能
-            mGlobalSetting.albumSetting(albumSetting);
-        }
-        if (mBinding.cbCamera.isChecked()){
-            // 开启拍摄功能
-            mGlobalSetting.cameraSetting(cameraSetting);
-        }
-        if (mBinding.cbRecorder.isChecked()){
-            // 开启录音功能
-            mGlobalSetting.recorderSetting(recorderSetting);
-        }
-
-        mGlobalSetting
-                .setOnMainListener(errorMessage -> {
-                    Log.d(TAG, errorMessage);
-                    Toast.makeText(MainSimpleActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-                })
+        globalSetting
                 // 设置路径和7.0保护路径等等
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
+                .allStrategy(new SaveStrategy(true, getPackageName() + ".fileProvider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 // 最大5张图片、最大3个视频、最大1个音频
@@ -137,10 +123,10 @@
                         5,
                         3,
                         3,
-                        alreadyImageCount,
-                        alreadyVideoCount,
-                        alreadyAudioCount)
-                .forResult(REQUEST_CODE_CHOOSE);
+                        0,
+                        0,
+                        0)
+                .forResult(100);
 
 #### 获取相关返回的数据
 
@@ -151,6 +137,19 @@
             return;
         List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
     }
+
+#### 别忘记这个配置，否则拍摄录制录音保存文件时闪退报错
+
+    <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.fileProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths_public" />
+    </provider>
+
 
 #### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
 

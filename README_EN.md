@@ -55,19 +55,19 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 
 	dependencies {
 	     // if you want to simplify the code and at the same time use multilibrary and progresslibrary, albumCameraRecorderCommon, can directly use the combined library
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.47X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.48X'
 
 	     // Public library, if not using the combined library above
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.47X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.48X'
 	     // core lib, call display album, screen recording, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.47X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.48X'
          // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.47X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.48X'
 
          // use it with editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.47X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.48X'
 	     // For editing video
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.47X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.48X'
 	}
 
 ## snapshoot
@@ -80,7 +80,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 100% through[Compatibility Test Report](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/WeTest.md).
 ![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/androidx/wetest/5.jpg)
 
-## use
+## use(You are advised to download Demo for more functions)
 #### Enable multimedia related functions
 
         // Shooting Related Settings
@@ -105,20 +105,10 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
         RecorderSetting recorderSetting = new RecorderSetting();
 
         // globalSetting
-        mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
-
-        if (mBinding.cbAlbum.isChecked()){
-            // Open the album function
-            mGlobalSetting.albumSetting(mAlbumSetting);
-        }
-        if (mBinding.cbCamera.isChecked()){
-            // Turn on the shooting function
-            mGlobalSetting.cameraSetting(cameraSetting);
-        }
-        if (mBinding.cbRecorder.isChecked()){
-            // Enable recording
-            mGlobalSetting.recorderSetting(recorderSetting);
-        }
+        GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(MimeType.ofAll());
+        globalSetting.cameraSetting(cameraSetting);
+        globalSetting.albumSetting(albumSetting);
+        globalSetting.recorderSetting(recorderSetting);
 
         mGlobalSetting
                 .setOnMainListener(errorMessage -> {
@@ -148,6 +138,18 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
             return;
         List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
     }
+
+#### Do not forget this configuration. Otherwise, an error will be reported when recording and saving files
+
+    <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.fileProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths_public" />
+    </provider>
 
 #### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java) for details.
 
