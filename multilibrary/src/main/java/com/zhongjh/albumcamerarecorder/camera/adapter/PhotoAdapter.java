@@ -20,6 +20,9 @@ import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.listener.OnMoreClickListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,8 +72,18 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         mGlobalSpec.imageEngine.loadUriImage(mContext, holder.imgPhoto, mListData.get(position).getUri());
         // 点击图片
-        holder.itemView.setOnClickListener(v -> onClickListener(position));
-        holder.imgCancel.setOnClickListener(v -> removePosition(position));
+        holder.itemView.setOnClickListener(new OnMoreClickListener() {
+            @Override
+            public void onMoreClickListener(@NotNull View v) {
+                onClickListener(position);
+            }
+        });
+        holder.imgCancel.setOnClickListener(new OnMoreClickListener() {
+            @Override
+            public void onMoreClickListener(@NotNull View v) {
+                removePosition(position);
+            }
+        });
     }
 
     public List<BitmapData> getListData() {
@@ -84,6 +97,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     /**
      * 点击事件
+     *
      * @param position 索引
      */
     private void onClickListener(int position) {
@@ -93,6 +107,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             multiMedia.setUri(item.getUri());
             multiMedia.setPath(item.getPath());
             multiMedia.setMimeType(MimeType.JPEG.toString());
+            multiMedia.setWidth(item.getWidth());
+            multiMedia.setHeight(item.getHeight());
             items.add(multiMedia);
         }
         Bundle bundle = new Bundle();
@@ -106,6 +122,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         item.setUri(mListData.get(position).getUri());
         item.setPath(mListData.get(position).getPath());
         item.setMimeType(MimeType.JPEG.toString());
+        item.setWidth(mListData.get(position).getWidth());
+        item.setHeight(mListData.get(position).getHeight());
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
@@ -130,12 +148,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         mPhotoAdapterListener.onDelete(position);
         mListData.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position,getItemCount());
+        notifyItemRangeChanged(position, getItemCount());
     }
 
     @Override
     public int getItemCount() {
-        Log.d(TAG,"getItemCount");
+        Log.d(TAG, "getItemCount");
         return mListData != null ? mListData.size() : 0;
     }
 
