@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -67,7 +68,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     /**
      * 拍摄配置
      */
-    private GlobalSpec mGlobalSpec;
+    GlobalSpec mGlobalSpec= GlobalSpec.getInstance();
     /**
      * 迁移视频的异步线程
      */
@@ -90,12 +91,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setRequestedOrientation(GlobalSpec.getInstance().orientation);
+        setTheme(mGlobalSpec.themeId);
         StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_video);
         mLocalFile.setPath(getIntent().getStringExtra(PATH));
-        // 初始化设置
-        mGlobalSpec = GlobalSpec.getInstance();
         initView();
         initListener();
         initData();
