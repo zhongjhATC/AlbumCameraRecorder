@@ -42,16 +42,15 @@ open class MultiMedia : LocalFile, Parcelable {
     constructor(id: Long, mimeType: String, size: Long, duration: Long, width: Int, height: Int) : super() {
         this.id = id
         this.mimeType = mimeType
-        val contentUri: Uri
-        when {
+        val contentUri: Uri = when {
             isImage() -> {
-                contentUri = Images.Media.EXTERNAL_CONTENT_URI
+                Images.Media.EXTERNAL_CONTENT_URI
             }
             isVideo() -> {
-                contentUri = Video.Media.EXTERNAL_CONTENT_URI
+                Video.Media.EXTERNAL_CONTENT_URI
             }
             else -> {
-                contentUri = Files.getContentUri("external")
+                Files.getContentUri("external")
             }
         }
         this.uri = ContentUris.withAppendedId(contentUri, id)
@@ -104,7 +103,7 @@ open class MultiMedia : LocalFile, Parcelable {
     }
 
     /**
-     * 重写hashCode，所以如果修改以下这些值，那么将会它存于的hashmap找不到它
+     * 重写hashCode，所以如果修改以下这些值，那么将会它存于的hashMap找不到它
      */
     override fun hashCode(): Int {
         var result = 1

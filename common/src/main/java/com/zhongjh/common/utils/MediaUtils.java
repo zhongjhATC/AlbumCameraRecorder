@@ -2,11 +2,12 @@ package com.zhongjh.common.utils;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+
+import androidx.exifinterface.media.ExifInterface;
 
 import com.zhongjh.common.entity.MediaExtraInfo;
 
@@ -22,10 +23,19 @@ import java.io.InputStream;
 public class MediaUtils {
 
     /**
+     * 90度
+     */
+    private static final String ORIENTATION_ROTATE_90 = "90";
+    /**
+     * 270度
+     */
+    private static final String ORIENTATION_ROTATE_270 = "270";
+
+    /**
      * 获取图片的宽高
      *
      * @param context 上下文
-     * @param path     path
+     * @param path    path
      * @return 根据图片path获取相关参数
      */
     public static MediaExtraInfo getImageSize(Context context, String path) {
@@ -49,7 +59,9 @@ public class MediaUtils {
             e.printStackTrace();
         } finally {
             try {
-                inputStream.close();
+                if (inputStream != null) {
+                    inputStream.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -61,7 +73,7 @@ public class MediaUtils {
      * 获取视频的宽高、时长
      *
      * @param context 上下文
-     * @param path     path
+     * @param path    path
      * @return 根据视频path获取相关参数
      */
     public static MediaExtraInfo getVideoSize(Context context, String path) {
@@ -75,7 +87,7 @@ public class MediaUtils {
             }
             String orientation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
             int width, height;
-            if (TextUtils.equals("90", orientation) || TextUtils.equals("270", orientation)) {
+            if (TextUtils.equals(ORIENTATION_ROTATE_90, orientation) || TextUtils.equals(ORIENTATION_ROTATE_270, orientation)) {
                 height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
                 width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
             } else {
@@ -97,7 +109,7 @@ public class MediaUtils {
      * 获取音频的宽高、时长
      *
      * @param context 上下文
-     * @param path     path
+     * @param path    path
      * @return 根据音频path获取相关参数
      */
     public static MediaExtraInfo getAudioSize(Context context, String path) {
@@ -117,7 +129,6 @@ public class MediaUtils {
         }
         return mediaExtraInfo;
     }
-
 
 
     /**

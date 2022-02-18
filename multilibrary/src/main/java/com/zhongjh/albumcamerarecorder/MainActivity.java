@@ -28,14 +28,13 @@ import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.common.utils.AppUtils;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
+import com.zhongjh.common.utils.AppUtils;
+import com.zhongjh.common.utils.StatusBarUtils;
 
 import java.util.ArrayList;
-
-import com.zhongjh.common.utils.StatusBarUtils;
 
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;

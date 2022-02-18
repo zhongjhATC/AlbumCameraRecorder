@@ -18,18 +18,17 @@ import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;
+import com.zhongjh.common.entity.SaveStrategy;
+import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.AbstractMaskProgressLayoutListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import com.zhongjh.common.entity.SaveStrategy;
-import com.zhongjh.common.enums.MimeType;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 这是一个超级简单代码就完成的示例
@@ -41,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
 public class MainSuperSimpleActivity extends AppCompatActivity {
 
     protected static final int REQUEST_CODE_CHOOSE = 236;
+    private final static int PROGRESS_MAX = 100;
 
     ActivityMainSuperSimpleBinding mBinding;
     GlobalSetting mGlobalSetting;
@@ -175,7 +175,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                         percentage++;
                         multiMedia.setPercentage(percentage);
                         Log.d("MyTask", multiMedia.getUri().toString() + "进度： " + percentage);
-                        if (percentage == 100) {
+                        if (percentage == PROGRESS_MAX) {
                             this.cancel();
                         }
                         // 现实应用设置完成赋值url的时候可以这样写如下代码：

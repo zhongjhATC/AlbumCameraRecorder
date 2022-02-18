@@ -42,19 +42,8 @@ class IncapableCause {
         mMessage = message
     }
 
-    constructor(title: String?, message: String) {
-        mTitle = title
-        mMessage = message
-    }
-
     constructor(@Form form: Int, message: String) {
         mForm = form
-        mMessage = message
-    }
-
-    constructor(@Form form: Int, title: String?, message: String) {
-        mForm = form
-        mTitle = title
         mMessage = message
     }
 

@@ -35,14 +35,17 @@ public class UriUtils {
     private final static String IMAGE = "image";
     private final static String VIDEO = "video";
     private final static String AUDIO = "audio";
-    private final static String CONTENT = "content";
-    private final static String FILE = "file";
     private final static String RAW = "raw:";
     private final static String MSF = "msf:";
 
     private final static String URI_AUTHORITY_GOOGLE = "com.google.android.apps.photos.content";
     private final static String URI_AUTHORITY_TENCENT = "com.tencent.mtt.fileprovider";
     private final static String URI_AUTHORITY_HUAWEI = "com.huawei.hidisk.fileprovider";
+
+    private final static String FILES_PATH = "/files_path/";
+    private final static String CACHE_PATH = "/cache_path/";
+    private final static String EXTERNAL_FILES_PATH = "external_files_path";
+    private final static String EXTERNAL_CACHE_PATH = "external_cache_path";
 
     /**
      * Uri转换file
@@ -69,7 +72,7 @@ public class UriUtils {
     @SuppressLint("ObsoleteSdkInt")
     private static File uriToFileReal(Context context, Uri uri) {
         if (context == null || uri == null) {
-            Log.d(TAG, uri.toString() + " context or uri is null. -> uriToFile");
+            Log.d(TAG, " context or uri is null. -> uriToFile");
             return null;
         }
         String scheme = uri.getScheme();
@@ -134,18 +137,19 @@ public class UriUtils {
             }
         }
         file = null;
-        if (path.startsWith("/files_path/")) {
+
+        if (path.startsWith(FILES_PATH)) {
             file = new File(context.getFilesDir().getAbsolutePath()
-                    + path.replace("/files_path/", "/"));
-        } else if (path.startsWith("/cache_path/")) {
+                    + path.replace(FILES_PATH, "/"));
+        } else if (path.startsWith(CACHE_PATH)) {
             file = new File(context.getCacheDir().getAbsolutePath()
-                    + path.replace("/cache_path/", "/"));
-        } else if (path.startsWith("/external_files_path/")) {
+                    + path.replace(CACHE_PATH, "/"));
+        } else if (path.startsWith(EXTERNAL_FILES_PATH)) {
             file = new File(context.getExternalFilesDir(null).getAbsolutePath()
-                    + path.replace("/external_files_path/", "/"));
-        } else if (path.startsWith("/external_cache_path/")) {
+                    + path.replace(EXTERNAL_FILES_PATH, "/"));
+        } else if (path.startsWith(EXTERNAL_CACHE_PATH)) {
             file = new File(context.getExternalCacheDir().getAbsolutePath()
-                    + path.replace("/external_cache_path/", "/"));
+                    + path.replace(EXTERNAL_CACHE_PATH, "/"));
         }
         return file;
     }

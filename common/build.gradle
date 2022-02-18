@@ -5,7 +5,7 @@ plugins {
 }
 //============================== JitPack 上传插件配置 =====================
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.zhongjhATC'
+group = 'com.github.zhongjhATC'
 
 android {
     compileSdkVersion 31
@@ -40,6 +40,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.5.0'
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
+    implementation 'androidx.exifinterface:exifinterface:1.3.3'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

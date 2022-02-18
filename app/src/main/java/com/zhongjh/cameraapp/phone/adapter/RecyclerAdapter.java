@@ -27,9 +27,10 @@ import java.util.List;
  */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
-    private Context mContext;
-    private LayoutInflater mInflater;
-    List<Data> datas = new ArrayList<>();
+    private static final int SIZE_20 = 20;
+    private final Context mContext;
+    private final LayoutInflater mInflater;
+    List<Data> data = new ArrayList<>();
 
     public RecyclerAdapter(Context context) {
         this.mContext = context;
@@ -46,10 +47,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         imageUrls1.add("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg11.51tietu.net%2Fpic%2F2016-071418%2F20160714181543xyu10ukncwf221991.jpg&refer=http%3A%2F%2Fimg11.51tietu.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1631178701&t=bc3132a59d5252ef953c3204e0d96939");
         imageUrls1.add("https://img1.baidu.com/it/u=3766151103,2483188409&fm=26&fmt=auto&gp=0.jpg");
         data1.setImageUrls(imageUrls1);
-        datas.add(data1);
+        data.add(data1);
 
         // 模拟20条
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < SIZE_20; i++) {
             if (i == 2) {
                 // 第三个跳过，尽量模拟真实情况
                 continue;
@@ -64,7 +65,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             data.setImageUrls(imageUrls);
             data.setAudioUrls(audioUrls);
             data.setVideoUrls(videoUrls);
-            datas.add(data);
+            this.data.add(data);
         }
     }
 
@@ -80,12 +81,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.mplImageList.reset();
-        holder.mplImageList.setImageUrls(datas.get(position).getImageUrls());
-        if (datas.get(position).getAudioUrls().size() > 0) {
-            holder.mplImageList.setAudioUrls(datas.get(position).getAudioUrls());
+        holder.mplImageList.setImageUrls(data.get(position).getImageUrls());
+        if (data.get(position).getAudioUrls().size() > 0) {
+            holder.mplImageList.setAudioUrls(data.get(position).getAudioUrls());
         }
-        if (datas.get(position).getVideoUrls().size() > 0) {
-            holder.mplImageList.setVideoUrls(datas.get(position).getVideoUrls());
+        if (data.get(position).getVideoUrls().size() > 0) {
+            holder.mplImageList.setVideoUrls(data.get(position).getVideoUrls());
         }
         holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
             @Override
@@ -94,32 +95,32 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             @Override
-            public void onItemAdd(View view, MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 Toast.makeText(mContext, "这边写跳转相册代码获取到的数据填充该RecyclerView即可", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onItemClick(View view, MultiMediaView multiMediaView) {
+            public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
 
             }
 
             @Override
-            public void onItemStartUploading(MultiMediaView multiMediaView) {
+            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
 
             }
 
             @Override
-            public void onItemClose(View view, MultiMediaView multiMediaView) {
+            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
 
             }
 
             @Override
-            public void onItemAudioStartDownload(View view, String url) {
+            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
             }
 
             @Override
-            public boolean onItemVideoStartDownload(View view, MultiMediaView multiMediaView) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 return false;
             }
         });
@@ -127,7 +128,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return datas.size();
+        return data.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

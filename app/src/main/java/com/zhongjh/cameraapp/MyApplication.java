@@ -15,11 +15,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         CrashReport.initCrashReport(this, "daa7c064ac", false);
-
-//        // 内存泄漏检测
-//        if (!LeakCanary.isInAnalyzerProcess(this)) {
-//            LeakCanary.install(this);
-//        }
     }
 
     @Override

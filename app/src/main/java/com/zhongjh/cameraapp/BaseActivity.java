@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
@@ -43,6 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private static final String TAG = "BaseActivity";
     protected static final int REQUEST_CODE_CHOOSE = 236;
+    private final static int PROGRESS_MAX = 100;
 
     /**
      * 权限申请自定义码
@@ -200,18 +200,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * 显示当前所有文件的地址
-     */
-    private void showToastUris(List<Uri> uris) {
-        StringBuilder content = new StringBuilder();
-        for (Uri item : uris) {
-            content.append(item.toString());
-            content.append("\n");
-        }
-        Toast.makeText(getApplicationContext(), content, Toast.LENGTH_LONG).show();
-    }
-
     @Override
     protected void onDestroy() {
         // 停止所有的上传
@@ -246,7 +234,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         percentage++;
                         multiMedia.setPercentage(percentage);
-                        if (percentage == 100) {
+                        if (percentage == PROGRESS_MAX) {
                             this.cancel();
                         }
                         // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：
