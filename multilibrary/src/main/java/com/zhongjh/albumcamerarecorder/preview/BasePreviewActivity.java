@@ -29,7 +29,6 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
-import com.zhongjh.albumcamerarecorder.preview.previewitem.PreviewItemFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
@@ -48,7 +47,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
@@ -183,7 +181,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         mViewHolder = new ViewHolder(this);
 
-        mAdapter = new PreviewPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, null);
+        mAdapter = new PreviewPagerAdapter(getApplicationContext(), BasePreviewActivity.this);
         mViewHolder.pager.setAdapter(mAdapter);
         mViewHolder.checkView.setCountable(mAlbumSpec.countable);
 
@@ -219,7 +217,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         item.setUri(editUri);
         item.setPath(mEditImageFile.getPath());
         mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
-        ((PreviewItemFragment) mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
+        // TODO
+//        ((PreviewItemFragment) mAdapter.getFragment(getSupportFragmentManager(), mViewHolder.pager.getCurrentItem())).init();
     }
 
     /**
@@ -366,9 +365,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onPageSelected(int position) {
         PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
+        if (adapter == null) {
+            return;
+        }
         if (mPreviousPos != -1 && mPreviousPos != position) {
-            ((PreviewItemFragment) adapter.instantiateItem(mViewHolder.pager, mPreviousPos)).resetView();
-
             MultiMedia item = adapter.getMediaItem(position);
             if (mAlbumSpec.countable) {
                 int checkedNum = mSelectedCollection.checkedNumOf(item);
@@ -696,7 +696,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     private void refreshMultiMediaItem(boolean apply) {
         if (mIsEdit) {
             // 循环当前所有图片进行处理
-            for (MultiMedia multiMedia : mAdapter.getmItems()) {
+            for (MultiMedia multiMedia : mAdapter.getItems()) {
                 if (apply) {
                     // 获取真实路径
                     String path = null;

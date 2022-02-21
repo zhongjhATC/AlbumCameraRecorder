@@ -34,9 +34,6 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.utils.UriUtils;
-
-import java.io.File;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
@@ -69,13 +66,16 @@ public class PreviewItemFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         videoPlayButton = view.findViewById(R.id.video_play_button);
         image = view.findViewById(R.id.image_view);
-        init();
+//        init();
     }
 
     /**
      * 初始化，也可用于编辑图片后重新刷新当前界面
      */
     public void init() {
+        if (getArguments() == null) {
+            return;
+        }
         final MultiMedia item = getArguments().getParcelable(ARGS_ITEM);
         if (item == null) {
             return;
