@@ -3,7 +3,6 @@ package com.zhongjh.albumcamerarecorder.camera;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Picture;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -21,7 +20,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -259,7 +257,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private CaptureListener mCaptureListener;
     public MainActivity mMainActivity;
-    private Fragment mFragment;
+    private CameraFragment mFragment;
 
 
     // 赋值Camera错误回调
@@ -795,7 +793,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 public void onFinish() {
                     Log.d(TAG, "videoMergeCoordinator onFinish");
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(100);
-                    PreviewVideoActivity.startActivity(mFragment, mNewSectionVideoPath);
+                    PreviewVideoActivity.startActivity(mFragment, mFragment.mPreviewVideoActivityResult, mNewSectionVideoPath);
                 }
 
                 @Override
@@ -854,7 +852,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 if (!mIsShort && !isBreakOff()) {
                     if (!mIsSectionRecord) {
                         //  如果录制结束，打开该视频。打开底部菜单
-                        PreviewVideoActivity.startActivity(mFragment, result.getFile().getPath());
+                        PreviewVideoActivity.startActivity(mFragment, mFragment.mPreviewVideoActivityResult, result.getFile().getPath());
                         Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
                     } else {
                         Log.d(TAG, "onVideoTaken 分段录制 " + result.getFile().getPath());
@@ -1120,13 +1118,15 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     });
                 }
                 for (LocalFile item : newFiles) {
-                    // 加入图片到android系统库里面
-                    Uri uri = MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
-                            mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-                    // 加入相册后的最后是id，直接使用该id
-                    item.setId(MediaStoreUtils.getId(uri));
-                    item.setMimeType(MimeType.JPEG.getMimeTypeName());
-                    item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
+                    if (item.getPath() != null) {
+                        // 加入图片到android系统库里面
+                        Uri uri = MediaStoreUtils.displayToGallery(getContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                                mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                        // 加入相册后的最后是id，直接使用该id
+                        item.setId(MediaStoreUtils.getId(uri));
+                        item.setMimeType(MimeType.JPEG.getMimeTypeName());
+                        item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
+                    }
                 }
                 // 执行完成
                 Log.d(TAG, "captureSuccess");

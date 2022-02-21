@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -30,7 +30,6 @@ import java.util.List;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 
 /**
  * 横向形式显示多个图片的
@@ -43,20 +42,20 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     private final String TAG = PhotoAdapter.class.getSimpleName();
 
     Context mContext;
-    Fragment mFragment;
+    CameraFragment mCameraFragment;
     GlobalSpec mGlobalSpec;
     List<BitmapData> mListData;
 
     // region 回调监听事件
 
-    private PhotoAdapterListener mPhotoAdapterListener;
+    private final PhotoAdapterListener mPhotoAdapterListener;
 
     // endregion
 
-    public PhotoAdapter(Context context, Fragment fragment, GlobalSpec globalSpec,
+    public PhotoAdapter(Context context, CameraFragment fragment, GlobalSpec globalSpec,
                         List<BitmapData> listData, PhotoAdapterListener photoAdapterListener) {
         mContext = context;
-        mFragment = fragment;
+        mCameraFragment = fragment;
         mGlobalSpec = globalSpec;
         this.mListData = listData;
         mPhotoAdapterListener = photoAdapterListener;
@@ -131,10 +130,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        mFragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_CAMRRA);
+        mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
         if (mGlobalSpec.isCutscenes) {
-            if (mFragment.getActivity() != null) {
-                mFragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+            if (mCameraFragment.getActivity() != null) {
+                mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
             }
         }
     }

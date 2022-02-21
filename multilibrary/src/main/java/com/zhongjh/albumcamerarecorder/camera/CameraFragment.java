@@ -2,7 +2,6 @@ package com.zhongjh.albumcamerarecorder.camera;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -11,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.BaseFragment;
@@ -34,12 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.camera.PreviewVideoActivity.REQUEST_CODE_PREVIEW_VIDEO;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.REQUEST_CODE_PREVIEW_CAMRRA;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
-import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
 
 /**
  * 拍摄视频
@@ -51,6 +49,22 @@ public class CameraFragment extends BaseFragment {
 
 
     private final static int MILLISECOND = 2000;
+
+    /**
+     * 在图廊预览界面点击了确定
+     */
+    public ActivityResultLauncher<Intent> mAlbumPreviewActivityResult;
+
+    /**
+     * 从视频预览界面回来
+     */
+    ActivityResultLauncher<Intent> mPreviewVideoActivityResult;
+
+    /**
+     * 从编辑图片界面回来
+     */
+    ActivityResultLauncher<Intent> mImageEditActivityResult;
+
     private MainActivity mActivity;
     private CameraLayout mCameraLayout;
 
@@ -85,6 +99,7 @@ public class CameraFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mGlobalSpec = GlobalSpec.getInstance();
+        onActivityResult();
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
 
@@ -110,60 +125,82 @@ public class CameraFragment extends BaseFragment {
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        boolean isReturn = mCameraLayout.onActivityResult(resultCode);
-        if (isReturn) {
-            return;
-        }
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_CODE_PREVIEW_CAMRRA:
-                    // 如果在预览界面点击了确定
-                    if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                        // 请求的预览界面
-                        Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
-                        // 获取选择的数据
-                        ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                        if (selected == null) {
-                            return;
-                        }
-                        // 重新赋值
-                        ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
-                        for (MultiMedia item : selected) {
-                            BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri(), item.getWidth(), item.getHeight());
-                            bitmapDatas.add(bitmapData);
-                        }
-                        // 全部刷新
-                        mCameraLayout.refreshMultiPhoto(bitmapDatas);
-                    }
-                    break;
-                case REQUEST_CODE_PREVIEW_VIDEO:
-                    // 从视频预览界面回来
-                    ArrayList<LocalFile> localFiles = new ArrayList<>();
-                    LocalFile localFile = data.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
-                    localFiles.add(localFile);
-                    mIsCommit = true;
-                    if (mGlobalSpec.onResultCallbackListener == null) {
-                        // 获取视频路径
-                        Intent result = new Intent();
-                        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
-                        mActivity.setResult(RESULT_OK, result);
-                    } else {
-                        mGlobalSpec.onResultCallbackListener.onResult(localFiles);
-                    }
-                    mActivity.finish();
-                    break;
-                case REQ_IMAGE_EDIT:
-                    // 编辑图片界面
-                    mCameraLayout.refreshEditPhoto(data.getIntExtra(EXTRA_WIDTH, 0),
-                            data.getIntExtra(EXTRA_HEIGHT, 0));
-                    break;
-                default:
-                    break;
+    /**
+     * 针对回调
+     */
+    private void onActivityResult() {
+        // 在图廊预览界面点击了确定
+        mAlbumPreviewActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            boolean isReturn = mCameraLayout.onActivityResult(result.getResultCode());
+            if (isReturn) {
+                return;
             }
-        }
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() == null) {
+                    return;
+                }
+                if (result.getData().getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                    // 请求的预览界面
+                    Bundle resultBundle = result.getData().getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+                    // 获取选择的数据
+                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                    if (selected == null) {
+                        return;
+                    }
+                    // 重新赋值
+                    ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
+                    for (MultiMedia item : selected) {
+                        BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri(), item.getWidth(), item.getHeight());
+                        bitmapDatas.add(bitmapData);
+                    }
+                    // 全部刷新
+                    mCameraLayout.refreshMultiPhoto(bitmapDatas);
+                }
+            }
+        });
+
+        // 从视频预览界面回来
+        mPreviewVideoActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            boolean isReturn = mCameraLayout.onActivityResult(result.getResultCode());
+            if (isReturn) {
+                return;
+            }
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() == null) {
+                    return;
+                }
+                // 从视频预览界面回来
+                ArrayList<LocalFile> localFiles = new ArrayList<>();
+                LocalFile localFile = result.getData().getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
+                localFiles.add(localFile);
+                mIsCommit = true;
+                if (mGlobalSpec.onResultCallbackListener == null) {
+                    // 获取视频路径
+                    Intent intent = new Intent();
+                    intent.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+                    mActivity.setResult(RESULT_OK, intent);
+                } else {
+                    mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                }
+                mActivity.finish();
+            }
+        });
+
+        // 从编辑图片界面回来
+        mImageEditActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            boolean isReturn = mCameraLayout.onActivityResult(result.getResultCode());
+            if (isReturn) {
+                return;
+            }
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() == null) {
+                    return;
+                }
+                // 编辑图片界面
+                mCameraLayout.refreshEditPhoto(result.getData().getIntExtra(EXTRA_WIDTH, 0),
+                        result.getData().getIntExtra(EXTRA_HEIGHT, 0));
+            }
+        });
     }
 
     @Override
@@ -241,10 +278,6 @@ public class CameraFragment extends BaseFragment {
                 mActivity.finish();
             }
 
-            @Override
-            public void recordSuccess(String path, Uri uri) {
-            }
-
         });
     }
 
@@ -278,10 +311,10 @@ public class CameraFragment extends BaseFragment {
         mCameraLayout.setEditListener((uri, newPath) -> {
             Intent intent = new Intent();
             intent.setClass(getContext(), ImageEditActivity.class);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getActivity().getRequestedOrientation());
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri);
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
-            this.startActivityForResult(intent, REQ_IMAGE_EDIT);
+            mImageEditActivityResult.launch(intent);
         });
     }
 

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -42,10 +43,7 @@ import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.T
 public class PreviewVideoActivity extends AppCompatActivity {
 
     private static final String TAG = PreviewVideoActivity.class.getSimpleName();
-    /**
-     * 合成视频录制的预览
-     */
-    public static final int REQUEST_CODE_PREVIEW_VIDEO = 26;
+
     static final String LOCAL_FILE = "LOCAL_FILE";
     static final String PATH = "PATH";
 
@@ -80,12 +78,14 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * @param fragment 打开者
      * @param path     视频地址
      */
-    public static void startActivity(Fragment fragment, String path) {
+    public static void startActivity(Fragment fragment, ActivityResultLauncher<Intent> previewVideoActivityResult, String path) {
         Intent intent = new Intent();
         intent.putExtra(PATH, path);
         intent.setClass(fragment.getContext(), PreviewVideoActivity.class);
-        fragment.startActivityForResult(intent, REQUEST_CODE_PREVIEW_VIDEO);
-        fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+        previewVideoActivityResult.launch(intent);
+        if (fragment.getActivity() != null) {
+            fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+        }
     }
 
     @Override
@@ -149,9 +149,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
         mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this,
                 mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
 
-        File file = new File(mLocalFile.getPath());
-        Log.d(TAG, "exists:" + file.exists() + " length:" + file.length());
-        playVideo(file);
+        if (mLocalFile.getPath() != null) {
+            File file = new File(mLocalFile.getPath());
+            Log.d(TAG, "exists:" + file.exists() + " length:" + file.length());
+            playVideo(file);
+        }
     }
 
     /**
@@ -202,31 +204,35 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 压缩视频
      */
     private void compress() {
-        // 获取文件名称
-        String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
-        File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-        mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
-            @Override
-            public void onFinish() {
-                confirm(newFile);
-            }
+        if (mLocalFile.getPath() != null) {
+            // 获取文件名称
+            String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
+            File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
+            mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
+                @Override
+                public void onFinish() {
+                    confirm(newFile);
+                }
 
-            @Override
-            public void onProgress(int progress, long progressTime) {
-                mBtnConfirm.setProgress(progress);
-            }
+                @Override
+                public void onProgress(int progress, long progressTime) {
+                    mBtnConfirm.setProgress(progress);
+                }
 
-            @Override
-            public void onCancel() {
+                @Override
+                public void onCancel() {
 
-            }
+                }
 
-            @Override
-            public void onError(@NotNull String message) {
-                mIsRun = false;
+                @Override
+                public void onError(@NotNull String message) {
+                    mIsRun = false;
+                }
+            });
+            if (mLocalFile.getPath() != null) {
+                mGlobalSpec.videoCompressCoordinator.compressRxJava(PreviewVideoActivity.this.getClass(), mLocalFile.getPath(), newFile.getPath());
             }
-        });
-        mGlobalSpec.videoCompressCoordinator.compressRxJava(PreviewVideoActivity.this.getClass(), mLocalFile.getPath(), newFile.getPath());
+        }
     }
 
     /**
