@@ -28,11 +28,11 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     private ObjectAnimator mObjectAnimatorSweep;
     private ObjectAnimator mObjectAnimatorAngle;
     private boolean mModeAppearing;
-    private Paint mPaint;
+    private final Paint mPaint;
     private float mCurrentGlobalAngleOffset;
     private float mCurrentGlobalAngle;
     private float mCurrentSweepAngle;
-    private float mBorderWidth;
+    private final float mBorderWidth;
     private boolean mRunning;
 
     public CircularAnimatedDrawable(int color, float borderWidth) {

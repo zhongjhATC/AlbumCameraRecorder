@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder.widget.progressbutton;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -9,13 +8,13 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.StateSet;
 
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.zhongjh.albumcamerarecorder.R;
 
@@ -23,8 +22,8 @@ public class CircularProgressButton extends AppCompatButton {
 
     public static final int IDLE_STATE_PROGRESS = 0;
     public static final int ERROR_STATE_PROGRESS = -1;
-    public static final int SUCCESS_STATE_PROGRESS = 100;
-    public static final int INDETERMINATE_STATE_PROGRESS = 50;
+
+    private Context mContext;
 
     private StrokeGradientDrawable background;
     private CircularAnimatedDrawable mAnimatedDrawable;
@@ -81,6 +80,7 @@ public class CircularProgressButton extends AppCompatButton {
     }
 
     private void init(Context context, AttributeSet attributeSet) {
+        mContext = context;
         mStrokeWidth = (int) getContext().getResources().getDimension(R.dimen.cpb_stroke_width);
 
         initAttributes(context, attributeSet);
@@ -101,7 +101,9 @@ public class CircularProgressButton extends AppCompatButton {
         StrokeGradientDrawable drawablePressed = createDrawable(colorPressed);
         mErrorStateDrawable = new StateListDrawable();
 
-        mErrorStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
+        if (drawablePressed != null) {
+            mErrorStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
+        }
         mErrorStateDrawable.addState(StateSet.WILD_CARD, background.getGradientDrawable());
     }
 
@@ -111,7 +113,9 @@ public class CircularProgressButton extends AppCompatButton {
         StrokeGradientDrawable drawablePressed = createDrawable(colorPressed);
         mCompleteStateDrawable = new StateListDrawable();
 
-        mCompleteStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
+        if (drawablePressed != null) {
+            mCompleteStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
+        }
         mCompleteStateDrawable.addState(StateSet.WILD_CARD, background.getGradientDrawable());
     }
 
@@ -129,9 +133,15 @@ public class CircularProgressButton extends AppCompatButton {
         StrokeGradientDrawable drawablePressed = createDrawable(colorPressed);
         mIdleStateDrawable = new StateListDrawable();
 
-        mIdleStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
-        mIdleStateDrawable.addState(new int[]{android.R.attr.state_focused}, drawableFocused.getGradientDrawable());
-        mIdleStateDrawable.addState(new int[]{-android.R.attr.state_enabled}, drawableDisabled.getGradientDrawable());
+        if (drawablePressed != null) {
+            mIdleStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
+        }
+        if (drawableFocused != null) {
+            mIdleStateDrawable.addState(new int[]{android.R.attr.state_focused}, drawableFocused.getGradientDrawable());
+        }
+        if (drawableDisabled != null) {
+            mIdleStateDrawable.addState(new int[]{-android.R.attr.state_enabled}, drawableDisabled.getGradientDrawable());
+        }
         mIdleStateDrawable.addState(StateSet.WILD_CARD, background.getGradientDrawable());
     }
 
@@ -152,14 +162,17 @@ public class CircularProgressButton extends AppCompatButton {
     }
 
     private StrokeGradientDrawable createDrawable(int color) {
-        GradientDrawable drawable = (GradientDrawable) getResources().getDrawable(R.drawable.cpb_background).mutate();
-        drawable.setColor(color);
-        drawable.setCornerRadius(mCornerRadius);
-        StrokeGradientDrawable strokeGradientDrawable = new StrokeGradientDrawable(drawable);
-        strokeGradientDrawable.setStrokeColor(color);
-        strokeGradientDrawable.setStrokeWidth(mStrokeWidth);
-
-        return strokeGradientDrawable;
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.cpb_background, mContext.getTheme());
+        if (drawable != null) {
+            GradientDrawable gradientDrawable = (GradientDrawable) drawable.mutate();
+            gradientDrawable.setColor(color);
+            gradientDrawable.setCornerRadius(mCornerRadius);
+            StrokeGradientDrawable strokeGradientDrawable = new StrokeGradientDrawable(gradientDrawable);
+            strokeGradientDrawable.setStrokeColor(color);
+            strokeGradientDrawable.setStrokeWidth(mStrokeWidth);
+            return strokeGradientDrawable;
+        }
+        return null;
     }
 
     @Override
@@ -204,15 +217,15 @@ public class CircularProgressButton extends AppCompatButton {
 
             int idleStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorIdle,
                     R.color.cpb_idle_state_selector);
-            mIdleColorState = getResources().getColorStateList(idleStateSelector);
+            mIdleColorState = ResourcesCompat.getColorStateList(getResources(), idleStateSelector, mContext.getTheme());
 
             int completeStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorComplete,
                     R.color.cpb_complete_state_selector);
-            mCompleteColorState = getResources().getColorStateList(completeStateSelector);
+            mCompleteColorState = ResourcesCompat.getColorStateList(getResources(), completeStateSelector, mContext.getTheme());
 
             int errorStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorError,
                     R.color.cpb_error_state_selector);
-            mErrorColorState = getResources().getColorStateList(errorStateSelector);
+            mErrorColorState = ResourcesCompat.getColorStateList(getResources(), errorStateSelector, mContext.getTheme());
 
             mColorProgress = attr.getColor(R.styleable.CircularProgressButton_cpb_colorProgress, white);
             mColorIndicator = attr.getColor(R.styleable.CircularProgressButton_cpb_colorIndicator, blue);
@@ -224,7 +237,7 @@ public class CircularProgressButton extends AppCompatButton {
     }
 
     protected int getColor(int id) {
-        return getResources().getColor(id);
+        return ResourcesCompat.getColor(getResources(), id, mContext.getTheme());
     }
 
     protected TypedArray getTypedArray(Context context, AttributeSet attributeSet, int[] attr) {
@@ -347,7 +360,7 @@ public class CircularProgressButton extends AppCompatButton {
         animation.start();
     }
 
-    private OnAnimationEndListener mProgressStateListener = new OnAnimationEndListener() {
+    private final OnAnimationEndListener mProgressStateListener = new OnAnimationEndListener() {
         @Override
         public void onAnimationEnd() {
             mMorphingInProgress = false;
@@ -387,7 +400,7 @@ public class CircularProgressButton extends AppCompatButton {
 
     }
 
-    private OnAnimationEndListener mCompleteStateListener = new OnAnimationEndListener() {
+    private final OnAnimationEndListener mCompleteStateListener = new OnAnimationEndListener() {
         @Override
         public void onAnimationEnd() {
             if (mIconComplete != 0) {
@@ -433,7 +446,7 @@ public class CircularProgressButton extends AppCompatButton {
 
     }
 
-    private OnAnimationEndListener mIdleStateListener = new OnAnimationEndListener() {
+    private final OnAnimationEndListener mIdleStateListener = new OnAnimationEndListener() {
         @Override
         public void onAnimationEnd() {
             removeIcon();
@@ -473,7 +486,7 @@ public class CircularProgressButton extends AppCompatButton {
         animation.start();
     }
 
-    private OnAnimationEndListener mErrorStateListener = new OnAnimationEndListener() {
+    private final OnAnimationEndListener mErrorStateListener = new OnAnimationEndListener() {
         @Override
         public void onAnimationEnd() {
             if (mIconError != 0) {
@@ -497,23 +510,20 @@ public class CircularProgressButton extends AppCompatButton {
 
         animation.setFromStrokeColor(mColorIndicator);
         animation.setToStrokeColor(getNormalColor(mIdleColorState));
-        animation.setListener(new OnAnimationEndListener() {
-            @Override
-            public void onAnimationEnd() {
-                removeIcon();
-                setText(mIdleText);
-                mMorphingInProgress = false;
-                mState = State.IDLE;
+        animation.setListener(() -> {
+            removeIcon();
+            setText(mIdleText);
+            mMorphingInProgress = false;
+            mState = State.IDLE;
 
-                mStateManager.checkState(CircularProgressButton.this);
-            }
+            mStateManager.checkState(CircularProgressButton.this);
         });
 
         animation.start();
     }
 
     private void setIcon(int icon) {
-        Drawable drawable = getResources().getDrawable(icon);
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), icon, mContext.getTheme());
         if (drawable != null) {
             int padding = (getWidth() / 2) - (drawable.getIntrinsicWidth() / 2);
             setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
@@ -529,14 +539,8 @@ public class CircularProgressButton extends AppCompatButton {
     /**
      * Set the View's background. Masks the API changes made in Jelly Bean.
      */
-    @SuppressWarnings("deprecation")
-    @SuppressLint("NewApi")
     public void setBackgroundCompat(Drawable drawable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            setBackground(drawable);
-        } else {
-            setBackgroundDrawable(drawable);
-        }
+        setBackground(drawable);
     }
 
     public void setProgress(int progress) {
@@ -581,6 +585,7 @@ public class CircularProgressButton extends AppCompatButton {
         return mProgress;
     }
 
+    @Override
     public void setBackgroundColor(int color) {
         background.getGradientDrawable().setColor(color);
     }
