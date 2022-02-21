@@ -84,7 +84,7 @@ public class MediaStoreUtils {
      */
     public static Uri displayToGallery(Context context, File file, @MediaTypes int type, long duration, int width, int height,
                                        String directory, MediaStoreCompat mediaStoreCompat) {
-        Log.d("displayToGallery",file.getPath());
+        Log.d("displayToGallery", file.getPath());
         if (!file.exists()) {
             return null;
         }
@@ -185,7 +185,7 @@ public class MediaStoreUtils {
                         exif.saveAttributes();
                     }
                 } catch (IOException e) {
-                    Log.d(TAG,e.getMessage());
+                    Log.d(TAG, e.getMessage());
                     e.printStackTrace();
                 }
                 break;
@@ -212,10 +212,14 @@ public class MediaStoreUtils {
 
     /**
      * 根据uri获取里面的id
+     *
      * @param uri uri
      * @return id
      */
     public static Long getId(Uri uri) {
+        if (uri == null) {
+            return 0L;
+        }
         // 加入相册后的最后是id，直接使用该id
         String uriPath = uri.getPath();
         try {

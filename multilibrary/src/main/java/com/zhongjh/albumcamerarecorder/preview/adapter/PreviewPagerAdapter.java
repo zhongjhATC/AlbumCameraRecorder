@@ -124,6 +124,18 @@ public class PreviewPagerAdapter extends PagerAdapter {
     }
 
     /**
+     * 刷新当前
+     *
+     * @param currentItem 当前position
+     */
+    public void currentItemInit(int currentItem) {
+        View view = mCacheView.get(currentItem);
+        if (view != null) {
+            init(view, mItems.get(currentItem));
+        }
+    }
+
+    /**
      * 初始化，也可用于编辑图片后重新刷新当前界面
      */
     public void init(View view, MultiMedia item) {

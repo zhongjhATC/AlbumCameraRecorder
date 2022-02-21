@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,7 +51,6 @@ import java.io.File;
 
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
-import static com.zhongjh.imageedit.ImageEditActivity.REQ_IMAGE_EDIT;
 
 /**
  * 预览的基类
@@ -137,12 +138,17 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     private AlbumCompressFileTask mAlbumCompressFileTask;
 
     protected ViewHolder mViewHolder;
+    /**
+     * 打开ImageEditActivity的回调
+     */
+    ActivityResultLauncher<Intent> mImageEditActivityResult;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         // 获取样式
         setTheme(GlobalSpec.getInstance().themeId);
         super.onCreate(savedInstanceState);
+        onActivityResult();
         StatusBarUtils.initStatusBar(BasePreviewActivity.this);
         setContentView(R.layout.activity_media_preview_zjh);
 
@@ -192,15 +198,16 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         initListener();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQ_IMAGE_EDIT) {
+    /**
+     * 针对回调
+     */
+    private void onActivityResult() {
+        mImageEditActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
                 mIsEdit = true;
                 refreshMultiMediaItem();
             }
-        }
+        });
     }
 
     /**
@@ -217,8 +224,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         item.setUri(editUri);
         item.setPath(mEditImageFile.getPath());
         mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
-        // TODO
-//        ((PreviewItemFragment) mAdapter.getFragment(getSupportFragmentManager(), mViewHolder.pager.getCurrentItem())).init();
+        mAdapter.currentItemInit(mViewHolder.pager.getCurrentItem());
     }
 
     /**
@@ -241,8 +247,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (count > 0) {
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.originalMaxSize));
-                incapableDialog.show(getSupportFragmentManager(),
-                        IncapableDialog.class.getName());
+                if (incapableDialog != null) {
+                    incapableDialog.show(getSupportFragmentManager(),
+                            IncapableDialog.class.getName());
+                }
                 return;
             }
 
@@ -308,18 +316,15 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             setResultOkByIsCompress(true);
         } else if (v.getId() == R.id.tvEdit) {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-
             File file;
-
             file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
             mEditImageFile = file;
-
             Intent intent = new Intent();
             intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getRequestedOrientation());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
-            startActivityForResult(intent, REQ_IMAGE_EDIT);
+            mImageEditActivityResult.launch(intent);
         } else if (v.getId() == R.id.checkView) {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
@@ -453,8 +458,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 // 弹框提示取消原图
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.originalMaxSize));
-                incapableDialog.show(getSupportFragmentManager(),
-                        IncapableDialog.class.getName());
+                if (incapableDialog != null) {
+                    incapableDialog.show(getSupportFragmentManager(),
+                            IncapableDialog.class.getName());
+                }
                 // 去掉原图按钮的选择状态
                 mViewHolder.original.setChecked(false);
                 mViewHolder.original.setColor(Color.WHITE);
