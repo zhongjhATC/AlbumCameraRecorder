@@ -14,6 +14,14 @@ import java.util.List;
  */
 public class HandleBackUtil {
 
+    public static boolean handleBackPress(Fragment fragment) {
+        return handleBackPress(fragment.getChildFragmentManager());
+    }
+
+    public static boolean handleBackPress(FragmentActivity fragmentActivity) {
+        return handleBackPress(fragmentActivity.getSupportFragmentManager());
+    }
+
     /**
      * 将back事件分发给 FragmentManager 中管理的子Fragment，如果该 FragmentManager 中的所有Fragment都
      * 没有处理back事件，则尝试 FragmentManager.popBackStack()
@@ -24,10 +32,6 @@ public class HandleBackUtil {
      */
     public static boolean handleBackPress(FragmentManager fragmentManager) {
         List<Fragment> fragments = fragmentManager.getFragments();
-
-        if (fragments == null) {
-            return false;
-        }
 
         for (int i = fragments.size() - 1; i >= 0; i--) {
             Fragment child = fragments.get(i);
@@ -42,14 +46,6 @@ public class HandleBackUtil {
             return true;
         }
         return false;
-    }
-
-    public static boolean handleBackPress(Fragment fragment) {
-        return handleBackPress(fragment.getChildFragmentManager());
-    }
-
-    public static boolean handleBackPress(FragmentActivity fragmentActivity) {
-        return handleBackPress(fragmentActivity.getSupportFragmentManager());
     }
 
     /**

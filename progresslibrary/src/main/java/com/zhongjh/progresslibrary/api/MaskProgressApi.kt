@@ -4,7 +4,6 @@ import android.net.Uri
 import android.view.View
 import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.progresslibrary.entity.MultiMediaView
-import java.nio.file.Files
 import java.util.*
 
 /**
