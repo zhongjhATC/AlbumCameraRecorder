@@ -17,17 +17,17 @@ interface VideoEditListener {
      * @param progress 进度百分比
      * @param progressTime 进度时间
      */
-    fun onProgress(progress: Int, progressTime: Long);
+    fun onProgress(progress: Int, progressTime: Long)
 
     /**
      * 取消
      */
-    fun onCancel();
+    fun onCancel()
 
     /**
      * 异常
      * @param message 信息
      */
-    fun onError(message: String);
+    fun onError(message: String)
 
 }

@@ -289,8 +289,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
     private void confirm(File newFile) {
         Intent intent = new Intent();
         MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplicationContext(), newFile.getPath());
-        mLocalFile.setWidth(mediaExtraInfo.getWidth());
-        mLocalFile.setHeight(mediaExtraInfo.getHeight());
+        mLocalFile.setWidth(mediaExtraInfo.width);
+        mLocalFile.setHeight(mediaExtraInfo.height);
         Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
                 mLocalFile.getWidth(), mLocalFile.getHeight(),
                 mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);

@@ -189,9 +189,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                     // 某些手机拍摄没有自带宽高，那么我们可以自己获取
                     if (localFile.getWidth() == 0 && localFile.isVideo()) {
                         MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localFile.getPath());
-                        localFile.setWidth(mediaExtraInfo.getWidth());
-                        localFile.setHeight(mediaExtraInfo.getHeight());
-                        localFile.setDuration(mediaExtraInfo.getDuration());
+                        localFile.setWidth(mediaExtraInfo.width);
+                        localFile.setHeight(mediaExtraInfo.height);
+                        localFile.setDuration(mediaExtraInfo.duration);
                     }
                     Log.i(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
                 }

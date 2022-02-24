@@ -34,17 +34,17 @@ class IncapableCause {
     /**
      * 默认toast模式
      */
-    private var mForm = TOAST
-    private var mTitle: String? = null
-    private val mMessage: String
+    private var form = TOAST
+    private var title: String? = null
+    private val message: String
 
     constructor(message: String) {
-        mMessage = message
+        this.message = message
     }
 
     constructor(@Form form: Int, message: String) {
-        mForm = form
-        mMessage = message
+        this.form = form
+        this.message = message
     }
 
     companion object {
@@ -62,16 +62,16 @@ class IncapableCause {
             if (cause == null) {
                 return
             }
-            when (cause.mForm) {
+            when (cause.form) {
                 NONE -> {
                 }
                 DIALOG -> {
-                    val incapableDialog: IncapableDialog? = IncapableDialog.newInstance(cause.mTitle, cause.mMessage)
+                    val incapableDialog: IncapableDialog? = IncapableDialog.newInstance(cause.title, cause.message)
                     incapableDialog?.show((context as FragmentActivity).supportFragmentManager,
                             IncapableDialog::class.java.name)
                 }
-                TOAST -> Toast.makeText(context, cause.mMessage, Toast.LENGTH_SHORT).show()
-                else -> Toast.makeText(context, cause.mMessage, Toast.LENGTH_SHORT).show()
+                TOAST -> Toast.makeText(context, cause.message, Toast.LENGTH_SHORT).show()
+                else -> Toast.makeText(context, cause.message, Toast.LENGTH_SHORT).show()
             }
         }
     }
