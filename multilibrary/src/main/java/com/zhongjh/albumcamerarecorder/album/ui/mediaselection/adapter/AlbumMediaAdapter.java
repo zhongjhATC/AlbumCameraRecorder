@@ -57,7 +57,7 @@ public class AlbumMediaAdapter extends
 
     public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, RecyclerView recyclerView) {
         super(null);
-        mAlbumSpec = AlbumSpec.getInstance();
+        mAlbumSpec = AlbumSpec.INSTANCE;
         mSelectedCollection = selectedCollection;
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.item_placeholder});
@@ -85,7 +85,7 @@ public class AlbumMediaAdapter extends
         mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
                 getImageResize(mediaViewHolder.mMediaGrid.getContext()),
                 mPlaceholder,
-                mAlbumSpec.countable,
+                mAlbumSpec.getCountable(),
                 holder
         ));
         mediaViewHolder.mMediaGrid.bindMedia(item);
@@ -101,7 +101,7 @@ public class AlbumMediaAdapter extends
      */
     private void setCheckStatus(MultiMedia item, MediaGrid mediaGrid) {
         // 是否多选时,显示数字
-        if (mAlbumSpec.countable) {
+        if (mAlbumSpec.getCountable()) {
             int checkedNum = mSelectedCollection.checkedNumOf(item);
             if (checkedNum > 0) {
                 // 设置启用,设置数量
@@ -151,7 +151,7 @@ public class AlbumMediaAdapter extends
     @Override
     public void onCheckViewClicked(CheckView checkView, MultiMedia item, RecyclerView.ViewHolder holder) {
         // 是否多选模式,显示数字
-        if (mAlbumSpec.countable) {
+        if (mAlbumSpec.getCountable()) {
             // 获取当前选择的第几个
             int checkedNum = mSelectedCollection.checkedNumOf(item);
             if (checkedNum == CheckView.UNCHECKED) {
@@ -299,7 +299,7 @@ public class AlbumMediaAdapter extends
             // 图片调整后的大小：获取列表的每个格子的宽度
             mImageResize = availableWidth / spanCount;
             // 图片调整后的大小 * 缩放比例
-            mImageResize = (int) (mImageResize * mAlbumSpec.thumbnailScale);
+            mImageResize = (int) (mImageResize * mAlbumSpec.getThumbnailScale());
         }
         return mImageResize;
     }

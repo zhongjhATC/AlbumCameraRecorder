@@ -125,8 +125,8 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
         }
 
         // 过滤不符合用户设定的资源 Filter提供抽象方法，由用户自行设置过滤规则
-        if (AlbumSpec.getInstance().baseFilters != null) {
-            for (BaseFilter baseFilter : AlbumSpec.getInstance().baseFilters) {
+        if (AlbumSpec.INSTANCE.getBaseFilters() != null) {
+            for (BaseFilter baseFilter : AlbumSpec.INSTANCE.getBaseFilters()) {
                 IncapableCause incapableCause = baseFilter.filter(context, item);
                 if (incapableCause != null) {
                     return incapableCause;
@@ -163,7 +163,7 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
      * 是否应该纠正旋转
      *
      * @param context 上下文
-     * @param uri      图片uri
+     * @param uri     图片uri
      * @return 如果图片本身旋转了90或者270就返回是，需要纠正，否则否
      */
     private static boolean shouldRotate(Context context, Uri uri) {

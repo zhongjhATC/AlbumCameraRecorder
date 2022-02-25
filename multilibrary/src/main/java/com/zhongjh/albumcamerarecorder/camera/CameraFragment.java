@@ -24,7 +24,6 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.imageedit.ImageEditActivity;
@@ -261,7 +260,7 @@ public class CameraFragment extends BaseFragment {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTabLayoutScroll(true, mActivity, mCameraLayout.mViewHolder.pvLayout);
+                mActivity.showHideTableLayout(true);
             }
 
             @Override

@@ -122,12 +122,12 @@ public class AlbumLoader extends CursorLoader {
     public static CursorLoader newInstance(Context context) {
         String selection;
         String[] selectionArgs;
-        if (AlbumSpec.getInstance().onlyShowImages()) {
+        if (AlbumSpec.INSTANCE.onlyShowImages()) {
             selection = beforeAndroidTen()
                     ? SELECTION_FOR_SINGLE_MEDIA_TYPE : SELECTION_FOR_SINGLE_MEDIA_TYPE_29;
             selectionArgs = getSelectionArgsForSingleMediaType(
                     MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
-        } else if (AlbumSpec.getInstance().onlyShowVideos()) {
+        } else if (AlbumSpec.INSTANCE.onlyShowVideos()) {
             selection = beforeAndroidTen()
                     ? SELECTION_FOR_SINGLE_MEDIA_TYPE : SELECTION_FOR_SINGLE_MEDIA_TYPE_29;
             selectionArgs = getSelectionArgsForSingleMediaType(

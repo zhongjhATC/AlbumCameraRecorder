@@ -1,14 +1,14 @@
 package com.zhongjh.albumcamerarecorder.preview;
 
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.common.entity.MultiMedia;
 
 import java.util.List;
-
-import com.zhongjh.common.entity.MultiMedia;
 
 /**
  * 点击相册的预览按钮进入的界面
@@ -30,7 +30,7 @@ public class SelectedPreviewActivity extends BasePreviewActivity {
         List<MultiMedia> selected = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
         mAdapter.addAll(selected);
         mAdapter.notifyDataSetChanged();
-        if (mAlbumSpec.countable) {
+        if (mAlbumSpec.getCountable()) {
             mViewHolder.checkView.setCheckedNum(1);
         } else {
             mViewHolder.checkView.setChecked(true);

@@ -3,6 +3,10 @@ package com.zhongjh.albumcamerarecorder.album.ui.mediaselection;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,24 +14,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
-
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
-import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
+import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.MediaGridInset;
-import com.zhongjh.common.utils.DisplayMetricsUtils;
-
+import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.utils.DisplayMetricsUtils;
 
 /**
  * 相册 界面
@@ -142,11 +139,11 @@ public class MediaSelectionFragment extends Fragment implements
 
         // 设置recyclerView的布局
         int spanCount;
-        AlbumSpec albumSpec = AlbumSpec.getInstance();
-        if (albumSpec.gridExpectedSize > 0) {
-            spanCount = UiUtils.spanCount(getContext(), albumSpec.gridExpectedSize);
+        AlbumSpec albumSpec = AlbumSpec.INSTANCE;
+        if (albumSpec.getGridExpectedSize() > 0) {
+            spanCount = UiUtils.spanCount(getContext(), albumSpec.getGridExpectedSize());
         } else {
-            spanCount = albumSpec.spanCount;
+            spanCount = albumSpec.getSpanCount();
         }
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
 

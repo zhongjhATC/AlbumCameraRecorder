@@ -176,8 +176,8 @@ public class GlobalSpec {
         // 优先取各自的类型，如果没设置则取公共的
         switch (moduleTypes) {
             case ModuleTypes.ALBUM:
-                if (AlbumSpec.getInstance().mimeTypeSet != null) {
-                    return AlbumSpec.getInstance().mimeTypeSet;
+                if (AlbumSpec.INSTANCE.getMimeTypeSet() != null) {
+                    return AlbumSpec.INSTANCE.getMimeTypeSet();
                 } else {
                     return GlobalSpec.getInstance().mimeTypeSet;
                 }

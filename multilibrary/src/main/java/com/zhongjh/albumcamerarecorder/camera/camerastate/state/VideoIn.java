@@ -1,11 +1,8 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
-import android.util.Log;
-
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
-import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 /**
  * 正在录制视频中的状态
@@ -58,8 +55,7 @@ public class VideoIn extends StateMode {
     @Override
     public void longClickShort(long time) {
         // 母窗体显示底部
-        ViewBusinessUtils.setTabLayoutScroll(true, getCameraLayout().mMainActivity,
-                getCameraLayout().mViewHolder.pvLayout);
+        getCameraLayout().mMainActivity.showHideTableLayout(true);
     }
 
     @Override

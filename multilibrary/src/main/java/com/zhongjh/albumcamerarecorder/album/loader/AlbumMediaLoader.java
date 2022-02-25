@@ -126,10 +126,10 @@ public class AlbumMediaLoader extends CursorLoader {
         String selection;
         String[] selectionArgs;
         if (album.isAll()) {
-            if (AlbumSpec.getInstance().onlyShowImages()) {
+            if (AlbumSpec.INSTANCE.onlyShowImages()) {
                 selection = SELECTION_ALL_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
-            } else if (AlbumSpec.getInstance().onlyShowVideos()) {
+            } else if (AlbumSpec.INSTANCE.onlyShowVideos()) {
                 selection = SELECTION_ALL_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
             } else {
@@ -137,11 +137,11 @@ public class AlbumMediaLoader extends CursorLoader {
                 selectionArgs = SELECTION_ALL_ARGS;
             }
         } else {
-            if (AlbumSpec.getInstance().onlyShowImages()) {
+            if (AlbumSpec.INSTANCE.onlyShowImages()) {
                 selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionAlbumArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE,
                         album.getId());
-            } else if (AlbumSpec.getInstance().onlyShowVideos()) {
+            } else if (AlbumSpec.INSTANCE.onlyShowVideos()) {
                 selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionAlbumArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO,
                         album.getId());

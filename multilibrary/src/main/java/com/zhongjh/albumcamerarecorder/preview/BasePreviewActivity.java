@@ -153,7 +153,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_media_preview_zjh);
 
         mGlobalSpec = GlobalSpec.getInstance();
-        mAlbumSpec = AlbumSpec.getInstance();
+        mAlbumSpec = AlbumSpec.INSTANCE;
         boolean isAllowRepeat = getIntent().getBooleanExtra(EXTRA_IS_ALLOW_REPEAT, false);
         mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
         mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER, true);
@@ -189,7 +189,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         mAdapter = new PreviewPagerAdapter(getApplicationContext(), BasePreviewActivity.this);
         mViewHolder.pager.setAdapter(mAdapter);
-        mViewHolder.checkView.setCountable(mAlbumSpec.countable);
+        mViewHolder.checkView.setCountable(mAlbumSpec.getCountable());
 
         mAlbumCompressFileTask = new AlbumCompressFileTask(getApplicationContext(), TAG,
                 BasePreviewActivity.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
@@ -246,7 +246,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             int count = countOverMaxSize();
             if (count > 0) {
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.originalMaxSize));
+                        getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.getOriginalMaxSize()));
                 if (incapableDialog != null) {
                     incapableDialog.show(getSupportFragmentManager(),
                             IncapableDialog.class.getName());
@@ -260,8 +260,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 mViewHolder.original.setColor(Color.WHITE);
             }
 
-            if (mAlbumSpec.onCheckedListener != null) {
-                mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);
+            if (mAlbumSpec.getOnCheckedListener() != null) {
+                mAlbumSpec.getOnCheckedListener().onCheck(mOriginalEnable);
             }
         });
         // 点击Loading停止
@@ -329,7 +329,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
                 mSelectedCollection.remove(item);
-                if (mAlbumSpec.countable) {
+                if (mAlbumSpec.getCountable()) {
                     mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED);
                 } else {
                     mViewHolder.checkView.setChecked(false);
@@ -341,7 +341,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 }
                 if (isTrue) {
                     mSelectedCollection.add(item);
-                    if (mAlbumSpec.countable) {
+                    if (mAlbumSpec.getCountable()) {
                         mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
                     } else {
                         mViewHolder.checkView.setChecked(true);
@@ -350,9 +350,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             }
             updateApplyButton();
 
-            if (mAlbumSpec.onSelectedListener != null && mIsSelectedListener) {
+            if (mAlbumSpec.getOnSelectedListener() != null && mIsSelectedListener) {
                 // 触发选择的接口事件
-                mAlbumSpec.onSelectedListener.onSelected(mSelectedCollection.asListOfLocalFile());
+                mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
             }
         }
     }
@@ -375,7 +375,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         }
         if (mPreviousPos != -1 && mPreviousPos != position) {
             MultiMedia item = adapter.getMediaItem(position);
-            if (mAlbumSpec.countable) {
+            if (mAlbumSpec.getCountable()) {
                 int checkedNum = mSelectedCollection.checkedNumOf(item);
                 mViewHolder.checkView.setCheckedNum(checkedNum);
                 if (checkedNum > 0) {
@@ -423,7 +423,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         }
 
         // 判断是否开启原图
-        if (mAlbumSpec.originalable) {
+        if (mAlbumSpec.getOriginalEnable()) {
             // 显示
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
             updateOriginalState();
@@ -457,7 +457,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (mOriginalEnable) {
                 // 弹框提示取消原图
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.originalMaxSize));
+                        getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.getOriginalMaxSize()));
                 if (incapableDialog != null) {
                     incapableDialog.show(getSupportFragmentManager(),
                             IncapableDialog.class.getName());
@@ -482,7 +482,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             MultiMedia item = mSelectedCollection.asList().get(i);
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
-                if (size > mAlbumSpec.originalMaxSize) {
+                if (size > mAlbumSpec.getOriginalMaxSize()) {
                     count++;
                 }
             }
@@ -507,7 +507,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
 
         if (item.isVideo()) {
             mViewHolder.originalLayout.setVisibility(View.GONE);
-        } else if (mAlbumSpec.originalable) {
+        } else if (mAlbumSpec.getOriginalEnable()) {
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
         }
 

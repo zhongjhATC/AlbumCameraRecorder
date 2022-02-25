@@ -1,7 +1,6 @@
-package com.zhongjh.albumcamerarecorder.utils;
+package com.zhongjh.albumcamerarecorder.utils
 
-import android.content.pm.FeatureInfo;
-import android.content.pm.PackageManager;
+import android.content.pm.PackageManager
 
 /**
  * 有关手机模块工具
@@ -9,23 +8,20 @@ import android.content.pm.PackageManager;
  * @author zhongjh
  * @date 2019/3/25
  */
-public class PackageManagerUtils {
-
+object PackageManagerUtils {
     /**
      * 判断是否支持闪光灯
      * @param pm PackageManager
      * @return 是否
      */
-    public static boolean isSupportCameraLedFlash(PackageManager pm) {
+    @JvmStatic
+    fun isSupportCameraLedFlash(pm: PackageManager?): Boolean {
         if (pm != null) {
-            FeatureInfo[] features = pm.getSystemAvailableFeatures();
-            if (features != null) {
-                for (FeatureInfo ignored : features) {
-                    return true;
-                }
+            val features = pm.systemAvailableFeatures
+            for (ignored in features) {
+                return true
             }
         }
-        return false;
+        return false
     }
-
 }

@@ -182,7 +182,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private void initConfig() {
         // 初始化设置
-        mAlbumSpec = AlbumSpec.getInstance();
+        mAlbumSpec = AlbumSpec.INSTANCE;
         mGlobalSpec = GlobalSpec.getInstance();
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
@@ -282,7 +282,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 int count = countOverMaxSize();
                 if (count > 0) {
                     IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                            getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.originalMaxSize));
+                            getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.getOriginalMaxSize()));
                     incapableDialog.show(getFragmentManager(),
                             IncapableDialog.class.getName());
                     return;
@@ -293,8 +293,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 mViewHolder.original.setChecked(mOriginalEnable);
 
                 // 设置状态是否原图
-                if (mAlbumSpec.onCheckedListener != null) {
-                    mAlbumSpec.onCheckedListener.onCheck(mOriginalEnable);
+                if (mAlbumSpec.getOnCheckedListener() != null) {
+                    mAlbumSpec.getOnCheckedListener().onCheck(mOriginalEnable);
                 }
 
             }
@@ -405,7 +405,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
 
         // 是否显示原图控件
-        if (mAlbumSpec.originalable) {
+        if (mAlbumSpec.getOriginalEnable()) {
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
             updateOriginalState();
         } else {
@@ -426,7 +426,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (mOriginalEnable) {
                 // 弹出窗口提示大于 xx mb
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.originalMaxSize));
+                        getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.getOriginalMaxSize()));
                 if (this.getFragmentManager() == null) {
                     return;
                 }
@@ -454,7 +454,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
 
-                if (size > mAlbumSpec.originalMaxSize) {
+                if (size > mAlbumSpec.getOriginalMaxSize()) {
                     count++;
                 }
             }
@@ -522,8 +522,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // notify bottom toolbar that check state changed.
         updateBottomToolbar();
         // 触发选择的接口事件
-        if (mAlbumSpec.onSelectedListener != null) {
-            mAlbumSpec.onSelectedListener.onSelected(mSelectedCollection.asListOfLocalFile());
+        if (mAlbumSpec.getOnSelectedListener() != null) {
+            mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
         }
     }
 

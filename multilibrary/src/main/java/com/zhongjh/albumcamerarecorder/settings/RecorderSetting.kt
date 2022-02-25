@@ -1,29 +1,23 @@
-package com.zhongjh.albumcamerarecorder.settings;
+package com.zhongjh.albumcamerarecorder.settings
 
-import com.zhongjh.albumcamerarecorder.settings.api.RecorderSettingApi;
+import com.zhongjh.albumcamerarecorder.settings.api.RecorderSettingApi
 
 /**
  * 录音机
  * @author zhongjh
  */
-public final class RecorderSetting implements RecorderSettingApi {
+class RecorderSetting : RecorderSettingApi {
 
-    private final RecordeSpec mRecordeSpec;
+    private val mRecordeSpec: RecordeSpec = RecordeSpec.getCleanInstance()
 
-    public RecorderSetting() {
-        mRecordeSpec = RecordeSpec.getCleanInstance();
+    override fun duration(duration: Int): RecorderSetting {
+        mRecordeSpec.duration = duration
+        return this
     }
 
-    @Override
-    public RecorderSetting duration(int duration) {
-        mRecordeSpec.duration = duration;
-        return this;
-    }
-
-    @Override
-    public RecorderSetting minDuration(int minDuration) {
-        mRecordeSpec.minDuration = minDuration;
-        return this;
+    override fun minDuration(minDuration: Int): RecorderSetting {
+        mRecordeSpec.minDuration = minDuration
+        return this
     }
 
 }

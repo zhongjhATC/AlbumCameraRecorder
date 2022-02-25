@@ -249,7 +249,7 @@ public class SelectedItemCollection {
         String type = "";
         SelectedCountMessage selectedCountMessage;
         // 判断是否混合视频图片模式
-        if (!AlbumSpec.getInstance().mediaTypeExclusive) {
+        if (!AlbumSpec.INSTANCE.getMediaTypeExclusive()) {
             // 混合检查
             getSelectCount();
             if (Objects.requireNonNull(item.getMimeType()).startsWith(IMAGE)) {
@@ -374,7 +374,7 @@ public class SelectedItemCollection {
     private int currentMaxSelectable() {
         int leastCount;
         // 判断是否能同时选择视频和图片
-        if (!AlbumSpec.getInstance().mediaTypeExclusive) {
+        if (!AlbumSpec.INSTANCE.getMediaTypeExclusive()) {
             // 返回视频+图片
             leastCount = SelectableUtils.getImageVideoMaxCount();
         } else {
@@ -395,11 +395,11 @@ public class SelectedItemCollection {
     /**
      * 判断选择资源(图片跟视频)是否类型冲突
      * Determine whether there will be conflict media types. A user can only select images and videos at the same time
-     * while {@link AlbumSpec#mediaTypeExclusive} is set to false.
+     * while {@link AlbumSpec#getMediaTypeExclusive} is set to false.
      */
     private boolean typeConflict(MultiMedia item) {
         // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
-        return AlbumSpec.getInstance().mediaTypeExclusive
+        return AlbumSpec.INSTANCE.getMediaTypeExclusive()
                 && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_MIXED))
                 || (item.isVideo() && (mCollectionType == COLLECTION_IMAGE || mCollectionType == COLLECTION_MIXED)));
     }

@@ -29,7 +29,6 @@ import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayout;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
-import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
@@ -195,7 +194,7 @@ public class SoundRecordingFragment extends BaseFragment {
             @Override
             public void actionDown() {
                 // 母窗体禁止滑动
-                ViewBusinessUtils.setTabLayoutScroll(false, ((MainActivity) mActivity), mViewHolder.pvLayout);
+                ((MainActivity) mActivity).showHideTableLayout(false);
             }
 
             @Override
@@ -211,7 +210,7 @@ public class SoundRecordingFragment extends BaseFragment {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> onRecord(false, true), mRecordSpec.minDuration - time);
                 mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTabLayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
+                ((MainActivity) mActivity).showHideTableLayout(true);
             }
 
             @Override
@@ -268,7 +267,7 @@ public class SoundRecordingFragment extends BaseFragment {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
-                ViewBusinessUtils.setTabLayoutScroll(true, ((MainActivity) mActivity), mViewHolder.pvLayout);
+                ((MainActivity) mActivity).showHideTableLayout(true);
                 // 重置取消确认按钮
                 mViewHolder.pvLayout.reset();
                 // 重置时间

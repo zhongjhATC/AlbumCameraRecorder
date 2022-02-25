@@ -1,13 +1,11 @@
-package com.zhongjh.albumcamerarecorder.constants;
+package com.zhongjh.albumcamerarecorder.constants
 
 /**
  * @author zhongjh
  */
-public class Constant {
-
+object Constant {
     /**
      * LocalFile的数据
      */
-    public static final String EXTRA_RESULT_SELECTION_LOCAL_FILE = "extra_result_selection_local_file";
-
+    const val EXTRA_RESULT_SELECTION_LOCAL_FILE = "extra_result_selection_local_file"
 }

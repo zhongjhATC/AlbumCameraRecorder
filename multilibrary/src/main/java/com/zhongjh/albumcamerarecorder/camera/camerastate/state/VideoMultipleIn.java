@@ -3,7 +3,6 @@ package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
-import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 
 /**
  * 多个视频的状态录制中
@@ -69,8 +68,7 @@ public class VideoMultipleIn extends StateMode {
         getCameraLayout().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
         if (getCameraLayout().mVideoPaths.size() <= 0) {
             // 母窗体显示底部
-            ViewBusinessUtils.setTabLayoutScroll(true, getCameraLayout().mMainActivity,
-                    getCameraLayout().mViewHolder.pvLayout);
+            getCameraLayout().mMainActivity.showHideTableLayout(true);
         }
     }
 

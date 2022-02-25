@@ -52,7 +52,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
-import com.zhongjh.albumcamerarecorder.utils.ViewBusinessUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
@@ -611,7 +610,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             public void actionDown() {
                 Log.d(TAG, "pvLayout actionDown");
                 // 母窗体隐藏底部滑动
-                ViewBusinessUtils.setTabLayoutScroll(false, mMainActivity, mViewHolder.pvLayout);
+                mMainActivity.showHideTableLayout(false);
             }
 
             @Override
