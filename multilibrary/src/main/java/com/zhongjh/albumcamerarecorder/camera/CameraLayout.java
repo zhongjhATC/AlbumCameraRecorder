@@ -227,7 +227,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private final Runnable mCameraTakePictureRunnable = new Runnable() {
         @Override
         public void run() {
-            if (mCameraSpec.enableImageHighDefinition) {
+            if (mCameraSpec.getEnableImageHighDefinition()) {
                 mViewHolder.cameraView.takePicture();
             } else {
                 mViewHolder.cameraView.takePictureSnapshot();
@@ -345,7 +345,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private void initData() {
         // 初始化设置
-        mCameraSpec = CameraSpec.getInstance();
+        mCameraSpec = CameraSpec.INSTANCE;
         mGlobalSpec = GlobalSpec.getInstance();
         // 设置图片路径
         if (mGlobalSpec.pictureStrategy != null) {
@@ -368,7 +368,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mPlaceholder = ta.getDrawable(0);
 
         // 闪光灯修改默认模式
-        mFlashModel = mCameraSpec.flashModel;
+        mFlashModel = mCameraSpec.getFlashModel();
         // 记忆模式
         flashGetCache();
     }
@@ -383,21 +383,21 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mViewHolder = new ViewHolder(view);
 
         // 如果有设置高清模式，则根据相应高清模式更改模式
-        if (mCameraSpec.enableImageHighDefinition) {
+        if (mCameraSpec.getEnableImageHighDefinition()) {
             mViewHolder.cameraView.setMode(PICTURE);
-        } else if (mCameraSpec.enableVideoHighDefinition) {
+        } else if (mCameraSpec.getEnableVideoHighDefinition()) {
             mViewHolder.cameraView.setMode(VIDEO);
         } else {
             mViewHolder.cameraView.setMode(VIDEO);
         }
 
-        if (mCameraSpec.watermarkResource != -1) {
-            LayoutInflater.from(getContext()).inflate(mCameraSpec.watermarkResource, mViewHolder.cameraView, true);
+        if (mCameraSpec.getWatermarkResource() != -1) {
+            LayoutInflater.from(getContext()).inflate(mCameraSpec.getWatermarkResource(), mViewHolder.cameraView, true);
         }
 
         // 回调cameraView可以自定义相关参数
-        if (mCameraSpec.onCameraViewListener != null) {
-            mCameraSpec.onCameraViewListener.onInitListener(mViewHolder.cameraView);
+        if (mCameraSpec.getOnCameraViewListener() != null) {
+            mCameraSpec.getOnCameraViewListener().onInitListener(mViewHolder.cameraView);
         }
 
         // 兼容沉倾状态栏
@@ -422,11 +422,11 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
 
         setFlashLamp(); // 设置闪光灯模式
-        mViewHolder.imgSwitch.setImageResource(mCameraSpec.imageSwitch);
+        mViewHolder.imgSwitch.setImageResource(mCameraSpec.getImageSwitch());
         // 设置录制时间
-        mViewHolder.pvLayout.setDuration(mCameraSpec.duration * 1000);
+        mViewHolder.pvLayout.setDuration(mCameraSpec.getDuration() * 1000);
         // 最短录制时间
-        mViewHolder.pvLayout.setMinDuration(mCameraSpec.minDuration);
+        mViewHolder.pvLayout.setMinDuration(mCameraSpec.getMinDuration());
     }
 
     /**
@@ -434,7 +434,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private void initPvLayoutButtonFeatures() {
         // 判断点击和长按的权限
-        if (mCameraSpec.isClickRecord) {
+        if (mCameraSpec.isClickRecord()) {
             // 禁用长按功能
             mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_CLICK_AND_HOLD);
             mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_light_touch_camera));
@@ -565,8 +565,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         }
         mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
         if (mCameraSpec.isMergeEnable()) {
-            mCameraSpec.videoMergeCoordinator.onMergeDestroy(CameraLayout.this.getClass());
-            mCameraSpec.videoMergeCoordinator = null;
+            if (mCameraSpec.getVideoMergeCoordinator() != null) {
+                mCameraSpec.getVideoMergeCoordinator().onMergeDestroy(CameraLayout.this.getClass());
+                mCameraSpec.setVideoMergeCoordinator(null);
+            }
         }
         mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
         mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
@@ -701,7 +703,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             if (mVideoFile == null) {
                 mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
             }
-            if (mCameraSpec.enableVideoHighDefinition) {
+            if (mCameraSpec.getEnableVideoHighDefinition()) {
                 mViewHolder.cameraView.takeVideo(mVideoFile);
             } else {
                 mViewHolder.cameraView.takeVideoSnapshot(mVideoFile);
@@ -728,7 +730,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 显示右上角菜单
         setMenuVisibility(VISIBLE);
         // 停止录像
-        postDelayed(() -> stopRecord(true), mCameraSpec.minDuration - time);
+        postDelayed(() -> stopRecord(true), mCameraSpec.getMinDuration() - time);
     }
 
     /**
@@ -787,7 +789,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private void initVideoEditListener() {
         if (mCameraSpec.isMergeEnable()) {
-            mCameraSpec.videoMergeCoordinator.setVideoMergeListener(CameraLayout.this.getClass(), new VideoEditListener() {
+            mCameraSpec.getVideoMergeCoordinator().setVideoMergeListener(CameraLayout.this.getClass(), new VideoEditListener() {
                 @Override
                 public void onFinish() {
                     Log.d(TAG, "videoMergeCoordinator onFinish");
@@ -1056,7 +1058,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             for (String item : mVideoPaths) {
                 Log.d(TAG, "新的合并视频素材：" + item);
             }
-            mCameraSpec.videoMergeCoordinator.merge(CameraLayout.this.getClass(), mNewSectionVideoPath, mVideoPaths,
+            mCameraSpec.getVideoMergeCoordinator().merge(CameraLayout.this.getClass(), mNewSectionVideoPath, mVideoPaths,
                     getContext().getCacheDir().getPath() + File.separator + "cam.txt");
         }
     }
@@ -1261,15 +1263,15 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private void setFlashLamp() {
         switch (mFlashModel) {
             case TYPE_FLASH_AUTO:
-                mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashAuto);
+                mViewHolder.imgFlash.setImageResource(mCameraSpec.getImageFlashAuto());
                 mViewHolder.cameraView.setFlash(Flash.AUTO);
                 break;
             case TYPE_FLASH_ON:
-                mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOn);
+                mViewHolder.imgFlash.setImageResource(mCameraSpec.getImageFlashOn());
                 mViewHolder.cameraView.setFlash(Flash.TORCH);
                 break;
             case TYPE_FLASH_OFF:
-                mViewHolder.imgFlash.setImageResource(mCameraSpec.imageFlashOff);
+                mViewHolder.imgFlash.setImageResource(mCameraSpec.getImageFlashOff());
                 mViewHolder.cameraView.setFlash(Flash.OFF);
                 break;
             default:
@@ -1340,7 +1342,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     public void stopVideoMultiple() {
         if (mCameraSpec.isMergeEnable()) {
-            mCameraSpec.videoMergeCoordinator.onMergeDispose(CameraLayout.this.getClass());
+            mCameraSpec.getVideoMergeCoordinator().onMergeDispose(CameraLayout.this.getClass());
         }
     }
 
@@ -1395,7 +1397,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private void flashGetCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则使用上个闪光灯模式
-        if (mCameraSpec.enableFlashMemoryModel) {
+        if (mCameraSpec.getEnableFlashMemoryModel()) {
             mFlashModel = FlashCacheUtils.getFlashModel(getContext());
         }
     }
@@ -1405,7 +1407,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private void flashSaveCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则存储当前闪光灯模式
-        if (mCameraSpec.enableFlashMemoryModel) {
+        if (mCameraSpec.getEnableFlashMemoryModel()) {
             FlashCacheUtils.saveFlashModel(getContext(), mFlashModel);
         }
     }

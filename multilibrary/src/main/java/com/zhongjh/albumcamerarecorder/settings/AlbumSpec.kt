@@ -109,8 +109,8 @@ object AlbumSpec  {
      */
     fun onlyShowImages(): Boolean {
         return (showSingleMediaType &&
-                ofImage().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM))
-                || GlobalSpec.getInstance().maxVideoSelectable != null && GlobalSpec.getInstance().maxVideoSelectable == 0)
+                ofImage().containsAll(GlobalSpec.instance.getMimeTypeSet(ModuleTypes.ALBUM))
+                || GlobalSpec.instance.maxVideoSelectable != null && GlobalSpec.instance.maxVideoSelectable == 0)
     }
 
     /**
@@ -118,8 +118,8 @@ object AlbumSpec  {
      */
     fun onlyShowVideos(): Boolean {
         return (showSingleMediaType &&
-                ofVideo().containsAll(GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.ALBUM))
-                || GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxImageSelectable == 0)
+                ofVideo().containsAll(GlobalSpec.instance.getMimeTypeSet(ModuleTypes.ALBUM))
+                || GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxImageSelectable == 0)
     }
 
 }

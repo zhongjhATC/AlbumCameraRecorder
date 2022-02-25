@@ -27,15 +27,15 @@ object SelectableUtils {
      */
     @JvmStatic
     fun albumValid(): Boolean {
-        return if (GlobalSpec.getInstance().albumSetting != null) {
-            if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxVideoSelectable != null) {
-                GlobalSpec.getInstance().maxImageSelectable > 0 || GlobalSpec.getInstance().maxVideoSelectable > 0
-            } else if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxImageSelectable > 0) {
+        return if (GlobalSpec.instance.albumSetting != null) {
+            if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxVideoSelectable != null) {
+                GlobalSpec.instance.maxImageSelectable > 0 || GlobalSpec.instance.maxVideoSelectable > 0
+            } else if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxImageSelectable > 0) {
                 true
-            } else if (GlobalSpec.getInstance().maxVideoSelectable != null && GlobalSpec.getInstance().maxVideoSelectable > 0) {
+            } else if (GlobalSpec.instance.maxVideoSelectable != null && GlobalSpec.instance.maxVideoSelectable > 0) {
                 true
             } else {
-                GlobalSpec.getInstance().maxSelectable != null && GlobalSpec.getInstance().maxSelectable > 0
+                GlobalSpec.instance.maxSelectable != null && GlobalSpec.instance.maxSelectable > 0
             }
         } else false
     }
@@ -47,15 +47,15 @@ object SelectableUtils {
      */
     @JvmStatic
     fun cameraValid(): Boolean {
-        return if (GlobalSpec.getInstance().cameraSetting != null) {
-            if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxVideoSelectable != null) {
-                GlobalSpec.getInstance().maxImageSelectable > 0 || GlobalSpec.getInstance().maxVideoSelectable > 0
-            } else if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxImageSelectable > 0) {
+        return if (GlobalSpec.instance.cameraSetting != null) {
+            if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxVideoSelectable != null) {
+                GlobalSpec.instance.maxImageSelectable > 0 || GlobalSpec.instance.maxVideoSelectable > 0
+            } else if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxImageSelectable > 0) {
                 true
-            } else if (GlobalSpec.getInstance().maxVideoSelectable != null && GlobalSpec.getInstance().maxVideoSelectable > 0) {
+            } else if (GlobalSpec.instance.maxVideoSelectable != null && GlobalSpec.instance.maxVideoSelectable > 0) {
                 true
             } else {
-                GlobalSpec.getInstance().maxSelectable != null && GlobalSpec.getInstance().maxSelectable > 0
+                GlobalSpec.instance.maxSelectable != null && GlobalSpec.instance.maxSelectable > 0
             }
         } else false
     }
@@ -67,12 +67,12 @@ object SelectableUtils {
      */
     @JvmStatic
     fun videoValid(): Boolean {
-        if (GlobalSpec.getInstance().cameraSetting != null) {
-            if (GlobalSpec.getInstance().getMimeTypeSet(ModuleTypes.CAMERA)
+        if (GlobalSpec.instance.cameraSetting != null) {
+            if (GlobalSpec.instance.getMimeTypeSet(ModuleTypes.CAMERA)
                     .containsAll(ofVideo())
             ) {
                 // 是否激活视频并且总数量大于1
-                return GlobalSpec.getInstance().maxSelectable != null && GlobalSpec.getInstance().maxSelectable > 0
+                return GlobalSpec.instance.maxSelectable != null && GlobalSpec.instance.maxSelectable > 0
             }
         }
         return false
@@ -85,11 +85,11 @@ object SelectableUtils {
      */
     @JvmStatic
     fun recorderValid(): Boolean {
-        return if (GlobalSpec.getInstance().recorderSetting != null) {
-            if (GlobalSpec.getInstance().maxAudioSelectable != null) {
-                GlobalSpec.getInstance().maxAudioSelectable > 0
+        return if (GlobalSpec.instance.recorderSetting != null) {
+            if (GlobalSpec.instance.maxAudioSelectable != null) {
+                GlobalSpec.instance.maxAudioSelectable > 0
             } else {
-                GlobalSpec.getInstance().maxSelectable != null && GlobalSpec.getInstance().maxSelectable > 0
+                GlobalSpec.instance.maxSelectable != null && GlobalSpec.instance.maxSelectable > 0
             }
         } else {
             false
@@ -112,10 +112,10 @@ object SelectableUtils {
         isMaxCount = isImageVideoMaxCount(imageCount, videoCount)
         if (!isMaxCount) {
             // 再判断本身
-            if (GlobalSpec.getInstance().maxImageSelectable != null) {
-                isMaxCount = imageCount == GlobalSpec.getInstance().maxImageSelectable
-            } else if (GlobalSpec.getInstance().maxSelectable != null) {
-                isMaxCount = imageCount == GlobalSpec.getInstance().maxSelectable
+            if (GlobalSpec.instance.maxImageSelectable != null) {
+                isMaxCount = imageCount == GlobalSpec.instance.maxImageSelectable
+            } else if (GlobalSpec.instance.maxSelectable != null) {
+                isMaxCount = imageCount == GlobalSpec.instance.maxSelectable
             }
             selectedCountMessage.type = IMAGE
             selectedCountMessage.maxCount = imageCount
@@ -143,10 +143,10 @@ object SelectableUtils {
         isMaxCount = isImageVideoMaxCount(imageCount, videoCount)
         if (!isMaxCount) {
             // 再判断本身
-            if (GlobalSpec.getInstance().maxVideoSelectable != null) {
-                isMaxCount = videoCount == GlobalSpec.getInstance().maxVideoSelectable
-            } else if (GlobalSpec.getInstance().maxSelectable != null) {
-                isMaxCount = videoCount == GlobalSpec.getInstance().maxSelectable
+            if (GlobalSpec.instance.maxVideoSelectable != null) {
+                isMaxCount = videoCount == GlobalSpec.instance.maxVideoSelectable
+            } else if (GlobalSpec.instance.maxSelectable != null) {
+                isMaxCount = videoCount == GlobalSpec.instance.maxSelectable
             }
             selectedCountMessage.type = VIDEO
             selectedCountMessage.maxCount = videoCount
@@ -166,8 +166,8 @@ object SelectableUtils {
      * @return 是否达到最大数量
      */
     private fun isImageVideoMaxCount(imageCount: Int, videoCount: Int): Boolean {
-        return if (GlobalSpec.getInstance().maxSelectable != null) {
-            imageCount + videoCount == GlobalSpec.getInstance().maxSelectable
+        return if (GlobalSpec.instance.maxSelectable != null) {
+            imageCount + videoCount == GlobalSpec.instance.maxSelectable
         } else {
             false
         }
@@ -179,14 +179,14 @@ object SelectableUtils {
     @JvmStatic
     val imageVideoMaxCount: Int
         get() {
-            if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxVideoSelectable != null) {
-                return GlobalSpec.getInstance().maxImageSelectable + GlobalSpec.getInstance().maxVideoSelectable
-            } else if (GlobalSpec.getInstance().maxSelectable != null) {
-                return GlobalSpec.getInstance().maxSelectable
-            } else if (GlobalSpec.getInstance().maxImageSelectable != null) {
-                return GlobalSpec.getInstance().maxImageSelectable
-            } else if (GlobalSpec.getInstance().maxVideoSelectable != null) {
-                return GlobalSpec.getInstance().maxVideoSelectable
+            if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxVideoSelectable != null) {
+                return GlobalSpec.instance.maxImageSelectable + GlobalSpec.instance.maxVideoSelectable
+            } else if (GlobalSpec.instance.maxSelectable != null) {
+                return GlobalSpec.instance.maxSelectable
+            } else if (GlobalSpec.instance.maxImageSelectable != null) {
+                return GlobalSpec.instance.maxImageSelectable
+            } else if (GlobalSpec.instance.maxVideoSelectable != null) {
+                return GlobalSpec.instance.maxVideoSelectable
             }
             return 0
         }
@@ -198,10 +198,10 @@ object SelectableUtils {
      */
     @JvmStatic
     val imageMaxCount: Int
-        get() = if (GlobalSpec.getInstance().maxImageSelectable != null) {
-            GlobalSpec.getInstance().maxImageSelectable
-        } else if (GlobalSpec.getInstance().maxSelectable != null) {
-            GlobalSpec.getInstance().maxSelectable
+        get() = if (GlobalSpec.instance.maxImageSelectable != null) {
+            GlobalSpec.instance.maxImageSelectable
+        } else if (GlobalSpec.instance.maxSelectable != null) {
+            GlobalSpec.instance.maxSelectable
         } else {
             0
         }
@@ -211,10 +211,10 @@ object SelectableUtils {
      */
     @JvmStatic
     val videoMaxCount: Int
-        get() = if (GlobalSpec.getInstance().maxVideoSelectable != null) {
-            GlobalSpec.getInstance().maxVideoSelectable
-        } else if (GlobalSpec.getInstance().maxSelectable != null) {
-            GlobalSpec.getInstance().maxSelectable
+        get() = if (GlobalSpec.instance.maxVideoSelectable != null) {
+            GlobalSpec.instance.maxVideoSelectable
+        } else if (GlobalSpec.instance.maxSelectable != null) {
+            GlobalSpec.instance.maxSelectable
         } else {
             0
         }
@@ -224,10 +224,10 @@ object SelectableUtils {
      */
     @JvmStatic
     val audioMaxCount: Int
-        get() = if (GlobalSpec.getInstance().maxAudioSelectable != null) {
-            GlobalSpec.getInstance().maxAudioSelectable
-        } else if (GlobalSpec.getInstance().maxSelectable != null) {
-            GlobalSpec.getInstance().maxSelectable
+        get() = if (GlobalSpec.instance.maxAudioSelectable != null) {
+            GlobalSpec.instance.maxAudioSelectable
+        } else if (GlobalSpec.instance.maxSelectable != null) {
+            GlobalSpec.instance.maxSelectable
         } else {
             0
         }
@@ -238,14 +238,14 @@ object SelectableUtils {
     @JvmStatic
     val singleImageVideo: Boolean
         get() {
-            if (GlobalSpec.getInstance().maxImageSelectable != null && GlobalSpec.getInstance().maxVideoSelectable != null) {
-                return GlobalSpec.getInstance().maxImageSelectable == 1 && GlobalSpec.getInstance().maxVideoSelectable == 1
-            } else if (GlobalSpec.getInstance().maxImageSelectable != null) {
-                return GlobalSpec.getInstance().maxImageSelectable == 1
-            } else if (GlobalSpec.getInstance().maxVideoSelectable != null) {
-                return GlobalSpec.getInstance().maxVideoSelectable == 1
-            } else if (GlobalSpec.getInstance().maxSelectable != null) {
-                return GlobalSpec.getInstance().maxSelectable == 1
+            if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxVideoSelectable != null) {
+                return GlobalSpec.instance.maxImageSelectable == 1 && GlobalSpec.instance.maxVideoSelectable == 1
+            } else if (GlobalSpec.instance.maxImageSelectable != null) {
+                return GlobalSpec.instance.maxImageSelectable == 1
+            } else if (GlobalSpec.instance.maxVideoSelectable != null) {
+                return GlobalSpec.instance.maxVideoSelectable == 1
+            } else if (GlobalSpec.instance.maxSelectable != null) {
+                return GlobalSpec.instance.maxSelectable == 1
             }
             return false
         }

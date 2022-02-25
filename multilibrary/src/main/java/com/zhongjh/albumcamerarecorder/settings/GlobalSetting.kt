@@ -1,56 +1,30 @@
-package com.zhongjh.albumcamerarecorder.settings;
+package com.zhongjh.albumcamerarecorder.settings
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.Toast;
-
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StyleRes;
-import androidx.fragment.app.Fragment;
-
-import com.zhongjh.albumcamerarecorder.MainActivity;
-import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
-import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface;
-import com.zhongjh.albumcamerarecorder.listener.OnMainListener;
-import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi;
-import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
-import com.zhongjh.common.coordinator.VideoCompressCoordinator;
-import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.entity.SaveStrategy;
-import com.zhongjh.common.enums.MimeType;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Set;
-
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_BEHIND;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_FULL_USER;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LOCKED;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.os.Bundle
+import android.widget.Toast
+import androidx.annotation.IntDef
+import androidx.annotation.StyleRes
+import com.zhongjh.albumcamerarecorder.MainActivity
+import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
+import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
+import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
+import com.zhongjh.albumcamerarecorder.listener.OnMainListener
+import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
+import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
+import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.audioMaxCount
+import com.zhongjh.common.coordinator.VideoCompressCoordinator
+import com.zhongjh.common.entity.MultiMedia
+import com.zhongjh.common.entity.SaveStrategy
+import com.zhongjh.common.enums.MimeType
+import java.lang.ref.WeakReference
+import java.util.*
 
 /**
  * 用于构建媒体具体公共设置 API。
@@ -58,232 +32,180 @@ import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
  * @author zhongjh
  * @date 2018/9/28
  */
-public final class GlobalSetting implements GlobalSettingApi {
+class GlobalSetting internal constructor(
+    private val mMultiMediaSetting: MultiMediaSetting,
+    mimeTypes: Set<MimeType?>
+) : GlobalSettingApi {
 
-    private final MultiMediaSetting mMultiMediaSetting;
-    private final GlobalSpec mGlobalSpec;
+    private val mGlobalSpec: GlobalSpec = cleanInstance
 
-    @IntDef(value = {
-            SCREEN_ORIENTATION_UNSPECIFIED,
-            SCREEN_ORIENTATION_LANDSCAPE,
-            SCREEN_ORIENTATION_PORTRAIT,
-            SCREEN_ORIENTATION_USER,
-            SCREEN_ORIENTATION_BEHIND,
-            SCREEN_ORIENTATION_SENSOR,
-            SCREEN_ORIENTATION_NOSENSOR,
-            SCREEN_ORIENTATION_SENSOR_LANDSCAPE,
-            SCREEN_ORIENTATION_SENSOR_PORTRAIT,
-            SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
-            SCREEN_ORIENTATION_REVERSE_PORTRAIT,
-            SCREEN_ORIENTATION_FULL_SENSOR,
-            SCREEN_ORIENTATION_USER_LANDSCAPE,
-            SCREEN_ORIENTATION_USER_PORTRAIT,
-            SCREEN_ORIENTATION_FULL_USER,
-            SCREEN_ORIENTATION_LOCKED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ScreenOrientation {
-    }
+    @IntDef(value = [ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_USER, ActivityInfo.SCREEN_ORIENTATION_BEHIND, ActivityInfo.SCREEN_ORIENTATION_SENSOR, ActivityInfo.SCREEN_ORIENTATION_NOSENSOR, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR, ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_FULL_USER, ActivityInfo.SCREEN_ORIENTATION_LOCKED])
+    @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+    annotation class ScreenOrientation
 
-    @Override
-    public void onDestroy() {
-        mGlobalSpec.onMainListener = null;
-        mGlobalSpec.onResultCallbackListener = null;
+    override fun onDestroy() {
+        mGlobalSpec.onMainListener = null
+        mGlobalSpec.onResultCallbackListener = null
         if (mGlobalSpec.albumSetting != null) {
-            mGlobalSpec.albumSetting.onDestroy();
+            mGlobalSpec.albumSetting!!.onDestroy()
         }
         if (mGlobalSpec.cameraSetting != null) {
-            mGlobalSpec.cameraSetting.onDestroy();
+            mGlobalSpec.cameraSetting!!.onDestroy()
         }
     }
 
-    /**
-     * 在上下文中构造新的规范生成器。
-     *
-     * @param multiMediaSetting 在 requester context wrapper.
-     * @param mimeTypes         设置为选择的 {@link MimeType} 类型
-     */
-    GlobalSetting(MultiMediaSetting multiMediaSetting, @NonNull Set<MimeType> mimeTypes) {
-        mMultiMediaSetting = multiMediaSetting;
-        mGlobalSpec = GlobalSpec.getCleanInstance();
-        mGlobalSpec.setMimeTypeSet(mimeTypes);
-
-//        mGlobalSpec.orientation = SCREEN_ORIENTATION_UNSPECIFIED;
+    override fun albumSetting(albumSetting: AlbumSetting): GlobalSetting {
+        mGlobalSpec.albumSetting = albumSetting
+        return this
     }
 
-    @Override
-    public GlobalSetting albumSetting(AlbumSetting albumSetting) {
-        mGlobalSpec.albumSetting = albumSetting;
-        return this;
+    override fun cameraSetting(cameraSetting: CameraSetting): GlobalSetting {
+        mGlobalSpec.cameraSetting = cameraSetting
+        return this
     }
 
-    @Override
-    public GlobalSetting cameraSetting(CameraSetting cameraSetting) {
-        mGlobalSpec.cameraSetting = cameraSetting;
-        return this;
+    override fun recorderSetting(recorderSetting: RecorderSetting): GlobalSetting {
+        mGlobalSpec.recorderSetting = recorderSetting
+        return this
     }
 
-    @Override
-    public GlobalSetting recorderSetting(RecorderSetting recorderSetting) {
-        mGlobalSpec.recorderSetting = recorderSetting;
-        return this;
+    override fun theme(@StyleRes themeId: Int): GlobalSetting {
+        mGlobalSpec.themeId = themeId
+        return this
     }
 
-    @Override
-    public GlobalSetting theme(@StyleRes int themeId) {
-        mGlobalSpec.themeId = themeId;
-        return this;
+    override fun defaultPosition(defaultPosition: Int): GlobalSetting {
+        mGlobalSpec.defaultPosition = defaultPosition
+        return this
     }
 
-    @Override
-    public GlobalSetting defaultPosition(int defaultPosition) {
-        mGlobalSpec.defaultPosition = defaultPosition;
-        return null;
-    }
-
-
-    @Override
-    public GlobalSetting maxSelectablePerMediaType(Integer maxSelectable, Integer maxImageSelectable, Integer maxVideoSelectable, Integer maxAudioSelectable,
-                                                   int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-        if (maxSelectable == null && maxImageSelectable == null) {
-            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值");
-        }
-        if (maxSelectable == null && maxVideoSelectable == null) {
-            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值");
-        }
-        if (maxSelectable == null && maxAudioSelectable == null) {
-            throw new IllegalStateException("maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值");
-        }
-        if (maxSelectable != null && maxImageSelectable != null && maxImageSelectable > maxSelectable) {
-            throw new IllegalStateException("maxSelectable 必须比 maxImageSelectable 大");
-        }
-        if (maxSelectable != null && maxVideoSelectable != null && maxVideoSelectable > maxSelectable) {
-            throw new IllegalStateException("maxSelectable 必须比 maxVideoSelectable 大");
-        }
-        if (maxSelectable != null && maxAudioSelectable != null && maxAudioSelectable > maxSelectable) {
-            throw new IllegalStateException("maxSelectable 必须比 maxAudioSelectable 大");
-        }
+    override fun maxSelectablePerMediaType(
+        maxSelectable: Int?,
+        maxImageSelectable: Int?,
+        maxVideoSelectable: Int?,
+        maxAudioSelectable: Int?,
+        alreadyImageCount: Int,
+        alreadyVideoCount: Int,
+        alreadyAudioCount: Int
+    ): GlobalSetting {
+        check(!(maxSelectable == null && maxImageSelectable == null)) { "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值" }
+        check(!(maxSelectable == null && maxVideoSelectable == null)) { "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值" }
+        check(!(maxSelectable == null && maxAudioSelectable == null)) { "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值" }
+        check(!(maxSelectable != null && maxImageSelectable != null && maxImageSelectable > maxSelectable)) { "maxSelectable 必须比 maxImageSelectable 大" }
+        check(!(maxSelectable != null && maxVideoSelectable != null && maxVideoSelectable > maxSelectable)) { "maxSelectable 必须比 maxVideoSelectable 大" }
+        check(!(maxSelectable != null && maxAudioSelectable != null && maxAudioSelectable > maxSelectable)) { "maxSelectable 必须比 maxAudioSelectable 大" }
 
         // 计算
         if (maxSelectable != null) {
-            mGlobalSpec.maxSelectable = maxSelectable - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount);
+            mGlobalSpec.maxSelectable =
+                maxSelectable - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount)
         }
         if (maxImageSelectable != null) {
-            mGlobalSpec.maxImageSelectable = maxImageSelectable - alreadyImageCount;
+            mGlobalSpec.maxImageSelectable = maxImageSelectable - alreadyImageCount
         } else {
-            mGlobalSpec.maxImageSelectable = null;
+            mGlobalSpec.maxImageSelectable = null
         }
         if (maxVideoSelectable != null) {
-            mGlobalSpec.maxVideoSelectable = maxVideoSelectable - alreadyVideoCount;
+            mGlobalSpec.maxVideoSelectable = maxVideoSelectable - alreadyVideoCount
         } else {
-            mGlobalSpec.maxVideoSelectable = null;
+            mGlobalSpec.maxVideoSelectable = null
         }
         if (maxAudioSelectable != null) {
-            mGlobalSpec.maxAudioSelectable = maxAudioSelectable - alreadyAudioCount;
+            mGlobalSpec.maxAudioSelectable = maxAudioSelectable - alreadyAudioCount
         } else {
-            mGlobalSpec.maxAudioSelectable = null;
+            mGlobalSpec.maxAudioSelectable = null
         }
-        return this;
+        return this
     }
 
-    @Override
-    public GlobalSetting alreadyCount(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+    override fun alreadyCount(
+        alreadyImageCount: Int,
+        alreadyVideoCount: Int,
+        alreadyAudioCount: Int
+    ): GlobalSetting {
         // 计算
         if (mGlobalSpec.maxSelectable != null) {
-            mGlobalSpec.maxSelectable = mGlobalSpec.maxSelectable - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount);
+            mGlobalSpec.maxSelectable =
+                mGlobalSpec.maxSelectable!! - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount)
         }
         if (mGlobalSpec.maxImageSelectable != null) {
-            mGlobalSpec.maxImageSelectable = mGlobalSpec.maxImageSelectable - alreadyImageCount;
+            mGlobalSpec.maxImageSelectable = mGlobalSpec.maxImageSelectable!! - alreadyImageCount
         }
         if (mGlobalSpec.maxVideoSelectable != null) {
-            mGlobalSpec.maxVideoSelectable = mGlobalSpec.maxVideoSelectable - alreadyVideoCount;
+            mGlobalSpec.maxVideoSelectable = mGlobalSpec.maxVideoSelectable!! - alreadyVideoCount
         }
         if (mGlobalSpec.maxAudioSelectable != null) {
-            mGlobalSpec.maxAudioSelectable = mGlobalSpec.maxAudioSelectable - alreadyAudioCount;
+            mGlobalSpec.maxAudioSelectable = mGlobalSpec.maxAudioSelectable!! - alreadyAudioCount
         }
-        return this;
+        return this
     }
 
-    @Override
-    public GlobalSetting allStrategy(SaveStrategy saveStrategy) {
-        mGlobalSpec.saveStrategy = saveStrategy;
-        return this;
+    override fun allStrategy(saveStrategy: SaveStrategy): GlobalSetting {
+        mGlobalSpec.saveStrategy = saveStrategy
+        return this
     }
 
-    @Override
-    public GlobalSetting pictureStrategy(SaveStrategy saveStrategy) {
-        mGlobalSpec.pictureStrategy = saveStrategy;
-        return this;
+    override fun pictureStrategy(saveStrategy: SaveStrategy): GlobalSetting {
+        mGlobalSpec.pictureStrategy = saveStrategy
+        return this
     }
 
-    @Override
-    public GlobalSetting videoStrategy(SaveStrategy saveStrategy) {
-        mGlobalSpec.videoStrategy = saveStrategy;
-        return this;
+    override fun videoStrategy(saveStrategy: SaveStrategy): GlobalSetting {
+        mGlobalSpec.videoStrategy = saveStrategy
+        return this
     }
 
-    @Override
-    public GlobalSetting audioStrategy(SaveStrategy saveStrategy) {
-        mGlobalSpec.audioStrategy = saveStrategy;
-        return this;
+    override fun audioStrategy(saveStrategy: SaveStrategy): GlobalSetting {
+        mGlobalSpec.audioStrategy = saveStrategy
+        return this
     }
 
-    @Override
-    public GlobalSetting imageEngine(ImageEngine imageEngine) {
-        mGlobalSpec.imageEngine = imageEngine;
-        return this;
+    override fun imageEngine(imageEngine: ImageEngine): GlobalSetting {
+        mGlobalSpec.imageEngine = imageEngine
+        return this
     }
 
-    @Override
-    public GlobalSetting isCutscenes(boolean isCutscenes) {
-        mGlobalSpec.isCutscenes = isCutscenes;
-        return this;
+    override fun isCutscenes(isCutscenes: Boolean): GlobalSetting {
+        mGlobalSpec.isCutscenes = isCutscenes
+        return this
     }
 
-    @Override
-    public GlobalSetting setRequestedOrientation(@ScreenOrientation int requestedOrientation) {
-        mGlobalSpec.orientation = requestedOrientation;
-        return this;
+    override fun setRequestedOrientation(@ScreenOrientation requestedOrientation: Int): GlobalSetting {
+        mGlobalSpec.orientation = requestedOrientation
+        return this
     }
 
-    @Override
-    public GlobalSetting isImageEdit(boolean isImageEdit) {
-        mGlobalSpec.isImageEdit = isImageEdit;
-        return this;
+    override fun isImageEdit(isImageEdit: Boolean): GlobalSetting {
+        mGlobalSpec.isImageEdit = isImageEdit
+        return this
     }
 
-    @Override
-    public GlobalSetting setOnImageCompressionInterface(@Nullable ImageCompressionInterface listener) {
-        mGlobalSpec.imageCompressionInterface = listener;
-        return this;
+    override fun setOnImageCompressionInterface(listener: ImageCompressionInterface?): GlobalSetting {
+        mGlobalSpec.imageCompressionInterface = listener
+        return this
     }
 
-    @Override
-    public GlobalSetting videoCompress(VideoCompressCoordinator videoCompressManager) {
-        mGlobalSpec.videoCompressCoordinator = videoCompressManager;
-        return this;
+    override fun videoCompress(videoCompressManager: VideoCompressCoordinator): GlobalSetting {
+        mGlobalSpec.videoCompressCoordinator = videoCompressManager
+        return this
     }
 
-    @NonNull
-    @Override
-    public GlobalSetting setOnMainListener(@Nullable OnMainListener listener) {
-        mGlobalSpec.onMainListener = listener;
-        return this;
+    override fun setOnMainListener(listener: OnMainListener?): GlobalSetting {
+        mGlobalSpec.onMainListener = listener
+        return this
     }
 
-    @Override
-    public void forResult(int requestCode) {
-        mGlobalSpec.requestCode = requestCode;
+    override fun forResult(requestCode: Int) {
+        mGlobalSpec.requestCode = requestCode
         // 回调监听设置null
-        mGlobalSpec.onResultCallbackListener = null;
-        openMain(requestCode);
+        mGlobalSpec.onResultCallbackListener = null
+        openMain(requestCode)
     }
 
-    @Override
-    public void forResult(OnResultCallbackListener listener) {
+    override fun forResult(listener: OnResultCallbackListener) {
         // 绑定回调监听
-        mGlobalSpec.onResultCallbackListener = new WeakReference<>(listener).get();
-        openMain(null);
+        mGlobalSpec.onResultCallbackListener = WeakReference(listener).get()
+        openMain(null)
     }
 
     /**
@@ -294,24 +216,27 @@ public final class GlobalSetting implements GlobalSettingApi {
      * @param list        数据源
      * @param position    当前数据的索引
      */
-    @Override
-    public void openPreviewData(Activity activity, int requestCode,
-                                ArrayList<? extends MultiMedia> list, int position) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, list);
-        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
-
-        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list.get(position));
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true);
-        GlobalSpec globalSpec = GlobalSpec.getInstance();
-        activity.startActivityForResult(intent, requestCode);
+    override fun openPreviewData(
+        activity: Activity, requestCode: Int,
+        list: ArrayList<out MultiMedia>, position: Int
+    ) {
+        val bundle = Bundle()
+        bundle.putParcelableArrayList(SelectedItemCollection.STATE_SELECTION, list)
+        bundle.putInt(
+            SelectedItemCollection.STATE_COLLECTION_TYPE,
+            SelectedItemCollection.COLLECTION_IMAGE
+        )
+        val intent = Intent(activity, AlbumPreviewActivity::class.java)
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list[position])
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle)
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true)
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false)
+        intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
+        val globalSpec: GlobalSpec = GlobalSpec.getInstance()
+        activity.startActivityForResult(intent, requestCode)
         if (globalSpec.isCutscenes) {
-            activity.overridePendingTransition(R.anim.activity_open, 0);
+            activity.overridePendingTransition(R.anim.activity_open, 0)
         }
     }
 
@@ -322,15 +247,14 @@ public final class GlobalSetting implements GlobalSettingApi {
      * @param list     资源id数据源
      * @param position 当前数据的索引
      */
-    @Override
-    public void openPreviewResourceId(Activity activity, ArrayList<Integer> list, int position) {
-        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
-        for (Integer item : list) {
-            MultiMedia multiMedia = new MultiMedia();
-            multiMedia.setDrawableId(item);
-            multiMedias.add(multiMedia);
+    override fun openPreviewResourceId(activity: Activity, list: ArrayList<Int>, position: Int) {
+        val multiMedias = ArrayList<MultiMedia>()
+        for (item in list) {
+            val multiMedia = MultiMedia()
+            multiMedia.drawableId = item
+            multiMedias.add(multiMedia)
         }
-        openPreview(activity, multiMedias, position);
+        openPreview(activity, multiMedias, position)
     }
 
     /**
@@ -340,92 +264,105 @@ public final class GlobalSetting implements GlobalSettingApi {
      * @param list     文件地址的数据源
      * @param position 当前数据的索引
      */
-    @Override
-    public void openPreviewPath(Activity activity, ArrayList<String> list, int position) {
-        ArrayList<MultiMedia> multiMedias = new ArrayList<>();
-        for (String item : list) {
-            MultiMedia multiMedia = new MultiMedia();
-            multiMedia.setUrl(item);
-            multiMedias.add(multiMedia);
+    override fun openPreviewPath(activity: Activity, list: ArrayList<String>, position: Int) {
+        val multiMedias = ArrayList<MultiMedia>()
+        for (item in list) {
+            val multiMedia = MultiMedia()
+            multiMedia.url = item
+            multiMedias.add(multiMedia)
         }
-        openPreview(activity, multiMedias, position);
+        openPreview(activity, multiMedias, position)
     }
 
-    private void openMain(Integer requestCode) {
-        Activity activity = mMultiMediaSetting.getActivity();
-        if (activity == null) {
-            return;
-        }
+    private fun openMain(requestCode: Int?) {
+        val activity = mMultiMediaSetting.activity ?: return
         // 数量
-        int numItems = 0;
+        var numItems = 0
         // 根据相关配置做相应的初始化
         if (mGlobalSpec.albumSetting != null) {
-            numItems++;
+            numItems++
         }
         if (mGlobalSpec.cameraSetting != null) {
-            numItems++;
+            numItems++
         }
         if (mGlobalSpec.recorderSetting != null && numItems <= 0) {
-            if (SelectableUtils.getAudioMaxCount() > 0) {
-                numItems++;
+            if (audioMaxCount > 0) {
+                numItems++
             } else {
                 if (mGlobalSpec.onMainListener != null) {
-                    mGlobalSpec.onMainListener.onOpenFail(activity.getResources().getString(R.string.z_multi_library_the_recording_limit_has_been_reached));
+                    mGlobalSpec.onMainListener!!.onOpenFail(activity.resources.getString(R.string.z_multi_library_the_recording_limit_has_been_reached))
                 } else {
-                    Toast.makeText(activity.getApplicationContext(), activity.getResources().getString(R.string.z_multi_library_the_recording_limit_has_been_reached), Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                        activity.applicationContext,
+                        activity.resources.getString(R.string.z_multi_library_the_recording_limit_has_been_reached),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
-        if (numItems <= 0) {
-            throw new IllegalStateException(activity.getResources().getString(R.string.z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set));
-        }
-
-        Intent intent = new Intent(activity, MainActivity.class);
-
-        Fragment fragment = mMultiMediaSetting.getFragment();
+        check(numItems > 0) { activity.resources.getString(R.string.z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set) }
+        val intent = Intent(activity, MainActivity::class.java)
+        val fragment = mMultiMediaSetting.fragment
         if (fragment != null) {
             if (requestCode != null) {
-                fragment.startActivityForResult(intent, requestCode);
+                fragment.startActivityForResult(intent, requestCode)
             } else {
-                fragment.startActivity(intent);
+                fragment.startActivity(intent)
             }
         } else {
             if (requestCode != null) {
-                activity.startActivityForResult(intent, requestCode);
+                activity.startActivityForResult(intent, requestCode)
             } else {
-                activity.startActivity(intent);
+                activity.startActivity(intent)
             }
             if (mGlobalSpec.isCutscenes) {
-                activity.overridePendingTransition(R.anim.activity_open, 0);
+                activity.overridePendingTransition(R.anim.activity_open, 0)
+            }
+        }
+    }
+
+    companion object {
+        /**
+         * 提供给 [.openPreviewResourceId] 和 [.openPreviewPath] 共用的方法
+         *
+         * @param activity    窗体
+         * @param multiMedias 数据源
+         * @param position    当前数据的索引
+         */
+        private fun openPreview(
+            activity: Activity,
+            multiMedias: ArrayList<MultiMedia>,
+            position: Int
+        ) {
+            val bundle = Bundle()
+            bundle.putParcelableArrayList(SelectedItemCollection.STATE_SELECTION, multiMedias)
+            bundle.putInt(
+                SelectedItemCollection.STATE_COLLECTION_TYPE,
+                SelectedItemCollection.COLLECTION_IMAGE
+            )
+            val intent = Intent(activity, AlbumPreviewActivity::class.java)
+            intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, multiMedias[position])
+            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle)
+            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+            intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true)
+            intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false)
+            intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false)
+            intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
+            val globalSpec: GlobalSpec = GlobalSpec.getInstance()
+            activity.startActivityForResult(intent, globalSpec.requestCode)
+            if (globalSpec.isCutscenes) {
+                activity.overridePendingTransition(R.anim.activity_open, 0)
             }
         }
     }
 
     /**
-     * 提供给 {@link #openPreviewResourceId} 和 {@link #openPreviewPath} 共用的方法
+     * 在上下文中构造新的规范生成器。
      *
-     * @param activity    窗体
-     * @param multiMedias 数据源
-     * @param position    当前数据的索引
+     * @param multiMediaSetting 在 requester context wrapper.
+     * @param mimeTypes         设置为选择的 [MimeType] 类型
      */
-    private static void openPreview(Activity activity, ArrayList<MultiMedia> multiMedias, int position) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, multiMedias);
-        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
-
-        Intent intent = new Intent(activity, AlbumPreviewActivity.class);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, multiMedias.get(position));
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false);
-        intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true);
-        GlobalSpec globalSpec = GlobalSpec.getInstance();
-        activity.startActivityForResult(intent, globalSpec.requestCode);
-        if (globalSpec.isCutscenes) {
-            activity.overridePendingTransition(R.anim.activity_open, 0);
-        }
+    init {
+        mGlobalSpec.setMimeTypeSet(mimeTypes)
     }
-
 }

@@ -1,15 +1,12 @@
-package com.zhongjh.albumcamerarecorder.settings;
+package com.zhongjh.albumcamerarecorder.settings
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
-import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi;
-
-import com.zhongjh.common.coordinator.VideoMergeCoordinator;
-import com.zhongjh.common.enums.MimeType;
-
-import java.util.Set;
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
+import com.zhongjh.albumcamerarecorder.settings.CameraSpec.cleanInstance
+import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi
+import com.zhongjh.common.coordinator.VideoMergeCoordinator
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.enums.MimeType.Companion.ofImage
+import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 
 /**
  * 有关拍摄界面的动态设置
@@ -17,121 +14,99 @@ import java.util.Set;
  * @author zhongjh
  * @date 2018/12/26
  */
-public class CameraSetting implements CameraSettingApi {
+class CameraSetting : CameraSettingApi {
 
-    private final CameraSpec mCameraSpec;
+    private val mCameraSpec: CameraSpec = cleanInstance
 
-
-    public CameraSetting() {
-        mCameraSpec = CameraSpec.getCleanInstance();
+    override fun onDestroy() {
+        mCameraSpec.onCameraViewListener = null
     }
 
-    @Override
-    public void onDestroy() {
-        mCameraSpec.onCameraViewListener = null;
-    }
-
-    @Override
-    public CameraSetting mimeTypeSet(@NonNull Set<MimeType> mimeTypes) {
+    override fun mimeTypeSet(mimeTypes: Set<MimeType>): CameraSetting {
         // 如果设置了高清模式，则优先以高清模式为准
         if (!mCameraSpec.enableImageHighDefinition && !mCameraSpec.enableVideoHighDefinition) {
-            mCameraSpec.mimeTypeSet = mimeTypes;
+            mCameraSpec.mimeTypeSet = mimeTypes
         }
-        return this;
+        return this
     }
 
-    @Override
-    public CameraSetting enableImageHighDefinition(boolean enable) {
-        mCameraSpec.enableImageHighDefinition = enable;
+    override fun enableImageHighDefinition(enable: Boolean): CameraSetting {
+        mCameraSpec.enableImageHighDefinition = enable
         // 如果启用图片高清，就禁用录制视频
         if (enable) {
-            mCameraSpec.mimeTypeSet = MimeType.ofImage();
+            mCameraSpec.mimeTypeSet = ofImage()
         }
-        return this;
+        return this
     }
 
-    @Override
-    public CameraSetting enableVideoHighDefinition(boolean enable) {
-        mCameraSpec.enableVideoHighDefinition = enable;
+    override fun enableVideoHighDefinition(enable: Boolean): CameraSetting {
+        mCameraSpec.enableVideoHighDefinition = enable
         // 如果启用视频高清，就禁用拍摄图片,并且单击就能录制
         if (enable) {
-            mCameraSpec.mimeTypeSet = MimeType.ofVideo();
-            mCameraSpec.isClickRecord = true;
+            mCameraSpec.mimeTypeSet = ofVideo()
+            mCameraSpec.isClickRecord = true
         }
-        return this;
+        return this
     }
 
-    @Override
-    public CameraSetting duration(int duration) {
-        mCameraSpec.duration = duration;
-        return this;
+    override fun duration(duration: Int): CameraSetting {
+        mCameraSpec.duration = duration
+        return this
     }
 
-    @Override
-    public CameraSetting minDuration(int minDuration) {
-        mCameraSpec.minDuration = minDuration;
-        return this;
+    override fun minDuration(minDuration: Int): CameraSetting {
+        mCameraSpec.minDuration = minDuration
+        return this
     }
 
-    @Override
-    public CameraSetting isClickRecord(boolean isClickRecord) {
-        mCameraSpec.isClickRecord = isClickRecord;
-        return this;
+    override fun isClickRecord(isClickRecord: Boolean): CameraSetting {
+        mCameraSpec.isClickRecord = isClickRecord
+        return this
     }
 
-    @Override
-    public CameraSetting videoMerge(VideoMergeCoordinator videoEditManager) {
-        mCameraSpec.videoMergeCoordinator = videoEditManager;
-        return this;
+    override fun videoMerge(videoEditManager: VideoMergeCoordinator): CameraSetting {
+        mCameraSpec.videoMergeCoordinator = videoEditManager
+        return this
     }
 
-    @Override
-    public CameraSetting watermarkResource(int watermarkResource) {
-        mCameraSpec.watermarkResource = watermarkResource;
-        return this;
+    override fun watermarkResource(watermarkResource: Int): CameraSetting {
+        mCameraSpec.watermarkResource = watermarkResource
+        return this
     }
 
-    @Override
-    public CameraSetting imageSwitch(int imageSwitch) {
-        mCameraSpec.imageSwitch = imageSwitch;
-        return this;
+    override fun imageSwitch(imageSwitch: Int): CameraSetting {
+        mCameraSpec.imageSwitch = imageSwitch
+        return this
     }
 
-    @Override
-    public CameraSetting imageFlashOn(int imageFlashOn) {
-        mCameraSpec.imageFlashOn = imageFlashOn;
-        return this;
+    override fun imageFlashOn(imageFlashOn: Int): CameraSetting {
+        mCameraSpec.imageFlashOn = imageFlashOn
+        return this
     }
 
-    @Override
-    public CameraSetting imageFlashOff(int imageFlashOff) {
-        mCameraSpec.imageFlashOff = imageFlashOff;
-        return this;
+    override fun imageFlashOff(imageFlashOff: Int): CameraSetting {
+        mCameraSpec.imageFlashOff = imageFlashOff
+        return this
     }
 
-    @Override
-    public CameraSetting imageFlashAuto(int imageFlashAuto) {
-        mCameraSpec.imageFlashAuto = imageFlashAuto;
-        return this;
+    override fun imageFlashAuto(imageFlashAuto: Int): CameraSetting {
+        mCameraSpec.imageFlashAuto = imageFlashAuto
+        return this
     }
 
-    @Override
-    public CameraSetting flashModel(int flashModel) {
-        mCameraSpec.flashModel = flashModel;
-        return this;
+    override fun flashModel(flashModel: Int): CameraSetting {
+        mCameraSpec.flashModel = flashModel
+        return this
     }
 
-    @Override
-    public CameraSetting enableFlashMemoryModel(boolean enableFlashMemoryModel) {
-        mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel;
-        return this;
+    override fun enableFlashMemoryModel(enableFlashMemoryModel: Boolean): CameraSetting {
+        mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel
+        return this
     }
 
-    @Override
-    public CameraSetting setOnCameraViewListener(@Nullable OnCameraViewListener listener) {
-        mCameraSpec.onCameraViewListener = listener;
-        return this;
+    override fun setOnCameraViewListener(listener: OnCameraViewListener?): CameraSetting {
+        mCameraSpec.onCameraViewListener = listener
+        return this
     }
-
 
 }

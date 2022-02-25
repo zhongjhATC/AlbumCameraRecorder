@@ -135,13 +135,13 @@ public class SoundRecordingFragment extends BaseFragment {
 
         // 初始化设置
         mGlobalSpec = GlobalSpec.getInstance();
-        mRecordSpec = RecordeSpec.getInstance();
+        mRecordSpec = RecordeSpec.INSTANCE;
         // 提示文本
         mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_sound_recording));
         // 设置录制时间
-        mViewHolder.pvLayout.setDuration(mRecordSpec.duration * 1000);
+        mViewHolder.pvLayout.setDuration(mRecordSpec.getDuration() * 1000);
         // 最短录制时间
-        mViewHolder.pvLayout.setMinDuration(mRecordSpec.minDuration);
+        mViewHolder.pvLayout.setMinDuration(mRecordSpec.getMinDuration());
         // 设置只能长按
         mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
 
@@ -207,7 +207,7 @@ public class SoundRecordingFragment extends BaseFragment {
                 Log.d(TAG, "onLongClickShort" + time);
                 mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));  // 提示过短
                 // 停止录音
-                new Handler(Looper.getMainLooper()).postDelayed(() -> onRecord(false, true), mRecordSpec.minDuration - time);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> onRecord(false, true), mRecordSpec.getMinDuration() - time);
                 mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
                 // 母窗体启动滑动
                 ((MainActivity) mActivity).showHideTableLayout(true);

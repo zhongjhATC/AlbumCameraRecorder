@@ -8,7 +8,7 @@ import com.zhongjh.albumcamerarecorder.settings.api.RecorderSettingApi
  */
 class RecorderSetting : RecorderSettingApi {
 
-    private val mRecordeSpec: RecordeSpec = RecordeSpec.getCleanInstance()
+    private val mRecordeSpec: RecordeSpec = RecordeSpec.cleanInstance
 
     override fun duration(duration: Int): RecorderSetting {
         mRecordeSpec.duration = duration
