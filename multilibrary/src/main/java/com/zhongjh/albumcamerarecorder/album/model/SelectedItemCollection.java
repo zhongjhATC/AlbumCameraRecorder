@@ -9,7 +9,6 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
-import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalFile;
@@ -168,7 +167,7 @@ public class SelectedItemCollection {
      */
     public boolean remove(MultiMedia item) {
         boolean removed;
-        MultiMedia multiMedia = MultiMediaUtils.checkedMultiMediaOf(mItems, item);
+        MultiMedia multiMedia = MultiMedia.checkedMultiMediaOf(mItems, item);
         removed = mItems.remove(multiMedia);
         if (removed) {
             if (mItems.size() == 0) {
@@ -421,7 +420,7 @@ public class SelectedItemCollection {
      * @return 选择的索引，最终返回的选择了第几个
      */
     public int checkedNumOf(MultiMedia item) {
-        return MultiMediaUtils.checkedNumOf(new ArrayList<>(mItems), item);
+        return MultiMedia.checkedNumOf(new ArrayList<>(mItems), item);
     }
 
 }

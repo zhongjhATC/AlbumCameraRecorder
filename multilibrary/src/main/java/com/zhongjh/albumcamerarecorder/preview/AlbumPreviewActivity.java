@@ -26,7 +26,6 @@ import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.MultiMediaUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +99,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
                 mIsAlreadySetPosition = true;
                 MultiMedia selected = getIntent().getParcelableExtra(EXTRA_ITEM);
                 // -1是爲了拿到索引
-                int selectedIndex = MultiMediaUtils.checkedNumOf(items, selected) - 1;
+                int selectedIndex = MultiMedia.checkedNumOf(items, selected) - 1;
                 mViewHolder.pager.setCurrentItem(selectedIndex, false);
                 mPreviousPos = selectedIndex;
             }

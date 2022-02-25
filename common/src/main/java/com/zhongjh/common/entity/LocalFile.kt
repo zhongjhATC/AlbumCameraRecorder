@@ -108,7 +108,7 @@ open class LocalFile : Parcelable {
         } else if (isVideo()) {
             // 有些手机视频拍照没有宽高的
             if (localFile.width == 0) {
-                val mediaExtraInfo = MediaUtils.getVideoSize(context, this.path)
+                val mediaExtraInfo = MediaUtils.getVideoSize(context, compressionFile.absolutePath)
                 height = mediaExtraInfo.height
                 width = mediaExtraInfo.width
                 duration = mediaExtraInfo.duration

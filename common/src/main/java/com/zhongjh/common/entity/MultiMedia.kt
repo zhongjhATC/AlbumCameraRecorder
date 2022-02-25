@@ -147,6 +147,82 @@ open class MultiMedia : LocalFile, Parcelable {
                     cursor.getInt(cursor.getColumnIndex(MediaColumns.WIDTH)),
                     cursor.getInt(cursor.getColumnIndex(MediaColumns.HEIGHT)))
         }
+
+        /**
+         * 获取相同数据的索引
+         *
+         * @param items 数据列表
+         * @param item  当前数据
+         * @return 索引
+         */
+        @JvmStatic
+        fun checkedNumOf(items: List<MultiMedia>, item: MultiMedia): Int {
+            var index = -1
+            if (item.uri != null) {
+                for (i in items.indices) {
+                    if (items[i].uri != null && items[i].uri == item.uri
+                        && items[i].multiMediaId == item.multiMediaId
+                    ) {
+                        index = i
+                        break
+                    }
+                }
+            } else if (item.drawableId != -1) {
+                for (i in items.indices) {
+                    if (items[i].drawableId != -1 && items[i].drawableId == item.drawableId && items[i].multiMediaId == item.multiMediaId) {
+                        index = i
+                        break
+                    }
+                }
+            } else if (item.url != null) {
+                for (i in items.indices) {
+                    if (items[i].url != null && items[i].url == item.url
+                        && items[i].multiMediaId == item.multiMediaId
+                    ) {
+                        index = i
+                        break
+                    }
+                }
+            }
+            // 如果选择的为 -1 就是未选状态，否则选择基础数量+1
+            return if (index == -1) Int.MIN_VALUE else index + 1
+        }
+
+        /**
+         * 获取相同数据的對象
+         *
+         * @param items 数据列表
+         * @param item  当前数据
+         * @return 索引
+         */
+        @JvmStatic
+        fun checkedMultiMediaOf(items: List<MultiMedia>, item: MultiMedia): MultiMedia? {
+            var multiMedia: MultiMedia? = null
+            if (item.uri != null) {
+                for (i in items.indices) {
+                    if (items[i].uri == item.uri) {
+                        multiMedia = items[i]
+                        break
+                    }
+                }
+            } else if (item.drawableId != -1) {
+                for (i in items.indices) {
+                    if (items[i].drawableId == item.drawableId) {
+                        multiMedia = items[i]
+                        break
+                    }
+                }
+            } else if (item.url != null) {
+                for (i in items.indices) {
+                    if (items[i].url == item.url) {
+                        multiMedia = items[i]
+                        break
+                    }
+                }
+            }
+            return multiMedia
+        }
+
     }
 
 
