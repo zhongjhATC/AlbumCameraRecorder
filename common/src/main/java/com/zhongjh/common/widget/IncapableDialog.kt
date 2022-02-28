@@ -15,7 +15,7 @@ import com.zhongjh.common.R
  */
 class IncapableDialog : DialogFragment() {
 
-    private var mContext: Context? = null
+    private lateinit var mContext: Context
 
     companion object {
 
@@ -23,7 +23,7 @@ class IncapableDialog : DialogFragment() {
         private const val EXTRA_MESSAGE = "extra_message"
 
         @JvmStatic
-        fun newInstance(title: String?, message: String?): IncapableDialog? {
+        fun newInstance(title: String, message: String): IncapableDialog {
             val dialog = IncapableDialog()
             val args = Bundle()
             args.putString(EXTRA_TITLE, title)
@@ -41,7 +41,7 @@ class IncapableDialog : DialogFragment() {
             title = bundle.getString(EXTRA_TITLE)
             message = bundle.getString(EXTRA_MESSAGE)
         }
-        val builder = AlertDialog.Builder(mContext!!)
+        val builder = AlertDialog.Builder(mContext)
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
         }

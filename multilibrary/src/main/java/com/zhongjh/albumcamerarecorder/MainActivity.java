@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private int mDefaultPosition;
 
-    GlobalSpec mSpec= GlobalSpec.getInstance();
+    GlobalSpec mSpec = GlobalSpec.INSTANCE;
     /**
      * 是否初始化完毕
      */
@@ -87,13 +87,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (mSpec.needOrientationRestriction()) {
-            setRequestedOrientation(mSpec.orientation);
+            setRequestedOrientation(mSpec.getOrientation());
         }
-        setTheme(mSpec.themeId);
+        setTheme(mSpec.getThemeId());
         StatusBarUtils.initStatusBar(MainActivity.this);
         super.onCreate(savedInstanceState);
-        // @@确认是否进行了配置
-        if (!mSpec.hasInited) {
+        // 确认是否进行了配置
+        if (!mSpec.getHasInited()) {
             setResult(RESULT_CANCELED);
             finish();
             return;
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        if (mSpec.isCutscenes) {
+        if (mSpec.getCutscenesEnabled()) {
             //关闭窗体动画显示
             this.overridePendingTransition(0, R.anim.activity_close);
         }
@@ -373,10 +373,10 @@ public class MainActivity extends AppCompatActivity {
 
             int defaultPositionType = ALBUM;// 默认选择谁的类型
 
-            if (mSpec.defaultPosition == RECORDER) {
+            if (mSpec.getDefaultPosition() == RECORDER) {
                 // 默认语音
                 defaultPositionType = RECORDER;
-            } else if (mSpec.defaultPosition == CAMERA) {
+            } else if (mSpec.getDefaultPosition() == CAMERA) {
                 // 默认录制
                 defaultPositionType = CAMERA;
             }

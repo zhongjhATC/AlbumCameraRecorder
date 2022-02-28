@@ -24,7 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -75,8 +74,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private static final String CHECK_STATE = "checkState";
 
-    private AppCompatActivity mActivity;
-    private Context mContext;
+    private MainActivity mActivity;
     /**
      * 上一个Fragment,因为切换相册后，数据要进行一次销毁才能读取
      */
@@ -142,17 +140,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         return matissFragment;
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onAttach(@NonNull Activity activity) {
-        super.onAttach(activity);
-        this.mActivity = (AppCompatActivity) activity;
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.mContext = context;
+        if (context instanceof Activity) {
+            this.mActivity = (MainActivity) context;
+        }
         mSelectedCollection = new SelectedItemCollection(getContext());
     }
 
@@ -170,7 +163,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         this.view = view;
         mViewHolder = new ViewHolder(view);
         initConfig();
-        mAlbumCompressFileTask = new AlbumCompressFileTask(mContext, TAG, MatissFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
+        mAlbumCompressFileTask = new AlbumCompressFileTask(mActivity, TAG, MatissFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
         initView(savedInstanceState);
         initListener();
         return view;
@@ -183,21 +176,33 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private void initConfig() {
         // 初始化设置
         mAlbumSpec = AlbumSpec.INSTANCE;
-        mGlobalSpec = GlobalSpec.getInstance();
+        mGlobalSpec = GlobalSpec.INSTANCE;
+
         // 设置图片路径
-        if (mGlobalSpec.pictureStrategy != null) {
+        if (mGlobalSpec.getPictureStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.pictureStrategy);
+            mPictureMediaStoreCompat = new MediaStoreCompat(mActivity, mGlobalSpec.getPictureStrategy());
         } else {
             // 否则使用全局的
-            if (mGlobalSpec.saveStrategy == null) {
+            if (mGlobalSpec.getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.saveStrategy);
+                mPictureMediaStoreCompat = new MediaStoreCompat(mActivity, mGlobalSpec.getSaveStrategy());
             }
         }
-        mVideoMediaStoreCompat = new MediaStoreCompat(getContext(),
-                mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
+
+        // 设置视频路径
+        if (mGlobalSpec.getVideoStrategy() != null) {
+            // 如果设置了视频的文件夹路径，就使用它的
+            mVideoMediaStoreCompat = new MediaStoreCompat(mActivity, mGlobalSpec.getVideoStrategy());
+        } else {
+            // 否则使用全局的
+            if (mGlobalSpec.getSaveStrategy() == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
+            } else {
+                mVideoMediaStoreCompat = new MediaStoreCompat(mActivity, mGlobalSpec.getSaveStrategy());
+            }
+        }
     }
 
     /**
@@ -206,13 +211,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private void initView(Bundle savedInstanceState) {
         // 兼容沉倾状态栏
         ViewGroup.LayoutParams layoutParams = mViewHolder.toolbar.getLayoutParams();
-        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mContext);
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mActivity);
         layoutParams.height = layoutParams.height + statusBarHeight;
         mViewHolder.toolbar.setLayoutParams(layoutParams);
         mViewHolder.toolbar.setPadding(mViewHolder.toolbar.getPaddingLeft(), statusBarHeight,
                 mViewHolder.toolbar.getPaddingRight(), mViewHolder.toolbar.getPaddingBottom());
         Drawable navigationIcon = mViewHolder.toolbar.getNavigationIcon();
-        TypedArray ta = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
+        TypedArray ta = mActivity.getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
         int color = ta.getColor(0, 0);
         ta.recycle();
         if (navigationIcon != null) {
@@ -224,8 +229,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
         updateBottomToolbar();
 
-        mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(mContext, null, false);
-        mAlbumsSpinner = new AlbumsSpinner(mContext);
+        mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(mActivity, null, false);
+        mAlbumsSpinner = new AlbumsSpinner(mActivity);
         mAlbumsSpinner.setSelectedTextView(mViewHolder.selectedAlbum);
         mAlbumsSpinner.setPopupAnchorView(mViewHolder.toolbar);
         mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
@@ -263,8 +268,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
             intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
-            startActivityForResult(intent, mGlobalSpec.requestCode);
-            if (mGlobalSpec.isCutscenes) {
+            startActivityForResult(intent, mGlobalSpec.getRequestCode());
+            if (mGlobalSpec.getCutscenesEnabled()) {
                 mActivity.overridePendingTransition(R.anim.activity_open, 0);
             }
         });
@@ -317,9 +322,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onDestroy() {
-        if (mGlobalSpec.isCompressEnable()) {
-            mGlobalSpec.videoCompressCoordinator.onCompressDestroy(MatissFragment.this.getClass());
-            mGlobalSpec.videoCompressCoordinator = null;
+        if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
+            mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(MatissFragment.this.getClass());
+            mGlobalSpec.setVideoCompressCoordinator(null);
         }
         // 销毁相册model
         mAlbumCollection.onDestroy();
@@ -341,7 +346,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             return;
         }
         // 请求的预览界面
-        if (requestCode == mGlobalSpec.requestCode) {
+        if (requestCode == mGlobalSpec.getRequestCode()) {
             Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
             // 获取选择的数据
             ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
@@ -535,8 +540,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
-        startActivityForResult(intent, mGlobalSpec.requestCode);
-        if (mGlobalSpec.isCutscenes) {
+        startActivityForResult(intent, mGlobalSpec.getRequestCode());
+        if (mGlobalSpec.getCutscenesEnabled()) {
             mActivity.overridePendingTransition(R.anim.activity_open, 0);
         }
     }
@@ -609,7 +614,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private void setResultOk(ArrayList<LocalFile> localFiles) {
         Log.d(TAG, "setResultOk");
-        if (mGlobalSpec.onResultCallbackListener == null) {
+        if (mGlobalSpec.getOnResultCallbackListener() == null) {
             // 获取选择的图片的url集合
             Intent result = new Intent();
             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
@@ -618,7 +623,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mActivity.setResult(RESULT_OK, result);
             mActivity.finish();
         } else {
-            mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+            mGlobalSpec.getOnResultCallbackListener().onResult(localFiles);
             mActivity.finish();
         }
     }

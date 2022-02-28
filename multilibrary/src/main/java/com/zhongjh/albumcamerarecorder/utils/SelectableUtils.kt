@@ -28,6 +28,7 @@ object SelectableUtils {
      *
      * @return 是否有效
      */
+    @JvmStatic
     fun albumValid(): Boolean {
         return if (GlobalSpec.albumSetting != null) {
             if (GlobalSpec.maxImageSelectable ?: 0 > 0 || GlobalSpec.maxVideoSelectable ?: 0 > 0) {
@@ -48,6 +49,7 @@ object SelectableUtils {
      *
      * @return 是否有效
      */
+    @JvmStatic
     fun cameraValid(): Boolean {
         return if (GlobalSpec.albumSetting != null) {
             if (GlobalSpec.maxImageSelectable ?: 0 > 0 || GlobalSpec.maxVideoSelectable ?: 0 > 0) {
@@ -66,6 +68,7 @@ object SelectableUtils {
      *
      * @return 是否有效
      */
+    @JvmStatic
     fun videoValid(): Boolean {
         if (GlobalSpec.cameraSetting != null) {
             if (GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA).containsAll(ofVideo())
@@ -83,6 +86,7 @@ object SelectableUtils {
      *
      * @return 是否有效
      */
+    @JvmStatic
     fun recorderValid(): Boolean {
         return if (GlobalSpec.recorderSetting != null) {
             if (GlobalSpec.maxAudioSelectable ?: 0 > 0) {

@@ -97,12 +97,12 @@ object GlobalSpec {
      */
     var audioStrategy: SaveStrategy? = null
 
-    var imageEngine: ImageEngine? = null
+    lateinit var imageEngine: ImageEngine
 
     /**
      * 是否启动过场动画，只包括开始打开界面和关闭界面的过场动画
      */
-    var isCutscenes = false
+    var cutscenesEnabled = false
 
     /**
      * 横竖屏设置,默认强制竖屏
@@ -112,7 +112,7 @@ object GlobalSpec {
     /**
      * 图片是否开启编辑功能，涉及功能：预览、拍照
      */
-    var isImageEdit = false
+    var imageEditEnabled = false
 
     /**
      * 压缩图片接口
@@ -198,9 +198,9 @@ object GlobalSpec {
         audioStrategy = null
         hasInited = true
         imageEngine = GlideEngine()
-        isCutscenes = true
+        cutscenesEnabled = true
         orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        isImageEdit = true
+        imageEditEnabled = true
         imageCompressionInterface = null
         requestCode = 0
     }

@@ -293,7 +293,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void finish() {
         super.finish();
-        if (mGlobalSpec.isCutscenes)
+        if (mGlobalSpec.cutscenesEnabled)
         //关闭窗体动画显示
         {
             this.overridePendingTransition(0, R.anim.activity_close);
@@ -511,7 +511,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
         }
 
-        if (item.isImage() && mGlobalSpec.isImageEdit) {
+        if (item.isImage() && mGlobalSpec.imageEditEnabled) {
             mViewHolder.tvEdit.setVisibility(View.VISIBLE);
         } else {
             mViewHolder.tvEdit.setVisibility(View.GONE);

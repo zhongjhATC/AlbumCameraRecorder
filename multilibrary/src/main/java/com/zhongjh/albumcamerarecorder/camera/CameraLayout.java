@@ -1207,7 +1207,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mCameraStateManagement.setState(mCameraStateManagement.getPictureComplete());
 
         // 判断是否要编辑
-        if (mGlobalSpec.isImageEdit) {
+        if (mGlobalSpec.imageEditEnabled) {
             mViewHolder.rlEdit.setVisibility(View.VISIBLE);
             mViewHolder.rlEdit.setTag(uri);
         } else {

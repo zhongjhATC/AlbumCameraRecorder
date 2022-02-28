@@ -69,7 +69,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
-        mGlobalSpec.imageEngine.loadUriImage(mContext, holder.imgPhoto, mListData.get(position).getUri());
+        mGlobalSpec.getImageEngine().loadUriImage(mContext, holder.imgPhoto, mListData.get(position).getUri());
         // 点击图片
         holder.itemView.setOnClickListener(new OnMoreClickListener() {
             @Override
@@ -131,7 +131,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
-        if (mGlobalSpec.isCutscenes) {
+        if (mGlobalSpec.getCutscenesEnabled()) {
             if (mCameraFragment.getActivity() != null) {
                 mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
             }

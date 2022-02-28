@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,6 +65,7 @@ public class CameraFragment extends BaseFragment {
      */
     ActivityResultLauncher<Intent> mImageEditActivityResult;
 
+
     private MainActivity mActivity;
     private CameraLayout mCameraLayout;
 
@@ -87,17 +89,18 @@ public class CameraFragment extends BaseFragment {
         return cameraFragment;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public void onAttach(@NotNull Activity activity) {
-        super.onAttach(activity);
-        this.mActivity = (MainActivity) activity;
+    public void onAttach(@NonNull @NotNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity) {
+            this.mActivity = (MainActivity) context;
+        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mGlobalSpec = GlobalSpec.getInstance();
+        mGlobalSpec = GlobalSpec.INSTANCE;
         onActivityResult();
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
@@ -173,13 +176,13 @@ public class CameraFragment extends BaseFragment {
                 LocalFile localFile = result.getData().getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
                 localFiles.add(localFile);
                 mIsCommit = true;
-                if (mGlobalSpec.onResultCallbackListener == null) {
+                if (mGlobalSpec.getOnResultCallbackListener() == null) {
                     // 获取视频路径
                     Intent intent = new Intent();
                     intent.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
                     mActivity.setResult(RESULT_OK, intent);
                 } else {
-                    mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                    mGlobalSpec.getOnResultCallbackListener().onResult(localFiles);
                 }
                 mActivity.finish();
             }

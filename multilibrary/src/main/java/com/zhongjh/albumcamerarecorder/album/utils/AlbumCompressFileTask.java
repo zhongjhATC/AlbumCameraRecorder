@@ -87,9 +87,9 @@ public class AlbumCompressFileTask {
                         newLocalFiles.add(new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile));
                         Log.d(mTag, "不存在新建文件");
                     } else if (item.isVideo()) {
-                        if (mGlobalSpec.isCompressEnable()) {
+                        if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
                             // 压缩视频
-                            mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(mClsKey, new VideoEditListener() {
+                            mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(mClsKey, new VideoEditListener() {
                                 @Override
                                 public void onFinish() {
                                     LocalFile localFile = new LocalFile(mContext, mVideoMediaStoreCompat, item, newFile);
@@ -110,7 +110,7 @@ public class AlbumCompressFileTask {
                                 public void onError(@NotNull String message) {
                                 }
                             });
-                            mGlobalSpec.videoCompressCoordinator.compressAsync(mClsKey, path, newFile.getPath());
+                            mGlobalSpec.getVideoCompressCoordinator().compressAsync(mClsKey, path, newFile.getPath());
                         }
                     }
                 }
@@ -129,10 +129,10 @@ public class AlbumCompressFileTask {
         File oldFile = new File(path);
         // 根据类型压缩
         File compressionFile;
-        if (mGlobalSpec.imageCompressionInterface != null) {
+        if (mGlobalSpec.getImageCompressionInterface() != null) {
             // 压缩图片
             try {
-                compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(mContext, oldFile);
+                compressionFile = mGlobalSpec.getImageCompressionInterface().compressionFile(mContext, oldFile);
             } catch (IOException e) {
                 compressionFile = oldFile;
                 e.printStackTrace();
@@ -150,11 +150,11 @@ public class AlbumCompressFileTask {
      */
     public LocalFile isCompress(LocalFile item) {
         // 判断是否需要压缩
-        if (item.isVideo() && mGlobalSpec.videoCompressCoordinator == null) {
+        if (item.isVideo() && mGlobalSpec.getVideoCompressCoordinator() == null) {
             return item;
         } else if (item.isGif()) {
             return item;
-        } else if (item.isImage() && mGlobalSpec.imageCompressionInterface == null) {
+        } else if (item.isImage() && mGlobalSpec.getImageCompressionInterface() == null) {
             return item;
         } else {
             return null;
@@ -177,19 +177,21 @@ public class AlbumCompressFileTask {
         } else {
             path = item.getPath();
         }
-        // 判断是否Android 29
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // 29以上的版本都必须是私有的或者公共目录
-            File cacheFile = null;
-            if (item.isImage()) {
-                cacheFile = mPictureMediaStoreCompat.createFile(0, true, getNameSuffix(path));
-            } else if (item.isVideo()) {
-                cacheFile = mVideoMediaStoreCompat.createFile(1, true, getNameSuffix(path));
-            }
-            // >=29 的需要通过uri获取公共目录的文件，并且拷贝到私有目录
-            if (cacheFile != null) {
-                FileUtil.copy(mContext, item.getUri(), cacheFile);
-                path = cacheFile.getAbsolutePath();
+        if (path != null) {
+            // 判断是否Android 29
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // 29以上的版本都必须是私有的或者公共目录
+                File cacheFile = null;
+                if (item.isImage()) {
+                    cacheFile = mPictureMediaStoreCompat.createFile(0, true, getNameSuffix(path));
+                } else if (item.isVideo()) {
+                    cacheFile = mVideoMediaStoreCompat.createFile(1, true, getNameSuffix(path));
+                }
+                // >=29 的需要通过uri获取公共目录的文件，并且拷贝到私有目录
+                if (cacheFile != null) {
+                    FileUtil.copy(mContext, item.getUri(), cacheFile);
+                    path = cacheFile.getAbsolutePath();
+                }
             }
         }
         return path;

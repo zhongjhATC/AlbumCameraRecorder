@@ -2,7 +2,6 @@ package com.zhongjh.albumcamerarecorder.album.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -10,9 +9,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-
 import com.zhongjh.common.entity.MultiMedia;
 
 /**
@@ -142,10 +142,10 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
      */
     private void setImage() {
         if (mMedia.isGif()) {
-            GlobalSpec.getInstance().imageEngine.loadGifThumbnail(getContext(), mPreBindInfo.mResize,
+            GlobalSpec.INSTANCE.getImageEngine().loadGifThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getUri());
         } else {
-            GlobalSpec.getInstance().imageEngine.loadThumbnail(getContext(), mPreBindInfo.mResize,
+            GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getUri());
         }
     }

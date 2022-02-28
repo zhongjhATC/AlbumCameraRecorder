@@ -171,7 +171,7 @@ class GlobalSetting internal constructor(
     }
 
     override fun isCutscenes(isCutscenes: Boolean): GlobalSetting {
-        mGlobalSpec.isCutscenes = isCutscenes
+        mGlobalSpec.cutscenesEnabled = isCutscenes
         return this
     }
 
@@ -181,7 +181,7 @@ class GlobalSetting internal constructor(
     }
 
     override fun isImageEdit(isImageEdit: Boolean): GlobalSetting {
-        mGlobalSpec.isImageEdit = isImageEdit
+        mGlobalSpec.imageEditEnabled = isImageEdit
         return this
     }
 
@@ -239,7 +239,7 @@ class GlobalSetting internal constructor(
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false)
         intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
         activity.startActivityForResult(intent, requestCode)
-        if (GlobalSpec.isCutscenes) {
+        if (GlobalSpec.cutscenesEnabled) {
             activity.overridePendingTransition(R.anim.activity_open, 0)
         }
     }
@@ -319,7 +319,7 @@ class GlobalSetting internal constructor(
             } else {
                 activity.startActivity(intent)
             }
-            if (mGlobalSpec.isCutscenes) {
+            if (mGlobalSpec.cutscenesEnabled) {
                 activity.overridePendingTransition(R.anim.activity_open, 0)
             }
         }
@@ -353,7 +353,7 @@ class GlobalSetting internal constructor(
             intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false)
             intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
             activity.startActivityForResult(intent, GlobalSpec.requestCode)
-            if (GlobalSpec.isCutscenes) {
+            if (GlobalSpec.cutscenesEnabled) {
                 activity.overridePendingTransition(R.anim.activity_open, 0)
             }
         }
