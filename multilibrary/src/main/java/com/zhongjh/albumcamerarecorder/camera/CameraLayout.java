@@ -346,21 +346,31 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private void initData() {
         // 初始化设置
         mCameraSpec = CameraSpec.INSTANCE;
-        mGlobalSpec = GlobalSpec.getInstance();
+        mGlobalSpec = GlobalSpec.INSTANCE;
         // 设置图片路径
-        if (mGlobalSpec.pictureStrategy != null) {
+        if (mGlobalSpec.getPictureStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.pictureStrategy);
+            mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.getPictureStrategy());
         } else {
             // 否则使用全局的
-            if (mGlobalSpec.saveStrategy == null) {
+            if (mGlobalSpec.getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.saveStrategy);
+                mPictureMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.getSaveStrategy());
             }
         }
-        mVideoMediaStoreCompat = new MediaStoreCompat(getContext(),
-                mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
+        // 设置视频路径
+        if (mGlobalSpec.getVideoStrategy() != null) {
+            // 如果设置了视频的文件夹路径，就使用它的
+            mVideoMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.getVideoStrategy());
+        } else {
+            // 否则使用全局的
+            if (mGlobalSpec.getSaveStrategy() == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
+            } else {
+                mVideoMediaStoreCompat = new MediaStoreCompat(getContext(), mGlobalSpec.getSaveStrategy());
+            }
+        }
 
         // 默认图片
         TypedArray ta = getContext().getTheme().obtainStyledAttributes(
@@ -788,7 +798,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 视频编辑后的事件，目前 有分段录制后合并、压缩视频
      */
     private void initVideoEditListener() {
-        if (mCameraSpec.isMergeEnable()) {
+        if (mCameraSpec.isMergeEnable() && mCameraSpec.getVideoMergeCoordinator() != null) {
             mCameraSpec.getVideoMergeCoordinator().setVideoMergeListener(CameraLayout.this.getClass(), new VideoEditListener() {
                 @Override
                 public void onFinish() {
@@ -967,7 +977,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
         // 重置位置
         mViewHolder.imgPhoto.resetMatrix();
-        mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, uri);
+        mGlobalSpec.getImageEngine().loadUriImage(getContext(), mViewHolder.imgPhoto, uri);
         mViewHolder.rlEdit.setTag(uri);
     }
 
@@ -1051,7 +1061,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 打开预览视频界面
      */
     public void openPreviewVideoActivity() {
-        if (mIsSectionRecord) {
+        if (mIsSectionRecord && mCameraSpec.getVideoMergeCoordinator() != null) {
             // 合并视频
             mNewSectionVideoPath = mVideoMediaStoreCompat.createFile(1, true, "mp4").getPath();
             Log.d(TAG, "新的合并视频：" + mNewSectionVideoPath);
@@ -1088,9 +1098,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     File oldFile = new File(item.getPath());
                     // 压缩图片
                     File compressionFile = null;
-                    if (mGlobalSpec.imageCompressionInterface != null) {
+                    if (mGlobalSpec.getImageCompressionInterface() != null) {
                         try {
-                            compressionFile = mGlobalSpec.imageCompressionInterface.compressionFile(getContext(), oldFile);
+                            compressionFile = mGlobalSpec.getImageCompressionInterface().compressionFile(getContext(), oldFile);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -1196,7 +1206,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 重置位置
         mViewHolder.imgPhoto.resetMatrix();
         mViewHolder.imgPhoto.setVisibility(VISIBLE);
-        mGlobalSpec.imageEngine.loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
+        mGlobalSpec.getImageEngine().loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
         mViewHolder.cameraView.close();
         mViewHolder.flShow.setVisibility(VISIBLE);
         mViewHolder.pvLayout.startTipAlphaAnimation();
@@ -1207,7 +1217,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mCameraStateManagement.setState(mCameraStateManagement.getPictureComplete());
 
         // 判断是否要编辑
-        if (mGlobalSpec.imageEditEnabled) {
+        if (mGlobalSpec.getImageEditEnabled()) {
             mViewHolder.rlEdit.setVisibility(View.VISIBLE);
             mViewHolder.rlEdit.setTag(uri);
         } else {
@@ -1341,7 +1351,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 多视频分段录制中止提交
      */
     public void stopVideoMultiple() {
-        if (mCameraSpec.isMergeEnable()) {
+        if (mCameraSpec.isMergeEnable() && mCameraSpec.getVideoMergeCoordinator() != null) {
             mCameraSpec.getVideoMergeCoordinator().onMergeDispose(CameraLayout.this.getClass());
         }
     }

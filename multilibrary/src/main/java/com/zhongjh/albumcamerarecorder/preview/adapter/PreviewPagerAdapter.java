@@ -171,18 +171,18 @@ public class PreviewPagerAdapter extends PagerAdapter {
         if (item.getUri() != null) {
             Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), mActivity);
             if (item.isGif()) {
-                GlobalSpec.getInstance().imageEngine.loadGifImage(mContext, size.x, size.y, image,
+                GlobalSpec.INSTANCE.getImageEngine().loadGifImage(mContext, size.x, size.y, image,
                         item.getUri());
             } else {
-                GlobalSpec.getInstance().imageEngine.loadImage(mContext, size.x, size.y, image,
+                GlobalSpec.INSTANCE.getImageEngine().loadImage(mContext, size.x, size.y, image,
                         item.getUri());
 
             }
         } else if (item.getUrl() != null) {
-            GlobalSpec.getInstance().imageEngine.loadUrlImage(mContext, image,
+            GlobalSpec.INSTANCE.getImageEngine().loadUrlImage(mContext, image,
                     item.getUrl());
         } else if (item.getDrawableId() != -1) {
-            GlobalSpec.getInstance().imageEngine.loadDrawableImage(mContext, image,
+            GlobalSpec.INSTANCE.getImageEngine().loadDrawableImage(mContext, image,
                     item.getDrawableId());
         }
     }

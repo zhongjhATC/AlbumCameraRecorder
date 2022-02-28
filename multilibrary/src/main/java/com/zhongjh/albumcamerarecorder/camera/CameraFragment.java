@@ -269,12 +269,12 @@ public class CameraFragment extends BaseFragment {
             @Override
             public void captureSuccess(ArrayList<LocalFile> localFiles) {
                 mIsCommit = true;
-                if (mGlobalSpec.onResultCallbackListener == null) {
+                if (mGlobalSpec.getOnResultCallbackListener() == null) {
                     Intent result = new Intent();
                     result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
                     mActivity.setResult(RESULT_OK, result);
                 } else {
-                    mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                    mGlobalSpec.getOnResultCallbackListener().onResult(localFiles);
                 }
                 mIsCommit = true;
                 mActivity.finish();

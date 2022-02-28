@@ -146,14 +146,13 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         // 获取样式
-        setTheme(GlobalSpec.getInstance().themeId);
+        mGlobalSpec = GlobalSpec.INSTANCE;
+        mAlbumSpec = AlbumSpec.INSTANCE;
+        setTheme(mGlobalSpec.getThemeId());
         super.onCreate(savedInstanceState);
         onActivityResult();
         StatusBarUtils.initStatusBar(BasePreviewActivity.this);
         setContentView(R.layout.activity_media_preview_zjh);
-
-        mGlobalSpec = GlobalSpec.getInstance();
-        mAlbumSpec = AlbumSpec.INSTANCE;
         boolean isAllowRepeat = getIntent().getBooleanExtra(EXTRA_IS_ALLOW_REPEAT, false);
         mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
         mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER, true);
@@ -162,19 +161,29 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mIsByAlbum = getIntent().getBooleanExtra(IS_BY_ALBUM, false);
 
         // 设置图片路径
-        if (mGlobalSpec.pictureStrategy != null) {
+        if (mGlobalSpec.getPictureStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.pictureStrategy);
+            mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.getPictureStrategy());
         } else {
             // 否则使用全局的
-            if (mGlobalSpec.saveStrategy == null) {
+            if (mGlobalSpec.getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.saveStrategy);
+                mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.getSaveStrategy());
             }
         }
-        mVideoMediaStoreCompat = new MediaStoreCompat(getApplicationContext(),
-                mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
+        // 设置视频路径
+        if (mGlobalSpec.getVideoStrategy() != null) {
+            // 如果设置了视频的文件夹路径，就使用它的
+            mVideoMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.getVideoStrategy());
+        } else {
+            // 否则使用全局的
+            if (mGlobalSpec.getSaveStrategy() == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
+            } else {
+                mVideoMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.getSaveStrategy());
+            }
+        }
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
@@ -293,7 +302,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void finish() {
         super.finish();
-        if (mGlobalSpec.cutscenesEnabled)
+        if (mGlobalSpec.getCutscenesEnabled())
         //关闭窗体动画显示
         {
             this.overridePendingTransition(0, R.anim.activity_close);
@@ -511,7 +520,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
         }
 
-        if (item.isImage() && mGlobalSpec.imageEditEnabled) {
+        if (item.isImage() && mGlobalSpec.getImageEditEnabled()) {
             mViewHolder.tvEdit.setVisibility(View.VISIBLE);
         } else {
             mViewHolder.tvEdit.setVisibility(View.GONE);
@@ -525,7 +534,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      */
     private void setResultOkByIsCompress(boolean apply) {
         // 判断是否需要压缩
-        if (mGlobalSpec.imageCompressionInterface != null) {
+        if (mGlobalSpec.getImageCompressionInterface() != null) {
             if (apply) {
                 compressFile();
             } else {
@@ -630,13 +639,13 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 Log.d(TAG, "不存在新建文件");
             } else if (item.isVideo()) {
                 // 压缩视频
-                if (mGlobalSpec.isCompressEnable()) {
+                if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
                     // 如果是编辑过的就给新的地址
                     if (item.getOldPath() != null) {
                         newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getOldPath()));
                     }
                     File finalNewFile = newFile;
-                    mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(BasePreviewActivity.class, new VideoEditListener() {
+                    mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(BasePreviewActivity.class, new VideoEditListener() {
                         @Override
                         public void onFinish() {
                             item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, finalNewFile);
@@ -663,7 +672,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                         public void onError(@NotNull String message) {
                         }
                     });
-                    mGlobalSpec.videoCompressCoordinator.compressAsync(BasePreviewActivity.class, path, finalNewFile.getPath());
+                    mGlobalSpec.getVideoCompressCoordinator().compressAsync(BasePreviewActivity.class, path, finalNewFile.getPath());
                 }
             }
         }

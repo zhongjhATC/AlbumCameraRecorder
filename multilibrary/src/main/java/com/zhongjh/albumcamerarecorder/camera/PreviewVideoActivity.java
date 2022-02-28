@@ -66,7 +66,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     /**
      * 拍摄配置
      */
-    GlobalSpec mGlobalSpec = GlobalSpec.getInstance();
+    GlobalSpec mGlobalSpec = GlobalSpec.INSTANCE;
     /**
      * 迁移视频的异步线程
      */
@@ -90,8 +90,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setRequestedOrientation(GlobalSpec.getInstance().orientation);
-        setTheme(mGlobalSpec.themeId);
+        setRequestedOrientation(GlobalSpec.INSTANCE.getOrientation());
+        setTheme(mGlobalSpec.getThemeId());
         StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_video);
@@ -110,9 +110,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (mGlobalSpec.isCompressEnable()) {
-            mGlobalSpec.videoCompressCoordinator.onCompressDestroy(PreviewVideoActivity.this.getClass());
-            mGlobalSpec.videoCompressCoordinator = null;
+        if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
+            mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(PreviewVideoActivity.this.getClass());
+            mGlobalSpec.setVideoCompressCoordinator(null);
         }
         if (mMoveVideoFileTask != null) {
             mMoveVideoFileTask.cancel();
@@ -145,9 +145,18 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 初始化数据
      */
     private void initData() {
-        // 公共配置
-        mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this,
-                mGlobalSpec.videoStrategy == null ? mGlobalSpec.saveStrategy : mGlobalSpec.videoStrategy);
+        // 设置视频路径
+        if (mGlobalSpec.getVideoStrategy() != null) {
+            // 如果设置了视频的文件夹路径，就使用它的
+            mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this, mGlobalSpec.getVideoStrategy());
+        } else {
+            // 否则使用全局的
+            if (mGlobalSpec.getSaveStrategy() == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
+            } else {
+                mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this, mGlobalSpec.getSaveStrategy());
+            }
+        }
 
         if (mLocalFile.getPath() != null) {
             File file = new File(mLocalFile.getPath());
@@ -204,11 +213,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 压缩视频
      */
     private void compress() {
-        if (mLocalFile.getPath() != null) {
+        if (mLocalFile.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
             // 获取文件名称
             String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
             File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-            mGlobalSpec.videoCompressCoordinator.setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
+            mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
                 @Override
                 public void onFinish() {
                     confirm(newFile);
@@ -229,8 +238,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
                     mIsRun = false;
                 }
             });
-            if (mLocalFile.getPath() != null) {
-                mGlobalSpec.videoCompressCoordinator.compressRxJava(PreviewVideoActivity.this.getClass(), mLocalFile.getPath(), newFile.getPath());
+            if (mLocalFile.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
+                mGlobalSpec.getVideoCompressCoordinator().compressRxJava(PreviewVideoActivity.this.getClass(), mLocalFile.getPath(), newFile.getPath());
             }
         }
     }
