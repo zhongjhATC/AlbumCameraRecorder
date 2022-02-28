@@ -22,57 +22,56 @@ object SelectableUtils {
 
     /**
      * 相册是否有效启动
+     * 判断公共配置中的最大可选图片或者最大可选视频是否 > 0
+     * 判断公共配置中的最大可选数据是否 > 0
+     * 满足以上条件都开启相册
      *
      * @return 是否有效
      */
-    @JvmStatic
     fun albumValid(): Boolean {
-        return if (GlobalSpec.instance.albumSetting != null) {
-            if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxVideoSelectable != null) {
-                GlobalSpec.instance.maxImageSelectable > 0 || GlobalSpec.instance.maxVideoSelectable > 0
-            } else if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxImageSelectable > 0) {
-                true
-            } else if (GlobalSpec.instance.maxVideoSelectable != null && GlobalSpec.instance.maxVideoSelectable > 0) {
+        return if (GlobalSpec.albumSetting != null) {
+            if (GlobalSpec.maxImageSelectable ?: 0 > 0 || GlobalSpec.maxVideoSelectable ?: 0 > 0) {
                 true
             } else {
-                GlobalSpec.instance.maxSelectable != null && GlobalSpec.instance.maxSelectable > 0
+                GlobalSpec.maxSelectable ?: 0 > 0
             }
-        } else false
+        } else {
+            false
+        }
     }
 
     /**
      * 拍摄(拍照、录像)是否有效启动
+     * 判断公共配置中的最大可选图片或者最大可选视频是否 > 0
+     * 判断公共配置中的最大可选数据是否 > 0
+     * 满足以上条件都开启拍摄
      *
      * @return 是否有效
      */
-    @JvmStatic
     fun cameraValid(): Boolean {
-        return if (GlobalSpec.instance.cameraSetting != null) {
-            if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxVideoSelectable != null) {
-                GlobalSpec.instance.maxImageSelectable > 0 || GlobalSpec.instance.maxVideoSelectable > 0
-            } else if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxImageSelectable > 0) {
-                true
-            } else if (GlobalSpec.instance.maxVideoSelectable != null && GlobalSpec.instance.maxVideoSelectable > 0) {
+        return if (GlobalSpec.albumSetting != null) {
+            if (GlobalSpec.maxImageSelectable ?: 0 > 0 || GlobalSpec.maxVideoSelectable ?: 0 > 0) {
                 true
             } else {
-                GlobalSpec.instance.maxSelectable != null && GlobalSpec.instance.maxSelectable > 0
+                GlobalSpec.maxSelectable ?: 0 > 0
             }
-        } else false
+        } else {
+            false
+        }
     }
 
     /**
      * 录像是否有效启动
+     * 判断启动了录像并且可选视频 > 0
      *
      * @return 是否有效
      */
-    @JvmStatic
     fun videoValid(): Boolean {
-        if (GlobalSpec.instance.cameraSetting != null) {
-            if (GlobalSpec.instance.getMimeTypeSet(ModuleTypes.CAMERA)
-                    .containsAll(ofVideo())
+        if (GlobalSpec.cameraSetting != null) {
+            if (GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA).containsAll(ofVideo())
             ) {
                 // 是否激活视频并且总数量大于1
-                return GlobalSpec.instance.maxSelectable != null && GlobalSpec.instance.maxSelectable > 0
+                return GlobalSpec.maxSelectable ?: 0 > 0
             }
         }
         return false
@@ -80,16 +79,16 @@ object SelectableUtils {
 
     /**
      * 录音是否有效启动
+     * 判断启动了录音并且可选音频 > 0
      *
      * @return 是否有效
      */
-    @JvmStatic
     fun recorderValid(): Boolean {
-        return if (GlobalSpec.instance.recorderSetting != null) {
-            if (GlobalSpec.instance.maxAudioSelectable != null) {
-                GlobalSpec.instance.maxAudioSelectable > 0
+        return if (GlobalSpec.recorderSetting != null) {
+            if (GlobalSpec.maxAudioSelectable ?: 0 > 0) {
+                true
             } else {
-                GlobalSpec.instance.maxSelectable != null && GlobalSpec.instance.maxSelectable > 0
+                GlobalSpec.maxSelectable ?: 0 > 0
             }
         } else {
             false
@@ -112,10 +111,10 @@ object SelectableUtils {
         isMaxCount = isImageVideoMaxCount(imageCount, videoCount)
         if (!isMaxCount) {
             // 再判断本身
-            if (GlobalSpec.instance.maxImageSelectable != null) {
-                isMaxCount = imageCount == GlobalSpec.instance.maxImageSelectable
-            } else if (GlobalSpec.instance.maxSelectable != null) {
-                isMaxCount = imageCount == GlobalSpec.instance.maxSelectable
+            if (GlobalSpec.maxImageSelectable != null) {
+                isMaxCount = imageCount == GlobalSpec.maxImageSelectable
+            } else if (GlobalSpec.maxSelectable != null) {
+                isMaxCount = imageCount == GlobalSpec.maxSelectable
             }
             selectedCountMessage.type = IMAGE
             selectedCountMessage.maxCount = imageCount
@@ -143,10 +142,10 @@ object SelectableUtils {
         isMaxCount = isImageVideoMaxCount(imageCount, videoCount)
         if (!isMaxCount) {
             // 再判断本身
-            if (GlobalSpec.instance.maxVideoSelectable != null) {
-                isMaxCount = videoCount == GlobalSpec.instance.maxVideoSelectable
-            } else if (GlobalSpec.instance.maxSelectable != null) {
-                isMaxCount = videoCount == GlobalSpec.instance.maxSelectable
+            if (GlobalSpec.maxVideoSelectable != null) {
+                isMaxCount = videoCount == GlobalSpec.maxVideoSelectable
+            } else if (GlobalSpec.maxSelectable != null) {
+                isMaxCount = videoCount == GlobalSpec.maxSelectable
             }
             selectedCountMessage.type = VIDEO
             selectedCountMessage.maxCount = videoCount
@@ -166,8 +165,8 @@ object SelectableUtils {
      * @return 是否达到最大数量
      */
     private fun isImageVideoMaxCount(imageCount: Int, videoCount: Int): Boolean {
-        return if (GlobalSpec.instance.maxSelectable != null) {
-            imageCount + videoCount == GlobalSpec.instance.maxSelectable
+        return if (GlobalSpec.maxSelectable != null) {
+            imageCount + videoCount == GlobalSpec.maxSelectable
         } else {
             false
         }
@@ -179,58 +178,41 @@ object SelectableUtils {
     @JvmStatic
     val imageVideoMaxCount: Int
         get() {
-            if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxVideoSelectable != null) {
-                return GlobalSpec.instance.maxImageSelectable + GlobalSpec.instance.maxVideoSelectable
-            } else if (GlobalSpec.instance.maxSelectable != null) {
-                return GlobalSpec.instance.maxSelectable
-            } else if (GlobalSpec.instance.maxImageSelectable != null) {
-                return GlobalSpec.instance.maxImageSelectable
-            } else if (GlobalSpec.instance.maxVideoSelectable != null) {
-                return GlobalSpec.instance.maxVideoSelectable
-            }
-            return 0
+            return (GlobalSpec.maxImageSelectable ?: 0) + (GlobalSpec.maxVideoSelectable ?: 0)
         }
 
     /**
      * 拍摄界面使用的场景
+     * 优先：如果 maxImageSelectable 不为null就返回 maxImageSelectable
+     * 次级：如果 maxSelectable 不为null则返回 maxSelectable
+     * 否则为0
      *
      * @return 返回最多能选择的图片
      */
     @JvmStatic
     val imageMaxCount: Int
-        get() = if (GlobalSpec.instance.maxImageSelectable != null) {
-            GlobalSpec.instance.maxImageSelectable
-        } else if (GlobalSpec.instance.maxSelectable != null) {
-            GlobalSpec.instance.maxSelectable
-        } else {
-            0
-        }
+        get() = GlobalSpec.maxImageSelectable ?: GlobalSpec.maxSelectable ?: 0
 
     /**
+     * 优先：如果 maxVideoSelectable 不为null就返回 maxVideoSelectable
+     * 次级：如果 maxSelectable 不为null则返回 maxSelectable
+     * 否则为0
+     *
      * @return 返回最多能选择的视频数量
      */
     @JvmStatic
     val videoMaxCount: Int
-        get() = if (GlobalSpec.instance.maxVideoSelectable != null) {
-            GlobalSpec.instance.maxVideoSelectable
-        } else if (GlobalSpec.instance.maxSelectable != null) {
-            GlobalSpec.instance.maxSelectable
-        } else {
-            0
-        }
+        get() = GlobalSpec.maxVideoSelectable ?: GlobalSpec.maxSelectable ?: 0
 
     /**
+     * 优先：如果 maxAudioSelectable 不为null就返回 maxAudioSelectable
+     * 次级：如果 maxSelectable 不为null则返回 maxSelectable
+     * 否则为0
      * @return 返回最多能选择的音频数量
      */
     @JvmStatic
     val audioMaxCount: Int
-        get() = if (GlobalSpec.instance.maxAudioSelectable != null) {
-            GlobalSpec.instance.maxAudioSelectable
-        } else if (GlobalSpec.instance.maxSelectable != null) {
-            GlobalSpec.instance.maxSelectable
-        } else {
-            0
-        }
+        get() = GlobalSpec.maxAudioSelectable ?: GlobalSpec.maxSelectable ?: 0
 
     /**
      * @return 返回图片/视频是否只剩下一个选择
@@ -238,14 +220,14 @@ object SelectableUtils {
     @JvmStatic
     val singleImageVideo: Boolean
         get() {
-            if (GlobalSpec.instance.maxImageSelectable != null && GlobalSpec.instance.maxVideoSelectable != null) {
-                return GlobalSpec.instance.maxImageSelectable == 1 && GlobalSpec.instance.maxVideoSelectable == 1
-            } else if (GlobalSpec.instance.maxImageSelectable != null) {
-                return GlobalSpec.instance.maxImageSelectable == 1
-            } else if (GlobalSpec.instance.maxVideoSelectable != null) {
-                return GlobalSpec.instance.maxVideoSelectable == 1
-            } else if (GlobalSpec.instance.maxSelectable != null) {
-                return GlobalSpec.instance.maxSelectable == 1
+            if (GlobalSpec.maxImageSelectable != null && GlobalSpec.maxVideoSelectable != null) {
+                return GlobalSpec.maxImageSelectable == 1 && GlobalSpec.maxVideoSelectable == 1
+            } else if (GlobalSpec.maxImageSelectable != null) {
+                return GlobalSpec.maxImageSelectable == 1
+            } else if (GlobalSpec.maxVideoSelectable != null) {
+                return GlobalSpec.maxVideoSelectable == 1
+            } else if (GlobalSpec.maxSelectable != null) {
+                return GlobalSpec.maxSelectable == 1
             }
             return false
         }

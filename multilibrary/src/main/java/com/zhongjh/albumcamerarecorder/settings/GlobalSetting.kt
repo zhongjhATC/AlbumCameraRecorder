@@ -31,10 +31,15 @@ import java.util.*
  *
  * @author zhongjh
  * @date 2018/9/28
+ *
+ * 在上下文中构造新的规范生成器。
+ *
+ * @param multiMediaSetting 在 requester context wrapper.
+ * @param mimeTypes         设置为选择的 [MimeType] 类型
  */
 class GlobalSetting internal constructor(
-    private val mMultiMediaSetting: MultiMediaSetting,
-    mimeTypes: Set<MimeType?>
+    private val multiMediaSetting: MultiMediaSetting,
+    mimeTypes: Set<MimeType>
 ) : GlobalSettingApi {
 
     private val mGlobalSpec: GlobalSpec = cleanInstance
@@ -233,9 +238,8 @@ class GlobalSetting internal constructor(
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true)
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false)
         intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
-        val globalSpec: GlobalSpec = GlobalSpec.getInstance()
         activity.startActivityForResult(intent, requestCode)
-        if (globalSpec.isCutscenes) {
+        if (GlobalSpec.isCutscenes) {
             activity.overridePendingTransition(R.anim.activity_open, 0)
         }
     }
@@ -275,7 +279,7 @@ class GlobalSetting internal constructor(
     }
 
     private fun openMain(requestCode: Int?) {
-        val activity = mMultiMediaSetting.activity ?: return
+        val activity = multiMediaSetting.activity ?: return
         // 数量
         var numItems = 0
         // 根据相关配置做相应的初始化
@@ -302,7 +306,7 @@ class GlobalSetting internal constructor(
         }
         check(numItems > 0) { activity.resources.getString(R.string.z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set) }
         val intent = Intent(activity, MainActivity::class.java)
-        val fragment = mMultiMediaSetting.fragment
+        val fragment = multiMediaSetting.fragment
         if (fragment != null) {
             if (requestCode != null) {
                 fragment.startActivityForResult(intent, requestCode)
@@ -348,20 +352,13 @@ class GlobalSetting internal constructor(
             intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false)
             intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false)
             intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
-            val globalSpec: GlobalSpec = GlobalSpec.getInstance()
-            activity.startActivityForResult(intent, globalSpec.requestCode)
-            if (globalSpec.isCutscenes) {
+            activity.startActivityForResult(intent, GlobalSpec.requestCode)
+            if (GlobalSpec.isCutscenes) {
                 activity.overridePendingTransition(R.anim.activity_open, 0)
             }
         }
     }
 
-    /**
-     * 在上下文中构造新的规范生成器。
-     *
-     * @param multiMediaSetting 在 requester context wrapper.
-     * @param mimeTypes         设置为选择的 [MimeType] 类型
-     */
     init {
         mGlobalSpec.setMimeTypeSet(mimeTypes)
     }

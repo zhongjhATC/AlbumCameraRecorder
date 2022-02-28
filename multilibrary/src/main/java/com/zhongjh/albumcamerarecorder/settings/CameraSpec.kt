@@ -94,14 +94,14 @@ object CameraSpec {
      * 仅支持图片
      */
     fun onlySupportImages(): Boolean {
-        return ofImage().containsAll(GlobalSpec.instance.getMimeTypeSet(ModuleTypes.CAMERA))
+        return ofImage().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA))
     }
 
     /**
      * 仅支持视频
      */
     fun onlySupportVideos(): Boolean {
-        return ofVideo().containsAll(GlobalSpec.instance.getMimeTypeSet(ModuleTypes.CAMERA))
+        return ofVideo().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA))
     }
 
     /**

@@ -37,9 +37,9 @@ object GlobalSpec {
     var recorderSetting: RecorderSetting? = null
 
     /**
-     * 选择 mime 的类型，MimeType.allOf()
+     * 选择 mime 的类型，MimeType.ofAll()
      */
-    private var mimeTypeSet: Set<MimeType>? = null
+    private var mimeTypeSet = MimeType.ofAll()
 
     /**
      * 是否通过正规方式进来
@@ -146,19 +146,13 @@ object GlobalSpec {
     /**
      * @return 返回 mime 的类型，MimeType.allOf()
      */
-    fun getMimeTypeSet(@ModuleTypes moduleTypes: Int): Set<MimeType>? {
+    fun getMimeTypeSet(@ModuleTypes moduleTypes: Int): Set<MimeType> {
         // 优先取各自的类型，如果没设置则取公共的
         when (moduleTypes) {
-            ModuleTypes.ALBUM -> return if (AlbumSpec.mimeTypeSet != null) {
-                AlbumSpec.mimeTypeSet
-            } else {
-                this.mimeTypeSet
-            }
-            ModuleTypes.CAMERA -> return if (CameraSpec.mimeTypeSet != null) {
-                CameraSpec.mimeTypeSet
-            } else {
-                this.mimeTypeSet
-            }
+            ModuleTypes.ALBUM ->
+                return AlbumSpec.mimeTypeSet ?: this.mimeTypeSet
+            ModuleTypes.CAMERA ->
+                return CameraSpec.mimeTypeSet ?: this.mimeTypeSet
             ModuleTypes.RECORDER -> {
             }
             else -> {
@@ -167,7 +161,7 @@ object GlobalSpec {
         return mimeTypeSet
     }
 
-    fun setMimeTypeSet(mimeTypeSet: Set<MimeType>?) {
+    fun setMimeTypeSet(mimeTypeSet: Set<MimeType>) {
         this.mimeTypeSet = mimeTypeSet
     }
 
@@ -191,7 +185,7 @@ object GlobalSpec {
         albumSetting = null
         cameraSetting = null
         recorderSetting = null
-        mimeTypeSet = null
+        mimeTypeSet = MimeType.ofAll()
         defaultPosition = 0
         themeId = R.style.AppTheme_Blue
         maxSelectable = null
