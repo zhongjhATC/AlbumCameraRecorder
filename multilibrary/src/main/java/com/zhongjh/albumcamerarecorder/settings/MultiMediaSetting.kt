@@ -23,7 +23,7 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
     private val mContext: WeakReference<Activity> = WeakReference(activity)
     private val mFragment: WeakReference<Fragment?>?
     
-    val activity: Activity = mContext.get()
+    val activity: Activity? = mContext.get()
     val fragment: Fragment?
         get() = mFragment?.get()
 
