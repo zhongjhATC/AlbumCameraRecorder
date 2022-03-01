@@ -139,7 +139,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
         List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
     }
 
-#### Do not forget this configuration. Otherwise, an error will be reported when recording and saving files
+#### Do not forget this configuration. Otherwise, an error will be reported when recording and saving files、Uri is cleared when album selection image preview is confirmed
 
     <provider
         android:name="androidx.core.content.FileProvider"

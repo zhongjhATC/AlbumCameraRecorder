@@ -138,7 +138,7 @@
         List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
     }
 
-#### 别忘记这个配置，否则拍摄录制录音保存文件时闪退报错
+#### 别忘记这个配置，否则拍摄录制录音保存文件时闪退报错、相册选择图片预览确认时uri会被清空种种问题
 
     <provider
         android:name="androidx.core.content.FileProvider"
