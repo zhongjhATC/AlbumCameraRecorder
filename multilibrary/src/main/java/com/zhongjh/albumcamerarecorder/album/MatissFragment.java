@@ -524,6 +524,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 触发选择的接口事件
         if (mAlbumSpec.onSelectedListener != null) {
             mAlbumSpec.onSelectedListener.onSelected(mSelectedCollection.asListOfLocalFile());
+        } else {
+            // 如果没有触发选择，也照样触发该事件赋值path
+            mSelectedCollection.updatePath();
         }
     }
 

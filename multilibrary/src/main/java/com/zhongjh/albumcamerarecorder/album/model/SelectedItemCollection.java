@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.album.model;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -217,15 +218,36 @@ public class SelectedItemCollection {
     public ArrayList<LocalFile> asListOfLocalFile() {
         ArrayList<LocalFile> localFiles = new ArrayList<>();
         for (MultiMedia item : mItems) {
-            // 相册是只有uri没有path的，此时确定后转换
-            File file = UriUtils.uriToFile(mContext, item.getUri());
-            if (file != null && file.exists()) {
-                item.setPath(file.getPath());
-            }
+            updateMultiMediaPath(item);
             LocalFile localFile = new LocalFile(item);
             localFiles.add(localFile);
         }
         return localFiles;
+    }
+
+    /**
+     * 更新path
+     */
+    public void updatePath() {
+        for (MultiMedia item : mItems) {
+            updateMultiMediaPath(item);
+        }
+    }
+
+    /**
+     * 更新 MultiMedia 的path
+     * 如果为 null 则更新真实地址
+     *
+     * @param multiMedia multiMedia
+     */
+    private void updateMultiMediaPath(MultiMedia multiMedia) {
+        if (TextUtils.isEmpty(multiMedia.getPath())) {
+            // 相册是只有uri没有path的，此时确定后转换
+            File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
+            if (file != null && file.exists()) {
+                multiMedia.setPath(file.getPath());
+            }
+        }
     }
 
     /**
