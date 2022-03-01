@@ -279,7 +279,7 @@ class GlobalSetting internal constructor(
     }
 
     private fun openMain(requestCode: Int?) {
-        val activity = multiMediaSetting.activity
+        val activity = multiMediaSetting.activity ?: return
         // 数量
         var numItems = 0
         // 根据相关配置做相应的初始化

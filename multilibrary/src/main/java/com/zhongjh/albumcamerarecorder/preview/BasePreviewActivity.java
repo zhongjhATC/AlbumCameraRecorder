@@ -360,6 +360,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (mAlbumSpec.getOnSelectedListener() != null && mIsSelectedListener) {
                 // 触发选择的接口事件
                 mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
+            } else {
+                mSelectedCollection.updatePath();
             }
         }
     }
