@@ -45,8 +45,6 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
         return GlobalSetting(this, mimeTypes)
     }
 
-
-
     companion object {
         /**
          * 设置由Activity打开
