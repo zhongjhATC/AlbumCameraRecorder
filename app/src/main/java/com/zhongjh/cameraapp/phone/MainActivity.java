@@ -182,7 +182,7 @@ public class MainActivity extends BaseActivity {
         RecorderSetting recorderSetting = new RecorderSetting();
 
         //  全局
-        Set<MimeType> mimeTypes = null;
+        Set<MimeType> mimeTypes = MimeType.ofAll();
         if (mBinding.rbAllAll.isChecked()) {
             mimeTypes = MimeType.ofAll();
         } else if (mBinding.rbAllVideo.isChecked()) {
