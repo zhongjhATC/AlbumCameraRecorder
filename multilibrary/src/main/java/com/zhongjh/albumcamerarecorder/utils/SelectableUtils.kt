@@ -22,62 +22,50 @@ object SelectableUtils {
 
     /**
      * 相册是否有效启动
-     * 判断公共配置中的最大可选图片或者最大可选视频是否 > 0
-     * 判断公共配置中的最大可选数据是否 > 0
-     * 满足以上条件都开启相册
+     *
+     * 公共配置中的最大可选图片或者最大可选视频是否为 null
+     * 如果为 null 就是可选无限，最大值受 maxSelectable 限制
+     * 如果不为 null 就判断是否 > 0，如果 < 0 就不开启相册
      *
      * @return 是否有效
      */
     @JvmStatic
     fun albumValid(): Boolean {
         return if (GlobalSpec.albumSetting != null) {
-            if (GlobalSpec.maxImageSelectable ?: 0 > 0 || GlobalSpec.maxVideoSelectable ?: 0 > 0) {
+            if (GlobalSpec.maxImageSelectable != null && GlobalSpec.maxVideoSelectable != null) {
+                GlobalSpec.maxImageSelectable!! > 0 || GlobalSpec.maxVideoSelectable!! > 0
+            } else if (GlobalSpec.maxImageSelectable != null && GlobalSpec.maxImageSelectable!! > 0) {
+                true
+            } else if (GlobalSpec.maxVideoSelectable != null && GlobalSpec.maxVideoSelectable!! > 0) {
                 true
             } else {
-                GlobalSpec.maxSelectable ?: 0 > 0
+                GlobalSpec.maxSelectable != null && GlobalSpec.maxSelectable!! > 0
             }
-        } else {
-            false
-        }
+        } else false
     }
 
     /**
      * 拍摄(拍照、录像)是否有效启动
-     * 判断公共配置中的最大可选图片或者最大可选视频是否 > 0
-     * 判断公共配置中的最大可选数据是否 > 0
-     * 满足以上条件都开启拍摄
+     *
+     * 公共配置中的最大可选图片或者最大可选视频是否为 null
+     * 如果为 null 就是可选无限，最大值受 maxSelectable 限制
+     * 如果不为 null 就判断是否 > 0，如果 < 0 就不开启拍摄
      *
      * @return 是否有效
      */
     @JvmStatic
     fun cameraValid(): Boolean {
-        return if (GlobalSpec.albumSetting != null) {
-            if (GlobalSpec.maxImageSelectable ?: 0 > 0 || GlobalSpec.maxVideoSelectable ?: 0 > 0) {
+        return if (GlobalSpec.cameraSetting != null) {
+            if (GlobalSpec.maxImageSelectable != null && GlobalSpec.maxVideoSelectable != null) {
+                GlobalSpec.maxImageSelectable!! > 0 || GlobalSpec.maxVideoSelectable!! > 0
+            } else if (GlobalSpec.maxImageSelectable != null && GlobalSpec.maxImageSelectable!! > 0) {
+                true
+            } else if (GlobalSpec.maxVideoSelectable != null && GlobalSpec.maxVideoSelectable!! > 0) {
                 true
             } else {
-                GlobalSpec.maxSelectable ?: 0 > 0
+                GlobalSpec.maxSelectable != null && GlobalSpec.maxSelectable!! > 0
             }
-        } else {
-            false
-        }
-    }
-
-    /**
-     * 录像是否有效启动
-     * 判断启动了录像并且可选视频 > 0
-     *
-     * @return 是否有效
-     */
-    @JvmStatic
-    fun videoValid(): Boolean {
-        if (GlobalSpec.cameraSetting != null) {
-            if (GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA).containsAll(ofVideo())
-            ) {
-                // 是否激活视频并且总数量大于1
-                return GlobalSpec.maxSelectable ?: 0 > 0
-            }
-        }
-        return false
+        } else false
     }
 
     /**
@@ -89,14 +77,34 @@ object SelectableUtils {
     @JvmStatic
     fun recorderValid(): Boolean {
         return if (GlobalSpec.recorderSetting != null) {
-            if (GlobalSpec.maxAudioSelectable ?: 0 > 0) {
-                true
+            if (GlobalSpec.maxAudioSelectable != null) {
+                GlobalSpec.maxAudioSelectable!! > 0
             } else {
-                GlobalSpec.maxSelectable ?: 0 > 0
+                GlobalSpec.maxSelectable != null && GlobalSpec.maxSelectable!! > 0
             }
         } else {
             false
         }
+    }
+
+    /**
+     * 录像是否有效启动
+     *
+     * 判断启动了录像并且可选视频 > 0
+     *
+     * @return 是否有效
+     */
+    @JvmStatic
+    fun videoValid(): Boolean {
+        if (GlobalSpec.cameraSetting != null) {
+            if (GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA)
+                    .containsAll(ofVideo())
+            ) {
+                // 是否激活视频并且总数量大于1
+                return GlobalSpec.maxSelectable != null && GlobalSpec.maxSelectable!! > 0
+            }
+        }
+        return false
     }
 
     /**
@@ -177,12 +185,27 @@ object SelectableUtils {
     }
 
     /**
+     * 如果 maxImageSelectable 和 maxVideoSelectable 都不为null，那么返回他们的数值和
+     * 如果上述数值都为null，就以 maxSelectable 为准
+     * 如果 maxSelectable 也为null
+     * 那么依次判断 maxImageSelectable 和 maxVideoSelectable 的数值
+     * 如果全部为 null 就直接返回0
+     *
      * @return 返回最多能选择的图片+视频数量
      */
     @JvmStatic
     val imageVideoMaxCount: Int
         get() {
-            return (GlobalSpec.maxImageSelectable ?: 0) + (GlobalSpec.maxVideoSelectable ?: 0)
+            if (GlobalSpec.maxImageSelectable != null && GlobalSpec.maxVideoSelectable != null) {
+                return GlobalSpec.maxImageSelectable!! + GlobalSpec.maxVideoSelectable!!
+            } else if (GlobalSpec.maxSelectable != null) {
+                return GlobalSpec.maxSelectable!!
+            } else if (GlobalSpec.maxImageSelectable != null) {
+                return GlobalSpec.maxImageSelectable!!
+            } else if (GlobalSpec.maxVideoSelectable != null) {
+                return GlobalSpec.maxVideoSelectable!!
+            }
+            return 0
         }
 
     /**
@@ -217,6 +240,7 @@ object SelectableUtils {
     @JvmStatic
     val audioMaxCount: Int
         get() = GlobalSpec.maxAudioSelectable ?: GlobalSpec.maxSelectable ?: 0
+
 
     /**
      * @return 返回图片/视频是否只剩下一个选择

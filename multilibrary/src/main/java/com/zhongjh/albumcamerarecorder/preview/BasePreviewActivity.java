@@ -256,10 +256,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (count > 0) {
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.getOriginalMaxSize()));
-                if (incapableDialog != null) {
-                    incapableDialog.show(getSupportFragmentManager(),
-                            IncapableDialog.class.getName());
-                }
+                incapableDialog.show(getSupportFragmentManager(),
+                        IncapableDialog.class.getName());
                 return;
             }
 
@@ -467,10 +465,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 // 弹框提示取消原图
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.getOriginalMaxSize()));
-                if (incapableDialog != null) {
-                    incapableDialog.show(getSupportFragmentManager(),
-                            IncapableDialog.class.getName());
-                }
+                incapableDialog.show(getSupportFragmentManager(),
+                        IncapableDialog.class.getName());
                 // 去掉原图按钮的选择状态
                 mViewHolder.original.setChecked(false);
                 mViewHolder.original.setColor(Color.WHITE);
@@ -672,7 +668,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                         public void onError(@NotNull String message) {
                         }
                     });
-                    mGlobalSpec.getVideoCompressCoordinator().compressAsync(BasePreviewActivity.class, path, finalNewFile.getPath());
+                    if (mGlobalSpec.getVideoCompressCoordinator() != null) {
+                        mGlobalSpec.getVideoCompressCoordinator().compressAsync(BasePreviewActivity.class, path, finalNewFile.getPath());
+                    }
                 }
             }
         }
@@ -686,7 +684,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     protected synchronized void setResultOk(boolean apply) {
         Log.d(TAG, "setResultOk");
         refreshMultiMediaItem(apply);
-        if (mGlobalSpec.onResultCallbackListener == null || !mIsExternalUsers) {
+        if (mGlobalSpec.getOnResultCallbackListener() == null || !mIsExternalUsers) {
             // 如果是外部使用并且不同意，则不执行RESULT_OK
             Intent intent = new Intent();
             intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
@@ -699,7 +697,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 setResult(RESULT_OK, intent);
             }
         } else {
-            mGlobalSpec.onResultCallbackListener.onResultFromPreview(mSelectedCollection.asList(), apply);
+            mGlobalSpec.getOnResultCallbackListener().onResultFromPreview(mSelectedCollection.asList(), apply);
         }
         finish();
     }

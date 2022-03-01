@@ -18,9 +18,9 @@ public class SelectedPreviewActivity extends BasePreviewActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setRequestedOrientation(GlobalSpec.getInstance().orientation);
+        setRequestedOrientation(GlobalSpec.INSTANCE.getOrientation());
         super.onCreate(savedInstanceState);
-        if (!GlobalSpec.getInstance().hasInited) {
+        if (!GlobalSpec.INSTANCE.getHasInited()) {
             setResult(RESULT_CANCELED);
             finish();
             return;

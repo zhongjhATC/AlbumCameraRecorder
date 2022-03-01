@@ -190,7 +190,7 @@ class GlobalSetting internal constructor(
         return this
     }
 
-    override fun videoCompress(videoCompressManager: VideoCompressCoordinator): GlobalSetting {
+    override fun videoCompress(videoCompressManager: VideoCompressCoordinator?): GlobalSetting {
         mGlobalSpec.videoCompressCoordinator = videoCompressManager
         return this
     }

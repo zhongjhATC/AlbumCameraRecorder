@@ -134,7 +134,7 @@ public class SoundRecordingFragment extends BaseFragment {
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(true);
 
         // 初始化设置
-        mGlobalSpec = GlobalSpec.getInstance();
+        mGlobalSpec = GlobalSpec.INSTANCE;
         mRecordSpec = RecordeSpec.INSTANCE;
         // 提示文本
         mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_sound_recording));
@@ -489,7 +489,7 @@ public class SoundRecordingFragment extends BaseFragment {
                         localFile.setPath(newFile.getPath());
                         localFile.setUri(mAudioMediaStoreCompat.getUri(newFile.getPath()));
                         if (progress >= FULL) {
-                            if (mGlobalSpec.onResultCallbackListener == null) {
+                            if (mGlobalSpec.getOnResultCallbackListener() == null) {
                                 Intent result = new Intent();
                                 ArrayList<LocalFile> localFiles = new ArrayList<>();
                                 localFiles.add(localFile);
@@ -498,7 +498,7 @@ public class SoundRecordingFragment extends BaseFragment {
                             } else {
                                 ArrayList<LocalFile> localFiles = new ArrayList<>();
                                 localFiles.add(localFile);
-                                mGlobalSpec.onResultCallbackListener.onResult(localFiles);
+                                mGlobalSpec.getOnResultCallbackListener().onResult(localFiles);
                             }
                             mActivity.finish();
                         }
@@ -520,12 +520,18 @@ public class SoundRecordingFragment extends BaseFragment {
      * 开始录音
      */
     private void startRecording() {
-
-        // 根据配置创建文件配置
-        GlobalSpec globalSpec = GlobalSpec.getInstance();
-        // 音频文件配置路径
-        mAudioMediaStoreCompat = new MediaStoreCompat(mContext,
-                globalSpec.audioStrategy == null ? globalSpec.saveStrategy : globalSpec.audioStrategy);
+        // 设置音频路径
+        if (mGlobalSpec.getAudioStrategy() != null) {
+            // 如果设置了音频的文件夹路径，就使用它的
+            mAudioMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getAudioStrategy());
+        } else {
+            // 否则使用全局的
+            if (mGlobalSpec.getSaveStrategy() == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
+            } else {
+                mAudioMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getSaveStrategy());
+            }
+        }
         mFile = mAudioMediaStoreCompat.createFile(2, true, "aac");
 
         mRecorder = new MediaRecorder();

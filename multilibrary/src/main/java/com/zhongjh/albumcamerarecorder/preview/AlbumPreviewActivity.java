@@ -32,6 +32,7 @@ import java.util.List;
 
 /**
  * 点击相册图片或者视频、九宫格、编辑处都可以进来
+ *
  * @author zhongjh
  */
 public class AlbumPreviewActivity extends BasePreviewActivity implements
@@ -46,7 +47,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setRequestedOrientation(GlobalSpec.getInstance().orientation);
+        setRequestedOrientation(GlobalSpec.INSTANCE.getOrientation());
         super.onCreate(savedInstanceState);
         mCollection.onCreate(this, this);
         Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);
