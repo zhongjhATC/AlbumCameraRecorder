@@ -308,6 +308,7 @@ public final class GlobalSetting implements GlobalSettingApi {
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true);
+        intent.putExtra(BasePreviewActivity.IS_BY_PROGRESS_GRIDVIEW, true);
         GlobalSpec globalSpec = GlobalSpec.getInstance();
         activity.startActivityForResult(intent, requestCode);
         if (globalSpec.isCutscenes) {
