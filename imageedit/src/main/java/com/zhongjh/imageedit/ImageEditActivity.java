@@ -8,11 +8,11 @@ import android.text.TextUtils;
 
 import com.zhongjh.imageedit.core.ImageMode;
 import com.zhongjh.imageedit.core.ImageText;
+import com.zhongjh.imageedit.core.file.BaseImageDecoder;
 import com.zhongjh.imageedit.core.file.ImageAssetFileDecoder;
 import com.zhongjh.imageedit.core.file.ImageContentDecoder;
-import com.zhongjh.imageedit.core.file.BaseImageDecoder;
 import com.zhongjh.imageedit.core.file.ImageFileDecoder;
-import com.zhongjh.imageedit.core.util.ImageUtils;
+import com.zhongjh.imageedit.core.util.BitmapLoadUtils;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -80,15 +80,9 @@ public class ImageEditActivity extends BaseImageEditActivity {
         options.inJustDecodeBounds = true;
 
         decoder.decode(options);
-
-        if (options.outWidth > MAX_WIDTH) {
-            options.inSampleSize = ImageUtils.inSampleSize(Math.round(1f * options.outWidth / MAX_WIDTH));
-        }
-
-        if (options.outHeight > MAX_HEIGHT) {
-            options.inSampleSize = Math.max(options.inSampleSize,
-                    ImageUtils.inSampleSize(Math.round(1f * options.outHeight / MAX_HEIGHT)));
-        }
+        // 按照成倍的缩小
+        int maxBitmapSize = BitmapLoadUtils.calculateMaxBitmapSize(getApplicationContext());
+        options.inSampleSize = BitmapLoadUtils.calculateInSampleSize(options, maxBitmapSize, maxBitmapSize);
 
         options.inJustDecodeBounds = false;
 
