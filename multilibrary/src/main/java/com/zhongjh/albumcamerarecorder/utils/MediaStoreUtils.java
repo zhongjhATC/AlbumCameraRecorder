@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.exifinterface.media.ExifInterface;
 
@@ -82,12 +83,10 @@ public class MediaStoreUtils {
      * @param directory        子文件目录
      * @param mediaStoreCompat mediaStoreCompat
      */
+    @NonNull
     public static Uri displayToGallery(Context context, File file, @MediaTypes int type, long duration, int width, int height,
                                        String directory, MediaStoreCompat mediaStoreCompat) {
         Log.d("displayToGallery",file.getPath());
-        if (!file.exists()) {
-            return null;
-        }
         Uri uri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             uri = displayToGalleryAndroidQ(context, file, type, duration, width, height, directory, mediaStoreCompat);
