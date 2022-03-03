@@ -1,9 +1,8 @@
-package com.zhongjh.albumcamerarecorder.listener;
+package com.zhongjh.albumcamerarecorder.listener
 
-import android.content.Context;
-
-import java.io.File;
-import java.io.IOException;
+import android.content.Context
+import java.io.File
+import java.io.IOException
 
 /**
  * 压缩图片接口
@@ -11,8 +10,7 @@ import java.io.IOException;
  * @author zhongjh
  * @date 2021/9/26
  */
-public interface ImageCompressionInterface {
-
+interface ImageCompressionInterface {
     /**
      * 压缩图片
      *
@@ -21,6 +19,6 @@ public interface ImageCompressionInterface {
      * @return 压缩后的文件
      * @throws IOException 文件流异常
      */
-    File compressionFile(Context context, File file) throws IOException;
-
+    @Throws(IOException::class)
+    fun compressionFile(context: Context, file: File): File
 }

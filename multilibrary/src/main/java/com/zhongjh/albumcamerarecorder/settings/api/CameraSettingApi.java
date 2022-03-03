@@ -7,11 +7,10 @@ import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
-
-import java.util.Set;
-
 import com.zhongjh.common.coordinator.VideoMergeCoordinator;
 import com.zhongjh.common.enums.MimeType;
+
+import java.util.Set;
 
 /**
  * 有关拍摄界面的动态设置
@@ -20,11 +19,6 @@ import com.zhongjh.common.enums.MimeType;
  * @date 2019/3/20
  */
 public interface CameraSettingApi {
-
-    /**
-     * 销毁事件
-     */
-    void onDestroy();
 
     /**
      * 支持的类型：图片，视频

@@ -7,7 +7,6 @@ import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
-import com.zhongjh.albumcamerarecorder.listener.OnMainListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.entity.SaveStrategy
@@ -123,11 +122,6 @@ object GlobalSpec {
      * 视频压缩功能
      */
     var videoCompressCoordinator: VideoCompressCoordinator? = null
-
-    /**
-     * 主界面的有关事件
-     */
-    var onMainListener: OnMainListener? = null
 
     /**
      * 请求界面的Code

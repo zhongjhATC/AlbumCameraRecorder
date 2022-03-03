@@ -3,9 +3,7 @@ package com.zhongjh.cameraapp.phone;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -189,10 +187,6 @@ public class MainUpperLimitActivity extends BaseActivity {
                 limitModel.getMaxAudioSelectable());
 
         mGlobalSetting
-                .setOnMainListener(errorMessage -> {
-                    Log.d(TAG, errorMessage);
-                    Toast.makeText(MainUpperLimitActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-                })
                 // 设置路径和7.0保护路径等等
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4

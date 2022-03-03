@@ -22,7 +22,10 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
      */
     private val mAlbumSpec: AlbumSpec = AlbumSpec.cleanInstance
 
-    override fun onDestroy() {
+    /**
+     * 销毁事件
+     */
+    fun onDestroy() {
         mAlbumSpec.onSelectedListener = null
         mAlbumSpec.onCheckedListener = null
     }
@@ -77,12 +80,12 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
-    override fun setOnSelectedListener(listener: OnSelectedListener?): AlbumSetting {
+    override fun setOnSelectedListener(listener: OnSelectedListener): AlbumSetting {
         mAlbumSpec.onSelectedListener = listener
         return this
     }
 
-    override fun setOnCheckedListener(listener: OnCheckedListener?): AlbumSetting {
+    override fun setOnCheckedListener(listener: OnCheckedListener): AlbumSetting {
         mAlbumSpec.onCheckedListener = listener
         return this
     }

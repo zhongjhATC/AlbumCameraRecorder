@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.widget.Toast
 import androidx.annotation.IntDef
 import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.MainActivity
@@ -12,13 +11,11 @@ import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
 import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
-import com.zhongjh.albumcamerarecorder.listener.OnMainListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
-import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.audioMaxCount
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.entity.MultiMedia
 import com.zhongjh.common.entity.SaveStrategy
@@ -37,10 +34,9 @@ import java.util.*
  * @param multiMediaSetting 在 requester context wrapper.
  * @param mimeTypes         设置为选择的 [MimeType] 类型
  */
-class GlobalSetting internal constructor(
-    private val multiMediaSetting: MultiMediaSetting,
-    mimeTypes: Set<MimeType>
-) : GlobalSettingApi {
+class GlobalSetting
+internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes: Set<MimeType>) :
+    GlobalSettingApi {
 
     private val mGlobalSpec: GlobalSpec = cleanInstance
 
@@ -49,7 +45,6 @@ class GlobalSetting internal constructor(
     annotation class ScreenOrientation
 
     override fun onDestroy() {
-        mGlobalSpec.onMainListener = null
         mGlobalSpec.onResultCallbackListener = null
         if (mGlobalSpec.albumSetting != null) {
             mGlobalSpec.albumSetting!!.onDestroy()
@@ -79,8 +74,8 @@ class GlobalSetting internal constructor(
         return this
     }
 
-    override fun defaultPosition(defaultPosition: Int): GlobalSetting {
-        mGlobalSpec.defaultPosition = defaultPosition
+    override fun defaultPosition(position: Int): GlobalSetting {
+        mGlobalSpec.defaultPosition = position
         return this
     }
 
@@ -185,18 +180,13 @@ class GlobalSetting internal constructor(
         return this
     }
 
-    override fun setOnImageCompressionInterface(listener: ImageCompressionInterface?): GlobalSetting {
+    override fun setOnImageCompressionInterface(listener: ImageCompressionInterface): GlobalSetting {
         mGlobalSpec.imageCompressionInterface = listener
         return this
     }
 
-    override fun videoCompress(videoCompressManager: VideoCompressCoordinator?): GlobalSetting {
+    override fun videoCompress(videoCompressManager: VideoCompressCoordinator): GlobalSetting {
         mGlobalSpec.videoCompressCoordinator = videoCompressManager
-        return this
-    }
-
-    override fun setOnMainListener(listener: OnMainListener?): GlobalSetting {
-        mGlobalSpec.onMainListener = listener
         return this
     }
 
@@ -290,21 +280,10 @@ class GlobalSetting internal constructor(
         if (mGlobalSpec.cameraSetting != null) {
             numItems++
         }
-        if (mGlobalSpec.recorderSetting != null && numItems <= 0) {
-            if (audioMaxCount > 0) {
-                numItems++
-            } else {
-                if (mGlobalSpec.onMainListener != null) {
-                    mGlobalSpec.onMainListener!!.onOpenFail(activity.resources.getString(R.string.z_multi_library_the_recording_limit_has_been_reached))
-                } else {
-                    Toast.makeText(
-                        activity.applicationContext,
-                        activity.resources.getString(R.string.z_multi_library_the_recording_limit_has_been_reached),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
+        if (mGlobalSpec.recorderSetting != null) {
+            numItems++
         }
+        // 如果numItems一个都没，则抛出异常
         check(numItems > 0) { activity.resources.getString(R.string.z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set) }
         val intent = Intent(activity, MainActivity::class.java)
         val fragment = multiMediaSetting.fragment

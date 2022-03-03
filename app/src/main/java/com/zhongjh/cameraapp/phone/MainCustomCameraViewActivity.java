@@ -3,11 +3,9 @@ package com.zhongjh.cameraapp.phone;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.databinding.DataBindingUtil;
 
@@ -181,10 +179,6 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         mGlobalSetting.recorderSetting(recorderSetting);
 
         mGlobalSetting
-                .setOnMainListener(errorMessage -> {
-                    Log.d(TAG, errorMessage);
-                    Toast.makeText(MainCustomCameraViewActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-                })
                 // 设置路径和7.0保护路径等等
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4

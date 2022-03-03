@@ -242,7 +242,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .albumSetting(albumSetting)
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
-                .setOnMainListener(errorMessage -> Toast.makeText(getApplication(), errorMessage, Toast.LENGTH_LONG).show())
                 // 设置路径和7.0保护路径等等
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))
                 // 如果设置这个，有关图片的优先权比allStrategy高

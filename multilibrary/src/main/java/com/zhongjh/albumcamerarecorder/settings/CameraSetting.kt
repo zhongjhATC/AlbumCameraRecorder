@@ -18,7 +18,10 @@ class CameraSetting : CameraSettingApi {
 
     private val mCameraSpec: CameraSpec = cleanInstance
 
-    override fun onDestroy() {
+    /**
+     * 销毁事件
+     */
+    fun onDestroy() {
         mCameraSpec.onCameraViewListener = null
     }
 

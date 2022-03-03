@@ -13,13 +13,8 @@ import com.zhongjh.common.enums.MimeType
 interface AlbumSettingApi {
 
     /**
-     * 销毁事件
-     */
-    fun onDestroy()
-
-    /**
      * 支持的类型：图片，视频
-     * 这个优先于 [MultiMediaSetting.choose]
+     * 这个优先于 [com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting.choose]
      * @param mimeTypes 类型
      * @return [AlbumSetting] this
      */
@@ -30,8 +25,8 @@ interface AlbumSettingApi {
      *
      * @param showSingleMediaType 是否只显示一种媒体类型，图像或视频。
      * @return [AlbumSetting] this
-     * @see AlbumSpec.onlyShowImages
-     * @see AlbumSpec.onlyShowVideos
+     * @see com.zhongjh.albumcamerarecorder.settings.AlbumSpec.onlyShowImages
+     * @see com.zhongjh.albumcamerarecorder.settings.AlbumSpec.onlyShowVideos
      */
     fun showSingleMediaType(showSingleMediaType: Boolean): AlbumSetting
 
@@ -102,7 +97,7 @@ interface AlbumSettingApi {
      * @param listener [OnSelectedListener]
      * @return [AlbumSetting] this
      */
-    fun setOnSelectedListener(listener: OnSelectedListener?): AlbumSetting
+    fun setOnSelectedListener(listener: OnSelectedListener): AlbumSetting
 
     /**
      * 当用户选中或取消选中“原始”时，立即为回调设置侦听器。
@@ -110,5 +105,6 @@ interface AlbumSettingApi {
      * @param listener [OnSelectedListener]
      * @return [AlbumSetting] this
      */
-    fun setOnCheckedListener(listener: OnCheckedListener?): AlbumSetting
+    fun setOnCheckedListener(listener: OnCheckedListener): AlbumSetting
+
 }

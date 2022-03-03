@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.databinding.DataBindingUtil;
 
@@ -161,7 +160,6 @@ public class MainThemeActivity extends BaseActivity {
         mGlobalSetting.cameraSetting(cameraSetting);
         mGlobalSetting.recorderSetting(recorderSetting);
         mGlobalSetting
-                .setOnMainListener(errorMessage -> Toast.makeText(MainThemeActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show())
                 // 设置路径和7.0保护路径等等
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))
                 // for glide-V4
