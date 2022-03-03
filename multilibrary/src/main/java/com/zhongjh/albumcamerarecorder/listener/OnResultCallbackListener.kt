@@ -1,23 +1,21 @@
-package com.zhongjh.albumcamerarecorder.listener;
+package com.zhongjh.albumcamerarecorder.listener
 
-import com.zhongjh.common.entity.LocalFile;
-import com.zhongjh.common.entity.MultiMedia;
-
-import java.util.List;
+import com.zhongjh.common.entity.LocalFile
+import com.zhongjh.common.entity.MultiMedia
 
 /**
  * onResult 的事件
  *
  * @author zhongjh
  */
-public interface OnResultCallbackListener {
+interface OnResultCallbackListener {
 
     /**
      * return LocalMedia result
      *
      * @param result 控件返回的相关数据
      */
-    void onResult(List<LocalFile> result);
+    fun onResult(result: List<LocalFile?>?)
 
     /**
      * return LocalMedia result
@@ -25,5 +23,5 @@ public interface OnResultCallbackListener {
      * @param result 控件返回的相关数据,跟九宫格挂钩
      * @param apply  是否预览界面点击了同意
      */
-    void onResultFromPreview(List<MultiMedia> result, boolean apply);
+    fun onResultFromPreview(result: List<MultiMedia?>?, apply: Boolean)
 }

@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.listener;
+package com.zhongjh.albumcamerarecorder.camera.listener
 
 /**
  * 点击或者长按事件回调
@@ -6,48 +6,47 @@ package com.zhongjh.albumcamerarecorder.camera.listener;
  * @author zhongjh
  * @date 2018/7/23
  */
-public interface ClickOrLongListener {
+interface ClickOrLongListener {
 
     /**
      * 按钮按下后的效果，用于禁止滑动等别的界面的操作
      */
-    void actionDown();
+    fun actionDown()
 
     /**
      * 点击
      */
-    void onClick();
+    fun onClick()
 
     /**
      * 长按启动
      */
-    void onLongClick();
+    fun onLongClick()
 
     /**
      * 长按结束
      * @param time 时间
      */
-    void onLongClickEnd(long time);
+    fun onLongClickEnd(time: Long)
 
     /**
      * 长按结束如果过短
      * @param time 时间
      */
-    void onLongClickShort(long time);
+    fun onLongClickShort(time: Long)
 
     /**
      * 长按中途出现异常
      */
-    void onLongClickError();
+    fun onLongClickError()
 
     /**
      * 禁止点击后，依然点击时的提示
      */
-    void onBanClickTips();
+    fun onBanClickTips()
 
     /**
      * 可以点击结束的提示
      */
-    void onClickStopTips();
-
+    fun onClickStopTips()
 }

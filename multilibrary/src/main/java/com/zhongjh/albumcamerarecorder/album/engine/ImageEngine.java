@@ -26,7 +26,6 @@ import android.widget.ImageView;
  * and {@link com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine}.
  * @author zhongjh
  */
-@SuppressWarnings("unused")
 public interface ImageEngine {
 
     /**

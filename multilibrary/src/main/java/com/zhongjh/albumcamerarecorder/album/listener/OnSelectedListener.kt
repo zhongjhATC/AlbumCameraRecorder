@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.zhongjh.albumcamerarecorder.album.listener
 
-package com.zhongjh.albumcamerarecorder.album.listener;
-
-import android.net.Uri;
-import androidx.annotation.NonNull;
-
-import com.zhongjh.common.entity.LocalFile;
-
-import java.util.List;
+import com.zhongjh.common.entity.LocalFile
 
 /**
  * 相册item事件
  * @author zhihu
  */
-public interface OnSelectedListener {
-
+interface OnSelectedListener {
     /**
      * 每次选择的事件
-     * @param localFiles 所选项目{@link com.zhongjh.common.entity.LocalFile} 列表.
+     * @param localFiles 所选项目[com.zhongjh.common.entity.LocalFile] 列表.
      */
-    void onSelected(@NonNull List<LocalFile> localFiles);
-
+    fun onSelected(localFiles: List<LocalFile>)
 }

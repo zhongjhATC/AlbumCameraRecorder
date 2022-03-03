@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.zhongjh.albumcamerarecorder.camera.listener
 
-package com.zhongjh.albumcamerarecorder.camera.listener;
-
-import com.otaliastudios.cameraview.CameraView;
+import com.otaliastudios.cameraview.CameraView
 
 /**
  * CameraView事件
  * @author zhongjh
  */
-public interface OnCameraViewListener {
-
+interface OnCameraViewListener {
     /**
      * 自定义cameraView事件
      * @param cameraView cameraView本身
      */
-    void onInitListener(CameraView cameraView);
-
+    fun onInitListener(cameraView: CameraView)
 }

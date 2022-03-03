@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.listener;
+package com.zhongjh.albumcamerarecorder.camera.listener
 
 /**
  * 退出监听
@@ -6,11 +6,9 @@ package com.zhongjh.albumcamerarecorder.camera.listener;
  * @author zhongjh
  * @date 2018/10/10
  */
-public interface CloseListener {
-
+interface CloseListener {
     /**
      * 退出
      */
-    void onClose();
-
+    fun onClose()
 }

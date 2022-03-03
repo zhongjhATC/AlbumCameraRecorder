@@ -1,8 +1,7 @@
-package com.zhongjh.albumcamerarecorder.camera.listener;
+package com.zhongjh.albumcamerarecorder.camera.listener
 
-import com.zhongjh.common.entity.LocalFile;
-
-import java.util.ArrayList;
+import com.zhongjh.common.entity.LocalFile
+import java.util.*
 
 /**
  * 拍照录像
@@ -10,18 +9,16 @@ import java.util.ArrayList;
  *
  * @author zhongjh
  */
-public interface OperateCameraListener {
-
+interface OperateCameraListener {
     /**
      * 取消事件
      */
-    void cancel();
+    fun cancel()
 
     /**
      * 拍照成功后点击确认事件
      *
      * @param localFiles 包含文件地址、uri和丰富其他属性
      */
-    void captureSuccess(ArrayList<LocalFile> localFiles);
-
+    fun captureSuccess(localFiles: ArrayList<LocalFile>)
 }
