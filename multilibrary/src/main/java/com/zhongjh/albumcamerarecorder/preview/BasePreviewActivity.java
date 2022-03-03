@@ -215,17 +215,42 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 刷新MultiMedia
      */
     private void refreshMultiMediaItem() {
-        // 未加入相册时候的uri
-        Uri editUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
         // 获取当前查看的multimedia
-        MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-        item.setOldUri(item.getUri());
-        item.setOldPath(item.getPath());
+        MultiMedia multiMedia = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+        // 编辑前的uri
+        Uri editUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
+        multiMedia.setOldUri(multiMedia.getUri());
+        // 编辑前的path
+        String oldPath = null;
+        if (multiMedia.getPath() == null) {
+            File file = UriUtils.uriToFile(getApplicationContext(), multiMedia.getUri());
+            if (file != null) {
+                oldPath = UriUtils.uriToFile(getApplicationContext(), multiMedia.getUri()).getAbsolutePath();
+            }
+        } else {
+            oldPath = multiMedia.getPath();
+        }
+        multiMedia.setOldPath(oldPath);
         // 更新当前fragment
-        item.setUri(editUri);
-        item.setPath(mEditImageFile.getPath());
-        mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), item);
+        multiMedia.setUri(editUri);
+        multiMedia.setPath(mEditImageFile.getPath());
+        mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), multiMedia);
         ((PreviewItemFragment) mAdapter.getFragment(mViewHolder.pager.getCurrentItem())).init();
+
+        // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
+        for (MultiMedia item : mSelectedCollection.asList()) {
+            if (item.getId() == multiMedia.getId()) {
+                // 如果两个id都一样，那就是同个图片，再判断是否同个对象
+                if (!item.equals(multiMedia)) {
+                    // 如果不是同个对象，那么另外一个对象要赋值
+                    item.setOldPath(multiMedia.getOldPath());
+                    item.setOldUri(multiMedia.getOldUri());
+                    item.setPath(multiMedia.getPath());
+                    item.setUri(multiMedia.getUri());
+                }
+            }
+        }
+
     }
 
     /**
