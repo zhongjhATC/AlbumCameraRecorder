@@ -31,7 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 点击相册图片或者视频、九宫格、编辑处都可以进来
+ * 点击相册图片或者视频、九宫格处都可以进来
+ * 标记是以点击的当前item为准而显示，这个为什么使用数据库 AlbumMediaCollection 查询，而不使用上个界面传递过来的数据
+ * 是因为用户可能点击的是未选择的数据
+ *
  * @author zhongjh
  */
 public class AlbumPreviewActivity extends BasePreviewActivity implements
