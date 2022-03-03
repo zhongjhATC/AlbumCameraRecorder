@@ -238,6 +238,7 @@ class GlobalSetting internal constructor(
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true)
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false)
         intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
+        intent.putExtra(BasePreviewActivity.IS_BY_PROGRESS_GRIDVIEW, true)
         activity.startActivityForResult(intent, requestCode)
         if (GlobalSpec.cutscenesEnabled) {
             activity.overridePendingTransition(R.anim.activity_open, 0)

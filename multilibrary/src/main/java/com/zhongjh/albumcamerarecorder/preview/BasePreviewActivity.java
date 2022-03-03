@@ -74,6 +74,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String IS_SELECTED_CHECK = "is_selected_check";
     public static final String IS_EXTERNAL_USERS = "is_external_users";
     public static final String IS_BY_ALBUM = "is_by_album";
+    public static final String IS_BY_PROGRESS_GRIDVIEW = "is_by_progress_gridview";
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected GlobalSpec mGlobalSpec;
@@ -115,6 +116,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 是否从相册界面进来的
      */
     protected boolean mIsByAlbum = false;
+    /**
+     * 是否从九宫格进来的
+     */
+    protected boolean mIsByProgressGridView = false;
 
     /**
      * 图片存储器
@@ -159,6 +164,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK, true);
         mIsExternalUsers = getIntent().getBooleanExtra(IS_EXTERNAL_USERS, false);
         mIsByAlbum = getIntent().getBooleanExtra(IS_BY_ALBUM, false);
+        mIsByProgressGridView = getIntent().getBooleanExtra(IS_BY_PROGRESS_GRIDVIEW, false);
 
         // 设置图片路径
         if (mGlobalSpec.getPictureStrategy() != null) {
@@ -401,7 +407,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
                 }
             }
-            updateSize(item);
+            updateUI(item);
         }
         mPreviousPos = position;
     }
@@ -498,13 +504,14 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     /**
+     * 更新ui
      * 如果当前item是gif就显示多少M的文本
      * 如果当前item是video就显示播放按钮
      *
      * @param item 当前图片
      */
     @SuppressLint("SetTextI18n")
-    protected void updateSize(MultiMedia item) {
+    protected void updateUI(MultiMedia item) {
         if (item.isGif()) {
             mViewHolder.size.setVisibility(View.VISIBLE);
             mViewHolder.size.setText(PhotoMetadataUtils.getSizeInMb(item.getSize()) + "M");
@@ -518,7 +525,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
         }
 
-        if (item.isImage() && mGlobalSpec.getImageEditEnabled()) {
+        if (item.isImage() && mGlobalSpec.getImageEditEnabled() && !mIsByProgressGridView) {
             mViewHolder.tvEdit.setVisibility(View.VISIBLE);
         } else {
             mViewHolder.tvEdit.setVisibility(View.GONE);

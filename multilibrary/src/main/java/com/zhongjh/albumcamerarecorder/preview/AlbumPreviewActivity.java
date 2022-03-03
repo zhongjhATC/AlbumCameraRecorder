@@ -32,7 +32,6 @@ import java.util.List;
 
 /**
  * 点击相册图片或者视频、九宫格、编辑处都可以进来
- *
  * @author zhongjh
  */
 public class AlbumPreviewActivity extends BasePreviewActivity implements
@@ -65,7 +64,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
         } else {
             mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
         }
-        updateSize(item);
+        updateUI(item);
     }
 
     @Override
