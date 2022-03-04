@@ -1,122 +1,105 @@
-package com.zhongjh.albumcamerarecorder.album.utils;
+package com.zhongjh.albumcamerarecorder.album.utils
 
-import android.content.Context;
-import android.os.Build;
-import android.util.Log;
-
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.common.entity.LocalFile;
-import com.zhongjh.common.listener.VideoEditListener;
-import com.zhongjh.common.utils.MediaStoreCompat;
-import com.zhongjh.common.utils.UriUtils;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import android.content.Context
+import android.os.Build
+import android.util.Log
+import com.zhongjh.albumcamerarecorder.camera.util.FileUtil
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
+import com.zhongjh.common.entity.LocalFile
+import com.zhongjh.common.listener.VideoEditListener
+import com.zhongjh.common.utils.MediaStoreCompat
+import com.zhongjh.common.utils.UriUtils
+import java.io.File
+import java.io.IOException
+import java.util.*
 
 /**
  * 这是相册界面和预览界面共用的一个异步线程逻辑
+ * @param globalSpec 公共配置
+ * @param pictureMediaStoreCompat  图片文件配置路径
+ * @param videoMediaStoreCompat 录像文件配置路径
  *
  * @author zhongjh
  * @date 2022/2/9
  */
-public class AlbumCompressFileTask {
-
-    private final Context mContext;
-    private final String mTag;
-    private final Class<?> mClsKey;
-    /**
-     * 公共配置
-     */
-    private final GlobalSpec mGlobalSpec;
-    /**
-     * 图片文件配置路径
-     */
-    private final MediaStoreCompat mPictureMediaStoreCompat;
-    /**
-     * 录像文件配置路径
-     */
-    private final MediaStoreCompat mVideoMediaStoreCompat;
-
-    public AlbumCompressFileTask(Context context, String tag, Class<?> clsKey, GlobalSpec globalSpec,
-                                 MediaStoreCompat pictureMediaStoreCompat, MediaStoreCompat videoMediaStoreCompat) {
-        mContext = context;
-        mTag = tag;
-        mClsKey = clsKey;
-        mGlobalSpec = globalSpec;
-        mPictureMediaStoreCompat = pictureMediaStoreCompat;
-        mVideoMediaStoreCompat = videoMediaStoreCompat;
-    }
-
-    public ArrayList<LocalFile> compressFileTaskDoInBackground(ArrayList<LocalFile> localFiles) {
+class AlbumCompressFileTask(
+    private val context: Context, private val tag: String, private val clsKey: Class<*>,
+    private val globalSpec: GlobalSpec,
+    private val pictureMediaStoreCompat: MediaStoreCompat,
+    private val videoMediaStoreCompat: MediaStoreCompat
+) {
+    fun compressFileTaskDoInBackground(localFiles: ArrayList<LocalFile>): ArrayList<LocalFile> {
         // 将 缓存文件 拷贝到 配置目录
-        ArrayList<LocalFile> newLocalFiles = new ArrayList<>();
-        for (LocalFile item : localFiles) {
+        val newLocalFiles = ArrayList<LocalFile>()
+        for (item in localFiles) {
             // 判断是否需要压缩
-            LocalFile isCompressItem = isCompress(item);
+            val isCompressItem = isCompress(item)
             if (isCompressItem != null) {
-                newLocalFiles.add(isCompressItem);
-                continue;
+                newLocalFiles.add(isCompressItem)
+                continue
             }
 
             // 开始压缩逻辑，获取真实路径
-            String path = getPath(item);
-
+            val path = getPath(item)
             if (path != null) {
-                String newFileName = getNewFileName(item, path);
-                File newFile = getNewFile(item, path, newFileName);
-
+                val newFileName = getNewFileName(item, path)
+                val newFile = getNewFile(item, path, newFileName)
                 if (newFile.exists()) {
-                    LocalFile localFile;
-                    if (item.isImage()) {
-                        localFile = new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile);
-                    } else {
-                        localFile = new LocalFile(mContext, mVideoMediaStoreCompat, item, newFile);
-                    }
-                    newLocalFiles.add(localFile);
-                    Log.d(mTag, "存在直接使用");
+                    val localFile: LocalFile =
+                        if (item.isImage()) {
+                            LocalFile(context, pictureMediaStoreCompat, item, newFile)
+                        } else {
+                            LocalFile(context, videoMediaStoreCompat, item, newFile)
+                        }
+                    newLocalFiles.add(localFile)
+                    Log.d(tag, "存在直接使用")
                 } else {
                     if (item.isImage()) {
                         // 处理是否压缩图片
-                        File compressionFile = handleImage(path);
+                        val compressionFile = handleImage(path)
                         // 移动到新的文件夹
-                        FileUtil.copy(compressionFile, newFile);
-                        newLocalFiles.add(new LocalFile(mContext, mPictureMediaStoreCompat, item, newFile));
-                        Log.d(mTag, "不存在新建文件");
+                        FileUtil.copy(compressionFile, newFile)
+                        newLocalFiles.add(
+                            LocalFile(
+                                context,
+                                pictureMediaStoreCompat,
+                                item,
+                                newFile
+                            )
+                        )
+                        Log.d(tag, "不存在新建文件")
                     } else if (item.isVideo()) {
-                        if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
+                        if (globalSpec.isCompressEnable) {
                             // 压缩视频
-                            mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(mClsKey, new VideoEditListener() {
-                                @Override
-                                public void onFinish() {
-                                    LocalFile localFile = new LocalFile(mContext, mVideoMediaStoreCompat, item, newFile);
-                                    newLocalFiles.add(localFile);
-                                    Log.d(mTag, "不存在新建文件");
-                                }
+                            globalSpec.videoCompressCoordinator?.setVideoCompressListener(
+                                clsKey,
+                                object : VideoEditListener {
+                                    override fun onFinish() {
+                                        val localFile = LocalFile(
+                                            context,
+                                            videoMediaStoreCompat,
+                                            item,
+                                            newFile
+                                        )
+                                        newLocalFiles.add(localFile)
+                                        Log.d(tag, "不存在新建文件")
+                                    }
 
-                                @Override
-                                public void onProgress(int progress, long progressTime) {
-                                }
-
-                                @Override
-                                public void onCancel() {
-
-                                }
-
-                                @Override
-                                public void onError(@NotNull String message) {
-                                }
-                            });
-                            mGlobalSpec.getVideoCompressCoordinator().compressAsync(mClsKey, path, newFile.getPath());
+                                    override fun onProgress(progress: Int, progressTime: Long) {}
+                                    override fun onCancel() {}
+                                    override fun onError(message: String) {}
+                                })
+                            globalSpec.videoCompressCoordinator?.compressAsync(
+                                clsKey,
+                                path,
+                                newFile.path
+                            )
                         }
                     }
                 }
             }
         }
-        return newLocalFiles;
+        return newLocalFiles
     }
 
     /**
@@ -125,22 +108,23 @@ public class AlbumCompressFileTask {
      * @param path 图片真实路径
      * @return 压缩后的文件
      */
-    public File handleImage(String path) {
-        File oldFile = new File(path);
+    fun handleImage(path: String): File {
+        val oldFile = File(path)
         // 根据类型压缩
-        File compressionFile;
-        if (mGlobalSpec.getImageCompressionInterface() != null) {
+        var compressionFile: File
+        if (globalSpec.imageCompressionInterface != null) {
             // 压缩图片
             try {
-                compressionFile = mGlobalSpec.getImageCompressionInterface().compressionFile(mContext, oldFile);
-            } catch (IOException e) {
-                compressionFile = oldFile;
-                e.printStackTrace();
+                compressionFile =
+                    globalSpec.imageCompressionInterface!!.compressionFile(context, oldFile)
+            } catch (e: IOException) {
+                compressionFile = oldFile
+                e.printStackTrace()
             }
         } else {
-            compressionFile = oldFile;
+            compressionFile = oldFile
         }
-        return compressionFile;
+        return compressionFile
     }
 
     /**
@@ -148,16 +132,16 @@ public class AlbumCompressFileTask {
      *
      * @return 返回对象为null就需要压缩，否则不需要压缩
      */
-    public LocalFile isCompress(LocalFile item) {
+    fun isCompress(item: LocalFile): LocalFile? {
         // 判断是否需要压缩
-        if (item.isVideo() && mGlobalSpec.getVideoCompressCoordinator() == null) {
-            return item;
+        return if (item.isVideo() && globalSpec.videoCompressCoordinator == null) {
+            item
         } else if (item.isGif()) {
-            return item;
-        } else if (item.isImage() && mGlobalSpec.getImageCompressionInterface() == null) {
-            return item;
+            item
+        } else if (item.isImage() && globalSpec.imageCompressionInterface == null) {
+            item
         } else {
-            return null;
+            null
         }
     }
 
@@ -165,36 +149,36 @@ public class AlbumCompressFileTask {
      * 返回当前处理的LocalFile的真实路径
      *
      * @param item 当前处理的LocalFile
-     * @return 真实路径
+     * @return 真实路径,有可能因为转不成uri转不成file返回null
      */
-    public String getPath(LocalFile item) {
-        String path = null;
-        if (item.getPath() == null) {
-            File file = UriUtils.uriToFile(mContext, item.getUri());
+    fun getPath(item: LocalFile): String? {
+        var path: String? = null
+        if (item.path == null) {
+            val file = UriUtils.uriToFile(context, item.uri)
             if (file != null) {
-                path = file.getAbsolutePath();
+                path = file.absolutePath
             }
         } else {
-            path = item.getPath();
+            path = item.path
         }
         if (path != null) {
             // 判断是否Android 29
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // 29以上的版本都必须是私有的或者公共目录
-                File cacheFile = null;
+                var cacheFile: File? = null
                 if (item.isImage()) {
-                    cacheFile = mPictureMediaStoreCompat.createFile(0, true, getNameSuffix(path));
+                    cacheFile = pictureMediaStoreCompat.createFile(0, true, getNameSuffix(path))
                 } else if (item.isVideo()) {
-                    cacheFile = mVideoMediaStoreCompat.createFile(1, true, getNameSuffix(path));
+                    cacheFile = videoMediaStoreCompat.createFile(1, true, getNameSuffix(path))
                 }
                 // >=29 的需要通过uri获取公共目录的文件，并且拷贝到私有目录
                 if (cacheFile != null) {
-                    FileUtil.copy(mContext, item.getUri(), cacheFile);
-                    path = cacheFile.getAbsolutePath();
+                    FileUtil.copy(context, item.uri, cacheFile)
+                    path = cacheFile.absolutePath
                 }
             }
         }
-        return path;
+        return path
     }
 
     /**
@@ -204,32 +188,30 @@ public class AlbumCompressFileTask {
      * @param path 真实路径
      * @return 返回迁移后的file的名称
      */
-    public String getNewFileName(LocalFile item, String path) {
+    fun getNewFileName(item: LocalFile, path: String): String {
         // 移动文件,获取文件名称
-        String newFileName = path.substring(path.lastIndexOf(File.separator));
-
-        String[] newFileNames = newFileName.split("\\.");
+        var newFileName = path.substring(path.lastIndexOf(File.separator))
+        val newFileNames = newFileName.split("\\.").toTypedArray()
         // 设置压缩后的照片名称，id_CMP
-        newFileName = item.getId() + "_CMP";
-        if (newFileNames.length > 1) {
+        newFileName = item.id.toString() + "_CMP"
+        if (newFileNames.size > 1) {
             // 设置后缀名
-            newFileName = newFileName + "." + newFileNames[1];
+            newFileName = newFileName + "." + newFileNames[1]
         }
-        return newFileName;
+        return newFileName
     }
 
     /**
      * @return 获取后缀名
      */
-    public String getNameSuffix(String path) {
+    fun getNameSuffix(path: String): String {
         // 获取文件名称
-        String newFileName = path.substring(path.lastIndexOf(File.separator));
-        String[] newFileNames = newFileName.split("\\.");
-        if (newFileNames.length > 1) {
+        val newFileName = path.substring(path.lastIndexOf(File.separator))
+        val newFileNames = newFileName.split("\\.").toTypedArray()
+        return if (newFileNames.size > 1) {
             // 返回后缀名
-            return newFileNames[1];
-        }
-        return "";
+            newFileNames[1]
+        } else ""
     }
 
     /**
@@ -240,16 +222,15 @@ public class AlbumCompressFileTask {
      * @param newFileName 迁移后的file的名称
      * @return 返回迁移后的file
      */
-    public File getNewFile(LocalFile item, String path, String newFileName) {
-        File newFile;
-        if (item.isImage()) {
-            newFile = mPictureMediaStoreCompat.fineFile(newFileName, 0, false);
+    fun getNewFile(item: LocalFile, path: String?, newFileName: String?): File {
+        val newFile: File
+        newFile = if (item.isImage()) {
+            pictureMediaStoreCompat.fineFile(newFileName!!, 0, false)
         } else if (item.isVideo()) {
-            newFile = mVideoMediaStoreCompat.fineFile(newFileName, 1, false);
+            videoMediaStoreCompat.fineFile(newFileName!!, 1, false)
         } else {
-            newFile = new File(path);
+            File(path)
         }
-        return newFile;
+        return newFile
     }
-
 }

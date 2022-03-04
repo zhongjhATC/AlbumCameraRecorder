@@ -24,9 +24,9 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.R;
-import com.zhongjh.cameraapp.configuration.ImageCompressionLuBan;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.configuration.ImageCompressionLuBan;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MediaExtraInfo;
@@ -220,15 +220,11 @@ public class MainActivity extends BaseActivity {
         // 是否压缩图片
         if (mBinding.cbIsCompressImage.isChecked()) {
             mGlobalSetting.setOnImageCompressionInterface(new ImageCompressionLuBan());
-        } else {
-            mGlobalSetting.setOnImageCompressionInterface(null);
         }
 
         // 是否压缩视频
         if (mBinding.cbIsCompressVideo.isChecked()) {
             mGlobalSetting.videoCompress(new VideoCompressManager());
-        } else {
-            mGlobalSetting.videoCompress(null);
         }
 
         // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
@@ -274,7 +270,7 @@ public class MainActivity extends BaseActivity {
         mGlobalSetting.forResult(new OnResultCallbackListener() {
 
             @Override
-            public void onResult(List<LocalFile> result) {
+            public void onResult(@NotNull List<? extends LocalFile> result) {
                 for (LocalFile localFile : result) {
                     Log.i(TAG, "onResult id:" + localFile.getId());
                     Log.d(TAG, "onResult 绝对路径:" + localFile.getPath());
@@ -295,10 +291,12 @@ public class MainActivity extends BaseActivity {
                     Log.d(TAG, "onResult 具体类型:" + localFile.getMimeType());
                     // 某些手机拍摄没有自带宽高，那么我们可以自己获取
                     if (localFile.getWidth() == 0 && localFile.isVideo()) {
-                        MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localFile.getPath());
-                        localFile.setWidth(mediaExtraInfo.getWidth());
-                        localFile.setHeight(mediaExtraInfo.getHeight());
-                        localFile.setDuration(mediaExtraInfo.getDuration());
+                        if (localFile.getPath() != null) {
+                            MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localFile.getPath());
+                            localFile.setWidth(mediaExtraInfo.getWidth());
+                            localFile.setHeight(mediaExtraInfo.getHeight());
+                            localFile.setDuration(mediaExtraInfo.getDuration());
+                        }
                     }
                     Log.d(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
                     Log.d(TAG, UriUtils.uriToFile(getApplicationContext(), localFile.getUri()).getPath());
@@ -307,7 +305,7 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onResultFromPreview(List<MultiMedia> result, boolean apply) {
+            public void onResultFromPreview(@NotNull List<? extends MultiMedia> result, boolean apply) {
                 if (apply) {
                     for (MultiMedia multiMedia : result) {
                         // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效

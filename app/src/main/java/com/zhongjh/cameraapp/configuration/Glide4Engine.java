@@ -26,6 +26,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.cameraapp.R;
 
+import org.jetbrains.annotations.NotNull;
+
 
 /**
  * {@link ImageEngine} implementation using Glide.
@@ -34,7 +36,7 @@ import com.zhongjh.cameraapp.R;
 public class Glide4Engine implements ImageEngine {
 
     @Override
-    public void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri) {
+    public void loadThumbnail(@NotNull Context context, int resize, @NotNull Drawable placeholder, @NotNull ImageView imageView, @NotNull Uri uri) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(uri)
@@ -46,8 +48,8 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView,
-                                 Uri uri) {
+    public void loadGifThumbnail(@NotNull Context context, int resize, @NotNull Drawable placeholder, @NotNull ImageView imageView,
+                                 @NotNull Uri uri) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(uri)
@@ -59,7 +61,7 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
+    public void loadImage(@NotNull Context context, int resizeX, int resizeY, @NotNull ImageView imageView, @NotNull Uri uri) {
         Glide.with(context)
                 .load(uri)
                 .apply(new RequestOptions()
@@ -71,7 +73,7 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadUrlImage(Context context, ImageView imageView, String url) {
+    public void loadUrlImage(@NotNull Context context, @NotNull ImageView imageView, @NotNull String url) {
         Glide.with(context)
                 .load(url)
                 .apply(new RequestOptions()
@@ -82,7 +84,7 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadUriImage(Context context, ImageView imageView, Uri uri) {
+    public void loadUriImage(@NotNull Context context, @NotNull ImageView imageView, @NotNull Uri uri) {
         Glide.with(context)
                 .load(uri)
                 .apply(new RequestOptions()
@@ -93,7 +95,7 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadDrawableImage(Context context, ImageView imageView, Integer resourceId) {
+    public void loadDrawableImage(@NotNull Context context, @NotNull ImageView imageView, int resourceId) {
         Glide.with(context)
                 .load(resourceId)
                 .apply(new RequestOptions()
@@ -104,7 +106,7 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
+    public void loadGifImage(@NotNull Context context, int resizeX, int resizeY, @NotNull ImageView imageView, @NotNull Uri uri) {
         Glide.with(context)
                 .asGif()
                 .load(uri)

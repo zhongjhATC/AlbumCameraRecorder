@@ -289,7 +289,7 @@ public class CameraFragment extends BaseFragment {
     private void initCameraLayoutCaptureListener() {
         mCameraLayout.setCaptureListener(new CaptureListener() {
             @Override
-            public void remove(List<BitmapData> captureData) {
+            public void remove(@NotNull List<? extends BitmapData> captureData) {
                 // 判断如果删除光图片的时候，母窗体启动滑动
                 if (captureData.size() <= 0) {
                     mActivity.showHideTableLayout(true);
@@ -297,7 +297,7 @@ public class CameraFragment extends BaseFragment {
             }
 
             @Override
-            public void add(List<BitmapData> captureDatas) {
+            public void add(@NotNull List<? extends BitmapData> captureDatas) {
                 if (captureDatas.size() > 0) {
                     // 母窗体禁止滑动
                     mActivity.showHideTableLayout(false);

@@ -339,21 +339,27 @@ public class SelectedItemCollection {
     private String getCause(int maxSelectable, boolean isMashup, String type) {
         String cause = "";
         if (isMashup) {
-            if (type.equals(IMAGE_VIDEO)) {
-                cause = mContext.getResources().getString(
-                        R.string.z_multi_library_error_over_count,
-                        maxSelectable
-                );
-            } else if (type.equals(IMAGE)) {
-                cause = mContext.getResources().getString(
-                        R.string.z_multi_library_error_over_count_image,
-                        maxSelectable
-                );
-            } else if (type.equals(VIDEO)) {
-                cause = mContext.getResources().getString(
-                        R.string.z_multi_library_error_over_count_video,
-                        maxSelectable
-                );
+            switch (type) {
+                case IMAGE_VIDEO:
+                    cause = mContext.getResources().getString(
+                            R.string.z_multi_library_error_over_count,
+                            maxSelectable
+                    );
+                    break;
+                case IMAGE:
+                    cause = mContext.getResources().getString(
+                            R.string.z_multi_library_error_over_count_image,
+                            maxSelectable
+                    );
+                    break;
+                case VIDEO:
+                    cause = mContext.getResources().getString(
+                            R.string.z_multi_library_error_over_count_video,
+                            maxSelectable
+                    );
+                    break;
+                default:
+                    break;
             }
         } else {
             cause = mContext.getResources().getString(

@@ -27,6 +27,8 @@ import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.cameraapp.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,7 +52,7 @@ public class GifSizeFilter extends BaseFilter {
     }
 
     @Override
-    public IncapableCause filter(Context context, MultiMedia item) {
+    public IncapableCause filter(@NotNull Context context, @NotNull MultiMedia item) {
         if (!needFiltering(context, item)) {
             return null;
         }

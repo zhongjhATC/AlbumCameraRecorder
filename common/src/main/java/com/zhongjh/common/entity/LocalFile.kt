@@ -66,8 +66,8 @@ open class LocalFile : Parcelable {
     constructor()
 
     /**
-     * 从localFile赋值到另外一个新的localFile
-     * 之所以这样做是因为Parcelable如果使用的是看似父类其实是子类就会出问题
+     * 从 localFile 赋值到另外一个新的 localFile
+     * 之所以这样做是因为 Parcelable 如果使用的是看似父类其实是子类就会出问题
      */
     constructor(localFile: LocalFile) : super() {
         id = localFile.id
@@ -85,14 +85,24 @@ open class LocalFile : Parcelable {
     /**
      * 赋值一个新的path，借由这个新的path，修改相关参数
      */
-    constructor(context: Context, mediaStoreCompat: MediaStoreCompat, localFile: LocalFile, compressionFile: File) : super() {
+    constructor(
+        context: Context,
+        mediaStoreCompat: MediaStoreCompat,
+        localFile: LocalFile,
+        compressionFile: File
+    ) : super() {
         updateFile(context, mediaStoreCompat, localFile, compressionFile)
     }
 
     /**
      * 修改新的file
      */
-    fun updateFile(context: Context, mediaStoreCompat: MediaStoreCompat, localFile: LocalFile, compressionFile: File) {
+    fun updateFile(
+        context: Context,
+        mediaStoreCompat: MediaStoreCompat,
+        localFile: LocalFile,
+        compressionFile: File
+    ) {
         id = localFile.id
         this.path = compressionFile.absolutePath
         this.uri = mediaStoreCompat.getUri(compressionFile.absolutePath)
@@ -102,7 +112,8 @@ open class LocalFile : Parcelable {
         oldPath = localFile.oldPath
         oldUri = localFile.oldUri
         if (isImageOrGif()) {
-            val imageWidthAndHeight: IntArray = MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
+            val imageWidthAndHeight: IntArray =
+                MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
             height = imageWidthAndHeight[1]
             width = imageWidthAndHeight[0]
         } else if (isVideo()) {

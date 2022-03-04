@@ -15,7 +15,7 @@ interface OnResultCallbackListener {
      *
      * @param result 控件返回的相关数据
      */
-    fun onResult(result: List<LocalFile?>?)
+    fun onResult(result: List<LocalFile>)
 
     /**
      * return LocalMedia result
@@ -23,5 +23,5 @@ interface OnResultCallbackListener {
      * @param result 控件返回的相关数据,跟九宫格挂钩
      * @param apply  是否预览界面点击了同意
      */
-    fun onResultFromPreview(result: List<MultiMedia?>?, apply: Boolean)
+    fun onResultFromPreview(result: List<MultiMedia>, apply: Boolean)
 }

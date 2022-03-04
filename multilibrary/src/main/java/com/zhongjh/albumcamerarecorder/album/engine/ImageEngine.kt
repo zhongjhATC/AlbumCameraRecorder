@@ -1,33 +1,17 @@
-/*
- * Copyright 2017 Zhihu Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.zhongjh.albumcamerarecorder.album.engine;
+package com.zhongjh.albumcamerarecorder.album.engine
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.widget.ImageView;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.widget.ImageView
 
 /**
  * 图片不同加载方式
- * Image loader interface. There are predefined {@link com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine}
- * and {@link com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine}.
+ * Image loader interface. There are predefined [com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine]
+ * and [com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine].
  * @author zhongjh
  */
-public interface ImageEngine {
-
+interface ImageEngine {
     /**
      * 加载静态图像资源的缩略图
      * 大部分场景用于相册
@@ -38,7 +22,13 @@ public interface ImageEngine {
      * @param imageView   ImageView控件
      * @param uri         加载图像的URI
      */
-    void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri);
+    fun loadThumbnail(
+        context: Context,
+        resize: Int,
+        placeholder: Drawable,
+        imageView: ImageView,
+        uri: Uri
+    )
 
     /**
      * 加载GIF图像资源的缩略图。如果只是一个缩略图，你不必加载动画gif
@@ -50,7 +40,13 @@ public interface ImageEngine {
      * @param imageView   ImageView控件
      * @param uri         加载图像的URI
      */
-    void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri);
+    fun loadGifThumbnail(
+        context: Context,
+        resize: Int,
+        placeholder: Drawable,
+        imageView: ImageView,
+        uri: Uri
+    )
 
     /**
      * 加载静态图像资源
@@ -62,7 +58,7 @@ public interface ImageEngine {
      * @param imageView ImageView控件
      * @param uri       加载图像的URI
      */
-    void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri);
+    fun loadImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri)
 
     /**
      * 加载静态图像资源
@@ -72,7 +68,7 @@ public interface ImageEngine {
      * @param imageView ImageView控件
      * @param url       加载图像的url
      */
-    void loadUrlImage(Context context, ImageView imageView, String url);
+    fun loadUrlImage(context: Context, imageView: ImageView, url: String)
 
     /**
      * 加载静态图像资源
@@ -82,7 +78,7 @@ public interface ImageEngine {
      * @param imageView ImageView控件
      * @param uri       加载图像的uri
      */
-    void loadUriImage(Context context, ImageView imageView, Uri uri);
+    fun loadUriImage(context: Context, imageView: ImageView, uri: Uri)
 
     /**
      * 加载静态图像资源
@@ -92,7 +88,7 @@ public interface ImageEngine {
      * @param imageView  ImageView控件
      * @param resourceId 资源id图片
      */
-    void loadDrawableImage(Context context, ImageView imageView ,Integer resourceId);
+    fun loadDrawableImage(context: Context, imageView: ImageView, resourceId: Int)
 
     /**
      * 加载GIF图像资源。
@@ -103,7 +99,13 @@ public interface ImageEngine {
      * @param imageView ImageView控件
      * @param uri       加载图像的uri
      */
-    void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri);
+    fun loadGifImage(
+        context: Context,
+        resizeX: Int,
+        resizeY: Int,
+        imageView: ImageView,
+        uri: Uri
+    )
 
     /**
      * 此实现是否支持动态GIF
@@ -111,5 +113,5 @@ public interface ImageEngine {
      *
      * @return true支持动画gif，false不支持动画gif。
      */
-    boolean supportAnimatedGif();
+    fun supportAnimatedGif(): Boolean
 }
