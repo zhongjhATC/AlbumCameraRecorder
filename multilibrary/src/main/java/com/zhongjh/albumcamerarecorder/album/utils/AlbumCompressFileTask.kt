@@ -222,14 +222,17 @@ class AlbumCompressFileTask(
      * @param newFileName 迁移后的file的名称
      * @return 返回迁移后的file
      */
-    fun getNewFile(item: LocalFile, path: String?, newFileName: String?): File {
-        val newFile: File
-        newFile = if (item.isImage()) {
-            pictureMediaStoreCompat.fineFile(newFileName!!, 0, false)
-        } else if (item.isVideo()) {
-            videoMediaStoreCompat.fineFile(newFileName!!, 1, false)
-        } else {
-            File(path)
+    fun getNewFile(item: LocalFile, path: String, newFileName: String): File {
+        val newFile: File = when {
+            item.isImage() -> {
+                pictureMediaStoreCompat.fineFile(newFileName, 0, false)
+            }
+            item.isVideo() -> {
+                videoMediaStoreCompat.fineFile(newFileName, 1, false)
+            }
+            else -> {
+                File(path)
+            }
         }
         return newFile
     }

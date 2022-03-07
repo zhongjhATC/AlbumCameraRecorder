@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.albumcamerarecorder.album.utils;
+package com.zhongjh.albumcamerarecorder.album.utils
 
-import android.content.Context;
+import android.content.Context
+import kotlin.math.roundToInt
 
 /**
  * @author zhongjh
  */
-public class UiUtils {
+object UiUtils {
 
-    public static int spanCount(Context context, int gridExpectedSize) {
-        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        float expected = (float) screenWidth / (float) gridExpectedSize;
-        int spanCount = Math.round(expected);
+    @JvmStatic
+    fun spanCount(context: Context, gridExpectedSize: Int): Int {
+        val screenWidth = context.resources.displayMetrics.widthPixels
+        val expected = screenWidth.toFloat() / gridExpectedSize.toFloat()
+        var spanCount = expected.roundToInt()
         if (spanCount == 0) {
-            spanCount = 1;
+            spanCount = 1
         }
-        return spanCount;
+        return spanCount
     }
 
 }
