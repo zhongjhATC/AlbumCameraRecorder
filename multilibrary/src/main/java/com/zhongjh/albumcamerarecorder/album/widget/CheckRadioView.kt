@@ -1,66 +1,59 @@
-package com.zhongjh.albumcamerarecorder.album.widget;
+package com.zhongjh.albumcamerarecorder.album.widget
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.core.content.res.ResourcesCompat;
-
-import com.zhongjh.albumcamerarecorder.R;
-
-import com.zhongjh.common.utils.ColorFilterUtil;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.res.ResourcesCompat
+import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
 
 /**
  * 单选框
  * @author zhongjh
  */
-public class CheckRadioView extends AppCompatImageView {
+class CheckRadioView : AppCompatImageView {
 
-    private Drawable mDrawable;
+    private var mDrawable: Drawable? = null
+    private var mSelectedColor = 0
+    private var mUnSelectUdColor = 0
 
-    private int mSelectedColor;
-    private int mUnSelectUdColor;
-
-    public CheckRadioView(Context context) {
-        super(context);
-        init();
+    constructor(context: Context) : super(context) {
+        init()
     }
 
-
-
-    public CheckRadioView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        init()
     }
 
-    private void init() {
+    private fun init() {
         mSelectedColor = ResourcesCompat.getColor(
-                getResources(), R.color.blue_item_checkCircle_backgroundColor,
-                getContext().getTheme());
+            resources, R.color.blue_item_checkCircle_backgroundColor,
+            context.theme
+        )
         mUnSelectUdColor = ResourcesCompat.getColor(
-                getResources(), R.color.blue_check_original_radio_disable,
-                getContext().getTheme());
-        setChecked(false);
+            resources, R.color.blue_check_original_radio_disable,
+            context.theme
+        )
+        setChecked(false)
     }
 
-    public void setChecked(boolean enable) {
+    fun setChecked(enable: Boolean) {
         if (enable) {
-            setImageResource(R.drawable.ic_radio_button_checked_white_24dp);
-            mDrawable = getDrawable();
-            ColorFilterUtil.setColorFilterSrcIn(mDrawable,mSelectedColor);
+            setImageResource(R.drawable.ic_radio_button_checked_white_24dp)
+            mDrawable = drawable
+            setColorFilterSrcIn(mDrawable!!, mSelectedColor)
         } else {
-            setImageResource(R.drawable.ic_radio_button_unchecked_white_24dp);
-            mDrawable = getDrawable();
-            ColorFilterUtil.setColorFilterSrcIn(mDrawable,mUnSelectUdColor);
+            setImageResource(R.drawable.ic_radio_button_unchecked_white_24dp)
+            mDrawable = drawable
+            setColorFilterSrcIn(mDrawable!!, mUnSelectUdColor)
         }
     }
 
-
-    public void setColor(int color) {
+    fun setColor(color: Int) {
         if (mDrawable == null) {
-            mDrawable = getDrawable();
+            mDrawable = drawable
         }
-        ColorFilterUtil.setColorFilterSrcIn(mDrawable,color);
+        setColorFilterSrcIn(mDrawable!!, color)
     }
 }

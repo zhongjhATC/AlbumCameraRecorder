@@ -5,25 +5,21 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import androidx.exifinterface.media.ExifInterface;
 
 import com.zhongjh.albumcamerarecorder.R;
-
-import com.zhongjh.common.entity.IncapableCause;
-
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-
+import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.BasePhotoMetadataUtils;
-
-import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.common.utils.UriUtils;
 
 import java.io.FileNotFoundException;
