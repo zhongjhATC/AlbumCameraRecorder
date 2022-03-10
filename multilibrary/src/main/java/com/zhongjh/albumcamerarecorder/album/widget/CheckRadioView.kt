@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder.album.widget
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.res.ResourcesCompat
@@ -14,7 +13,6 @@ import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
  */
 class CheckRadioView : AppCompatImageView {
 
-    private var mDrawable: Drawable? = null
     private var mSelectedColor = 0
     private var mUnSelectUdColor = 0
 
@@ -41,19 +39,14 @@ class CheckRadioView : AppCompatImageView {
     fun setChecked(enable: Boolean) {
         if (enable) {
             setImageResource(R.drawable.ic_radio_button_checked_white_24dp)
-            mDrawable = drawable
-            setColorFilterSrcIn(mDrawable!!, mSelectedColor)
+            setColorFilterSrcIn(drawable, mSelectedColor)
         } else {
             setImageResource(R.drawable.ic_radio_button_unchecked_white_24dp)
-            mDrawable = drawable
-            setColorFilterSrcIn(mDrawable!!, mUnSelectUdColor)
+            setColorFilterSrcIn(drawable, mUnSelectUdColor)
         }
     }
 
     fun setColor(color: Int) {
-        if (mDrawable == null) {
-            mDrawable = drawable
-        }
-        setColorFilterSrcIn(mDrawable!!, color)
+        setColorFilterSrcIn(drawable, color)
     }
 }

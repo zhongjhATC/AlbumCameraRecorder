@@ -16,14 +16,14 @@ import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
  */
 class AlbumsSpinner(context: Context) {
 
-    private var mAdapter: CursorAdapter? = null
-    private var mSelected: TextView? = null
+    private lateinit var mAdapter: CursorAdapter
+    private lateinit var mSelected: TextView
     private val mListPopupWindow: ListPopupWindow = ListPopupWindow(
         context,
         null,
         com.zhongjh.albumcamerarecorder.R.attr.listPopupWindowStyle
     )
-    private var mOnItemSelectedListener: AdapterView.OnItemSelectedListener? = null
+    private lateinit var mOnItemSelectedListener: AdapterView.OnItemSelectedListener
 
     /**
      * 赋值事件
@@ -54,20 +54,20 @@ class AlbumsSpinner(context: Context) {
     private fun onItemSelected(context: Context, position: Int) {
         mListPopupWindow.dismiss()
         // 获取数据源
-        val cursor = mAdapter!!.cursor
+        val cursor = mAdapter.cursor
         // 选择该position
         cursor.moveToPosition(position)
         val album = valueOf(cursor)
         val displayName = album.getDisplayName(context)
-        if (mSelected!!.visibility == View.VISIBLE) {
+        if (mSelected.visibility == View.VISIBLE) {
             // 如果显示就赋值
-            mSelected!!.text = displayName
+            mSelected.text = displayName
         } else {
             // 否则先显示出来再赋值
-            mSelected!!.alpha = 0.0f
-            mSelected!!.visibility = View.VISIBLE
-            mSelected!!.text = displayName
-            mSelected!!.animate().alpha(1.0f).setDuration(
+            mSelected.alpha = 0.0f
+            mSelected.visibility = View.VISIBLE
+            mSelected.text = displayName
+            mSelected.animate().alpha(1.0f).setDuration(
                 context.resources.getInteger(
                     android.R.integer.config_longAnimTime
                 ).toLong()
@@ -80,7 +80,7 @@ class AlbumsSpinner(context: Context) {
      *
      * @param adapter 适配器
      */
-    fun setAdapter(adapter: CursorAdapter?) {
+    fun setAdapter(adapter: CursorAdapter) {
         mListPopupWindow.setAdapter(adapter)
         mAdapter = adapter
     }
@@ -95,25 +95,25 @@ class AlbumsSpinner(context: Context) {
         mSelected = textView
 
         // 设置下拉箭头的颜色跟album_element_color文本颜色一样
-        val drawables = mSelected!!.compoundDrawables
+        val drawables = mSelected.compoundDrawables
         val right = drawables[2]
         val ta =
-            mSelected!!.context.theme.obtainStyledAttributes(intArrayOf(com.zhongjh.albumcamerarecorder.R.attr.album_element_color))
+            mSelected.context.theme.obtainStyledAttributes(intArrayOf(com.zhongjh.albumcamerarecorder.R.attr.album_element_color))
         val color = ta.getColor(0, 0)
         ta.recycle()
         // 使用设置的主题颜色对目标Drawable(这里是一个小箭头)进行SRC_IN模式合成 达到改变Drawable颜色的效果
         setColorFilterSrcIn(right, color)
-        mSelected!!.visibility = View.GONE
-        mSelected!!.setOnClickListener { v: View ->
+        mSelected.visibility = View.GONE
+        mSelected.setOnClickListener { v: View ->
             // 显示选择框
             val itemHeight =
                 v.resources.getDimensionPixelSize(com.zhongjh.albumcamerarecorder.R.dimen.album_item_height)
             mListPopupWindow.height =
-                if (mAdapter!!.count > MAX_SHOWN_COUNT) itemHeight * MAX_SHOWN_COUNT else itemHeight * mAdapter!!.count
+                if (mAdapter.count > MAX_SHOWN_COUNT) itemHeight * MAX_SHOWN_COUNT else itemHeight * mAdapter.count
             mListPopupWindow.show()
         }
         // 设置textView向下拖拽可下拉ListPopupWindow
-        mSelected!!.setOnTouchListener(mListPopupWindow.createDragToOpenListener(mSelected))
+        mSelected.setOnTouchListener(mListPopupWindow.createDragToOpenListener(mSelected))
     }
 
     /**
@@ -138,11 +138,9 @@ class AlbumsSpinner(context: Context) {
         mListPopupWindow.verticalOffset = (-48 * density).toInt()
 
         // 点击事件
-        mListPopupWindow.setOnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id: Long ->
+        mListPopupWindow.setOnItemClickListener { parent: AdapterView<*>, view: View, position: Int, id: Long ->
             onItemSelected(parent.context, position)
-            if (mOnItemSelectedListener != null) {
-                mOnItemSelectedListener!!.onItemSelected(parent, view, position, id)
-            }
+            mOnItemSelectedListener.onItemSelected(parent, view, position, id)
         }
     }
 }

@@ -1,255 +1,250 @@
-/*
- * Copyright 2017 Zhihu Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.zhongjh.albumcamerarecorder.album.widget;
+package com.zhongjh.albumcamerarecorder.album.widget
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RadialGradient;
-import android.graphics.Rect;
-import android.graphics.Shader;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import androidx.core.content.res.ResourcesCompat;
-import android.text.TextPaint;
-import android.util.AttributeSet;
-import android.view.View;
-
-import com.zhongjh.albumcamerarecorder.R;
-
+import android.content.Context
+import android.graphics.*
+import android.graphics.drawable.Drawable
+import android.text.TextPaint
+import android.util.AttributeSet
+import android.view.View
+import androidx.core.content.res.ResourcesCompat
+import com.zhongjh.albumcamerarecorder.R
 
 /**
  * @author zhongjh
  */
-public class CheckView extends View {
+class CheckView : View {
 
-    public static final int UNCHECKED = Integer.MIN_VALUE;
-    /**
-     * dp
-     */
-    private static final float STROKE_WIDTH = 3.0f;
-    /**
-     * dp
-     */
-    private static final float SHADOW_WIDTH = 6.0f;
-    /**
-     * dp
-     */
-    private static final int SIZE = 48;
-    /**
-     * dp
-     */
-    private static final float STROKE_RADIUS = 11.5f;
-    /**
-     * dp
-     */
-    private static final float BG_RADIUS = 11.0f;
-    /**
-     * dp
-     */
-    private static final int CONTENT_SIZE = 16;
-    private boolean mCountable;
-    private boolean mChecked;
-    private int mCheckedNum;
-    private Paint mStrokePaint;
-    private Paint mBackgroundPaint;
-    private TextPaint mTextPaint;
-    private Paint mShadowPaint;
-    private Drawable mCheckDrawable;
-    private float mDensity;
-    private Rect mCheckRect;
-    private boolean mEnabled = true;
+    private var mCountable = false
+    private var mChecked = false
+    private var mCheckedNum = 0
+    private lateinit var mStrokePaint: Paint
+    private val mBackgroundPaint by lazy {
+        initBackgroundPaint()
+    }
+    private val mTextPaint by lazy {
+        initTextPaint()
+    }
+    private val mShadowPaint by lazy {
+        initShadowPaint()
+    }
+    private var mCheckDrawable: Drawable? = null
+    private var mDensity = 0f
+    private var mCheckRect: Rect? = null
+    private var mEnabled = true
 
-    public CheckView(Context context) {
-        super(context);
-        init(context);
+    constructor(context: Context) : super(context) {
+        init(context)
     }
 
-    public CheckView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
     }
 
-    public CheckView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context)
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         // fixed size 48dp x 48dp
-        int sizeSpec = MeasureSpec.makeMeasureSpec((int) (SIZE * mDensity), MeasureSpec.EXACTLY);
-        super.onMeasure(sizeSpec, sizeSpec);
+        val sizeSpec = MeasureSpec.makeMeasureSpec((SIZE * mDensity).toInt(), MeasureSpec.EXACTLY)
+        super.onMeasure(sizeSpec, sizeSpec)
     }
 
-    private void init(Context context) {
-        mDensity = context.getResources().getDisplayMetrics().density;
-
-        mStrokePaint = new Paint();
-        mStrokePaint.setAntiAlias(true);
-        mStrokePaint.setStyle(Paint.Style.STROKE);
-        mStrokePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
-        mStrokePaint.setStrokeWidth(STROKE_WIDTH * mDensity);
-        TypedArray ta = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.item_checkCircle_borderColor});
-        int defaultColor = ResourcesCompat.getColor(
-                getResources(), R.color.blue_item_checkCircle_borderColor,
-                getContext().getTheme());
-        int color = ta.getColor(0, defaultColor);
-        ta.recycle();
-        mStrokePaint.setColor(color);
-
-        mCheckDrawable = ResourcesCompat.getDrawable(context.getResources(),
-                R.drawable.ic_check_white_18dp, context.getTheme());
+    private fun init(context: Context) {
+        mDensity = context.resources.displayMetrics.density
+        mStrokePaint = Paint()
+        mStrokePaint.isAntiAlias = true
+        mStrokePaint.style = Paint.Style.STROKE
+        mStrokePaint.xfermode =
+            PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
+        mStrokePaint.strokeWidth = STROKE_WIDTH * mDensity
+        val ta =
+            getContext().theme.obtainStyledAttributes(intArrayOf(R.attr.item_checkCircle_borderColor))
+        val defaultColor = ResourcesCompat.getColor(
+            resources, R.color.blue_item_checkCircle_borderColor,
+            getContext().theme
+        )
+        val color = ta.getColor(0, defaultColor)
+        ta.recycle()
+        mStrokePaint.color = color
+        mCheckDrawable = ResourcesCompat.getDrawable(
+            context.resources,
+            R.drawable.ic_check_white_18dp, context.theme
+        )
     }
 
-    public void setChecked(boolean checked) {
-        if (mCountable) {
-            throw new IllegalStateException("CheckView is countable, call setCheckedNum() instead.");
-        }
-        mChecked = checked;
-        invalidate();
+    fun setChecked(checked: Boolean) {
+        check(!mCountable) { "CheckView is countable, call setCheckedNum() instead." }
+        mChecked = checked
+        invalidate()
     }
 
-    public void setCountable(boolean countable) {
-        mCountable = countable;
+    fun setCountable(countable: Boolean) {
+        mCountable = countable
     }
 
-    public void setCheckedNum(int checkedNum) {
-        if (!mCountable) {
-            throw new IllegalStateException("CheckView is not countable, call setChecked() instead.");
-        }
-        if (checkedNum != UNCHECKED && checkedNum <= 0) {
-            throw new IllegalArgumentException("checked num can't be negative.");
-        }
-        mCheckedNum = checkedNum;
-        invalidate();
+    fun setCheckedNum(checkedNum: Int) {
+        check(mCountable) { "CheckView is not countable, call setChecked() instead." }
+        require(!(checkedNum != UNCHECKED && checkedNum <= 0)) { "checked num can't be negative." }
+        mCheckedNum = checkedNum
+        invalidate()
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
+    override fun setEnabled(enabled: Boolean) {
         if (mEnabled != enabled) {
-            mEnabled = enabled;
-            invalidate();
+            mEnabled = enabled
+            invalidate()
         }
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
 
         // draw outer and inner shadow
-        initShadowPaint();
-        canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
-                (STROKE_RADIUS + STROKE_WIDTH / 2 + SHADOW_WIDTH) * mDensity, mShadowPaint);
+        initShadowPaint()
+        canvas.drawCircle(
+            SIZE.toFloat() * mDensity / 2, SIZE.toFloat() * mDensity / 2,
+            (STROKE_RADIUS + STROKE_WIDTH / 2 + SHADOW_WIDTH) * mDensity, mShadowPaint
+        )
 
         // draw white stroke
-        canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
-                STROKE_RADIUS * mDensity, mStrokePaint);
+        canvas.drawCircle(
+            SIZE.toFloat() * mDensity / 2, SIZE.toFloat() * mDensity / 2,
+            STROKE_RADIUS * mDensity, mStrokePaint
+        )
 
         // draw content
         if (mCountable) {
             if (mCheckedNum != UNCHECKED) {
-                initBackgroundPaint();
-                canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
-                        BG_RADIUS * mDensity, mBackgroundPaint);
-                initTextPaint();
-                String text = String.valueOf(mCheckedNum);
-                int baseX = (int) (getWidth() - mTextPaint.measureText(text)) / 2;
-                int baseY = (int) (getHeight() - mTextPaint.descent() - mTextPaint.ascent()) / 2;
-                canvas.drawText(text, baseX, baseY, mTextPaint);
+                initBackgroundPaint()
+                canvas.drawCircle(
+                    SIZE.toFloat() * mDensity / 2, SIZE.toFloat() * mDensity / 2,
+                    BG_RADIUS * mDensity, mBackgroundPaint
+                )
+                initTextPaint()
+                val text = mCheckedNum.toString()
+                val baseX = (width - mTextPaint.measureText(text)).toInt() / 2
+                val baseY = (height - mTextPaint.descent() - mTextPaint.ascent()).toInt() / 2
+                canvas.drawText(text, baseX.toFloat(), baseY.toFloat(), mTextPaint)
             }
         } else {
             if (mChecked) {
-                initBackgroundPaint();
-                canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
-                        BG_RADIUS * mDensity, mBackgroundPaint);
-
-                mCheckDrawable.setBounds(getCheckRect());
-                mCheckDrawable.draw(canvas);
+                initBackgroundPaint()
+                canvas.drawCircle(
+                    SIZE.toFloat() * mDensity / 2, SIZE.toFloat() * mDensity / 2,
+                    BG_RADIUS * mDensity, mBackgroundPaint
+                )
+                mCheckDrawable!!.bounds = checkRect
+                mCheckDrawable!!.draw(canvas)
             }
         }
 
         // enable hint
-        setAlpha(mEnabled ? 1.0f : 0.5f);
+        alpha = if (mEnabled) 1.0f else 0.5f
     }
 
-    private void initShadowPaint() {
-        if (mShadowPaint == null) {
-            mShadowPaint = new Paint();
-            mShadowPaint.setAntiAlias(true);
-            // all in dp
-            float outerRadius = STROKE_RADIUS + STROKE_WIDTH / 2;
-            float innerRadius = outerRadius - STROKE_WIDTH;
-            float gradientRadius = outerRadius + SHADOW_WIDTH;
-            float stop0 = (innerRadius - SHADOW_WIDTH) / gradientRadius;
-            float stop1 = innerRadius / gradientRadius;
-            float stop2 = outerRadius / gradientRadius;
-            float stop3 = 1.0f;
-            mShadowPaint.setShader(
-                    new RadialGradient((float) SIZE * mDensity / 2,
-                            (float) SIZE * mDensity / 2,
-                            gradientRadius * mDensity,
-                            new int[]{Color.parseColor("#00000000"), Color.parseColor("#0D000000"),
-                                    Color.parseColor("#0D000000"), Color.parseColor("#00000000")},
-                            new float[]{stop0, stop1, stop2, stop3},
-                            Shader.TileMode.CLAMP));
-        }
+    private fun initShadowPaint(): Paint {
+        val shadowPaint = Paint()
+        shadowPaint.isAntiAlias = true
+        // all in dp
+        val outerRadius = STROKE_RADIUS + STROKE_WIDTH / 2
+        val innerRadius = outerRadius - STROKE_WIDTH
+        val gradientRadius = outerRadius + SHADOW_WIDTH
+        val stop0 = (innerRadius - SHADOW_WIDTH) / gradientRadius
+        val stop1 = innerRadius / gradientRadius
+        val stop2 = outerRadius / gradientRadius
+        val stop3 = 1.0f
+        shadowPaint.shader = RadialGradient(
+            SIZE.toFloat() * mDensity / 2,
+            SIZE.toFloat() * mDensity / 2,
+            gradientRadius * mDensity, intArrayOf(
+                Color.parseColor("#00000000"), Color.parseColor("#0D000000"),
+                Color.parseColor("#0D000000"), Color.parseColor("#00000000")
+            ), floatArrayOf(stop0, stop1, stop2, stop3),
+            Shader.TileMode.CLAMP
+        )
+        return shadowPaint
     }
 
-    private void initBackgroundPaint() {
-        if (mBackgroundPaint == null) {
-            mBackgroundPaint = new Paint();
-            mBackgroundPaint.setAntiAlias(true);
-            mBackgroundPaint.setStyle(Paint.Style.FILL);
-            TypedArray ta = getContext().getTheme()
-                    .obtainStyledAttributes(new int[]{R.attr.item_checkCircle_backgroundColor});
-            int defaultColor = ResourcesCompat.getColor(
-                    getResources(), R.color.blue_item_checkCircle_backgroundColor,
-                    getContext().getTheme());
-            int color = ta.getColor(0, defaultColor);
-            ta.recycle();
-            mBackgroundPaint.setColor(color);
-        }
+    private fun initBackgroundPaint(): Paint {
+        val backgroundPaint = Paint()
+        backgroundPaint.isAntiAlias = true
+        backgroundPaint.style = Paint.Style.FILL
+        val ta = context.theme
+            .obtainStyledAttributes(intArrayOf(R.attr.item_checkCircle_backgroundColor))
+        val defaultColor = ResourcesCompat.getColor(
+            resources, R.color.blue_item_checkCircle_backgroundColor,
+            context.theme
+        )
+        val color = ta.getColor(0, defaultColor)
+        ta.recycle()
+        backgroundPaint.color = color
+        return backgroundPaint
     }
 
-    private void initTextPaint() {
-        if (mTextPaint == null) {
-            mTextPaint = new TextPaint();
-            mTextPaint.setAntiAlias(true);
-            mTextPaint.setColor(Color.WHITE);
-            mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-            mTextPaint.setTextSize(12.0f * mDensity);
-        }
+    private fun initTextPaint(): TextPaint {
+        val textPaint = TextPaint()
+        textPaint.isAntiAlias = true
+        textPaint.color = Color.WHITE
+        textPaint.typeface = Typeface.create(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+        )
+        textPaint.textSize = 12.0f * mDensity
+        return textPaint
     }
 
     /**
      * rect for drawing checked number or mark
      * @return rect
      */
-    private Rect getCheckRect() {
-        if (mCheckRect == null) {
-            int rectPadding = (int) (SIZE * mDensity / 2 - CONTENT_SIZE * mDensity / 2);
-            mCheckRect = new Rect(rectPadding, rectPadding,
-                    (int) (SIZE * mDensity - rectPadding), (int) (SIZE * mDensity - rectPadding));
+    private val checkRect: Rect
+        get() {
+            if (mCheckRect == null) {
+                val rectPadding = (SIZE * mDensity / 2 - CONTENT_SIZE * mDensity / 2).toInt()
+                mCheckRect = Rect(
+                    rectPadding, rectPadding,
+                    (SIZE * mDensity - rectPadding).toInt(), (SIZE * mDensity - rectPadding).toInt()
+                )
+            }
+            return mCheckRect!!
         }
 
-        return mCheckRect;
+    companion object {
+        const val UNCHECKED = Int.MIN_VALUE
+
+        /**
+         * dp
+         */
+        private const val STROKE_WIDTH = 3.0f
+
+        /**
+         * dp
+         */
+        private const val SHADOW_WIDTH = 6.0f
+
+        /**
+         * dp
+         */
+        private const val SIZE = 48
+
+        /**
+         * dp
+         */
+        private const val STROKE_RADIUS = 11.5f
+
+        /**
+         * dp
+         */
+        private const val BG_RADIUS = 11.0f
+
+        /**
+         * dp
+         */
+        private const val CONTENT_SIZE = 16
     }
 }
