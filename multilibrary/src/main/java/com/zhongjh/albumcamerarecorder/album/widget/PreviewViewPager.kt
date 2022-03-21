@@ -13,32 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.albumcamerarecorder.album.widget;
+package com.zhongjh.albumcamerarecorder.album.widget
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
-
-import androidx.viewpager.widget.ViewPager;
-
-import it.sephiroth.android.library.imagezoom.ImageViewTouch;
-
+import android.content.Context
+import android.util.AttributeSet
+import android.view.View
+import androidx.viewpager.widget.ViewPager
+import it.sephiroth.android.library.imagezoom.ImageViewTouch
 
 /**
  * 预览的ViewPager
  * @author zhongjh
  */
-public class PreviewViewPager extends ViewPager {
-
-    public PreviewViewPager(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected boolean canScroll(View v, boolean checkV, int dx, int x, int y) {
-        if (v instanceof ImageViewTouch) {
-            return ((ImageViewTouch) v).canScroll(dx) || super.canScroll(v, checkV, dx, x, y);
-        }
-        return super.canScroll(v, checkV, dx, x, y);
+class PreviewViewPager(context: Context, attrs: AttributeSet?) : ViewPager(
+    context, attrs
+) {
+    override fun canScroll(v: View, checkV: Boolean, dx: Int, x: Int, y: Int): Boolean {
+        return if (v is ImageViewTouch) {
+            v.canScroll(dx) || super.canScroll(v, checkV, dx, x, y)
+        } else super.canScroll(v, checkV, dx, x, y)
     }
 }

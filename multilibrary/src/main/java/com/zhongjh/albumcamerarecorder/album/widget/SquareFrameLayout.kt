@@ -13,27 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.albumcamerarecorder.album.widget;
+package com.zhongjh.albumcamerarecorder.album.widget
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.widget.FrameLayout;
+import android.content.Context
+import android.util.AttributeSet
+import android.widget.FrameLayout
 
 /**
  * @author zhongjh
  */
-public class SquareFrameLayout extends FrameLayout {
+open class SquareFrameLayout : FrameLayout {
 
-    public SquareFrameLayout(Context context) {
-        super(context);
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
     }
 
-    public SquareFrameLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
-    }
 }

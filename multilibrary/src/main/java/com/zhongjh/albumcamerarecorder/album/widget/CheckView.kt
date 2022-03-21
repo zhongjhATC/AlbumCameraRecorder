@@ -83,6 +83,9 @@ class CheckView : View {
         invalidate()
     }
 
+    /**
+     * 设置是否多选
+     */
     fun setCountable(countable: Boolean) {
         mCountable = countable
     }

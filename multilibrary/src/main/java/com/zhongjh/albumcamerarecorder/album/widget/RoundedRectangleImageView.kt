@@ -13,56 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhongjh.albumcamerarecorder.album.widget;
+package com.zhongjh.albumcamerarecorder.album.widget
 
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Path;
-import android.graphics.RectF;
-import androidx.appcompat.widget.AppCompatImageView;
-import android.util.AttributeSet;
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Path
+import android.graphics.RectF
+import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatImageView
 
 /**
  * @author zhongjh
  */
-public class RoundedRectangleImageView extends AppCompatImageView {
+class RoundedRectangleImageView : AppCompatImageView {
+    private var mRadius = 0f
+    private lateinit var mRoundedRectPath: Path
+    private lateinit var mRectF: RectF
 
-    private float mRadius;
-    private Path mRoundedRectPath;
-    private RectF mRectF;
-
-    public RoundedRectangleImageView(Context context) {
-        super(context);
-        init(context);
+    constructor(context: Context) : super(context) {
+        init(context)
     }
 
-    public RoundedRectangleImageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
     }
 
-    public RoundedRectangleImageView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context)
     }
 
-    private void init(Context context) {
-        float density = context.getResources().getDisplayMetrics().density;
-        mRadius = 2.0f * density;
-        mRoundedRectPath = new Path();
-        mRectF = new RectF();
+    private fun init(context: Context) {
+        val density = context.resources.displayMetrics.density
+        mRadius = 2.0f * density
+        mRoundedRectPath = Path()
+        mRectF = RectF()
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mRectF.set(0.0f, 0.0f, getWidth(), getHeight());
-        mRoundedRectPath.addRoundRect(mRectF, mRadius, mRadius, Path.Direction.CW);
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        mRectF[0.0f, 0.0f, width.toFloat()] = height.toFloat()
+        mRoundedRectPath.addRoundRect(mRectF, mRadius, mRadius, Path.Direction.CW)
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        canvas.clipPath(mRoundedRectPath);
-        super.onDraw(canvas);
+    override fun onDraw(canvas: Canvas) {
+        canvas.clipPath(mRoundedRectPath)
+        super.onDraw(canvas)
     }
 }
