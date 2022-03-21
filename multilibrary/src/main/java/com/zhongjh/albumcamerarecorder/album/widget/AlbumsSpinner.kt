@@ -7,7 +7,7 @@ import android.widget.AdapterView
 import android.widget.CursorAdapter
 import android.widget.TextView
 import androidx.appcompat.widget.ListPopupWindow
-import com.zhongjh.albumcamerarecorder.album.entity.Album.CREATOR.valueOf
+import com.zhongjh.albumcamerarecorder.album.entity.Album.Companion.valueOf
 import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
 
 /**

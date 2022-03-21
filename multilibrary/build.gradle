@@ -1,10 +1,12 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    // 插件提供的其他特性,@Parcelize、View binding and caching
+    id 'kotlin-android-extensions'
 }
 //============================== JitPack 上传插件配置 =====================
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.zhongjhATC'
+group = 'com.github.zhongjhATC'
 
 android {
     compileSdkVersion rootProject.ext.androidCompileSdkVersion
@@ -32,6 +34,11 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    // 这个配置是为了禁用除了parcelize外的其他功能
+    androidExtensions {
+        features = ["parcelize"]
     }
 }
 

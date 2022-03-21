@@ -3,47 +3,22 @@ package com.zhongjh.albumcamerarecorder.album.entity
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
-import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.loader.AlbumLoader
+import kotlinx.android.parcel.Parcelize
 
 /**
  * 专辑
  * @author zhihu
  */
-class Album : Parcelable {
-
-    val id: String?
-    val coverUri: Uri?
-    private val displayName: String?
+@Parcelize
+class Album internal constructor(
+    var id: String,
+    var coverUri: Uri,
+    var displayName: String,
     var count: Long
-        private set
-
-    internal constructor(id: String?, coverUri: Uri?, albumName: String?, count: Long) {
-        this.id = id
-        this.coverUri = coverUri
-        displayName = albumName
-        this.count = count
-    }
-
-    internal constructor(source: Parcel) {
-        id = source.readString()
-        coverUri = source.readParcelable(Uri::class.java.classLoader)
-        displayName = source.readString()
-        count = source.readLong()
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(id)
-        dest.writeParcelable(coverUri, 0)
-        dest.writeString(displayName)
-        dest.writeLong(count)
-    }
+) : Parcelable {
 
     /**
      *
@@ -58,7 +33,7 @@ class Album : Parcelable {
      * 显示名称，可能返回“全部”
      * @return 返回名称
      */
-    fun getDisplayName(context: Context): String? {
+    fun getDisplayName(context: Context): String {
         return if (isAll) {
             context.getString(R.string.z_multi_library_album_name_all)
         } else displayName
@@ -73,15 +48,7 @@ class Album : Parcelable {
     val isEmpty: Boolean
         get() = count == 0L
 
-    companion object CREATOR : Parcelable.Creator<Album> {
-
-        override fun createFromParcel(source: Parcel): Album {
-            return Album(source)
-        }
-
-        override fun newArray(size: Int): Array<Album?> {
-            return arrayOfNulls(size)
-        }
+    companion object {
 
         const val ALBUM_ID_ALL: String = (-1).toString()
         const val ALBUM_NAME_ALL = "All"
