@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings.api;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
@@ -65,6 +64,7 @@ public interface CameraSettingApi {
 
     /**
      * 点击即录制（点击拍摄图片功能则失效）
+     *
      * @param isClickReocrd 是：开启该功能，否：关闭该功能
      * @return {@link CameraSetting} for fluent API.
      */
@@ -72,6 +72,7 @@ public interface CameraSettingApi {
 
     /**
      * 启动视频编辑功能，目前只有视频分段录制，后续会增加
+     *
      * @param videoEditManager 视频编辑协调者
      * @return {@link CameraSetting} for fluent API.
      */
@@ -79,6 +80,7 @@ public interface CameraSettingApi {
 
     /**
      * 水印资源,可通过layout赋值水印，所处于的位置等等都可通过layout本身来处理
+     *
      * @param watermarkResource 水印资源的layout id
      * @return {@link CameraSetting} for fluent API.
      */
@@ -125,6 +127,14 @@ public interface CameraSettingApi {
     CameraSetting flashModel(@FlashModels int flashModel);
 
     /**
+     * 通过Key触发拍照事件
+     *
+     * @param keyCode 例如升音量键或者降音量键都触发拍照事件则传递 KeyEvent.KEYCODE_VOLUME_DOWN|KeyEvent.KEYCODE_VOLUME_UP
+     * @return {@link CameraSetting} for fluent API.
+     */
+    CameraSetting onKeyDownTakePhoto(int keyCode);
+
+    /**
      * 是否开启闪光灯记忆模式，默认关闭
      * 在开启闪光某个模式（例如闪光灯开启模式）后，在界面结束时，会自动记录当前模式（例如闪光灯开启模式）
      * 下次再打开时，依然是这个模式（例如闪光灯开启模式）
@@ -141,6 +151,6 @@ public interface CameraSettingApi {
      * @param listener {@link OnCameraViewListener}
      * @return {@link CameraSetting} this
      */
-    CameraSetting setOnCameraViewListener(@Nullable OnCameraViewListener listener);
+    CameraSetting setOnCameraViewListener(OnCameraViewListener listener);
 
 }

@@ -29,6 +29,7 @@ import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
+import com.zhongjh.albumcamerarecorder.utils.HandleOnKeyUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 import com.zhongjh.common.utils.AppUtils;
@@ -106,6 +107,15 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (!HandleBackUtil.handleBackPress(this)) {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (HandleOnKeyUtil.handleOnKey(this, keyCode, event)) {
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
         }
     }
 
@@ -223,7 +233,6 @@ public class MainActivity extends AppCompatActivity {
             mIsInit = true;
         }
     }
-
 
     /**
      * 请求权限

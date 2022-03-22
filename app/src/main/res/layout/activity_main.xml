@@ -719,6 +719,13 @@
 
                 </LinearLayout>
 
+                <CheckBox
+                    android:id="@+id/cbOnKeyDownTakePhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/volume_button_trigger_photo_taking" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

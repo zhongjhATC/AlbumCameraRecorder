@@ -109,7 +109,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 拍摄配置
      */
-    private CameraSpec mCameraSpec;
+    public CameraSpec mCameraSpec;
 
     /**
      * 状态管理
@@ -682,7 +682,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 拍照
      */
-    private void takePhoto() {
+    public void takePhoto() {
         // 开启才能执行别的事件, 如果已经有分段视频，则不允许拍照了
         if (mViewHolder.cameraView.isOpened() && mVideoTimes.size() <= 0) {
             // 判断数量

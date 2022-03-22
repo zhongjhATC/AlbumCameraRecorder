@@ -102,12 +102,17 @@ class CameraSetting : CameraSettingApi {
         return this
     }
 
+    override fun onKeyDownTakePhoto(keyCode: Int): CameraSetting {
+        mCameraSpec.keyCodeTakePhoto = keyCode
+        return this
+    }
+
     override fun enableFlashMemoryModel(enableFlashMemoryModel: Boolean): CameraSetting {
         mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel
         return this
     }
 
-    override fun setOnCameraViewListener(listener: OnCameraViewListener?): CameraSetting {
+    override fun setOnCameraViewListener(listener: OnCameraViewListener): CameraSetting {
         mCameraSpec.onCameraViewListener = listener
         return this
     }

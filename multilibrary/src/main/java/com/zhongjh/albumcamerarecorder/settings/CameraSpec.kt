@@ -60,6 +60,11 @@ object CameraSpec {
     var flashModel = FlashModels.TYPE_FLASH_OFF
 
     /**
+     * 通过keyCode触发拍照事件
+     */
+    var keyCodeTakePhoto = 0
+
+    /**
      * 是否开启闪光灯记忆模式
      * 在开启闪光某个模式（例如闪光灯开启模式）后，在界面结束时，会自动记录当前模式（例如闪光灯开启模式），下次再打开时，依然是这个模式（例如闪光灯开启模式）
      */

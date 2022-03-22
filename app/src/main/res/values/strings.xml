@@ -12,6 +12,7 @@
     <string name="support_video">Support video</string>
     <string name="start_the_watermark">start the watermark</string>
     <string name="start_flash_memory_model">Enable flash memory mode</string>
+    <string name="volume_button_trigger_photo_taking">Volume button trigger photo taking (customizable key trigger)</string>
     <string name="flash_settings">Click to change the default mode of the flash：</string>
     <string name="flash_off">FLASH OFF</string>
     <string name="flash_on">FLASH ON</string>

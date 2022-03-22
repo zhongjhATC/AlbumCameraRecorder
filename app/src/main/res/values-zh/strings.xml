@@ -12,6 +12,7 @@
     <string name="support_video">支持视频</string>
     <string name="start_the_watermark">启动水印</string>
     <string name="start_flash_memory_model">启动闪光灯记忆模式</string>
+    <string name="volume_button_trigger_photo_taking">音量键触发拍照(可自定义key触发)</string>
     <string name="flash_settings">点击更改闪光灯默认的模式：</string>
     <string name="flash_off">闪光灯关闭</string>
     <string name="flash_on">闪光灯开启</string>

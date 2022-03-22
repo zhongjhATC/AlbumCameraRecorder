@@ -3,7 +3,7 @@ package com.zhongjh.albumcamerarecorder.utils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.zhongjh.albumcamerarecorder.listener.HandleBackInterface
+import com.zhongjh.albumcamerarecorder.listener.HandleFragmentInterface
 
 /**
  * 处理fragment的回退事件
@@ -26,7 +26,6 @@ object HandleBackUtil {
      * 没有处理back事件，则尝试 FragmentManager.popBackStack()
      *
      * @return 如果处理了back键则返回 **true**
-     * @see .handleBackPress
      * @see .handleBackPress
      */
     private fun handleBackPress(fragmentManager: FragmentManager): Boolean {
@@ -52,7 +51,7 @@ object HandleBackUtil {
     private fun isFragmentBackHandled(fragment: Fragment): Boolean {
         return (fragment.isVisible
                 && fragment.userVisibleHint // for ViewPager
-                && fragment is HandleBackInterface
-                && (fragment as HandleBackInterface).onBackPressed())
+                && fragment is HandleFragmentInterface
+                && (fragment as HandleFragmentInterface).onBackPressed())
     }
 }

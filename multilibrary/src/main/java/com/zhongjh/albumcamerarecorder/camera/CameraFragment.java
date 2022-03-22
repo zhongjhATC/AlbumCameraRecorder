@@ -47,7 +47,6 @@ import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
  */
 public class CameraFragment extends BaseFragment {
 
-
     private final static int MILLISECOND = 2000;
 
     /**
@@ -222,6 +221,15 @@ public class CameraFragment extends BaseFragment {
                 return false;
             }
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, @NotNull KeyEvent event) {
+        if ((keyCode & mCameraLayout.mCameraSpec.getKeyCodeTakePhoto()) > 0) {
+            mCameraLayout.takePhoto();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
