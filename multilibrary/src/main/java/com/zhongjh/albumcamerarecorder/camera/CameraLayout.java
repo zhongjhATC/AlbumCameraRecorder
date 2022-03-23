@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -663,8 +662,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             public void onBanClickTips() {
                 // 判断如果是分段录制模式就提示
                 if (mIsSectionRecord) {
-                    Toast.makeText(getContext(), R.string.z_multi_library_working_video_click_later,
-                            Toast.LENGTH_SHORT).show();
+                    mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_working_video_click_later));
                 }
             }
 
@@ -698,7 +696,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     mCameraTakePictureRunnable.run();
                 }
             } else {
-                Toast.makeText(getContext(), getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached), Toast.LENGTH_SHORT).show();
+                mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached));
             }
         }
     }
@@ -906,7 +904,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 Log.d(TAG, "onCameraError");
                 super.onCameraError(exception);
                 if (mIsSectionRecord) {
-                    Toast.makeText(getContext(), R.string.z_multi_library_recording_error_roll_back_previous_paragraph, Toast.LENGTH_SHORT).show();
+                    mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_recording_error_roll_back_previous_paragraph));
                     mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
                 }
                 if (!TextUtils.isEmpty(exception.getMessage())) {
@@ -1155,7 +1153,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             public void onFail(Throwable t) {
                 super.onFail(t);
                 Log.e(TAG, t.getMessage());
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                mViewHolder.pvLayout.setTipAlphaAnimation(t.getMessage());
                 setUiEnableTrue();
             }
         };
