@@ -191,7 +191,7 @@ class AlbumCompressFileTask(
     fun getNewFileName(item: LocalFile, path: String): String {
         // 移动文件,获取文件名称
         var newFileName = path.substring(path.lastIndexOf(File.separator))
-        val newFileNames = newFileName.split("\\.").toTypedArray()
+        val newFileNames = newFileName.split(".").toTypedArray()
         // 设置压缩后的照片名称，id_CMP
         newFileName = item.id.toString() + "_CMP"
         if (newFileNames.size > 1) {
@@ -207,7 +207,7 @@ class AlbumCompressFileTask(
     fun getNameSuffix(path: String): String {
         // 获取文件名称
         val newFileName = path.substring(path.lastIndexOf(File.separator))
-        val newFileNames = newFileName.split("\\.").toTypedArray()
+        val newFileNames = newFileName.split(".").toTypedArray()
         return if (newFileNames.size > 1) {
             // 返回后缀名
             newFileNames[1]
