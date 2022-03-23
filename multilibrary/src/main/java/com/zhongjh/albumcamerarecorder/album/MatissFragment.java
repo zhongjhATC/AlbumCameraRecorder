@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -566,12 +567,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
             // 隐藏母窗体的table
-            ((MainActivity) mActivity).showHideTableLayout(false);
+            mActivity.showHideTableLayout(false);
         } else {
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.GONE);
             // 隐藏母窗体的table
-            ((MainActivity) mActivity).showHideTableLayout(true);
+            mActivity.showHideTableLayout(true);
         }
     }
 
@@ -606,6 +607,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 setResultOk(result);
             }
 
+            @Override
+            public void onFail(Throwable t) {
+                Toast.makeText(mActivity.getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                super.onFail(t);
+            }
         };
         return mCompressFileTask;
     }
