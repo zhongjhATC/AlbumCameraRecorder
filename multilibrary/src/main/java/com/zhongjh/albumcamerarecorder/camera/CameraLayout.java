@@ -1088,20 +1088,16 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     private ThreadUtils.SimpleTask<ArrayList<LocalFile>> getMovePictureFileTask() {
         mMovePictureFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
             @Override
-            public ArrayList<LocalFile> doInBackground() {
+            public ArrayList<LocalFile> doInBackground() throws IOException {
                 // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
                 ArrayList<LocalFile> newFiles = new ArrayList<>();
                 // 将 缓存文件 拷贝到 配置目录
                 for (BitmapData item : mBitmapData) {
                     File oldFile = new File(item.getPath());
                     // 压缩图片
-                    File compressionFile = null;
+                    File compressionFile;
                     if (mGlobalSpec.getImageCompressionInterface() != null) {
-                        try {
-                            compressionFile = mGlobalSpec.getImageCompressionInterface().compressionFile(getContext(), oldFile);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        compressionFile = mGlobalSpec.getImageCompressionInterface().compressionFile(getContext(), oldFile);
                     } else {
                         compressionFile = oldFile;
                     }
@@ -1113,7 +1109,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                     localFile.setPath(newFile.getAbsolutePath());
                     localFile.setWidth(item.getWidth());
                     localFile.setHeight(item.getHeight());
-                    localFile.setSize(compressionFile != null ? compressionFile.length() : 0);
+                    localFile.setSize(compressionFile.length());
                     newFiles.add(localFile);
                     FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
                         if (ioProgress >= 1) {
