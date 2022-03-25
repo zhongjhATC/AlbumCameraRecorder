@@ -98,5 +98,7 @@ dependencies {
 
     // luban压缩图片
     implementation 'top.zibin:Luban:1.1.8'
+    // https://github.com/zetbaitsu/Compressor 另一款压缩库
+    implementation 'id.zelory:compressor:2.1.1'
 
 }
