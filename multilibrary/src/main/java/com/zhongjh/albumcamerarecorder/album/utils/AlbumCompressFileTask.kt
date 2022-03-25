@@ -111,19 +111,13 @@ class AlbumCompressFileTask(
     fun handleImage(path: String): File {
         val oldFile = File(path)
         // 根据类型压缩
-        var compressionFile: File
-        if (globalSpec.imageCompressionInterface != null) {
-            // 压缩图片
-            try {
-                compressionFile =
-                    globalSpec.imageCompressionInterface!!.compressionFile(context, oldFile)
-            } catch (e: IOException) {
-                compressionFile = oldFile
-                e.printStackTrace()
+        val compressionFile: File =
+            if (globalSpec.imageCompressionInterface != null) {
+                // 压缩图片
+                globalSpec.imageCompressionInterface!!.compressionFile(context, oldFile)
+            } else {
+                oldFile
             }
-        } else {
-            compressionFile = oldFile
-        }
         return compressionFile
     }
 

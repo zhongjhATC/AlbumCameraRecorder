@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -646,6 +647,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onFail(Throwable t) {
                 super.onFail(t);
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "getCompressFileTask onFail " + t.getMessage());
             }
         };
