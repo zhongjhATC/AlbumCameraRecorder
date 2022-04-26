@@ -4,14 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import androidx.databinding.DataBindingUtil;
 
-import com.otaliastudios.cameraview.size.AspectRatio;
-import com.otaliastudios.cameraview.size.SizeSelector;
-import com.otaliastudios.cameraview.size.SizeSelectors;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -141,15 +137,12 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
         // 自定义cameraView的宽高，更多设置参考 https://github.com/natario1/CameraView 源码
         cameraSetting.setOnCameraViewListener(cameraView -> {
-            // 可以自定义cameraView预览时候的宽高
+            // 可以自定义cameraView预览时候的宽高,如果定义的不是高清拍照录制模式，那么出来的成品也是跟预览一样大小
+            // 如果想做成比例方式也可以，那么计算屏幕宽度，高度这些就不用我说了吧？
             RelativeLayout.LayoutParams layoutParams =
-                    new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    new RelativeLayout.LayoutParams(400, 100);
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
             cameraView.setLayoutParams(layoutParams);
-            // 注意，如果需要按照比例显示视频或者图片，需要先设置cameraView的宽高为WRAP_CONTENT。同时该比例会自动根据当前手机的传感器选择最适用的。
-            SizeSelector sizeSelector = SizeSelectors.aspectRatio(AspectRatio.of(1, 1), 0f);
-            cameraView.setPictureSize(sizeSelector);
-            cameraView.setVideoSize(sizeSelector);
         });
 
         // 相册
