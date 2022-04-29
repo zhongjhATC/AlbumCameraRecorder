@@ -150,10 +150,14 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             // 根据类型做相关设置
             if (multiMediaView.isVideo()) {
                 // 视频处理，判断是否显示播放按钮
-                holder.tvVideoDuration.visibility = View.VISIBLE
-                holder.tvVideoDuration.text = DateUtils.formatElapsedTime(multiMediaView.duration / 1000)
-            } else if (multiMediaView.isImageOrGif()) {
-                holder.tvVideoDuration.visibility = View.GONE
+                if(multiMediaView.duration>0){
+                   holder.tvVideoDuration.visibility = View.VISIBLE
+                   holder.tvVideoDuration.text = DateUtils.formatElapsedTime(multiMediaView.duration / 1000)
+                }else{
+                  holder.tvVideoDuration.visibility = View.GONE
+                }
+            } else{
+               holder.tvVideoDuration.visibility = View.GONE
             }
 
             if (multiMediaView.isGif()) {
