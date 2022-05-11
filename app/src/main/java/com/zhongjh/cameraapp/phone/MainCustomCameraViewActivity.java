@@ -203,6 +203,9 @@ public class MainCustomCameraViewActivity extends BaseActivity {
 
     /**
      * 修改CameraPreview
+     * <p>
+     * 之前有小伙伴想做出跟系统相机预览范围一样广，但是这基本不可能的，这个是根据硬件配置而定
+     * 因为想预览界面铺满又想拍照反应快又想跟系统相机一摸一样的话，微信早就这样做出来了
      */
     private void updateCameraPreview(CameraView cameraView) {
         cameraView.setPreview(Preview.SURFACE);
