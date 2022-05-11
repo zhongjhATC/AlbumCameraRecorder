@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -393,10 +392,7 @@ public class MainActivity extends BaseActivity {
         cameraSetting.enableImageHighDefinition(mBinding.cbPictureHD.isChecked());
 
         // 开启高清录像(失去拍照功能)
-        if (mBinding.cbOnKeyDownTakePhoto.isChecked()) {
-            cameraSetting.onKeyDownTakePhoto(KeyEvent.KEYCODE_VOLUME_DOWN | KeyEvent.KEYCODE_VOLUME_UP);
-        }
-
+        cameraSetting.enableVideoHighDefinition(mBinding.cbVideoHD.isChecked());
 
         return cameraSetting;
     }

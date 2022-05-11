@@ -8,6 +8,8 @@ import android.widget.RelativeLayout;
 
 import androidx.databinding.DataBindingUtil;
 
+import com.otaliastudios.cameraview.CameraView;
+import com.otaliastudios.cameraview.controls.Preview;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -42,6 +44,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
     private final String TAG = MainCustomCameraViewActivity.this.getClass().getSimpleName();
 
     GlobalSetting mGlobalSetting;
+    CameraSetting cameraSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -135,14 +138,15 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         CameraSetting cameraSetting = new CameraSetting();
         // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
+//        cameraSetting.enableImageHighDefinition(true);
         // 自定义cameraView的宽高，更多设置参考 https://github.com/natario1/CameraView 源码
         cameraSetting.setOnCameraViewListener(cameraView -> {
             // 可以自定义cameraView预览时候的宽高,如果定义的不是高清拍照录制模式，那么出来的成品也是跟预览一样大小
             // 如果想做成比例方式也可以，那么计算屏幕宽度，高度这些就不用我说了吧？
-            RelativeLayout.LayoutParams layoutParams =
-                    new RelativeLayout.LayoutParams(400, 100);
-            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-            cameraView.setLayoutParams(layoutParams);
+            updateSize(cameraView);
+
+            // 如果想跟系统相机一样拍摄范围更广，需要设置cameraSetting.enableImageHighDefinition(true)，同时要修改cameraPreview
+//             updateCameraPreview(cameraView);
         });
 
         // 相册
@@ -186,4 +190,22 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                         alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
+
+    /**
+     * 修改宽高
+     */
+    private void updateSize(CameraView cameraView) {
+        RelativeLayout.LayoutParams layoutParams =
+                new RelativeLayout.LayoutParams(400, 100);
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        cameraView.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * 修改CameraPreview
+     */
+    private void updateCameraPreview(CameraView cameraView) {
+        cameraView.setPreview(Preview.SURFACE);
+    }
+
 }
