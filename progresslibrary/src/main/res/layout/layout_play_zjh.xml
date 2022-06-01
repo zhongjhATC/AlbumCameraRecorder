@@ -13,7 +13,7 @@
         android:contentDescription="@string/z_progress_library_play_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_play_circle_outline_black_24dp" />
+        app:srcCompat="@drawable/ic_play_circle_outline_black_24dp_zhongjh" />
 
     <SeekBar
         android:id="@+id/seekBar"

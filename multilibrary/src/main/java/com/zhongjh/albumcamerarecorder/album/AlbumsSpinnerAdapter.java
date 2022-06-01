@@ -58,7 +58,7 @@ public class AlbumsSpinnerAdapter extends CursorAdapter {
 
         // do not need to load animated Gif
         GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(context, context.getResources().getDimensionPixelSize(R
-                        .dimen.media_grid_size), mPlaceholder,
+                        .dimen.z_media_grid_size), mPlaceholder,
                 view.findViewById(R.id.album_cover), album.getCoverUri());
     }
 }

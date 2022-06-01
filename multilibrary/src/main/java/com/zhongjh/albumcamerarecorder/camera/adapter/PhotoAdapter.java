@@ -64,7 +64,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @NonNull
     @Override
     public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new PhotoViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_image_zjh, parent, false));
+        return new PhotoViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_image_multilibrary_zjh, parent, false));
     }
 
     @Override
@@ -134,7 +134,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
         if (mGlobalSpec.getCutscenesEnabled()) {
             if (mCameraFragment.getActivity() != null) {
-                mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+                mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
             }
         }
     }

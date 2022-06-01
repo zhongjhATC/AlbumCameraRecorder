@@ -231,7 +231,7 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
         intent.putExtra(BasePreviewActivity.IS_BY_PROGRESS_GRIDVIEW, true)
         activity.startActivityForResult(intent, requestCode)
         if (GlobalSpec.cutscenesEnabled) {
-            activity.overridePendingTransition(R.anim.activity_open, 0)
+            activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
         }
     }
 
@@ -300,7 +300,7 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
                 activity.startActivity(intent)
             }
             if (mGlobalSpec.cutscenesEnabled) {
-                activity.overridePendingTransition(R.anim.activity_open, 0)
+                activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
             }
         }
     }
@@ -334,7 +334,7 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
             intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
             activity.startActivityForResult(intent, GlobalSpec.requestCode)
             if (GlobalSpec.cutscenesEnabled) {
-                activity.overridePendingTransition(R.anim.activity_open, 0)
+                activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
             }
         }
     }

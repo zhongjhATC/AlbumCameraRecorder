@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         super.finish();
         if (mSpec.getCutscenesEnabled()) {
             //关闭窗体动画显示
-            this.overridePendingTransition(0, R.anim.activity_close);
+            this.overridePendingTransition(0, R.anim.activity_close_zjh);
         }
     }
 

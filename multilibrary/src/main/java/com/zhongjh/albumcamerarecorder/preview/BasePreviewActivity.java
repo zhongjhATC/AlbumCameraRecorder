@@ -334,7 +334,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         super.finish();
         //关闭窗体动画显示
         if (mGlobalSpec.getCutscenesEnabled()) {
-            this.overridePendingTransition(0, R.anim.activity_close);
+            this.overridePendingTransition(0, R.anim.activity_close_zjh);
         }
     }
 

@@ -16,11 +16,11 @@
   -->
 <resources>
 
-    <dimen name="media_grid_size">48dp</dimen>
-    <dimen name="media_grid_spacing">4dp</dimen>
+    <dimen name="z_media_grid_size">48dp</dimen>
+    <dimen name="z_media_grid_spacing">4dp</dimen>
 
-    <dimen name="album_item_height">72dp</dimen>
+    <dimen name="z_album_item_height">72dp</dimen>
 
-    <dimen name="cpb_stroke_width">4dp</dimen>
+    <dimen name="z_cpb_stroke_width">4dp</dimen>
 
 </resources>

@@ -88,7 +88,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     private var mItemHeight: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        val view: View = mInflater.inflate(R.layout.item_image, parent, false)
+        val view: View = mInflater.inflate(R.layout.item_image_progresslibrary_zjh, parent, false)
         val photoViewHolder = PhotoViewHolder(view)
         // 设置高度
         val params = photoViewHolder.itemView.layoutParams
@@ -124,7 +124,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         // 设置图片
         if (isShowAddItem(position)) {
             // 加载➕图
-            holder.mpvImage.setImageResource(R.drawable.selector_image_add)
+            holder.mpvImage.setImageResource(R.drawable.selector_image_add_zhongjh)
             // 隐藏close
             holder.vClose.visibility = View.GONE
             holder.vClose.setOnClickListener(null)

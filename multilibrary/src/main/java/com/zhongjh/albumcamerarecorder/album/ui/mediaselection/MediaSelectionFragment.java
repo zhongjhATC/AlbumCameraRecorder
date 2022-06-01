@@ -148,7 +148,7 @@ public class MediaSelectionFragment extends Fragment implements
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
 
         // 加载线，recyclerView加载数据
-        int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
+        int spacing = getResources().getDimensionPixelSize(R.dimen.z_media_grid_spacing);
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
         mRecyclerView.setAdapter(mAdapter);
         mAlbumMediaCollection.onCreate(getActivity(), new AlbumMediaCollection.AlbumMediaCallbacks() {

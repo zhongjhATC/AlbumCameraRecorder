@@ -92,7 +92,7 @@ class PlayView : FrameLayout {
     }
 
     private fun initView() {
-        val view = View.inflate(context, R.layout.layout_play, this)
+        val view = View.inflate(context, R.layout.layout_play_zjh, this)
         mViewHolder = ViewHolder(view)
 
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
@@ -205,7 +205,7 @@ class PlayView : FrameLayout {
             // 进度条归零
             mViewHolder.seekBar.progress = 0
             // 控制栏中的播放按钮显示暂停状态
-            mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp)
+            mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
             mIsPlaying = false
             // 当前时间
             mViewHolder.tvCurrentProgress.text = "00:00/"
@@ -222,12 +222,12 @@ class PlayView : FrameLayout {
             // 如果当前正在播放  停止播放 更改控制栏播放状态
             if (mMediaPlayer.isPlaying) {
                 mMediaPlayer.pause()
-                mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp)
+                mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
             }
         } else {
             // 如果当前停止播放  继续播放 更改控制栏状态
             Log.d(TAG, "播放")
-            mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp)
+            mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp_zhongjh)
             // 判断如果是结束了就是重新播放，否则就是继续播放
             if (mIsCompletion) {
                 try {

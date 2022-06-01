@@ -271,7 +271,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
             startActivityForResult(intent, mGlobalSpec.getRequestCode());
             if (mGlobalSpec.getCutscenesEnabled()) {
-                mActivity.overridePendingTransition(R.anim.activity_open, 0);
+                mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
             }
         });
 
@@ -546,7 +546,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
         startActivityForResult(intent, mGlobalSpec.getRequestCode());
         if (mGlobalSpec.getCutscenesEnabled()) {
-            mActivity.overridePendingTransition(R.anim.activity_open, 0);
+            mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
         }
     }
 

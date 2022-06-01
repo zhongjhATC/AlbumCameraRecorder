@@ -27,7 +27,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?colorPrimary"
         android:elevation="4dp"
-        android:theme="?toolbar"
+        android:theme="?attr/toolbar.zhongjh"
         tools:targetApi="lollipop">
 
         <RelativeLayout

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <item name="tagid" type="id"/> <!-- 用于区分tagid -->
+    <item name="z_tagid" type="id"/> <!-- 用于区分tagid -->
 
 </resources>

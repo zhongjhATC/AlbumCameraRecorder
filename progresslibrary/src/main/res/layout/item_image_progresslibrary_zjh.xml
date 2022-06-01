@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/selector_image_add" />
+        android:src="@drawable/selector_image_add_zhongjh" />
 
     <com.sdsmdg.harjot.vectormaster.VectorMasterView
         android:id="@+id/vmvClose"
@@ -24,7 +24,7 @@
         android:layout_height="32dp"
         android:contentDescription="@string/z_progress_library_delete_button"
         android:visibility="gone"
-        app:vector_src="@drawable/ic_twotone_highlight_off_24dp"
+        app:vector_src="@drawable/ic_twotone_highlight_off_24dp_zhongjh"
         tools:visibility="gone" />
 
     <ImageView
@@ -35,7 +35,7 @@
         android:paddingBottom="8dp"
         android:contentDescription="@string/z_progress_library_delete_button"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_twotone_highlight_off_24dp"
+        app:srcCompat="@drawable/ic_twotone_highlight_off_24dp_zhongjh"
         tools:visibility="visible" />
 
     <ImageView

@@ -1,5 +1,8 @@
 package com.zhongjh.imageedit;
 
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -13,9 +16,6 @@ import com.zhongjh.imageedit.core.ImageMode;
 import com.zhongjh.imageedit.core.ImageText;
 import com.zhongjh.imageedit.view.ImageColorGroup;
 import com.zhongjh.imageedit.view.ImageViewCustom;
-
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION;
 
 /**
  * Created by felix on 2017/12/5 下午3:08.
@@ -55,7 +55,7 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         Bitmap bitmap = getBitmap();
         if (bitmap != null) {
-            setContentView(R.layout.image_edit_activity);
+            setContentView(R.layout.image_edit_activity_zjh);
             initViews();
             mImageViewCustom.setImageBitmap(bitmap);
             onCreated();

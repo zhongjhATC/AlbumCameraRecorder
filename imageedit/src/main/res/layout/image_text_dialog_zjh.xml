@@ -48,10 +48,10 @@
         android:layout_weight="1"
         android:background="@null"
         android:gravity="top"
-        android:textColor="@color/image_color_primary"
+        android:textColor="@color/z_image_color_primary"
         android:textSize="24sp"
         tools:text="这里添加文字" />
 
-    <include layout="@layout/image_color_layout" />
+    <include layout="@layout/image_color_layout_zjh" />
 
 </LinearLayout>

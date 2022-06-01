@@ -81,7 +81,7 @@ public class CircularProgressButton extends AppCompatButton {
 
     private void init(Context context, AttributeSet attributeSet) {
         mContext = context;
-        mStrokeWidth = (int) getContext().getResources().getDimension(R.dimen.cpb_stroke_width);
+        mStrokeWidth = (int) getContext().getResources().getDimension(R.dimen.z_cpb_stroke_width);
 
         initAttributes(context, attributeSet);
 
@@ -216,15 +216,15 @@ public class CircularProgressButton extends AppCompatButton {
             int grey = getColor(R.color.cpb_grey);
 
             int idleStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorIdle,
-                    R.color.cpb_idle_state_selector);
+                    R.color.cpb_idle_state_selector_zjh);
             mIdleColorState = ResourcesCompat.getColorStateList(getResources(), idleStateSelector, mContext.getTheme());
 
             int completeStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorComplete,
-                    R.color.cpb_complete_state_selector);
+                    R.color.cpb_complete_state_selector_zjh);
             mCompleteColorState = ResourcesCompat.getColorStateList(getResources(), completeStateSelector, mContext.getTheme());
 
             int errorStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorError,
-                    R.color.cpb_error_state_selector);
+                    R.color.cpb_error_state_selector_zjh);
             mErrorColorState = ResourcesCompat.getColorStateList(getResources(), errorStateSelector, mContext.getTheme());
 
             mColorProgress = attr.getColor(R.styleable.CircularProgressButton_cpb_colorProgress, white);

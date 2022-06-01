@@ -31,7 +31,7 @@ public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
 
     public ImageTextEditDialog(Context context, Callback callback) {
         super(context, R.style.ImageTextDialog);
-        setContentView(R.layout.image_text_dialog);
+        setContentView(R.layout.image_text_dialog_zjh);
         mCallback = callback;
         Window window = getWindow();
         if (window != null) {

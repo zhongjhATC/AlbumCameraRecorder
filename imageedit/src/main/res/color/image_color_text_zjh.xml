@@ -3,8 +3,8 @@
 
     <item android:color="#333" android:state_enabled="false" />
 
-    <item android:color="@color/image_color_accent" android:state_pressed="true" />
+    <item android:color="@color/z_image_color_accent" android:state_pressed="true" />
 
-    <item android:color="@color/image_color_white" />
+    <item android:color="@color/z_image_color_white" />
 
 </selector>

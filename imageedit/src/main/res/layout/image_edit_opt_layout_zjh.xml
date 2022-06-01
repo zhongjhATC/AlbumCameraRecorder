@@ -73,42 +73,42 @@
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
                     android:id="@+id/cr_red"
-                    android:layout_width="@dimen/image_color"
-                    android:layout_height="@dimen/image_color"
-                    android:layout_margin="@dimen/image_color_margin"
+                    android:layout_width="@dimen/z_image_color"
+                    android:layout_height="@dimen/z_image_color"
+                    android:layout_margin="@dimen/z_image_color_margin"
                     android:button="@null"
-                    app:image_color="@color/image_color_red" />
+                    app:image_color="@color/z_image_color_red" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
-                    android:layout_width="@dimen/image_color"
-                    android:layout_height="@dimen/image_color"
-                    android:layout_margin="@dimen/image_color_margin"
-                    app:image_color="@color/image_color_black" />
+                    android:layout_width="@dimen/z_image_color"
+                    android:layout_height="@dimen/z_image_color"
+                    android:layout_margin="@dimen/z_image_color_margin"
+                    app:image_color="@color/z_image_color_black" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
-                    android:layout_width="@dimen/image_color"
-                    android:layout_height="@dimen/image_color"
-                    android:layout_margin="@dimen/image_color_margin"
+                    android:layout_width="@dimen/z_image_color"
+                    android:layout_height="@dimen/z_image_color"
+                    android:layout_margin="@dimen/z_image_color_margin"
 
-                    app:image_color="@color/image_color_white" />
-
-                <com.zhongjh.imageedit.view.ImageColorRadio
-                    android:layout_width="@dimen/image_color"
-                    android:layout_height="@dimen/image_color"
-                    android:layout_margin="@dimen/image_color_margin"
-                    app:image_color="@color/image_color_cyan" />
+                    app:image_color="@color/z_image_color_white" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
-                    android:layout_width="@dimen/image_color"
-                    android:layout_height="@dimen/image_color"
-                    android:layout_margin="@dimen/image_color_margin"
-                    app:image_color="@color/image_color_yellow" />
+                    android:layout_width="@dimen/z_image_color"
+                    android:layout_height="@dimen/z_image_color"
+                    android:layout_margin="@dimen/z_image_color_margin"
+                    app:image_color="@color/z_image_color_cyan" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
-                    android:layout_width="@dimen/image_color"
-                    android:layout_height="@dimen/image_color"
-                    android:layout_margin="@dimen/image_color_margin"
-                    app:image_color="@color/image_color_blue" />
+                    android:layout_width="@dimen/z_image_color"
+                    android:layout_height="@dimen/z_image_color"
+                    android:layout_margin="@dimen/z_image_color_margin"
+                    app:image_color="@color/z_image_color_yellow" />
+
+                <com.zhongjh.imageedit.view.ImageColorRadio
+                    android:layout_width="@dimen/z_image_color"
+                    android:layout_height="@dimen/z_image_color"
+                    android:layout_margin="@dimen/z_image_color_margin"
+                    app:image_color="@color/z_image_color_blue" />
 
             </com.zhongjh.imageedit.view.ImageColorGroup>
 
@@ -116,8 +116,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/image_mosaic_tip"
-                android:textColor="@color/image_color_white"
+                android:text="@string/z_image_mosaic_tip"
+                android:textColor="@color/z_image_color_white"
                 android:textSize="12sp" />
 
         </ViewSwitcher>
@@ -127,7 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:contentDescription="@string/image_undo"
+            android:contentDescription="@string/z_image_undo"
             android:onClick="onClick"
             android:src="@drawable/image_btn_undo" />
 
@@ -152,7 +152,7 @@
             android:textColor="#FFF" />
 
         <Space
-            android:layout_width="@dimen/image_mode_space"
+            android:layout_width="@dimen/z_image_mode_space"
             android:layout_height="wrap_content" />
 
         <ImageButton
@@ -160,14 +160,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:contentDescription="@string/image_text"
+            android:contentDescription="@string/z_image_text"
             android:gravity="center"
             android:onClick="onClick"
             android:src="@drawable/image_btn_text"
             android:textColor="#FFF" />
 
         <Space
-            android:layout_width="@dimen/image_mode_space"
+            android:layout_width="@dimen/z_image_mode_space"
             android:layout_height="wrap_content" />
 
         <RadioButton
@@ -180,7 +180,7 @@
             android:textColor="#FFF" />
 
         <Space
-            android:layout_width="@dimen/image_mode_space"
+            android:layout_width="@dimen/z_image_mode_space"
             android:layout_height="wrap_content" />
 
         <ImageButton
@@ -188,7 +188,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:contentDescription="@string/image_clip"
+            android:contentDescription="@string/z_image_clip"
             android:gravity="center"
             android:onClick="onClick"
             android:src="@drawable/image_btn_clip"

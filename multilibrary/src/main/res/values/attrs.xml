@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="toolbar" format="reference" />
+    <attr name="toolbar.zhongjh" format="reference" />
     <attr name="album.element.color" format="reference|color" /> <!-- title文本颜色 -->
     <attr name="bottomToolbar.bg" format="reference|color" /> <!-- 底部背景颜色 -->
     <attr name="bottomToolbar.preview.textColor" format="reference|color" /> <!-- 预览文本颜色 -->
@@ -28,7 +28,7 @@
 
     <!-- region 拍照录像相关属性 -->
 
-    <declare-styleable name="OperationButton">
+    <declare-styleable name="OperationButtonZhongjh">
         <!-- 操作类型的按钮 -->
         <attr name="type">
             <enum name="cancel" value="0" />

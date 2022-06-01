@@ -107,7 +107,7 @@ class AlbumsSpinner(context: Context) {
         mSelected.setOnClickListener { v: View ->
             // 显示选择框
             val itemHeight =
-                v.resources.getDimensionPixelSize(com.zhongjh.albumcamerarecorder.R.dimen.album_item_height)
+                v.resources.getDimensionPixelSize(com.zhongjh.albumcamerarecorder.R.dimen.z_album_item_height)
             mListPopupWindow.height =
                 if (mAdapter.count > MAX_SHOWN_COUNT) itemHeight * MAX_SHOWN_COUNT else itemHeight * mAdapter.count
             mListPopupWindow.show()

@@ -57,7 +57,7 @@ public class PhotoVideoLayoutBase extends BaseOperationLayout {
     @Override
     public ViewHolder newViewHolder() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        View view = inflater.inflate(R.layout.layout_photovideo_operate, this, true);
+        View view = inflater.inflate(R.layout.layout_photovideo_operate_zjh, this, true);
         return new ViewHolder(view);
     }
 

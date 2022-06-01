@@ -71,7 +71,7 @@ public class AlbumMediaAdapter extends
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // 相片的item
-        return new MediaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.media_grid_item, parent, false));
+        return new MediaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.media_grid_item_zjh, parent, false));
     }
 
 
@@ -295,7 +295,7 @@ public class AlbumMediaAdapter extends
             }
             int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
             int availableWidth = screenWidth - context.getResources().getDimensionPixelSize(
-                    R.dimen.media_grid_spacing) * (spanCount - 1);
+                    R.dimen.z_media_grid_spacing) * (spanCount - 1);
             // 图片调整后的大小：获取列表的每个格子的宽度
             mImageResize = availableWidth / spanCount;
             // 图片调整后的大小 * 缩放比例

@@ -59,7 +59,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
     }
 
     private fun init(context: Context) {
-        LayoutInflater.from(context).inflate(R.layout.media_grid_content, this, true)
+        LayoutInflater.from(context).inflate(R.layout.media_grid_content_zjh, this, true)
         mThumbnail = findViewById(R.id.media_thumbnail)
         mCheckView = findViewById(R.id.checkView)
         mGifTag = findViewById(R.id.gif)

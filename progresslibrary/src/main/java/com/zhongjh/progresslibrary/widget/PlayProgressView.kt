@@ -129,7 +129,7 @@ class PlayProgressView : ConstraintLayout {
      * 添加后的初始化
      */
     private fun addInit() {
-        val view = inflate(context, R.layout.layout_play_progress, this)
+        val view = inflate(context, R.layout.layout_play_progress_zjh, this)
         mViewHolder = ViewHolder(view)
 
         // 显示上传中的音频

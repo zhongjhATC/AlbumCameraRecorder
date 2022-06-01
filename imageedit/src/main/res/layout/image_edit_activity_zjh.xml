@@ -20,12 +20,12 @@
         android:id="@+id/vs_op"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:inAnimation="@anim/image_fade_in"
-        android:outAnimation="@anim/image_fade_out">
+        android:inAnimation="@anim/image_fade_in_zjh"
+        android:outAnimation="@anim/image_fade_out_zjh">
 
-        <include layout="@layout/image_edit_opt_layout" />
+        <include layout="@layout/image_edit_opt_layout_zjh" />
 
-        <include layout="@layout/image_edit_clip_layout" />
+        <include layout="@layout/image_edit_clip_layout_zjh" />
 
     </ViewSwitcher>
 

@@ -51,6 +51,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_remove_circle_black_24dp" />
+        app:srcCompat="@drawable/ic_remove_circle_black_24dp_zhongjh" />
 
 </merge>

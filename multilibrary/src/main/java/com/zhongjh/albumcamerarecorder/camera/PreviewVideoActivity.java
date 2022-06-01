@@ -84,7 +84,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         intent.setClass(fragment.getContext(), PreviewVideoActivity.class);
         previewVideoActivityResult.launch(intent);
         if (fragment.getActivity() != null) {
-            fragment.getActivity().overridePendingTransition(R.anim.activity_open, 0);
+            fragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
         }
     }
 
@@ -94,7 +94,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         setTheme(mGlobalSpec.getThemeId());
         StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview_video);
+        setContentView(R.layout.activity_preview_video_zjh);
         mLocalFile.setPath(getIntent().getStringExtra(PATH));
         initView();
         initListener();
@@ -104,7 +104,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     @Override
     public void finish() {
         //关闭窗体动画显示
-        this.overridePendingTransition(0, R.anim.activity_close);
+        this.overridePendingTransition(0, R.anim.activity_close_zjh);
         super.finish();
     }
 

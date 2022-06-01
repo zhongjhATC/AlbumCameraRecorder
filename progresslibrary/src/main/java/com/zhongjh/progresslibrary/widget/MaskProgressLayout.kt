@@ -110,44 +110,44 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         val colorPrimary = typedArray.getColor(0, defaultColor)
 
         // 获取自定义属性。
-        val maskProgressLayoutStyle = context.obtainStyledAttributes(attrs, R.styleable.MaskProgressLayout)
+        val maskProgressLayoutStyle = context.obtainStyledAttributes(attrs, R.styleable.MaskProgressLayoutZhongjh)
         // 是否允许操作
-        isOperation = maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayout_isOperation, true)
+        isOperation = maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayoutZhongjh_isOperation, true)
         // 一行多少列
-        val columnNumber = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_columnNumber, 4)
+        val columnNumber = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_columnNumber, 4)
         // 列与列之间多少间隔px单位
-        val columnSpace = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_columnSpace, 10)
+        val columnSpace = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_columnSpace, 10)
         // 获取默认图片
-        var drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_album_thumbnail_placeholder)
+        var drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_album_thumbnail_placeholder)
         // 获取添加图片
-        val imageAddDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_imageAddDrawable)
+        val imageAddDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_imageAddDrawable)
         // 获取显示图片的类
-        val imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_imageEngine)
+        val imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_imageEngine)
         // provider的authorities,用于提供给外部的file
-        val authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_authority)
+        val authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_authority)
         val saveStrategy = SaveStrategy(true, authority, "")
         mMediaStoreCompat = MediaStoreCompat(context, saveStrategy)
         // 获取最多显示多少个方框
-        val maxCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_maxCount, 5)
-        val imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_imageDeleteColor, colorPrimary)
-        val imageDeleteDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_imageDeleteDrawable)
+        val maxCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_maxCount, 5)
+        val imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_imageDeleteColor, colorPrimary)
+        val imageDeleteDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_imageDeleteDrawable)
 
         // region 音频
         // 音频，删除按钮的颜色
-        audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioDeleteColor, colorPrimary)
+        audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioDeleteColor, colorPrimary)
         // 音频 文件的进度条颜色
-        audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioProgressColor, colorPrimary)
+        audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioProgressColor, colorPrimary)
         // 音频 播放按钮的颜色
-        audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_audioPlayColor, colorPrimary)
+        audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioPlayColor, colorPrimary)
         // endregion 音频
 
         // region 遮罩层相关属性
 
-        val maskingColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_maskingColor, colorPrimary)
-        val maskingTextSize = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_maskingTextSize, 12)
+        val maskingColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_maskingColor, colorPrimary)
+        val maskingTextSize = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_maskingTextSize, 12)
 
-        val maskingTextColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayout_maskingTextColor, ContextCompat.getColor(context, R.color.thumbnail_placeholder))
-        var maskingTextContent = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_maskingTextContent)
+        val maskingTextColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_maskingTextColor, ContextCompat.getColor(context, R.color.z_thumbnail_placeholder))
+        var maskingTextContent = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_maskingTextContent)
 
         // endregion 遮罩层相关属性
 
@@ -169,13 +169,13 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         }
 
         if (drawable == null) {
-            drawable = ContextCompat.getDrawable(context, R.color.thumbnail_placeholder)
+            drawable = ContextCompat.getDrawable(context, R.color.z_thumbnail_placeholder)
         }
         if (maskingTextContent == null) {
             maskingTextContent = ""
         }
 
-        val view = inflate(context, R.layout.layout_mask_progress, this)
+        val view = inflate(context, R.layout.layout_mask_progress_zjh, this)
         mViewHolder = ViewHolder(view)
 
         // 初始化九宫格的控件
