@@ -60,6 +60,7 @@
         <activity android:name=".phone.MainCustomCameraViewActivity" />
 
         <activity android:name=".phone.MainSuperSimpleActivity" />
+        <activity android:name=".phone.ErrorActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

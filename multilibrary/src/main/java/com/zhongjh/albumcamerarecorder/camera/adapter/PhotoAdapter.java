@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
@@ -45,6 +47,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     CameraFragment mCameraFragment;
     GlobalSpec mGlobalSpec;
     List<BitmapData> mListData;
+
+    /**
+     * 记录当前删除事件的时间
+     */
+    private long mLastDeleteTime;
 
     // region 回调监听事件
 
@@ -145,10 +152,29 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * @param position 索引
      */
     public void removePosition(int position) {
-        mPhotoAdapterListener.onDelete(position);
-        mListData.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, getItemCount());
+        if (isDelete()) {
+            mPhotoAdapterListener.onDelete(position);
+            mListData.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, getItemCount());
+        }
+    }
+
+    /**
+     * 根据两次删除时间判断是否能删除
+     * 两次删除操作之间不能低于500毫秒，因为在我们快速删除的时候，会出现问题IndexOutOfIndexException或者删除错乱的问题，
+     * 原因是notifyItemRangeChanged这个方法中开启了多线程，动画有250毫秒+120毫秒
+     * @return 是否能删除
+     */
+    public boolean isDelete() {
+        boolean flag = false;
+        long curClickTime = System.currentTimeMillis();
+        int deleteDelayTime = 500;
+        if ((curClickTime - mLastDeleteTime) >= deleteDelayTime) {
+            flag = true;
+        }
+        mLastDeleteTime = curClickTime;
+        return flag;
     }
 
     @Override

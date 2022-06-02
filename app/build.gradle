@@ -46,7 +46,6 @@ android {
             signingConfig signingConfigs.release
         }
     }
-
     dataBinding {
         enabled = true
     }
@@ -100,5 +99,8 @@ dependencies {
     implementation 'top.zibin:Luban:1.1.8'
     // https://github.com/zetbaitsu/Compressor 另一款压缩库
     implementation 'id.zelory:compressor:2.1.1'
+
+    // 异常捕获 https://github.com/Ereza/CustomActivityOnCrash
+    api 'cat.ereza:customactivityoncrash:2.3.0'
 
 }
