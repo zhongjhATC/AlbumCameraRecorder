@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -27,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
@@ -51,7 +49,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     /**
      * 记录当前删除事件的时间
      */
-    private long mLastDeleteTime;
+    private long mLastOperationTime;
 
     // region 回调监听事件
 
@@ -107,41 +105,43 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * @param position 索引
      */
     private void onClickListener(int position) {
-        ArrayList<MultiMedia> items = new ArrayList<>();
-        for (BitmapData item : mListData) {
-            MultiMedia multiMedia = new MultiMedia();
-            multiMedia.setId(mListData.indexOf(item));
-            multiMedia.setUri(item.getUri());
-            multiMedia.setPath(item.getPath());
-            multiMedia.setMimeType(MimeType.JPEG.toString());
-            multiMedia.setWidth(item.getWidth());
-            multiMedia.setHeight(item.getHeight());
-            items.add(multiMedia);
-        }
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, items);
-        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+        if (isOperation()) {
+            ArrayList<MultiMedia> items = new ArrayList<>();
+            for (BitmapData item : mListData) {
+                MultiMedia multiMedia = new MultiMedia();
+                multiMedia.setId(mListData.indexOf(item));
+                multiMedia.setUri(item.getUri());
+                multiMedia.setPath(item.getPath());
+                multiMedia.setMimeType(MimeType.JPEG.toString());
+                multiMedia.setWidth(item.getWidth());
+                multiMedia.setHeight(item.getHeight());
+                items.add(multiMedia);
+            }
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(STATE_SELECTION, items);
+            bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
-        Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
+            Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
 
-        // 获取目前点击的这个item
-        MultiMedia item = new MultiMedia();
-        item.setUri(mListData.get(position).getUri());
-        item.setPath(mListData.get(position).getPath());
-        item.setMimeType(MimeType.JPEG.toString());
-        item.setWidth(mListData.get(position).getWidth());
-        item.setHeight(mListData.get(position).getHeight());
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+            // 获取目前点击的这个item
+            MultiMedia item = new MultiMedia();
+            item.setUri(mListData.get(position).getUri());
+            item.setPath(mListData.get(position).getPath());
+            item.setMimeType(MimeType.JPEG.toString());
+            item.setWidth(mListData.get(position).getWidth());
+            item.setHeight(mListData.get(position).getHeight());
+            intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
-        if (mGlobalSpec.getCutscenesEnabled()) {
-            if (mCameraFragment.getActivity() != null) {
-                mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
+            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+            intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+            intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
+            intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+            mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
+            if (mGlobalSpec.getCutscenesEnabled()) {
+                if (mCameraFragment.getActivity() != null) {
+                    mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
+                }
             }
         }
     }
@@ -152,7 +152,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * @param position 索引
      */
     public void removePosition(int position) {
-        if (isDelete()) {
+        if (isOperation()) {
             mPhotoAdapterListener.onDelete(position);
             mListData.remove(position);
             notifyItemRemoved(position);
@@ -161,19 +161,20 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     /**
-     * 根据两次删除时间判断是否能删除
-     * 两次删除操作之间不能低于500毫秒，因为在我们快速删除的时候，会出现问题IndexOutOfIndexException或者删除错乱的问题，
+     * 根据两次操作时间判断是否能进行下一个操作
+     * 两次操作之间不能低于500毫秒，因为在我们快速删除的时候，会出现问题IndexOutOfIndexException或者删除错乱的问题，
      * 原因是notifyItemRangeChanged这个方法中开启了多线程，动画有250毫秒+120毫秒
-     * @return 是否能删除
+     *
+     * @return 是否能操作
      */
-    public boolean isDelete() {
+    public boolean isOperation() {
         boolean flag = false;
         long curClickTime = System.currentTimeMillis();
         int deleteDelayTime = 500;
-        if ((curClickTime - mLastDeleteTime) >= deleteDelayTime) {
+        if ((curClickTime - mLastOperationTime) >= deleteDelayTime) {
             flag = true;
         }
-        mLastDeleteTime = curClickTime;
+        mLastOperationTime = curClickTime;
         return flag;
     }
 
