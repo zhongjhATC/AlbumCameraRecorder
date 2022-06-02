@@ -159,24 +159,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         mPhotoAdapterListener.onDelete(bitmapData);
     }
 
-    /**
-     * 根据两次操作时间判断是否能进行下一个操作
-     * 两次操作之间不能低于500毫秒，因为在我们快速删除的时候，会出现问题IndexOutOfIndexException或者删除错乱的问题，
-     * 原因是notifyItemRangeChanged这个方法中开启了多线程，动画有250毫秒+120毫秒
-     *
-     * @return 是否能操作
-     */
-    public boolean isOperation() {
-        boolean flag = false;
-        long curClickTime = System.currentTimeMillis();
-        int deleteDelayTime = 500;
-        if ((curClickTime - mLastOperationTime) >= deleteDelayTime) {
-            flag = true;
-        }
-        mLastOperationTime = curClickTime;
-        return flag;
-    }
-
     @Override
     public int getItemCount() {
         Log.d(TAG, "getItemCount");
