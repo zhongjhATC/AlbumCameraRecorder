@@ -367,7 +367,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         list.remove(multiMediaView)
         multiMediaView.maskProgressView.reset()
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, 1)
+        notifyItemRangeChanged(position, list.size)
     }
 
     /**
@@ -389,7 +389,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         if (list.size + maskProgressLayout.audioList.size >= maxMediaCount
                 && isOperation) {
             notifyItemRemoved(list.size)
-            notifyItemRangeChanged(list.size, 1)
+            notifyItemRangeChanged(list.size,  list.size)
         }
     }
 

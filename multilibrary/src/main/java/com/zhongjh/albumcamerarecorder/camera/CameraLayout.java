@@ -1,5 +1,16 @@
 package com.zhongjh.albumcamerarecorder.camera;
 
+import static com.otaliastudios.cameraview.controls.Mode.PICTURE;
+import static com.otaliastudios.cameraview.controls.Mode.VIDEO;
+import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
+import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
+import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
+import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
+import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
+import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -68,17 +79,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
-
-import static com.otaliastudios.cameraview.controls.Mode.PICTURE;
-import static com.otaliastudios.cameraview.controls.Mode.VIDEO;
-import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
-import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
-import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
-import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
-import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
-import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
-import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
 
 /**
  * @author zhongjh
@@ -1358,18 +1358,19 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 多图进行删除的时候
      *
-     * @param position 数据的索引
+     * @param bitmapData 数据
      */
     @Override
-    public void onDelete(int position) {
+    public void onDelete(BitmapData bitmapData) {
         // 删除文件
-        FileUtil.deleteFile(mBitmapData.get(position).getPath());
+        FileUtil.deleteFile(bitmapData.getPath());
 
         // 回调接口：删除图片后剩下的相关数据
         mCaptureListener.remove(mBitmapData);
 
-        // 当列表全部删掉的话，就隐藏,为什么是 <= 1，因为是先删除实体，再删除数据源，所以这个判断结束后，就会删除数据源实际是0了
-        if (mBitmapData.size() <= 1) {
+        // 当列表全部删掉隐藏列表框的UI
+        Log.d(TAG,"onDelete " + mBitmapData.size());
+        if (mBitmapData.size() <= 0) {
             // 隐藏横版列表
             mViewHolder.rlPhoto.setVisibility(View.GONE);
 

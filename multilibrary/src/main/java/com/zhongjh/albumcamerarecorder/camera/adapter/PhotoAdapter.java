@@ -1,5 +1,9 @@
 package com.zhongjh.albumcamerarecorder.camera.adapter;
 
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,10 +30,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
 
 /**
  * 横向形式显示多个图片的
@@ -74,18 +74,19 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
-        mGlobalSpec.getImageEngine().loadUriImage(mContext, holder.imgPhoto, mListData.get(position).getUri());
+        BitmapData bitmapData = mListData.get(position);
+        mGlobalSpec.getImageEngine().loadUriImage(mContext, holder.imgPhoto, bitmapData.getUri());
         // 点击图片
         holder.itemView.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onMoreClickListener(@NotNull View v) {
-                onClickListener(position);
+                onClickListener(bitmapData);
             }
         });
         holder.imgCancel.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onMoreClickListener(@NotNull View v) {
-                removePosition(position);
+                removePosition(bitmapData);
             }
         });
     }
@@ -102,46 +103,44 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     /**
      * 点击事件
      *
-     * @param position 索引
+     * @param bitmapData 数据
      */
-    private void onClickListener(int position) {
-        if (isOperation()) {
-            ArrayList<MultiMedia> items = new ArrayList<>();
-            for (BitmapData item : mListData) {
-                MultiMedia multiMedia = new MultiMedia();
-                multiMedia.setId(mListData.indexOf(item));
-                multiMedia.setUri(item.getUri());
-                multiMedia.setPath(item.getPath());
-                multiMedia.setMimeType(MimeType.JPEG.toString());
-                multiMedia.setWidth(item.getWidth());
-                multiMedia.setHeight(item.getHeight());
-                items.add(multiMedia);
-            }
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(STATE_SELECTION, items);
-            bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
+    private void onClickListener(BitmapData bitmapData) {
+        ArrayList<MultiMedia> items = new ArrayList<>();
+        for (BitmapData item : mListData) {
+            MultiMedia multiMedia = new MultiMedia();
+            multiMedia.setId(mListData.indexOf(item));
+            multiMedia.setUri(item.getUri());
+            multiMedia.setPath(item.getPath());
+            multiMedia.setMimeType(MimeType.JPEG.toString());
+            multiMedia.setWidth(item.getWidth());
+            multiMedia.setHeight(item.getHeight());
+            items.add(multiMedia);
+        }
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STATE_SELECTION, items);
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
-            Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
+        Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
 
-            // 获取目前点击的这个item
-            MultiMedia item = new MultiMedia();
-            item.setUri(mListData.get(position).getUri());
-            item.setPath(mListData.get(position).getPath());
-            item.setMimeType(MimeType.JPEG.toString());
-            item.setWidth(mListData.get(position).getWidth());
-            item.setHeight(mListData.get(position).getHeight());
-            intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+        // 获取目前点击的这个item
+        MultiMedia item = new MultiMedia();
+        item.setUri(bitmapData.getUri());
+        item.setPath(bitmapData.getPath());
+        item.setMimeType(MimeType.JPEG.toString());
+        item.setWidth(bitmapData.getWidth());
+        item.setHeight(bitmapData.getHeight());
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
 
-            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
-            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-            intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
-            intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
-            intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-            mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
-            if (mGlobalSpec.getCutscenesEnabled()) {
-                if (mCameraFragment.getActivity() != null) {
-                    mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
-                }
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
+        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+        mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
+        if (mGlobalSpec.getCutscenesEnabled()) {
+            if (mCameraFragment.getActivity() != null) {
+                mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
             }
         }
     }
@@ -149,15 +148,15 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     /**
      * 根据索引删除view
      *
-     * @param position 索引
+     * @param bitmapData 数据
      */
-    public void removePosition(int position) {
-        if (isOperation()) {
-            mPhotoAdapterListener.onDelete(position);
-            mListData.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, getItemCount());
-        }
+    public void removePosition(BitmapData bitmapData) {
+        int position = mListData.indexOf(bitmapData);
+        Log.d(TAG,"removePosition " + position);
+        mListData.remove(bitmapData);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mListData.size());
+        mPhotoAdapterListener.onDelete(bitmapData);
     }
 
     /**
