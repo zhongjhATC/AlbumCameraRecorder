@@ -1,5 +1,8 @@
 package com.zhongjh.albumcamerarecorder.preview;
 
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -38,6 +41,7 @@ import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -49,9 +53,6 @@ import com.zhongjh.imageedit.ImageEditActivity;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 
 /**
  * 预览的基类
@@ -138,6 +139,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 完成压缩-复制的异步线程
      */
     ThreadUtils.SimpleTask<Void> mCompressFileTask;
+    /**
+     * 完成迁移文件的异步线程
+     */
+    ThreadUtils.SimpleTask<Void> mMoveFileTask;
     /**
      * 异步线程的逻辑
      */
@@ -273,11 +278,21 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      */
     private void initListener() {
         // 编辑
-        mViewHolder.tvEdit.setOnClickListener(this);
+        mViewHolder.tvEdit.setOnClickListener(new OnMoreClickListener() {
+            @Override
+            public void onMoreClickListener(@NonNull View v) {
+                openImageEditActivity();
+            }
+        });
         // 返回
         mViewHolder.iBtnBack.setOnClickListener(this);
         // 确认
-        mViewHolder.buttonApply.setOnClickListener(this);
+        mViewHolder.buttonApply.setOnClickListener(new OnMoreClickListener() {
+            @Override
+            public void onMoreClickListener(@NonNull View v) {
+                setResultOkByIsCompress(true);
+            }
+        });
         // 多图时滑动事件
         mViewHolder.pager.addOnPageChangeListener(this);
         // 右上角选择事件
@@ -350,19 +365,8 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         if (v.getId() == R.id.ibtnBack) {
             onBackPressed();
-        } else if (v.getId() == R.id.buttonApply) {
-            setResultOkByIsCompress(true);
         } else if (v.getId() == R.id.tvEdit) {
-            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-            File file;
-            file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
-            mEditImageFile = file;
-            Intent intent = new Intent();
-            intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getRequestedOrientation());
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
-            mImageEditActivityResult.launch(intent);
+
         } else if (v.getId() == R.id.checkView) {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
@@ -558,6 +562,22 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     /**
+     * 打开编辑的Activity
+     */
+    private void openImageEditActivity() {
+        MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+        File file;
+        file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
+        mEditImageFile = file;
+        Intent intent = new Intent();
+        intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
+        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getRequestedOrientation());
+        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
+        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
+        mImageEditActivityResult.launch(intent);
+    }
+
+    /**
      * 关闭Activity回调相关数值,如果需要压缩，另外弄一套压缩逻辑
      *
      * @param apply 是否同意
@@ -574,8 +594,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         } else {
             if (apply) {
                 moveStoreCompatFile();
+            } else {
+                // 直接返回
+                setResultOk(false);
             }
-            setResultOk(apply);
         }
     }
 
@@ -583,25 +605,52 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 不压缩，直接移动文件
      */
     private void moveStoreCompatFile() {
-        // 不压缩，直接迁移到配置文件
-        for (LocalFile item : mSelectedCollection.asList()) {
-            if (item.getPath() != null) {
-                File oldFile = new File(item.getPath());
-                if (oldFile.exists()) {
-                    if (item.isImage() || item.isVideo()) {
-                        File newFile;
-                        if (item.isImage()) {
-                            newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
-                        } else {
-                            // 如果是视频
-                            newFile = mVideoMediaStoreCompat.createFile(1, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
+        // 显示loading动画
+        setControlTouchEnable(false);
+
+        // 复制相册的文件
+        ThreadUtils.executeByIo(getMoveFileTask());
+    }
+
+    /**
+     * 线程： 不压缩，直接移动文件
+     *
+     * @return 线程
+     */
+    private ThreadUtils.SimpleTask<Void> getMoveFileTask() {
+        mMoveFileTask = new ThreadUtils.SimpleTask<Void>() {
+
+            @Override
+            public Void doInBackground() {
+                // 不压缩，直接迁移到配置文件
+                for (LocalFile item : mSelectedCollection.asList()) {
+                    if (item.getPath() != null) {
+                        File oldFile = new File(item.getPath());
+                        if (oldFile.exists()) {
+                            if (item.isImage() || item.isVideo()) {
+                                File newFile;
+                                if (item.isImage()) {
+                                    newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
+                                } else {
+                                    // 如果是视频
+                                    newFile = mVideoMediaStoreCompat.createFile(1, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
+                                }
+                                HandleEditImages(item, newFile, oldFile);
+                            }
                         }
-                        HandleEditImages(item, newFile, oldFile);
                     }
                 }
+                return null;
             }
-        }
+
+            @Override
+            public void onSuccess(Void result) {
+                setResultOk(true);
+            }
+        };
+        return mMoveFileTask;
     }
+
 
     /**
      * 判断是否压缩，如果要压缩先要迁移复制再压缩
