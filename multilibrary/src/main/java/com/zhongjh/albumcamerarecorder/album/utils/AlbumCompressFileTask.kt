@@ -190,7 +190,7 @@ class AlbumCompressFileTask(
         newFileName = item.id.toString() + "_CMP"
         if (newFileNames.size > 1) {
             // 设置后缀名
-            newFileName = newFileName + "." + newFileNames[1]
+            newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
         }
         return newFileName
     }
@@ -204,7 +204,7 @@ class AlbumCompressFileTask(
         val newFileNames = newFileName.split(".").toTypedArray()
         return if (newFileNames.size > 1) {
             // 返回后缀名
-            newFileNames[1]
+            newFileNames[newFileNames.size - 1]
         } else ""
     }
 
