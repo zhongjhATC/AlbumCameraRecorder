@@ -75,6 +75,8 @@
 
 ## 快照
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration.gif)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration1.gif)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration2.gif)
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/DemonstrationShowImg.png)
 
 
