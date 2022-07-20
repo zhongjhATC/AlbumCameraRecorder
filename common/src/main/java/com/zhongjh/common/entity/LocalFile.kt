@@ -32,6 +32,16 @@ open class LocalFile : Parcelable {
     var uri: Uri? = null
 
     /**
+     * 原图的真实路径
+     */
+    var pathOriginal: String? = null
+
+    /**
+     * 原图的真实路径转换成的uri
+     */
+    var uriOriginal: Uri? = null
+
+    /**
      * 具体类型，jpg,png,mp3等等
      * {@link MimeType }
      */
@@ -54,6 +64,11 @@ open class LocalFile : Parcelable {
     var height: Int = 0
 
     /**
+     * 是否开启了原图
+     */
+    var isOriginal = false
+
+    /**
      * 编辑前的真实路径
      */
     var oldPath: String? = null
@@ -73,13 +88,16 @@ open class LocalFile : Parcelable {
         id = localFile.id
         path = localFile.path
         uri = localFile.uri
+        uriOriginal = localFile.uriOriginal
+        pathOriginal = localFile.pathOriginal
         mimeType = localFile.mimeType
         size = localFile.size
         duration = localFile.duration
         oldPath = localFile.oldPath
         oldUri = localFile.oldUri
-        height = localFile.height
+        isOriginal = localFile.isOriginal
         width = localFile.width
+        height = localFile.height
     }
 
     /**
@@ -111,21 +129,22 @@ open class LocalFile : Parcelable {
         duration = localFile.duration
         oldPath = localFile.oldPath
         oldUri = localFile.oldUri
+        isOriginal = localFile.isOriginal
         if (isImageOrGif()) {
             val imageWidthAndHeight: IntArray =
                 MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
-            height = imageWidthAndHeight[1]
             width = imageWidthAndHeight[0]
+            height = imageWidthAndHeight[1]
         } else if (isVideo()) {
             // 有些手机视频拍照没有宽高的
             if (localFile.width == 0) {
                 val mediaExtraInfo = MediaUtils.getVideoSize(context, compressionFile.absolutePath)
-                height = mediaExtraInfo.height
                 width = mediaExtraInfo.width
+                height = mediaExtraInfo.height
                 duration = mediaExtraInfo.duration
             } else {
-                height = localFile.height
                 width = localFile.width
+                height = localFile.height
             }
         }
     }
@@ -139,8 +158,10 @@ open class LocalFile : Parcelable {
         duration = input.readLong()
         oldPath = input.readString()
         oldUri = input.readParcelable(Uri::class.java.classLoader)
-        height = input.readInt()
+        val original = input.readLong()
+        isOriginal = original == 1L
         width = input.readInt()
+        height = input.readInt()
     }
 
     constructor(multiMedia: MultiMedia) {
@@ -152,8 +173,9 @@ open class LocalFile : Parcelable {
         duration = multiMedia.duration
         oldPath = multiMedia.oldPath
         oldUri = multiMedia.oldUri
-        height = multiMedia.height
+        isOriginal = multiMedia.isOriginal
         width = multiMedia.width
+        height = multiMedia.height
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -165,6 +187,11 @@ open class LocalFile : Parcelable {
         dest.writeLong(duration)
         dest.writeString(oldPath)
         dest.writeParcelable(oldUri, flags)
+        if (isOriginal) {
+            dest.writeLong(1)
+        } else {
+            dest.writeLong(0)
+        }
         dest.writeInt(width)
         dest.writeInt(height)
     }

@@ -54,11 +54,11 @@ open class MultiMedia : LocalFile, Parcelable {
             }
         }
         this.uri = ContentUris.withAppendedId(contentUri, id)
+        this.uriOriginal = ContentUris.withAppendedId(contentUri, id)
         this.size = size
         this.duration = duration
         this.width = width
         this.height = height
-
     }
 
     /**

@@ -1,5 +1,8 @@
 package com.zhongjh.albumcamerarecorder;
 
+import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
+import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Dialog;
@@ -36,9 +39,6 @@ import com.zhongjh.common.utils.AppUtils;
 import com.zhongjh.common.utils.StatusBarUtils;
 
 import java.util.ArrayList;
-
-import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
-import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
 /**
  * 包含三大fragment
@@ -195,8 +195,8 @@ public class MainActivity extends AppCompatActivity {
         if (!mIsShowDialog) {
             if (requestCode == GET_PERMISSION_REQUEST) {
                 int permissionsLength = 0;
-                for (int i = 0; i < grantResults.length; i++) {
-                    if (grantResults[i] == PERMISSION_DENIED) {
+                for (int grantResult : grantResults) {
+                    if (grantResult == PERMISSION_DENIED) {
                         // 如果拒绝后
                         permissionsLength++;
                     }

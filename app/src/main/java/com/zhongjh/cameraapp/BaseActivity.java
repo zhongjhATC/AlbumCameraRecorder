@@ -171,9 +171,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                     // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
                     Log.i(TAG, "onResult id:" + localFile.getId());
                     Log.i(TAG, "onResult 绝对路径:" + localFile.getPath());
+                    Log.d(TAG, "onResult 旧图路径:" + localFile.getOldPath());
                     Log.i(TAG, "onResult Uri:" + localFile.getUri());
                     Log.i(TAG, "onResult 文件大小: " + localFile.getSize());
                     Log.i(TAG, "onResult 视频音频长度: " + localFile.getDuration());
+                    Log.i(TAG, "onResult 是否选择了原图: " + localFile.isOriginal());
                     if (localFile.isImageOrGif()) {
                         if (localFile.isImage()) {
                             Log.d(TAG, "onResult 图片类型");

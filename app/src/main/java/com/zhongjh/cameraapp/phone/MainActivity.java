@@ -274,9 +274,11 @@ public class MainActivity extends BaseActivity {
                 for (LocalFile localFile : result) {
                     Log.i(TAG, "onResult id:" + localFile.getId());
                     Log.d(TAG, "onResult 绝对路径:" + localFile.getPath());
+                    Log.d(TAG, "onResult 旧图路径:" + localFile.getOldPath());
                     Log.d(TAG, "onResult Uri:" + localFile.getUri());
                     Log.d(TAG, "onResult 文件大小: " + localFile.getSize());
                     Log.d(TAG, "onResult 视频音频长度: " + localFile.getDuration());
+                    Log.i(TAG, "onResult 是否选择了原图: " + localFile.isOriginal());
                     if (localFile.isImageOrGif()) {
                         if (localFile.isImage()) {
                             Log.d(TAG, "onResult 图片类型");
@@ -311,9 +313,11 @@ public class MainActivity extends BaseActivity {
                         // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
                         Log.i(TAG, "onResult id:" + multiMedia.getId());
                         Log.i(TAG, "onResult 绝对路径:" + multiMedia.getPath());
+                        Log.d(TAG, "onResult 旧图路径:" + multiMedia.getOldPath());
                         Log.i(TAG, "onResult Uri:" + multiMedia.getUri());
                         Log.i(TAG, "onResult 文件大小: " + multiMedia.getSize());
                         Log.i(TAG, "onResult 视频音频长度: " + multiMedia.getDuration());
+                        Log.i(TAG, "onResult 是否选择了原图: " + multiMedia.isOriginal());
                         if (multiMedia.isImageOrGif()) {
                             if (multiMedia.isImage()) {
                                 Log.d(TAG, "onResult 图片类型");
