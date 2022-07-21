@@ -237,7 +237,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     private void refreshMultiMediaItem() {
         // 获取当前查看的multimedia
         MultiMedia multiMedia = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-        // 编辑前的uri
+        // 编辑后的uri
         Uri editUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
         multiMedia.setOldUri(multiMedia.getUri());
         // 编辑前的path
@@ -251,7 +251,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             oldPath = multiMedia.getPath();
         }
         multiMedia.setOldPath(oldPath);
-        // 更新当前fragment
+        // 更新当前fragment编辑后的uri和path
         multiMedia.setUri(editUri);
         multiMedia.setPath(mEditImageFile.getPath());
         mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), multiMedia);
