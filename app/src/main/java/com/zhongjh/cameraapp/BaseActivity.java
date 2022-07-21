@@ -172,7 +172,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                     Log.i(TAG, "onResult id:" + localFile.getId());
                     Log.i(TAG, "onResult 绝对路径:" + localFile.getPath());
                     Log.d(TAG, "onResult 旧图路径:" + localFile.getOldPath());
+                    Log.d(TAG, "onResult 原图路径:" + localFile.getOriginalPath());
                     Log.i(TAG, "onResult Uri:" + localFile.getUri());
+                    Log.d(TAG, "onResult 旧图Uri:" + localFile.getOldUri());
+                    Log.d(TAG, "onResult 原图Uri:" + localFile.getOriginalUri());
                     Log.i(TAG, "onResult 文件大小: " + localFile.getSize());
                     Log.i(TAG, "onResult 视频音频长度: " + localFile.getDuration());
                     Log.i(TAG, "onResult 是否选择了原图: " + localFile.isOriginal());

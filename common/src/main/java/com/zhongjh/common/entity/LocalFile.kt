@@ -4,9 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import android.text.TextUtils
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaUtils
+import com.zhongjh.common.utils.UriUtils
 import java.io.File
 
 /**
@@ -22,24 +24,24 @@ open class LocalFile : Parcelable {
     var id: Long = 0
 
     /**
-     * 真实路径
+     * 真实路径。如果开启压缩功能则是压缩后的路径，否则跟原图一样
      */
     var path: String? = null
 
     /**
-     * 真实路径转换成的uri
+     * uri。如果开启压缩功能则是压缩后的路径，否则跟原图一样
      */
     var uri: Uri? = null
 
     /**
-     * 原图的真实路径
+     * 原始的真实路径。如果开启压缩功能则是压缩前的路径，否则跟[path]一样
      */
-    var pathOriginal: String? = null
+    var originalPath: String? = null
 
     /**
-     * 原图的真实路径转换成的uri
+     * 原始uri。如果开启压缩功能则是压缩前的路径，否则跟[uri]一样
      */
-    var uriOriginal: Uri? = null
+    var originalUri: Uri? = null
 
     /**
      * 具体类型，jpg,png,mp3等等
@@ -88,8 +90,8 @@ open class LocalFile : Parcelable {
         id = localFile.id
         path = localFile.path
         uri = localFile.uri
-        uriOriginal = localFile.uriOriginal
-        pathOriginal = localFile.pathOriginal
+        originalPath = localFile.originalPath
+        originalUri = localFile.originalUri
         mimeType = localFile.mimeType
         size = localFile.size
         duration = localFile.duration
@@ -127,6 +129,8 @@ open class LocalFile : Parcelable {
         mimeType = localFile.mimeType
         size = compressionFile.length()
         duration = localFile.duration
+        originalPath = localFile.originalPath
+        originalUri = localFile.originalUri
         oldPath = localFile.oldPath
         oldUri = localFile.oldUri
         isOriginal = localFile.isOriginal
@@ -156,6 +160,8 @@ open class LocalFile : Parcelable {
         mimeType = input.readString()
         size = input.readLong()
         duration = input.readLong()
+        originalPath = input.readString()
+        originalUri = input.readParcelable(Uri::class.java.classLoader)
         oldPath = input.readString()
         oldUri = input.readParcelable(Uri::class.java.classLoader)
         val original = input.readLong()
@@ -171,6 +177,8 @@ open class LocalFile : Parcelable {
         mimeType = multiMedia.mimeType
         size = multiMedia.size
         duration = multiMedia.duration
+        originalPath = multiMedia.originalPath
+        originalUri = multiMedia.originalUri
         oldPath = multiMedia.oldPath
         oldUri = multiMedia.oldUri
         isOriginal = multiMedia.isOriginal
@@ -185,6 +193,8 @@ open class LocalFile : Parcelable {
         dest.writeString(mimeType)
         dest.writeLong(size)
         dest.writeLong(duration)
+        dest.writeString(originalPath)
+        dest.writeParcelable(originalUri, flags)
         dest.writeString(oldPath)
         dest.writeParcelable(oldUri, flags)
         if (isOriginal) {
@@ -267,6 +277,21 @@ open class LocalFile : Parcelable {
                 || mimeType.equals(MimeType.WEBM.toString())
                 || mimeType.equals(MimeType.TS.toString())
                 || mimeType.equals(MimeType.AVI.toString())
+    }
+
+    /**
+     * 场景：初始化相册时点击item时赋值
+     * 根据相册当前uri同时赋值真实路径path和原图真实路径originalPath
+     */
+    fun analysesUriSetPathAndOriginalPath(context: Context) {
+        if (TextUtils.isEmpty(path)) {
+            // 相册是只有uri没有path的，此时确定后转换
+            val file = UriUtils.uriToFile(context, uri)
+            if (file != null && file.exists()) {
+                path = file.path
+                originalPath = file.path
+            }
+        }
     }
 
 }

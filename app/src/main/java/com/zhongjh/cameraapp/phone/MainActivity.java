@@ -275,7 +275,10 @@ public class MainActivity extends BaseActivity {
                     Log.i(TAG, "onResult id:" + localFile.getId());
                     Log.d(TAG, "onResult 绝对路径:" + localFile.getPath());
                     Log.d(TAG, "onResult 旧图路径:" + localFile.getOldPath());
+                    Log.d(TAG, "onResult 原图路径:" + localFile.getOriginalPath());
                     Log.d(TAG, "onResult Uri:" + localFile.getUri());
+                    Log.d(TAG, "onResult 旧图Uri:" + localFile.getOldUri());
+                    Log.d(TAG, "onResult 原图Uri:" + localFile.getOriginalUri());
                     Log.d(TAG, "onResult 文件大小: " + localFile.getSize());
                     Log.d(TAG, "onResult 视频音频长度: " + localFile.getDuration());
                     Log.i(TAG, "onResult 是否选择了原图: " + localFile.isOriginal());
@@ -314,7 +317,10 @@ public class MainActivity extends BaseActivity {
                         Log.i(TAG, "onResult id:" + multiMedia.getId());
                         Log.i(TAG, "onResult 绝对路径:" + multiMedia.getPath());
                         Log.d(TAG, "onResult 旧图路径:" + multiMedia.getOldPath());
+                        Log.d(TAG, "onResult 原图路径:" + multiMedia.getOriginalPath());
                         Log.i(TAG, "onResult Uri:" + multiMedia.getUri());
+                        Log.d(TAG, "onResult 旧图Uri:" + multiMedia.getOldUri());
+                        Log.d(TAG, "onResult 原图Uri:" + multiMedia.getOriginalUri());
                         Log.i(TAG, "onResult 文件大小: " + multiMedia.getSize());
                         Log.i(TAG, "onResult 视频音频长度: " + multiMedia.getDuration());
                         Log.i(TAG, "onResult 是否选择了原图: " + multiMedia.isOriginal());

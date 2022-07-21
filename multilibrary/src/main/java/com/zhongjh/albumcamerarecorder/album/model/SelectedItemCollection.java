@@ -1,9 +1,12 @@
 package com.zhongjh.albumcamerarecorder.album.model;
 
+import static com.zhongjh.common.enums.Constant.IMAGE;
+import static com.zhongjh.common.enums.Constant.IMAGE_VIDEO;
+import static com.zhongjh.common.enums.Constant.VIDEO;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -14,16 +17,10 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.utils.UriUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static com.zhongjh.common.enums.Constant.IMAGE;
-import static com.zhongjh.common.enums.Constant.IMAGE_VIDEO;
-import static com.zhongjh.common.enums.Constant.VIDEO;
 
 /**
  * 选择的数据源
@@ -240,13 +237,7 @@ public class SelectedItemCollection {
      * @param multiMedia multiMedia
      */
     private void updateMultiMediaPath(MultiMedia multiMedia) {
-        if (TextUtils.isEmpty(multiMedia.getPath())) {
-            // 相册是只有uri没有path的，此时确定后转换
-            File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
-            if (file != null && file.exists()) {
-                multiMedia.setPath(file.getPath());
-            }
-        }
+        multiMedia.analysesUriSetPathAndOriginalPath(mContext);
     }
 
     /**
