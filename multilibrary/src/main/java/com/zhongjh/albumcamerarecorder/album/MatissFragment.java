@@ -50,6 +50,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.ColorFilterUtil;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -264,25 +265,31 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         });
 
         // 预览事件
-        mViewHolder.buttonPreview.setOnClickListener(view -> {
-            Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
-            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
-            startActivityForResult(intent, mGlobalSpec.getRequestCode());
-            if (mGlobalSpec.getCutscenesEnabled()) {
-                mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
+        mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {
+            @Override
+            public void onListener(@NonNull View v) {
+                Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
+                intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+                intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+                intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
+                startActivityForResult(intent, mGlobalSpec.getRequestCode());
+                if (mGlobalSpec.getCutscenesEnabled()) {
+                    mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
+                }
             }
         });
 
         // 确认当前选择的图片
-        mViewHolder.buttonApply.setOnClickListener(view -> {
-            ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
-            // 设置是否原图状态
-            for (LocalFile localFile: localFiles) {
-                localFile.setOriginal(mOriginalEnable);
+        mViewHolder.buttonApply.setOnClickListener(new OnMoreClickListener() {
+            @Override
+            public void onListener(@NonNull View v) {
+                ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
+                // 设置是否原图状态
+                for (LocalFile localFile: localFiles) {
+                    localFile.setOriginal(mOriginalEnable);
+                }
+                compressFile(localFiles);
             }
-            compressFile(localFiles);
         });
 
         // 点击原图

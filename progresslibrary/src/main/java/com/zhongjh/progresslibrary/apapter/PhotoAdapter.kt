@@ -132,7 +132,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             holder.tvVideoDuration.visibility = View.GONE
             // 设置条目的点击事件
             holder.itemView.setOnClickListener(object : OnMoreClickListener() {
-                override fun onMoreClickListener(v: View) {
+                override fun onListener(v: View) {
                     mMultiMediaViewAdd.maskProgressView = holder.mpvImage
                     mMultiMediaViewAdd.itemView = holder.itemView
                     // 点击加载➕图
@@ -168,7 +168,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             if (isOperation) {
                 holder.vClose.visibility = View.VISIBLE
                 holder.vClose.setOnClickListener(object : OnMoreClickListener() {
-                    override fun onMoreClickListener(v: View) {
+                    override fun onListener(v: View) {
                         removePosition(multiMediaView)
                     }
                 })
@@ -177,7 +177,7 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             }
             // 设置条目的点击事件
             holder.itemView.setOnClickListener(object : OnMoreClickListener() {
-                override fun onMoreClickListener(v: View) {
+                override fun onListener(v: View) {
                     if (listener != null) {
                         // 点击
                         if (multiMediaView.isImageOrGif()) {

@@ -67,7 +67,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
         } else {
             mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
         }
-        updateUI(item);
+        updateUi(item);
     }
 
     @Override

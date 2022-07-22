@@ -1,5 +1,6 @@
 package com.zhongjh.common.listener
 
+import android.util.Log
 import android.view.View
 
 /**
@@ -14,7 +15,7 @@ abstract class OnMoreClickListener : View.OnClickListener {
     private var lastTime: Long = 0L
     private var btnId = 0
 
-    abstract fun onMoreClickListener(v: View)
+    abstract fun onListener(v: View)
     override fun onClick(v: View) {
         val currentTime = System.currentTimeMillis()
         if (btnId != v.id) {
@@ -23,7 +24,8 @@ abstract class OnMoreClickListener : View.OnClickListener {
         if (currentTime - lastTime > MIN_CLICK_DELAY_TIME) {
             btnId = v.id
             lastTime = currentTime
-            onMoreClickListener(v)
+            Log.d("OnMoreClickListener", "" + currentTime)
+            onListener(v)
         }
     }
 

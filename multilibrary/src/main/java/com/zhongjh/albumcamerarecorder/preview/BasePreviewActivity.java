@@ -282,7 +282,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 编辑
         mViewHolder.tvEdit.setOnClickListener(new OnMoreClickListener() {
             @Override
-            public void onMoreClickListener(@NonNull View v) {
+            public void onListener(@NonNull View v) {
                 openImageEditActivity();
             }
         });
@@ -291,7 +291,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 确认
         mViewHolder.buttonApply.setOnClickListener(new OnMoreClickListener() {
             @Override
-            public void onMoreClickListener(@NonNull View v) {
+            public void onListener(@NonNull View v) {
                 // 确认的一刻赋值
                 List<MultiMedia> multiMedias = mSelectedCollection.asList();
                 // 设置是否原图状态
@@ -373,8 +373,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         if (v.getId() == R.id.ibtnBack) {
             onBackPressed();
-        } else if (v.getId() == R.id.tvEdit) {
-
         } else if (v.getId() == R.id.checkView) {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
@@ -444,7 +442,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
                 }
             }
-            updateUI(item);
+            updateUi(item);
         }
         mPreviousPos = position;
     }
@@ -472,16 +470,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             // 启用，显示数字
             mViewHolder.buttonApply.setEnabled(true);
             mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure, selectedCount));
-        }
-
-        // 判断是否开启原图
-        if (mAlbumSpec.getOriginalEnable()) {
-            // 显示
-            mViewHolder.originalLayout.setVisibility(View.VISIBLE);
-            updateOriginalState();
-        } else {
-            // 隐藏
-            mViewHolder.originalLayout.setVisibility(View.GONE);
         }
 
         // 判断是否启动操作
@@ -548,7 +536,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * @param item 当前图片
      */
     @SuppressLint("SetTextI18n")
-    protected void updateUI(MultiMedia item) {
+    protected void updateUi(MultiMedia item) {
         if (item.isGif()) {
             mViewHolder.size.setVisibility(View.VISIBLE);
             mViewHolder.size.setText(PhotoMetadataUtils.getSizeInMb(item.getSize()) + "M");
@@ -556,10 +544,14 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             mViewHolder.size.setVisibility(View.GONE);
         }
 
-        if (item.isVideo()) {
-            mViewHolder.originalLayout.setVisibility(View.GONE);
-        } else if (mAlbumSpec.getOriginalEnable()) {
+        // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
+        if (mAlbumSpec.getOriginalEnable() && mIsByAlbum && !item.isVideo()) {
+            // 显示
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
+            updateOriginalState();
+        } else {
+            // 隐藏
+            mViewHolder.originalLayout.setVisibility(View.GONE);
         }
 
         if (item.isImage() && mGlobalSpec.getImageEditEnabled() && !mIsByProgressGridView) {

@@ -79,13 +79,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         // 点击图片
         holder.itemView.setOnClickListener(new OnMoreClickListener() {
             @Override
-            public void onMoreClickListener(@NotNull View v) {
+            public void onListener(@NotNull View v) {
                 onClickListener(bitmapData);
             }
         });
         holder.imgCancel.setOnClickListener(new OnMoreClickListener() {
             @Override
-            public void onMoreClickListener(@NotNull View v) {
+            public void onListener(@NotNull View v) {
                 removePosition(bitmapData);
             }
         });
