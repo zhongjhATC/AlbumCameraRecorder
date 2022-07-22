@@ -620,6 +620,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
             @Override
             public void onFail(Throwable t) {
+                // 结束loading
+                setControlTouchEnable(true);
                 Toast.makeText(mActivity.getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 super.onFail(t);
             }
