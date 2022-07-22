@@ -1,6 +1,9 @@
 package com.zhongjh.albumcamerarecorder.album;
 
 
+import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -54,9 +57,6 @@ import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 
 import java.util.ArrayList;
-
-import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
 
 /**
  * 相册
@@ -278,6 +278,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 确认当前选择的图片
         mViewHolder.buttonApply.setOnClickListener(view -> {
             ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
+            // 设置是否原图状态
+            for (LocalFile localFile: localFiles) {
+                localFile.setOriginal(mOriginalEnable);
+            }
             compressFile(localFiles);
         });
 

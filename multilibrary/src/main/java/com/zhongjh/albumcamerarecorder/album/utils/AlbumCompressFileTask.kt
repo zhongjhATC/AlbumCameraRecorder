@@ -47,9 +47,9 @@ class AlbumCompressFileTask(
                 if (newFile.exists()) {
                     val localFile: LocalFile =
                         if (item.isImage()) {
-                            LocalFile(context, pictureMediaStoreCompat, item, newFile)
+                            LocalFile(context, pictureMediaStoreCompat, item, newFile, true)
                         } else {
-                            LocalFile(context, videoMediaStoreCompat, item, newFile)
+                            LocalFile(context, videoMediaStoreCompat, item, newFile, true)
                         }
                     newLocalFiles.add(localFile)
                     Log.d(tag, "存在直接使用")
@@ -64,7 +64,8 @@ class AlbumCompressFileTask(
                                 context,
                                 pictureMediaStoreCompat,
                                 item,
-                                newFile
+                                newFile,
+                                true
                             )
                         )
                         Log.d(tag, "不存在新建文件")
@@ -79,7 +80,8 @@ class AlbumCompressFileTask(
                                             context,
                                             videoMediaStoreCompat,
                                             item,
-                                            newFile
+                                            newFile,
+                                            true
                                         )
                                         newLocalFiles.add(localFile)
                                         Log.d(tag, "不存在新建文件")

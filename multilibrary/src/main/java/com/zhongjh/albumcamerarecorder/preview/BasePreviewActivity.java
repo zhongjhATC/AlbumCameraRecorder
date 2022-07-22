@@ -53,6 +53,7 @@ import com.zhongjh.imageedit.ImageEditActivity;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * 预览的基类
@@ -237,10 +238,11 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     private void refreshMultiMediaItem() {
         // 获取当前查看的multimedia
         MultiMedia multiMedia = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-        // 编辑后的uri
-        Uri editUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
-        multiMedia.setOldUri(multiMedia.getUri());
-        // 编辑前的path
+        // 获取编辑前的uri
+        Uri oldUri = multiMedia.getUri();
+        // 获取编辑后的uri
+        Uri newUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
+        // 获取编辑前的path
         String oldPath = null;
         if (multiMedia.getPath() == null) {
             File file = UriUtils.uriToFile(getApplicationContext(), multiMedia.getUri());
@@ -251,22 +253,22 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             oldPath = multiMedia.getPath();
         }
         multiMedia.setOldPath(oldPath);
+        // 获取编辑后的path
+        String newPath = mEditImageFile.getPath();
+        // 赋值新旧的path、uri
+        multiMedia.handleEditValue(newPath, newUri, oldPath, oldUri);
         // 更新当前fragment编辑后的uri和path
-        multiMedia.setUri(editUri);
-        multiMedia.setPath(mEditImageFile.getPath());
         mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), multiMedia);
         mAdapter.currentItemInit(mViewHolder.pager.getCurrentItem());
 
-        // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
+        // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据 是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
+        // 如何重现进入这个条件里面：先相册选择第一个，然后点击相册第二个item进入详情，在详情界面滑动到第一个，对第一个进行编辑改动，则会进入这些条件里面
         for (MultiMedia item : mSelectedCollection.asList()) {
             if (item.getId() == multiMedia.getId()) {
                 // 如果两个id都一样，那就是同个图片，再判断是否同个对象
                 if (!item.equals(multiMedia)) {
                     // 如果不是同个对象，那么另外一个对象要赋值
-                    item.setOldPath(multiMedia.getOldPath());
-                    item.setOldUri(multiMedia.getOldUri());
-                    item.setPath(multiMedia.getPath());
-                    item.setUri(multiMedia.getUri());
+                    item.handleEditValue(multiMedia.getPath(), multiMedia.getUri(), multiMedia.getOldPath(), multiMedia.getOldUri());
                 }
             }
         }
@@ -290,6 +292,12 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         mViewHolder.buttonApply.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onMoreClickListener(@NonNull View v) {
+                // 确认的一刻赋值
+                List<MultiMedia> multiMedias = mSelectedCollection.asList();
+                // 设置是否原图状态
+                for (MultiMedia multiMedia : multiMedias) {
+                    multiMedia.setOriginal(mOriginalEnable);
+                }
                 setResultOkByIsCompress(true);
             }
         });
@@ -635,7 +643,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                                     // 如果是视频
                                     newFile = mVideoMediaStoreCompat.createFile(1, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
                                 }
-                                HandleEditImages(item, newFile, oldFile);
+                                HandleEditImages(item, newFile, oldFile, false);
                             }
                         }
                     }
@@ -720,9 +728,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 存在压缩后的文件并且没有编辑过的 就直接使用
         if (newFile.exists() && item.getOldPath() == null) {
             if (item.isImage()) {
-                item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile);
+                item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile, true);
             } else {
-                item.updateFile(getApplicationContext(), mVideoMediaStoreCompat, item, newFile);
+                item.updateFile(getApplicationContext(), mVideoMediaStoreCompat, item, newFile, true);
             }
             Log.d(TAG, "存在直接使用");
         } else {
@@ -734,7 +742,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                 if (item.getOldPath() != null) {
                     newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getOldPath()));
                 }
-                HandleEditImages(item, newFile, compressionFile);
+                HandleEditImages(item, newFile, compressionFile, true);
                 Log.d(TAG, "不存在新建文件");
             } else if (item.isVideo()) {
                 // 压缩视频
@@ -747,7 +755,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(BasePreviewActivity.class, new VideoEditListener() {
                         @Override
                         public void onFinish() {
-                            item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, finalNewFile);
+                            item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, finalNewFile, true);
                             // 如果是编辑过的加入相册
                             if (item.getOldPath() != null) {
                                 Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), finalNewFile, TYPE_VIDEO,
@@ -783,11 +791,12 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 判断是否编辑过的图片
      * 如果编辑过，则拷贝到配置目录下并加入相册
      *
-     * @param item    文件数据
-     * @param newFile 新移动的文件
-     * @param oldFile 目前的文件
+     * @param item       文件数据
+     * @param newFile    新移动的文件
+     * @param oldFile    目前的文件
+     * @param isCompress 是否压缩
      */
-    private void HandleEditImages(LocalFile item, File newFile, File oldFile) {
+    private void HandleEditImages(LocalFile item, File newFile, File oldFile, Boolean isCompress) {
         // 迁移到新的文件夹(配置目录)
         if (item.getOldPath() != null) {
             // 如果编辑过就直接 移动 文件
@@ -796,7 +805,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             // 如果没有编辑过就拷贝，因为有可能是源文件需要保留
             FileUtil.copy(oldFile, newFile);
         }
-        item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile);
+        item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile, isCompress);
         // 如果是编辑过的加入相册
         if (item.getOldPath() != null) {
             Uri uri = MediaStoreUtils.displayToGallery(this, newFile, TYPE_PICTURE,

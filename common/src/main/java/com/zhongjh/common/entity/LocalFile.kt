@@ -13,6 +13,11 @@ import java.io.File
 
 /**
  * 文件地址
+ * 该实体会分别拥有三个地址
+ * [path] 真实路径。如果开启压缩功能则是压缩后的路径，否则跟原图一样
+ * [originalPath] 原始路径。如果开启压缩功能则是压缩前的路径，否则跟[path]一样
+ * [oldPath] 编辑前的路径。当使用编辑功能后，[path]会记录下编辑后的路径，而[oldPath]则会记录下编辑前的路径。如果没有进行编辑，则为null
+ * 当用户勾选原图事件，albumSetting.setOnCheckedListener该事件会触发,赋值[isOriginal]
  * @author zhongjh
  * @date 2021/12/24
  */
@@ -109,48 +114,10 @@ open class LocalFile : Parcelable {
         context: Context,
         mediaStoreCompat: MediaStoreCompat,
         localFile: LocalFile,
-        compressionFile: File
+        compressionFile: File,
+        isCompress: Boolean
     ) : super() {
-        updateFile(context, mediaStoreCompat, localFile, compressionFile)
-    }
-
-    /**
-     * 修改新的file
-     */
-    fun updateFile(
-        context: Context,
-        mediaStoreCompat: MediaStoreCompat,
-        localFile: LocalFile,
-        compressionFile: File
-    ) {
-        id = localFile.id
-        this.path = compressionFile.absolutePath
-        this.uri = mediaStoreCompat.getUri(compressionFile.absolutePath)
-        mimeType = localFile.mimeType
-        size = compressionFile.length()
-        duration = localFile.duration
-        originalPath = localFile.originalPath
-        originalUri = localFile.originalUri
-        oldPath = localFile.oldPath
-        oldUri = localFile.oldUri
-        isOriginal = localFile.isOriginal
-        if (isImageOrGif()) {
-            val imageWidthAndHeight: IntArray =
-                MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
-            width = imageWidthAndHeight[0]
-            height = imageWidthAndHeight[1]
-        } else if (isVideo()) {
-            // 有些手机视频拍照没有宽高的
-            if (localFile.width == 0) {
-                val mediaExtraInfo = MediaUtils.getVideoSize(context, compressionFile.absolutePath)
-                width = mediaExtraInfo.width
-                height = mediaExtraInfo.height
-                duration = mediaExtraInfo.duration
-            } else {
-                width = localFile.width
-                height = localFile.height
-            }
-        }
+        updateFile(context, mediaStoreCompat, localFile, compressionFile, isCompress)
     }
 
     constructor(input: Parcel) {
@@ -280,6 +247,53 @@ open class LocalFile : Parcelable {
     }
 
     /**
+     * 场景：在相册预览等界面迁移图片到配置文件夹处，重新生成新的地址
+     * 修改新的file
+     */
+    fun updateFile(
+        context: Context,
+        mediaStoreCompat: MediaStoreCompat,
+        localFile: LocalFile,
+        compressionFile: File,
+        isCompress: Boolean
+    ) {
+        id = localFile.id
+        this.path = compressionFile.absolutePath
+        this.uri = mediaStoreCompat.getUri(compressionFile.absolutePath)
+        // 如果支持压缩，则原图是压缩前的，否则原图跟path是一样的
+        if (isCompress) {
+            this.originalPath = localFile.originalPath
+            this.originalUri = localFile.originalUri
+        } else {
+            this.originalPath = this.path
+            this.originalUri = this.uri
+        }
+        mimeType = localFile.mimeType
+        size = compressionFile.length()
+        duration = localFile.duration
+        oldPath = localFile.oldPath
+        oldUri = localFile.oldUri
+        isOriginal = localFile.isOriginal
+        if (isImageOrGif()) {
+            val imageWidthAndHeight: IntArray =
+                MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
+            width = imageWidthAndHeight[0]
+            height = imageWidthAndHeight[1]
+        } else if (isVideo()) {
+            // 有些手机视频拍照没有宽高的
+            if (localFile.width == 0) {
+                val mediaExtraInfo = MediaUtils.getVideoSize(context, compressionFile.absolutePath)
+                width = mediaExtraInfo.width
+                height = mediaExtraInfo.height
+                duration = mediaExtraInfo.duration
+            } else {
+                width = localFile.width
+                height = localFile.height
+            }
+        }
+    }
+
+    /**
      * 场景：初始化相册时点击item时赋值
      * 根据相册当前uri同时赋值真实路径path和原图真实路径originalPath
      */
@@ -292,6 +306,19 @@ open class LocalFile : Parcelable {
                 originalPath = file.path
             }
         }
+    }
+
+    /**
+     * 场景：图片进行编辑后的赋值
+     * 处理编辑后的赋值
+     */
+    fun handleEditValue(newPath: String, newUri: Uri?, oldPath: String?, oldUri: Uri?) {
+        this.path = newPath
+        this.uri = newUri
+        this.originalPath = newPath
+        this.originalUri = newUri
+        this.oldPath = oldPath
+        this.oldUri = oldUri
     }
 
 }
