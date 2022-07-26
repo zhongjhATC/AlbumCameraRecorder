@@ -27,7 +27,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.google.android.material.tabs.TabLayout;
-import com.zhongjh.albumcamerarecorder.album.MatissFragment;
+import com.zhongjh.albumcamerarecorder.album.MainFragment;
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -426,9 +426,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             if (mTitles.get(position).equals(getString(R.string.z_multi_library_album))) {
                 if (adapterViewPager.getCount() <= 1) {
-                    return MatissFragment.newInstance(0);
+                    return MainFragment.Companion.newInstance(0);
                 }
-                return MatissFragment.newInstance(50);
+                return MainFragment.Companion.newInstance(50);
             } else if (mTitles.get(position).equals(getString(R.string.z_multi_library_sound_recording))) {
                 return SoundRecordingFragment.newInstance();
             } else {

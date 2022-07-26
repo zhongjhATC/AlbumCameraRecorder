@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.MainFragment;
 import com.zhongjh.albumcamerarecorder.album.MatissFragment;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
@@ -82,10 +83,12 @@ public class MediaSelectionFragment extends Fragment implements
 
         // 旧版的知乎是用Activity，而这边则使用Fragments的获取到MatissFragment
         Fragment matissFragment = null;
-        if (getFragmentManager() != null) {
-            for (Fragment fragment : getFragmentManager().getFragments()) {
-                if (fragment instanceof MatissFragment) {
-                    matissFragment = fragment;
+        for (Fragment fragment : getParentFragmentManager().getFragments()) {
+            if (fragment instanceof MainFragment) {
+                for (Fragment fragmentChild : fragment.getChildFragmentManager().getFragments()) {
+                    if (fragmentChild instanceof MatissFragment) {
+                        matissFragment = fragmentChild;
+                    }
                 }
             }
         }
@@ -228,6 +231,7 @@ public class MediaSelectionFragment extends Fragment implements
     public interface SelectionProvider {
         /**
          * 用于获取当前选择的数据
+         *
          * @return 当前选择的数据
          */
         SelectedItemCollection provideSelectedItemCollection();

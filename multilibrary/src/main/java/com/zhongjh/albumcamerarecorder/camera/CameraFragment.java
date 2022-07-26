@@ -1,5 +1,10 @@
 package com.zhongjh.albumcamerarecorder.camera;
 
+import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -33,11 +38,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
-import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
 /**
  * 拍摄视频
@@ -82,10 +82,7 @@ public class CameraFragment extends BaseFragment {
     private boolean mIsCommit = false;
 
     public static CameraFragment newInstance() {
-        CameraFragment cameraFragment = new CameraFragment();
-        Bundle args = new Bundle();
-        cameraFragment.setArguments(args);
-        return cameraFragment;
+        return new CameraFragment();
     }
 
     @Override
