@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album;
+package com.zhongjh.albumcamerarecorder.album.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;

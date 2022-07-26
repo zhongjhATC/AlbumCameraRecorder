@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
 import com.zhongjh.albumcamerarecorder.BaseFragment
 import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment
 
 /**
  * 一个容器，容纳CameraFragment和别的Fragment,一切都是为了过渡动画
