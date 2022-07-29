@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.settings
 
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
@@ -114,6 +115,11 @@ class CameraSetting : CameraSettingApi {
 
     override fun setOnCameraViewListener(listener: OnCameraViewListener): CameraSetting {
         mCameraSpec.onCameraViewListener = listener
+        return this
+    }
+
+    override fun setOnCaptureListener(listener: OnCaptureListener): CameraSetting {
+        mCameraSpec.onCaptureListener = listener
         return this
     }
 

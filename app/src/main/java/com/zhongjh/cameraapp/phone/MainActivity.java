@@ -10,12 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
+import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -403,6 +406,19 @@ public class MainActivity extends BaseActivity {
 
         // 开启高清录像(失去拍照功能)
         cameraSetting.enableVideoHighDefinition(mBinding.cbVideoHD.isChecked());
+
+        // 拍照事件
+        cameraSetting.setOnCaptureListener(new OnCaptureListener() {
+            @Override
+            public void remove(@NonNull List<? extends BitmapData> captureData, int position) {
+                Log.d(TAG, "删除索引 " + position);
+            }
+
+            @Override
+            public void add(@NonNull List<? extends BitmapData> captureDatas, int position) {
+                Log.d(TAG, "添加索引 " + position);
+            }
+        });
 
         return cameraSetting;
     }

@@ -1,5 +1,10 @@
 package com.zhongjh.albumcamerarecorder.camera;
 
+import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,10 +25,11 @@ import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
@@ -33,11 +39,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
-import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
 /**
  * 拍摄视频
@@ -72,6 +73,7 @@ public class CameraFragment extends BaseFragment {
      * 公共配置
      */
     private GlobalSpec mGlobalSpec;
+    private CameraSpec mCameraSpec;
     /**
      * 声明一个long类型变量：用于存放上一点击“返回键”的时刻
      */
@@ -100,6 +102,7 @@ public class CameraFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mGlobalSpec = GlobalSpec.INSTANCE;
+        mCameraSpec = CameraSpec.INSTANCE;
         onActivityResult();
         View view = inflater.inflate(R.layout.fragment_camera_zjh, container, false);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
@@ -253,6 +256,7 @@ public class CameraFragment extends BaseFragment {
         if (mCameraLayout != null) {
             mCameraLayout.onDestroy(mIsCommit);
         }
+        mCameraSpec.setOnCaptureListener(null);
         super.onDestroy();
     }
 
@@ -295,20 +299,27 @@ public class CameraFragment extends BaseFragment {
      * 拍摄后操作图片的事件
      */
     private void initCameraLayoutCaptureListener() {
-        mCameraLayout.setCaptureListener(new CaptureListener() {
+        mCameraLayout.setCaptureListener(new OnCaptureListener() {
+
             @Override
-            public void remove(@NotNull List<? extends BitmapData> captureData) {
+            public void remove(@NotNull List<? extends BitmapData> captureData, int position) {
                 // 判断如果删除光图片的时候，母窗体启动滑动
                 if (captureData.size() <= 0) {
                     mActivity.showHideTableLayout(true);
                 }
+                if (mCameraSpec.getOnCaptureListener() != null) {
+                    mCameraSpec.getOnCaptureListener().remove(captureData, position);
+                }
             }
 
             @Override
-            public void add(@NotNull List<? extends BitmapData> captureDatas) {
+            public void add(@NotNull List<? extends BitmapData> captureDatas, int position) {
                 if (captureDatas.size() > 0) {
                     // 母窗体禁止滑动
                     mActivity.showHideTableLayout(false);
+                }
+                if (mCameraSpec.getOnCaptureListener() != null) {
+                    mCameraSpec.getOnCaptureListener().add(captureDatas, position);
                 }
             }
         });

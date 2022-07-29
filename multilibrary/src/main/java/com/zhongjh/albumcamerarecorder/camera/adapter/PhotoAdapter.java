@@ -152,11 +152,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      */
     public void removePosition(BitmapData bitmapData) {
         int position = mListData.indexOf(bitmapData);
-        Log.d(TAG,"removePosition " + position);
+        Log.d(TAG, "removePosition " + position);
         mListData.remove(bitmapData);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, mListData.size());
-        mPhotoAdapterListener.onDelete(bitmapData);
+        mPhotoAdapterListener.onDelete(bitmapData, position);
     }
 
     @Override

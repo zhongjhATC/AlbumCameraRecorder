@@ -18,7 +18,8 @@ public interface PhotoAdapterListener {
      * 删除该图片
      *
      * @param bitmapData 数据
+     * @param position   删除的索引
      */
-    void onDelete(BitmapData bitmapData);
+    void onDelete(BitmapData bitmapData, int position);
 
 }
