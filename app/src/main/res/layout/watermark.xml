@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 必须使用merge标签，根布局只能ImageView控件 -->
-<merge
-    tools:parentTag="android.widget.FrameLayout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--
+必须使用merge标签，根布局可以是ImageView控件也可以是TextView等等其他控件
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
 
     <ImageView
         android:id="@+id/watermark"
