@@ -152,6 +152,7 @@
             android:resource="@xml/file_paths_public" />
     </provider>
 
+#### 如果还有别的常见问题，具体可以看[可能会发生的问题](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)搜索报错关键字
 
 #### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
 

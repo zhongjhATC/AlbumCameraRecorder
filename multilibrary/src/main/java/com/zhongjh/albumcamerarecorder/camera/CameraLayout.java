@@ -48,7 +48,7 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateInterface;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.camera.listener.CaptureListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.CloseListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.EditListener;
@@ -253,7 +253,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 拍摄后操作图片的事件
      */
-    private CaptureListener mCaptureListener;
+    private OnCaptureListener mOnCaptureListener;
     public MainActivity mMainActivity;
     private CameraFragment mFragment;
 
@@ -289,10 +289,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     /**
      * 拍摄后操作图片的事件
      *
-     * @param captureListener 事件
+     * @param onCaptureListener 事件
      */
-    public void setCaptureListener(CaptureListener captureListener) {
-        this.mCaptureListener = captureListener;
+    public void setCaptureListener(OnCaptureListener onCaptureListener) {
+        this.mOnCaptureListener = onCaptureListener;
     }
 
     /**
@@ -1184,7 +1184,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             showSinglePicture(bitmapData, file, uri);
         }
         // 回调接口：添加图片后剩下的相关数据
-        mCaptureListener.add(mBitmapData);
+        mOnCaptureListener.add(mBitmapData, mBitmapData.size() - 1);
     }
 
     /**
@@ -1359,17 +1359,18 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 多图进行删除的时候
      *
      * @param bitmapData 数据
+     * @param position   删除的索引
      */
     @Override
-    public void onDelete(BitmapData bitmapData) {
+    public void onDelete(BitmapData bitmapData, int position) {
         // 删除文件
         FileUtil.deleteFile(bitmapData.getPath());
 
         // 回调接口：删除图片后剩下的相关数据
-        mCaptureListener.remove(mBitmapData);
+        mOnCaptureListener.remove(mBitmapData, position);
 
         // 当列表全部删掉隐藏列表框的UI
-        Log.d(TAG,"onDelete " + mBitmapData.size());
+        Log.d(TAG, "onDelete " + mBitmapData.size());
         if (mBitmapData.size() <= 0) {
             // 隐藏横版列表
             mViewHolder.rlPhoto.setVisibility(View.GONE);

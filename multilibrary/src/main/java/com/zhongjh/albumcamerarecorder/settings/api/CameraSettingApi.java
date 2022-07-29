@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.coordinator.VideoMergeCoordinator;
@@ -145,12 +146,22 @@ public interface CameraSettingApi {
     CameraSetting enableFlashMemoryModel(boolean enableFlashMemoryModel);
 
     /**
-     * 有关CameraView事件
+     * 有关CameraView事件, 自定义相关属性
      * <p>
      *
      * @param listener {@link OnCameraViewListener}
      * @return {@link CameraSetting} this
      */
     CameraSetting setOnCameraViewListener(OnCameraViewListener listener);
+
+    /**
+     * 有关拍摄后添加、删除图片后触发的事件
+     * 基于之前有人需求拍照后获取当前拍照的方位，所以开放该接口
+     * <p>
+     *
+     * @param listener {@link OnCaptureListener}
+     * @return {@link CameraSetting} this
+     */
+    CameraSetting setOnCaptureListener(OnCaptureListener listener);
 
 }

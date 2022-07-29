@@ -153,6 +153,8 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
             android:resource="@xml/file_paths_public" />
     </provider>
 
+#### If there are other common problems, you can see the [website](https://github.com/zhongjhATC/AlbumCameraRecorder/issues) search error keywords
+
 #### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java) for details.
 
 #### Related APIs, more APIs and support for continuous enrichment added
