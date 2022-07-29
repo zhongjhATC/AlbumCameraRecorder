@@ -407,7 +407,7 @@ public class MainActivity extends BaseActivity {
         // 开启高清录像(失去拍照功能)
         cameraSetting.enableVideoHighDefinition(mBinding.cbVideoHD.isChecked());
 
-        // 拍照事件
+        // 拍照时添加图片事件以及删除图片事件
         cameraSetting.setOnCaptureListener(new OnCaptureListener() {
             @Override
             public void remove(@NonNull List<? extends BitmapData> captureData, int position) {
