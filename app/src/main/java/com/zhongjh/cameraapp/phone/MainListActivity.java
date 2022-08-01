@@ -1,21 +1,19 @@
 package com.zhongjh.cameraapp.phone;
 
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
-import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.R;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
-
-import java.util.ArrayList;
-
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+
+import java.util.ArrayList;
 
 /**
  * list配置

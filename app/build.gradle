@@ -45,6 +45,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
     }
     dataBinding {
         enabled = true
@@ -87,10 +92,7 @@ dependencies {
     implementation 'com.tencent.bugly:crashreport:latest.release' //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
     implementation 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
 
-//    // 检测内存泄漏 http://www.liaohuqiu.net/cn/posts/leak-canary-read-me/ https://github.com/square/leakcanary
-//    implementation 'com.squareup.leakcanary:leakcanary-android:1.6.2' // 2.6以上版本会报错
-//    implementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.2'
-
+    // 检测内存泄漏 http://www.liaohuqiu.net/cn/posts/leak-canary-read-me/ https://github.com/square/leakcanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
 
     implementation 'androidx.multidex:multidex:2.0.1'

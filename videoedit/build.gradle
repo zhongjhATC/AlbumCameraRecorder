@@ -4,7 +4,7 @@ plugins {
 }
 //============================== JitPack 上传插件配置 =====================
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.zhongjhATC'
+group = 'com.github.zhongjhATC'
 
 android {
     compileSdkVersion rootProject.ext.androidCompileSdkVersion
@@ -22,8 +22,10 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+        debug {
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -39,6 +41,7 @@ dependencies {
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
 
     compileOnly project(':common')
+    // https://github.com/microshow/RxFFmpeg
     implementation 'com.github.microshow:RxFFmpeg:4.9.0-lite'
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
