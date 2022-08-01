@@ -164,7 +164,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             }
             if (mImageEngine == null) {
                 // image_engine找不到相关类
-                throw RuntimeException("Image_engine could not find the related class")
+                throw RuntimeException("Image_engine could not find the related class $imageEngineStr")
             }
         }
 
