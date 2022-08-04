@@ -99,12 +99,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                 if (size == 0) {
                     if (isBrowse) {
-                        Toast.makeText(this, getString(R.string.you_can_turn_it_back_on), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.you_can_turn_it_back_on), Toast.LENGTH_SHORT).show();
                     } else {
                         openMain(0, 0, 0);
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.please_open_it_in_settings_permission_management), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.please_open_it_in_settings_permission_management), Toast.LENGTH_SHORT).show();
                 }
             }
         }

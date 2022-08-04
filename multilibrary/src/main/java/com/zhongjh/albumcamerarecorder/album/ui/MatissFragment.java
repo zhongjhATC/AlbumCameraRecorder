@@ -23,12 +23,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -212,12 +212,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      */
     private void initView(Bundle savedInstanceState) {
         // 兼容沉倾状态栏
-        ViewGroup.LayoutParams layoutParams = mViewHolder.toolbar.getLayoutParams();
         int statusBarHeight = StatusBarUtils.getStatusBarHeight(mActivity);
-        layoutParams.height = layoutParams.height + statusBarHeight;
-        mViewHolder.toolbar.setLayoutParams(layoutParams);
-        mViewHolder.toolbar.setPadding(mViewHolder.toolbar.getPaddingLeft(), statusBarHeight,
-                mViewHolder.toolbar.getPaddingRight(), mViewHolder.toolbar.getPaddingBottom());
+        mViewHolder.root.setPadding(mViewHolder.root.getPaddingLeft(), statusBarHeight,
+                mViewHolder.root.getPaddingRight(), mViewHolder.root.getPaddingBottom());
+        // 修改颜色
         Drawable navigationIcon = mViewHolder.toolbar.getNavigationIcon();
         TypedArray ta = mActivity.getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
         int color = ta.getColor(0, 0);
@@ -285,7 +283,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             public void onListener(@NonNull View v) {
                 ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
                 // 设置是否原图状态
-                for (LocalFile localFile: localFiles) {
+                for (LocalFile localFile : localFiles) {
                     localFile.setOriginal(mOriginalEnable);
                 }
                 compressFile(localFiles);
@@ -679,7 +677,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public ControlTouchFrameLayout container;
         public TextView emptyViewContent;
         public FrameLayout emptyView;
-        public RelativeLayout root;
+        public CoordinatorLayout root;
         public ImageView imgClose;
         public ProgressBar pbLoading;
 

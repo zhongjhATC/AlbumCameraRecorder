@@ -26,7 +26,7 @@ public class SelectedPreviewFragment extends BasePreviewFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        Bundle bundle = null;
+        Bundle bundle;
         if (getArguments() != null) {
             bundle = getArguments().getBundle(EXTRA_DEFAULT_BUNDLE);
             List<MultiMedia> selected = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
