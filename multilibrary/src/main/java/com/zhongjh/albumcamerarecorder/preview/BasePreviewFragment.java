@@ -382,6 +382,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
+        mAdapter.destroy();
         super.onDestroyView();
     }
 
@@ -667,7 +668,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         };
         return mMoveFileTask;
     }
-
 
     /**
      * 判断是否压缩，如果要压缩先要迁移复制再压缩

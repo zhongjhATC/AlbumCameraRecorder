@@ -59,7 +59,7 @@ public class PreviewPagerAdapter extends PagerAdapter {
     /**
      * 要缓存的view
      */
-    private final SparseArray<View> mCacheView = new SparseArray<>();
+    private SparseArray<View> mCacheView = new SparseArray<>();
 
     public PreviewPagerAdapter(Context context, Activity activity) {
         mContext = context;
@@ -101,6 +101,14 @@ public class PreviewPagerAdapter extends PagerAdapter {
         if (mCacheView.size() > MAX_CACHE_SIZE) {
             mCacheView.remove(position);
         }
+    }
+
+    /**
+     * 清除
+     */
+    public void destroy() {
+        mCacheView.clear();
+        mCacheView = null;
     }
 
     public int getSize() {

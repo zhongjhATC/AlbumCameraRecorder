@@ -135,7 +135,7 @@ public class MediaSelectionFragment extends Fragment implements
             return;
         }
         mAdapter = new AlbumMediaAdapter(getContext(),
-                mSelectionProvider.provideSelectedItemCollection(), mRecyclerView);
+                mSelectionProvider.provideSelectedItemCollection(), getImageResize());
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);
         mRecyclerView.setHasFixedSize(true);
@@ -148,7 +148,7 @@ public class MediaSelectionFragment extends Fragment implements
         } else {
             spanCount = albumSpec.getSpanCount();
         }
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext().getApplicationContext(), spanCount));
 
         // 加载线，recyclerView加载数据
         int spacing = getResources().getDimensionPixelSize(R.dimen.z_media_grid_spacing);
@@ -178,6 +178,16 @@ public class MediaSelectionFragment extends Fragment implements
         mAlbumMediaCollection.load(album);
     }
 
+    @Override
+    public void onDestroyView() {
+        mAdapter.unregisterCheckStateListener();
+        mAdapter.unregisterOnMediaClickListener();
+        mCheckStateListener = null;
+        mOnMediaClickListener = null;
+        mAdapter = null;
+        super.onDestroyView();
+    }
+
     public void onDestroyData() {
         mAlbumMediaCollection.onDestroy();
     }
@@ -200,13 +210,6 @@ public class MediaSelectionFragment extends Fragment implements
         mAlbumMediaCollection.restartLoader(album);
     }
 
-    /**
-     * 刷新所能看到的选择
-     */
-    public void refreshSelection() {
-        mAdapter.refreshSelection();
-    }
-
     @Override
     public void onUpdate() {
         // 通知外部活动检查状态改变
@@ -226,6 +229,30 @@ public class MediaSelectionFragment extends Fragment implements
     }
 
     /**
+     * 返回图片调整大小
+     *
+     * @return 列表的每个格子的宽度 * 缩放比例
+     */
+    private int getImageResize() {
+        int imageResize = 60;
+//        if (getContext() != null) {
+//            RecyclerView.LayoutManager lm = mRecyclerView.getLayoutManager();
+//            int spanCount = 0;
+//            if (lm != null) {
+//                spanCount = ((GridLayoutManager) lm).getSpanCount();
+//            }
+//            int screenWidth = getContext().getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+//            int availableWidth = screenWidth - getContext().getApplicationContext().getResources().getDimensionPixelSize(
+//                    R.dimen.z_media_grid_spacing) * (spanCount - 1);
+//            // 图片调整后的大小：获取列表的每个格子的宽度
+//            imageResize = availableWidth / spanCount;
+//            // 图片调整后的大小 * 缩放比例
+//            imageResize = (int) (imageResize * AlbumSpec.INSTANCE.getThumbnailScale());
+//        }
+        return imageResize;
+    }
+
+    /**
      * 点击接口
      */
     public interface SelectionProvider {
@@ -236,5 +263,4 @@ public class MediaSelectionFragment extends Fragment implements
          */
         SelectedItemCollection provideSelectedItemCollection();
     }
-
 }

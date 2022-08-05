@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -52,10 +51,9 @@ public class AlbumMediaAdapter extends
     private final AlbumSpec mAlbumSpec;
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
-    private final RecyclerView mRecyclerView;
     private int mImageResize;
 
-    public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, RecyclerView recyclerView) {
+    public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, int imageResize) {
         super(null);
         mAlbumSpec = AlbumSpec.INSTANCE;
         mSelectedCollection = selectedCollection;
@@ -64,7 +62,7 @@ public class AlbumMediaAdapter extends
         mPlaceholder = ta.getDrawable(0);
         ta.recycle();
 
-        mRecyclerView = recyclerView;
+        mImageResize = imageResize;
     }
 
     @NonNull
@@ -83,7 +81,7 @@ public class AlbumMediaAdapter extends
         final MultiMedia item = MultiMedia.valueOf(cursor);
         // 传递相关的值
         mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
-                getImageResize(mediaViewHolder.mMediaGrid.getContext()),
+                mImageResize,
                 mPlaceholder,
                 mAlbumSpec.getCountable(),
                 holder
@@ -248,60 +246,6 @@ public class AlbumMediaAdapter extends
      */
     public void unregisterOnMediaClickListener() {
         mOnMediaClickListener = null;
-    }
-
-    /**
-     * 刷新所能看到的选择
-     */
-    public void refreshSelection() {
-        GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
-        // 获取当前能看到的第一个，和最后一个
-        int first = 0;
-        if (layoutManager != null) {
-            first = layoutManager.findFirstVisibleItemPosition();
-        }
-        int last = 0;
-        if (layoutManager != null) {
-            last = layoutManager.findLastVisibleItemPosition();
-        }
-        if (first == -1 || last == -1) {
-            // 如果是-1就直接返回
-            return;
-        }
-        // 获取数据源
-        Cursor cursor = getCursor();
-        for (int i = first; i <= last; i++) {
-            RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(first);
-            if (holder instanceof MediaViewHolder) {
-                if (cursor.moveToPosition(i)) {
-                    setCheckStatus(MultiMedia.valueOf(cursor), ((MediaViewHolder) holder).mMediaGrid);
-                }
-            }
-        }
-    }
-
-    /**
-     * 返回图片调整大小
-     *
-     * @param context 上下文
-     * @return 列表的每个格子的宽度 * 缩放比例
-     */
-    private int getImageResize(Context context) {
-        if (mImageResize == 0) {
-            RecyclerView.LayoutManager lm = mRecyclerView.getLayoutManager();
-            int spanCount = 0;
-            if (lm != null) {
-                spanCount = ((GridLayoutManager) lm).getSpanCount();
-            }
-            int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-            int availableWidth = screenWidth - context.getResources().getDimensionPixelSize(
-                    R.dimen.z_media_grid_spacing) * (spanCount - 1);
-            // 图片调整后的大小：获取列表的每个格子的宽度
-            mImageResize = availableWidth / spanCount;
-            // 图片调整后的大小 * 缩放比例
-            mImageResize = (int) (mImageResize * mAlbumSpec.getThumbnailScale());
-        }
-        return mImageResize;
     }
 
     public interface CheckStateListener {

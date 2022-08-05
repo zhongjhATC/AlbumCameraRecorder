@@ -366,6 +366,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
+        mAdapter.destroy();
         super.onDestroy();
     }
 
