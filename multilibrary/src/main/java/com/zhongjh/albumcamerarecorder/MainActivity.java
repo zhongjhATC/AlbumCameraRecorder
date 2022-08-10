@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder;
 
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
-import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -23,8 +22,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.zhongjh.albumcamerarecorder.album.MainFragment;
@@ -34,7 +34,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.utils.HandleOnKeyUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
-import com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager;
 import com.zhongjh.common.utils.AppUtils;
 import com.zhongjh.common.utils.StatusBarUtils;
 
@@ -48,7 +47,7 @@ import java.util.ArrayList;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private FragmentPagerAdapter adapterViewPager;
+    private FragmentStateAdapter adapterViewPager;
 
     private final static int ALBUM = 0;
     private final static int CAMERA = 1;
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * viewPager
      */
-    private NoScrollViewPager mVpPager;
+    private ViewPager2 mVpPager;
     /**
      * 默认索引
      */
@@ -217,18 +216,17 @@ public class MainActivity extends AppCompatActivity {
         if (!mIsInit) {
             mVpPager = findViewById(R.id.viewPager);
             mTabLayout = findViewById(R.id.tableLayout);
-            adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, mSpec);
+            adapterViewPager = new MyPagerAdapter(this, mSpec);
             mVpPager.setAdapter(adapterViewPager);
             mVpPager.setOffscreenPageLimit(3);
             // 根据配置默认选第几个
             mVpPager.setCurrentItem(mDefaultPosition);
             // 判断只有一个的时候
-            if (adapterViewPager.getCount() <= 1) {
+            if (adapterViewPager.getItemCount() <= 1) {
                 // 则隐藏底部
                 mTabLayout.setVisibility(View.GONE);
             } else {
                 mTabLayout.setVisibility(View.VISIBLE);
-                mTabLayout.setupWithViewPager(mVpPager);
             }
             mIsInit = true;
         }
@@ -355,32 +353,39 @@ public class MainActivity extends AppCompatActivity {
      */
     public void showHideTableLayout(boolean isShow) {
         // 判断只有一个的时候
-        if (adapterViewPager.getCount() <= 1) {
+        if (adapterViewPager.getItemCount() <= 1) {
             // 则隐藏底部
             mTabLayout.setVisibility(View.GONE);
         } else {
             if (isShow) {
                 mTabLayout.setVisibility(View.VISIBLE);
                 // 设置可以滑动
-                mVpPager.setScroll();
+//                mVpPager.setScroll();
             } else {
                 mTabLayout.setVisibility(View.GONE);
                 // 禁滑viewPager
-                mVpPager.setScroll();
+//                mVpPager.setScroll();
             }
         }
     }
 
-    public class MyPagerAdapter extends FragmentPagerAdapter {
+    public class MyPagerAdapter extends FragmentStateAdapter {
 
-        int numItems;// 数量
+        /**
+         * 数量
+         */
+        int numItems;
 
-        ArrayList<String> mTitles = new ArrayList<>(); // 标题
+        /**
+         * 标题
+         */
+        ArrayList<String> mTitles = new ArrayList<>();
 
-        public MyPagerAdapter(@NonNull FragmentManager fm, int behavior, GlobalSpec mSpec) {
-            super(fm, behavior);
+        public MyPagerAdapter(FragmentActivity fa, GlobalSpec mSpec) {
+            super(fa);
 
-            int defaultPositionType = ALBUM;// 默认选择谁的类型
+            // 默认选择谁的类型
+            int defaultPositionType = ALBUM;
 
             if (mSpec.getDefaultPosition() == RECORDER) {
                 // 默认语音
@@ -414,18 +419,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        // Returns total number of pages
-        @Override
-        public int getCount() {
-            return numItems;
-        }
-
-        // Returns the fragment to display for that page
         @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             if (mTitles.get(position).equals(getString(R.string.z_multi_library_album))) {
-                if (adapterViewPager.getCount() <= 1) {
+                if (numItems <= 1) {
                     return MainFragment.Companion.newInstance(0);
                 }
                 return MainFragment.Companion.newInstance(50);
@@ -436,12 +434,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Returns the page title for the top indicator
         @Override
-        public CharSequence getPageTitle(int position) {
-            return mTitles.get(position);
+        public int getItemCount() {
+            return numItems;
         }
-
     }
 
 }

@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -677,7 +677,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public ControlTouchFrameLayout container;
         public TextView emptyViewContent;
         public FrameLayout emptyView;
-        public CoordinatorLayout root;
+        public ConstraintLayout root;
         public ImageView imgClose;
         public ProgressBar pbLoading;
 
