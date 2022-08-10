@@ -27,6 +27,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.zhongjh.albumcamerarecorder.album.MainFragment;
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
@@ -47,7 +48,7 @@ import java.util.ArrayList;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private FragmentStateAdapter adapterViewPager;
+    private MyPagerAdapter adapterViewPager;
 
     private final static int ALBUM = 0;
     private final static int CAMERA = 1;
@@ -65,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
      * 底部控件
      */
     private TabLayout mTabLayout;
+    /**
+     * 底部控件用于关联viewPager2的
+     */
+    private TabLayoutMediator mLayoutMediator;
     /**
      * viewPager
      */
@@ -125,6 +130,12 @@ public class MainActivity extends AppCompatActivity {
             //关闭窗体动画显示
             this.overridePendingTransition(0, R.anim.activity_close_zjh);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLayoutMediator.detach();
     }
 
     @Override
@@ -220,13 +231,18 @@ public class MainActivity extends AppCompatActivity {
             mVpPager.setAdapter(adapterViewPager);
             mVpPager.setOffscreenPageLimit(3);
             // 根据配置默认选第几个
-            mVpPager.setCurrentItem(mDefaultPosition);
+            mVpPager.setCurrentItem(mDefaultPosition, false);
             // 判断只有一个的时候
             if (adapterViewPager.getItemCount() <= 1) {
                 // 则隐藏底部
                 mTabLayout.setVisibility(View.GONE);
             } else {
                 mTabLayout.setVisibility(View.VISIBLE);
+                mLayoutMediator = new TabLayoutMediator(mTabLayout, mVpPager, false, true,
+                        (tab, position) -> tab.setText(adapterViewPager.mTitles.get(position)));
+                mLayoutMediator.attach();
+                // 禁滑viewPager
+                mVpPager.setUserInputEnabled(false);
             }
             mIsInit = true;
         }
@@ -359,12 +375,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (isShow) {
                 mTabLayout.setVisibility(View.VISIBLE);
-                // 设置可以滑动
-//                mVpPager.setScroll();
             } else {
                 mTabLayout.setVisibility(View.GONE);
-                // 禁滑viewPager
-//                mVpPager.setScroll();
             }
         }
     }
@@ -379,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 标题
          */
-        ArrayList<String> mTitles = new ArrayList<>();
+        public ArrayList<String> mTitles = new ArrayList<>();
 
         public MyPagerAdapter(FragmentActivity fa, GlobalSpec mSpec) {
             super(fa);
