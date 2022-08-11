@@ -12,11 +12,12 @@ import com.zhongjh.common.utils.StatusBarUtils;
 
 /**
  * 自定义的一个Behavior，滑动控件时自动隐藏底部控件
+ * 为了性能效率考虑，只服务于FrameLayoutBehavior
  *
  * @author zhongjh
  * @date 2022/8/10
  */
-public class BottomBarBehavior extends CoordinatorLayout.Behavior<View> {
+public class BottomBarBehavior extends CoordinatorLayout.Behavior<FrameLayoutBehavior> {
 
     /**
      * 状态栏高度
@@ -29,16 +30,17 @@ public class BottomBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     @Override
-    public boolean layoutDependsOn(@NonNull CoordinatorLayout parent, @NonNull View child, @NonNull View dependency) {
+    public boolean layoutDependsOn(@NonNull CoordinatorLayout parent, @NonNull FrameLayoutBehavior child, @NonNull View dependency) {
         // 说明子控件依赖AppBarLayout
         return dependency instanceof AppBarLayout;
     }
 
 
     @Override
-    public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, View child, View dependency) {
+    public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, FrameLayoutBehavior child, View dependency) {
         // 顶部的AppBarLayout是paddingTop状态栏高度的
         child.setTranslationY(Math.abs(dependency.getTop() - statusBarHeight));
+        child.getOnListener().onDependentViewChanged(Math.abs(dependency.getTop() - statusBarHeight));
         return true;
     }
 

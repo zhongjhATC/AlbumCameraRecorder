@@ -118,7 +118,7 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <FrameLayout
+    <com.zhongjh.albumcamerarecorder.widget.FrameLayoutBehavior
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -199,7 +199,7 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-    </FrameLayout>
+    </com.zhongjh.albumcamerarecorder.widget.FrameLayoutBehavior>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

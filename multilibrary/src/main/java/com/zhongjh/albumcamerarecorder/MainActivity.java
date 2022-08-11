@@ -381,6 +381,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onDependentViewChanged(float translationY) {
+        mTabLayout.setTranslationY(Math.abs(translationY));
+    }
+
     public class MyPagerAdapter extends FragmentStateAdapter {
 
         /**

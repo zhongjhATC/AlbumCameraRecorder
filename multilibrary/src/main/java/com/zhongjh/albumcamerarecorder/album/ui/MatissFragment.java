@@ -48,6 +48,7 @@ import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
+import com.zhongjh.albumcamerarecorder.widget.FrameLayoutBehavior;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
@@ -322,6 +323,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 恢复界面可用
             setControlTouchEnable(true);
         });
+
+        // 触发滑动事件
+        mViewHolder.bottomToolbar.setOnListener(translationY -> mActivity.onDependentViewChanged(translationY));
     }
 
     @Override
@@ -673,7 +677,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public CheckRadioView original;
         public LinearLayout originalLayout;
         public TextView buttonApply;
-        public FrameLayout bottomToolbar;
+        public FrameLayoutBehavior bottomToolbar;
         public ControlTouchFrameLayout container;
         public TextView emptyViewContent;
         public FrameLayout emptyView;
