@@ -17,7 +17,7 @@ import com.zhongjh.common.utils.StatusBarUtils;
  * @author zhongjh
  * @date 2022/8/10
  */
-public class BottomBarBehavior extends CoordinatorLayout.Behavior<FrameLayoutBehavior> {
+public class BottomBarBehavior extends CoordinatorLayout.Behavior<ConstraintLayoutBehavior> {
 
     /**
      * 状态栏高度
@@ -30,14 +30,14 @@ public class BottomBarBehavior extends CoordinatorLayout.Behavior<FrameLayoutBeh
     }
 
     @Override
-    public boolean layoutDependsOn(@NonNull CoordinatorLayout parent, @NonNull FrameLayoutBehavior child, @NonNull View dependency) {
+    public boolean layoutDependsOn(@NonNull CoordinatorLayout parent, @NonNull ConstraintLayoutBehavior child, @NonNull View dependency) {
         // 说明子控件依赖AppBarLayout
         return dependency instanceof AppBarLayout;
     }
 
 
     @Override
-    public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, FrameLayoutBehavior child, View dependency) {
+    public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, ConstraintLayoutBehavior child, View dependency) {
         // 顶部的AppBarLayout是paddingTop状态栏高度的
         child.setTranslationY(Math.abs(dependency.getTop() - statusBarHeight));
         child.getOnListener().onDependentViewChanged(Math.abs(dependency.getTop() - statusBarHeight));

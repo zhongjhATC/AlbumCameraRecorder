@@ -21,13 +21,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
@@ -47,8 +47,8 @@ import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior;
 import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
-import com.zhongjh.albumcamerarecorder.widget.FrameLayoutBehavior;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
@@ -425,10 +425,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         // 是否显示原图控件
         if (mAlbumSpec.getOriginalEnable()) {
-            mViewHolder.originalLayout.setVisibility(View.VISIBLE);
+            mViewHolder.groupOriginal.setVisibility(View.VISIBLE);
             updateOriginalState();
         } else {
-            mViewHolder.originalLayout.setVisibility(View.INVISIBLE);
+            mViewHolder.groupOriginal.setVisibility(View.INVISIBLE);
         }
 
         showBottomView(selectedCount);
@@ -675,9 +675,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public Toolbar toolbar;
         public TextView buttonPreview;
         public CheckRadioView original;
-        public LinearLayout originalLayout;
+        public View originalLayout;
+        public Group groupOriginal;
         public TextView buttonApply;
-        public FrameLayoutBehavior bottomToolbar;
+        public ConstraintLayoutBehavior bottomToolbar;
         public ControlTouchFrameLayout container;
         public TextView emptyViewContent;
         public FrameLayout emptyView;
@@ -692,6 +693,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             this.buttonPreview = rootView.findViewById(R.id.buttonPreview);
             this.original = rootView.findViewById(R.id.original);
             this.originalLayout = rootView.findViewById(R.id.originalLayout);
+            this.groupOriginal = rootView.findViewById(R.id.groupOriginal);
             this.buttonApply = rootView.findViewById(R.id.buttonApply);
             this.bottomToolbar = rootView.findViewById(R.id.bottomToolbar);
             this.container = rootView.findViewById(R.id.container);

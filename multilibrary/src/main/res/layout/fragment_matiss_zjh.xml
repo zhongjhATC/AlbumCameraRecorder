@@ -1,19 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2017 Zhihu Inc.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -35,40 +20,36 @@
             android:elevation="1dp"
             android:theme="?attr/toolbar.zhongjh"
             app:layout_scrollFlags="scroll|enterAlways"
+            tools:layout_height="50dp"
             tools:targetApi="lollipop">
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/imgClose"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:contentDescription="@string/z_multi_library_delete_button"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:srcCompat="@drawable/ic_close_white_24dp" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/selectedAlbum"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"
+                    android:drawableRight="@drawable/ic_arrow_drop_down_white_24dp"
+                    android:foreground="?selectableItemBackground"
+                    android:gravity="center"
+                    android:textColor="?attr/album.element.color"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:ignore="RtlHardcoded,UseCompatTextViewDrawableXml" />
 
-                    <TextView
-                        android:id="@+id/selectedAlbum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"
-                        android:drawableRight="@drawable/ic_arrow_drop_down_white_24dp"
-                        android:foreground="?selectableItemBackground"
-                        android:gravity="center"
-                        android:textColor="?attr/album.element.color"
-                        android:textSize="20sp"
-                        tools:ignore="RtlHardcoded,UseCompatTextViewDrawableXml" />
-
-                </RelativeLayout>
-
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -118,60 +99,79 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.zhongjh.albumcamerarecorder.widget.FrameLayoutBehavior
+    <com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom|end"
         android:background="?attr/bottomToolbar.bg"
         android:elevation="1dp"
-        android:layout_gravity="bottom|end"
-        app:layout_behavior="com.zhongjh.albumcamerarecorder.widget.BottomBarBehavior">
+        app:layout_behavior="com.zhongjh.albumcamerarecorder.widget.BottomBarBehavior"
+        tools:layout_height="50dp">
 
         <TextView
             android:id="@+id/buttonPreview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
             android:foreground="?selectableItemBackground"
             android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@string/z_multi_library_button_preview"
             android:textColor="?attr/bottomToolbar.preview.textColor"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/groupOriginal"
+            app:constraint_referenced_ids="originalLayout,original,tvOriginal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+
+        <View
             android:id="@+id/originalLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:foreground="?selectableItemBackground"
             android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
             android:visibility="visible"
-            tools:showIn="@layout/fragment_matiss_zjh">
+            app:layout_constraintEnd_toEndOf="@+id/tvOriginal"
+            app:layout_constraintStart_toStartOf="@+id/original"
+            tools:showIn="@layout/fragment_matiss_zjh" />
 
-            <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
-                android:id="@+id/original"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_radio_button_unchecked_white_24dp" />
+        <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
+            android:id="@+id/original"
+            android:layout_width="32dp"
+            android:layout_height="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="0dp"
+            android:layout_gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvOriginal"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@+id/buttonPreview"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/ic_radio_button_unchecked_white_24dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:enabled="true"
-                android:paddingStart="4dp"
-                android:paddingLeft="4dp"
-                android:text="@string/z_multi_library_button_original"
-                android:textColor="?attr/bottomToolbar.preview.textColor"
-                android:textSize="14sp"
-                tools:ignore="RtlSymmetry" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvOriginal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:paddingStart="0dp"
+            android:paddingEnd="16dp"
+            android:enabled="true"
+            android:text="@string/z_multi_library_button_original"
+            android:textColor="?attr/bottomToolbar.preview.textColor"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonApply"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/original"
+            app:layout_constraintTop_toTopOf="@+id/buttonApply"
+            tools:ignore="RtlSymmetry" />
 
         <TextView
             android:id="@+id/buttonApply"
@@ -183,7 +183,8 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:textColor="?attr/bottomToolbar.apply.textColor"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <ProgressBar
             android:id="@+id/pbLoading"
@@ -197,9 +198,10 @@
             android:paddingRight="16dp"
             android:paddingBottom="8dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:visibility="visible" />
 
-    </com.zhongjh.albumcamerarecorder.widget.FrameLayoutBehavior>
+    </com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
