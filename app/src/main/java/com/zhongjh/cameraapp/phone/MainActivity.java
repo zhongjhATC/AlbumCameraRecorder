@@ -516,32 +516,32 @@ public class MainActivity extends BaseActivity {
      */
     private boolean check() {
         if (getMaxCount() == null && getImageCount() == null) {
-            Toast.makeText(this, "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值",
+            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值",
                     Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() == null && getVideoCount() == null) {
-            Toast.makeText(this, "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值",
+            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值",
                     Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() == null && getAudioCount() == null) {
-            Toast.makeText(this, "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值",
+            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值",
                     Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() != null && getImageCount() != null && getImageCount() > getMaxCount()) {
-            Toast.makeText(this, "maxSelectable 必须比 maxImageSelectable 大",
+            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxImageSelectable 大",
                     Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() != null && getVideoCount() != null && getVideoCount() > getMaxCount()) {
-            Toast.makeText(this, "maxSelectable 必须比 maxVideoSelectable 大",
+            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxVideoSelectable 大",
                     Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() != null && getAudioCount() != null && getAudioCount() > getMaxCount()) {
-            Toast.makeText(this, "maxSelectable 必须比 maxAudioSelectable 大",
+            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxAudioSelectable 大",
                     Toast.LENGTH_SHORT).show();
             return false;
         }

@@ -8,10 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityRecyclerviewBinding;
 import com.zhongjh.cameraapp.phone.adapter.RecyclerAdapter;
@@ -55,7 +53,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
         // 给RecyclerView设置布局管理器
         mBinding.recyclerview.setLayoutManager(layoutManager);
         // 创建适配器，并且设置
-        RecyclerAdapter adapter = new RecyclerAdapter(this);
+        RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext());
         mBinding.recyclerview.setAdapter(adapter);
     }
 

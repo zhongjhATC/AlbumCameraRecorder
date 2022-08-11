@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.zhongjh.albumcamerarecorder.widget.NoScrollViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -16,6 +16,7 @@
         android:layout_alignParentBottom="true"
         android:background="#CCFFFFFF"
         app:tabGravity="fill"
+        android:elevation="1dp"
         app:tabIndicatorHeight="1dp"
         app:tabMaxWidth="0dp"
         app:tabMode="fixed"

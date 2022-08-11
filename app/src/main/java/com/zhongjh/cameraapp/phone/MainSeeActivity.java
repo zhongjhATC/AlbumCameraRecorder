@@ -347,7 +347,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     @Override
     public void onFail(Throwable throwable) {
         progressDialog.hide();
-        Toast.makeText(this, getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 
     /**

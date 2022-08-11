@@ -1,5 +1,10 @@
 package com.zhongjh.albumcamerarecorder.recorder;
 
+import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
+import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -40,11 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static android.app.Activity.RESULT_OK;
-import static android.content.Context.MODE_PRIVATE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
-
 /**
  * 录音
  *
@@ -69,8 +69,8 @@ public class SoundRecordingFragment extends BaseFragment {
      * 公共配置
      */
     private GlobalSpec mGlobalSpec;
-    RecordeSpec mRecordSpec;
-    MediaStoreCompat mAudioMediaStoreCompat;
+    private RecordeSpec mRecordSpec;
+    private MediaStoreCompat mAudioMediaStoreCompat;
 
     /**
      * 是否正在播放中

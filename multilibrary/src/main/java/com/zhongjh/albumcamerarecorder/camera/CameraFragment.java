@@ -84,10 +84,7 @@ public class CameraFragment extends BaseFragment {
     private boolean mIsCommit = false;
 
     public static CameraFragment newInstance() {
-        CameraFragment cameraFragment = new CameraFragment();
-        Bundle args = new Bundle();
-        cameraFragment.setArguments(args);
-        return cameraFragment;
+        return new CameraFragment();
     }
 
     @Override
