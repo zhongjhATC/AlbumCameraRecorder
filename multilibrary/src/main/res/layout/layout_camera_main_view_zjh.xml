@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rlMain"
@@ -33,7 +33,7 @@
         app:cameraMode="video"
         app:cameraPlaySounds="true"
         app:cameraPreview="glSurface"
-        app:cameraPreviewFrameRate="22"/>
+        app:cameraPreviewFrameRate="22" />
 
     <FrameLayout
         android:id="@+id/flShow"
@@ -138,4 +138,4 @@
         android:contentDescription="底部功能按钮"
         tools:ignore="HardcodedText" />
 
-</com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout>
+</com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout>

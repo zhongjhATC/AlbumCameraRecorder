@@ -63,7 +63,7 @@ import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
-import com.zhongjh.albumcamerarecorder.widget.ChildClickableFrameLayout;
+import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.VideoEditListener;
@@ -1421,7 +1421,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public static class ViewHolder {
 
         View rootView;
-        ChildClickableFrameLayout rlMain;
+        ChildClickableRelativeLayout rlMain;
         public ImageViewTouch imgPhoto;
         public FrameLayout flShow;
         public ImageView imgFlash;
