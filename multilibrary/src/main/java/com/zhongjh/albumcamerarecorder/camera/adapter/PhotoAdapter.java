@@ -42,7 +42,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     private final String TAG = PhotoAdapter.class.getSimpleName();
 
     Context mContext;
-    CameraFragment mCameraFragment;
     GlobalSpec mGlobalSpec;
     List<BitmapData> mListData;
 
@@ -57,10 +56,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     // endregion
 
-    public PhotoAdapter(Context context, CameraFragment fragment, GlobalSpec globalSpec,
+    public PhotoAdapter(Context context, GlobalSpec globalSpec,
                         List<BitmapData> listData, PhotoAdapterListener photoAdapterListener) {
         mContext = context;
-        mCameraFragment = fragment;
         mGlobalSpec = globalSpec;
         this.mListData = listData;
         mPhotoAdapterListener = photoAdapterListener;
@@ -137,6 +135,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+        mPhotoAdapterListener.onClick(intent);
         mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
         if (mGlobalSpec.getCutscenesEnabled()) {
             if (mCameraFragment.getActivity() != null) {

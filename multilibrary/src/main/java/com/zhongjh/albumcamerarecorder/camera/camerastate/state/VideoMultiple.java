@@ -1,6 +1,6 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
+import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 
@@ -13,17 +13,17 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 public class VideoMultiple extends StateMode {
 
     /**
-     * @param cameraLayout          主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoMultiple(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
-        super(cameraLayout, cameraStateManagement);
+    public VideoMultiple(CameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+        super(cameraFragment, cameraStateManagement);
     }
 
     @Override
     public void resetState() {
         // 重置所有
-        getCameraLayout().resetStateAll();
+        getCameraFragment().resetStateAll();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
@@ -41,12 +41,12 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void pvLayoutCommit() {
-        getCameraLayout().openPreviewVideoActivity();
+        getCameraFragment().openPreviewVideoActivity();
     }
 
     @Override
     public void pvLayoutCancel() {
-        getCameraLayout().removeVideoMultiple();
+        getCameraFragment().removeVideoMultiple();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void stopProgress() {
-        getCameraLayout().stopVideoMultiple();
+        getCameraFragment().stopVideoMultiple();
     }
 
 }

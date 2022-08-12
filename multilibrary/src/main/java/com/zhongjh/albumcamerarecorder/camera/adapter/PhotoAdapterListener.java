@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.adapter;
 
+import android.content.Intent;
+
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 
 /**
@@ -11,8 +13,10 @@ public interface PhotoAdapterListener {
 
     /**
      * 点击图片事件
+     *
+     * @param intent 点击后，封装相关数据进入该intent
      */
-    void onClick();
+    void onClick(Intent intent);
 
     /**
      * 删除该图片

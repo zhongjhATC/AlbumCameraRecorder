@@ -1,6 +1,6 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
+import com.zhongjh.albumcamerarecorder.camera.BaseCameraFragment;
 
 /**
  * 状态模式
@@ -13,14 +13,14 @@ public abstract class StateMode implements StateInterface {
     protected final String TAG = CameraStateManagement.class.getSimpleName();
 
     CameraStateManagement cameraStateManagement;
-    CameraLayout cameraLayout;
+    BaseCameraFragment cameraFragment;
 
-    public CameraLayout getCameraLayout() {
-        return cameraLayout;
+    public BaseCameraFragment getCameraFragment() {
+        return cameraFragment;
     }
 
-    public void setCameraLayout(CameraLayout cameraLayout) {
-        this.cameraLayout = cameraLayout;
+    public void setCameraFragment(BaseCameraFragment cameraLayout) {
+        this.cameraFragment = cameraLayout;
     }
 
     public CameraStateManagement getCameraStateManagement() {
@@ -33,10 +33,10 @@ public abstract class StateMode implements StateInterface {
 
     /**
      * @param cameraStateManagement 可以让状态更改别的状态
-     * @param cameraLayout       主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment       主要是多个状态围绕着cameraLayout进行相关处理
      */
-    public StateMode(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
-        this.cameraLayout = cameraLayout;
+    public StateMode(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+        this.cameraFragment = cameraFragment;
         this.cameraStateManagement = cameraStateManagement;
     }
 }

@@ -1,6 +1,6 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
+import com.zhongjh.albumcamerarecorder.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 
@@ -13,11 +13,11 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 public class PictureMultiple extends StateMode {
 
     /**
-     * @param cameraLayout          主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment        主要是多个状态围绕着cameraFragment进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public PictureMultiple(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
-        super(cameraLayout, cameraStateManagement);
+    public PictureMultiple(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+        super(cameraFragment, cameraStateManagement);
     }
 
     @Override
@@ -37,11 +37,11 @@ public class PictureMultiple extends StateMode {
 
     @Override
     public void pvLayoutCommit() {
-        getCameraLayout().setUiEnableFalse();
+        getCameraFragment().setUiEnableFalse();
         // 拍照完成
-        if (getCameraLayout().getOperateCameraListener() != null) {
+        if (getCameraFragment().getOperateCameraListener() != null) {
             // 移动文件
-            getCameraLayout().movePictureFile();
+            getCameraFragment().movePictureFile();
         }
     }
 
@@ -62,7 +62,7 @@ public class PictureMultiple extends StateMode {
 
     @Override
     public void stopProgress() {
-        getCameraLayout().mMovePictureFileTask.cancel();
+        getCameraFragment().mMovePictureFileTask.cancel();
     }
 
 }

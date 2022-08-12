@@ -19,7 +19,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?item.placeholder"
-    android:foreground="?selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/hint"

@@ -3,8 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera.camerastate;
 import android.util.Log;
 import android.view.View;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
-import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
+import com.zhongjh.albumcamerarecorder.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.state.PictureComplete;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.state.PictureMultiple;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.state.Preview;
@@ -27,7 +26,7 @@ public class CameraStateManagement implements StateInterface {
 
     private final String TAG = CameraStateManagement.class.getSimpleName();
 
-    CameraLayout mCameraLayout;
+    BaseCameraFragment mCameraFragment;
     /**
      * 当前状态
      */
@@ -61,16 +60,16 @@ public class CameraStateManagement implements StateInterface {
      */
     StateInterface videoMultipleIn;
 
-    public CameraStateManagement(CameraLayout cameraLayout) {
-        mCameraLayout = cameraLayout;
+    public CameraStateManagement(BaseCameraFragment cameraFragment) {
+        mCameraFragment = cameraFragment;
         // 初始化相关状态逻辑
-        preview = new Preview(cameraLayout, this);
-        videoComplete = new VideoComplete(cameraLayout, this);
-        pictureComplete = new PictureComplete(cameraLayout, this);
-        pictureMultiple = new PictureMultiple(cameraLayout, this);
-        videoMultiple = new VideoMultiple(cameraLayout, this);
-        videoIn = new VideoIn(cameraLayout, this);
-        videoMultipleIn = new VideoMultipleIn(cameraLayout, this);
+        preview = new Preview(cameraFragment, this);
+        videoComplete = new VideoComplete(cameraFragment, this);
+        pictureComplete = new PictureComplete(cameraFragment, this);
+        pictureMultiple = new PictureMultiple(cameraFragment, this);
+        videoMultiple = new VideoMultiple(cameraFragment, this);
+        videoIn = new VideoIn(cameraFragment, this);
+        videoMultipleIn = new VideoMultipleIn(cameraFragment, this);
         // 设置当前默认状态
         state = preview;
     }
@@ -113,10 +112,10 @@ public class CameraStateManagement implements StateInterface {
     @Override
     public void stopRecord(boolean isShort) {
         Log.d(TAG, "stopRecord");
-        mCameraLayout.mIsShort = isShort;
-        mCameraLayout.mViewHolder.cameraView.stopVideo();
+        mCameraFragment.mIsShort = isShort;
+        mCameraFragment.mViewHolder.cameraView.stopVideo();
         // 显示菜单
-        mCameraLayout.setMenuVisibility(View.VISIBLE);
+        mCameraFragment.setMenuVisibility(View.VISIBLE);
         state.stopRecord(isShort);
     }
 
