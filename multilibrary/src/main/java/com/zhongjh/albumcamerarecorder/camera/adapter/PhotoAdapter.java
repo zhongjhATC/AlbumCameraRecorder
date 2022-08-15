@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -44,11 +43,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     Context mContext;
     GlobalSpec mGlobalSpec;
     List<BitmapData> mListData;
-
-    /**
-     * 记录当前删除事件的时间
-     */
-    private long mLastOperationTime;
 
     // region 回调监听事件
 
@@ -136,12 +130,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
         mPhotoAdapterListener.onClick(intent);
-        mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
-        if (mGlobalSpec.getCutscenesEnabled()) {
-            if (mCameraFragment.getActivity() != null) {
-                mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
-            }
-        }
     }
 
     /**

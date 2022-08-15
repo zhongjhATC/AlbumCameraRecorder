@@ -16,13 +16,16 @@ import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
+import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
@@ -46,6 +49,8 @@ import java.util.List;
  * @date 2022/8/11
  */
 public abstract class BaseCameraFragment extends BaseFragment implements PhotoAdapterListener {
+
+    private static final String TAG = BaseCameraFragment.class.getSimpleName();
 
     private final static int MILLISECOND = 2000;
 
@@ -115,7 +120,6 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         setView();
         init();
         initMultiplePhotoAdapter();
-        mCameraLayout.init(mActivity, this);
         mCameraLayout.setErrorListener(new ErrorListener() {
             @Override
             public void onError() {
@@ -175,10 +179,11 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
     public abstract CameraView getCameraView();
 
     /**
-     * 当想使用已经定义好的多图显示控件，请设置它
+     * 当想使用自带的多图显示控件，请设置它
      *
      * @return 返回多图的Recycler显示控件
      */
+    @Nullable
     public abstract RecyclerView getRecyclerViewPhoto();
 
     /**
@@ -275,18 +280,25 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
     public void initMultiplePhotoAdapter() {
         // 初始化多图适配器，先判断是不是多图配置
         mPhotoAdapter = new PhotoAdapter(getContext(), mGlobalSpec, mBitmapData, this);
-        if (SelectableUtils.getImageMaxCount() > 1) {
-            mViewHolder.rlPhoto.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-            mViewHolder.rlPhoto.setAdapter(mPhotoAdapter);
-            mViewHolder.rlPhoto.setVisibility(View.VISIBLE);
-        } else {
-            mViewHolder.rlPhoto.setVisibility(View.GONE);
+        if (getRecyclerViewPhoto() != null) {
+            if (SelectableUtils.getImageMaxCount() > 1) {
+                getRecyclerViewPhoto().setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+                getRecyclerViewPhoto().setAdapter(mPhotoAdapter);
+                getRecyclerViewPhoto().setVisibility(View.VISIBLE);
+            } else {
+                getRecyclerViewPhoto().setVisibility(View.GONE);
+            }
         }
     }
 
     @Override
     public void onClick(Intent intent) {
-
+        mAlbumPreviewActivityResult.launch(intent);
+        if (mGlobalSpec.getCutscenesEnabled()) {
+            if (getActivity() != null) {
+                getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
+            }
+        }
     }
 
     /**
@@ -300,8 +312,13 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         // 删除文件
         FileUtil.deleteFile(bitmapData.getPath());
 
-        // 回调接口：删除图片后剩下的相关数据
-        mOnCaptureListener.remove(mBitmapData, position);
+        // 判断如果删除光图片的时候，母窗体启动滑动
+        if (mBitmapData.size() <= 0) {
+            mActivity.showHideTableLayout(true);
+        }
+        if (mCameraSpec.getOnCaptureListener() != null) {
+            mCameraSpec.getOnCaptureListener().remove(mBitmapData, position);
+        }
 
         // 当列表全部删掉隐藏列表框的UI
         Log.d(TAG, "onDelete " + mBitmapData.size());
