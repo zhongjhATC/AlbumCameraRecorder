@@ -1430,7 +1430,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         public RecyclerView rlPhoto;
         View vLine1;
         View vLine2;
-        View vLine3;
         ImageView imgClose;
         public CameraView cameraView;
         ConstraintLayout clMenu;
@@ -1447,7 +1446,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             this.rlPhoto = rootView.findViewById(R.id.rlPhoto);
             this.vLine1 = rootView.findViewById(R.id.vLine1);
             this.vLine2 = rootView.findViewById(R.id.vLine2);
-            this.vLine3 = rootView.findViewById(R.id.vLine3);
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);
