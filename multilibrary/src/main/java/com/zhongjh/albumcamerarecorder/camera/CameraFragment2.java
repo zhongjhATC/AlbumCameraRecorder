@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,6 +49,11 @@ public class CameraFragment2 extends BaseCameraFragment {
         return mViewHolder.rlPhoto;
     }
 
+    @Nullable
+    @Override
+    public View[] getMultiplePhotoView() {
+        return new View[]{mViewHolder.vLine1, mViewHolder.vLine2};
+    }
 
 
     public static class ViewHolder {
@@ -62,7 +68,6 @@ public class CameraFragment2 extends BaseCameraFragment {
         RecyclerView rlPhoto;
         View vLine1;
         View vLine2;
-        View vLine3;
         ImageView imgClose;
         CameraView cameraView;
         ConstraintLayout clMenu;
@@ -79,7 +84,6 @@ public class CameraFragment2 extends BaseCameraFragment {
             this.rlPhoto = rootView.findViewById(R.id.rlPhoto);
             this.vLine1 = rootView.findViewById(R.id.vLine1);
             this.vLine2 = rootView.findViewById(R.id.vLine2);
-            this.vLine3 = rootView.findViewById(R.id.vLine3);
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);

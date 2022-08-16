@@ -119,21 +119,14 @@
         android:id="@+id/vLine2"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_above="@+id/vLine3"
+        android:layout_above="@+id/pvLayout"
         android:background="#40000000"
         tools:visibility="visible"
         android:visibility="gone" />
 
-    <View
-        android:id="@+id/vLine3"
-        android:layout_width="match_parent"
-        android:layout_height="16dp"
-        tools:visibility="visible"
-        android:layout_above="@+id/pvLayout"
-        android:background="#20000000" />
-
     <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayoutBase
         android:id="@+id/pvLayout"
+        android:paddingTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layout_height="100dp"

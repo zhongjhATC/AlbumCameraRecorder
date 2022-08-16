@@ -187,6 +187,13 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
     public abstract RecyclerView getRecyclerViewPhoto();
 
     /**
+     * 修饰多图控件的View，一般用于群体隐藏和显示，你也可以重写[hideViewByMultipleZero]方法自行隐藏显示相关view
+     * @return ArrayList<View>
+     */
+    @Nullable
+    public abstract View[] getMultiplePhotoView();
+
+    /**
      * 针对回调
      */
     private void onActivityResult() {
