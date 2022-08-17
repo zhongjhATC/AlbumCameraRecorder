@@ -62,11 +62,8 @@ public class PictureComplete extends StateMode {
     @Override
     public void pvLayoutCommit() {
         getCameraFragment().setUiEnableFalse();
-        // 拍照完成
-        if (getCameraFragment().getOperateCameraListener() != null) {
-            // 移动文件
-            getCameraFragment().movePictureFile();
-        }
+        // 拍照完成,移动文件
+        getCameraFragment().movePictureFile();
 
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());

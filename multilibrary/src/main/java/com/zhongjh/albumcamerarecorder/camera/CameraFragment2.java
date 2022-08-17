@@ -13,7 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayoutBase;
+import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
+import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
@@ -55,6 +56,40 @@ public class CameraFragment2 extends BaseCameraFragment {
         return new View[]{mViewHolder.vLine1, mViewHolder.vLine2};
     }
 
+    @Nullable
+    @Override
+    public PhotoVideoLayout getPhotoVideoLayout() {
+        return mViewHolder.pvLayout;
+    }
+
+    @Nullable
+    @Override
+    public View[] getSinglePhotoView() {
+        return new View[]{mViewHolder.rlEdit};
+    }
+
+    @Nullable
+    @Override
+    public View getCloseView() {
+        return mViewHolder.imgClose;
+    }
+
+    @Nullable
+    @Override
+    public View getFlashView() {
+        return mViewHolder.imgFlash;
+    }
+
+    @Nullable
+    @Override
+    public View getSwitchView() {
+        return mViewHolder.imgSwitch;
+    }
+
+    @Override
+    public void onDelete(BitmapData bitmapData, int position) {
+        super.onDelete(bitmapData, position);
+    }
 
     public static class ViewHolder {
 
@@ -64,7 +99,7 @@ public class CameraFragment2 extends BaseCameraFragment {
         FrameLayout flShow;
         ImageView imgFlash;
         ImageView imgSwitch;
-        PhotoVideoLayoutBase pvLayout;
+        PhotoVideoLayout pvLayout;
         RecyclerView rlPhoto;
         View vLine1;
         View vLine2;

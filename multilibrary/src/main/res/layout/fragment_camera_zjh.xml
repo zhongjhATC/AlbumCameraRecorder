@@ -124,7 +124,7 @@
         tools:visibility="visible"
         android:visibility="gone" />
 
-    <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayoutBase
+    <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout
         android:id="@+id/pvLayout"
         android:paddingTop="16dp"
         android:layout_width="match_parent"

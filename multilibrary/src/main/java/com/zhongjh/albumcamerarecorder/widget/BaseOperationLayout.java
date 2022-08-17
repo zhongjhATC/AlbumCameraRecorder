@@ -23,7 +23,7 @@ import com.zhongjh.common.utils.DisplayMetricsUtils;
 import java.util.ArrayList;
 
 /**
- * 集成各个控件的布局
+ * 集成开始功能按钮、确认按钮、取消按钮的布局
  * {@link com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton 点击或者长按的按钮 }
  * {@link com.zhongjh.circularprogressview.CircularProgress 操作按钮(取消和确认) }
  *
