@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Parcelable
+import android.provider.MediaStore
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.loader.AlbumLoader
 import kotlinx.android.parcel.Parcelize
@@ -60,11 +61,14 @@ class Album internal constructor(
         @JvmStatic
         fun valueOf(cursor: Cursor): Album {
             val column = cursor.getString(cursor.getColumnIndex(AlbumLoader.COLUMN_URI))
+            val bucketDisplayName =
+                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
+            val count = cursor.getLong(cursor.getColumnIndex(AlbumLoader.COLUMN_COUNT))
             return Album(
-                cursor.getString(cursor.getColumnIndex("bucket_id")),
+                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID)),
                 Uri.parse(column ?: ""),
-                cursor.getString(cursor.getColumnIndex("bucket_display_name")),
-                cursor.getLong(cursor.getColumnIndex(AlbumLoader.COLUMN_COUNT))
+                bucketDisplayName ?: "",
+                count
             )
         }
     }
