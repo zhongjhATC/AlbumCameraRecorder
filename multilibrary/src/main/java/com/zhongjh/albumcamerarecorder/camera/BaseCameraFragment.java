@@ -595,10 +595,13 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
             }
         }
 
-        // 隐藏左右侧按钮
         if (getPhotoVideoLayout() != null) {
+            // 隐藏左右侧按钮
             getPhotoVideoLayout().getViewHolder().btnCancel.setVisibility(View.GONE);
             getPhotoVideoLayout().getViewHolder().btnConfirm.setVisibility(View.GONE);
+
+            // 如果是单图编辑情况下,隐藏编辑按钮
+            getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.GONE);
 
             // 恢复长按事件，即重新启用录制
             getPhotoVideoLayout().getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
@@ -608,12 +611,6 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         // 设置空闲状态
         mCameraStateManagement.setState(mCameraStateManagement.getPreview());
 
-        // 如果是单图编辑情况下
-        if (singlePhotoViews != null) {
-            for (View view : singlePhotoViews) {
-                view.setVisibility(View.GONE);
-            }
-        }
         showBottomMenu();
     }
 

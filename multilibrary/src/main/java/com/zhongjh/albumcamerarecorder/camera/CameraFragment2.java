@@ -106,7 +106,6 @@ public class CameraFragment2 extends BaseCameraFragment {
         ImageView imgClose;
         CameraView cameraView;
         ConstraintLayout clMenu;
-        RelativeLayout rlEdit;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -122,7 +121,6 @@ public class CameraFragment2 extends BaseCameraFragment {
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);
-            this.rlEdit = rootView.findViewById(R.id.rlEdit);
         }
 
     }
