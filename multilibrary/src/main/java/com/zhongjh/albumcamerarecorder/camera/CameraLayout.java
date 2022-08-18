@@ -522,7 +522,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
     public void onResume() {
         LogUtil.i("CameraLayout onResume");
         // 清空进度，防止正在进度中突然按home键
-        mViewHolder.pvLayout.viewHolder.btnClickOrLong.reset();
+        mViewHolder.pvLayout.getViewHolder().btnClickOrLong.reset();
         // 重置当前按钮的功能
         initPvLayoutButtonFeatures();
         mViewHolder.cameraView.open();
@@ -933,7 +933,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 编辑图片事件
      */
     private void initPhotoEditListener() {
-        mViewHolder.rlEdit.setOnClickListener(view -> {
+        mViewHolder.pvLayout.getViewHolder().rlEdit.setOnClickListener(view -> {
             Uri uri = (Uri) view.getTag();
             mPhotoEditFile = mPictureMediaStoreCompat.createFile(0, true, "jpg");
             if (mEditListener != null) {
@@ -976,7 +976,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 重置位置
         mViewHolder.imgPhoto.resetMatrix();
         mGlobalSpec.getImageEngine().loadUriImage(getContext(), mViewHolder.imgPhoto, uri);
-        mViewHolder.rlEdit.setTag(uri);
+        mViewHolder.pvLayout.getViewHolder().rlEdit.setTag(uri);
     }
 
     /**
@@ -1040,7 +1040,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mViewHolder.flShow.setVisibility(View.GONE);
 
         // 隐藏编辑按钮
-        mViewHolder.rlEdit.setVisibility(View.GONE);
+        mViewHolder.pvLayout.getViewHolder().rlEdit.setVisibility(View.GONE);
 
         // 恢复底部按钮
         mViewHolder.pvLayout.reset();
@@ -1212,10 +1212,10 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
 
         // 判断是否要编辑
         if (mGlobalSpec.getImageEditEnabled()) {
-            mViewHolder.rlEdit.setVisibility(View.VISIBLE);
-            mViewHolder.rlEdit.setTag(uri);
+            mViewHolder.pvLayout.getViewHolder().rlEdit.setVisibility(View.VISIBLE);
+            mViewHolder.pvLayout.getViewHolder().rlEdit.setTag(uri);
         } else {
-            mViewHolder.rlEdit.setVisibility(View.INVISIBLE);
+            mViewHolder.pvLayout.getViewHolder().rlEdit.setVisibility(View.INVISIBLE);
         }
 
         // 隐藏拍照按钮
@@ -1329,7 +1329,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mViewHolder.imgFlash.setEnabled(true);
         mViewHolder.imgSwitch.setEnabled(true);
         // 重置按钮进度
-        mViewHolder.pvLayout.viewHolder.btnConfirm.reset();
+        mViewHolder.pvLayout.getViewHolder().btnConfirm.reset();
     }
 
     /**
@@ -1391,7 +1391,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             mCameraStateManagement.setState(mCameraStateManagement.getPreview());
 
             // 如果是单图编辑情况下
-            mViewHolder.rlEdit.setVisibility(View.GONE);
+            mViewHolder.pvLayout.getViewHolder().rlEdit.setVisibility(View.GONE);
 
             // 恢复底部
             showBottomMenu();
@@ -1433,7 +1433,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         ImageView imgClose;
         public CameraView cameraView;
         ConstraintLayout clMenu;
-        RelativeLayout rlEdit;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -1449,7 +1448,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);
-            this.rlEdit = rootView.findViewById(R.id.rlEdit);
         }
 
     }

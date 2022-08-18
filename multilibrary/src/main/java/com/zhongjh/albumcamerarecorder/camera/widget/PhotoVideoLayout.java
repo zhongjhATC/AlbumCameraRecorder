@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +40,10 @@ public class PhotoVideoLayout extends BaseOperationLayout {
 
     public void setRecordListener(RecordListener recordListener) {
         this.mRecordListener = recordListener;
+    }
+
+    public ViewHolder getViewHolder() {
+        return (ViewHolder) viewHolder;
     }
 
     public PhotoVideoLayout(@NonNull Context context) {
@@ -80,4 +85,16 @@ public class PhotoVideoLayout extends BaseOperationLayout {
             mRecordListener.sectionRecord(viewHolder.tvSectionRecord.getTag().toString());
         });
     }
+
+    public static class ViewHolder extends BaseOperationLayout.ViewHolder {
+
+        public RelativeLayout rlEdit;
+
+        public ViewHolder(View rootView) {
+            super(rootView);
+            this.rlEdit = rootView.findViewById(R.id.rlEdit);
+        }
+
+    }
+
 }

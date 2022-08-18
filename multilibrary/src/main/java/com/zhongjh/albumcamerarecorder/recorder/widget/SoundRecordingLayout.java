@@ -1,12 +1,13 @@
 package com.zhongjh.albumcamerarecorder.recorder.widget;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
@@ -32,6 +33,10 @@ public class SoundRecordingLayout extends BaseOperationLayout {
      * 当前活动状态，默认休闲
      */
     public int mState = STATE_PREVIEW;
+
+    public ViewHolder getViewHolder() {
+        return (ViewHolder) viewHolder;
+    }
 
     public SoundRecordingLayout(@NonNull Context context) {
         super(context);
