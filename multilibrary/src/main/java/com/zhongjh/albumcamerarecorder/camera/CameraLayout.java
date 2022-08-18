@@ -24,7 +24,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -48,11 +47,11 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateInterface;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.CloseListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.EditListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OperateCameraListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
@@ -1037,7 +1036,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         showBottomMenu();
 
         // 隐藏大图
-        mViewHolder.flShow.setVisibility(View.GONE);
+        mViewHolder.imgPhoto.setVisibility(View.GONE);
 
         // 隐藏编辑按钮
         mViewHolder.pvLayout.getViewHolder().rlEdit.setVisibility(View.GONE);
@@ -1202,7 +1201,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         mViewHolder.imgPhoto.setVisibility(VISIBLE);
         mGlobalSpec.getImageEngine().loadUriImage(getContext(), mViewHolder.imgPhoto, bitmapData.getUri());
         mViewHolder.cameraView.close();
-        mViewHolder.flShow.setVisibility(VISIBLE);
+        mViewHolder.imgPhoto.setVisibility(VISIBLE);
         mViewHolder.pvLayout.startTipAlphaAnimation();
         mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
         mPhotoFile = file;
@@ -1423,7 +1422,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         View rootView;
         ChildClickableFrameLayout rlMain;
         public ImageViewTouch imgPhoto;
-        public FrameLayout flShow;
         public ImageView imgFlash;
         public ImageView imgSwitch;
         public PhotoVideoLayout pvLayout;
@@ -1438,7 +1436,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
             this.rootView = rootView;
             this.rlMain = rootView.findViewById(R.id.rlMain);
             this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
-            this.flShow = rootView.findViewById(R.id.flShow);
             this.imgFlash = rootView.findViewById(R.id.imgFlash);
             this.imgSwitch = rootView.findViewById(R.id.imgSwitch);
             this.pvLayout = rootView.findViewById(R.id.pvLayout);

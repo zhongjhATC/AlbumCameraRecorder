@@ -1,13 +1,13 @@
 package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
 
+import static android.view.View.INVISIBLE;
+
 import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-
-import static android.view.View.INVISIBLE;
 
 /**
  * 单图完成状态的相关处理
@@ -34,7 +34,6 @@ public class PictureComplete extends StateMode {
 
         // 隐藏图片view
         getCameraLayout().mViewHolder.imgPhoto.setVisibility(INVISIBLE);
-        getCameraLayout().mViewHolder.flShow.setVisibility(INVISIBLE);
 
         // 删除图片
         if (getCameraLayout().mPhotoFile != null) {
