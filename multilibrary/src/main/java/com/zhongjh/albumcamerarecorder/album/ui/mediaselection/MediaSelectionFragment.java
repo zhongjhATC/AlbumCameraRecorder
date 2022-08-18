@@ -121,14 +121,6 @@ public class MediaSelectionFragment extends Fragment implements
             album = getArguments().getParcelable(EXTRA_ALBUM);
         }
 
-//        // 初始化底部间距
-//        int marginBottom = 0;
-//        if (getArguments() != null) {
-//            marginBottom = getArguments().getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM);
-//        }
-//        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mFlMain.getLayoutParams();
-//        layoutParams.bottomMargin = DisplayMetricsUtils.dip2px(marginBottom);
-
         // 实例化适配器并且传递数据源
         if (getContext() == null || getActivity() == null) {
             return;
