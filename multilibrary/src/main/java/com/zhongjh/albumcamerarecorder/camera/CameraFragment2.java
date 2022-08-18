@@ -14,8 +14,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
-
-import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
 
 /**
  * 继承于BaseCameraFragment
@@ -39,6 +38,12 @@ public class CameraFragment2 extends BaseCameraFragment {
 
     @NonNull
     @Override
+    public IChildClickableLayout getChildClickableLayout() {
+        return mViewHolder.rlMain;
+    }
+
+    @NonNull
+    @Override
     public CameraView getCameraView() {
         return mViewHolder.cameraView;
     }
@@ -54,15 +59,15 @@ public class CameraFragment2 extends BaseCameraFragment {
         return new View[]{mViewHolder.vLine1, mViewHolder.vLine2};
     }
 
-    @Nullable
+    @NonNull
     @Override
     public PhotoVideoLayout getPhotoVideoLayout() {
         return mViewHolder.pvLayout;
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public View getSinglePhotoView() {
+    public com.zhongjh.albumcamerarecorder.widget.ImageViewTouch getSinglePhotoView() {
         return mViewHolder.imgPhoto;
     }
 
@@ -74,13 +79,13 @@ public class CameraFragment2 extends BaseCameraFragment {
 
     @Nullable
     @Override
-    public View getFlashView() {
+    public ImageView getFlashView() {
         return mViewHolder.imgFlash;
     }
 
     @Nullable
     @Override
-    public View getSwitchView() {
+    public ImageView getSwitchView() {
         return mViewHolder.imgSwitch;
     }
 
@@ -93,7 +98,7 @@ public class CameraFragment2 extends BaseCameraFragment {
 
         View rootView;
         ChildClickableRelativeLayout rlMain;
-        ImageViewTouch imgPhoto;
+        com.zhongjh.albumcamerarecorder.widget.ImageViewTouch imgPhoto;
         ImageView imgFlash;
         ImageView imgSwitch;
         PhotoVideoLayout pvLayout;

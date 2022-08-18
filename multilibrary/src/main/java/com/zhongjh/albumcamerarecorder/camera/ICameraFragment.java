@@ -1,10 +1,13 @@
 package com.zhongjh.albumcamerarecorder.camera;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.common.entity.LocalFile;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -37,6 +40,7 @@ public interface ICameraFragment {
 
     /**
      * 刷新多个图片
+     *
      * @param bitmapDatas 最新的多图数据源
      */
     void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas);
@@ -48,6 +52,13 @@ public interface ICameraFragment {
      * @param height 最新图片的高度
      */
     void refreshEditPhoto(int width, int height);
+
+    /**
+     * 添加入数据源
+     *
+     * @param bitmap bitmap
+     */
+    void addCaptureData(Bitmap bitmap);
 
     /**
      * 确认提交这些数据
@@ -62,6 +73,20 @@ public interface ICameraFragment {
      * @param throwable 异常
      */
     void failByConfirm(Throwable throwable);
+
+    /**
+     * 显示单图
+     *
+     * @param bitmapData 显示单图数据源
+     * @param file       显示单图的文件
+     * @param uri        显示单图的uri
+     */
+    void showSinglePicture(BitmapData bitmapData, File file, Uri uri);
+
+    /**
+     * 显示多图
+     */
+    void showMultiplePicture();
 
     /**
      * 恢复底部菜单,母窗体启动滑动
@@ -91,5 +116,6 @@ public interface ICameraFragment {
      * 场景：确认图片时，压缩中途禁止某些功能使用
      */
     void setUiEnableFalse();
+
 
 }
