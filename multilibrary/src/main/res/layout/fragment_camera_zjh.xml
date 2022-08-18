@@ -35,32 +35,24 @@
         app:cameraPreview="glSurface"
         app:cameraPreviewFrameRate="22" />
 
-    <FrameLayout
-        android:id="@+id/flShow"
+    <com.zhongjh.albumcamerarecorder.widget.ImageViewTouch
+        android:id="@+id/imgPhoto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
         android:background="#000"
-        android:visibility="gone">
-
-        <it.sephiroth.android.library.imagezoom.ImageViewTouch
-            android:id="@+id/imgPhoto"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:contentDescription="如果是单张照片便显示当前拍照的"
-            android:visibility="invisible"
-            tools:ignore="HardcodedText" />
-
-    </FrameLayout>
+        android:contentDescription="如果是单张照片便显示当前拍照的"
+        android:visibility="invisible"
+        tools:ignore="HardcodedText" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clMenu"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        tools:layout_height="50dp"
         android:layout_alignParentEnd="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:layout_height="50dp">
 
         <ImageView
             android:id="@+id/imgClose"
@@ -112,8 +104,8 @@
         android:layout_height="16dp"
         android:layout_above="@+id/vLine2"
         android:background="#20000000"
-        tools:visibility="visible"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <View
         android:id="@+id/vLine2"
@@ -121,19 +113,19 @@
         android:layout_height="0.5dp"
         android:layout_above="@+id/pvLayout"
         android:background="#40000000"
-        tools:visibility="visible"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout
         android:id="@+id/pvLayout"
-        android:paddingTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="50dp"
         android:background="#20000000"
         android:contentDescription="底部功能按钮"
-        tools:ignore="HardcodedText" />
+        android:paddingTop="16dp"
+        tools:ignore="HardcodedText"
+        tools:layout_height="100dp" />
 
 </com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout>

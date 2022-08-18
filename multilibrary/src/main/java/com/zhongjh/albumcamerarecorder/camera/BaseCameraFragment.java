@@ -37,13 +37,11 @@ import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.camera.listener.ErrorListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -51,6 +49,7 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
+import com.zhongjh.albumcamerarecorder.widget.ImageViewTouch;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MimeType;
@@ -235,9 +234,9 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
     @Nullable
     private View[] multiplePhotoViews;
     /**
-     * 修饰单图控件的View数组
+     * 修饰单图控件的View
      */
-    private View[] singlePhotoViews;
+    private ImageViewTouch singlePhotoViews;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -399,14 +398,13 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
     public abstract PhotoVideoLayout getPhotoVideoLayout();
 
     /**
-     * 修饰单图控件的View，只有第一次初始化有效
-     * 一般用于群体隐藏和显示
+     * 单图控件的View
      * 你也可以重写[hideViewByMultipleZero]方法自行隐藏显示相关view
      *
-     * @return View[]
+     * @return View
      */
     @Nullable
-    public abstract View[] getSinglePhotoView();
+    public abstract ImageViewTouch getSinglePhotoView();
 
     /**
      * 左上角的关闭控件
@@ -649,8 +647,10 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         mBitmapData.add(bitmapData);
 
         // 重置位置
-        mViewHolder.imgPhoto.resetMatrix();
-        mGlobalSpec.getImageEngine().loadUriImage(mContext, mViewHolder.imgPhoto, uri);
+        if (getSinglePhotoView() != null) {
+            getSinglePhotoView().resetMatrix();
+            mGlobalSpec.getImageEngine().loadUriImage(mContext, getSinglePhotoView(), uri);
+        }
     }
 
     /**
@@ -846,7 +846,7 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         }
         // 重置按钮进度
         if (getPhotoVideoLayout() != null) {
-            getPhotoVideoLayout().viewHolder.btnConfirm.reset();
+            getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
         }
     }
 

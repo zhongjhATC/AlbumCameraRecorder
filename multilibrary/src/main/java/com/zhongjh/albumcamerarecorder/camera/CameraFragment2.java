@@ -2,9 +2,7 @@ package com.zhongjh.albumcamerarecorder.camera;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,8 +62,8 @@ public class CameraFragment2 extends BaseCameraFragment {
 
     @Nullable
     @Override
-    public View[] getSinglePhotoView() {
-        return new View[]{mViewHolder.rlEdit};
+    public View getSinglePhotoView() {
+        return mViewHolder.imgPhoto;
     }
 
     @Nullable
@@ -96,7 +94,6 @@ public class CameraFragment2 extends BaseCameraFragment {
         View rootView;
         ChildClickableRelativeLayout rlMain;
         ImageViewTouch imgPhoto;
-        FrameLayout flShow;
         ImageView imgFlash;
         ImageView imgSwitch;
         PhotoVideoLayout pvLayout;
@@ -111,7 +108,6 @@ public class CameraFragment2 extends BaseCameraFragment {
             this.rootView = rootView;
             this.rlMain = rootView.findViewById(R.id.rlMain);
             this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
-            this.flShow = rootView.findViewById(R.id.flShow);
             this.imgFlash = rootView.findViewById(R.id.imgFlash);
             this.imgSwitch = rootView.findViewById(R.id.imgSwitch);
             this.pvLayout = rootView.findViewById(R.id.pvLayout);
