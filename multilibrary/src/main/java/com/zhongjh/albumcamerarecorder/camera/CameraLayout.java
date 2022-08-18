@@ -730,14 +730,14 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      * 录制时间过短
      */
     private void longClickShort(final long time) {
-        Log.d(TAG, "longClickShort " + time);
+        Log.d(TAG, "longClickShort " + mCameraSpec.getMinDuration() + " and " + time);
         mCameraStateManagement.longClickShort(time);
         // 提示过短
         mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
         // 显示右上角菜单
         setMenuVisibility(VISIBLE);
         // 停止录像
-        postDelayed(() -> stopRecord(true), mCameraSpec.getMinDuration() - time);
+        stopRecord(true);
     }
 
     /**
