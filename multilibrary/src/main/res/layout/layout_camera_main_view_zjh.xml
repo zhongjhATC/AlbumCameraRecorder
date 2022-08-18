@@ -121,7 +121,7 @@
         android:background="#40000000"
         android:visibility="gone" />
 
-    <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayoutBase
+    <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

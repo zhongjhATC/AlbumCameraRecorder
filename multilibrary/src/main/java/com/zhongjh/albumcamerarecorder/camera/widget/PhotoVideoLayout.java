@@ -1,13 +1,13 @@
 package com.zhongjh.albumcamerarecorder.camera.widget;
 
 import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RelativeLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
@@ -18,7 +18,7 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
  * @author zhongjh
  * @date 2018/10/16
  */
-public class PhotoVideoLayoutBase extends BaseOperationLayout {
+public class PhotoVideoLayout extends BaseOperationLayout {
 
 
     private RecordListener mRecordListener;
@@ -42,15 +42,19 @@ public class PhotoVideoLayoutBase extends BaseOperationLayout {
         this.mRecordListener = recordListener;
     }
 
-    public PhotoVideoLayoutBase(@NonNull Context context) {
+    public ViewHolder getViewHolder() {
+        return (ViewHolder) viewHolder;
+    }
+
+    public PhotoVideoLayout(@NonNull Context context) {
         super(context);
     }
 
-    public PhotoVideoLayoutBase(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public PhotoVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PhotoVideoLayoutBase(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PhotoVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -81,4 +85,16 @@ public class PhotoVideoLayoutBase extends BaseOperationLayout {
             mRecordListener.sectionRecord(viewHolder.tvSectionRecord.getTag().toString());
         });
     }
+
+    public static class ViewHolder extends BaseOperationLayout.ViewHolder {
+
+        public RelativeLayout rlEdit;
+
+        public ViewHolder(View rootView) {
+            super(rootView);
+            this.rlEdit = rootView.findViewById(R.id.rlEdit);
+        }
+
+    }
+
 }

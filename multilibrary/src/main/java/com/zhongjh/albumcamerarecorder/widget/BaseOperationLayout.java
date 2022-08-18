@@ -85,14 +85,10 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
     // endregion
 
-    public ViewHolder getViewHolder() {
-        return viewHolder;
-    }
-
     /**
      * 控件集合
      */
-    public ViewHolder viewHolder;
+    protected ViewHolder viewHolder;
 
     /**
      * 是否第一次
