@@ -737,7 +737,7 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
         // 显示右上角菜单
         setMenuVisibility(VISIBLE);
         // 停止录像
-        postDelayed(() -> stopRecord(true), mCameraSpec.getMinDuration() - time);
+        stopRecord(true);
     }
 
     /**

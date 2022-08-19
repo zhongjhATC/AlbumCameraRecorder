@@ -22,12 +22,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -36,7 +36,10 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.otaliastudios.cameraview.CameraView;
+import com.otaliastudios.cameraview.CameraException;
+import com.otaliastudios.cameraview.CameraListener;
+import com.otaliastudios.cameraview.PictureResult;
+import com.otaliastudios.cameraview.VideoResult;
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -45,26 +48,29 @@ import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.camerastate.StateInterface;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
+import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.albumcamerarecorder.widget.ImageViewTouch;
-import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.OnMoreClickListener;
+import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,10 +83,12 @@ import java.util.List;
  * @author zhongjh
  * @date 2022/8/11
  */
-public abstract class BaseCameraFragment extends BaseFragment implements PhotoAdapterListener, ICameraFragment {
+public abstract class BaseCameraFragment extends BaseFragment
+        implements PhotoAdapterListener, ICameraFragment, ICameraView {
 
     private static final String TAG = BaseCameraFragment.class.getSimpleName();
 
+    private final static int PROGRESS_MAX = 100;
     private final static int MILLISECOND = 2000;
 
     /**
@@ -256,7 +264,7 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         multiplePhotoViews = getMultiplePhotoView();
         singlePhotoViews = getSinglePhotoView();
         setView();
-        init();
+        initData();
         initListener();
         return view;
     }
@@ -296,7 +304,7 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
     /**
      * 初始化相关数据
      */
-    protected void init() {
+    protected void initData() {
         // 初始化设置
         mGlobalSpec = GlobalSpec.INSTANCE;
         mCameraSpec = CameraSpec.INSTANCE;
@@ -343,7 +351,7 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
      * 初始化相关事件
      */
     protected void initListener() {
-        // 关闭View
+        // 关闭事件
         initCameraLayoutCloseListener();
         // 切换闪光灯模式
         initImgFlashListener();
@@ -351,6 +359,14 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         initImgSwitchListener();
         // 主按钮监听
         initPvLayoutPhotoVideoListener();
+        // 左右确认和取消
+        initPvLayoutOperateListener();
+        // 录制界面按钮事件监听，目前只有一个，点击分段录制
+        initPvLayoutRecordListener();
+        // 视频编辑后的事件，目前只有分段录制后合并
+        initVideoEditListener();
+        // 拍照监听
+        initCameraViewListener();
         // 编辑图片事件
         initPhotoEditListener();
     }
@@ -396,7 +412,6 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         }
     }
 
-
     /**
      * 主按钮监听
      */
@@ -438,27 +453,197 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
             @Override
             public void onLongClickError() {
                 Log.d(TAG, "pvLayout onLongClickError ");
-                if (mErrorListener != null) {
-                    mErrorListener.onAudioPermissionError();
-                }
             }
 
             @Override
             public void onBanClickTips() {
                 // 判断如果是分段录制模式就提示
                 if (mIsSectionRecord) {
-                    mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_working_video_click_later));
+                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_working_video_click_later));
                 }
             }
 
             @Override
             public void onClickStopTips() {
                 if (mIsSectionRecord) {
-                    mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_suspension));
+                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_suspension));
                 } else {
-                    mViewHolder.pvLayout.setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_end));
+                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_end));
                 }
             }
+        });
+    }
+
+    /**
+     * 左右两个按钮：确认和取消
+     */
+    private void initPvLayoutOperateListener() {
+        getPhotoVideoLayout().setOperateListener(new BaseOperationLayout.OperateListener() {
+            @Override
+            public void cancel() {
+                Log.d(TAG, "cancel " + getState().toString());
+                mCameraStateManagement.pvLayoutCancel();
+            }
+
+            @Override
+            public void confirm() {
+                Log.d(TAG, "confirm " + getState().toString());
+                mCameraStateManagement.pvLayoutCommit();
+            }
+
+            @Override
+            public void startProgress() {
+                Log.d(TAG, "startProgress " + getState().toString());
+                mCameraStateManagement.pvLayoutCommit();
+            }
+
+            @Override
+            public void stopProgress() {
+                Log.d(TAG, "stopProgress " + getState().toString());
+                mCameraStateManagement.stopProgress();
+                // 重置按钮
+                getPhotoVideoLayout().resetConfirm();
+            }
+
+            @Override
+            public void doneProgress() {
+                Log.d(TAG, "doneProgress " + getState().toString());
+                getPhotoVideoLayout().resetConfirm();
+            }
+        });
+    }
+
+    /**
+     * 录制界面按钮事件监听，目前只有一个，点击分段录制
+     */
+    private void initPvLayoutRecordListener() {
+        getPhotoVideoLayout().setRecordListener(tag -> {
+            mIsSectionRecord = "1".equals(tag);
+            getPhotoVideoLayout().setProgressMode(true);
+        });
+    }
+
+    /**
+     * 视频编辑后的事件，目前 有分段录制后合并、压缩视频
+     */
+    private void initVideoEditListener() {
+        if (mCameraSpec.isMergeEnable() && mCameraSpec.getVideoMergeCoordinator() != null) {
+            mCameraSpec.getVideoMergeCoordinator().setVideoMergeListener(BaseCameraFragment.this.getClass(), new VideoEditListener() {
+                @Override
+                public void onFinish() {
+                    Log.d(TAG, "videoMergeCoordinator onFinish");
+                    getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
+                    PreviewVideoActivity.startActivity(BaseCameraFragment.this, mPreviewVideoActivityResult, mNewSectionVideoPath);
+                }
+
+                @Override
+                public void onProgress(int progress, long progressTime) {
+                    Log.d(TAG, "videoMergeCoordinator onProgress progress: " + progress + " progressTime: " + progressTime);
+                    if (progress >= PROGRESS_MAX) {
+                        getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(99);
+                    } else {
+                        getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(progress);
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+                    Log.d(TAG, "videoMergeCoordinator onCancel");
+                    // 重置按钮
+                    getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+                }
+
+                @Override
+                public void onError(@NotNull String message) {
+                    Log.d(TAG, "videoMergeCoordinator onError" + message);
+                    // 重置按钮
+                    getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+                }
+            });
+        }
+    }
+
+    /**
+     * 拍照、录制监听
+     */
+    private void initCameraViewListener() {
+        getCameraView().addCameraListener(new CameraListener() {
+
+            @Override
+            public void onPictureTaken(@NonNull PictureResult result) {
+                // 如果是自动闪光灯模式便关闭闪光灯
+                if (mFlashModel == TYPE_FLASH_AUTO) {
+                    getCameraView().setFlash(Flash.OFF);
+                }
+                result.toBitmap(bitmap -> {
+                    // 显示图片
+                    addCaptureData(bitmap);
+                    // 恢复点击
+                    getChildClickableLayout().setChildClickable(true);
+                });
+                super.onPictureTaken(result);
+            }
+
+            @Override
+            public void onVideoTaken(@NonNull VideoResult result) {
+                Log.d(TAG, "onVideoTaken");
+                super.onVideoTaken(result);
+                // 判断是否短时间结束
+                if (!mIsShort && !isBreakOff()) {
+                    if (!mIsSectionRecord) {
+                        //  如果录制结束，打开该视频。打开底部菜单
+                        PreviewVideoActivity.startActivity(BaseCameraFragment.this, mPreviewVideoActivityResult, result.getFile().getPath());
+                        Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
+                    } else {
+                        Log.d(TAG, "onVideoTaken 分段录制 " + result.getFile().getPath());
+                        mVideoTimes.add(mSectionRecordTime);
+                        // 如果已经有录像缓存，那么就不执行这个动作了
+                        if (mVideoPaths.size() <= 0) {
+                            getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
+                            getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+                        }
+                        // 加入视频列表
+                        mVideoPaths.add(result.getFile().getPath());
+                        // 显示当前进度
+                        getPhotoVideoLayout().setData(mVideoTimes);
+                        // 创建新的file
+                        mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
+                        // 如果是在已经合成的情况下继续拍摄，那就重置状态
+                        if (!getPhotoVideoLayout().getProgressMode()) {
+                            getPhotoVideoLayout().resetConfirm();
+                        }
+                    }
+                } else {
+                    Log.d(TAG, "onVideoTaken delete " + mVideoFile.getPath());
+                    FileUtil.deleteFile(mVideoFile);
+                }
+                mIsShort = false;
+                setBreakOff(false);
+                getPhotoVideoLayout().setEnabled(true);
+            }
+
+            @Override
+            public void onVideoRecordingStart() {
+                Log.d(TAG, "onVideoRecordingStart");
+                super.onVideoRecordingStart();
+                // 录制开始后，在没有结果之前，禁止第二次点击
+                getPhotoVideoLayout().setEnabled(false);
+            }
+
+            @Override
+            public void onCameraError(@NonNull CameraException exception) {
+                Log.d(TAG, "onCameraError");
+                super.onCameraError(exception);
+                if (mIsSectionRecord) {
+                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_recording_error_roll_back_previous_paragraph));
+                    getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
+                }
+                if (!TextUtils.isEmpty(exception.getMessage())) {
+                    Log.d(TAG, "onCameraError:" + exception.getMessage() + " " + exception.getReason());
+                }
+                getPhotoVideoLayout().setEnabled(true);
+            }
+
         });
     }
 
@@ -478,79 +663,6 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
             mImageEditActivityResult.launch(intent);
         });
     }
-
-    /**
-     * 设置ChildClickableLayout
-     *
-     * @return 返回ChildClickableLayout，主要用于控制整个屏幕是否接受触摸事件
-     */
-    @NonNull
-    public abstract IChildClickableLayout getChildClickableLayout();
-
-    /**
-     * 设置CameraView
-     *
-     * @return 返回CameraView，主要用于拍摄、录制，里面包含水印
-     */
-    @NonNull
-    public abstract CameraView getCameraView();
-
-    /**
-     * 当想使用自带的多图显示控件，请设置它
-     *
-     * @return 返回多图的Recycler显示控件
-     */
-    @Nullable
-    public abstract RecyclerView getRecyclerViewPhoto();
-
-    /**
-     * 修饰多图控件的View，只有第一次初始化有效
-     * 一般用于群体隐藏和显示
-     * 你也可以重写[hideViewByMultipleZero]方法自行隐藏显示相关view
-     *
-     * @return View[]
-     */
-    @Nullable
-    public abstract View[] getMultiplePhotoView();
-
-    /**
-     * 当想使用自带的功能按钮（包括拍摄、录制、录音、确认、取消），请设置它
-     *
-     * @return PhotoVideoLayout
-     */
-    @NonNull
-    public abstract PhotoVideoLayout getPhotoVideoLayout();
-
-    /**
-     * 单图控件的View
-     *
-     * @return ImageViewTouch
-     */
-    public abstract ImageViewTouch getSinglePhotoView();
-
-    /**
-     * 左上角的关闭控件
-     *
-     * @return View
-     */
-    @Nullable
-    public abstract View getCloseView();
-
-    /**
-     * 右上角的闪光灯控件
-     *
-     * @return View
-     */
-    @Nullable
-    public abstract ImageView getFlashView();
-
-    /**
-     * 右上角的切换前置/后置摄像控件
-     *
-     * @return View
-     */
-    @Nullable
-    public abstract ImageView getSwitchView();
 
     /**
      * 针对回调
@@ -718,7 +830,7 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         // 显示右上角菜单
         setMenuVisibility(View.VISIBLE);
         // 停止录像
-        Handle.postDelayed(() -> stopRecord(true), mCameraSpec.getMinDuration() - time);
+        stopRecord(true);
     }
 
     /**
@@ -1062,7 +1174,7 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
 
         // 显示横版列表的线条空间
         if (getMultiplePhotoView() != null) {
-            for (View view: getMultiplePhotoView()) {
+            for (View view : getMultiplePhotoView()) {
                 view.setVisibility(View.VISIBLE);
                 view.setVisibility(View.VISIBLE);
             }
@@ -1085,6 +1197,15 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
 
         // 禁用长按事件，即禁止录像
         getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
+    }
+
+    /**
+     * 获取当前view的状态
+     *
+     * @return 状态
+     */
+    public StateInterface getState() {
+        return mCameraStateManagement.getState();
     }
 
     /**
@@ -1177,6 +1298,15 @@ public abstract class BaseCameraFragment extends BaseFragment implements PhotoAd
         if (mCameraSpec.getEnableFlashMemoryModel()) {
             FlashCacheUtils.saveFlashModel(getContext(), mFlashModel);
         }
+    }
+
+    /**
+     * 停止录像并且完成它，如果是因为视频过短则清除冗余数据
+     *
+     * @param isShort 是否因为视频过短而停止
+     */
+    public void stopRecord(boolean isShort) {
+        mCameraStateManagement.stopRecord(isShort);
     }
 
     /**
