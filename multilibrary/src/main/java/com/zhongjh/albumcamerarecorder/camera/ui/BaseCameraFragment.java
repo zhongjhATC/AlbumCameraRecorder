@@ -48,7 +48,6 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.camera.ui.impl.ICameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.impl.ICameraView;
-import com.zhongjh.albumcamerarecorder.camera.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
@@ -1422,6 +1421,15 @@ public abstract class BaseCameraFragment extends BaseFragment
         }
         if (getSwitchView() != null) {
             getSwitchView().setEnabled(false);
+        }
+    }
+
+    /**
+     * 多视频分段录制中止提交
+     */
+    public void stopVideoMultiple() {
+        if (mCameraSpec.isMergeEnable() && mCameraSpec.getVideoMergeCoordinator() != null) {
+            mCameraSpec.getVideoMergeCoordinator().onMergeDispose(this.getClass());
         }
     }
 

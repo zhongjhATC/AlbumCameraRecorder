@@ -13,7 +13,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
 public class VideoMultiple extends StateMode {
 
     /**
-     * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment        主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
     public VideoMultiple(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {

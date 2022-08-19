@@ -11,6 +11,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
  * @date 2021/11/25
  */
 public class VideoIn extends StateMode {
+
     /**
      * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态

@@ -29,7 +29,7 @@
             android:screenOrientation="locked"
             android:launchMode="singleTop" />
         <activity
-            android:name=".camera.PreviewVideoActivity"
+            android:name=".camera.ui.PreviewVideoActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="locked"
             android:launchMode="singleTop" />

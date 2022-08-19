@@ -22,12 +22,12 @@ import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayo
  * @author zhongjh
  * @date 2022/8/12
  */
-public class CameraFragment2 extends BaseCameraFragment {
+public class CameraFragment extends BaseCameraFragment {
 
     ViewHolder mViewHolder;
 
-    public static CameraFragment2 newInstance() {
-        return new CameraFragment2();
+    public static CameraFragment newInstance() {
+        return new CameraFragment();
     }
 
     @Override

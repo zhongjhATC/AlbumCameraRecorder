@@ -1,6 +1,6 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
 
@@ -16,7 +16,7 @@ public class VideoMultipleIn extends StateMode {
      * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoMultipleIn(CameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+    public VideoMultipleIn(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
         super(cameraFragment, cameraStateManagement);
     }
 
@@ -30,18 +30,18 @@ public class VideoMultipleIn extends StateMode {
     public Boolean onBackPressed() {
         // 如果是录制中则暂停视频
         getCameraFragment().setBreakOff(true);
-        getCameraFragment().mViewHolder.cameraView.stopVideo();
-        getCameraFragment().mViewHolder.pvLayout.resetConfirm();
-        getCameraFragment().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
+        getCameraFragment().getCameraView().stopVideo();
+        getCameraFragment().getPhotoVideoLayout().resetConfirm();
+        getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
 
         if (getCameraFragment().mVideoPaths.size() <= 0) {
             // 如果没有视频节点则重置所有按钮
-            getCameraFragment().mViewHolder.pvLayout.reset();
+            getCameraFragment().getPhotoVideoLayout().reset();
             // 恢复预览状态
             getCameraStateManagement().setState(getCameraStateManagement().getPreview());
         } else {
             // 如果有视频节点则中断中心按钮
-            getCameraFragment().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.breakOff();
+            getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.breakOff();
             // 恢复预览状态
             getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
         }
@@ -65,10 +65,10 @@ public class VideoMultipleIn extends StateMode {
 
     @Override
     public void longClickShort(long time) {
-        getCameraFragment().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.selectionRecordRollBack();
+        getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
         if (getCameraFragment().mVideoPaths.size() <= 0) {
             // 母窗体显示底部
-            getCameraFragment().mMainActivity.showHideTableLayout(true);
+            getCameraFragment().mActivity.showHideTableLayout(true);
         }
     }
 
@@ -78,7 +78,7 @@ public class VideoMultipleIn extends StateMode {
             // 如果没有视频数据
             if (getCameraFragment().mVideoPaths.size() <= 0) {
                 // 则重置底部按钮
-                getCameraFragment().mViewHolder.pvLayout.reset();
+                getCameraFragment().getPhotoVideoLayout().reset();
                 // 恢复预览状态
                 getCameraStateManagement().setState(getCameraStateManagement().getPreview());
             } else {

@@ -1,4 +1,6 @@
-package com.zhongjh.albumcamerarecorder.camera;
+package com.zhongjh.albumcamerarecorder.camera.ui;
+
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -31,8 +33,6 @@ import com.zhongjh.common.utils.ThreadUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 
 
 /**
