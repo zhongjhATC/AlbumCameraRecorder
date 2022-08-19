@@ -1,6 +1,6 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate;
+package com.zhongjh.albumcamerarecorder.camera.ui.camerastate;
 
-import com.zhongjh.albumcamerarecorder.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
 
 /**
  * 状态模式

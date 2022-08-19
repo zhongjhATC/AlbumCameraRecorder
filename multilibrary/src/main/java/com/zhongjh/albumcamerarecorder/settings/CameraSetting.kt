@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings
 
+import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec.cleanInstance
@@ -18,12 +19,22 @@ import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 class CameraSetting : CameraSettingApi {
 
     private val mCameraSpec: CameraSpec = cleanInstance
+    /**
+     * 赋予自定义的CameraFragment
+     * 如果设置则使用自定义的CameraFragment,否则使用默认的CameraFragment
+     */
+    var baseCameraFragment : BaseCameraFragment? = null
 
     /**
      * 销毁事件
      */
     fun onDestroy() {
         mCameraSpec.onCameraViewListener = null
+    }
+
+    override fun cameraFragment(baseCameraFragment: BaseCameraFragment): CameraSetting {
+        this.baseCameraFragment = baseCameraFragment
+        return this
     }
 
     override fun mimeTypeSet(mimeTypes: Set<MimeType>): CameraSetting {

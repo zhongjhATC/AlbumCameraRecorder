@@ -1,8 +1,8 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
+package com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state;
 
 import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
 
 /**
  * 多个视频的状态录制中

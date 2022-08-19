@@ -29,7 +29,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.zhongjh.albumcamerarecorder.album.MainFragment;
-import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.CameraFragment2;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
@@ -446,7 +446,11 @@ public class MainActivity extends AppCompatActivity {
             } else if (mTitles.get(position).equals(getString(R.string.z_multi_library_sound_recording))) {
                 return SoundRecordingFragment.newInstance();
             } else {
-                return CameraFragment.newInstance();
+                if (mSpec.getCameraSetting() != null && mSpec.getCameraSetting().getBaseCameraFragment() != null) {
+                    return mSpec.getCameraSetting().getBaseCameraFragment();
+                } else {
+                    return CameraFragment2.newInstance();
+                }
             }
         }
 

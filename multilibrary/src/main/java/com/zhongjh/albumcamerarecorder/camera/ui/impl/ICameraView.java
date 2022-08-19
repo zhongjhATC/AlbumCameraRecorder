@@ -1,5 +1,6 @@
-package com.zhongjh.albumcamerarecorder.camera;
+package com.zhongjh.albumcamerarecorder.camera.ui.impl;
 
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -21,12 +22,27 @@ import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayo
 public interface ICameraView {
 
     /**
+     * 初始化根布局
+     *
+     * @return 布局layout的id
+     */
+    int setContentView();
+
+    /**
+     * 初始化相关view
+     *
+     * @param view               初始化好的view
+     * @param savedInstanceState savedInstanceState
+     */
+    void initView(View view, Bundle savedInstanceState);
+
+    /**
      * 设置ChildClickableLayout
      *
      * @return 返回ChildClickableLayout，主要用于控制整个屏幕是否接受触摸事件
      */
     @NonNull
-    public abstract IChildClickableLayout getChildClickableLayout();
+    IChildClickableLayout getChildClickableLayout();
 
     /**
      * 设置CameraView
@@ -34,7 +50,7 @@ public interface ICameraView {
      * @return 返回CameraView，主要用于拍摄、录制，里面包含水印
      */
     @NonNull
-    public abstract CameraView getCameraView();
+    CameraView getCameraView();
 
     /**
      * 当想使用自带的多图显示控件，请设置它
@@ -42,7 +58,7 @@ public interface ICameraView {
      * @return 返回多图的Recycler显示控件
      */
     @Nullable
-    public abstract RecyclerView getRecyclerViewPhoto();
+    RecyclerView getRecyclerViewPhoto();
 
     /**
      * 修饰多图控件的View，只有第一次初始化有效
@@ -52,7 +68,7 @@ public interface ICameraView {
      * @return View[]
      */
     @Nullable
-    public abstract View[] getMultiplePhotoView();
+    View[] getMultiplePhotoView();
 
     /**
      * 当想使用自带的功能按钮（包括拍摄、录制、录音、确认、取消），请设置它
@@ -60,14 +76,14 @@ public interface ICameraView {
      * @return PhotoVideoLayout
      */
     @NonNull
-    public abstract PhotoVideoLayout getPhotoVideoLayout();
+    PhotoVideoLayout getPhotoVideoLayout();
 
     /**
      * 单图控件的View
      *
      * @return ImageViewTouch
      */
-    public abstract ImageViewTouch getSinglePhotoView();
+    ImageViewTouch getSinglePhotoView();
 
     /**
      * 左上角的关闭控件
@@ -75,7 +91,7 @@ public interface ICameraView {
      * @return View
      */
     @Nullable
-    public abstract View getCloseView();
+    View getCloseView();
 
     /**
      * 右上角的闪光灯控件
@@ -83,7 +99,7 @@ public interface ICameraView {
      * @return View
      */
     @Nullable
-    public abstract ImageView getFlashView();
+    ImageView getFlashView();
 
     /**
      * 右上角的切换前置/后置摄像控件
@@ -91,6 +107,6 @@ public interface ICameraView {
      * @return View
      */
     @Nullable
-    public abstract ImageView getSwitchView();
+    ImageView getSwitchView();
 
 }

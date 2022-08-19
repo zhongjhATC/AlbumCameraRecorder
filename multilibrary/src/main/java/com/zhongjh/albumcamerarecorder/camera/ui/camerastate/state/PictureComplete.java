@@ -1,15 +1,13 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
+package com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state;
 
 import static android.view.View.INVISIBLE;
 
 import android.view.View;
 
-import com.zhongjh.albumcamerarecorder.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-
-import static android.view.View.INVISIBLE;
 
 /**
  * 单图完成状态的相关处理
@@ -30,21 +28,21 @@ public class PictureComplete extends StateMode {
     @Override
     public void resetState() {
         // 重新启用cameraView
-        if (!getCameraFragment().mViewHolder.cameraView.isOpened()) {
-            getCameraFragment().mViewHolder.cameraView.open();
+        if (!getCameraFragment().getCameraView().isOpened()) {
+            getCameraFragment().getCameraView().open();
         }
 
         // 隐藏图片view
-        getCameraFragment().mViewHolder.imgPhoto.setVisibility(INVISIBLE);
+        getCameraFragment().getSinglePhotoView().setVisibility(INVISIBLE);
 
         // 删除图片
         if (getCameraFragment().mPhotoFile != null) {
             FileUtil.deleteFile(getCameraFragment().mPhotoFile);
         }
 
-        getCameraFragment().mViewHolder.pvLayout.getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
+        getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
 
-        getCameraFragment().mViewHolder.pvLayout.reset();
+        getCameraFragment().getPhotoVideoLayout().reset();
 
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
@@ -73,7 +71,7 @@ public class PictureComplete extends StateMode {
     @Override
     public void pvLayoutCancel() {
         getCameraFragment().cancelOnResetBySinglePicture();
-        getCameraFragment().mViewHolder.cameraView.open();
+        getCameraFragment().getCameraView().open();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }

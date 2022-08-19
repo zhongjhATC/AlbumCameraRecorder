@@ -1,8 +1,8 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
+package com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state;
 
-import com.zhongjh.albumcamerarecorder.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 
 import static android.app.Activity.RESULT_OK;

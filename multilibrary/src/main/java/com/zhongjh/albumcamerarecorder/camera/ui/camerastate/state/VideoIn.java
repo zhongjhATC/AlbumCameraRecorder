@@ -1,8 +1,8 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
+package com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
 
 /**
  * 正在录制视频中的状态
@@ -15,7 +15,7 @@ public class VideoIn extends StateMode {
      * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoIn(CameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+    public VideoIn(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
         super(cameraFragment, cameraStateManagement);
     }
 
@@ -29,9 +29,9 @@ public class VideoIn extends StateMode {
     public Boolean onBackPressed() {
         // 如果是录制中则暂停视频
         getCameraFragment().setBreakOff(true);
-        getCameraFragment().mViewHolder.cameraView.stopVideo();
+        getCameraFragment().getCameraView().stopVideo();
         // 重置按钮
-        getCameraFragment().mViewHolder.pvLayout.reset();
+        getCameraFragment().getPhotoVideoLayout().reset();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
         return true;
@@ -55,14 +55,14 @@ public class VideoIn extends StateMode {
     @Override
     public void longClickShort(long time) {
         // 母窗体显示底部
-        getCameraFragment().mMainActivity.showHideTableLayout(true);
+        getCameraFragment().mActivity.showHideTableLayout(true);
     }
 
     @Override
     public void stopRecord(boolean isShort) {
         if (isShort) {
             // 重置底部按钮
-            getCameraFragment().mViewHolder.pvLayout.reset();
+            getCameraFragment().getPhotoVideoLayout().reset();
             getCameraStateManagement().setState(getCameraStateManagement().getPreview());
         } else {
             getCameraStateManagement().setState(getCameraStateManagement().getVideoComplete());

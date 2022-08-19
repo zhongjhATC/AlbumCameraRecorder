@@ -1,16 +1,16 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate;
+package com.zhongjh.albumcamerarecorder.camera.ui.camerastate;
 
 import android.util.Log;
 import android.view.View;
 
-import com.zhongjh.albumcamerarecorder.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.state.PictureComplete;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.state.PictureMultiple;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.state.Preview;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoComplete;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoIn;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoMultiple;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.state.VideoMultipleIn;
+import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.PictureComplete;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.PictureMultiple;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.Preview;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.VideoComplete;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.VideoIn;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.VideoMultiple;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.VideoMultipleIn;
 
 /**
  * CameraLayout涉及到状态改变的事件都在这里

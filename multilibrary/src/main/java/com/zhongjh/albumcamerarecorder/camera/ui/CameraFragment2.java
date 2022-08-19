@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera;
+package com.zhongjh.albumcamerarecorder.camera.ui;
 
 import android.os.Bundle;
 import android.view.View;
@@ -25,6 +25,10 @@ import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayo
 public class CameraFragment2 extends BaseCameraFragment {
 
     ViewHolder mViewHolder;
+
+    public static CameraFragment2 newInstance() {
+        return new CameraFragment2();
+    }
 
     @Override
     public int setContentView() {

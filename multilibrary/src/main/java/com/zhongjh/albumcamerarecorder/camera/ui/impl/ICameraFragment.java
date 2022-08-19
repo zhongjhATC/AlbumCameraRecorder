@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera;
+package com.zhongjh.albumcamerarecorder.camera.ui.impl;
 
 import android.content.Intent;
 import android.graphics.Bitmap;

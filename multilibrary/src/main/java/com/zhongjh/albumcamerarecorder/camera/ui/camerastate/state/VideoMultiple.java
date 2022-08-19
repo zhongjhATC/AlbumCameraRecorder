@@ -1,8 +1,8 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
+package com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
 
 /**
  * 多个视频模式
@@ -16,7 +16,7 @@ public class VideoMultiple extends StateMode {
      * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoMultiple(CameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+    public VideoMultiple(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
         super(cameraFragment, cameraStateManagement);
     }
 
