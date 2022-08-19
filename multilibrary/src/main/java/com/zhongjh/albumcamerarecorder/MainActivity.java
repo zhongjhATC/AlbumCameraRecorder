@@ -135,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLayoutMediator.detach();
+        if (mLayoutMediator != null) {
+            mLayoutMediator.detach();
+        }
     }
 
     @Override
