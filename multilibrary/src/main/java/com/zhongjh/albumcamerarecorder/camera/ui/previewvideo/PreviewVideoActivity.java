@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui;
+package com.zhongjh.albumcamerarecorder.camera.ui.previewvideo;
 
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 
@@ -44,7 +44,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     private static final String TAG = PreviewVideoActivity.class.getSimpleName();
 
-    static final String LOCAL_FILE = "LOCAL_FILE";
+    public static final String LOCAL_FILE = "LOCAL_FILE";
     static final String PATH = "PATH";
 
     VideoView mVideoViewPreview;
