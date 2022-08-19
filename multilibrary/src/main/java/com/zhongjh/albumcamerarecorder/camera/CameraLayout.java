@@ -198,30 +198,9 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
      */
     private String mNewSectionVideoPath;
     /**
-     * 用于延迟隐藏的事件，如果不用延迟，会有短暂闪屏现象
-     */
-    private final Handler mCameraViewGoneHandler = new Handler(Looper.getMainLooper());
-    /**
-     * 用于延迟显示的事件，如果不用延迟，会有短暂闪屏现象
-     */
-    private final Handler mCameraViewVisibleHandler = new Handler(Looper.getMainLooper());
-    /**
      * 延迟拍摄，用于打开闪光灯再拍摄
      */
     private final Handler mCameraTakePictureHandler = new Handler(Looper.getMainLooper());
-    private final Runnable mCameraViewGoneRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // 隐藏cameraView
-            mViewHolder.cameraView.close();
-        }
-    };
-    private final Runnable mCameraViewVisibleRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mViewHolder.cameraView.open();
-        }
-    };
     private final Runnable mCameraTakePictureRunnable = new Runnable() {
         @Override
         public void run() {
@@ -578,8 +557,6 @@ public class CameraLayout extends RelativeLayout implements PhotoAdapterListener
                 mCameraSpec.setVideoMergeCoordinator(null);
             }
         }
-        mCameraViewGoneHandler.removeCallbacks(mCameraViewGoneRunnable);
-        mCameraViewVisibleHandler.removeCallbacks(mCameraViewVisibleRunnable);
         mCameraTakePictureHandler.removeCallbacks(mCameraTakePictureRunnable);
         if (mMovePictureFileTask != null) {
             mMovePictureFileTask.cancel();
