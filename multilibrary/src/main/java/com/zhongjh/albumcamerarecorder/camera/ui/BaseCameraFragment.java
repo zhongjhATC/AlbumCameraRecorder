@@ -55,6 +55,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateInterface;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
+import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
@@ -84,12 +85,13 @@ import java.util.List;
 
 /**
  * 一个父类的拍摄Fragment，用于开放出来给开发自定义，但是同时也需要遵守一些规范
- * 因为该类含有过多方法，所以采用 多接口 + Facade 模式
+ * 因为该类含有过多方法，所以采用多接口
  *
  * @author zhongjh
  * @date 2022/8/11
  */
-public abstract class BaseCameraFragment extends BaseFragment
+public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicturePresenter>
+        extends BaseFragment
         implements PhotoAdapterListener, ICameraFragment, ICameraView {
 
     private static final String TAG = BaseCameraFragment.class.getSimpleName();
@@ -100,30 +102,21 @@ public abstract class BaseCameraFragment extends BaseFragment
     /**
      * 状态管理
      */
-    public CameraStateManagement mCameraStateManagement;
-
-    public CameraStateManagement getCameraStateManagement() {
-        return mCameraStateManagement;
-    }
-
+    private CameraStateManagement mCameraStateManagement;
     /**
      * 在图廊预览界面点击了确定
      */
     public ActivityResultLauncher<Intent> mAlbumPreviewActivityResult;
-
     /**
      * 从视频预览界面回来
      */
     ActivityResultLauncher<Intent> mPreviewVideoActivityResult;
-
     /**
      * 从编辑图片界面回来
      */
     ActivityResultLauncher<Intent> mImageEditActivityResult;
-
     public Context mContext;
     public MainActivity mActivity;
-
     /**
      * 图片
      */
@@ -142,15 +135,6 @@ public abstract class BaseCameraFragment extends BaseFragment
     public CameraSpec mCameraSpec;
 
     /**
-     * 一个迁移图片的异步线程
-     */
-    public ThreadUtils.SimpleTask<ArrayList<LocalFile>> mMovePictureFileTask;
-
-    /**
-     * 拍照的图片集合适配器
-     */
-    private PhotoAdapter mPhotoAdapter;
-    /**
      * 图片,单图或者多图都会加入该列表
      */
     List<BitmapData> mBitmapData = new ArrayList<>();
@@ -161,7 +145,12 @@ public abstract class BaseCameraFragment extends BaseFragment
     /**
      * 处于分段录制模式下的视频的时间列表
      */
-    private final ArrayList<Long> mVideoTimes = new ArrayList<>();
+    private final ArrayList<Long> videoTimes = new ArrayList<>();
+
+    public ArrayList<Long> getVideoTimes() {
+        return videoTimes;
+    }
+
     /**
      * 处于分段录制模式下合成的新的视频
      */
@@ -171,21 +160,18 @@ public abstract class BaseCameraFragment extends BaseFragment
      */
     public File mVideoFile;
     /**
-     * 照片File,用于后面能随时删除
-     */
-    public File mPhotoFile;
-    /**
-     * 编辑后的照片
-     */
-    private File mPhotoEditFile;
-    /**
-     * 照片Uri,作用于单图
-     */
-    public Uri mSinglePhotoUri;
-    /**
      * 闪关灯状态 默认关闭
      */
-    private int mFlashModel = TYPE_FLASH_OFF;
+    private int flashModel = TYPE_FLASH_OFF;
+
+    public int getFlashModel() {
+        return flashModel;
+    }
+
+    public void setFlashModel(int flashModel) {
+        this.flashModel = flashModel;
+    }
+
     /**
      * 默认图片
      */
@@ -214,20 +200,6 @@ public abstract class BaseCameraFragment extends BaseFragment
      * 是否中断录像
      */
     private boolean mIsBreakOff;
-    /**
-     * 延迟拍摄，用于打开闪光灯再拍摄
-     */
-    private final Handler mCameraTakePictureHandler = new Handler(Looper.getMainLooper());
-    private final Runnable mCameraTakePictureRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (mCameraSpec.getEnableImageHighDefinition()) {
-                getCameraView().takePicture();
-            } else {
-                getCameraView().takePictureSnapshot();
-            }
-        }
-    };
 
     /**
      * 修饰多图控件的View数组
@@ -238,6 +210,19 @@ public abstract class BaseCameraFragment extends BaseFragment
      * 修饰单图控件的View
      */
     private ImageViewTouch singlePhotoViews;
+
+    public CameraStateManagement getCameraStateManagement() {
+        return mCameraStateManagement;
+    }
+
+    /**
+     * 设置[BaseCameraPicturePresenter]，专门处理有关图片逻辑
+     * 如果没有自定义，则直接返回[BaseCameraPicturePresenter]
+     *
+     * @return BaseCameraPicturePresenter
+     */
+    @NonNull
+    abstract CameraPicture getCameraPicturePresenter();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -282,7 +267,7 @@ public abstract class BaseCameraFragment extends BaseFragment
     @Override
     public boolean onKeyDown(int keyCode, @NotNull KeyEvent event) {
         if ((keyCode & mCameraSpec.getKeyCodeTakePhoto()) > 0) {
-            takePhoto();
+            getCameraPicturePresenter().takePhoto();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -315,60 +300,7 @@ public abstract class BaseCameraFragment extends BaseFragment
     @Override
     public void onDestroy() {
         onDestroy(mIsCommit);
-        mCameraSpec.setOnCaptureListener(null);
         super.onDestroy();
-    }
-
-    /**
-     * 生命周期onDestroy
-     *
-     * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
-     */
-    protected void onDestroy(boolean isCommit) {
-        LogUtil.i("CameraLayout destroy");
-        if (!isCommit) {
-            if (mPhotoFile != null) {
-                // 删除图片
-                FileUtil.deleteFile(mPhotoFile);
-            }
-            if (mVideoFile != null) {
-                // 删除视频
-                FileUtil.deleteFile(mVideoFile);
-            }
-            // 删除多个视频
-            for (String item : mVideoPaths) {
-                FileUtil.deleteFile(item);
-            }
-            // 删除多个图片
-            if (mPhotoAdapter.getListData() != null) {
-                for (BitmapData bitmapData : mPhotoAdapter.getListData()) {
-                    FileUtil.deleteFile(bitmapData.getPath());
-                }
-            }
-            // 新合成视频删除
-            if (mNewSectionVideoPath != null) {
-                FileUtil.deleteFile(mNewSectionVideoPath);
-            }
-        } else {
-            // 如果是提交的，删除合成前的视频
-            for (String item : mVideoPaths) {
-                FileUtil.deleteFile(item);
-            }
-        }
-        getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-        if (mCameraSpec.isMergeEnable()) {
-            if (mCameraSpec.getVideoMergeCoordinator() != null) {
-                mCameraSpec.getVideoMergeCoordinator().onMergeDestroy(this.getClass());
-                mCameraSpec.setVideoMergeCoordinator(null);
-            }
-        }
-        mCameraTakePictureHandler.removeCallbacks(mCameraTakePictureRunnable);
-        if (mMovePictureFileTask != null) {
-            mMovePictureFileTask.cancel();
-        }
-        getCameraView().destroy();
-        // 记忆模式
-        flashSaveCache();
     }
 
     /**
@@ -419,7 +351,7 @@ public abstract class BaseCameraFragment extends BaseFragment
         mPlaceholder = ta.getDrawable(0);
 
         // 闪光灯修改默认模式
-        mFlashModel = mCameraSpec.getFlashModel();
+        flashModel = mCameraSpec.getFlashModel();
         // 记忆模式
         flashGetCache();
         initMultiplePhotoAdapter();
@@ -470,9 +402,9 @@ public abstract class BaseCameraFragment extends BaseFragment
     private void initImgFlashListener() {
         if (getFlashView() != null) {
             getFlashView().setOnClickListener(v -> {
-                mFlashModel++;
-                if (mFlashModel > TYPE_FLASH_OFF) {
-                    mFlashModel = TYPE_FLASH_AUTO;
+                flashModel++;
+                if (flashModel > TYPE_FLASH_OFF) {
+                    flashModel = TYPE_FLASH_AUTO;
                 }
                 // 重新设置当前闪光灯模式
                 setFlashLamp();
@@ -505,7 +437,7 @@ public abstract class BaseCameraFragment extends BaseFragment
             @Override
             public void onClick() {
                 Log.d(TAG, "pvLayout onClick");
-                takePhoto();
+                getCameraPicturePresenter().takePhoto();
             }
 
             @Override
@@ -650,7 +582,7 @@ public abstract class BaseCameraFragment extends BaseFragment
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
                 // 如果是自动闪光灯模式便关闭闪光灯
-                if (mFlashModel == TYPE_FLASH_AUTO) {
+                if (flashModel == TYPE_FLASH_AUTO) {
                     getCameraView().setFlash(Flash.OFF);
                 }
                 result.toBitmap(bitmap -> {
@@ -674,7 +606,7 @@ public abstract class BaseCameraFragment extends BaseFragment
                         Log.d(TAG, "onVideoTaken " + result.getFile().getPath());
                     } else {
                         Log.d(TAG, "onVideoTaken 分段录制 " + result.getFile().getPath());
-                        mVideoTimes.add(mSectionRecordTime);
+                        videoTimes.add(mSectionRecordTime);
                         // 如果已经有录像缓存，那么就不执行这个动作了
                         if (mVideoPaths.size() <= 0) {
                             getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
@@ -683,7 +615,7 @@ public abstract class BaseCameraFragment extends BaseFragment
                         // 加入视频列表
                         mVideoPaths.add(result.getFile().getPath());
                         // 显示当前进度
-                        getPhotoVideoLayout().setData(mVideoTimes);
+                        getPhotoVideoLayout().setData(videoTimes);
                         // 创建新的file
                         mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
                         // 如果是在已经合成的情况下继续拍摄，那就重置状态
@@ -835,11 +767,11 @@ public abstract class BaseCameraFragment extends BaseFragment
      */
     public void initMultiplePhotoAdapter() {
         // 初始化多图适配器，先判断是不是多图配置
-        mPhotoAdapter = new PhotoAdapter(getContext(), mGlobalSpec, mBitmapData, this);
+        getCameraPicturePresenter().setPhotoAdapter(new PhotoAdapter(getContext(), mGlobalSpec, mBitmapData, this));
         if (getRecyclerViewPhoto() != null) {
             if (SelectableUtils.getImageMaxCount() > 1) {
                 getRecyclerViewPhoto().setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-                getRecyclerViewPhoto().setAdapter(mPhotoAdapter);
+                getRecyclerViewPhoto().setAdapter(getCameraPicturePresenter().getPhotoAdapter());
                 getRecyclerViewPhoto().setVisibility(View.VISIBLE);
             } else {
                 getRecyclerViewPhoto().setVisibility(View.GONE);
@@ -848,27 +780,46 @@ public abstract class BaseCameraFragment extends BaseFragment
     }
 
     /**
-     * 拍照
+     * 生命周期onDestroy
+     *
+     * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
      */
-    private void takePhoto() {
-        // 开启才能执行别的事件, 如果已经有分段视频，则不允许拍照了
-        if (getCameraView().isOpened() && mVideoTimes.size() <= 0) {
-            // 判断数量
-            if (mPhotoAdapter.getItemCount() < SelectableUtils.getImageMaxCount()) {
-                // 设置不能点击，防止多次点击报错
-                getChildClickableLayout().setChildClickable(false);
-                // 判断如果是自动闪光灯模式便开启闪光灯
-                if (mFlashModel == TYPE_FLASH_AUTO) {
-                    getCameraView().setFlash(Flash.TORCH);
-                    // 延迟1秒拍照
-                    mCameraTakePictureHandler.postDelayed(mCameraTakePictureRunnable, 1000);
-                } else {
-                    mCameraTakePictureRunnable.run();
-                }
-            } else {
-                getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached));
+    protected void onDestroy(boolean isCommit) {
+        LogUtil.i("CameraLayout destroy");
+        getCameraPicturePresenter().onDestroy(isCommit);
+        if (!isCommit) {
+            if (mVideoFile != null) {
+                // 删除视频
+                FileUtil.deleteFile(mVideoFile);
+            }
+            // 删除多个视频
+            for (String item : mVideoPaths) {
+                FileUtil.deleteFile(item);
+            }
+            // 新合成视频删除
+            if (mNewSectionVideoPath != null) {
+                FileUtil.deleteFile(mNewSectionVideoPath);
+            }
+        } else {
+            // 如果是提交的，删除合成前的视频
+            for (String item : mVideoPaths) {
+                FileUtil.deleteFile(item);
             }
         }
+        getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+        if (mCameraSpec.isMergeEnable()) {
+            if (mCameraSpec.getVideoMergeCoordinator() != null) {
+                mCameraSpec.getVideoMergeCoordinator().onMergeDestroy(this.getClass());
+                mCameraSpec.setVideoMergeCoordinator(null);
+            }
+        }
+        if (mMovePictureFileTask != null) {
+            mMovePictureFileTask.cancel();
+        }
+        getCameraView().destroy();
+        // 记忆模式
+        flashSaveCache();
+        mCameraSpec.setOnCaptureListener(null);
     }
 
     /**
@@ -1039,10 +990,10 @@ public abstract class BaseCameraFragment extends BaseFragment
         // 删除最后一个视频和视频文件
         FileUtil.deleteFile(mVideoPaths.get(mVideoPaths.size() - 1));
         mVideoPaths.remove(mVideoPaths.size() - 1);
-        mVideoTimes.remove(mVideoTimes.size() - 1);
+        videoTimes.remove(videoTimes.size() - 1);
 
         // 显示当前进度
-        getPhotoVideoLayout().setData(mVideoTimes);
+        getPhotoVideoLayout().setData(videoTimes);
         getPhotoVideoLayout().invalidateClickOrLongButton();
         if (mVideoPaths.size() == 0) {
             mCameraStateManagement.resetState();
@@ -1450,7 +1401,7 @@ public abstract class BaseCameraFragment extends BaseFragment
     private void flashGetCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则使用上个闪光灯模式
         if (mCameraSpec.getEnableFlashMemoryModel()) {
-            mFlashModel = FlashCacheUtils.getFlashModel(getContext());
+            flashModel = FlashCacheUtils.getFlashModel(getContext());
         }
     }
 
@@ -1460,7 +1411,7 @@ public abstract class BaseCameraFragment extends BaseFragment
     private void flashSaveCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则存储当前闪光灯模式
         if (mCameraSpec.getEnableFlashMemoryModel()) {
-            FlashCacheUtils.saveFlashModel(getContext(), mFlashModel);
+            FlashCacheUtils.saveFlashModel(getContext(), flashModel);
         }
     }
 
@@ -1501,7 +1452,7 @@ public abstract class BaseCameraFragment extends BaseFragment
      */
     private void setFlashLamp() {
         if (getFlashView() != null) {
-            switch (mFlashModel) {
+            switch (flashModel) {
                 case TYPE_FLASH_AUTO:
                     getFlashView().setImageResource(mCameraSpec.getImageFlashAuto());
                     getCameraView().setFlash(Flash.AUTO);

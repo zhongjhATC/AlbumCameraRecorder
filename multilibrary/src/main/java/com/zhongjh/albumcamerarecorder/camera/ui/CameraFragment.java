@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
+import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
@@ -22,9 +23,10 @@ import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayo
  * @author zhongjh
  * @date 2022/8/12
  */
-public class CameraFragment extends BaseCameraFragment {
+public class CameraFragment extends BaseCameraFragment<BaseCameraPicturePresenter> {
 
     ViewHolder mViewHolder;
+    BaseCameraPicturePresenter cameraPicturePresenter = new BaseCameraPicturePresenter(this);
 
     public static CameraFragment newInstance() {
         return new CameraFragment();
@@ -91,6 +93,12 @@ public class CameraFragment extends BaseCameraFragment {
     @Override
     public ImageView getSwitchView() {
         return mViewHolder.imgSwitch;
+    }
+
+    @NonNull
+    @Override
+    public BaseCameraPicturePresenter getCameraPicturePresenter() {
+        return cameraPicturePresenter;
     }
 
     @Override

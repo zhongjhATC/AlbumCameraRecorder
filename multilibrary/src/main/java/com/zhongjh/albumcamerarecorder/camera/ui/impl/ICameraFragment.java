@@ -117,5 +117,4 @@ public interface ICameraFragment {
      */
     void setUiEnableFalse();
 
-
 }
