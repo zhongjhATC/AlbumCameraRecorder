@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.camera.ui.presenter;
 
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,7 @@ import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.utils.ThreadUtils;
+import com.zhongjh.imageedit.ImageEditActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -67,6 +69,23 @@ public class BaseCameraPicturePresenter {
      * 一个迁移图片的异步线程
      */
     public ThreadUtils.SimpleTask<ArrayList<LocalFile>> movePictureFileTask;
+
+    /**
+     * 编辑图片事件
+     */
+    public void initPhotoEditListener() {
+        getPhotoVideoLayout().getViewHolder().rlEdit.setOnClickListener(view -> {
+            Uri uri = (Uri) view.getTag();
+            mPhotoEditFile = mPictureMediaStoreCompat.createFile(0, true, "jpg");
+
+            Intent intent = new Intent();
+            intent.setClass(getContext(), ImageEditActivity.class);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mPhotoEditFile.getAbsolutePath());
+            mImageEditActivityResult.launch(intent);
+        });
+    }
 
     /**
      * 拍照

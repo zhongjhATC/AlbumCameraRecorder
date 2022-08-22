@@ -378,7 +378,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         // 拍照监听
         initCameraViewListener();
         // 编辑图片事件
-        initPhotoEditListener();
+        getCameraPicturePresenter().initPhotoEditListener();
     }
 
     /**
@@ -657,22 +657,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         });
     }
 
-    /**
-     * 编辑图片事件
-     */
-    private void initPhotoEditListener() {
-        getPhotoVideoLayout().getViewHolder().rlEdit.setOnClickListener(view -> {
-            Uri uri = (Uri) view.getTag();
-            mPhotoEditFile = mPictureMediaStoreCompat.createFile(0, true, "jpg");
 
-            Intent intent = new Intent();
-            intent.setClass(getContext(), ImageEditActivity.class);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mPhotoEditFile.getAbsolutePath());
-            mImageEditActivityResult.launch(intent);
-        });
-    }
 
     /**
      * 针对回调
