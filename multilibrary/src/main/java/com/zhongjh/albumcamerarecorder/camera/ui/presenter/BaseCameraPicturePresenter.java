@@ -16,6 +16,7 @@ import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
 
@@ -52,6 +53,10 @@ public class BaseCameraPicturePresenter {
      */
     private Uri singlePhotoUri;
     /**
+     * 图片
+     */
+    private MediaStoreCompat mPictureMediaStoreCompat;
+    /**
      * 延迟拍摄，用于打开闪光灯再拍摄
      */
     private final Handler cameraTakePictureHandler = new Handler(Looper.getMainLooper());
@@ -71,12 +76,30 @@ public class BaseCameraPicturePresenter {
     public ThreadUtils.SimpleTask<ArrayList<LocalFile>> movePictureFileTask;
 
     /**
+     * 初始化有关图片的配置数据
+     */
+    public void initData() {
+        // 设置图片路径
+        if (baseCameraFragment.mGlobalSpec.getPictureStrategy() != null) {
+            // 如果设置了视频的文件夹路径，就使用它的
+            mPictureMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.mContext, baseCameraFragment.mGlobalSpec.getPictureStrategy());
+        } else {
+            // 否则使用全局的
+            if (baseCameraFragment.mGlobalSpec.getSaveStrategy() == null) {
+                throw new RuntimeException("Don't forget to set SaveStrategy.");
+            } else {
+                mPictureMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.mContext, baseCameraFragment.mGlobalSpec.getSaveStrategy());
+            }
+        }
+    }
+
+    /**
      * 编辑图片事件
      */
     public void initPhotoEditListener() {
-        getPhotoVideoLayout().getViewHolder().rlEdit.setOnClickListener(view -> {
+        baseCameraFragment.getPhotoVideoLayout().getViewHolder().rlEdit.setOnClickListener(view -> {
             Uri uri = (Uri) view.getTag();
-            mPhotoEditFile = mPictureMediaStoreCompat.createFile(0, true, "jpg");
+            setPhotoEditFile(baseCameraFragment.mPictureMediaStoreCompat.createFile(0, true, "jpg"));
 
             Intent intent = new Intent();
             intent.setClass(getContext(), ImageEditActivity.class);
@@ -131,6 +154,9 @@ public class BaseCameraPicturePresenter {
             }
         }
         cameraTakePictureHandler.removeCallbacks(cameraTakePictureRunnable);
+        if (movePictureFileTask != null) {
+            movePictureFileTask.cancel();
+        }
     }
 
     public PhotoAdapter getPhotoAdapter() {

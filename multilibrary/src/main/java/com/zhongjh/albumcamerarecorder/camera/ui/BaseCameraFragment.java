@@ -118,17 +118,13 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
     public Context mContext;
     public MainActivity mActivity;
     /**
-     * 图片
-     */
-    private MediaStoreCompat mPictureMediaStoreCompat;
-    /**
      * 录像文件配置路径
      */
-    private MediaStoreCompat mVideoMediaStoreCompat;
+    public MediaStoreCompat mVideoMediaStoreCompat;
     /**
      * 公共配置
      */
-    private GlobalSpec mGlobalSpec;
+    public GlobalSpec mGlobalSpec;
     /**
      * 拍摄配置
      */
@@ -320,18 +316,9 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         mCameraSpec = CameraSpec.INSTANCE;
         mCameraStateManagement = new CameraStateManagement(this);
         onActivityResult();
-        // 设置图片路径
-        if (mGlobalSpec.getPictureStrategy() != null) {
-            // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getPictureStrategy());
-        } else {
-            // 否则使用全局的
-            if (mGlobalSpec.getSaveStrategy() == null) {
-                throw new RuntimeException("Don't forget to set SaveStrategy.");
-            } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getSaveStrategy());
-            }
-        }
+
+        getCameraPicturePresenter().initData();
+
         // 设置视频路径
         if (mGlobalSpec.getVideoStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
@@ -797,9 +784,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
                 mCameraSpec.getVideoMergeCoordinator().onMergeDestroy(this.getClass());
                 mCameraSpec.setVideoMergeCoordinator(null);
             }
-        }
-        if (mMovePictureFileTask != null) {
-            mMovePictureFileTask.cancel();
         }
         getCameraView().destroy();
         // 记忆模式
