@@ -1,11 +1,17 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.presenter;
 
+import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
+import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.R;
@@ -37,6 +43,10 @@ public class BaseCameraPicturePresenter {
 
     protected BaseCameraFragment<BaseCameraPicturePresenter> baseCameraFragment;
     /**
+     * 从编辑图片界面回来
+     */
+    private ActivityResultLauncher<Intent> imageEditActivityResult;
+    /**
      * 拍照的多图片集合适配器
      */
     private PhotoAdapter photoAdapter;
@@ -53,9 +63,9 @@ public class BaseCameraPicturePresenter {
      */
     private Uri singlePhotoUri;
     /**
-     * 图片
+     * 图片的文件操作
      */
-    private MediaStoreCompat mPictureMediaStoreCompat;
+    private MediaStoreCompat pictureMediaStoreCompat;
     /**
      * 延迟拍摄，用于打开闪光灯再拍摄
      */
@@ -63,7 +73,7 @@ public class BaseCameraPicturePresenter {
     private final Runnable cameraTakePictureRunnable = new Runnable() {
         @Override
         public void run() {
-            if (baseCameraFragment.mCameraSpec.getEnableImageHighDefinition()) {
+            if (baseCameraFragment.getCameraSpec().getEnableImageHighDefinition()) {
                 baseCameraFragment.getCameraView().takePicture();
             } else {
                 baseCameraFragment.getCameraView().takePictureSnapshot();
@@ -80,17 +90,39 @@ public class BaseCameraPicturePresenter {
      */
     public void initData() {
         // 设置图片路径
-        if (baseCameraFragment.mGlobalSpec.getPictureStrategy() != null) {
+        if (baseCameraFragment.getGlobalSpec().getPictureStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.mContext, baseCameraFragment.mGlobalSpec.getPictureStrategy());
+            setPictureMediaStoreCompat(new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getPictureStrategy()));
         } else {
             // 否则使用全局的
-            if (baseCameraFragment.mGlobalSpec.getSaveStrategy() == null) {
+            if (baseCameraFragment.getGlobalSpec().getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.mContext, baseCameraFragment.mGlobalSpec.getSaveStrategy());
+                setPictureMediaStoreCompat(new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getSaveStrategy()));
             }
         }
+    }
+
+    /**
+     * 初始化Activity的编辑图片回调
+     */
+    public void initActivityResult() {
+        // 从编辑图片界面回来
+        imageEditActivityResult = baseCameraFragment.getMainActivity().registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    boolean isReturn = baseCameraFragment.initActivityResult(result.getResultCode());
+                    if (isReturn) {
+                        return;
+                    }
+                    if (result.getResultCode() == RESULT_OK) {
+                        if (result.getData() == null) {
+                            return;
+                        }
+                        // 编辑图片界面
+                        refreshEditPhoto(result.getData().getIntExtra(EXTRA_WIDTH, 0),
+                                result.getData().getIntExtra(EXTRA_HEIGHT, 0));
+                    }
+                });
     }
 
     /**
@@ -99,14 +131,13 @@ public class BaseCameraPicturePresenter {
     public void initPhotoEditListener() {
         baseCameraFragment.getPhotoVideoLayout().getViewHolder().rlEdit.setOnClickListener(view -> {
             Uri uri = (Uri) view.getTag();
-            setPhotoEditFile(baseCameraFragment.mPictureMediaStoreCompat.createFile(0, true, "jpg"));
-
+            setPhotoEditFile(getPictureMediaStoreCompat().createFile(0, true, "jpg"));
             Intent intent = new Intent();
-            intent.setClass(getContext(), ImageEditActivity.class);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
+            intent.setClass(baseCameraFragment.getMyContext(), ImageEditActivity.class);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.getMainActivity().getRequestedOrientation());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mPhotoEditFile.getAbsolutePath());
-            mImageEditActivityResult.launch(intent);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, getPhotoEditFile().getAbsolutePath());
+            baseCameraFragment.mImageEditActivityResult.launch(intent);
         });
     }
 
@@ -159,6 +190,14 @@ public class BaseCameraPicturePresenter {
         }
     }
 
+    public ActivityResultLauncher<Intent> getImageEditActivityResult() {
+        return imageEditActivityResult;
+    }
+
+    public void setImageEditActivityResult(ActivityResultLauncher<Intent> imageEditActivityResult) {
+        this.imageEditActivityResult = imageEditActivityResult;
+    }
+
     public PhotoAdapter getPhotoAdapter() {
         return photoAdapter;
     }
@@ -189,5 +228,13 @@ public class BaseCameraPicturePresenter {
 
     public void setSinglePhotoUri(Uri singlePhotoUri) {
         this.singlePhotoUri = singlePhotoUri;
+    }
+
+    public MediaStoreCompat getPictureMediaStoreCompat() {
+        return pictureMediaStoreCompat;
+    }
+
+    public void setPictureMediaStoreCompat(MediaStoreCompat pictureMediaStoreCompat) {
+        this.pictureMediaStoreCompat = pictureMediaStoreCompat;
     }
 }

@@ -56,7 +56,7 @@ public class VideoIn extends StateMode {
     @Override
     public void longClickShort(long time) {
         // 母窗体显示底部
-        getCameraFragment().mActivity.showHideTableLayout(true);
+        getCameraFragment().getMainActivity().showHideTableLayout(true);
     }
 
     @Override

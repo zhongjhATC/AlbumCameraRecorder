@@ -68,7 +68,7 @@ public class VideoMultipleIn extends StateMode {
         getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
         if (getCameraFragment().mVideoPaths.size() <= 0) {
             // 母窗体显示底部
-            getCameraFragment().mActivity.showHideTableLayout(true);
+            getCameraFragment().getMainActivity().showHideTableLayout(true);
         }
     }
 
