@@ -7,7 +7,7 @@ import android.view.View;
 import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter;
 
 /**
  * 单图完成状态的相关处理
@@ -21,7 +21,7 @@ public class PictureComplete extends StateMode {
      * @param cameraFragment        主要是多个状态围绕着CameraFragment进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public PictureComplete(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+    public PictureComplete(BaseCameraFragment<BaseCameraPicturePresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
         super(cameraFragment, cameraStateManagement);
     }
 
@@ -36,9 +36,7 @@ public class PictureComplete extends StateMode {
         getCameraFragment().getSinglePhotoView().setVisibility(INVISIBLE);
 
         // 删除图片
-        if (getCameraFragment().mPhotoFile != null) {
-            FileUtil.deleteFile(getCameraFragment().mPhotoFile);
-        }
+        getCameraFragment().getCameraPicturePresenter().deletePhotoFile();
 
         getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
 
@@ -88,8 +86,6 @@ public class PictureComplete extends StateMode {
 
     @Override
     public void stopProgress() {
-        if (getCameraFragment().mMovePictureFileTask != null) {
-            getCameraFragment().mMovePictureFileTask.cancel();
-        }
+        getCameraFragment().getCameraPicturePresenter().cancelMovePictureFileTask();
     }
 }

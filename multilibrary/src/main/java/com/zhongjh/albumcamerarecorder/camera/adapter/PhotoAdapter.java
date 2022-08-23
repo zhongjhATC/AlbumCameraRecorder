@@ -129,7 +129,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        mPhotoAdapterListener.onClick(intent);
+        mPhotoAdapterListener.onPhotoAdapterClick(intent);
     }
 
     /**
@@ -143,7 +143,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         mListData.remove(bitmapData);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, mListData.size());
-        mPhotoAdapterListener.onDelete(bitmapData, position);
+        mPhotoAdapterListener.onPhotoAdapterDelete(bitmapData, position);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state;
 import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter;
 
 /**
  * 正在录制视频中的状态
@@ -16,7 +17,7 @@ public class VideoIn extends StateMode {
      * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoIn(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+    public VideoIn(BaseCameraFragment<BaseCameraPicturePresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
         super(cameraFragment, cameraStateManagement);
     }
 

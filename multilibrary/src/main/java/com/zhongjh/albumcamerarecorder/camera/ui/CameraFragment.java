@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
@@ -99,11 +98,6 @@ public class CameraFragment extends BaseCameraFragment<BaseCameraPicturePresente
     @Override
     public BaseCameraPicturePresenter getCameraPicturePresenter() {
         return cameraPicturePresenter;
-    }
-
-    @Override
-    public void onDelete(BitmapData bitmapData, int position) {
-        super.onDelete(bitmapData, position);
     }
 
     public static class ViewHolder {

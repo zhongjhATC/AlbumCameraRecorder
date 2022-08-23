@@ -1,7 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.impl;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
@@ -19,46 +17,9 @@ import java.util.ArrayList;
 public interface ICameraFragment {
 
     /**
-     * 点击图片事件
-     *
-     * @param intent 点击后，封装相关数据进入该intent
-     */
-    void onClick(Intent intent);
-
-    /**
-     * 多图进行删除的时候
-     *
-     * @param bitmapData 数据
-     * @param position   删除的索引
-     */
-    void onDelete(BitmapData bitmapData, int position);
-
-    /**
      * 当多个图片删除到没有图片时候，隐藏相关View
      */
     void hideViewByMultipleZero();
-
-    /**
-     * 刷新多个图片
-     *
-     * @param bitmapDatas 最新的多图数据源
-     */
-    void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas);
-
-    /**
-     * 刷新编辑后的单图
-     *
-     * @param width  最新图片的宽度
-     * @param height 最新图片的高度
-     */
-    void refreshEditPhoto(int width, int height);
-
-    /**
-     * 添加入数据源
-     *
-     * @param bitmap bitmap
-     */
-    void addCaptureData(Bitmap bitmap);
 
     /**
      * 确认提交这些数据
@@ -72,7 +33,7 @@ public interface ICameraFragment {
      *
      * @param throwable 异常
      */
-    void failByConfirm(Throwable throwable);
+    void commitFail(Throwable throwable);
 
     /**
      * 显示单图

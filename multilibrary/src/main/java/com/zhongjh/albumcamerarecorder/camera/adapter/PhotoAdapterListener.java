@@ -16,7 +16,7 @@ public interface PhotoAdapterListener {
      *
      * @param intent 点击后，封装相关数据进入该intent
      */
-    void onClick(Intent intent);
+    void onPhotoAdapterClick(Intent intent);
 
     /**
      * 删除该图片
@@ -24,6 +24,6 @@ public interface PhotoAdapterListener {
      * @param bitmapData 数据
      * @param position   删除的索引
      */
-    void onDelete(BitmapData bitmapData, int position);
+    void onPhotoAdapterDelete(BitmapData bitmapData, int position);
 
 }

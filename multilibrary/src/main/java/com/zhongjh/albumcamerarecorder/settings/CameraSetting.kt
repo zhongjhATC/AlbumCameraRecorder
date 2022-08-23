@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.settings
 import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
+import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
@@ -23,7 +24,7 @@ class CameraSetting : CameraSettingApi {
      * 赋予自定义的CameraFragment
      * 如果设置则使用自定义的CameraFragment,否则使用默认的CameraFragment
      */
-    var baseCameraFragment : BaseCameraFragment? = null
+    var baseCameraFragment : BaseCameraFragment<BaseCameraPicturePresenter>? = null
 
     /**
      * 销毁事件
@@ -32,7 +33,7 @@ class CameraSetting : CameraSettingApi {
         mCameraSpec.onCameraViewListener = null
     }
 
-    override fun cameraFragment(baseCameraFragment: BaseCameraFragment): CameraSetting {
+    override fun cameraFragment(baseCameraFragment: BaseCameraFragment<BaseCameraPicturePresenter>): CameraSetting {
         this.baseCameraFragment = baseCameraFragment
         return this
     }

@@ -5,18 +5,14 @@ import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
-import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
-import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,8 +28,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
@@ -44,15 +38,13 @@ import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.camera.ui.impl.ICameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.impl.ICameraView;
-import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
-import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateInterface;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateInterface;
+import com.zhongjh.albumcamerarecorder.camera.ui.impl.ICameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.impl.ICameraView;
 import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
@@ -60,14 +52,12 @@ import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.albumcamerarecorder.widget.ImageViewTouch;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
@@ -76,20 +66,27 @@ import com.zhongjh.common.utils.ThreadUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 一个父类的拍摄Fragment，用于开放出来给开发自定义，但是同时也需要遵守一些规范
- * 因为该类含有过多方法，所以采用多接口
+ * 因为该类含有过多方法，所以采用多接口 + Facade 模式
+ * Facade模式在presenter包里面体现出来，这个并不是传统意义上的MVP上的P
+ * 只是单纯将CameraFragment里面的涉及Picture和Video的两个操作分开出来
+ * 这样做的好处是为了减少一个类的代码臃肿、易于扩展维护等等
+ * <p>
+ * 该类主要根据两个接口实现相关方法
+ * [ICameraView]:
+ * 主要让开发者提供相关View的实现
+ * [ICameraFragment]:
+ * 主要实现除了图片、视频的其他相关方法，比如显示LoadingView、闪光灯等操作、底部菜单显示隐藏、图廊预览等等
  *
  * @author zhongjh
  * @date 2022/8/11
  */
 public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicturePresenter>
         extends BaseFragment
-        implements PhotoAdapterListener, ICameraFragment, ICameraView {
+        implements ICameraView, ICameraFragment {
 
     private static final String TAG = BaseCameraFragment.class.getSimpleName();
 
@@ -122,11 +119,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
      * 拍摄配置
      */
     private CameraSpec cameraSpec;
-
-    /**
-     * 图片,单图或者多图都会加入该列表
-     */
-    List<BitmapData> mBitmapData = new ArrayList<>();
     /**
      * 处于分段录制模式下的视频的文件列表
      */
@@ -153,14 +145,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
      */
     private int flashModel = TYPE_FLASH_OFF;
 
-    public int getFlashModel() {
-        return flashModel;
-    }
-
-    public void setFlashModel(int flashModel) {
-        this.flashModel = flashModel;
-    }
-
     /**
      * 默认图片
      */
@@ -184,7 +168,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
     /**
      * 是否提交,如果不是提交则要删除冗余文件
      */
-    private boolean mIsCommit = false;
+    private boolean isCommit = false;
     /**
      * 是否中断录像
      */
@@ -211,7 +195,13 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
      * @return BaseCameraPicturePresenter
      */
     @NonNull
-    abstract CameraPicture getCameraPicturePresenter();
+    public abstract CameraPicture getCameraPicturePresenter();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initActivityResult();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -288,7 +278,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
 
     @Override
     public void onDestroy() {
-        onDestroy(mIsCommit);
+        onDestroy(isCommit);
         super.onDestroy();
     }
 
@@ -308,7 +298,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         globalSpec = GlobalSpec.INSTANCE;
         cameraSpec = CameraSpec.INSTANCE;
         mCameraStateManagement = new CameraStateManagement(this);
-        initActivityResult();
 
         getCameraPicturePresenter().initData();
 
@@ -334,7 +323,9 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         flashModel = cameraSpec.getFlashModel();
         // 记忆模式
         flashGetCache();
-        initMultiplePhotoAdapter();
+
+        // 初始化适配器
+        getCameraPicturePresenter().initMultiplePhotoAdapter();
     }
 
     /**
@@ -567,7 +558,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
                 }
                 result.toBitmap(bitmap -> {
                     // 显示图片
-                    addCaptureData(bitmap);
+                    getCameraPicturePresenter().addCaptureData(bitmap);
                     // 恢复点击
                     getChildClickableLayout().setChildClickable(true);
                 });
@@ -666,7 +657,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
                         bitmapDatas.add(bitmapData);
                     }
                     // 全部刷新
-                    refreshMultiPhoto(bitmapDatas);
+                    getCameraPicturePresenter().refreshMultiPhoto(bitmapDatas);
                 }
             }
         });
@@ -685,7 +676,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
                 ArrayList<LocalFile> localFiles = new ArrayList<>();
                 LocalFile localFile = result.getData().getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
                 localFiles.add(localFile);
-                mIsCommit = true;
+                isCommit = true;
                 if (globalSpec.getOnResultCallbackListener() == null) {
                     // 获取视频路径
                     Intent intent = new Intent();
@@ -698,7 +689,8 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
             }
         });
 
-         }
+        getCameraPicturePresenter().initActivityResult();
+    }
 
     /**
      * 返回true的时候即是纸条跳过了后面的ActivityResult事件
@@ -708,23 +700,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
      */
     public boolean initActivityResult(int resultCode) {
         return mCameraStateManagement.onActivityResult(resultCode);
-    }
-
-    /**
-     * 初始化多图适配器
-     */
-    public void initMultiplePhotoAdapter() {
-        // 初始化多图适配器，先判断是不是多图配置
-        getCameraPicturePresenter().setPhotoAdapter(new PhotoAdapter(getContext(), globalSpec, mBitmapData, this));
-        if (getRecyclerViewPhoto() != null) {
-            if (SelectableUtils.getImageMaxCount() > 1) {
-                getRecyclerViewPhoto().setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-                getRecyclerViewPhoto().setAdapter(getCameraPicturePresenter().getPhotoAdapter());
-                getRecyclerViewPhoto().setVisibility(View.VISIBLE);
-            } else {
-                getRecyclerViewPhoto().setVisibility(View.GONE);
-            }
-        }
     }
 
     /**
@@ -768,83 +743,44 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
     }
 
     /**
-     * 录制视频
+     * 提交图片成功后，返回数据给上一个页面
      */
-    private void recordVideo() {
-        // 开启录制功能才能执行别的事件
-        if (getCameraView().isOpened()) {
-            // 用于播放的视频file
-            if (mVideoFile == null) {
-                mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
-            }
-            if (cameraSpec.getEnableVideoHighDefinition()) {
-                getCameraView().takeVideo(mVideoFile);
-            } else {
-                getCameraView().takeVideoSnapshot(mVideoFile);
-            }
-            // 设置录制状态
-            if (mIsSectionRecord) {
-                mCameraStateManagement.setState(mCameraStateManagement.getVideoMultipleIn());
-            } else {
-                mCameraStateManagement.setState(mCameraStateManagement.getVideoIn());
-            }
-            // 开始录像
-            setMenuVisibility(View.INVISIBLE);
+    public void commitPictureSuccess(ArrayList<LocalFile> newFiles) {
+        Log.d(TAG, "mMovePictureFileTask onSuccess");
+        isCommit = true;
+        if (globalSpec.getOnResultCallbackListener() == null) {
+            Intent result = new Intent();
+            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, newFiles);
+            mainActivity.setResult(RESULT_OK, result);
+        } else {
+            globalSpec.getOnResultCallbackListener().onResult(newFiles);
         }
+        isCommit = true;
+        mainActivity.finish();
+        setUiEnableTrue();
     }
 
     /**
-     * 录制时间过短
-     */
-    private void longClickShort(final long time) {
-        Log.d(TAG, "longClickShort " + time);
-        mCameraStateManagement.longClickShort(time);
-        // 提示过短
-        getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
-        // 显示右上角菜单
-        setMenuVisibility(View.VISIBLE);
-        // 停止录像
-        stopRecord(true);
-    }
-
-    /**
-     * 点击图片事件
-     *
-     * @param intent 点击后，封装相关数据进入该intent
+     * 提交图片失败后
+     * @param throwable 异常
      */
     @Override
-    public void onClick(Intent intent) {
+    public void commitFail(Throwable throwable) {
+        getPhotoVideoLayout().setTipAlphaAnimation(throwable.getMessage());
+        setUiEnableTrue();
+    }
+
+    /**
+     * 打开预览图片
+     *
+     * @param intent 包含数据源
+     */
+    public void openAlbumPreviewActivity(Intent intent) {
         mAlbumPreviewActivityResult.launch(intent);
         if (globalSpec.getCutscenesEnabled()) {
             if (getActivity() != null) {
                 getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
             }
-        }
-    }
-
-    /**
-     * 多图进行删除的时候
-     *
-     * @param bitmapData 数据
-     * @param position   删除的索引
-     */
-    @Override
-    public void onDelete(BitmapData bitmapData, int position) {
-        // 删除文件
-        FileUtil.deleteFile(bitmapData.getPath());
-
-        // 判断如果删除光图片的时候，母窗体启动滑动
-        if (mBitmapData.size() <= 0) {
-            mainActivity.showHideTableLayout(true);
-        }
-        if (cameraSpec.getOnCaptureListener() != null) {
-            cameraSpec.getOnCaptureListener().remove(mBitmapData, position);
-        }
-
-        // 当列表全部删掉隐藏列表框的UI
-        Log.d(TAG, "onDelete " + mBitmapData.size());
-        if (mBitmapData.size() <= 0) {
-            hideViewByMultipleZero();
         }
     }
 
@@ -883,44 +819,43 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
     }
 
     /**
-     * 刷新多个图片
+     * 录制视频
      */
-    @Override
-    public void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas) {
-        mBitmapData = bitmapDatas;
-        mPhotoAdapter.setListData(mBitmapData);
+    private void recordVideo() {
+        // 开启录制功能才能执行别的事件
+        if (getCameraView().isOpened()) {
+            // 用于播放的视频file
+            if (mVideoFile == null) {
+                mVideoFile = mVideoMediaStoreCompat.createFile(1, true, "mp4");
+            }
+            if (cameraSpec.getEnableVideoHighDefinition()) {
+                getCameraView().takeVideo(mVideoFile);
+            } else {
+                getCameraView().takeVideoSnapshot(mVideoFile);
+            }
+            // 设置录制状态
+            if (mIsSectionRecord) {
+                mCameraStateManagement.setState(mCameraStateManagement.getVideoMultipleIn());
+            } else {
+                mCameraStateManagement.setState(mCameraStateManagement.getVideoIn());
+            }
+            // 开始录像
+            setMenuVisibility(View.INVISIBLE);
+        }
     }
 
     /**
-     * 刷新编辑后的单图
-     *
-     * @param width  最新图片的宽度
-     * @param height 最新图片的高度
+     * 录制时间过短
      */
-    @Override
-    public void refreshEditPhoto(int width, int height) {
-        // 删除旧图
-        if (mPhotoFile.exists()) {
-            boolean wasSuccessful = mPhotoFile.delete();
-            if (!wasSuccessful) {
-                System.out.println("was not successful.");
-            }
-        }
-        // 用编辑后的图作为新的图片
-        mPhotoFile = mPhotoEditFile;
-        Uri uri = mPictureMediaStoreCompat.getUri(mPhotoFile.getPath());
-        mSinglePhotoUri = uri;
-
-        // 重置mCaptureBitmaps
-        mBitmapData.clear();
-        BitmapData bitmapData = new BitmapData(mPhotoFile.getPath(), uri, width, height);
-        mBitmapData.add(bitmapData);
-
-        // 重置位置
-        if (getSinglePhotoView() != null) {
-            getSinglePhotoView().resetMatrix();
-            globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), uri);
-        }
+    private void longClickShort(final long time) {
+        Log.d(TAG, "longClickShort " + time);
+        mCameraStateManagement.longClickShort(time);
+        // 提示过短
+        getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
+        // 显示右上角菜单
+        setMenuVisibility(View.VISIBLE);
+        // 停止录像
+        stopRecord(true);
     }
 
     /**
@@ -999,132 +934,11 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
     public void movePictureFile() {
         showProgress();
         // 开始迁移文件
-        ThreadUtils.executeByIo(getMovePictureFileTask());
+        ThreadUtils.executeByIo(getCameraPicturePresenter().getMovePictureFileTask());
     }
 
     /**
-     * 迁移图片的线程
-     */
-    private ThreadUtils.SimpleTask<ArrayList<LocalFile>> getMovePictureFileTask() {
-        mMovePictureFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
-            @Override
-            public ArrayList<LocalFile> doInBackground() throws IOException {
-                // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
-                ArrayList<LocalFile> newFiles = new ArrayList<>();
-                // 将 缓存文件 拷贝到 配置目录
-                for (BitmapData item : mBitmapData) {
-                    File oldFile = new File(item.getPath());
-                    // 压缩图片
-                    File compressionFile;
-                    if (globalSpec.getImageCompressionInterface() != null) {
-                        compressionFile = globalSpec.getImageCompressionInterface().compressionFile(myContext, oldFile);
-                    } else {
-                        compressionFile = oldFile;
-                    }
-                    // 移动文件,获取文件名称
-                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
-                    File newFile = mPictureMediaStoreCompat.createFile(newFileName, 0, false);
-                    // new localFile
-                    LocalFile localFile = new LocalFile();
-                    localFile.setPath(newFile.getAbsolutePath());
-                    localFile.setWidth(item.getWidth());
-                    localFile.setHeight(item.getHeight());
-                    localFile.setSize(compressionFile.length());
-                    newFiles.add(localFile);
-                    FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
-                        if (ioProgress >= 1) {
-                            Log.d(TAG, file.getAbsolutePath());
-                            // 每次迁移完一个文件的进度
-                            int progress = 100 / mBitmapData.size();
-                            ThreadUtils.runOnUiThread(() -> setProgress(progress));
-                        }
-                    });
-                }
-                for (LocalFile item : newFiles) {
-                    if (item.getPath() != null) {
-                        // 加入图片到android系统库里面
-                        Uri uri = MediaStoreUtils.displayToGallery(myContext, new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
-                                mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-                        // 加入相册后的最后是id，直接使用该id
-                        item.setId(MediaStoreUtils.getId(uri));
-                        item.setMimeType(MimeType.JPEG.getMimeTypeName());
-                        item.setUri(mPictureMediaStoreCompat.getUri(item.getPath()));
-                    }
-                }
-                // 执行完成
-                Log.d(TAG, "captureSuccess");
-                return newFiles;
-            }
-
-            @Override
-            public void onSuccess(ArrayList<LocalFile> newFiles) {
-                Log.d(TAG, "mMovePictureFileTask onSuccess");
-                mIsCommit = true;
-                if (globalSpec.getOnResultCallbackListener() == null) {
-                    Intent result = new Intent();
-                    result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, newFiles);
-                    mainActivity.setResult(RESULT_OK, result);
-                } else {
-                    globalSpec.getOnResultCallbackListener().onResult(newFiles);
-                }
-                mIsCommit = true;
-                mainActivity.finish();
-                setUiEnableTrue();
-            }
-
-            @Override
-            public void onFail(Throwable t) {
-                super.onFail(t);
-                Log.e(TAG, t.getMessage());
-                failByConfirm(t);
-                setUiEnableTrue();
-            }
-        };
-        return mMovePictureFileTask;
-    }
-
-    /**
-     * 添加入数据源
-     *
-     * @param bitmap bitmap
-     */
-    @Override
-    public void addCaptureData(Bitmap bitmap) {
-        // 初始化数据并且存储进file
-        File file = mPictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
-        Uri uri = mPictureMediaStoreCompat.getUri(file.getPath());
-        Log.d(TAG, "file:" + file.getAbsolutePath());
-        BitmapData bitmapData = new BitmapData(file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
-        // 回收bitmap
-        if (bitmap.isRecycled()) {
-            // 回收并且置为null
-            bitmap.recycle();
-        }
-        // 加速回收机制
-        System.gc();
-        // 判断是否多个图片
-        if (SelectableUtils.getImageMaxCount() > 1) {
-            // 添加入数据源
-            mBitmapData.add(bitmapData);
-            showMultiplePicture();
-        } else {
-            mBitmapData.add(bitmapData);
-            showSinglePicture(bitmapData, file, uri);
-        }
-
-        if (mBitmapData.size() > 0) {
-            // 母窗体禁止滑动
-            mainActivity.showHideTableLayout(false);
-        }
-
-        // 回调接口：添加图片后剩下的相关数据
-        if (cameraSpec.getOnCaptureListener() != null) {
-            cameraSpec.getOnCaptureListener().add(mBitmapData, mBitmapData.size() - 1);
-        }
-    }
-
-    /**
-     * 显示单图
+     * 针对单图进行相关UI变化
      *
      * @param bitmapData 显示单图数据源
      * @param file       显示单图的文件
@@ -1141,7 +955,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         getCameraView().close();
         getPhotoVideoLayout().startTipAlphaAnimation();
         getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
-        mPhotoFile = file;
 
         // 设置当前模式是图片模式
         mCameraStateManagement.setState(mCameraStateManagement.getPictureComplete());
@@ -1159,7 +972,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
     }
 
     /**
-     * 显示多图
+     * 针对多图进行相关UI变化
      */
     @Override
     public void showMultiplePicture() {
@@ -1175,10 +988,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
                 view.setVisibility(View.VISIBLE);
             }
         }
-
-        // 更新最后一个添加
-        mPhotoAdapter.notifyItemInserted(mPhotoAdapter.getItemCount() - 1);
-        mPhotoAdapter.notifyItemRangeChanged(mPhotoAdapter.getItemCount() - 1, mPhotoAdapter.getItemCount());
 
         getPhotoVideoLayout().startTipAlphaAnimation();
         getPhotoVideoLayout().startOperaeBtnAnimatorMulti();
@@ -1211,7 +1020,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
      */
     @Override
     public void confirm(ArrayList<LocalFile> localFiles) {
-        mIsCommit = true;
+        isCommit = true;
         if (globalSpec.getOnResultCallbackListener() == null) {
             Intent result = new Intent();
             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
@@ -1219,20 +1028,15 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         } else {
             globalSpec.getOnResultCallbackListener().onResult(localFiles);
         }
-        mIsCommit = true;
+        isCommit = true;
         mainActivity.finish();
-    }
-
-    @Override
-    public void failByConfirm(Throwable throwable) {
-        getPhotoVideoLayout().setTipAlphaAnimation(throwable.getMessage());
     }
 
     /**
      * 取消单图后的重置
      */
     public void cancelOnResetBySinglePicture() {
-        mBitmapData.clear();
+        getCameraPicturePresenter().clearBitmapDatas();
 
         // 根据不同状态处理相应的事件
         resetStateAll();
@@ -1416,35 +1220,23 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         }
     }
 
-    public Context getMyContext() {
-        return myContext;
+    public int getFlashModel() {
+        return flashModel;
     }
 
-    public void setMyContext(Context myContext) {
-        this.myContext = myContext;
+    public Context getMyContext() {
+        return myContext;
     }
 
     public MainActivity getMainActivity() {
         return mainActivity;
     }
 
-    public void setMainActivity(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
-    }
-
     public GlobalSpec getGlobalSpec() {
         return globalSpec;
     }
 
-    public void setGlobalSpec(GlobalSpec globalSpec) {
-        this.globalSpec = globalSpec;
-    }
-
     public CameraSpec getCameraSpec() {
         return cameraSpec;
-    }
-
-    public void setCameraSpec(CameraSpec cameraSpec) {
-        this.cameraSpec = cameraSpec;
     }
 }

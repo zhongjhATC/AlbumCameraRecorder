@@ -2,40 +2,53 @@ package com.zhongjh.albumcamerarecorder.camera.ui.presenter;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
+import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.impl.ICameraPicture;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 这是专门负责图片的有关逻辑
+ * 涉及到图片的拍照、编辑图片、提交图片、多图系列等等都是该类负责
  *
  * @author zhongjh
  * @date 2022/8/22
  */
-public class BaseCameraPicturePresenter {
+public class BaseCameraPicturePresenter
+        implements PhotoAdapterListener, ICameraPicture {
 
     public BaseCameraPicturePresenter(BaseCameraFragment<BaseCameraPicturePresenter> baseCameraFragment) {
         this.baseCameraFragment = baseCameraFragment;
@@ -50,6 +63,10 @@ public class BaseCameraPicturePresenter {
      * 拍照的多图片集合适配器
      */
     private PhotoAdapter photoAdapter;
+    /**
+     * 图片,单图或者多图都会加入该列表
+     */
+    List<BitmapData> bitmapDatas = new ArrayList<>();
     /**
      * 照片File,用于后面能随时删除
      */
@@ -92,13 +109,30 @@ public class BaseCameraPicturePresenter {
         // 设置图片路径
         if (baseCameraFragment.getGlobalSpec().getPictureStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            setPictureMediaStoreCompat(new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getPictureStrategy()));
+            pictureMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getPictureStrategy());
         } else {
             // 否则使用全局的
             if (baseCameraFragment.getGlobalSpec().getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                setPictureMediaStoreCompat(new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getSaveStrategy()));
+                pictureMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getSaveStrategy());
+            }
+        }
+    }
+
+    /**
+     * 初始化多图适配器
+     */
+    public void initMultiplePhotoAdapter() {
+        // 初始化多图适配器，先判断是不是多图配置
+        photoAdapter = new PhotoAdapter(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec(), bitmapDatas, this);
+        if (baseCameraFragment.getRecyclerViewPhoto() != null) {
+            if (SelectableUtils.getImageMaxCount() > 1) {
+                baseCameraFragment.getRecyclerViewPhoto().setLayoutManager(new LinearLayoutManager(baseCameraFragment.getMyContext(), RecyclerView.HORIZONTAL, false));
+                baseCameraFragment.getRecyclerViewPhoto().setAdapter(photoAdapter);
+                baseCameraFragment.getRecyclerViewPhoto().setVisibility(View.VISIBLE);
+            } else {
+                baseCameraFragment.getRecyclerViewPhoto().setVisibility(View.GONE);
             }
         }
     }
@@ -108,7 +142,7 @@ public class BaseCameraPicturePresenter {
      */
     public void initActivityResult() {
         // 从编辑图片界面回来
-        imageEditActivityResult = baseCameraFragment.getMainActivity().registerForActivityResult(
+        imageEditActivityResult = baseCameraFragment.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
                     boolean isReturn = baseCameraFragment.initActivityResult(result.getResultCode());
                     if (isReturn) {
@@ -131,14 +165,39 @@ public class BaseCameraPicturePresenter {
     public void initPhotoEditListener() {
         baseCameraFragment.getPhotoVideoLayout().getViewHolder().rlEdit.setOnClickListener(view -> {
             Uri uri = (Uri) view.getTag();
-            setPhotoEditFile(getPictureMediaStoreCompat().createFile(0, true, "jpg"));
+            photoEditFile = pictureMediaStoreCompat.createFile(0, true, "jpg");
             Intent intent = new Intent();
             intent.setClass(baseCameraFragment.getMyContext(), ImageEditActivity.class);
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.getMainActivity().getRequestedOrientation());
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri);
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, getPhotoEditFile().getAbsolutePath());
-            baseCameraFragment.mImageEditActivityResult.launch(intent);
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, photoEditFile.getAbsolutePath());
+            imageEditActivityResult.launch(intent);
         });
+    }
+
+    /**
+     * 生命周期onDestroy
+     *
+     * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
+     */
+    public void onDestroy(boolean isCommit) {
+        LogUtil.i("BaseCameraPicturePresenter destroy");
+        if (!isCommit) {
+            if (photoFile != null) {
+                // 删除图片
+                FileUtil.deleteFile(photoFile);
+            }
+            // 删除多个图片
+            if (photoAdapter.getListData() != null) {
+                for (BitmapData bitmapData : photoAdapter.getListData()) {
+                    FileUtil.deleteFile(bitmapData.getPath());
+                }
+            }
+        }
+        cameraTakePictureHandler.removeCallbacks(cameraTakePictureRunnable);
+        if (movePictureFileTask != null) {
+            movePictureFileTask.cancel();
+        }
     }
 
     /**
@@ -166,75 +225,216 @@ public class BaseCameraPicturePresenter {
     }
 
     /**
-     * 生命周期onDestroy
+     * 添加入数据源
      *
-     * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
+     * @param bitmap bitmap
      */
-    public void onDestroy(boolean isCommit) {
-        LogUtil.i("BaseCameraPicturePresenter destroy");
-        if (!isCommit) {
-            if (getPhotoFile() != null) {
-                // 删除图片
-                FileUtil.deleteFile(getPhotoFile());
-            }
-            // 删除多个图片
-            if (getPhotoAdapter().getListData() != null) {
-                for (BitmapData bitmapData : getPhotoAdapter().getListData()) {
-                    FileUtil.deleteFile(bitmapData.getPath());
-                }
+    @Override
+    public void addCaptureData(Bitmap bitmap) {
+        // 初始化数据并且存储进file
+        File file = pictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
+        Uri uri = pictureMediaStoreCompat.getUri(file.getPath());
+        BitmapData bitmapData = new BitmapData(file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
+        // 回收bitmap
+        if (bitmap.isRecycled()) {
+            // 回收并且置为null
+            bitmap.recycle();
+        }
+        // 加速回收机制
+        System.gc();
+        // 判断是否多个图片
+        if (SelectableUtils.getImageMaxCount() > 1) {
+            // 添加入数据源
+            bitmapDatas.add(bitmapData);
+            // 更新最后一个添加
+            photoAdapter.notifyItemInserted(photoAdapter.getItemCount() - 1);
+            photoAdapter.notifyItemRangeChanged(photoAdapter.getItemCount() - 1, photoAdapter.getItemCount());
+            baseCameraFragment.showMultiplePicture();
+        } else {
+            bitmapDatas.add(bitmapData);
+            photoFile = file;
+            baseCameraFragment.showSinglePicture(bitmapData, file, uri);
+        }
+
+        if (bitmapDatas.size() > 0) {
+            // 母窗体禁止滑动
+            baseCameraFragment.getMainActivity().showHideTableLayout(false);
+        }
+
+        // 回调接口：添加图片后剩下的相关数据
+        if (baseCameraFragment.getCameraSpec().getOnCaptureListener() != null) {
+            baseCameraFragment.getCameraSpec().getOnCaptureListener().add(bitmapDatas, bitmapDatas.size() - 1);
+        }
+    }
+
+    /**
+     * 刷新多个图片
+     */
+    @Override
+    public void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas) {
+        this.bitmapDatas = bitmapDatas;
+        photoAdapter.setListData(this.bitmapDatas);
+    }
+
+    /**
+     * 刷新编辑后的单图
+     *
+     * @param width  最新图片的宽度
+     * @param height 最新图片的高度
+     */
+    @Override
+    public void refreshEditPhoto(int width, int height) {
+        // 删除旧图
+        if (photoFile.exists()) {
+            boolean wasSuccessful = photoFile.delete();
+            if (!wasSuccessful) {
+                System.out.println("was not successful.");
             }
         }
-        cameraTakePictureHandler.removeCallbacks(cameraTakePictureRunnable);
+        // 用编辑后的图作为新的图片
+        photoFile = photoEditFile;
+        Uri uri = pictureMediaStoreCompat.getUri(photoFile.getPath());
+        singlePhotoUri = uri;
+
+        // 重置mCaptureBitmaps
+        bitmapDatas.clear();
+        BitmapData bitmapData = new BitmapData(photoFile.getPath(), uri, width, height);
+        this.bitmapDatas.add(bitmapData);
+
+        // 重置位置
+        if (baseCameraFragment.getSinglePhotoView() != null) {
+            baseCameraFragment.getSinglePhotoView().resetMatrix();
+            baseCameraFragment.getGlobalSpec().getImageEngine().loadUriImage(baseCameraFragment.getMyContext(), baseCameraFragment.getSinglePhotoView(), uri);
+        }
+    }
+
+    /**
+     * 迁移图片的线程
+     */
+    public ThreadUtils.SimpleTask<ArrayList<LocalFile>> getMovePictureFileTask() {
+        movePictureFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
+            @Override
+            public ArrayList<LocalFile> doInBackground() throws IOException {
+                // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
+                ArrayList<LocalFile> newFiles = new ArrayList<>();
+                // 将 缓存文件 拷贝到 配置目录
+                for (BitmapData item : bitmapDatas) {
+                    File oldFile = new File(item.getPath());
+                    // 压缩图片
+                    File compressionFile;
+                    if (baseCameraFragment.getGlobalSpec().getImageCompressionInterface() != null) {
+                        compressionFile = baseCameraFragment.getGlobalSpec().getImageCompressionInterface().compressionFile(baseCameraFragment.getMyContext(), oldFile);
+                    } else {
+                        compressionFile = oldFile;
+                    }
+                    // 移动文件,获取文件名称
+                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
+                    File newFile = pictureMediaStoreCompat.createFile(newFileName, 0, false);
+                    // new localFile
+                    LocalFile localFile = new LocalFile();
+                    localFile.setPath(newFile.getAbsolutePath());
+                    localFile.setWidth(item.getWidth());
+                    localFile.setHeight(item.getHeight());
+                    localFile.setSize(compressionFile.length());
+                    newFiles.add(localFile);
+                    FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
+                        if (ioProgress >= 1) {
+                            // 每次迁移完一个文件的进度
+                            int progress = 100 / bitmapDatas.size();
+                            ThreadUtils.runOnUiThread(() -> baseCameraFragment.setProgress(progress));
+                        }
+                    });
+                }
+                for (LocalFile item : newFiles) {
+                    if (item.getPath() != null) {
+                        // 加入图片到android系统库里面
+                        Uri uri = MediaStoreUtils.displayToGallery(baseCameraFragment.getMyContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                                pictureMediaStoreCompat.getSaveStrategy().getDirectory(), pictureMediaStoreCompat);
+                        // 加入相册后的最后是id，直接使用该id
+                        item.setId(MediaStoreUtils.getId(uri));
+                        item.setMimeType(MimeType.JPEG.getMimeTypeName());
+                        item.setUri(pictureMediaStoreCompat.getUri(item.getPath()));
+                    }
+                }
+                // 执行完成
+                return newFiles;
+            }
+
+            @Override
+            public void onSuccess(ArrayList<LocalFile> newFiles) {
+                baseCameraFragment.commitPictureSuccess(newFiles);
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                baseCameraFragment.commitFail(t);
+            }
+        };
+        return movePictureFileTask;
+    }
+
+    /**
+     * 删除临时图片
+     */
+    @Override
+    public void deletePhotoFile() {
+        if (photoFile != null) {
+            FileUtil.deleteFile(photoFile);
+        }
+    }
+
+    /**
+     * 清除数据源
+     */
+    public void clearBitmapDatas() {
+        bitmapDatas.clear();
+    }
+
+    /**
+     * 停止迁移图片的线程运行
+     */
+    public void cancelMovePictureFileTask() {
         if (movePictureFileTask != null) {
             movePictureFileTask.cancel();
         }
     }
 
-    public ActivityResultLauncher<Intent> getImageEditActivityResult() {
-        return imageEditActivityResult;
+    /**
+     * 点击图片事件
+     *
+     * @param intent 点击后，封装相关数据进入该intent
+     */
+    @Override
+    public void onPhotoAdapterClick(Intent intent) {
+        baseCameraFragment.openAlbumPreviewActivity(intent);
     }
 
-    public void setImageEditActivityResult(ActivityResultLauncher<Intent> imageEditActivityResult) {
-        this.imageEditActivityResult = imageEditActivityResult;
+    /**
+     * 多图进行删除的时候
+     *
+     * @param bitmapData 数据
+     * @param position   删除的索引
+     */
+    @Override
+    public void onPhotoAdapterDelete(BitmapData bitmapData, int position) {
+        // 删除文件
+        FileUtil.deleteFile(bitmapData.getPath());
+
+        // 判断如果删除光图片的时候，母窗体启动滑动
+        if (bitmapDatas.size() <= 0) {
+            baseCameraFragment.getMainActivity().showHideTableLayout(true);
+        }
+        if (baseCameraFragment.getCameraSpec().getOnCaptureListener() != null) {
+            baseCameraFragment.getCameraSpec().getOnCaptureListener().remove(bitmapDatas, position);
+        }
+
+        // 当列表全部删掉隐藏列表框的UI
+        if (bitmapDatas.size() <= 0) {
+            baseCameraFragment.hideViewByMultipleZero();
+        }
     }
 
-    public PhotoAdapter getPhotoAdapter() {
-        return photoAdapter;
-    }
 
-    public void setPhotoAdapter(PhotoAdapter photoAdapter) {
-        this.photoAdapter = photoAdapter;
-    }
 
-    public File getPhotoFile() {
-        return photoFile;
-    }
-
-    public void setPhotoFile(File photoFile) {
-        this.photoFile = photoFile;
-    }
-
-    public File getPhotoEditFile() {
-        return photoEditFile;
-    }
-
-    public void setPhotoEditFile(File photoEditFile) {
-        this.photoEditFile = photoEditFile;
-    }
-
-    public Uri getSinglePhotoUri() {
-        return singlePhotoUri;
-    }
-
-    public void setSinglePhotoUri(Uri singlePhotoUri) {
-        this.singlePhotoUri = singlePhotoUri;
-    }
-
-    public MediaStoreCompat getPictureMediaStoreCompat() {
-        return pictureMediaStoreCompat;
-    }
-
-    public void setPictureMediaStoreCompat(MediaStoreCompat pictureMediaStoreCompat) {
-        this.pictureMediaStoreCompat = pictureMediaStoreCompat;
-    }
 }
