@@ -23,6 +23,6 @@
         android:paddingTop="6dp"
         android:paddingEnd="6dp"
         android:paddingBottom="6dp"
-        android:src="@drawable/ic_twotone_cancel_24px" />
+        app:srcCompat="@drawable/ic_twotone_cancel_24px" />
 
 </FrameLayout>

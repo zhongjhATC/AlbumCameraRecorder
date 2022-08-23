@@ -125,7 +125,7 @@ public class BaseCameraPicturePresenter
      */
     public void initMultiplePhotoAdapter() {
         // 初始化多图适配器，先判断是不是多图配置
-        photoAdapter = new PhotoAdapter(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec(), bitmapDatas, this);
+        photoAdapter = new PhotoAdapter(baseCameraFragment.getContext(), baseCameraFragment.getGlobalSpec(), bitmapDatas, this);
         if (baseCameraFragment.getRecyclerViewPhoto() != null) {
             if (SelectableUtils.getImageMaxCount() > 1) {
                 baseCameraFragment.getRecyclerViewPhoto().setLayoutManager(new LinearLayoutManager(baseCameraFragment.getMyContext(), RecyclerView.HORIZONTAL, false));
