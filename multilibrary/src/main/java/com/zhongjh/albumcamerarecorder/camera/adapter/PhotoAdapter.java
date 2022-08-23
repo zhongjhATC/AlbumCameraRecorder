@@ -4,7 +4,7 @@ import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,7 +40,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     private final String TAG = PhotoAdapter.class.getSimpleName();
 
-    Context mContext;
+    Activity mActivity;
     GlobalSpec mGlobalSpec;
     List<BitmapData> mListData;
 
@@ -50,9 +50,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     // endregion
 
-    public PhotoAdapter(Context context, GlobalSpec globalSpec,
+    public PhotoAdapter(Activity activity, GlobalSpec globalSpec,
                         List<BitmapData> listData, PhotoAdapterListener photoAdapterListener) {
-        mContext = context;
+        mActivity = activity;
         mGlobalSpec = globalSpec;
         this.mListData = listData;
         mPhotoAdapterListener = photoAdapterListener;
@@ -61,13 +61,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @NonNull
     @Override
     public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new PhotoViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_image_multilibrary_zjh, parent, false));
+        return new PhotoViewHolder(LayoutInflater.from(mActivity).inflate(R.layout.item_image_multilibrary_zjh, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         BitmapData bitmapData = mListData.get(position);
-        mGlobalSpec.getImageEngine().loadUriImage(mContext, holder.imgPhoto, bitmapData.getUri());
+        mGlobalSpec.getImageEngine().loadUriImage(mActivity, holder.imgPhoto, bitmapData.getUri());
         // 点击图片
         holder.itemView.setOnClickListener(new OnMoreClickListener() {
             @Override
@@ -113,7 +113,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         bundle.putParcelableArrayList(STATE_SELECTION, items);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
-        Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
+        Intent intent = new Intent(mActivity, AlbumPreviewActivity.class);
 
         // 获取目前点击的这个item
         MultiMedia item = new MultiMedia();
