@@ -745,6 +745,7 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
     /**
      * 提交图片成功后，返回数据给上一个页面
      */
+    @Override
     public void commitPictureSuccess(ArrayList<LocalFile> newFiles) {
         Log.d(TAG, "mMovePictureFileTask onSuccess");
         isCommit = true;
@@ -755,7 +756,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
         } else {
             globalSpec.getOnResultCallbackListener().onResult(newFiles);
         }
-        isCommit = true;
         mainActivity.finish();
         setUiEnableTrue();
     }
@@ -1011,25 +1011,6 @@ public abstract class BaseCameraFragment<CameraPicture extends BaseCameraPicture
      */
     public StateInterface getState() {
         return mCameraStateManagement.getState();
-    }
-
-    /**
-     * 确认提交这些多媒体数据
-     *
-     * @param localFiles 多媒体数据
-     */
-    @Override
-    public void confirm(ArrayList<LocalFile> localFiles) {
-        isCommit = true;
-        if (globalSpec.getOnResultCallbackListener() == null) {
-            Intent result = new Intent();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
-            mainActivity.setResult(RESULT_OK, result);
-        } else {
-            globalSpec.getOnResultCallbackListener().onResult(localFiles);
-        }
-        isCommit = true;
-        mainActivity.finish();
     }
 
     /**

@@ -105,6 +105,7 @@ public class BaseCameraPicturePresenter
     /**
      * 初始化有关图片的配置数据
      */
+    @Override
     public void initData() {
         // 设置图片路径
         if (baseCameraFragment.getGlobalSpec().getPictureStrategy() != null) {
@@ -123,6 +124,7 @@ public class BaseCameraPicturePresenter
     /**
      * 初始化多图适配器
      */
+    @Override
     public void initMultiplePhotoAdapter() {
         // 初始化多图适配器，先判断是不是多图配置
         photoAdapter = new PhotoAdapter(baseCameraFragment.getMainActivity(), baseCameraFragment.getGlobalSpec(), bitmapDatas, this);
@@ -140,6 +142,7 @@ public class BaseCameraPicturePresenter
     /**
      * 初始化Activity的编辑图片回调
      */
+    @Override
     public void initActivityResult() {
         // 从编辑图片界面回来
         imageEditActivityResult = baseCameraFragment.registerForActivityResult(
@@ -162,6 +165,7 @@ public class BaseCameraPicturePresenter
     /**
      * 编辑图片事件
      */
+    @Override
     public void initPhotoEditListener() {
         baseCameraFragment.getPhotoVideoLayout().getViewHolder().rlEdit.setOnClickListener(view -> {
             Uri uri = (Uri) view.getTag();
@@ -180,6 +184,7 @@ public class BaseCameraPicturePresenter
      *
      * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
      */
+    @Override
     public void onDestroy(boolean isCommit) {
         LogUtil.i("BaseCameraPicturePresenter destroy");
         if (!isCommit) {
@@ -203,6 +208,7 @@ public class BaseCameraPicturePresenter
     /**
      * 拍照
      */
+    @Override
     public void takePhoto() {
         // 开启才能执行别的事件, 如果已经有分段视频，则不允许拍照了
         if (baseCameraFragment.getCameraView().isOpened() && baseCameraFragment.getVideoTimes().size() <= 0) {
@@ -309,8 +315,10 @@ public class BaseCameraPicturePresenter
     }
 
     /**
-     * 迁移图片的线程
+     * 返回迁移图片的线程
+     * @return 迁移图片的线程
      */
+    @Override
     public ThreadUtils.SimpleTask<ArrayList<LocalFile>> getMovePictureFileTask() {
         movePictureFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
             @Override
@@ -387,6 +395,7 @@ public class BaseCameraPicturePresenter
     /**
      * 清除数据源
      */
+    @Override
     public void clearBitmapDatas() {
         bitmapDatas.clear();
     }
@@ -394,6 +403,7 @@ public class BaseCameraPicturePresenter
     /**
      * 停止迁移图片的线程运行
      */
+    @Override
     public void cancelMovePictureFileTask() {
         if (movePictureFileTask != null) {
             movePictureFileTask.cancel();

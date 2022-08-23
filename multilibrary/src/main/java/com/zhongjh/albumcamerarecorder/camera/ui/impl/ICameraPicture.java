@@ -1,9 +1,10 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.impl;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
+import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.utils.ThreadUtils;
 
 import java.util.ArrayList;
 
@@ -16,31 +17,43 @@ import java.util.ArrayList;
 public interface ICameraPicture {
 
     /**
+     * 初始化有关图片的配置数据
+     */
+    void initData();
+
+    /**
+     * 初始化多图适配器
+     */
+    void initMultiplePhotoAdapter();
+
+    /**
+     * 初始化Activity的编辑图片回调
+     */
+    void initActivityResult();
+
+    /**
+     * 编辑图片事件
+     */
+    void initPhotoEditListener();
+
+    /**
+     * 生命周期onDestroy
+     *
+     * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
+     */
+    void onDestroy(boolean isCommit);
+
+    /**
+     * 拍照
+     */
+    void takePhoto();
+
+    /**
      * 添加入数据源
      *
      * @param bitmap bitmap
      */
     void addCaptureData(Bitmap bitmap);
-
-    /**
-     * 删除临时图片
-     */
-    void deletePhotoFile();
-
-    /**
-     * 点击图片事件
-     *
-     * @param intent 点击后，封装相关数据进入该intent
-     */
-    void onPhotoAdapterClick(Intent intent);
-
-    /**
-     * 多图进行删除的时候
-     *
-     * @param bitmapData 数据
-     * @param position   删除的索引
-     */
-    void onPhotoAdapterDelete(BitmapData bitmapData, int position);
 
     /**
      * 刷新多个图片
@@ -57,4 +70,24 @@ public interface ICameraPicture {
      */
     void refreshEditPhoto(int width, int height);
 
+    /**
+     * 返回迁移图片的线程
+     * @return 迁移图片的线程
+     */
+    ThreadUtils.SimpleTask<ArrayList<LocalFile>> getMovePictureFileTask();
+
+    /**
+     * 删除临时图片
+     */
+    void deletePhotoFile();
+
+    /**
+     * 清除数据源
+     */
+    void clearBitmapDatas();
+
+    /**
+     * 停止迁移图片的线程运行
+     */
+    void cancelMovePictureFileTask();
 }

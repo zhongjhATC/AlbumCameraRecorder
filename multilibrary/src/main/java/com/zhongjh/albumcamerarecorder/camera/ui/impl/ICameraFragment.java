@@ -22,11 +22,10 @@ public interface ICameraFragment {
     void hideViewByMultipleZero();
 
     /**
-     * 确认提交这些数据
-     *
-     * @param localFiles 多媒体数据
+     * 提交图片成功后，返回数据给上一个页面
+     * @param newFiles 多媒体数据
      */
-    void confirm(ArrayList<LocalFile> localFiles);
+    void commitPictureSuccess(ArrayList<LocalFile> newFiles);
 
     /**
      * 确认提交数据中途报错，失败
