@@ -10,6 +10,7 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
+import com.zhongjh.cameraapp.phone.customlayout.MainCustomCameraLayoutActivity;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 
@@ -65,7 +66,8 @@ public class MainListActivity extends AppCompatActivity {
         // 自定义CameraView
         mBinding.btnCustomCameraView.setOnClickListener(v -> MainCustomCameraViewActivity.newInstance(MainListActivity.this));
 
-
+        // 自定义CameraLayout
+        mBinding.btnCustomCameraLayout.setOnClickListener(v -> MainCustomCameraLayoutActivity.newInstance(MainListActivity.this));
     }
 
 }
