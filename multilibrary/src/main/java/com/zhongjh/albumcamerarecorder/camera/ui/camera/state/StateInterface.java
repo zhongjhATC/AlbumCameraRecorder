@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.camerastate;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.state;
 
 /**
  * 事件接口

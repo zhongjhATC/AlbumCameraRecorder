@@ -1,16 +1,18 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.camerastate;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.state;
 
 import android.util.Log;
 import android.view.View;
 
-import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.PictureComplete;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.PictureMultiple;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.Preview;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.VideoComplete;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.VideoIn;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.VideoMultiple;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state.VideoMultipleIn;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.PictureComplete;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.PictureMultiple;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.Preview;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoComplete;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoIn;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoMultiple;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoMultipleIn;
 
 /**
  * CameraLayout涉及到状态改变的事件都在这里
@@ -26,7 +28,9 @@ public class CameraStateManagement implements StateInterface {
 
     private final String TAG = CameraStateManagement.class.getSimpleName();
 
-    BaseCameraFragment mCameraFragment;
+    BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> mCameraFragment;
     /**
      * 当前状态
      */
@@ -60,7 +64,9 @@ public class CameraStateManagement implements StateInterface {
      */
     StateInterface videoMultipleIn;
 
-    public CameraStateManagement(BaseCameraFragment cameraFragment) {
+    public CameraStateManagement(BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> cameraFragment) {
         mCameraFragment = cameraFragment;
         // 初始化相关状态逻辑
         preview = new Preview(cameraFragment, this);
@@ -112,7 +118,7 @@ public class CameraStateManagement implements StateInterface {
     @Override
     public void stopRecord(boolean isShort) {
         Log.d(TAG, "stopRecord");
-        mCameraFragment.mIsShort = isShort;
+        mCameraFragment.getCameraVideoPresenter().setShort(isShort);
         mCameraFragment.getCameraView().stopVideo();
         // 显示菜单
         mCameraFragment.setMenuVisibility(View.VISIBLE);

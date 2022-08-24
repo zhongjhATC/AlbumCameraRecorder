@@ -1,9 +1,11 @@
 package com.zhongjh.albumcamerarecorder.settings
 
-import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
-import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
@@ -20,11 +22,12 @@ import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 class CameraSetting : CameraSettingApi {
 
     private val mCameraSpec: CameraSpec = cleanInstance
+
     /**
      * 赋予自定义的CameraFragment
      * 如果设置则使用自定义的CameraFragment,否则使用默认的CameraFragment
      */
-    var baseCameraFragment : BaseCameraFragment<BaseCameraPicturePresenter>? = null
+    var baseCameraFragment: BaseCameraFragment<CameraStateManagement,BaseCameraPicturePresenter,BaseCameraVideoPresenter>? = null
 
     /**
      * 销毁事件
@@ -33,7 +36,7 @@ class CameraSetting : CameraSettingApi {
         mCameraSpec.onCameraViewListener = null
     }
 
-    override fun cameraFragment(baseCameraFragment: BaseCameraFragment<BaseCameraPicturePresenter>): CameraSetting {
+    override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManagement,BaseCameraPicturePresenter,BaseCameraVideoPresenter>): CameraSetting {
         this.baseCameraFragment = baseCameraFragment
         return this
     }

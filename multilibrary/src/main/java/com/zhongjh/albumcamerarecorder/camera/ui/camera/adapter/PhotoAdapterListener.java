@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.adapter;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter;
 
 import android.content.Intent;
 

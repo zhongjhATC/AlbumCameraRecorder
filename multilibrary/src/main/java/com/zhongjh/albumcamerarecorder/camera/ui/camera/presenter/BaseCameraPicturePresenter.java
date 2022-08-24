@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.presenter;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
@@ -20,11 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapter;
-import com.zhongjh.albumcamerarecorder.camera.adapter.PhotoAdapterListener;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.impl.ICameraPicture;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraPicture;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
@@ -50,11 +51,16 @@ import java.util.List;
 public class BaseCameraPicturePresenter
         implements PhotoAdapterListener, ICameraPicture {
 
-    public BaseCameraPicturePresenter(BaseCameraFragment<BaseCameraPicturePresenter> baseCameraFragment) {
+    public BaseCameraPicturePresenter(
+            BaseCameraFragment<? extends CameraStateManagement,
+                    ? extends BaseCameraPicturePresenter,
+                    ? extends BaseCameraVideoPresenter> baseCameraFragment) {
         this.baseCameraFragment = baseCameraFragment;
     }
 
-    protected BaseCameraFragment<BaseCameraPicturePresenter> baseCameraFragment;
+    protected BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> baseCameraFragment;
     /**
      * 从编辑图片界面回来
      */
@@ -140,7 +146,7 @@ public class BaseCameraPicturePresenter
     }
 
     /**
-     * 初始化Activity的编辑图片回调
+     * 初始化Activity的有关图片回调
      */
     @Override
     public void initActivityResult() {
@@ -211,7 +217,7 @@ public class BaseCameraPicturePresenter
     @Override
     public void takePhoto() {
         // 开启才能执行别的事件, 如果已经有分段视频，则不允许拍照了
-        if (baseCameraFragment.getCameraView().isOpened() && baseCameraFragment.getVideoTimes().size() <= 0) {
+        if (baseCameraFragment.getCameraView().isOpened() && baseCameraFragment.getCameraVideoPresenter().getVideoTimes().size() <= 0) {
             // 判断数量
             if (photoAdapter.getItemCount() < SelectableUtils.getImageMaxCount()) {
                 // 设置不能点击，防止多次点击报错
@@ -316,6 +322,7 @@ public class BaseCameraPicturePresenter
 
     /**
      * 返回迁移图片的线程
+     *
      * @return 迁移图片的线程
      */
     @Override
@@ -444,7 +451,6 @@ public class BaseCameraPicturePresenter
             baseCameraFragment.hideViewByMultipleZero();
         }
     }
-
 
 
 }

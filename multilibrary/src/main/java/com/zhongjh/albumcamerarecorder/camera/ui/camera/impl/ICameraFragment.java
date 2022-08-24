@@ -1,5 +1,6 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.impl;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.impl;
 
+import android.content.Intent;
 import android.net.Uri;
 
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
@@ -17,11 +18,6 @@ import java.util.ArrayList;
 public interface ICameraFragment {
 
     /**
-     * 当多个图片删除到没有图片时候，隐藏相关View
-     */
-    void hideViewByMultipleZero();
-
-    /**
      * 提交图片成功后，返回数据给上一个页面
      * @param newFiles 多媒体数据
      */
@@ -33,6 +29,19 @@ public interface ICameraFragment {
      * @param throwable 异常
      */
     void commitFail(Throwable throwable);
+
+    /**
+     * 提交视频成功后，返回数据给上一个页面
+     * @param intentPreviewVideo 从预览视频界面返回来的数据intent
+     */
+    void commitVideoSuccess(Intent intentPreviewVideo);
+
+
+
+    /**
+     * 当多个图片删除到没有图片时候，隐藏相关View
+     */
+    void hideViewByMultipleZero();
 
     /**
      * 显示单图

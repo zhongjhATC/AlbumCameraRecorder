@@ -1,11 +1,12 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.camerastate.state;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state;
 
 import static android.app.Activity.RESULT_OK;
 
-import com.zhongjh.albumcamerarecorder.camera.ui.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.ui.camerastate.StateMode;
-import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 
 /**
@@ -20,14 +21,16 @@ public class VideoComplete extends StateMode {
      * @param cameraFragment          主要是多个状态围绕着CameraFragment进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoComplete(BaseCameraFragment<BaseCameraPicturePresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
+    public VideoComplete(BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
         super(cameraFragment, cameraStateManagement);
     }
 
     @Override
     public void resetState() {
         // 取消视频删除文件
-        FileUtil.deleteFile(getCameraFragment().mVideoFile);
+        FileUtil.deleteFile(getCameraFragment().getCameraVideoPresenter().getVideoFile());
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
         getCameraFragment().resetStateAll();

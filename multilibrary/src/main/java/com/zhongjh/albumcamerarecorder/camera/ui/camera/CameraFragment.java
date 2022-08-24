@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera;
 
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.ui.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
@@ -22,10 +24,12 @@ import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayo
  * @author zhongjh
  * @date 2022/8/12
  */
-public class CameraFragment extends BaseCameraFragment<BaseCameraPicturePresenter> {
+public class CameraFragment extends BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter> {
 
     ViewHolder mViewHolder;
     BaseCameraPicturePresenter cameraPicturePresenter = new BaseCameraPicturePresenter(this);
+    BaseCameraVideoPresenter cameraVideoPresenter = new BaseCameraVideoPresenter(this);
+    CameraStateManagement cameraStateManagement = new CameraStateManagement(this);
 
     public static CameraFragment newInstance() {
         return new CameraFragment();
@@ -96,8 +100,20 @@ public class CameraFragment extends BaseCameraFragment<BaseCameraPicturePresente
 
     @NonNull
     @Override
+    public CameraStateManagement getCameraStateManagement() {
+        return cameraStateManagement;
+    }
+
+    @NonNull
+    @Override
     public BaseCameraPicturePresenter getCameraPicturePresenter() {
         return cameraPicturePresenter;
+    }
+
+    @NonNull
+    @Override
+    public BaseCameraVideoPresenter getCameraVideoPresenter() {
+        return cameraVideoPresenter;
     }
 
     public static class ViewHolder {
@@ -129,7 +145,6 @@ public class CameraFragment extends BaseCameraFragment<BaseCameraPicturePresente
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);
         }
-
     }
 
 }

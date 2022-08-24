@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.adapter;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
