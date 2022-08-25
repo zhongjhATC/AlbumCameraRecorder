@@ -1,6 +1,8 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera;
 
 import static android.app.Activity.RESULT_OK;
+import static com.otaliastudios.cameraview.controls.Mode.PICTURE;
+import static com.otaliastudios.cameraview.controls.Mode.VIDEO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
@@ -33,6 +35,7 @@ import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.VideoResult;
+import com.otaliastudios.cameraview.controls.Audio;
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -58,6 +61,7 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
+import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -168,8 +172,8 @@ public abstract class BaseCameraFragment
         View view = inflater.inflate(setContentView(), container, false);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
         initView(view, savedInstanceState);
-        setView();
         initData();
+        setView();
         initListener();
         return view;
     }
@@ -246,6 +250,57 @@ public abstract class BaseCameraFragment
      */
     protected void setView() {
         multiplePhotoViews = getMultiplePhotoView();
+
+        // 如果有设置高清模式，则根据相应高清模式更改模式
+        if (cameraSpec.getEnableImageHighDefinition()) {
+            getCameraView().setMode(PICTURE);
+        } else if (cameraSpec.getEnableVideoHighDefinition()) {
+            getCameraView().setMode(VIDEO);
+        } else {
+            getCameraView().setMode(VIDEO);
+        }
+
+        if (cameraSpec.getWatermarkResource() != -1) {
+            LayoutInflater.from(getContext()).inflate(cameraSpec.getWatermarkResource(), getCameraView(), true);
+        }
+
+        // 回调cameraView可以自定义相关参数
+        if (cameraSpec.getOnCameraViewListener() != null) {
+            cameraSpec.getOnCameraViewListener().onInitListener(getCameraView());
+        }
+
+        // 兼容沉倾状态栏
+        if (getTopView() != null) {
+            int statusBarHeight = StatusBarUtils.getStatusBarHeight(getMyContext());
+            getTopView().setPadding(0, statusBarHeight, 0, 0);
+            ViewGroup.LayoutParams layoutParams = getTopView().getLayoutParams();
+            layoutParams.height = layoutParams.height + statusBarHeight;
+        }
+
+        // 如果启动视频编辑并且可录制数量>=0，便显示分段录制功能
+        if (SelectableUtils.getVideoMaxCount() <= 0 || !cameraSpec.isMergeEnable()) {
+            getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+        } else {
+            getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
+        }
+
+        // 处理图片、视频等需要进度显示
+        getPhotoVideoLayout().getViewHolder().btnConfirm.setProgressMode(true);
+
+        // 初始化cameraView,判断是否开启录制视频，如果开启就开启声音
+        if (!SelectableUtils.videoValid()) {
+            getCameraView().setAudio(Audio.OFF);
+        }
+
+        // 设置闪光灯模式
+        setFlashLamp();
+        if (getSwitchView() != null) {
+            getSwitchView().setImageResource(cameraSpec.getImageSwitch());
+        }
+        // 设置录制时间
+        getPhotoVideoLayout().setDuration(cameraSpec.getDuration() * 1000);
+        // 最短录制时间
+        getPhotoVideoLayout().setMinDuration(cameraSpec.getMinDuration());
     }
 
     /**

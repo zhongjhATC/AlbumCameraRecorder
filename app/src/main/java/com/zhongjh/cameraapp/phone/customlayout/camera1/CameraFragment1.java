@@ -70,6 +70,12 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManagement, B
         return mViewHolder.rlMain;
     }
 
+    @Nullable
+    @Override
+    public View getTopView() {
+        return mViewHolder.clMenu;
+    }
+
     @NonNull
     @Override
     public CameraView getCameraView() {

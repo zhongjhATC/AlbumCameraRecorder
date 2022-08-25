@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.camera;
+package com.zhongjh.cameraapp.phone.customlayout.camera2;
 
 import android.os.Bundle;
 import android.view.View;
@@ -6,33 +6,38 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraView;
-import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
+import com.zhongjh.cameraapp.R;
 
 /**
  * 继承于BaseCameraFragment
+ * 主要演示 BaseCameraPicturePresenter
+ *
+ * 使用 TODO 关键字可搜索相关自定义代码
  *
  * @author zhongjh
  * @date 2022/8/12
  */
-public class CameraFragment extends BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter> {
+public class CameraFragment2 extends BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter> {
 
     ViewHolder mViewHolder;
-    BaseCameraPicturePresenter cameraPicturePresenter = new BaseCameraPicturePresenter(this);
+    CameraPicturePresenter cameraPicturePresenter = new CameraPicturePresenter(this);
     BaseCameraVideoPresenter cameraVideoPresenter = new BaseCameraVideoPresenter(this);
     CameraStateManagement cameraStateManagement = new CameraStateManagement(this);
 
-    public static CameraFragment newInstance() {
-        return new CameraFragment();
+    public static CameraFragment2 newInstance() {
+        return new CameraFragment2();
     }
 
     @Override
@@ -136,6 +141,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
         ImageView imgClose;
         CameraView cameraView;
         ConstraintLayout clMenu;
+        AppCompatButton btnCustom;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -150,6 +156,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);
+            this.btnCustom = rootView.findViewById(R.id.btnCustom);
         }
     }
 

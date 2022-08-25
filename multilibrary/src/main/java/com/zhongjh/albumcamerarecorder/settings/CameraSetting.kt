@@ -26,6 +26,7 @@ class CameraSetting : CameraSettingApi {
     /**
      * 赋予自定义的CameraFragment
      * 如果设置则使用自定义的CameraFragment,否则使用默认的CameraFragment
+     * 每次使用要重新赋值，因为会在每次关闭界面后删除该Fragment
      */
     var baseCameraFragment: BaseCameraFragment<CameraStateManagement,BaseCameraPicturePresenter,BaseCameraVideoPresenter>? = null
 
@@ -34,6 +35,7 @@ class CameraSetting : CameraSettingApi {
      */
     fun onDestroy() {
         mCameraSpec.onCameraViewListener = null
+        this.baseCameraFragment = null
     }
 
     override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManagement,BaseCameraPicturePresenter,BaseCameraVideoPresenter>): CameraSetting {

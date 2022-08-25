@@ -45,6 +45,13 @@ public interface ICameraView {
     IChildClickableLayout getChildClickableLayout();
 
     /**
+     * 返回顶部View，该View自动兼容沉倾状态栏
+     * @return view
+     */
+    @Nullable
+    View getTopView();
+
+    /**
      * 设置CameraView
      *
      * @return 返回CameraView，主要用于拍摄、录制，里面包含水印

@@ -58,6 +58,9 @@ public class BaseCameraPicturePresenter
         this.baseCameraFragment = baseCameraFragment;
     }
 
+    /**
+     * cameraFragment
+     */
     protected BaseCameraFragment<? extends CameraStateManagement,
             ? extends BaseCameraPicturePresenter,
             ? extends BaseCameraVideoPresenter> baseCameraFragment;
