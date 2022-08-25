@@ -137,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
         if (mLayoutMediator != null) {
             mLayoutMediator.detach();
         }
+        if (mSpec.getCameraSetting() != null) {
+            mSpec.getCameraSetting().clearCameraFragment();
+        }
         super.onDestroy();
     }
 
