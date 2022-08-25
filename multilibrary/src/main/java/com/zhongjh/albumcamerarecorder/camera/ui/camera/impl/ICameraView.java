@@ -37,7 +37,7 @@ public interface ICameraView {
     void initView(View view, Bundle savedInstanceState);
 
     /**
-     * 设置ChildClickableLayout
+     * 设置ChildClickableLayout，各大布局都支持
      *
      * @return 返回ChildClickableLayout，主要用于控制整个屏幕是否接受触摸事件
      */

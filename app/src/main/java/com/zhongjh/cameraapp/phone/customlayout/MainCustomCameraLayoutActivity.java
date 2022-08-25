@@ -18,6 +18,7 @@ import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameralayoutBinding;
+import com.zhongjh.cameraapp.phone.customlayout.camera1.CameraFragment1;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
@@ -54,8 +55,8 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_custom_cameraview);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_custom_cameraview);
+        setContentView(R.layout.activity_main_custom_cameralayout);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_custom_cameralayout);
 
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
@@ -132,6 +133,10 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         cameraSetting = new CameraSetting();
         // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
+
+        if (mBinding.radioButton1.isChecked()) {
+            cameraSetting.setBaseCameraFragment(CameraFragment1.newInstance());
+        }
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(false)
