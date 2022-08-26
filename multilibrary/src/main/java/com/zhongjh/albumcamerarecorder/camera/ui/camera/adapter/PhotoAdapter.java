@@ -1,10 +1,10 @@
-package com.zhongjh.albumcamerarecorder.camera.adapter;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter;
 
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -41,15 +40,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     private final String TAG = PhotoAdapter.class.getSimpleName();
 
-    Context mContext;
-    CameraFragment mCameraFragment;
+    Activity mActivity;
     GlobalSpec mGlobalSpec;
     List<BitmapData> mListData;
-
-    /**
-     * 记录当前删除事件的时间
-     */
-    private long mLastOperationTime;
 
     // region 回调监听事件
 
@@ -57,10 +50,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     // endregion
 
-    public PhotoAdapter(Context context, CameraFragment fragment, GlobalSpec globalSpec,
+    public PhotoAdapter(Activity activity, GlobalSpec globalSpec,
                         List<BitmapData> listData, PhotoAdapterListener photoAdapterListener) {
-        mContext = context;
-        mCameraFragment = fragment;
+        mActivity = activity;
         mGlobalSpec = globalSpec;
         this.mListData = listData;
         mPhotoAdapterListener = photoAdapterListener;
@@ -69,13 +61,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @NonNull
     @Override
     public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new PhotoViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_image_multilibrary_zjh, parent, false));
+        return new PhotoViewHolder(LayoutInflater.from(mActivity).inflate(R.layout.item_image_multilibrary_zjh, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         BitmapData bitmapData = mListData.get(position);
-        mGlobalSpec.getImageEngine().loadUriImage(mContext, holder.imgPhoto, bitmapData.getUri());
+        mGlobalSpec.getImageEngine().loadUriImage(mActivity, holder.imgPhoto, bitmapData.getUri());
         // 点击图片
         holder.itemView.setOnClickListener(new OnMoreClickListener() {
             @Override
@@ -121,7 +113,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         bundle.putParcelableArrayList(STATE_SELECTION, items);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
-        Intent intent = new Intent(mContext, AlbumPreviewActivity.class);
+        Intent intent = new Intent(mActivity, AlbumPreviewActivity.class);
 
         // 获取目前点击的这个item
         MultiMedia item = new MultiMedia();
@@ -137,12 +129,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
         intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
-        mCameraFragment.mAlbumPreviewActivityResult.launch(intent);
-        if (mGlobalSpec.getCutscenesEnabled()) {
-            if (mCameraFragment.getActivity() != null) {
-                mCameraFragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
-            }
-        }
+        mPhotoAdapterListener.onPhotoAdapterClick(intent);
     }
 
     /**
@@ -156,7 +143,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         mListData.remove(bitmapData);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, mListData.size());
-        mPhotoAdapterListener.onDelete(bitmapData, position);
+        mPhotoAdapterListener.onPhotoAdapterDelete(bitmapData, position);
     }
 
     @Override

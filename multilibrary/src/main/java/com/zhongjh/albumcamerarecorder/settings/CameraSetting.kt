@@ -1,7 +1,11 @@
 package com.zhongjh.albumcamerarecorder.settings
 
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
@@ -24,6 +28,23 @@ class CameraSetting : CameraSettingApi {
      */
     fun onDestroy() {
         mCameraSpec.onCameraViewListener = null
+    }
+
+    /**
+     * 赋予自定义的CameraFragment
+     * 如果设置则使用自定义的CameraFragment,否则使用默认的CameraFragment
+     * 每次使用要重新赋值，因为会在每次关闭界面后删除该Fragment
+     */
+    var baseCameraFragment: BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter>? =
+        null
+
+    override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter>): CameraSetting {
+        this.baseCameraFragment = baseCameraFragment
+        return this
+    }
+
+    fun clearCameraFragment() {
+        this.baseCameraFragment = null
     }
 
     override fun mimeTypeSet(mimeTypes: Set<MimeType>): CameraSetting {

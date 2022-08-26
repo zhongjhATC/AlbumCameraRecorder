@@ -5,18 +5,18 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimary">
+    android:background="?android:attr/colorPrimary">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="?android:attr/actionBarSize">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="?android:attr/colorPrimary"
             android:elevation="1dp"
             android:theme="?attr/toolbar.zhongjh"
             app:layout_scrollFlags="scroll|enterAlways"
@@ -41,7 +41,7 @@
                     android:layout_height="match_parent"
                     android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"
                     android:drawableRight="@drawable/ic_arrow_drop_down_white_24dp"
-                    android:foreground="?selectableItemBackground"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
                     android:textColor="?attr/album.element.color"
                     android:textSize="20sp"
@@ -102,7 +102,7 @@
     <com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="?android:attr/actionBarSize"
         android:layout_gravity="bottom|end"
         android:background="?attr/bottomToolbar.bg"
         android:elevation="1dp"
@@ -113,7 +113,7 @@
             android:id="@+id/buttonPreview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:foreground="?selectableItemBackground"
+            android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
@@ -133,7 +133,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:foreground="?selectableItemBackground"
+            android:foreground="?android:attr/selectableItemBackground"
             android:orientation="horizontal"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="@+id/tvOriginal"
@@ -178,7 +178,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:foreground="?selectableItemBackground"
+            android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rlMain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/black_eighty_percent"
+    android:orientation="vertical"
+    android:paddingTop="1dp">
+
+
+</com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout>

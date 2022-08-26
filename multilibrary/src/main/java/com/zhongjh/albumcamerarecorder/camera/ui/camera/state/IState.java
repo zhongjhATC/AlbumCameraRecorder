@@ -1,12 +1,13 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.state;
 
 /**
- * 事件接口
+ * 状态事件接口
+ * 对于不同状态下，他们各自的实现不一样
  *
  * @author zhongjh
  * @date 2021/11/25
  */
-public interface StateInterface {
+public interface IState {
 
     /**
      * 结束所有当前活动，重置状态

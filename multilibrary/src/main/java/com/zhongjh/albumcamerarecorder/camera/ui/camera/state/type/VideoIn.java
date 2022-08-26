@@ -1,8 +1,10 @@
-package com.zhongjh.albumcamerarecorder.camera.camerastate.state;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
-import com.zhongjh.albumcamerarecorder.camera.CameraLayout;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 
 /**
  * 正在录制视频中的状态
@@ -11,12 +13,15 @@ import com.zhongjh.albumcamerarecorder.camera.camerastate.StateMode;
  * @date 2021/11/25
  */
 public class VideoIn extends StateMode {
+
     /**
-     * @param cameraLayout          主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoIn(CameraLayout cameraLayout, CameraStateManagement cameraStateManagement) {
-        super(cameraLayout, cameraStateManagement);
+    public VideoIn(BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
+        super(cameraFragment, cameraStateManagement);
     }
 
     @Override
@@ -28,10 +33,10 @@ public class VideoIn extends StateMode {
     @Override
     public Boolean onBackPressed() {
         // 如果是录制中则暂停视频
-        getCameraLayout().setBreakOff(true);
-        getCameraLayout().mViewHolder.cameraView.stopVideo();
+        getCameraFragment().getCameraVideoPresenter().setBreakOff(true);
+        getCameraFragment().getCameraView().stopVideo();
         // 重置按钮
-        getCameraLayout().mViewHolder.pvLayout.reset();
+        getCameraFragment().getPhotoVideoLayout().reset();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
         return true;
@@ -55,14 +60,14 @@ public class VideoIn extends StateMode {
     @Override
     public void longClickShort(long time) {
         // 母窗体显示底部
-        getCameraLayout().mMainActivity.showHideTableLayout(true);
+        getCameraFragment().getMainActivity().showHideTableLayout(true);
     }
 
     @Override
     public void stopRecord(boolean isShort) {
         if (isShort) {
             // 重置底部按钮
-            getCameraLayout().mViewHolder.pvLayout.reset();
+            getCameraFragment().getPhotoVideoLayout().reset();
             getCameraStateManagement().setState(getCameraStateManagement().getPreview());
         } else {
             getCameraStateManagement().setState(getCameraStateManagement().getVideoComplete());

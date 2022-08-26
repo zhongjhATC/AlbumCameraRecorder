@@ -1,4 +1,6 @@
-package com.zhongjh.albumcamerarecorder.camera;
+package com.zhongjh.albumcamerarecorder.camera.ui.previewvideo;
+
+import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -32,8 +34,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
-
 
 /**
  * 一个预览合成分段录制的视频
@@ -44,7 +44,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
 
     private static final String TAG = PreviewVideoActivity.class.getSimpleName();
 
-    static final String LOCAL_FILE = "LOCAL_FILE";
+    public static final String LOCAL_FILE = "LOCAL_FILE";
     static final String PATH = "PATH";
 
     VideoView mVideoViewPreview;

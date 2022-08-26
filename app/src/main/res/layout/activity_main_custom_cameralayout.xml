@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="这是演示自己如何自定义录制界面的布局、逻辑" />
+
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RadioButton
+                    android:id="@+id/radioButton1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="单纯自己在布局添加东西简单修改逻辑" />
+
+                <RadioButton
+                    android:id="@+id/radioButton2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="修改拍照时图片逻辑" />
+
+            </RadioGroup>
+
+            <com.zhongjh.progresslibrary.widget.MaskProgressLayout
+                android:id="@+id/mplImageList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:audioDeleteColor="@color/blue_primary"
+                app:audioPlayColor="@color/blue_primary"
+                app:audioProgressColor="@color/blue_primary"
+                app:authority="com.zhongjh.cameraapp.fileprovider"
+                app:columnNumber="4"
+                app:columnSpace="10"
+                app:imageAddDrawable="@drawable/ic_add_gray"
+                app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
+                app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
+                app:maskingColor="?attr/colorPrimary"
+                app:maskingTextColor="@color/black_eighty_percent"
+                app:maskingTextContent="@string/up_upload_is_customizable"
+                app:maskingTextSize="12"
+                app:maxCount="7" />
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+</layout>

@@ -13,7 +13,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 
 /**
- * 跟父类一样
+ * 用于录制，拍摄的一系列控件按钮
  *
  * @author zhongjh
  * @date 2018/10/16
