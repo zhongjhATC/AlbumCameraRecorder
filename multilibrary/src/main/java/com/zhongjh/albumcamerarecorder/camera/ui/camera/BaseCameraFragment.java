@@ -169,7 +169,7 @@ public abstract class BaseCameraFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(setContentView(), container, false);
+        View view = setContentView(inflater,container);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
         initView(view, savedInstanceState);
         initData();

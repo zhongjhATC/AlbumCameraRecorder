@@ -1,7 +1,9 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.impl;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -25,10 +27,12 @@ public interface ICameraView {
 
     /**
      * 初始化根布局
+     * @param inflater onCreateView方法下面的inflater
+     * @param container  onCreateView方法下面的container
      *
-     * @return 布局layout的id
+     * @return 返回布局View
      */
-    int setContentView();
+    View setContentView(LayoutInflater inflater, ViewGroup container);
 
     /**
      * 初始化相关view
@@ -48,6 +52,7 @@ public interface ICameraView {
 
     /**
      * 返回顶部View，该View自动兼容沉倾状态栏
+     *
      * @return view
      */
     @Nullable

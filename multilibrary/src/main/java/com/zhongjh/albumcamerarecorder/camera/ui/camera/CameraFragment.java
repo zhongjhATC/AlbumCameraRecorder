@@ -1,7 +1,9 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -36,8 +38,8 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
     }
 
     @Override
-    public int setContentView() {
-        return R.layout.fragment_camera_zjh;
+    public View setContentView(LayoutInflater inflater, ViewGroup container) {
+        return inflater.inflate(R.layout.fragment_camera_zjh, container, false);
     }
 
     @Override

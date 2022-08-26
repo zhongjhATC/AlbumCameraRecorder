@@ -1,7 +1,9 @@
 package com.zhongjh.cameraapp.phone.customlayout.camera2;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -23,7 +25,7 @@ import com.zhongjh.cameraapp.R;
 /**
  * 继承于BaseCameraFragment
  * 主要演示 BaseCameraPicturePresenter
- *
+ * <p>
  * 使用 TODO 关键字可搜索相关自定义代码
  *
  * @author zhongjh
@@ -41,8 +43,8 @@ public class CameraFragment2 extends BaseCameraFragment<CameraStateManagement, B
     }
 
     @Override
-    public int setContentView() {
-        return R.layout.fragment_camera_zjh;
+    public View setContentView(LayoutInflater inflater, ViewGroup container) {
+        return inflater.inflate(R.layout.fragment_camera_zjh, container, false);
     }
 
     @Override
