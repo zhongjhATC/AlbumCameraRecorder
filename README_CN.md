@@ -20,12 +20,12 @@
 非X库版本,已经停止维护(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
 
 ## 特性
- - 支持自定义样式.支持更换里面的相关按钮.
+ - 录制拍照完全支持自己自定义！详情请看Demo如何使用，如果需要深入扩展需要了解更多代码[CameraFragment架构简介](https://juejin.cn/post/7136108758010167304/)
  - 支持相册、录制、录音等三合一功能（类似抖音等），并且也可以通过配置只独立出其中一个功能.
  - 支持可自定义权限请求也可以直接交由该库完成权限请求
  - 虽然功能很多，但是可以按照所需功能来引入某些库
  - 丰富的回调接口和调试信息,可利用现有API实现丰富的效果.
- - 兼容性强，不管是低版本的4.1还是目前最新版本的Android 11,都进行了相关兼容处理
+ - 兼容性强，不管是低版本的4.1还是目前最新版本的Android 11,都进行了相关兼容处理(也测试过Android 13没发现问题)
  - 支持所有图片读取处理自定义，例如可自定义glide、Fresco等等都可以
  - 支持从相册选择图片
  - 支持相册按照手机文件区分不同的文件夹选择
@@ -58,19 +58,19 @@
 
 	dependencies {
 	     // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.68X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.70X'
 
 	     // 公共库，如果不使用上面的combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.68X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.70X'
 	     // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.68X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.70X'
          // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.68X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.70X'
 
          // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.68X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.70X'
 	     // 配套编辑视频使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.68X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.70X'
 	}
 
 ## 快照
@@ -78,8 +78,6 @@
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration1.gif)
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration2.gif)
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/DemonstrationShowImg.png)
-
-
 
 ## 市场上常用手机兼容测试
 100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/WeTest.md).
@@ -151,6 +149,9 @@
             android:name="android.support.FILE_PROVIDER_PATHS"
             android:resource="@xml/file_paths_public" />
     </provider>
+
+#### 如果你需要修改拍摄录制的界面和逻辑
+简单扩展请参考Demo，如果需要深入扩展了解更多[CameraFragment架构简洁](https://juejin.cn/post/7136108758010167304/)
 
 #### 如果还有别的常见问题，具体可以看[可能会发生的问题](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)搜索报错关键字
 

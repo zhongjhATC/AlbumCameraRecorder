@@ -19,12 +19,12 @@ Also support supporting the use of the display of pictures, video, audio 9 grid 
 A non-X library version, no longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
 
 ## peculiarity
- - Support for custom styles. Support to change the relevant buttons inside.
+ - Record photo fully support your own custom! See how to use Demo for more details, if you need to go deeper, you need to know more code [Introduction to the CameraFragment architecture](https://juejin.cn/post/7136108758010167304/)
  - Support album, recording, recording and other functions in one (similar to Douyin, etc.), and you can configure only one of the functions independently.
  - Customizable permission requests are supported and can be directed to the library to complete permission requests
  - While there are many features, some libraries can be introduced as required
  - Rich callback interface and debugging information, using the existing API to achieve a rich effect.
- - Strong compatibility, whether the lower version of 4.1 or the current latest version of Android 11, has been carried out related compatibility processing
+ - Strong compatibility, whether the lower version of 4.1 or the current latest version of Android 11, has been carried out related compatibility processing(I also tested Android 13 and found no problem)
  - Support all image reading and processing customization, such as custom Glide, Fresco, etc
  - Support to select pictures from albums
  - Supports photo albums to select different folders according to mobile phone files
@@ -55,19 +55,19 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 
 	dependencies {
 	     // if you want to simplify the code and at the same time use multilibrary and progresslibrary, albumCameraRecorderCommon, can directly use the combined library
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.68X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.70X'
 
 	     // Public library, if not using the combined library above
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.68X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.70X'
 	     // core lib, call display album, screen recording, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.68X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.70X'
          // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.68X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.70X'
 
          // use it with editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.68X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.70X'
 	     // For editing video
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.68X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.70X'
 	}
 
 ## snapshoot
@@ -152,6 +152,9 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
             android:name="android.support.FILE_PROVIDER_PATHS"
             android:resource="@xml/file_paths_public" />
     </provider>
+
+#### If you need to modify the shooting and recording interface and logic
+Please refer to Demo for simple extensions. If you need to go deeper to learn more about extensions [simple architecture of CameraFragment](https://juejin.cn/post/7136108758010167304/)
 
 #### If there are other common problems, you can see the [website](https://github.com/zhongjhATC/AlbumCameraRecorder/issues) search error keywords
 
