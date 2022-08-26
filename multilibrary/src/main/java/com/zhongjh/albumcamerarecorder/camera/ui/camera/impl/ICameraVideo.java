@@ -3,6 +3,8 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera.impl;
 import com.otaliastudios.cameraview.VideoResult;
 
 /**
+ * 拍摄界面的有关视频View的接口
+ *
  * @author zhongjh
  * @date 2022/8/23
  */

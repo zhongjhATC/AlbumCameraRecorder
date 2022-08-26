@@ -1,6 +1,8 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.state;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
 
 /**
  * 状态模式
@@ -8,18 +10,24 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
  * @author zhongjh
  * @date 2021/11/25
  */
-public abstract class StateMode implements StateInterface {
+public abstract class StateMode implements IState {
 
     protected final String TAG = CameraStateManagement.class.getSimpleName();
 
     CameraStateManagement cameraStateManagement;
-    BaseCameraFragment cameraFragment;
+    BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> cameraFragment;
 
-    public BaseCameraFragment getCameraFragment() {
+    public BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> getCameraFragment() {
         return cameraFragment;
     }
 
-    public void setCameraFragment(BaseCameraFragment cameraLayout) {
+    public void setCameraFragment(BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> cameraLayout) {
         this.cameraFragment = cameraLayout;
     }
 
@@ -35,7 +43,9 @@ public abstract class StateMode implements StateInterface {
      * @param cameraStateManagement 可以让状态更改别的状态
      * @param cameraFragment       主要是多个状态围绕着cameraLayout进行相关处理
      */
-    public StateMode(BaseCameraFragment cameraFragment, CameraStateManagement cameraStateManagement) {
+    public StateMode(BaseCameraFragment<? extends CameraStateManagement,
+            ? extends BaseCameraPicturePresenter,
+            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
         this.cameraFragment = cameraFragment;
         this.cameraStateManagement = cameraStateManagement;
     }

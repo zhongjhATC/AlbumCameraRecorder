@@ -9,7 +9,8 @@ import com.zhongjh.common.utils.ThreadUtils;
 import java.util.ArrayList;
 
 /**
- * 拍摄界面的有关图片接口
+ * 拍摄界面的有关图片View的接口
+ * 控制多图Adapter也是在这里实现
  *
  * @author zhongjh
  * @date 2022/8/23

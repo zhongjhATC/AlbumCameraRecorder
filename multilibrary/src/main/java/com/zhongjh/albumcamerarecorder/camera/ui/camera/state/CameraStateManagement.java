@@ -6,13 +6,13 @@ import android.view.View;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.PictureComplete;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.PictureMultiple;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.Preview;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoComplete;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoIn;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoMultiple;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoMultipleIn;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.PictureComplete;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.PictureMultiple;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.Preview;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoComplete;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoIn;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoMultiple;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoMultipleIn;
 
 /**
  * CameraLayout涉及到状态改变的事件都在这里
@@ -24,7 +24,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state.VideoMultipl
  * @author zhongjh
  * @date 2021/11/25
  */
-public class CameraStateManagement implements StateInterface {
+public class CameraStateManagement implements IState {
 
     private final String TAG = CameraStateManagement.class.getSimpleName();
 
@@ -34,35 +34,35 @@ public class CameraStateManagement implements StateInterface {
     /**
      * 当前状态
      */
-    StateInterface state;
+    IState state;
     /**
      * 预览状态
      */
-    StateInterface preview;
+    IState preview;
     /**
      * 视频完成状态
      */
-    StateInterface videoComplete;
+    IState videoComplete;
     /**
      * 图片完成状态
      */
-    StateInterface pictureComplete;
+    IState pictureComplete;
     /**
      * 多个图片状态，至少有一张图片情况
      */
-    StateInterface pictureMultiple;
+    IState pictureMultiple;
     /**
      * 多个视频状态，至少有一段视频情况
      */
-    StateInterface videoMultiple;
+    IState videoMultiple;
     /**
      * 正在录制视频中的状态
      */
-    StateInterface videoIn;
+    IState videoIn;
     /**
      * 正在录制多个视频中的状态
      */
-    StateInterface videoMultipleIn;
+    IState videoMultipleIn;
 
     public CameraStateManagement(BaseCameraFragment<? extends CameraStateManagement,
             ? extends BaseCameraPicturePresenter,
@@ -133,7 +133,7 @@ public class CameraStateManagement implements StateInterface {
     /**
      * @return 当前状态
      */
-    public StateInterface getState() {
+    public IState getState() {
         Log.d(TAG, "getState" + state.toString());
         return state;
     }
@@ -141,36 +141,36 @@ public class CameraStateManagement implements StateInterface {
     /**
      * 赋值当前状态
      */
-    public void setState(StateInterface state) {
+    public void setState(IState state) {
         Log.d(TAG, "setState" + state.toString());
         this.state = state;
     }
 
-    public StateInterface getPreview() {
+    public IState getPreview() {
         return preview;
     }
 
-    public StateInterface getVideoComplete() {
+    public IState getVideoComplete() {
         return videoComplete;
     }
 
-    public StateInterface getPictureComplete() {
+    public IState getPictureComplete() {
         return pictureComplete;
     }
 
-    public StateInterface getPictureMultiple() {
+    public IState getPictureMultiple() {
         return pictureMultiple;
     }
 
-    public StateInterface getVideoMultiple() {
+    public IState getVideoMultiple() {
         return videoMultiple;
     }
 
-    public StateInterface getVideoIn() {
+    public IState getVideoIn() {
         return videoIn;
     }
 
-    public StateInterface getVideoMultipleIn() {
+    public IState getVideoMultipleIn() {
         return videoMultipleIn;
     }
 

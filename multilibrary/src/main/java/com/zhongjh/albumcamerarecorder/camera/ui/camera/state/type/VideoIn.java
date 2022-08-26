@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.state;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
@@ -7,18 +7,18 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 
 /**
- * 多个视频模式
+ * 正在录制视频中的状态
  *
  * @author zhongjh
- * @date 2021/11/29
+ * @date 2021/11/25
  */
-public class VideoMultiple extends StateMode {
+public class VideoIn extends StateMode {
 
     /**
-     * @param cameraFragment        主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManagement 可以让状态更改别的状态
      */
-    public VideoMultiple(BaseCameraFragment<? extends CameraStateManagement,
+    public VideoIn(BaseCameraFragment<? extends CameraStateManagement,
             ? extends BaseCameraPicturePresenter,
             ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
         super(cameraFragment, cameraStateManagement);
@@ -26,45 +26,56 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void resetState() {
-        // 重置所有
-        getCameraFragment().resetStateAll();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
 
     @Override
     public Boolean onBackPressed() {
-        return null;
+        // 如果是录制中则暂停视频
+        getCameraFragment().getCameraVideoPresenter().setBreakOff(true);
+        getCameraFragment().getCameraView().stopVideo();
+        // 重置按钮
+        getCameraFragment().getPhotoVideoLayout().reset();
+        // 恢复预览状态
+        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+        return true;
     }
 
     @Override
     public boolean onActivityResult(int resultCode) {
-        // 返回false处理视频
-        return false;
+        return true;
     }
 
     @Override
     public void pvLayoutCommit() {
-        getCameraFragment().getCameraVideoPresenter().openPreviewVideoActivity();
+
     }
 
     @Override
     public void pvLayoutCancel() {
-        getCameraFragment().getCameraVideoPresenter().removeVideoMultiple();
+
     }
 
     @Override
     public void longClickShort(long time) {
+        // 母窗体显示底部
+        getCameraFragment().getMainActivity().showHideTableLayout(true);
     }
 
     @Override
     public void stopRecord(boolean isShort) {
-
+        if (isShort) {
+            // 重置底部按钮
+            getCameraFragment().getPhotoVideoLayout().reset();
+            getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+        } else {
+            getCameraStateManagement().setState(getCameraStateManagement().getVideoComplete());
+        }
     }
 
     @Override
     public void stopProgress() {
-        getCameraFragment().stopVideoMultiple();
-    }
 
+    }
 }

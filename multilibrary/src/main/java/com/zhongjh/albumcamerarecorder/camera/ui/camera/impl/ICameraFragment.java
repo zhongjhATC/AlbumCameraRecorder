@@ -10,7 +10,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * 拍摄的接口，主要用于告示开发者可以使用哪些方法
+ * 拍摄界面的接口，主要用于告示开发者可以使用哪些方法
+ * 大部分是关于View操作的界面逻辑,除了图片、视频、实例化View，其他方法都统一在Fragment使用
  *
  * @author zhongjh
  * @date 2022/8/11
@@ -35,8 +36,6 @@ public interface ICameraFragment {
      * @param intentPreviewVideo 从预览视频界面返回来的数据intent
      */
     void commitVideoSuccess(Intent intentPreviewVideo);
-
-
 
     /**
      * 当多个图片删除到没有图片时候，隐藏相关View

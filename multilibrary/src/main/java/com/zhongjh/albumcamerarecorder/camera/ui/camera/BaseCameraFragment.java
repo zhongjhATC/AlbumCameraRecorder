@@ -49,7 +49,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateInterface;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.IState;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
@@ -875,7 +875,7 @@ public abstract class BaseCameraFragment
      *
      * @return 状态
      */
-    public StateInterface getState() {
+    public IState getState() {
         return getCameraStateManagement().getState();
     }
 
