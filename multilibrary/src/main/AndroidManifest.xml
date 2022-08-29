@@ -19,6 +19,12 @@
             android:screenOrientation="locked"
             android:launchMode="singleTop" />
         <activity
+            android:name=".preview.ContainerViewActivity"
+            android:configChanges="orientation|screenSize"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="locked"
+            android:launchMode="singleTop" />
+        <activity
             android:name=".preview.SelectedPreviewActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="locked"

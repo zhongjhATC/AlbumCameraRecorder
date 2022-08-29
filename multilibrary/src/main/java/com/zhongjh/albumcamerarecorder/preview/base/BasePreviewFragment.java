@@ -1,17 +1,21 @@
-package com.zhongjh.albumcamerarecorder.preview;
+package com.zhongjh.albumcamerarecorder.preview.base;
 
+import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -23,7 +27,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -34,6 +39,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -56,15 +62,15 @@ import java.io.File;
 import java.util.List;
 
 /**
- * 预览的基类
+ * 预览窗口的基类
  *
  * @author zhongjh
+ * @date 2022/8/29
  */
-public class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
+public class BasePreviewFragment extends Fragment implements View.OnClickListener,
         ViewPager.OnPageChangeListener {
 
-    private final String TAG = BasePreviewActivity.this.getClass().getSimpleName();
-
+    private final String TAG = BasePreviewFragment.this.getClass().getSimpleName();
     public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
     public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
@@ -79,12 +85,45 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     public static final String IS_BY_ALBUM = "is_by_album";
     public static final String IS_BY_PROGRESS_GRIDVIEW = "is_by_progress_gridview";
 
-    protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
+    protected FragmentActivity mActivity;
+    protected Context mContext;
+    protected ViewHolder mViewHolder;
+    protected PreviewPagerAdapter mAdapter;
     protected GlobalSpec mGlobalSpec;
     protected AlbumSpec mAlbumSpec;
-
-    protected PreviewPagerAdapter mAdapter;
-
+    protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(getContext());
+    /**
+     * 图片存储器
+     */
+    private MediaStoreCompat mPictureMediaStoreCompat;
+    /**
+     * 录像文件配置路径
+     */
+    private MediaStoreCompat mVideoMediaStoreCompat;
+    /**
+     * 完成压缩-复制的异步线程
+     */
+    ThreadUtils.SimpleTask<Void> mCompressFileTask;
+    /**
+     * 完成迁移文件的异步线程
+     */
+    ThreadUtils.SimpleTask<Void> mMoveFileTask;
+    /**
+     * 异步线程的逻辑
+     */
+    private AlbumCompressFileTask mAlbumCompressFileTask;
+    /**
+     * 打开ImageEditActivity的回调
+     */
+    ActivityResultLauncher<Intent> mImageEditActivityResult;
+    /**
+     * 当前编辑完的图片文件
+     */
+    private File mEditImageFile;
+    /**
+     * 当前预览的图片的索引,默认第一个
+     */
+    protected int mPreviousPos = -1;
     /**
      * 是否原图
      */
@@ -93,12 +132,6 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      * 是否编辑了图片
      */
     private boolean mIsEdit;
-
-    /**
-     * 当前预览的图片的索引,默认第一个
-     */
-    protected int mPreviousPos = -1;
-
     /**
      * 启用操作，默认true,也不启动右上角的选择框自定义触发事件
      */
@@ -124,100 +157,89 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
      */
     protected boolean mIsByProgressGridView = false;
 
-    /**
-     * 图片存储器
-     */
-    private MediaStoreCompat mPictureMediaStoreCompat;
-    /**
-     * 录像文件配置路径
-     */
-    private MediaStoreCompat mVideoMediaStoreCompat;
-    /**
-     * 当前编辑完的图片文件
-     */
-    private File mEditImageFile;
-    /**
-     * 完成压缩-复制的异步线程
-     */
-    ThreadUtils.SimpleTask<Void> mCompressFileTask;
-    /**
-     * 完成迁移文件的异步线程
-     */
-    ThreadUtils.SimpleTask<Void> mMoveFileTask;
-    /**
-     * 异步线程的逻辑
-     */
-    private AlbumCompressFileTask mAlbumCompressFileTask;
-
-    protected ViewHolder mViewHolder;
-    /**
-     * 打开ImageEditActivity的回调
-     */
-    ActivityResultLauncher<Intent> mImageEditActivityResult;
-
+    @Nullable
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_media_preview_zjh, container, false);
         // 获取样式
         mGlobalSpec = GlobalSpec.INSTANCE;
         mAlbumSpec = AlbumSpec.INSTANCE;
-        setTheme(mGlobalSpec.getThemeId());
-        super.onCreate(savedInstanceState);
         onActivityResult();
-        StatusBarUtils.initStatusBar(BasePreviewActivity.this);
-        setContentView(R.layout.activity_media_preview_zjh);
-        boolean isAllowRepeat = getIntent().getBooleanExtra(EXTRA_IS_ALLOW_REPEAT, false);
-        mEnableOperation = getIntent().getBooleanExtra(ENABLE_OPERATION, true);
-        mIsSelectedListener = getIntent().getBooleanExtra(IS_SELECTED_LISTENER, true);
-        mIsSelectedCheck = getIntent().getBooleanExtra(IS_SELECTED_CHECK, true);
-        mIsExternalUsers = getIntent().getBooleanExtra(IS_EXTERNAL_USERS, false);
-        mIsByAlbum = getIntent().getBooleanExtra(IS_BY_ALBUM, false);
-        mIsByProgressGridView = getIntent().getBooleanExtra(IS_BY_PROGRESS_GRIDVIEW, false);
+        StatusBarUtils.initStatusBar(mActivity);
+        Bundle bundle = new Bundle();
+        boolean isAllowRepeat = false;
+        if (getArguments() != null) {
+            isAllowRepeat = getArguments().getBoolean(EXTRA_IS_ALLOW_REPEAT, false);
+            mEnableOperation = getArguments().getBoolean(ENABLE_OPERATION, true);
+            mIsSelectedListener = getArguments().getBoolean(IS_SELECTED_LISTENER, true);
+            mIsSelectedCheck = getArguments().getBoolean(IS_SELECTED_CHECK, true);
+            mIsExternalUsers = getArguments().getBoolean(IS_EXTERNAL_USERS, false);
+            mIsByAlbum = getArguments().getBoolean(IS_BY_ALBUM, false);
+            mIsByProgressGridView = getArguments().getBoolean(IS_BY_PROGRESS_GRIDVIEW, false);
+        }
 
         // 设置图片路径
         if (mGlobalSpec.getPictureStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.getPictureStrategy());
+            mPictureMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getPictureStrategy());
         } else {
             // 否则使用全局的
             if (mGlobalSpec.getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.getSaveStrategy());
+                mPictureMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getSaveStrategy());
             }
         }
         // 设置视频路径
         if (mGlobalSpec.getVideoStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mVideoMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.getVideoStrategy());
+            mVideoMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getVideoStrategy());
         } else {
             // 否则使用全局的
             if (mGlobalSpec.getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mVideoMediaStoreCompat = new MediaStoreCompat(this, mGlobalSpec.getSaveStrategy());
+                mVideoMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getSaveStrategy());
             }
         }
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
-            mSelectedCollection.onCreate(getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
-            mOriginalEnable = getIntent().getBooleanExtra(EXTRA_RESULT_ORIGINAL_ENABLE, false);
+            mSelectedCollection.onCreate(getArguments().getBundle(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
+            mOriginalEnable = getArguments().getBoolean(EXTRA_RESULT_ORIGINAL_ENABLE, false);
         } else {
             // 初始化缓存的数据
             mSelectedCollection.onCreate(savedInstanceState, isAllowRepeat);
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
 
-        mViewHolder = new ViewHolder(this);
+        mViewHolder = new ViewHolder(view);
 
-        mAdapter = new PreviewPagerAdapter(getApplicationContext(), BasePreviewActivity.this);
+        mAdapter = new PreviewPagerAdapter(mContext, mActivity);
         mViewHolder.pager.setAdapter(mAdapter);
         mViewHolder.checkView.setCountable(mAlbumSpec.getCountable());
 
-        mAlbumCompressFileTask = new AlbumCompressFileTask(getApplicationContext(), TAG,
+        mAlbumCompressFileTask = new AlbumCompressFileTask(mContext, TAG,
                 BasePreviewActivity.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
 
 
         initListener();
+        return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context.getApplicationContext();
+        if (context instanceof Activity) {
+            mActivity = (FragmentActivity) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
+        mActivity = null;
     }
 
     /**
@@ -245,9 +267,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 获取编辑前的path
         String oldPath = null;
         if (multiMedia.getPath() == null) {
-            File file = UriUtils.uriToFile(getApplicationContext(), multiMedia.getUri());
+            File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
             if (file != null) {
-                oldPath = UriUtils.uriToFile(getApplicationContext(), multiMedia.getUri()).getAbsolutePath();
+                oldPath = UriUtils.uriToFile(mContext, multiMedia.getUri()).getAbsolutePath();
             }
         } else {
             oldPath = multiMedia.getPath();
@@ -311,7 +333,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             if (count > 0) {
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.getOriginalMaxSize()));
-                incapableDialog.show(getSupportFragmentManager(),
+                incapableDialog.show(getFragmentManager(),
                         IncapableDialog.class.getName());
                 return;
             }
@@ -340,7 +362,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         mSelectedCollection.onSaveInstanceState(outState);
         outState.putBoolean("checkState", mOriginalEnable);
         super.onSaveInstanceState(outState);
@@ -697,7 +719,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onFail(Throwable t) {
                 super.onFail(t);
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "getCompressFileTask onFail " + t.getMessage());
             }
         };
@@ -721,9 +743,9 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         // 存在压缩后的文件并且没有编辑过的 就直接使用
         if (newFile.exists() && item.getOldPath() == null) {
             if (item.isImage()) {
-                item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile, true);
+                item.updateFile(mContext, mPictureMediaStoreCompat, item, newFile, true);
             } else {
-                item.updateFile(getApplicationContext(), mVideoMediaStoreCompat, item, newFile, true);
+                item.updateFile(mContext, mVideoMediaStoreCompat, item, newFile, true);
             }
             Log.d(TAG, "存在直接使用");
         } else {
@@ -748,10 +770,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(BasePreviewActivity.class, new VideoEditListener() {
                         @Override
                         public void onFinish() {
-                            item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, finalNewFile, true);
+                            item.updateFile(mContext, mPictureMediaStoreCompat, item, finalNewFile, true);
                             // 如果是编辑过的加入相册
                             if (item.getOldPath() != null) {
-                                Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), finalNewFile, TYPE_VIDEO,
+                                Uri uri = MediaStoreUtils.displayToGallery(mContext, finalNewFile, TYPE_VIDEO,
                                         item.getDuration(), item.getWidth(), item.getHeight(),
                                         mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
                                 item.setId(MediaStoreUtils.getId(uri));
@@ -798,7 +820,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             // 如果没有编辑过就拷贝，因为有可能是源文件需要保留
             FileUtil.copy(oldFile, newFile);
         }
-        item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile, isCompress);
+        item.updateFile(mContext, mPictureMediaStoreCompat, item, newFile, isCompress);
         // 如果是编辑过的加入相册
         if (item.getOldPath() != null) {
             Uri uri = MediaStoreUtils.displayToGallery(this, newFile, TYPE_PICTURE,
@@ -847,7 +869,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                     // 获取真实路径
                     String path = null;
                     if (multiMedia.getPath() == null) {
-                        File file = UriUtils.uriToFile(getApplicationContext(), multiMedia.getUri());
+                        File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
                         if (file != null) {
                             path = file.getAbsolutePath();
                         }
@@ -909,7 +931,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
     }
 
     public static class ViewHolder {
-        public Activity activity;
+        public View rootView;
         public PreviewViewPager pager;
         ImageButton iBtnBack;
         TextView tvEdit;
@@ -921,19 +943,20 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         public CheckView checkView;
         public ProgressBar pbLoading;
 
-        ViewHolder(Activity activity) {
-            this.activity = activity;
-            this.pager = activity.findViewById(R.id.pager);
-            this.iBtnBack = activity.findViewById(R.id.ibtnBack);
-            this.tvEdit = activity.findViewById(R.id.tvEdit);
-            this.original = activity.findViewById(R.id.original);
-            this.originalLayout = activity.findViewById(R.id.originalLayout);
-            this.size = activity.findViewById(R.id.size);
-            this.buttonApply = activity.findViewById(R.id.buttonApply);
-            this.bottomToolbar = activity.findViewById(R.id.bottomToolbar);
-            this.checkView = activity.findViewById(R.id.checkView);
-            this.pbLoading = activity.findViewById(R.id.pbLoading);
+        ViewHolder(View rootView) {
+            this.rootView = rootView;
+            this.pager = rootView.findViewById(R.id.pager);
+            this.iBtnBack = rootView.findViewById(R.id.ibtnBack);
+            this.tvEdit = rootView.findViewById(R.id.tvEdit);
+            this.original = rootView.findViewById(R.id.original);
+            this.originalLayout = rootView.findViewById(R.id.originalLayout);
+            this.size = rootView.findViewById(R.id.size);
+            this.buttonApply = rootView.findViewById(R.id.buttonApply);
+            this.bottomToolbar = rootView.findViewById(R.id.bottomToolbar);
+            this.checkView = rootView.findViewById(R.id.checkView);
+            this.pbLoading = rootView.findViewById(R.id.pbLoading);
         }
 
     }
+
 }
