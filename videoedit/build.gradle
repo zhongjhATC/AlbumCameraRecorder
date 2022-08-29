@@ -44,5 +44,4 @@ dependencies {
     // https://github.com/microshow/RxFFmpeg
     implementation 'com.github.microshow:RxFFmpeg:4.9.0-lite'
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

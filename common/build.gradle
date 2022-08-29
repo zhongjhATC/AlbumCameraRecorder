@@ -38,7 +38,6 @@ android {
 
 dependencies {
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
