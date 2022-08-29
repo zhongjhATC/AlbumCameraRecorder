@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -233,6 +234,13 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         if (context instanceof Activity) {
             mActivity = (FragmentActivity) context;
         }
+        // 拦截OnBackPressed
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                setResultOkByIsCompress(false);
+            }
+        });
     }
 
     @Override
@@ -366,12 +374,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         mSelectedCollection.onSaveInstanceState(outState);
         outState.putBoolean("checkState", mOriginalEnable);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onBackPressed() {
-        setResultOkByIsCompress(false);
-        super.onBackPressed();
     }
 
     @Override
