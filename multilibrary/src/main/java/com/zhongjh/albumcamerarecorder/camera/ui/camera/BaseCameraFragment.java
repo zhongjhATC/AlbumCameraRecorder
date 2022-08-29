@@ -814,8 +814,8 @@ public abstract class BaseCameraFragment
     public void showSinglePicture(BitmapData bitmapData, File file, Uri uri) {
         // 拍照  隐藏 闪光灯、右上角的切换摄像头
         setMenuVisibility(View.INVISIBLE);
-        // 重置位置
-        getSinglePhotoView().resetMatrix();
+        // 这样可以重置
+        getSinglePhotoView().setZoomable(true);
         getSinglePhotoView().setVisibility(View.VISIBLE);
         globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getUri());
         getCameraView().close();

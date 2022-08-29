@@ -316,9 +316,9 @@ public class BaseCameraPicturePresenter
         BitmapData bitmapData = new BitmapData(photoFile.getPath(), uri, width, height);
         this.bitmapDatas.add(bitmapData);
 
-        // 重置位置
+        // 这样可以重置大小
         if (baseCameraFragment.getSinglePhotoView() != null) {
-            baseCameraFragment.getSinglePhotoView().resetMatrix();
+            baseCameraFragment.getSinglePhotoView().setZoomable(true);
             baseCameraFragment.getGlobalSpec().getImageEngine().loadUriImage(baseCameraFragment.getMyContext(), baseCameraFragment.getSinglePhotoView(), uri);
         }
     }

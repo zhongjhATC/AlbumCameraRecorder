@@ -20,6 +20,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
@@ -35,7 +37,7 @@ import com.zhongjh.progresslibrary.engine.ImageEngine;
 public class Glide4EngineProgress implements ImageEngine {
 
     @Override
-    public void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri) {
+    public void loadThumbnail(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, @NonNull Uri uri) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(uri)
@@ -47,7 +49,7 @@ public class Glide4EngineProgress implements ImageEngine {
     }
 
     @Override
-    public void loadUrlThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, String url) {
+    public void loadUrlThumbnail(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, @NonNull String url) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(url)
@@ -59,8 +61,8 @@ public class Glide4EngineProgress implements ImageEngine {
     }
 
     @Override
-    public void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView,
-                                 Uri uri) {
+    public void loadGifThumbnail(@NonNull Context context, int resize, Drawable placeholder, @NonNull ImageView imageView,
+                                 @NonNull Uri uri) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(uri)
@@ -72,7 +74,7 @@ public class Glide4EngineProgress implements ImageEngine {
     }
 
     @Override
-    public void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
+    public void loadImage(@NonNull Context context, int resizeX, int resizeY, @NonNull ImageView imageView, @NonNull Uri uri) {
         Glide.with(context)
                 .load(uri)
                 .apply(new RequestOptions()
@@ -83,7 +85,7 @@ public class Glide4EngineProgress implements ImageEngine {
     }
 
     @Override
-    public void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
+    public void loadGifImage(@NonNull Context context, int resizeX, int resizeY, @NonNull ImageView imageView, @NonNull Uri uri) {
         Glide.with(context)
                 .asGif()
                 .load(uri)

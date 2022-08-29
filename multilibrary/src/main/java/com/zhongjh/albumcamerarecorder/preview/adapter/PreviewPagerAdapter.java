@@ -31,6 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -40,9 +41,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import it.sephiroth.android.library.imagezoom.ImageViewTouch;
-import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
 /**
  * @author zhongjh
@@ -148,7 +146,7 @@ public class PreviewPagerAdapter extends PagerAdapter {
      */
     public void init(View view, MultiMedia item) {
         View videoPlayButton = view.findViewById(R.id.video_play_button);
-        ImageViewTouch image = view.findViewById(R.id.image_view);
+        PhotoView image = view.findViewById(R.id.image_view);
         if (item.isVideo()) {
             videoPlayButton.setVisibility(View.VISIBLE);
             videoPlayButton.setOnClickListener(v -> {
@@ -173,8 +171,6 @@ public class PreviewPagerAdapter extends PagerAdapter {
         } else {
             videoPlayButton.setVisibility(View.GONE);
         }
-
-        image.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
 
         if (item.getUri() != null) {
             Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), mActivity);
