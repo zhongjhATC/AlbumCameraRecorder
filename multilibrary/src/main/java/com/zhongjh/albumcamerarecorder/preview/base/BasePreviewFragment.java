@@ -377,16 +377,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        //关闭窗体动画显示
-        if (mGlobalSpec.getCutscenesEnabled()) {
-            this.overridePendingTransition(0, R.anim.activity_close_zjh);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
@@ -397,7 +388,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.ibtnBack) {
-            onBackPressed();
+            mActivity.onBackPressed();
         } else if (v.getId() == R.id.checkView) {
             MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
             if (mSelectedCollection.isSelected(item)) {
@@ -523,7 +514,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
                 // 弹框提示取消原图
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.getOriginalMaxSize()));
-                incapableDialog.show(getSupportFragmentManager(),
+                incapableDialog.show(getFragmentManager(),
                         IncapableDialog.class.getName());
                 // 去掉原图按钮的选择状态
                 mViewHolder.original.setChecked(false);
@@ -595,8 +586,8 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
         mEditImageFile = file;
         Intent intent = new Intent();
-        intent.setClass(BasePreviewActivity.this, ImageEditActivity.class);
-        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, getRequestedOrientation());
+        intent.setClass(mActivity, ImageEditActivity.class);
+        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
         intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
         intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
         mImageEditActivityResult.launch(intent);
@@ -825,7 +816,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         item.updateFile(mContext, mPictureMediaStoreCompat, item, newFile, isCompress);
         // 如果是编辑过的加入相册
         if (item.getOldPath() != null) {
-            Uri uri = MediaStoreUtils.displayToGallery(this, newFile, TYPE_PICTURE,
+            Uri uri = MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_PICTURE,
                     item.getDuration(), item.getWidth(), item.getHeight(),
                     mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
             item.setId(MediaStoreUtils.getId(uri));
@@ -848,14 +839,14 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
             intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
             intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             if (mIsExternalUsers && !apply) {
-                setResult(RESULT_CANCELED, intent);
+                mActivity.setResult(Activity.RESULT_CANCELED, intent);
             } else {
-                setResult(RESULT_OK, intent);
+                mActivity.setResult(RESULT_OK, intent);
             }
         } else {
             mGlobalSpec.getOnResultCallbackListener().onResultFromPreview(mSelectedCollection.asList(), apply);
         }
-        finish();
+        mActivity.finish();
     }
 
     /**
@@ -928,7 +919,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      */
     private boolean assertAddSelection(MultiMedia item) {
         IncapableCause cause = mSelectedCollection.isAcceptable(item);
-        IncapableCause.handleCause(this, cause);
+        IncapableCause.handleCause(mContext, cause);
         return cause == null;
     }
 
