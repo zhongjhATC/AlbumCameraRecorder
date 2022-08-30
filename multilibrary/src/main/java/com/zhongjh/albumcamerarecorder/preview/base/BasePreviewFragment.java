@@ -28,6 +28,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -40,7 +41,6 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -73,18 +73,30 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
 
     private final String TAG = BasePreviewFragment.this.getClass().getSimpleName();
     public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
+    /**
+     * 选择的数据源集合和类型
+     */
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
     public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
     public static final String EXTRA_RESULT_APPLY = "extra_result_apply";
     public static final String EXTRA_RESULT_IS_EDIT = "extra_result_is_edit";
+    /**
+     * 设置是否开启原图
+     */
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
+    public static final String OPERATION_ENABLE = "operation_enable";
+    /**
+     * 设置是否开启编辑功能
+     */
+    public static final String EDIT_ENABLE = "edit_enable";
+    /**
+     * 设置是否开启压缩
+     */
+    public static final String COMPRESS_ENABLE = "compress_enable";
     public static final String CHECK_STATE = "checkState";
-    public static final String ENABLE_OPERATION = "enable_operation";
     public static final String IS_SELECTED_LISTENER = "is_selected_listener";
     public static final String IS_SELECTED_CHECK = "is_selected_check";
     public static final String IS_EXTERNAL_USERS = "is_external_users";
-    public static final String IS_BY_ALBUM = "is_by_album";
-    public static final String IS_BY_PROGRESS_GRIDVIEW = "is_by_progress_gridview";
 
     protected FragmentActivity mActivity;
     protected Context mContext;
@@ -126,17 +138,25 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      */
     protected int mPreviousPos = -1;
     /**
-     * 是否原图
+     * 是否启动原图
      */
     protected boolean mOriginalEnable;
+    /**
+     * 启用操作，默认true,也不启动右上角的选择框自定义触发事件
+     */
+    protected boolean mOperationEnable = true;
+    /**
+     * 设置是否开启编辑功能
+     */
+    protected boolean mEditEnable = true;
+    /**
+     * 设置是否开启压缩
+     */
+    protected boolean mCompressEnable = false;
     /**
      * 是否编辑了图片
      */
     private boolean mIsEdit;
-    /**
-     * 启用操作，默认true,也不启动右上角的选择框自定义触发事件
-     */
-    protected boolean mEnableOperation = true;
     /**
      * 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
      */
@@ -149,34 +169,29 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * 是否外部直接调用该预览窗口，如果是外部直接调用，那么可以启用回调接口，内部统一使用onActivityResult方式回调
      */
     protected boolean mIsExternalUsers = false;
-    /**
-     * 是否从相册界面进来的
-     */
-    protected boolean mIsByAlbum = false;
-    /**
-     * 是否从九宫格进来的
-     */
-    protected boolean mIsByProgressGridView = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_media_preview_zjh, container, false);
-        // 获取样式
+        // 获取配置
         mGlobalSpec = GlobalSpec.INSTANCE;
         mAlbumSpec = AlbumSpec.INSTANCE;
+        // 获取样式
+        final ContextThemeWrapper wrapper = new ContextThemeWrapper(requireActivity(),
+                mGlobalSpec.getThemeId());
+        final LayoutInflater cloneInContext = inflater.cloneInContext(wrapper);
+        View view =  cloneInContext.inflate(R.layout.activity_media_preview_zjh, container, false);
         onActivityResult();
         StatusBarUtils.initStatusBar(mActivity);
-        Bundle bundle = new Bundle();
         boolean isAllowRepeat = false;
         if (getArguments() != null) {
             isAllowRepeat = getArguments().getBoolean(EXTRA_IS_ALLOW_REPEAT, false);
-            mEnableOperation = getArguments().getBoolean(ENABLE_OPERATION, true);
+            mOperationEnable = getArguments().getBoolean(OPERATION_ENABLE, true);
             mIsSelectedListener = getArguments().getBoolean(IS_SELECTED_LISTENER, true);
             mIsSelectedCheck = getArguments().getBoolean(IS_SELECTED_CHECK, true);
             mIsExternalUsers = getArguments().getBoolean(IS_EXTERNAL_USERS, false);
-            mIsByAlbum = getArguments().getBoolean(IS_BY_ALBUM, false);
-            mIsByProgressGridView = getArguments().getBoolean(IS_BY_PROGRESS_GRIDVIEW, false);
+            mCompressEnable = getArguments().getBoolean(COMPRESS_ENABLE, false);
+            mEditEnable = getArguments().getBoolean(EDIT_ENABLE, true);
         }
 
         // 设置图片路径
@@ -220,7 +235,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         mViewHolder.checkView.setCountable(mAlbumSpec.getCountable());
 
         mAlbumCompressFileTask = new AlbumCompressFileTask(mContext, TAG,
-                BasePreviewActivity.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
+                BasePreviewFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
 
 
         initListener();
@@ -341,7 +356,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
             if (count > 0) {
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.getOriginalMaxSize()));
-                incapableDialog.show(getFragmentManager(),
+                incapableDialog.show(getParentFragmentManager(),
                         IncapableDialog.class.getName());
                 return;
             }
@@ -489,7 +504,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         }
 
         // 判断是否启动操作
-        if (!mEnableOperation) {
+        if (!mOperationEnable) {
             mViewHolder.buttonApply.setVisibility(View.GONE);
             mViewHolder.checkView.setVisibility(View.GONE);
         } else {
@@ -514,7 +529,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
                 // 弹框提示取消原图
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.getOriginalMaxSize()));
-                incapableDialog.show(getFragmentManager(),
+                incapableDialog.show(getParentFragmentManager(),
                         IncapableDialog.class.getName());
                 // 去掉原图按钮的选择状态
                 mViewHolder.original.setChecked(false);
@@ -561,7 +576,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         }
 
         // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
-        if (mAlbumSpec.getOriginalEnable() && mIsByAlbum && !item.isVideo()) {
+        if (mAlbumSpec.getOriginalEnable() && mOriginalEnable && !item.isVideo()) {
             // 显示
             mViewHolder.originalLayout.setVisibility(View.VISIBLE);
             updateOriginalState();
@@ -570,7 +585,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
             mViewHolder.originalLayout.setVisibility(View.GONE);
         }
 
-        if (item.isImage() && mGlobalSpec.getImageEditEnabled() && !mIsByProgressGridView) {
+        if (item.isImage() && mGlobalSpec.getImageEditEnabled() && mEditEnable) {
             mViewHolder.tvEdit.setVisibility(View.VISIBLE);
         } else {
             mViewHolder.tvEdit.setVisibility(View.GONE);
@@ -685,7 +700,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
             @Override
             public Void doInBackground() {
                 // 来自相册的，才根据配置处理压缩和迁移
-                if (mIsByAlbum) {
+                if (mCompressEnable) {
                     // 将 缓存文件 拷贝到 配置目录
                     for (LocalFile item : mSelectedCollection.asList()) {
                         Log.d(TAG, "item " + item.getId());
@@ -760,7 +775,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
                         newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getOldPath()));
                     }
                     File finalNewFile = newFile;
-                    mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(BasePreviewActivity.class, new VideoEditListener() {
+                    mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(BasePreviewFragment.class, new VideoEditListener() {
                         @Override
                         public void onFinish() {
                             item.updateFile(mContext, mPictureMediaStoreCompat, item, finalNewFile, true);
@@ -788,7 +803,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
                         }
                     });
                     if (mGlobalSpec.getVideoCompressCoordinator() != null) {
-                        mGlobalSpec.getVideoCompressCoordinator().compressAsync(BasePreviewActivity.class, path, finalNewFile.getPath());
+                        mGlobalSpec.getVideoCompressCoordinator().compressAsync(BasePreviewFragment.class, path, finalNewFile.getPath());
                     }
                 }
             }

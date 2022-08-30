@@ -13,13 +13,14 @@ import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
+import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.common.entity.MultiMedia;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 点击相册图片或者视频、九宫格处都可以进来
+ * 点击相册某个item 或者 点击九宫格进来
  * 标记是以点击的当前item为准而显示，这个为什么使用数据库 AlbumMediaCollection 查询，而不使用上个界面传递过来的数据
  * 是因为用户可能点击的是未选择的数据
  *
@@ -31,9 +32,7 @@ public class AlbumPreviewFragment extends BasePreviewFragment implements
 
     public static final String EXTRA_ALBUM = "extra_album";
     public static final String EXTRA_ITEM = "extra_item";
-
     private final AlbumMediaCollection mCollection = new AlbumMediaCollection();
-
     private boolean mIsAlreadySetPosition;
 
     @Nullable
@@ -41,31 +40,43 @@ public class AlbumPreviewFragment extends BasePreviewFragment implements
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         mCollection.onCreate(mActivity, this);
-        Album album;
         if (getArguments() != null) {
-            album = getArguments().getParcelable(EXTRA_ALBUM);
+            Album album = getArguments().getParcelable(EXTRA_ALBUM);
+            ArrayList<MultiMedia> items = null;
             if (album != null) {
                 mCollection.load(album);
             } else {
                 Bundle bundle = getArguments().getBundle(EXTRA_DEFAULT_BUNDLE);
-                ArrayList<MultiMedia> items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
                 initItems(items);
             }
 
             MultiMedia item = getArguments().getParcelable(EXTRA_ITEM);
-            if (mAlbumSpec.getCountable()) {
-                mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+            if (item != null) {
+                if (mAlbumSpec.getCountable()) {
+                    mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+                } else {
+                    mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
+                }
+                updateUi(item);
             } else {
-                mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
+                if (items != null) {
+                    if (mAlbumSpec.getCountable()) {
+                        mViewHolder.checkView.setCheckedNum(1);
+                    } else {
+                        mViewHolder.checkView.setChecked(true);
+                    }
+                    mPreviousPos = 0;
+                    updateUi(items.get(0));
+                }
             }
-            updateUi(item);
         }
         return view;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         mCollection.onDestroy();
     }
 
@@ -88,21 +99,20 @@ public class AlbumPreviewFragment extends BasePreviewFragment implements
         if (adapter != null) {
             adapter.addAll(items);
             adapter.notifyDataSetChanged();
-            if (!mIsAlreadySetPosition) {
-                // onAlbumMediaLoad is called many times..
-                mIsAlreadySetPosition = true;
-                MultiMedia selected = null;
-                if (getArguments() != null) {
-                    selected = getArguments().getParcelable(EXTRA_ITEM);
+            if (getArguments() != null) {
+                if (!mIsAlreadySetPosition) {
+                    MultiMedia selected = getArguments().getParcelable(EXTRA_ITEM);
+                    if (selected != null) {
+                        // -1是爲了拿到索引
+                        int selectedIndex = MultiMedia.checkedNumOf(items, selected) - 1;
+                        mViewHolder.pager.setCurrentItem(selectedIndex, false);
+                        mPreviousPos = selectedIndex;
+                    }
+                    // onAlbumMediaLoad is called many times..
+                    mIsAlreadySetPosition = true;
                 }
-                // -1是爲了拿到索引
-                int selectedIndex = 0;
-                if (selected != null) {
-                    selectedIndex = MultiMedia.checkedNumOf(items, selected) - 1;
-                }
-                mViewHolder.pager.setCurrentItem(selectedIndex, false);
-                mPreviousPos = selectedIndex;
             }
+
         }
     }
 
@@ -110,4 +120,5 @@ public class AlbumPreviewFragment extends BasePreviewFragment implements
     public void onAlbumMediaReset() {
 
     }
+
 }

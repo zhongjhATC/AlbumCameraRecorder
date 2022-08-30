@@ -186,7 +186,7 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
         DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
         df.applyPattern("0.0");
         String result = df.format((float) sizeInBytes / 1024 / 1024);
-        Log.e(TAG, "getSizeInMB: " + result);
+        Log.d(TAG, "getSizeInMB: " + result);
         // in some case , 0.0 will be 0,0
         result = result.replaceAll(",", ".");
         return Float.parseFloat(result);

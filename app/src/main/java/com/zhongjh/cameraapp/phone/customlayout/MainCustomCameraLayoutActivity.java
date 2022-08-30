@@ -135,7 +135,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
-        // 每次使用要重新赋值，因为会在每次关闭界面后删除该Fragment
+        // 每次使用要重新赋值，因为会在每次关闭界面后清空该Fragment以免内存泄漏
         if (mBinding.radioButton1.isChecked()) {
             cameraSetting.setBaseCameraFragment(CameraFragment1.newInstance());
         } else if(mBinding.radioButton2.isChecked()) {

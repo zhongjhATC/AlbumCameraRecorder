@@ -12,8 +12,9 @@ import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
 import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewFragment
+import com.zhongjh.albumcamerarecorder.preview.ContainerViewActivity
+import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
@@ -221,14 +222,15 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
             SelectedItemCollection.STATE_COLLECTION_TYPE,
             SelectedItemCollection.COLLECTION_IMAGE
         )
-        val intent = Intent(activity, AlbumPreviewActivity::class.java)
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, list[position])
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle)
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false)
-        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true)
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false)
-        intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
-        intent.putExtra(BasePreviewActivity.IS_BY_PROGRESS_GRIDVIEW, true)
+        val intent = Intent(activity, ContainerViewActivity::class.java)
+        intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_ALBUM)
+        intent.putExtra(AlbumPreviewFragment.EXTRA_ITEM, list[position])
+        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle)
+        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+        intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)
+        intent.putExtra(BasePreviewFragment.IS_SELECTED_CHECK, false)
+        intent.putExtra(BasePreviewFragment.IS_EXTERNAL_USERS, true)
+        intent.putExtra(BasePreviewFragment.EDIT_ENABLE, false)
         activity.startActivityForResult(intent, requestCode)
         if (GlobalSpec.cutscenesEnabled) {
             activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
@@ -324,14 +326,15 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
                 SelectedItemCollection.STATE_COLLECTION_TYPE,
                 SelectedItemCollection.COLLECTION_IMAGE
             )
-            val intent = Intent(activity, AlbumPreviewActivity::class.java)
-            intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, multiMedias[position])
-            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle)
-            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false)
-            intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true)
-            intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false)
-            intent.putExtra(BasePreviewActivity.ENABLE_OPERATION, false)
-            intent.putExtra(BasePreviewActivity.IS_EXTERNAL_USERS, true)
+            val intent = Intent(activity, ContainerViewActivity::class.java)
+            intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_ALBUM)
+            intent.putExtra(AlbumPreviewFragment.EXTRA_ITEM, multiMedias[position])
+            intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle)
+            intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+            intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)
+            intent.putExtra(BasePreviewFragment.IS_SELECTED_CHECK, false)
+            intent.putExtra(BasePreviewFragment.OPERATION_ENABLE, false)
+            intent.putExtra(BasePreviewFragment.IS_EXTERNAL_USERS, true)
             activity.startActivityForResult(intent, GlobalSpec.requestCode)
             if (GlobalSpec.cutscenesEnabled) {
                 activity.overridePendingTransition(R.anim.activity_open_zjh, 0)

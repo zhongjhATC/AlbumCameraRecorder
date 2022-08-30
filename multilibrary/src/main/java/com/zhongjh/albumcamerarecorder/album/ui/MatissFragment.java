@@ -42,9 +42,9 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.ContainerViewActivity;
+import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior;
@@ -267,10 +267,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NonNull View v) {
-                Intent intent = new Intent(mActivity, SelectedPreviewActivity.class);
-                intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-                intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-                intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
+                Intent intent = new Intent(mActivity, ContainerViewActivity.class);
+                intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_SELECTED);
+                intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+                intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+                intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
                 startActivityForResult(intent, mGlobalSpec.getRequestCode());
                 if (mGlobalSpec.getCutscenesEnabled()) {
                     mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
@@ -361,15 +362,15 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
         // 请求的预览界面
         if (requestCode == mGlobalSpec.getRequestCode()) {
-            Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+            Bundle resultBundle = data.getBundleExtra(BasePreviewFragment.EXTRA_RESULT_BUNDLE);
             // 获取选择的数据
             ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
             // 是否启用原图
-            mOriginalEnable = data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+            mOriginalEnable = data.getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
             int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
                     SelectedItemCollection.COLLECTION_UNDEFINED);
             // 如果在预览界面点击了确定
-            if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+            if (data.getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
                 if (selected != null) {
                     ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
                     // 不用处理压缩，压缩处理已经在预览界面处理了
@@ -382,7 +383,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     Fragment mediaSelectionFragment = getFragmentManager().findFragmentByTag(
                             MediaSelectionFragment.class.getSimpleName());
                     if (mediaSelectionFragment instanceof MediaSelectionFragment) {
-                        if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_IS_EDIT, false)) {
+                        if (data.getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_IS_EDIT, false)) {
                             mIsRefresh = true;
                             albumsSpinnerNotifyData();
                             // 重新读取数据源
@@ -551,12 +552,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onMediaClick(Album album, MultiMedia item, int adapterPosition) {
-        Intent intent = new Intent(mActivity, AlbumPreviewActivity.class);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
+        Intent intent = new Intent(mActivity, ContainerViewActivity.class);
+        intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_ALBUM);
+        intent.putExtra(AlbumPreviewFragment.EXTRA_ALBUM, album);
+        intent.putExtra(AlbumPreviewFragment.EXTRA_ITEM, item);
+        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+        intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
         startActivityForResult(intent, mGlobalSpec.getRequestCode());
         if (mGlobalSpec.getCutscenesEnabled()) {
             mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);

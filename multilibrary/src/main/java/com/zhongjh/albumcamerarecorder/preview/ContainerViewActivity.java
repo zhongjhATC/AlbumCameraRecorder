@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.preview;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -15,6 +16,9 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
  */
 public class ContainerViewActivity extends AppCompatActivity {
 
+    public static final String EXTRA_TYPE = "EXTRA_TYPE";
+    public static final int TYPE_ALBUM = 0;
+    public static final int TYPE_SELECTED = 1;
     protected GlobalSpec mGlobalSpec;
 
     @Override
@@ -22,6 +26,7 @@ public class ContainerViewActivity extends AppCompatActivity {
         mGlobalSpec = GlobalSpec.INSTANCE;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_containerview_zjh);
+        initFragment();
     }
 
     @Override
@@ -31,6 +36,26 @@ public class ContainerViewActivity extends AppCompatActivity {
         if (mGlobalSpec.getCutscenesEnabled()) {
             this.overridePendingTransition(0, R.anim.activity_close_zjh);
         }
+    }
+
+    /**
+     * 实例化Fragment,根据不同的类型实例化不同的Fragment
+     */
+    private void initFragment() {
+        Fragment fragment = new AlbumPreviewFragment();
+        handleExtra(fragment);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragmentContainerView, fragment)
+                .commit();
+    }
+
+    /**
+     * 处理参数
+     */
+    private void handleExtra(Fragment fragment) {
+        Bundle bundle = getIntent().getExtras();
+        fragment.setArguments(bundle);
     }
 
 }

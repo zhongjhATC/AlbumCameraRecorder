@@ -18,8 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.ContainerViewActivity;
+import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MimeType;
@@ -113,8 +114,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         bundle.putParcelableArrayList(STATE_SELECTION, items);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
-        Intent intent = new Intent(mActivity, AlbumPreviewActivity.class);
-
+        Intent intent = new Intent(mActivity, ContainerViewActivity.class);
+        intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_ALBUM);
         // 获取目前点击的这个item
         MultiMedia item = new MultiMedia();
         item.setUri(bitmapData.getUri());
@@ -122,13 +123,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         item.setMimeType(MimeType.JPEG.toString());
         item.setWidth(bitmapData.getWidth());
         item.setHeight(bitmapData.getHeight());
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
+        intent.putExtra(AlbumPreviewFragment.EXTRA_ITEM, item);
 
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, bundle);
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-        intent.putExtra(BasePreviewActivity.EXTRA_IS_ALLOW_REPEAT, true);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_LISTENER, false);
-        intent.putExtra(BasePreviewActivity.IS_SELECTED_CHECK, false);
+        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(BasePreviewFragment.IS_SELECTED_LISTENER, false);
+        intent.putExtra(BasePreviewFragment.IS_SELECTED_CHECK, false);
         mPhotoAdapterListener.onPhotoAdapterClick(intent);
     }
 

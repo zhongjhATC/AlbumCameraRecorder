@@ -15,7 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:fitsSystemWindows="true">
 
         <ImageButton
@@ -99,7 +98,6 @@
                     android:layout_gravity="center_vertical"
                     android:enabled="true"
                     android:paddingStart="4dp"
-                    android:paddingLeft="4dp"
                     android:text="@string/z_multi_library_button_original"
                     android:textColor="?attr/preview.bottomToolbar.back.textColor"
                     android:textSize="14sp"
