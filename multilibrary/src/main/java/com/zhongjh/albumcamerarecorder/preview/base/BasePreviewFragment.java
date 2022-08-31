@@ -104,7 +104,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
     protected PreviewPagerAdapter mAdapter;
     protected GlobalSpec mGlobalSpec;
     protected AlbumSpec mAlbumSpec;
-    protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(getContext());
+    protected SelectedItemCollection mSelectedCollection;
     /**
      * 图片存储器
      */
@@ -180,7 +180,8 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         final ContextThemeWrapper wrapper = new ContextThemeWrapper(requireActivity(),
                 mGlobalSpec.getThemeId());
         final LayoutInflater cloneInContext = inflater.cloneInContext(wrapper);
-        View view =  cloneInContext.inflate(R.layout.activity_media_preview_zjh, container, false);
+        View view = cloneInContext.inflate(R.layout.activity_media_preview_zjh, container, false);
+        mSelectedCollection = new SelectedItemCollection(mContext);
         onActivityResult();
         StatusBarUtils.initStatusBar(mActivity);
         boolean isAllowRepeat = false;
