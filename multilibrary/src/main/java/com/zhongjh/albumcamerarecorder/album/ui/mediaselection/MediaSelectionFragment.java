@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.MainFragment;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
@@ -82,14 +81,8 @@ public class MediaSelectionFragment extends Fragment implements
 
         // 旧版的知乎是用Activity，而这边则使用Fragments的获取到MatissFragment
         Fragment matissFragment = null;
-        for (Fragment fragment : getParentFragmentManager().getFragments()) {
-            if (fragment instanceof MainFragment) {
-                for (Fragment fragmentChild : fragment.getChildFragmentManager().getFragments()) {
-                    if (fragmentChild instanceof MatissFragment) {
-                        matissFragment = fragmentChild;
-                    }
-                }
-            }
+        if (getParentFragment() instanceof MatissFragment) {
+            matissFragment = getParentFragment();
         }
         if (matissFragment == null) {
             throw new IllegalStateException("matissFragment Cannot be null");
@@ -141,7 +134,6 @@ public class MediaSelectionFragment extends Fragment implements
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);
         mRecyclerView.setHasFixedSize(true);
-
 
 
         // 加载线，recyclerView加载数据

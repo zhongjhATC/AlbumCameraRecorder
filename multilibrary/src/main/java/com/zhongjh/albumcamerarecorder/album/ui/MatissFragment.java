@@ -25,6 +25,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
@@ -77,12 +79,16 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private static final String CHECK_STATE = "checkState";
 
+    private Context mContext;
     private MainActivity mActivity;
+    /**
+     * 从预览界面回来
+     */
+    private ActivityResultLauncher<Intent> mPreviewActivityResult;
     /**
      * 上一个Fragment,因为切换相册后，数据要进行一次销毁才能读取
      */
     MediaSelectionFragment mFragmentLast;
-
     /**
      * 公共配置
      */
@@ -148,6 +154,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         super.onAttach(context);
         if (context instanceof Activity) {
             this.mActivity = (MainActivity) context;
+            this.mContext = context.getApplicationContext();
         }
         mSelectedCollection = new SelectedItemCollection(getContext());
     }
@@ -168,10 +175,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         initConfig();
         mAlbumCompressFileTask = new AlbumCompressFileTask(mActivity, TAG, MatissFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
         initView(savedInstanceState);
+        initActivityResult();
         initListener();
         return view;
     }
-
 
     /**
      * 初始化配置
@@ -240,6 +247,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumCollection.loadAlbums();
     }
 
+    /**
+     * 初始化事件
+     */
     private void initListener() {
         // 关闭事件
         mViewHolder.imgClose.setOnClickListener(v -> mActivity.finish());
@@ -271,7 +281,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
                 intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                 intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
-                startActivityForResult(intent, mGlobalSpec.getRequestCode());
+                mPreviewActivityResult.launch(intent);
                 if (mGlobalSpec.getCutscenesEnabled()) {
                     mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
                 }
@@ -293,26 +303,23 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         // 点击原图
         mViewHolder.originalLayout.setOnClickListener(view -> {
-            if (getFragmentManager() != null) {
-                // 如果有大于限制大小的，就提示
-                int count = countOverMaxSize();
-                if (count > 0) {
-                    IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                            getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.getOriginalMaxSize()));
-                    incapableDialog.show(getFragmentManager(),
-                            IncapableDialog.class.getName());
-                    return;
-                }
+            // 如果有大于限制大小的，就提示
+            int count = countOverMaxSize();
+            if (count > 0) {
+                IncapableDialog incapableDialog = IncapableDialog.newInstance("",
+                        getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.getOriginalMaxSize()));
+                incapableDialog.show(getChildFragmentManager(),
+                        IncapableDialog.class.getName());
+                return;
+            }
 
-                // 设置状态
-                mOriginalEnable = !mOriginalEnable;
-                mViewHolder.original.setChecked(mOriginalEnable);
+            // 设置状态
+            mOriginalEnable = !mOriginalEnable;
+            mViewHolder.original.setChecked(mOriginalEnable);
 
-                // 设置状态是否原图
-                if (mAlbumSpec.getOnCheckedListener() != null) {
-                    mAlbumSpec.getOnCheckedListener().onCheck(mOriginalEnable);
-                }
-
+            // 设置状态是否原图
+            if (mAlbumSpec.getOnCheckedListener() != null) {
+                mAlbumSpec.getOnCheckedListener().onCheck(mOriginalEnable);
             }
         });
 
@@ -326,6 +333,54 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         // 触发滑动事件
         mViewHolder.bottomToolbar.setOnListener(translationY -> mActivity.onDependentViewChanged(translationY));
+    }
+
+    /**
+     * 初始化Activity的返回
+     */
+    private void initActivityResult() {
+        mPreviewActivityResult = this.registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() != RESULT_OK) {
+                        return;
+                    }
+                    // 请求的预览界面
+                    if (result.getData() != null) {
+                        Bundle resultBundle = result.getData().getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
+                        // 获取选择的数据
+                        ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                        // 是否启用原图
+                        mOriginalEnable = result.getData().getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+                        int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
+                                SelectedItemCollection.COLLECTION_UNDEFINED);
+                        // 如果在预览界面点击了确定
+                        if (result.getData().getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                            if (selected != null) {
+                                ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
+                                // 不用处理压缩，压缩处理已经在预览界面处理了
+                                setResultOk(localFiles);
+                            }
+                        } else {
+                            // 点击了返回
+                            mSelectedCollection.overwrite(selected, collectionType);
+                            Fragment mediaSelectionFragment = getChildFragmentManager().findFragmentByTag(
+                                    MediaSelectionFragment.class.getSimpleName());
+                            if (mediaSelectionFragment instanceof MediaSelectionFragment) {
+                                if (result.getData().getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_IS_EDIT, false)) {
+                                    mIsRefresh = true;
+                                    albumsSpinnerNotifyData();
+                                    // 重新读取数据源
+                                    ((MediaSelectionFragment) mediaSelectionFragment).restartLoaderMediaGrid();
+                                } else {
+                                    // 刷新数据源
+                                    ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
+                                }
+                            }
+                            // 刷新底部
+                            updateBottomToolbar();
+                        }
+                    }
+                });
     }
 
     @Override
@@ -351,53 +406,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return item.getItemId() == android.R.id.home || super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-        // 请求的预览界面
-        if (requestCode == mGlobalSpec.getRequestCode()) {
-            Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
-            // 获取选择的数据
-            ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-            // 是否启用原图
-            mOriginalEnable = data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-            int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
-                    SelectedItemCollection.COLLECTION_UNDEFINED);
-            // 如果在预览界面点击了确定
-            if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                if (selected != null) {
-                    ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
-                    // 不用处理压缩，压缩处理已经在预览界面处理了
-                    setResultOk(localFiles);
-                }
-            } else {
-                // 点击了返回
-                mSelectedCollection.overwrite(selected, collectionType);
-                if (getFragmentManager() != null) {
-                    Fragment mediaSelectionFragment = getFragmentManager().findFragmentByTag(
-                            MediaSelectionFragment.class.getSimpleName());
-                    if (mediaSelectionFragment instanceof MediaSelectionFragment) {
-                        if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_IS_EDIT, false)) {
-                            mIsRefresh = true;
-                            albumsSpinnerNotifyData();
-                            // 重新读取数据源
-                            ((MediaSelectionFragment) mediaSelectionFragment).restartLoaderMediaGrid();
-                        } else {
-                            // 刷新数据源
-                            ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
-                        }
-                    }
-                    // 刷新底部
-                    updateBottomToolbar();
-                }
-
-            }
-        }
     }
 
     /**
@@ -446,10 +454,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 // 弹出窗口提示大于 xx mb
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.getOriginalMaxSize()));
-                if (this.getFragmentManager() == null) {
-                    return;
-                }
-                incapableDialog.show(this.getFragmentManager(),
+                incapableDialog.show(this.getChildFragmentManager(),
                         IncapableDialog.class.getName());
 
                 // 底部的原图钩去掉
@@ -489,7 +494,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(() -> {
             cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
-            mAlbumsSpinner.setSelection(getContext(),
+            mAlbumsSpinner.setSelection(mContext,
                     mAlbumCollection.getCurrentSelection());
             Album album = Album.valueOf(cursor);
             onAlbumSelected(album);
@@ -528,7 +533,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                     mFragmentLast.onDestroyData();
                 }
                 mFragmentLast = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
-                mActivity.getSupportFragmentManager()
+                getChildFragmentManager()
                         .beginTransaction()
                         .replace(R.id.container, mFragmentLast, MediaSelectionFragment.class.getSimpleName())
                         .commitAllowingStateLoss();
@@ -557,7 +562,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         intent.putExtra(BasePreviewActivity.IS_BY_ALBUM, true);
-        startActivityForResult(intent, mGlobalSpec.getRequestCode());
+        mPreviewActivityResult.launch(intent);
         if (mGlobalSpec.getCutscenesEnabled()) {
             mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
         }
@@ -645,11 +650,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             // 是否启用原图
             result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             mActivity.setResult(RESULT_OK, result);
-            mActivity.finish();
         } else {
             mGlobalSpec.getOnResultCallbackListener().onResult(localFiles);
-            mActivity.finish();
         }
+        mActivity.finish();
     }
 
     /**
