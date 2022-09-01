@@ -1,6 +1,7 @@
 package com.zhongjh.progresslibrary.widget
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.AttributeSet
@@ -21,7 +22,9 @@ import com.zhongjh.progresslibrary.R
 import com.zhongjh.progresslibrary.apapter.PhotoAdapter
 import com.zhongjh.progresslibrary.api.MaskProgressApi
 import com.zhongjh.progresslibrary.engine.ImageEngine
+import com.zhongjh.progresslibrary.entity.Masking
 import com.zhongjh.progresslibrary.entity.MultiMediaView
+import com.zhongjh.progresslibrary.entity.PhotoAdapterEntity
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener
 import java.util.*
 
@@ -34,17 +37,23 @@ import java.util.*
  */
 class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
+    companion object {
+        const val COLUMN_NUMBER = 4
+        const val MASKING_TEXT_SIZE = 12
+        const val MAX_MEDIA_COUNT = 5
+    }
+
     private lateinit var mPhotoAdapter: PhotoAdapter
+
+    /**
+     * 一些样式的属性
+     */
+    val photoAdapterEntity = PhotoAdapterEntity()
 
     /**
      * 控件集合
      */
     private lateinit var mViewHolder: ViewHolder
-
-    /**
-     * 图片加载方式
-     */
-    private var mImageEngine: ImageEngine? = null
 
     /**
      * 文件配置路径
@@ -92,7 +101,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         initView(attrs!!)
     }
 
@@ -102,92 +115,135 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     private fun initView(attrs: AttributeSet) {
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
         setWillNotDraw(false)
-
         // 获取系统颜色
         val defaultColor = -0x1000000
-        val attrsArray = intArrayOf(R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent)
+        val attrsArray =
+            intArrayOf(R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent)
         val typedArray = context.obtainStyledAttributes(attrsArray)
         val colorPrimary = typedArray.getColor(0, defaultColor)
 
         // 获取自定义属性。
-        val maskProgressLayoutStyle = context.obtainStyledAttributes(attrs, R.styleable.MaskProgressLayoutZhongjh)
+        val maskProgressLayoutStyle =
+            context.obtainStyledAttributes(attrs, R.styleable.MaskProgressLayout)
         // 是否允许操作
-        isOperation = maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayoutZhongjh_isOperation, true)
+        photoAdapterEntity.isOperation =
+            maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayout_isOperation, true)
         // 一行多少列
-        val columnNumber = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_columnNumber, 4)
-        // 列与列之间多少间隔px单位
-        val columnSpace = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_columnSpace, 10)
+        val columnNumber = maskProgressLayoutStyle.getInteger(
+            R.styleable.MaskProgressLayout_columnNumber,
+            COLUMN_NUMBER
+        )
         // 获取默认图片
-        var drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_album_thumbnail_placeholder)
+        var drawable =
+            maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_album_thumbnail_placeholder)
         // 获取添加图片
-        val imageAddDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_imageAddDrawable)
+        photoAdapterEntity.addDrawable =
+            maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_imageAddDrawable)
         // 获取显示图片的类
-        val imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_imageEngine)
+        val imageEngineStr =
+            maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_imageEngine)
         // provider的authorities,用于提供给外部的file
-        val authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_authority)
+        val authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_authority)
         val saveStrategy = SaveStrategy(true, authority, "")
         mMediaStoreCompat = MediaStoreCompat(context, saveStrategy)
         // 获取最多显示多少个方框
-        val maxCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_maxCount, 5)
-        val imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_imageDeleteColor, colorPrimary)
-        val imageDeleteDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_imageDeleteDrawable)
-
-        // region 音频
-        // 音频，删除按钮的颜色
-        audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioDeleteColor, colorPrimary)
-        // 音频 文件的进度条颜色
-        audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioProgressColor, colorPrimary)
-        // 音频 播放按钮的颜色
-        audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioPlayColor, colorPrimary)
-        // endregion 音频
-
-        // region 遮罩层相关属性
-
-        val maskingColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_maskingColor, colorPrimary)
-        val maskingTextSize = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_maskingTextSize, 12)
-
-        val maskingTextColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_maskingTextColor, ContextCompat.getColor(context, R.color.z_thumbnail_placeholder))
-        var maskingTextContent = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_maskingTextContent)
-
-        // endregion 遮罩层相关属性
-
-        if (imageEngineStr == null) {
-            // 必须定义image_engine属性，指定某个显示图片类
-            throw RuntimeException("The image_engine attribute must be defined to specify a class for displaying images")
-        } else {
-            val imageEngineClass: Class<*> //完整类名
-            try {
-                imageEngineClass = Class.forName(imageEngineStr)
-                mImageEngine = imageEngineClass.newInstance() as ImageEngine
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            if (mImageEngine == null) {
-                // image_engine找不到相关类
-                throw RuntimeException("Image_engine could not find the related class $imageEngineStr")
-            }
-        }
-
+        photoAdapterEntity.maxMediaCount =
+            maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_maxCount, MAX_MEDIA_COUNT)
+        photoAdapterEntity.deleteColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayout_imageDeleteColor,
+            colorPrimary
+        )
+        photoAdapterEntity.deleteImage =
+            maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayout_imageDeleteDrawable)
+        initAudioProperty(maskProgressLayoutStyle, colorPrimary)
+        photoAdapterEntity.masking = initMaskLayerProperty(maskProgressLayoutStyle, colorPrimary)
+        initException(imageEngineStr)
         if (drawable == null) {
             drawable = ContextCompat.getDrawable(context, R.color.z_thumbnail_placeholder)
         }
-        if (maskingTextContent == null) {
-            maskingTextContent = ""
-        }
+        photoAdapterEntity.placeholder = drawable!!
 
         val view = inflate(context, R.layout.layout_mask_progress_zjh, this)
         mViewHolder = ViewHolder(view)
 
         // 初始化九宫格的控件
         mViewHolder.rlGrid.layoutManager = GridLayoutManager(context, columnNumber)
-        mPhotoAdapter = PhotoAdapter(context, (mViewHolder.rlGrid.layoutManager as GridLayoutManager?)!!, this,
-                mImageEngine!!, drawable!!, isOperation, maxCount,
-                maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
-                imageDeleteColor, imageDeleteDrawable, imageAddDrawable)
+
+        mPhotoAdapter = PhotoAdapter(
+            context,
+            (mViewHolder.rlGrid.layoutManager as GridLayoutManager?)!!,
+            this,
+            photoAdapterEntity
+        )
         mViewHolder.rlGrid.adapter = mPhotoAdapter
 
         maskProgressLayoutStyle.recycle()
         typedArray.recycle()
+    }
+
+    /**
+     * 初始化音频属性
+     */
+    private fun initAudioProperty(maskProgressLayoutStyle: TypedArray, colorPrimary: Int) {
+        // 音频，删除按钮的颜色
+        audioDeleteColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayout_audioDeleteColor,
+            colorPrimary
+        )
+        // 音频 文件的进度条颜色
+        audioProgressColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayout_audioProgressColor,
+            colorPrimary
+        )
+        // 音频 播放按钮的颜色
+        audioPlayColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayout_audioPlayColor,
+            colorPrimary
+        )
+    }
+
+    /**
+     * 初始化遮罩层相关属性
+     */
+    private fun initMaskLayerProperty(
+        maskProgressLayoutStyle: TypedArray,
+        colorPrimary: Int
+    ): Masking {
+        val maskingColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayout_maskingColor,
+            colorPrimary
+        )
+        val maskingTextSize =
+            maskProgressLayoutStyle.getInteger(
+                R.styleable.MaskProgressLayout_maskingTextSize,
+                MASKING_TEXT_SIZE
+            )
+
+        val maskingTextColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayout_maskingTextColor,
+            ContextCompat.getColor(context, R.color.z_thumbnail_placeholder)
+        )
+        var maskingTextContent =
+            maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayout_maskingTextContent)
+        if (maskingTextContent == null) {
+            maskingTextContent = ""
+        }
+        return Masking(maskingColor, maskingTextSize, maskingTextColor, maskingTextContent)
+    }
+
+    /**
+     * 处理异常
+     */
+    private fun initException(imageEngineStr: String?) {
+        if (imageEngineStr == null) {
+            // 必须定义image_engine属性，指定某个显示图片类
+            throw
+            NullPointerException("The image_engine attribute must be defined to specify a class for displaying images")
+        } else {
+            // 完整类名
+            val imageEngineClass: Class<*> = Class.forName(imageEngineStr)
+            photoAdapterEntity.imageEngine = imageEngineClass.newInstance() as ImageEngine
+        }
     }
 
     override fun setAuthority(authority: String) {
@@ -207,8 +263,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             // 直接处理音频
             if (multiMediaView.isAudio()) {
                 addAudioData(multiMediaView)
-                // 检测添加多媒体上限
-                mPhotoAdapter.notifyDataSetChanged()
+                mPhotoAdapter.notifyItemInserted(mPhotoAdapter.getData().size - 1)
                 return
             }
             // 处理图片
@@ -287,8 +342,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         multiMediaView.uri = mMediaStoreCompat.getUri(filePath)
         multiMediaView.duration = length
         addAudioData(multiMediaView)
-        // 检测添加多媒体上限
-        mPhotoAdapter.notifyDataSetChanged()
+        mPhotoAdapter.notifyItemInserted(mPhotoAdapter.getData().size - 1)
     }
 
     override fun setAudioUrls(audioUrls: List<String>) {
@@ -308,7 +362,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
         // ms,时长
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
-                ?: -1
+            ?: -1
         val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
         multiMediaView.path = file
         multiMediaView.uri = mMediaStoreCompat.getUri(file)
@@ -359,7 +413,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun setOperation(isOperation: Boolean) {
         this.isOperation = isOperation
-        mPhotoAdapter.isOperation = isOperation
+        mPhotoAdapter.photoAdapterEntity.isOperation = isOperation
         // 添加音频后重置所有当前播放中的音频
         for (i in 0 until mViewHolder.llContent.childCount) {
             val item = mViewHolder.llContent.getChildAt(i) as PlayProgressView
@@ -385,20 +439,26 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
      * @return 最多显示多少个图片/视频/语音
      */
     fun getMaxMediaCount(): Int {
-        return mPhotoAdapter.maxMediaCount
+        return mPhotoAdapter.photoAdapterEntity.maxMediaCount
     }
 
     /**
      * 设置最多显示多少个图片/视频/语音
      */
-    fun setMaxMediaCount(maxMediaCount: Int?, maxImageSelectable: Int?, maxVideoSelectable: Int?, maxAudioSelectable: Int?) {
+    fun setMaxMediaCount(
+        maxMediaCount: Int?,
+        maxImageSelectable: Int?,
+        maxVideoSelectable: Int?,
+        maxAudioSelectable: Int?
+    ) {
         // 计算最终呈现的总数，这个总数决定是否还能点击添加
         val isMaxMediaCount = maxMediaCount != null &&
                 (maxImageSelectable == null || maxVideoSelectable == null || maxAudioSelectable == null)
         if (isMaxMediaCount) {
-            mPhotoAdapter.maxMediaCount = maxMediaCount!!
+            mPhotoAdapter.photoAdapterEntity.maxMediaCount = maxMediaCount!!
         } else {
-            mPhotoAdapter.maxMediaCount = maxImageSelectable!! + maxVideoSelectable!! + maxAudioSelectable!!
+            mPhotoAdapter.photoAdapterEntity.maxMediaCount =
+                maxImageSelectable!! + maxVideoSelectable!! + maxAudioSelectable!!
         }
     }
 
@@ -417,10 +477,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 创建音频控件的线程
      */
-    private fun getCreatePlayProgressViewTask(audioMultiMediaViews: List<MultiMediaView>, position: Int): SimpleTask<PlayProgressView> {
+    private fun getCreatePlayProgressViewTask(
+        audioMultiMediaViews: List<MultiMediaView>,
+        position: Int
+    ): SimpleTask<PlayProgressView> {
         mCreatePlayProgressViewTask = object : SimpleTask<PlayProgressView>() {
             override fun doInBackground(): PlayProgressView {
-                val playProgressView: PlayProgressView = newPlayProgressView(audioMultiMediaViews[position])
+                val playProgressView: PlayProgressView =
+                    newPlayProgressView(audioMultiMediaViews[position])
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 playProgressView.mViewHolder.playView.visibility = View.VISIBLE
                 // 隐藏上传进度
@@ -518,7 +582,6 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
                     maskProgressLayoutListener?.onItemClose(this@MaskProgressLayout, multiMediaView)
                 }
                 audioList.remove(multiMediaView)
-                mPhotoAdapter.notifyDataSetChanged()
             }
         }
         playProgressView.initStyle(audioDeleteColor, audioProgressColor, audioPlayColor)
@@ -533,7 +596,12 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     private fun isAuthority() {
         if (mMediaStoreCompat.saveStrategy.authority == null) {
             // 必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错。也可以代码设置setAuthority
-            throw java.lang.RuntimeException("You must define the authority attribute, which specifies the provider's authorities, to serve to external files. Otherwise, Android7.0 will report an error.You can also set setAuthority in code")
+            val stringBuilder = StringBuffer()
+            stringBuilder.append("You must define the authority attribute,")
+            stringBuilder.append("which specifies the provider's authorities,")
+            stringBuilder.append("to serve to external files. Otherwise, ")
+            stringBuilder.append("Android7.0 will report an error.You can also set setAuthority in code")
+            throw java.lang.RuntimeException(stringBuilder.toString())
         }
     }
 

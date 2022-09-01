@@ -19,6 +19,7 @@ import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.progresslibrary.R
 import com.zhongjh.progresslibrary.engine.ImageEngine
 import com.zhongjh.progresslibrary.entity.MultiMediaView
+import com.zhongjh.progresslibrary.entity.PhotoAdapterEntity
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout
 import com.zhongjh.progresslibrary.widget.MaskProgressView
@@ -35,23 +36,17 @@ import java.util.*
  * @param mContext            上下文
  * @param mGridLayoutManage 网格布局,用于动态计算，列数是外面动态设置的
  * @param maskProgressLayout 父控件
- * @param imageEngine 兼容各种图片加载库
- * @param placeholder 占位图
- * @param isOperation        是否操作
- * @param maxMediaCount 最多显示多少个图片/视频/语音
- * @param maskingColor       有关遮罩层：颜色
- * @param maskingTextSize    有关遮罩层：文字大小
- * @param maskingTextColor   有关遮罩层：文字颜色
- * @param maskingTextContent 有关遮罩层：文字内容
- * @param addDrawable        添加的图片资源
  */
-class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage: GridLayoutManager, private val maskProgressLayout: MaskProgressLayout,
-                   private val imageEngine: ImageEngine, private val placeholder: Drawable, var isOperation: Boolean, var maxMediaCount: Int,
-                   private val maskingColor: Int, private val maskingTextSize: Int, private val maskingTextColor: Int, private val maskingTextContent: String,
-                   private val deleteColor: Int, private val deleteImage: Drawable?, private val addDrawable: Drawable?) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
+class PhotoAdapter(
+    private val mContext: Context,
+    private val mGridLayoutManage: GridLayoutManager,
+    private val maskProgressLayout: MaskProgressLayout,
+    var photoAdapterEntity: PhotoAdapterEntity
+) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
     companion object {
         val TAG: String = PhotoAdapter::class.java.simpleName
+        const val TIME_UNIT: Int = 1000
     }
 
     private val mInflater: LayoutInflater = LayoutInflater.from(mContext)
@@ -99,23 +94,23 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         params.height = mItemHeight
 
         // 判断有没有自定义图片
-        if (deleteImage != null) {
+        if (photoAdapterEntity.deleteImage != null) {
             // 使用自定义图片
             photoViewHolder.imgClose.visibility = View.VISIBLE
-            photoViewHolder.imgClose.setImageDrawable(deleteImage)
+            photoViewHolder.imgClose.setImageDrawable(photoAdapterEntity.deleteImage)
             photoViewHolder.vClose = photoViewHolder.imgClose
         } else {
             // 使用自定义颜色
             photoViewHolder.vmvClose.visibility = View.VISIBLE
             val outline = photoViewHolder.vmvClose.getPathModelByName("close")
-            outline.fillColor = deleteColor
+            outline.fillColor = photoAdapterEntity.deleteColor
             photoViewHolder.vClose = photoViewHolder.vmvClose
         }
 
-        photoViewHolder.mpvImage.maskingColor = maskingColor
-        photoViewHolder.mpvImage.textSize = maskingTextSize
-        photoViewHolder.mpvImage.textColor = maskingTextColor
-        photoViewHolder.mpvImage.textString = maskingTextContent
+        photoViewHolder.mpvImage.maskingColor = photoAdapterEntity.masking.maskingColor
+        photoViewHolder.mpvImage.textSize = photoAdapterEntity.masking.maskingTextSize
+        photoViewHolder.mpvImage.textColor = photoAdapterEntity.masking.maskingTextColor
+        photoViewHolder.mpvImage.textString = photoAdapterEntity.masking.maskingTextContent
 
         return photoViewHolder
     }
@@ -136,7 +131,13 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
                     mMultiMediaViewAdd.maskProgressView = holder.mpvImage
                     mMultiMediaViewAdd.itemView = holder.itemView
                     // 点击加载➕图
-                    listener?.onItemAdd(v, mMultiMediaViewAdd, mImageCount, mVideoCount, maskProgressLayout.audioList.size)
+                    listener?.onItemAdd(
+                        v,
+                        mMultiMediaViewAdd,
+                        mImageCount,
+                        mVideoCount,
+                        maskProgressLayout.audioList.size
+                    )
                 }
             })
             holder.mpvImage.reset()
@@ -151,7 +152,8 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             if (multiMediaView.isVideo()) {
                 // 视频处理，判断是否显示播放按钮
                 holder.tvVideoDuration.visibility = View.VISIBLE
-                holder.tvVideoDuration.text = DateUtils.formatElapsedTime(multiMediaView.duration / 1000)
+                holder.tvVideoDuration.text =
+                    DateUtils.formatElapsedTime(multiMediaView.duration / TIME_UNIT)
             } else if (multiMediaView.isImageOrGif()) {
                 holder.tvVideoDuration.visibility = View.GONE
             }
@@ -162,10 +164,16 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
                 holder.imgGif.visibility = View.GONE
             }
 
-            holder.loadImage(mContext, imageEngine, placeholder, multiMediaView, mItemHeight)
+            holder.loadImage(
+                mContext,
+                photoAdapterEntity.imageEngine,
+                photoAdapterEntity.placeholder,
+                multiMediaView,
+                mItemHeight
+            )
 
             // 显示close
-            if (isOperation) {
+            if (photoAdapterEntity.isOperation) {
                 holder.vClose.visibility = View.VISIBLE
                 holder.vClose.setOnClickListener(object : OnMoreClickListener() {
                     override fun onListener(v: View) {
@@ -187,7 +195,8 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
                             // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
                             if (TextUtils.isEmpty(multiMediaView.path) && multiMediaView.uri == null) {
                                 // 执行下载事件
-                                val isContinue = listener!!.onItemVideoStartDownload(v, multiMediaView)
+                                val isContinue =
+                                    listener!!.onItemVideoStartDownload(v, multiMediaView)
                                 if (isContinue) {
                                     // 点击事件
                                     listener!!.onItemClick(v, multiMediaView)
@@ -226,7 +235,9 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             }
         }
         // 数量如果小于最大值并且允许操作，才+1，这个+1是最后加个可操作的Add方框
-        return if (list.size + maskProgressLayout.audioList.size < maxMediaCount && isOperation) {
+        return if (list.size + maskProgressLayout.audioList.size < photoAdapterEntity.maxMediaCount
+            && photoAdapterEntity.isOperation
+        ) {
             list.size + 1
         } else {
             list.size
@@ -237,8 +248,8 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
      * 清空数据
      */
     fun clearAll() {
+        notifyItemRangeRemoved(0,list.size)
         list.clear()
-        notifyDataSetChanged()
     }
 
     /**
@@ -386,10 +397,11 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
      */
     private fun isRemoveAdd() {
         // 判断是否等于最大数量,并且是可操作的才进行去掉add
-        if (list.size + maskProgressLayout.audioList.size >= maxMediaCount
-                && isOperation) {
+        if (list.size + maskProgressLayout.audioList.size >= photoAdapterEntity.maxMediaCount
+            && photoAdapterEntity.isOperation
+        ) {
             notifyItemRemoved(list.size)
-            notifyItemRangeChanged(list.size,  list.size)
+            notifyItemRangeChanged(list.size, list.size)
         }
     }
 
@@ -400,13 +412,18 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
      * @return 索引
      */
     private fun getNeedAddPosition(mimeType: String): Int {
-        if (MimeType.isImageOrGif(mimeType)) {
-            return list.size.coerceAtLeast(0)
-        } else if (MimeType.isVideo(mimeType)) {
-            // 获取图片第一个索引
-            return getImageFirstPosition()
+        return when {
+            MimeType.isImageOrGif(mimeType) -> {
+                list.size.coerceAtLeast(0)
+            }
+            MimeType.isVideo(mimeType) -> {
+                // 获取图片第一个索引
+                getImageFirstPosition()
+            }
+            else -> {
+                0
+            }
         }
-        return 0
     }
 
     /**
@@ -415,12 +432,11 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
      * @return 索引
      */
     private fun getImageFirstPosition(): Int {
-        if (list.size <= 0) {
-            return 0
-        }
-        for (item in list) {
-            if (item.isImageOrGif()) {
-                return list.indexOf(item)
+        if (list.size > 0) {
+            for (item in list) {
+                if (item.isImageOrGif()) {
+                    return list.indexOf(item)
+                }
             }
         }
         return 0
@@ -449,18 +465,26 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         /**
          * 加载图片
          */
-        internal fun loadImage(context: Context, imageEngine: ImageEngine,
-                               placeholder: Drawable, multiMediaView: MultiMediaView, height: Int) {
+        internal fun loadImage(
+            context: Context, imageEngine: ImageEngine,
+            placeholder: Drawable, multiMediaView: MultiMediaView, height: Int
+        ) {
             // 加载图片
             if (multiMediaView.uri != null) {
-                imageEngine.loadThumbnail(context, height, placeholder,
-                        mpvImage, multiMediaView.uri!!)
+                imageEngine.loadThumbnail(
+                    context, height, placeholder,
+                    mpvImage, multiMediaView.uri!!
+                )
             } else if (!TextUtils.isEmpty(multiMediaView.path)) {
-                imageEngine.loadThumbnail(context, height, placeholder,
-                        mpvImage, Uri.fromFile(File(multiMediaView.path!!)))
+                imageEngine.loadThumbnail(
+                    context, height, placeholder,
+                    mpvImage, Uri.fromFile(File(multiMediaView.path!!))
+                )
             } else if (!TextUtils.isEmpty(multiMediaView.url)) {
-                imageEngine.loadUrlThumbnail(context, height, placeholder,
-                        mpvImage, multiMediaView.url!!)
+                imageEngine.loadUrlThumbnail(
+                    context, height, placeholder,
+                    mpvImage, multiMediaView.url!!
+                )
             }
         }
 
