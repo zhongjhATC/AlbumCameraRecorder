@@ -12,17 +12,17 @@
         <attr name="maxCount" format="integer" /> <!-- 只能显示多少个图片包括视频、语音 -->
         <attr name="imageEngine" format="string"/> <!-- 显示图片的类 -->
         <attr name="imageAddDrawable" format="reference"/> <!-- 显示添加的图片 -->
-        <attr name="imageDeleteColor" format="color"/><!-- 图片视频文件的删除按钮颜色 -->
+        <attr name="imageDeleteColor" format="reference|color"/><!-- 图片视频文件的删除按钮颜色 -->
         <attr name="imageDeleteDrawable" format="reference"/><!-- 图片视频文件的删除按钮图片 -->
 
-        <attr name="audioDeleteColor" format="color"/><!-- 音频文件的删除按钮颜色 -->
-        <attr name="audioProgressColor" format="color"/><!-- 音频文件的进度条颜色 -->
-        <attr name="audioPlayColor" format="color"/><!-- 音频文件的播放按钮颜色 -->
+        <attr name="audioDeleteColor" format="reference|color"/><!-- 音频文件的删除按钮颜色 -->
+        <attr name="audioProgressColor" format="reference|color"/><!-- 音频文件的进度条颜色 -->
+        <attr name="audioPlayColor" format="reference|color"/><!-- 音频文件的播放按钮颜色 -->
 
         <!-- 遮罩层 -->
-        <attr name="maskingColor" format="color"/><!-- 遮罩颜色，默认用主颜色 -->
+        <attr name="maskingColor" format="reference|color"/><!-- 遮罩颜色，默认用主颜色 -->
         <attr name="maskingTextSize" format="integer"/><!-- 显示在遮罩层的字体大小 -->
-        <attr name="maskingTextColor" format="color"/><!-- 显示在遮罩层的字体颜色 -->
+        <attr name="maskingTextColor" format="reference|color"/><!-- 显示在遮罩层的字体颜色 -->
         <attr name="maskingTextContent" format="string"/><!-- 显示在遮罩层加载中的文字 -->
 
     </declare-styleable>
