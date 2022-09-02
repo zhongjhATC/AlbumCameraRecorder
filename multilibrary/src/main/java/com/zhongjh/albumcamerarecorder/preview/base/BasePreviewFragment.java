@@ -83,9 +83,13 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      */
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     /**
-     * 设置是否启动操作：选择、确定
+     * 设置是否启动确定功能
      */
-    public static final String OPERATION_ENABLE = "operation_enable";
+    public static final String APPLY_ENABLE = "apply_enable";
+    /**
+     * 设置是否启动选择功能
+     */
+    public static final String SELECTED_ENABLE = "selected_enable";
     /**
      * 设置是否开启编辑功能
      */
@@ -143,9 +147,13 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      */
     protected boolean mOriginalEnable;
     /**
-     * 启用操作，默认true,也不启动右上角的选择框自定义触发事件
+     * 设置是否启动确定功能
      */
-    protected boolean mOperationEnable = true;
+    protected boolean mApplyEnable = true;
+    /**
+     * 设置是否启动选择功能
+     */
+    protected boolean mSelectedEnable = true;
     /**
      * 设置是否开启编辑功能
      */
@@ -188,7 +196,8 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         boolean isAllowRepeat = false;
         if (getArguments() != null) {
             isAllowRepeat = getArguments().getBoolean(EXTRA_IS_ALLOW_REPEAT, false);
-            mOperationEnable = getArguments().getBoolean(OPERATION_ENABLE, true);
+            mApplyEnable = getArguments().getBoolean(APPLY_ENABLE, true);
+            mSelectedEnable = getArguments().getBoolean(SELECTED_ENABLE, true);
             mIsSelectedListener = getArguments().getBoolean(IS_SELECTED_LISTENER, true);
             mIsSelectedCheck = getArguments().getBoolean(IS_SELECTED_CHECK, true);
             mIsExternalUsers = getArguments().getBoolean(IS_EXTERNAL_USERS, false);
@@ -455,17 +464,17 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
                     int checkedNum = mSelectedCollection.checkedNumOf(item);
                     mViewHolder.checkView.setCheckedNum(checkedNum);
                     if (checkedNum > 0) {
-                        mViewHolder.checkView.setEnabled(true);
+                        setCheckViewEnable(true);
                     } else {
-                        mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
+                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
                     }
                 } else {
                     boolean checked = mSelectedCollection.isSelected(item);
                     mViewHolder.checkView.setChecked(checked);
                     if (checked) {
-                        mViewHolder.checkView.setEnabled(true);
+                        setCheckViewEnable(true);
                     } else {
-                        mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
+                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
                     }
                 }
                 updateUi(item);
@@ -495,13 +504,12 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         }
 
         // 判断是否启动操作
-        if (!mOperationEnable) {
+        if (!mApplyEnable) {
             mViewHolder.buttonApply.setVisibility(View.GONE);
-            mViewHolder.checkView.setVisibility(View.GONE);
         } else {
             mViewHolder.buttonApply.setVisibility(View.VISIBLE);
-            mViewHolder.checkView.setVisibility(View.VISIBLE);
         }
+        setCheckViewEnable(mSelectedEnable);
     }
 
     /**
@@ -902,14 +910,14 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         if (!enable) {
             mViewHolder.pbLoading.setVisibility(View.VISIBLE);
             mViewHolder.buttonApply.setVisibility(View.GONE);
-            mViewHolder.checkView.setEnabled(false);
+            setCheckViewEnable(false);
             mViewHolder.checkView.setOnClickListener(null);
             mViewHolder.tvEdit.setEnabled(false);
             mViewHolder.originalLayout.setEnabled(false);
         } else {
             mViewHolder.pbLoading.setVisibility(View.GONE);
             mViewHolder.buttonApply.setVisibility(View.VISIBLE);
-            mViewHolder.checkView.setEnabled(true);
+            setCheckViewEnable(true);
             mViewHolder.checkView.setOnClickListener(this);
             mViewHolder.tvEdit.setEnabled(true);
             mViewHolder.originalLayout.setEnabled(true);
@@ -926,6 +934,19 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         IncapableCause cause = mSelectedCollection.isAcceptable(item);
         IncapableCause.handleCause(mContext, cause);
         return cause == null;
+    }
+
+    /**
+     * 设置checkView是否启动，配置优先
+     *
+     * @param enable 是否启动
+     */
+    private void setCheckViewEnable(boolean enable) {
+        if (mSelectedEnable) {
+            mViewHolder.checkView.setEnabled(enable);
+        } else {
+            mViewHolder.checkView.setEnabled(false);
+        }
     }
 
     public static class ViewHolder {

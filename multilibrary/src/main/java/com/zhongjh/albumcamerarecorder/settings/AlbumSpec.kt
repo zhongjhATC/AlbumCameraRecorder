@@ -37,7 +37,7 @@ object AlbumSpec  {
     /**
      * 是否显示多选图片的数字
      */
-    var countable = false
+    var countable = true
 
     /**
      * 如果设置了item宽度的具体数值则计算获得列表的列数，否则使用设置的列数。如果你想要固定的跨度计数，请使用 spanCount(int spanCount)，当方向更改时，范围计数将保持不变。
@@ -87,7 +87,7 @@ object AlbumSpec  {
         mimeTypeSet = null
         mediaTypeExclusive = true
         showSingleMediaType = false
-        countable = false
+        countable = true
         baseFilters = null
         spanCount = 3
         thumbnailScale = 0.5f

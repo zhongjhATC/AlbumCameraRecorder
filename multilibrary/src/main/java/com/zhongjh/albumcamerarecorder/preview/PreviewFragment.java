@@ -52,6 +52,7 @@ public class PreviewFragment extends BasePreviewFragment implements
 
             MultiMedia item = getArguments().getParcelable(EXTRA_ITEM);
             if (item != null) {
+                // 如果有当前数据，则跳转到当前数据索引
                 if (mAlbumSpec.getCountable()) {
                     int selectedIndex = mSelectedCollection.checkedNumOf(item);
                     // 索引需要-1

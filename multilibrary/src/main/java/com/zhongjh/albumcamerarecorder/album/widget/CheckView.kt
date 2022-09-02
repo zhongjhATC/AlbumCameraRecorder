@@ -1,10 +1,12 @@
 package com.zhongjh.albumcamerarecorder.album.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.zhongjh.albumcamerarecorder.R
@@ -77,6 +79,14 @@ class CheckView : View {
         )
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (!mEnabled) {
+            return true
+        }
+        return super.onTouchEvent(event)
+    }
+
     fun setChecked(checked: Boolean) {
         check(!mCountable) { "CheckView is countable, call setCheckedNum() instead." }
         mChecked = checked
@@ -102,6 +112,10 @@ class CheckView : View {
             mEnabled = enabled
             invalidate()
         }
+    }
+
+    override fun isEnabled(): Boolean {
+        return mEnabled
     }
 
     override fun onDraw(canvas: Canvas) {

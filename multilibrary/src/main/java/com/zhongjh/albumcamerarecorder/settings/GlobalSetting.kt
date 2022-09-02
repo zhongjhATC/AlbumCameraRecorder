@@ -331,7 +331,8 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
             intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
             intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)
             intent.putExtra(BasePreviewFragment.IS_SELECTED_CHECK, false)
-            intent.putExtra(BasePreviewFragment.OPERATION_ENABLE, false)
+            intent.putExtra(BasePreviewFragment.APPLY_ENABLE, false)
+            intent.putExtra(BasePreviewFragment.SELECTED_ENABLE, false)
             intent.putExtra(BasePreviewFragment.IS_EXTERNAL_USERS, true)
             activity.startActivityForResult(intent, GlobalSpec.requestCode)
             if (GlobalSpec.cutscenesEnabled) {
