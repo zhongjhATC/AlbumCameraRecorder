@@ -1,6 +1,6 @@
 package com.zhongjh.cameraapp.phone.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +28,13 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
     private static final int SIZE_20 = 20;
-    private final Context mContext;
+    private final Activity mActivity;
     private final LayoutInflater mInflater;
     List<Data> data = new ArrayList<>();
 
-    public RecyclerAdapter(Context context) {
-        this.mContext = context;
-        this.mInflater = LayoutInflater.from(context);
+    public RecyclerAdapter(Activity activity) {
+        this.mActivity = activity;
+        this.mInflater = LayoutInflater.from(activity);
         initData();
     }
 
@@ -96,7 +96,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
             @Override
             public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-                Toast.makeText(mContext, "这边写跳转相册代码获取到的数据填充该RecyclerView即可", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity.getApplicationContext(), "这边写跳转相册代码获取到的数据填充该RecyclerView即可", Toast.LENGTH_SHORT).show();
             }
 
             @Override
