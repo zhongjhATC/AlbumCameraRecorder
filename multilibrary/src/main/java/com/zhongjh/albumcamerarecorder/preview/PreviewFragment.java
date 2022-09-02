@@ -54,9 +54,10 @@ public class PreviewFragment extends BasePreviewFragment implements
             if (item != null) {
                 if (mAlbumSpec.getCountable()) {
                     int selectedIndex = mSelectedCollection.checkedNumOf(item);
-                    mViewHolder.pager.setCurrentItem(selectedIndex, false);
-                    mPreviousPos = selectedIndex;
-                    mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+                    // 索引需要-1
+                    mPreviousPos = selectedIndex - 1;
+                    mViewHolder.pager.setCurrentItem(mPreviousPos, false);
+                    mViewHolder.checkView.setCheckedNum(selectedIndex);
                 } else {
                     mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
                 }
