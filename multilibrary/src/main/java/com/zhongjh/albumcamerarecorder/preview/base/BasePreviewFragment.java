@@ -82,6 +82,9 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * 设置是否开启原图
      */
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
+    /**
+     * 设置是否启动操作：选择、确定
+     */
     public static final String OPERATION_ENABLE = "operation_enable";
     /**
      * 设置是否开启编辑功能
@@ -235,7 +238,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
 
         mAlbumCompressFileTask = new AlbumCompressFileTask(mContext, TAG,
                 BasePreviewFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
-
 
         initListener();
         return view;
@@ -670,7 +672,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         };
         return mMoveFileTask;
     }
-
 
     /**
      * 判断是否压缩，如果要压缩先要迁移复制再压缩

@@ -16,9 +16,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
  */
 public class PreviewActivity extends AppCompatActivity {
 
-    public static final String EXTRA_TYPE = "EXTRA_TYPE";
-    public static final int TYPE_ALBUM = 0;
-    public static final int TYPE_SELECTED = 1;
     protected GlobalSpec mGlobalSpec;
 
     @Override

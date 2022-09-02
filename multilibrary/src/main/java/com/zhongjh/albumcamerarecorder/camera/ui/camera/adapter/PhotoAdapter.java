@@ -115,7 +115,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
         Intent intent = new Intent(mActivity, PreviewActivity.class);
-        intent.putExtra(PreviewActivity.EXTRA_TYPE, PreviewActivity.TYPE_ALBUM);
         // 获取目前点击的这个item
         MultiMedia item = new MultiMedia();
         item.setUri(bitmapData.getUri());
