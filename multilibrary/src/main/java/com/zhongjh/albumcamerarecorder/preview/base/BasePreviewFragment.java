@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
@@ -39,7 +39,6 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
-import com.zhongjh.albumcamerarecorder.album.widget.PreviewViewPager;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -68,8 +67,7 @@ import java.util.List;
  * @author zhongjh
  * @date 2022/8/29
  */
-public class BasePreviewFragment extends Fragment implements View.OnClickListener,
-        ViewPager.OnPageChangeListener {
+public class BasePreviewFragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = BasePreviewFragment.this.getClass().getSimpleName();
     public static final String EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat";
@@ -305,7 +303,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         multiMedia.handleEditValue(newPath, newUri, oldPath, oldUri);
         // 更新当前fragment编辑后的uri和path
         mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), multiMedia);
-        mAdapter.currentItemInit(mViewHolder.pager.getCurrentItem());
+        mAdapter.notifyItemChanged(mViewHolder.pager.getCurrentItem());
 
         // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据 是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
         // 如何重现进入这个条件里面：先相册选择第一个，然后点击相册第二个item进入详情，在详情界面滑动到第一个，对第一个进行编辑改动，则会进入这些条件里面
@@ -348,7 +346,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
             }
         });
         // 多图时滑动事件
-        mViewHolder.pager.addOnPageChangeListener(this);
+        mViewHolder.pager.registerOnPageChangeCallback(mOnPageChangeCallback);
         // 右上角选择事件
         mViewHolder.checkView.setOnClickListener(this);
         // 点击原图事件
@@ -397,7 +395,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
-        mAdapter.destroy();
+        mViewHolder.pager.unregisterOnPageChangeCallback(mOnPageChangeCallback);
         super.onDestroy();
     }
 
@@ -439,50 +437,40 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
     /**
      * 滑动事件
-     *
-     * @param position 索引
      */
-    @Override
-    public void onPageSelected(int position) {
-        PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
-        if (adapter == null) {
-            return;
-        }
-        if (mPreviousPos != -1 && mPreviousPos != position) {
-            MultiMedia item = adapter.getMediaItem(position);
-            if (mAlbumSpec.getCountable()) {
-                int checkedNum = mSelectedCollection.checkedNumOf(item);
-                mViewHolder.checkView.setCheckedNum(checkedNum);
-                if (checkedNum > 0) {
-                    mViewHolder.checkView.setEnabled(true);
-                } else {
-                    mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
-                }
-            } else {
-                boolean checked = mSelectedCollection.isSelected(item);
-                mViewHolder.checkView.setChecked(checked);
-                if (checked) {
-                    mViewHolder.checkView.setEnabled(true);
-                } else {
-                    mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
-                }
+    private final ViewPager2.OnPageChangeCallback mOnPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+        @Override
+        public void onPageSelected(int position) {
+            PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
+            if (adapter == null) {
+                return;
             }
-            updateUi(item);
+            if (mPreviousPos != -1 && mPreviousPos != position) {
+                MultiMedia item = adapter.getMediaItem(position);
+                if (mAlbumSpec.getCountable()) {
+                    int checkedNum = mSelectedCollection.checkedNumOf(item);
+                    mViewHolder.checkView.setCheckedNum(checkedNum);
+                    if (checkedNum > 0) {
+                        mViewHolder.checkView.setEnabled(true);
+                    } else {
+                        mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
+                    }
+                } else {
+                    boolean checked = mSelectedCollection.isSelected(item);
+                    mViewHolder.checkView.setChecked(checked);
+                    if (checked) {
+                        mViewHolder.checkView.setEnabled(true);
+                    } else {
+                        mViewHolder.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
+                    }
+                }
+                updateUi(item);
+            }
+            mPreviousPos = position;
         }
-        mPreviousPos = position;
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int i) {
-
-    }
+    };
 
     /**
      * 更新确定按钮状态
@@ -941,7 +929,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
 
     public static class ViewHolder {
         public View rootView;
-        public PreviewViewPager pager;
+        public ViewPager2 pager;
         ImageButton iBtnBack;
         TextView tvEdit;
         public CheckRadioView original;
