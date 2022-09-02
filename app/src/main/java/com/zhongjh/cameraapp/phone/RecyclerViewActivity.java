@@ -53,7 +53,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
         // 给RecyclerView设置布局管理器
         mBinding.recyclerview.setLayoutManager(layoutManager);
         // 创建适配器，并且设置
-        RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext());
+        RecyclerAdapter adapter = new RecyclerAdapter(this);
         mBinding.recyclerview.setAdapter(adapter);
     }
 
