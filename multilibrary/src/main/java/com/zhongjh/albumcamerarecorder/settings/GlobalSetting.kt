@@ -12,8 +12,8 @@ import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
 import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewFragment
-import com.zhongjh.albumcamerarecorder.preview.ContainerViewActivity
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
+import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
@@ -222,9 +222,9 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
             SelectedItemCollection.STATE_COLLECTION_TYPE,
             SelectedItemCollection.COLLECTION_IMAGE
         )
-        val intent = Intent(activity, ContainerViewActivity::class.java)
-        intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_ALBUM)
-        intent.putExtra(AlbumPreviewFragment.EXTRA_ITEM, list[position])
+        val intent = Intent(activity, PreviewActivity::class.java)
+        intent.putExtra(PreviewActivity.EXTRA_TYPE, PreviewActivity.TYPE_ALBUM)
+        intent.putExtra(PreviewFragment.EXTRA_ITEM, list[position])
         intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle)
         intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
         intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)
@@ -326,9 +326,9 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
                 SelectedItemCollection.STATE_COLLECTION_TYPE,
                 SelectedItemCollection.COLLECTION_IMAGE
             )
-            val intent = Intent(activity, ContainerViewActivity::class.java)
-            intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_ALBUM)
-            intent.putExtra(AlbumPreviewFragment.EXTRA_ITEM, multiMedias[position])
+            val intent = Intent(activity, PreviewActivity::class.java)
+            intent.putExtra(PreviewActivity.EXTRA_TYPE, PreviewActivity.TYPE_ALBUM)
+            intent.putExtra(PreviewFragment.EXTRA_ITEM, multiMedias[position])
             intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle)
             intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
             intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)

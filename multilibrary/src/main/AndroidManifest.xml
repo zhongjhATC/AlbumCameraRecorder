@@ -19,7 +19,7 @@
             android:screenOrientation="locked"
             android:launchMode="singleTop" />
         <activity
-            android:name=".preview.ContainerViewActivity"
+            android:name=".preview.PreviewActivity"
             android:configChanges="orientation|screenSize"
             android:hardwareAccelerated="true"
             android:screenOrientation="locked"

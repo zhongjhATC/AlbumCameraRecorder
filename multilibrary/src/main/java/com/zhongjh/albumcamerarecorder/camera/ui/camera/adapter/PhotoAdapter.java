@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewFragment;
-import com.zhongjh.albumcamerarecorder.preview.ContainerViewActivity;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.MultiMedia;
@@ -114,8 +114,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         bundle.putParcelableArrayList(STATE_SELECTION, items);
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
-        Intent intent = new Intent(mActivity, ContainerViewActivity.class);
-        intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_ALBUM);
+        Intent intent = new Intent(mActivity, PreviewActivity.class);
+        intent.putExtra(PreviewActivity.EXTRA_TYPE, PreviewActivity.TYPE_ALBUM);
         // 获取目前点击的这个item
         MultiMedia item = new MultiMedia();
         item.setUri(bitmapData.getUri());
@@ -123,7 +123,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         item.setMimeType(MimeType.JPEG.toString());
         item.setWidth(bitmapData.getWidth());
         item.setHeight(bitmapData.getHeight());
-        intent.putExtra(AlbumPreviewFragment.EXTRA_ITEM, item);
+        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
 
         intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);

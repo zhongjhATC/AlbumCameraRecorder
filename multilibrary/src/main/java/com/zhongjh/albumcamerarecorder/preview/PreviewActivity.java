@@ -14,7 +14,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
  * @author zhongjh
  * @date 2022/8/29
  */
-public class ContainerViewActivity extends AppCompatActivity {
+public class PreviewActivity extends AppCompatActivity {
 
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
     public static final int TYPE_ALBUM = 0;
@@ -42,7 +42,7 @@ public class ContainerViewActivity extends AppCompatActivity {
      * 实例化Fragment,根据不同的类型实例化不同的Fragment
      */
     private void initFragment() {
-        Fragment fragment = new AlbumPreviewFragment();
+        Fragment fragment = new PreviewFragment();
         handleExtra(fragment);
         getSupportFragmentManager()
                 .beginTransaction()

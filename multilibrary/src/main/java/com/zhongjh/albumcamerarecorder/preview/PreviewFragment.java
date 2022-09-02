@@ -20,20 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 点击相册某个item 或者 点击九宫格进来
- * 标记是以点击的当前item为准而显示，这个为什么使用数据库 AlbumMediaCollection 查询，而不使用上个界面传递过来的数据
- * 是因为用户可能点击的是未选择的数据
+ * 预览的Fragment
  *
  * @author zhongjh
  * @date 2022/7/26
  */
-public class AlbumPreviewFragment extends BasePreviewFragment implements
+public class PreviewFragment extends BasePreviewFragment implements
         AlbumMediaCollection.AlbumMediaCallbacks {
 
     public static final String EXTRA_ALBUM = "extra_album";
     public static final String EXTRA_ITEM = "extra_item";
     private final AlbumMediaCollection mCollection = new AlbumMediaCollection();
-    private boolean mIsAlreadySetPosition;
 
     @Nullable
     @Override
@@ -44,8 +41,10 @@ public class AlbumPreviewFragment extends BasePreviewFragment implements
             Album album = getArguments().getParcelable(EXTRA_ALBUM);
             ArrayList<MultiMedia> items = null;
             if (album != null) {
+                // 如果有专辑，则根据专辑加载数据
                 mCollection.load(album);
             } else {
+                // 如果没有专辑，就取决于来自与上个界面提供的数据
                 Bundle bundle = getArguments().getBundle(EXTRA_DEFAULT_BUNDLE);
                 items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
                 initItems(items);
@@ -54,6 +53,9 @@ public class AlbumPreviewFragment extends BasePreviewFragment implements
             MultiMedia item = getArguments().getParcelable(EXTRA_ITEM);
             if (item != null) {
                 if (mAlbumSpec.getCountable()) {
+                    int selectedIndex = mSelectedCollection.checkedNumOf(item);
+                    mViewHolder.pager.setCurrentItem(selectedIndex, false);
+                    mPreviousPos = selectedIndex;
                     mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
                 } else {
                     mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
@@ -99,20 +101,6 @@ public class AlbumPreviewFragment extends BasePreviewFragment implements
         if (adapter != null) {
             adapter.addAll(items);
             adapter.notifyDataSetChanged();
-            if (getArguments() != null) {
-                if (!mIsAlreadySetPosition) {
-                    MultiMedia selected = getArguments().getParcelable(EXTRA_ITEM);
-                    if (selected != null) {
-                        // -1是爲了拿到索引
-                        int selectedIndex = MultiMedia.checkedNumOf(items, selected) - 1;
-                        mViewHolder.pager.setCurrentItem(selectedIndex, false);
-                        mPreviousPos = selectedIndex;
-                    }
-                    // onAlbumMediaLoad is called many times..
-                    mIsAlreadySetPosition = true;
-                }
-            }
-
         }
     }
 

@@ -44,8 +44,8 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewFragment;
-import com.zhongjh.albumcamerarecorder.preview.ContainerViewActivity;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -277,8 +277,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NonNull View v) {
-                Intent intent = new Intent(mActivity, ContainerViewActivity.class);
-                intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_SELECTED);
+                Intent intent = new Intent(mActivity, PreviewActivity.class);
+                intent.putExtra(PreviewActivity.EXTRA_TYPE, PreviewActivity.TYPE_SELECTED);
                 intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
                 intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                 intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
@@ -557,10 +557,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onMediaClick(Album album, MultiMedia item, int adapterPosition) {
-        Intent intent = new Intent(mActivity, ContainerViewActivity.class);
-        intent.putExtra(ContainerViewActivity.EXTRA_TYPE, ContainerViewActivity.TYPE_ALBUM);
-        intent.putExtra(AlbumPreviewFragment.EXTRA_ALBUM, album);
-        intent.putExtra(AlbumPreviewFragment.EXTRA_ITEM, item);
+        Intent intent = new Intent(mActivity, PreviewActivity.class);
+        intent.putExtra(PreviewActivity.EXTRA_TYPE, PreviewActivity.TYPE_ALBUM);
+        intent.putExtra(PreviewFragment.EXTRA_ALBUM, album);
+        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
         intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
