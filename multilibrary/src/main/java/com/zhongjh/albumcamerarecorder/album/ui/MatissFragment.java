@@ -566,6 +566,17 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (mGlobalSpec.getCutscenesEnabled()) {
             mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
         }
+
+
+        Fragment fragment = new PreviewFragment();
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true) // Optimize for shared element transition
+                .addSharedElement(imageView, imageView.transitionName)
+                .replace(R.id.fragmentContainerView, fragment)
+                .addToBackStack(null)
+                .commit();
+
     }
 
     @Override

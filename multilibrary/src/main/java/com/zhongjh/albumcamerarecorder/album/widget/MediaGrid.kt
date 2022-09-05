@@ -178,12 +178,12 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
         /**
          * 点击事件
          *
-         * @param thumbnail 图片控件
+         * @param imageView 图片控件
          * @param item      数据
          * @param holder    控件
          */
         fun onThumbnailClicked(
-            thumbnail: ImageView?,
+            imageView: ImageView?,
             item: MultiMedia?,
             holder: RecyclerView.ViewHolder?
         )
