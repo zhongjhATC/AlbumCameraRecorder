@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -205,10 +206,10 @@ public class MediaSelectionFragment extends Fragment implements
     }
 
     @Override
-    public void onMediaClick(Album album, MultiMedia item, int adapterPosition) {
+    public void onMediaClick(Album album, ImageView imageView, MultiMedia item, int adapterPosition) {
         if (mOnMediaClickListener != null) {
             if (getArguments() != null) {
-                mOnMediaClickListener.onMediaClick(getArguments().getParcelable(EXTRA_ALBUM),
+                mOnMediaClickListener.onMediaClick(getArguments().getParcelable(EXTRA_ALBUM), imageView,
                         item, adapterPosition);
             }
         }

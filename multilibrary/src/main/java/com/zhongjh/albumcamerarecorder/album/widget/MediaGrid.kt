@@ -18,7 +18,7 @@ import com.zhongjh.common.entity.MultiMedia
  */
 class MediaGrid : SquareFrameLayout, View.OnClickListener {
 
-    private lateinit var mThumbnail: ImageView
+    private lateinit var mImageView: ImageView
 
     /**
      * 选择控件
@@ -60,18 +60,18 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
 
     private fun init(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.media_grid_content_zjh, this, true)
-        mThumbnail = findViewById(R.id.media_thumbnail)
+        mImageView = findViewById(R.id.media_thumbnail)
         mCheckView = findViewById(R.id.checkView)
         mGifTag = findViewById(R.id.gif)
         mVideoDuration = findViewById(R.id.video_duration)
-        mThumbnail.setOnClickListener(this)
+        mImageView.setOnClickListener(this)
         mCheckView.setOnClickListener(this)
     }
 
     override fun onClick(view: View) {
-        if (view === mThumbnail) {
+        if (view === mImageView) {
             // 图片的点击事件
-            mListener.onThumbnailClicked(mThumbnail, mMedia, mPreBindInfo.mViewHolder)
+            mListener.onThumbnailClicked(mImageView, mMedia, mPreBindInfo.mViewHolder)
         } else if (view === mCheckView) {
             // 勾选的点击事件
             mListener.onCheckViewClicked(mCheckView, mMedia, mPreBindInfo.mViewHolder)
@@ -144,15 +144,16 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
         if (mMedia.uri == null) {
             return
         }
+        mImageView.transitionName = mMedia.id.toString()
         if (mMedia.isGif()) {
             imageEngine.loadGifThumbnail(
                 context, mPreBindInfo.mResize,
-                mPreBindInfo.mPlaceholder, mThumbnail, mMedia.uri!!
+                mPreBindInfo.mPlaceholder, mImageView, mMedia.uri!!
             )
         } else {
             imageEngine.loadThumbnail(
                 context, mPreBindInfo.mResize,
-                mPreBindInfo.mPlaceholder, mThumbnail, mMedia.uri!!
+                mPreBindInfo.mPlaceholder, mImageView, mMedia.uri!!
             )
         }
     }

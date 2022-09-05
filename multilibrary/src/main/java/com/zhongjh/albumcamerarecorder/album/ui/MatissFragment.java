@@ -556,25 +556,32 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onMediaClick(Album album,ImageView imageView, MultiMedia item, int adapterPosition) {
-//        Intent intent = new Intent(mActivity, PreviewActivity.class);
-//        intent.putExtra(PreviewFragment.EXTRA_ALBUM, album);
-//        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
-//        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-//        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-//        intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
-//        mPreviewActivityResult.launch(intent);
-//        if (mGlobalSpec.getCutscenesEnabled()) {
-//            mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
-//        }
-        Fragment fragment = new PreviewFragment();
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                // 优化共享元素转换
-                .setReorderingAllowed(true)
-                .addSharedElement(imageView, imageView.getTransitionName())
-                .replace(R.id.fragmentContainerView, fragment)
-                .addToBackStack(null)
-                .commit();
+        Intent intent = new Intent(mActivity, PreviewActivity.class);
+        intent.putExtra(PreviewFragment.EXTRA_ALBUM, album);
+        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
+        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+        intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
+        mPreviewActivityResult.launch(intent);
+        if (mGlobalSpec.getCutscenesEnabled()) {
+            mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
+        }
+//        Fragment fragment = new PreviewFragment();
+//        Bundle bundle = new Bundle();
+//        bundle.putParcelable(PreviewFragment.EXTRA_ALBUM, album);
+//        bundle.putParcelable(PreviewFragment.EXTRA_ITEM, item);
+//        bundle.putBundle(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+//        bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//        bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
+//        fragment.setArguments(bundle);
+//        requireActivity().getSupportFragmentManager()
+//                .beginTransaction()
+//                // 优化共享元素转换
+//                .setReorderingAllowed(true)
+//                .addSharedElement(imageView, imageView.getTransitionName())
+//                .replace(R.id.fragmentContainerView, fragment)
+//                .addToBackStack(null)
+//                .commit();
 
     }
 
