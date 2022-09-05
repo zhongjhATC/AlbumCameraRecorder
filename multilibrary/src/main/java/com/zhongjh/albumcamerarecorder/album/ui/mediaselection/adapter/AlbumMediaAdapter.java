@@ -39,6 +39,7 @@ import com.zhongjh.common.entity.MultiMedia;
 
 /**
  * 相册适配器
+ *
  * @author zhongjh
  */
 public class AlbumMediaAdapter extends
@@ -86,6 +87,7 @@ public class AlbumMediaAdapter extends
                 mAlbumSpec.getCountable(),
                 holder
         ));
+
         mediaViewHolder.mMediaGrid.bindMedia(item);
         mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this);
         setCheckStatus(item, mediaViewHolder.mMediaGrid);
@@ -141,7 +143,7 @@ public class AlbumMediaAdapter extends
     @Override
     public void onThumbnailClicked(ImageView imageView, MultiMedia item, RecyclerView.ViewHolder holder) {
         if (mOnMediaClickListener != null) {
-            mOnMediaClickListener.onMediaClick(null, item, holder.getBindingAdapterPosition());
+            mOnMediaClickListener.onMediaClick(null, imageView, item, holder.getBindingAdapterPosition());
         }
     }
 
@@ -258,11 +260,13 @@ public class AlbumMediaAdapter extends
     public interface OnMediaClickListener {
         /**
          * 点击事件
-         * @param album 相册集合
-         * @param item 选项
+         *
+         * @param album           相册集合
+         * @param imageView       图片View
+         * @param item            选项
          * @param adapterPosition 索引
          */
-        void onMediaClick(Album album, MultiMedia item, int adapterPosition);
+        void onMediaClick(Album album, ImageView imageView, MultiMedia item, int adapterPosition);
     }
 
     private static class MediaViewHolder extends RecyclerView.ViewHolder {

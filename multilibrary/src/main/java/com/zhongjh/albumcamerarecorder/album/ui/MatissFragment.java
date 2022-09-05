@@ -555,24 +555,23 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
-    public void onMediaClick(Album album, MultiMedia item, int adapterPosition) {
-        Intent intent = new Intent(mActivity, PreviewActivity.class);
-        intent.putExtra(PreviewFragment.EXTRA_ALBUM, album);
-        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
-        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
-        mPreviewActivityResult.launch(intent);
-        if (mGlobalSpec.getCutscenesEnabled()) {
-            mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
-        }
-
-
+    public void onMediaClick(Album album,ImageView imageView, MultiMedia item, int adapterPosition) {
+//        Intent intent = new Intent(mActivity, PreviewActivity.class);
+//        intent.putExtra(PreviewFragment.EXTRA_ALBUM, album);
+//        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
+//        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+//        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//        intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
+//        mPreviewActivityResult.launch(intent);
+//        if (mGlobalSpec.getCutscenesEnabled()) {
+//            mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
+//        }
         Fragment fragment = new PreviewFragment();
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .setReorderingAllowed(true) // Optimize for shared element transition
-                .addSharedElement(imageView, imageView.transitionName)
+                // 优化共享元素转换
+                .setReorderingAllowed(true)
+                .addSharedElement(imageView, imageView.getTransitionName())
                 .replace(R.id.fragmentContainerView, fragment)
                 .addToBackStack(null)
                 .commit();
