@@ -58,7 +58,6 @@ public class PreviewFragment extends BasePreviewFragment implements
                     int selectedIndex = mSelectedCollection.checkedNumOf(item);
                     // 索引需要减1
                     mPreviousPos = selectedIndex - 1;
-                    mViewHolder.pager.setCurrentItem(mPreviousPos, false);
                     mViewHolder.checkView.setCheckedNum(selectedIndex);
                 } else {
                     mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
