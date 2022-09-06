@@ -31,6 +31,7 @@ public class PreviewFragment extends BasePreviewFragment implements
     public static final String EXTRA_ALBUM = "extra_album";
     public static final String EXTRA_ITEM = "extra_item";
     private final AlbumMediaCollection mCollection = new AlbumMediaCollection();
+    private boolean mIsAlreadySetPosition = false;
 
     @Nullable
     @Override
@@ -55,7 +56,7 @@ public class PreviewFragment extends BasePreviewFragment implements
                 // 如果有当前数据，则跳转到当前数据索引
                 if (mAlbumSpec.getCountable()) {
                     int selectedIndex = mSelectedCollection.checkedNumOf(item);
-                    // 索引需要-1
+                    // 索引需要减1
                     mPreviousPos = selectedIndex - 1;
                     mViewHolder.pager.setCurrentItem(mPreviousPos, false);
                     mViewHolder.checkView.setCheckedNum(selectedIndex);
@@ -102,7 +103,21 @@ public class PreviewFragment extends BasePreviewFragment implements
         PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
         if (adapter != null) {
             adapter.addAll(items);
-            adapter.notifyItemRangeInserted(0,items.size() - 1);
+            adapter.notifyItemRangeInserted(0, items.size() - 1);
+            if (!mIsAlreadySetPosition) {
+                // onAlbumMediaLoad is called many times..
+                mIsAlreadySetPosition = true;
+                if (getArguments() != null) {
+                    MultiMedia selected = getArguments().getParcelable(EXTRA_ITEM);
+                    if (selected != null) {
+                        // 减1是爲了拿到索引
+                        int selectedIndex = MultiMedia.checkedNumOf(items, selected) - 1;
+                        mViewHolder.pager.setCurrentItem(selectedIndex, false);
+                        mPreviousPos = selectedIndex;
+                    }
+                }
+            }
+
         }
     }
 
