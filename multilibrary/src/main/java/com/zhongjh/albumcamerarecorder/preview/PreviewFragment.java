@@ -102,7 +102,7 @@ public class PreviewFragment extends BasePreviewFragment implements
         PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
         if (adapter != null) {
             adapter.addAll(items);
-            adapter.notifyDataSetChanged();
+            adapter.notifyItemRangeInserted(0,items.size() - 1);
         }
     }
 
