@@ -35,11 +35,13 @@ import java.lang.ref.WeakReference;
  * @author zhongjh
  */
 public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int LOADER_ID = 2;
+    public static final int LOADER_MEDIA_ID = 2;
+    public static final int LOADER_PREVIEW_ID = 3;
     private static final String ARGS_ALBUM = "args_album";
     private WeakReference<Context> mContext;
     private LoaderManager mLoaderManager;
     private AlbumMediaCallbacks mCallbacks;
+    private int mLoaderId = 2;
 
     @NonNull
     @Override
@@ -83,7 +85,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
 
     public void onDestroy() {
         if (mLoaderManager != null) {
-            mLoaderManager.destroyLoader(LOADER_ID);
+            mLoaderManager.destroyLoader(mLoaderId);
         }
         mCallbacks = null;
     }
@@ -91,11 +93,13 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
     /**
      * 加载图片
      * @param target 专辑
+     * @param loaderId 因为两个Fragment共存的原因，所以要区分id
      */
-    public void load(@Nullable Album target) {
+    public void load(@Nullable Album target,int loaderId) {
+        mLoaderId = loaderId;
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);
-        mLoaderManager.initLoader(LOADER_ID, args, this);
+        mLoaderManager.initLoader(loaderId, args, this);
     }
 
     /**
@@ -105,7 +109,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
     public void restartLoader(@Nullable Album target) {
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);
-        mLoaderManager.restartLoader(LOADER_ID, args, this);
+        mLoaderManager.restartLoader(mLoaderId, args, this);
     }
 
     public interface AlbumMediaCallbacks {

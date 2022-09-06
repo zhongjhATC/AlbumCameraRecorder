@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.ui.mediaselection;
 
+import static com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection.LOADER_MEDIA_ID;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -162,7 +164,7 @@ public class MediaSelectionFragment extends Fragment implements
                 mAdapter.swapCursor(null);
             }
         });
-        mAlbumMediaCollection.load(album);
+        mAlbumMediaCollection.load(album,LOADER_MEDIA_ID);
     }
 
     @Override

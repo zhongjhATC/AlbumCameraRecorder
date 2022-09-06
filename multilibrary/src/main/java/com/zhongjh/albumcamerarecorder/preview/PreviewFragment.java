@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.preview;
 
+import static com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection.LOADER_PREVIEW_ID;
+
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -43,7 +45,7 @@ public class PreviewFragment extends BasePreviewFragment implements
             ArrayList<MultiMedia> items = null;
             if (album != null) {
                 // 如果有专辑，则根据专辑加载数据
-                mCollection.load(album);
+                mCollection.load(album, LOADER_PREVIEW_ID);
             } else {
                 // 如果没有专辑，就取决于来自与上个界面提供的数据
                 Bundle bundle = getArguments().getBundle(EXTRA_DEFAULT_BUNDLE);
