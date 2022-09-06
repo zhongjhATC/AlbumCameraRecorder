@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder;
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Intent;
@@ -12,8 +13,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -71,13 +75,17 @@ public class MainActivity extends AppCompatActivity {
      */
     private TabLayoutMediator mLayoutMediator;
     /**
-     * viewPager
+     * 显示隐藏TabLayout的动画
      */
-    private ViewPager2 mVpPager;
+    ObjectAnimator mAnimationTabLayout;
     /**
      * 默认索引
      */
     private int mDefaultPosition;
+    /**
+     * 底部控件高度
+     */
+    private float mTabLayoutHeight;
 
     GlobalSpec mSpec = GlobalSpec.INSTANCE;
     /**
@@ -139,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if (mSpec.getCameraSetting() != null) {
             mSpec.getCameraSetting().clearCameraFragment();
+        }
+        if (mAnimationTabLayout != null) {
+            mAnimationTabLayout.end();
         }
         super.onDestroy();
     }
@@ -230,8 +241,19 @@ public class MainActivity extends AppCompatActivity {
      */
     private void init() {
         if (!mIsInit) {
-            mVpPager = findViewById(R.id.viewPager);
+            ViewPager2 mVpPager = findViewById(R.id.viewPager);
             mTabLayout = findViewById(R.id.tableLayout);
+            mTabLayout.setTag(R.id.z_tab_layout_translation_y, 0);
+
+            // 获取高度，用于tabLayout的一些显示隐藏动画参数
+            mTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mTabLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mTabLayoutHeight = mTabLayout.getMeasuredHeight();
+                }
+            });
+
             adapterViewPager = new MyPagerAdapter(this, mSpec);
             mVpPager.setAdapter(adapterViewPager);
             mVpPager.setOffscreenPageLimit(3);
@@ -369,6 +391,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 显示或者隐藏底部
+     * 显示或者隐藏后，都用tag标记，为了[showHideTableLayoutAnimator]显示时回复数值
      *
      * @param isShow 是否显示
      */
@@ -386,9 +409,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 根据滑动隐藏显示底部控件
+     *
+     * @param translationY 顶部控件坐标，底部跟顶部这样可以联动
+     */
     public void onDependentViewChanged(float translationY) {
         mTabLayout.setTranslationY(Math.abs(translationY));
+        mTabLayout.setTag(R.id.z_tab_layout_translation_y, Math.abs(translationY));
+        Log.d("MainActivity", Math.abs(translationY) + "");
     }
+
+    /**
+     * 动画形式的显示隐藏TableLayout
+     *
+     * @param isShow 是否显示
+     */
+    public void showHideTableLayoutAnimator(boolean isShow) {
+        if (isShow) {
+            // 获取动画隐藏之前的坐标，恢复回该坐标
+            float translationY = (float) mTabLayout.getTag(R.id.z_tab_layout_translation_y);
+            mAnimationTabLayout = ObjectAnimator.ofFloat(mTabLayout, "translationY", translationY);
+            Log.d("MainActivity", translationY + "");
+        } else {
+            mAnimationTabLayout = ObjectAnimator.ofFloat(mTabLayout, "translationY", mTabLayoutHeight);
+        }
+        mAnimationTabLayout.setInterpolator(AnimationUtils.loadInterpolator(
+                getApplicationContext(),
+                android.R.interpolator.fast_out_linear_in
+        ));
+        mAnimationTabLayout.setDuration(300);
+        mAnimationTabLayout.start();
+    }
+
 
     public class MyPagerAdapter extends FragmentStateAdapter {
 

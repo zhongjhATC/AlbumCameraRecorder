@@ -44,8 +44,8 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -556,16 +556,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onMediaClick(Album album,ImageView imageView, MultiMedia item, int adapterPosition) {
-//        Intent intent = new Intent(mActivity, PreviewActivity.class);
-//        intent.putExtra(PreviewFragment.EXTRA_ALBUM, album);
-//        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
-//        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-//        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-//        intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
-//        mPreviewActivityResult.launch(intent);
-//        if (mGlobalSpec.getCutscenesEnabled()) {
-//            mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
-//        }
+        // 隐藏底部控件
+        mActivity.showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(PreviewFragment.EXTRA_ALBUM, album);
@@ -582,7 +574,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 .replace(R.id.fragmentContainerView, fragment)
                 .addToBackStack(null)
                 .commit();
-
     }
 
     @Override

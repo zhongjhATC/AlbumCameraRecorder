@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <item name="z_tagid" type="id"/> <!-- 用于区分tagid -->
+    <!-- 用于区分tagId -->
+    <item name="z_tagid" type="id"/>
+    <!-- 用于记录TabLayout的translationY -->
+    <item name="z_tab_layout_translation_y" type="id"/>
 
 </resources>

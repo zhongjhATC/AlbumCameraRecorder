@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
@@ -82,6 +83,10 @@ public class PreviewFragment extends BasePreviewFragment implements
 
     @Override
     public void onDestroy() {
+        // 如果依附的Activity是MainActivity,就显示底部控件动画
+        if (mActivity instanceof MainActivity) {
+            ((MainActivity) mActivity).showHideTableLayoutAnimator(true);
+        }
         super.onDestroy();
         mCollection.onDestroy();
     }
