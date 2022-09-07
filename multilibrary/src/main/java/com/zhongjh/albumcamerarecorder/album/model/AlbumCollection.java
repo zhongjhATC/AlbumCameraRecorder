@@ -3,13 +3,14 @@ package com.zhongjh.albumcamerarecorder.album.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import com.zhongjh.albumcamerarecorder.album.loader.AlbumLoader;
+import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 
 import java.lang.ref.WeakReference;
 
@@ -69,9 +70,9 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
         mCallbacks.onAlbumReset();
     }
 
-    public void onCreate(Fragment fragment, AlbumCallbacks callbacks) {
-        mContext = new WeakReference<>(fragment.getContext());
-        mLoaderManager = LoaderManager.getInstance(fragment);
+    public void onCreate(MainModel mainModel, AlbumCallbacks callbacks) {
+        mContext = new WeakReference<>(mainModel.getApplication());
+        mLoaderManager = LoaderManager.getInstance(mainModel.getApplication());
         mCallbacks = callbacks;
     }
 

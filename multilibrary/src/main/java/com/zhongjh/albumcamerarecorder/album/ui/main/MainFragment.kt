@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album
+package com.zhongjh.albumcamerarecorder.album.ui.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
