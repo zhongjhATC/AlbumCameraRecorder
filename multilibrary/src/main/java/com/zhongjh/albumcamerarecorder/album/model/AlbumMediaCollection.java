@@ -19,6 +19,7 @@ package com.zhongjh.albumcamerarecorder.album.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
@@ -32,6 +33,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * 多媒体数据源
+ *
  * @author zhongjh
  */
 public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -92,10 +94,11 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
 
     /**
      * 加载图片
-     * @param target 专辑
+     *
+     * @param target   专辑
      * @param loaderId 因为两个Fragment共存的原因，所以要区分id
      */
-    public void load(@Nullable Album target,int loaderId) {
+    public void load(@Nullable Album target, int loaderId) {
         mLoaderId = loaderId;
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);
@@ -103,7 +106,15 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
     }
 
     /**
+     * 获取当前数据源
+     */
+    public void getLoader() {
+        mLoaderManager.getLoader(mLoaderId);
+    }
+
+    /**
      * 重新加载图片
+     *
      * @param target 专辑
      */
     public void restartLoader(@Nullable Album target) {

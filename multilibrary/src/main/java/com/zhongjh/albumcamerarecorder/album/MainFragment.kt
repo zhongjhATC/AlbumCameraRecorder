@@ -9,7 +9,7 @@ import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment
 
 /**
- * 一个容器，容纳CameraFragment和别的Fragment,一切都是为了过渡动画
+ * 一个容器，容纳 MatissFragment和别的例如 PreviewFragment,一切都是为了过渡动画
  * @author zhongjh
  * @date 2022/7/26
  */

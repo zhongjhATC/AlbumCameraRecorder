@@ -99,19 +99,17 @@ public class MediaSelectionFragment extends Fragment implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_media_selection_zjh, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_media_selection_zjh, container, false);
         mRecyclerView = view.findViewById(R.id.recyclerview);
         mFlMain = view.findViewById(R.id.flMain);
+        init();
+        return view;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    /**
+     * 初始化
+     */
+    private void init() {
         Album album = null;
         if (getArguments() != null) {
             album = getArguments().getParcelable(EXTRA_ALBUM);
@@ -138,7 +136,6 @@ public class MediaSelectionFragment extends Fragment implements
         mAdapter.registerOnMediaClickListener(this);
         mRecyclerView.setHasFixedSize(true);
 
-
         // 加载线，recyclerView加载数据
         int spacing = getResources().getDimensionPixelSize(R.dimen.z_media_grid_spacing);
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
@@ -164,17 +161,17 @@ public class MediaSelectionFragment extends Fragment implements
                 mAdapter.swapCursor(null);
             }
         });
-        mAlbumMediaCollection.load(album,LOADER_MEDIA_ID);
+        mAlbumMediaCollection.load(album, LOADER_MEDIA_ID);
     }
 
     @Override
-    public void onDestroyView() {
+    public void onDestroy() {
         mAdapter.unregisterCheckStateListener();
         mAdapter.unregisterOnMediaClickListener();
         mCheckStateListener = null;
         mOnMediaClickListener = null;
         mAdapter = null;
-        super.onDestroyView();
+        super.onDestroy();
     }
 
     public void onDestroyData() {

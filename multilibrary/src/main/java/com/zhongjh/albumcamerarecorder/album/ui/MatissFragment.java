@@ -135,6 +135,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 异步线程的逻辑
      */
     private AlbumCompressFileTask mAlbumCompressFileTask;
+    private Cursor mCursor;
 
     private ViewHolder mViewHolder;
 
@@ -164,13 +165,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         super.onCreate(savedInstanceState);
     }
 
-    View view;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
-        this.view = view;
         mViewHolder = new ViewHolder(view);
         initConfig();
         mAlbumCompressFileTask = new AlbumCompressFileTask(mActivity, TAG, MatissFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
@@ -486,8 +484,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         return count;
     }
 
-    @Override
-    public void onAlbumLoadFinished(final Cursor cursor) {
+    /**
+     * 加载图片数据
+     *
+     * @param cursor 数据源
+     */
+    private void loadData(final Cursor cursor) {
         // 更新相册列表
         mAlbumsSpinnerAdapter.swapCursor(cursor);
         // 选择默认相册
@@ -499,6 +501,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             Album album = Album.valueOf(cursor);
             onAlbumSelected(album);
         });
+    }
+
+    @Override
+    public void onAlbumLoadFinished(final Cursor cursor) {
+        mCursor = cursor;
+        loadData(cursor);
     }
 
     @Override
@@ -555,7 +563,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
-    public void onMediaClick(Album album,ImageView imageView, MultiMedia item, int adapterPosition) {
+    public void onMediaClick(Album album, ImageView imageView, MultiMedia item, int adapterPosition) {
         // 隐藏底部控件
         mActivity.showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment();
@@ -566,7 +574,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
         fragment.setArguments(bundle);
-        requireActivity().getSupportFragmentManager()
+        getParentFragmentManager()
                 .beginTransaction()
                 // 优化共享元素转换
                 .setReorderingAllowed(true)
