@@ -240,9 +240,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumsSpinner.setSelectedTextView(mViewHolder.selectedAlbum);
         mAlbumsSpinner.setPopupAnchorView(mViewHolder.toolbar);
         mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
-        mAlbumCollection.onCreate(this, this);
-        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
-        mAlbumCollection.loadAlbums();
+//        mAlbumCollection.onCreate(this, this);
+//        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
+//        mAlbumCollection.loadAlbums();
     }
 
     /**

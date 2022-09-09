@@ -1,7 +1,5 @@
 package com.zhongjh.albumcamerarecorder.album.ui.main;
 
-import static com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection.LOADER_MEDIA_ID;
-
 import android.app.Application;
 import android.database.Cursor;
 
@@ -41,9 +39,9 @@ public class MainModel extends AndroidViewModel implements AlbumCollection.Album
 
     @Override
     public void onAlbumLoadFinished(Cursor cursor) {
-        // 加载完专辑数据后,也加载相应的图片数据
-        mAlbumMediaCollection.onCreate(this,this);
-        mAlbumMediaCollection.load(album, LOADER_MEDIA_ID);
+//        // 加载完专辑数据后,也加载相应的图片数据
+//        mAlbumMediaCollection.onCreate(this,this);
+//        mAlbumMediaCollection.load(album, LOADER_MEDIA_ID);
     }
 
     @Override
