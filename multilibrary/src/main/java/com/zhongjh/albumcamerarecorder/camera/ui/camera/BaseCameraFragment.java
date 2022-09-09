@@ -287,7 +287,7 @@ public abstract class BaseCameraFragment
         // 处理图片、视频等需要进度显示
         getPhotoVideoLayout().getViewHolder().btnConfirm.setProgressMode(true);
 
-        // 初始化cameraView,判断是否开启录制视频，如果开启就开启声音
+        // 初始化cameraView,判断是否开启录制视频，如果开启就开启录制声音
         if (!SelectableUtils.videoValid()) {
             getCameraView().setAudio(Audio.OFF);
         }
