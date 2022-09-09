@@ -101,7 +101,11 @@ object SelectableUtils {
                     .containsAll(ofVideo())
             ) {
                 // 是否激活视频并且总数量大于1
-                return GlobalSpec.maxSelectable != null && GlobalSpec.maxSelectable!! > 0
+                if (GlobalSpec.maxSelectable != null) {
+                    return GlobalSpec.maxSelectable!! > 0
+                } else if (GlobalSpec.maxVideoSelectable != null) {
+                    return GlobalSpec.maxVideoSelectable!! > 0
+                }
             }
         }
         return false
