@@ -118,7 +118,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         // 获取系统颜色
         val defaultColor = -0x1000000
         val attrsArray =
-            intArrayOf(android.R.attr.colorPrimary, android.R.attr.colorPrimaryDark, android.R.attr.colorAccent)
+            intArrayOf(R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent)
         val typedArray = context.obtainStyledAttributes(attrsArray)
         val colorPrimary = typedArray.getColor(0, defaultColor)
 
@@ -451,7 +451,6 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         maxVideoSelectable: Int?,
         maxAudioSelectable: Int?
     ) {
-    fun setMaxMediaCount(maxMediaCount: Int?, maxImageSelectable: Int?, maxVideoSelectable: Int?, maxAudioSelectable: Int?) {
         check(!(maxMediaCount == null && maxImageSelectable == null)) { "setMaxMediaCount 方法中如果 maxMediaCount 为null，那么 maxImageSelectable 必须是0或者0以上数值" }
         check(!(maxMediaCount == null && maxVideoSelectable == null)) { "setMaxMediaCount 方法中如果 maxMediaCount 为null，那么 maxVideoSelectable 必须是0或者0以上数值" }
         check(!(maxMediaCount == null && maxAudioSelectable == null)) { "setMaxMediaCount 方法中如果 maxMediaCount 为null，那么 maxAudioSelectable 必须是0或者0以上数值" }
