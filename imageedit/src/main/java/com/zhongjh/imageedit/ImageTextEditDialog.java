@@ -113,4 +113,8 @@ public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
          */
         void onText(ImageText text);
     }
+
+    public void setCallback(Callback callback) {
+        this.mCallback = callback;
+    }
 }
