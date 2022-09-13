@@ -142,6 +142,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             cameraSetting.setBaseCameraFragment(CameraFragment2.newInstance());
         }
 
+
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(false)
                 // 支持的类型：图片，视频
