@@ -92,7 +92,7 @@ public class MediaLoader {
      */
     private String getCondition() {
         String fileSizeCondition = getFileSizeCondition();
-        String queryMimeCondition = getQueryMimeCondition();
+        String queryMimeCondition = getQueryMimeTypeCondition();
         switch (config.chooseMode) {
             case PictureConfig.TYPE_ALL:
                 // Get all, not including audio
