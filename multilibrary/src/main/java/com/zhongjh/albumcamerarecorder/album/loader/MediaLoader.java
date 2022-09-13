@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
+ * 调用Android系统自带方法查询图片数据库
+ * 1. 每个查询条件会判断 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,如果低于Q版本则加入Group by bucket_id
+ * 2. ContentResolver().query() 会生成 "WHERE (1 = 1) AND (xxxx)",所以 GROUP_BY_BUCKET_Id 要自带一个半括号"("
+ *
  * @author zhongjh
  * @date 2022/9/9
  */
@@ -102,7 +106,7 @@ public class MediaLoader {
             return getSelectionByVideoCondition(fileSizeCondition);
         } else {
             // 查询所有
-            return getSelectionArgsForAllMediaCondition(getDurationCondition(), fileSizeCondition);
+            return getSelectionByAllCondition(getDurationCondition(), fileSizeCondition);
         }
     }
 
@@ -139,6 +143,24 @@ public class MediaLoader {
     }
 
     /**
+     * 构造查询条件字符串 - 所有
+     *
+     * @param durationCondition 视频的时长条件字符串
+     * @param fileSizeCondition 多媒体最大值查询条件字符串
+     * @return
+     */
+    private static String getSelectionByAllCondition(String durationCondition, String fileSizeCondition) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" OR ")
+                .append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=? AND ").append(durationCondition).append(") AND ").append(fileSizeCondition);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return stringBuilder.toString();
+        } else {
+            return stringBuilder.append(")").append(GROUP_BY_BUCKET_Id).toString();
+        }
+    }
+
+    /**
      * 构造查询条件字符串 - 图片
      *
      * @param fileSizeCondition 多媒体最大值查询条件字符串
@@ -149,7 +171,6 @@ public class MediaLoader {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return stringBuilder.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(fileSizeCondition).toString();
         } else {
-            // ContentResolver().query() 会生成 "WHERE (1 = 1) AND (xxxx)",所以 GROUP_BY_BUCKET_Id 要自带一个半括号"("
             return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(") AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_Id).toString();
         }
     }
@@ -167,6 +188,43 @@ public class MediaLoader {
         } else {
             return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(") AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_Id).toString();
         }
+    }
+
+    /**
+     * 构造参数
+     *
+     * @return 参数
+     */
+    private String[] getSelectionArgs() {
+        if (AlbumSpec.INSTANCE.onlyShowImages()) {
+            // 获取有关查询图片的参数
+            return getSelectionArgsBySingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+        } else if (AlbumSpec.INSTANCE.onlyShowVideos()) {
+            // 获取有关查询视频的参数
+            return getSelectionArgsBySingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+        } else {
+            // 获取有关查询所有的参数
+            return getSelectionArgsByAllMediaType();
+        }
+    }
+
+    /**
+     * 构造 图片、视频类型 的参数
+     *
+     * @return 参数数组
+     */
+    private static String[] getSelectionArgsByAllMediaType() {
+        return new String[]{String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE), String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)};
+    }
+
+    /**
+     * 构造指定类型的参数
+     *
+     * @param mediaType 类型
+     * @return 参数数组
+     */
+    private static String[] getSelectionArgsBySingleMediaType(int mediaType) {
+        return new String[]{String.valueOf(mediaType)};
     }
 
 }
