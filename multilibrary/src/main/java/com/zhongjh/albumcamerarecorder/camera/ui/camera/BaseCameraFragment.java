@@ -298,7 +298,7 @@ public abstract class BaseCameraFragment
             getSwitchView().setImageResource(cameraSpec.getImageSwitch());
         }
         // 设置录制时间
-        getPhotoVideoLayout().setDuration(cameraSpec.getDuration() * 1000);
+        getPhotoVideoLayout().setDuration(cameraSpec.getMaxDuration());
         // 最短录制时间
         getPhotoVideoLayout().setMinDuration(cameraSpec.getMinDuration());
     }

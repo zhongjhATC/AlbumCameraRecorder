@@ -72,9 +72,9 @@ object CameraSpec {
     var enableFlashMemoryModel = false
 
     /**
-     * 最长录制时间
+     * 最长录制时间，单位为毫秒
      */
-    var duration = 10
+    var maxDuration = 1000
 
     /**
      * 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
@@ -151,7 +151,7 @@ object CameraSpec {
         flashModel = FlashModels.TYPE_FLASH_OFF
         enableFlashMemoryModel = false
         // 最长录制时间
-        duration = 10
+        maxDuration = 1000
         // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
         minDuration = 1500
         videoMergeCoordinator = null

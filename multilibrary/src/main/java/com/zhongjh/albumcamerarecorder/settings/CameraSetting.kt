@@ -75,7 +75,7 @@ class CameraSetting : CameraSettingApi {
     }
 
     override fun duration(duration: Int): CameraSetting {
-        mCameraSpec.duration = duration
+        mCameraSpec.maxDuration = duration
         return this
     }
 

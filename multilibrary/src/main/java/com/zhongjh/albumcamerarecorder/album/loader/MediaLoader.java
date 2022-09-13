@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
+import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import java.util.ArrayList;
@@ -92,20 +93,16 @@ public class MediaLoader {
      */
     private String getCondition() {
         String fileSizeCondition = getFileSizeCondition();
-        String queryMimeCondition = getQueryMimeTypeCondition();
-        switch (config.chooseMode) {
-            case PictureConfig.TYPE_ALL:
-                // Get all, not including audio
-                return getSelectionArgsForAllMediaCondition(getDurationCondition(), fileSizeCondition, queryMimeCondition);
-            case PictureConfig.TYPE_IMAGE:
-                // Get Images
-                return getSelectionArgsForImageMediaCondition(queryMimeCondition, fileSizeCondition);
-            case PictureConfig.TYPE_VIDEO:
-            case PictureConfig.TYPE_AUDIO:
-                // Gets the specified album directory
-                return getSelectionArgsForVideoOrAudioMediaCondition(queryMimeCondition, fileSizeCondition);
+        if (AlbumSpec.INSTANCE.onlyShowImages()) {
+            // 只查询图片
+            return getSelectionArgsForImageMediaCondition(queryMimeCondition, fileSizeCondition);
+        } else if (AlbumSpec.INSTANCE.onlyShowVideos()) {
+            // 只查询视频
+            return getSelectionArgsForVideoOrAudioMediaCondition(queryMimeCondition, fileSizeCondition);
+        } else {
+            // 查询所有
+            return getSelectionArgsForAllMediaCondition(getDurationCondition(), fileSizeCondition, queryMimeCondition);
         }
-        return null;
     }
 
     /**
@@ -115,18 +112,22 @@ public class MediaLoader {
      */
     private String getFileSizeCondition() {
         // 获取文件最大值
-        long maxFileSize = AlbumSpec.INSTANCE.getOriginalMaxSize() == 0 ? Long.MAX_VALUE : AlbumSpec.INSTANCE.getOriginalMaxSize();
+        long maxFileSize = CameraSpec.INSTANCE.getMinDuration() == 0 ? Long.MAX_VALUE : AlbumSpec.INSTANCE.getOriginalMaxSize();
         return String.format(Locale.CHINA, MediaStore.MediaColumns.SIZE + " > 0 and " + MediaStore.MediaColumns.SIZE + " <= %d",
                 maxFileSize);
     }
 
     /**
-     * 获取多媒体类型的构造字符串
+     * Get video (maximum or minimum time)
      *
-     * @return 多媒体类型的构造字符串
+     * @return
      */
-    private String getQueryMimeTypeCondition() {
-
+    private String getDurationCondition() {
+        long maxS = config.videoMaxSecond == 0 ? Long.MAX_VALUE : config.videoMaxSecond;
+        return String.format(Locale.CHINA, "%d <%s " + MediaStore.MediaColumns.DURATION + " and " + MediaStore.MediaColumns.DURATION + " <= %d",
+                Math.max((long) 0, config.videoMinSecond),
+                Math.max((long) 0, config.videoMinSecond) == 0 ? "" : "=",
+                maxS);
     }
 
 }
