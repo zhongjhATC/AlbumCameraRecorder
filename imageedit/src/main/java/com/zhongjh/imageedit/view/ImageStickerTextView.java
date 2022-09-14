@@ -75,6 +75,7 @@ public class ImageStickerTextView extends BaseImageStickerView implements ImageT
     @Override
     public void onContentTap() {
         ImageTextEditDialog dialog = getDialog();
+        dialog.setCallback(this);
         dialog.setText(mText);
         dialog.show();
     }
