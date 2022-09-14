@@ -514,7 +514,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onAlbumLoadFinished(final Cursor cursor) {
-        mCursor = cursor;
         loadData(cursor);
     }
 
