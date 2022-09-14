@@ -579,6 +579,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                    <CheckBox
+                        android:id="@+id/cbSlideHideEnable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/whether_to_start_the_album_list_slide_hide" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"

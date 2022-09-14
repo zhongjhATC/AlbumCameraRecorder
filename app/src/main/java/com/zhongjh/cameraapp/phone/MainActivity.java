@@ -460,6 +460,8 @@ public class MainActivity extends BaseActivity {
                 })
                 // 开启原图
                 .originalEnable(mBinding.cbOriginalEnableTrue.isChecked())
+                // 是否启动相册列表滑动隐藏顶部和底部控件，上滑隐藏、下滑显示
+                .slidingHiddenEnable(mBinding.cbSlideHideEnable.isChecked())
                 // 最大原图size,仅当originalEnable为true的时候才有效
                 .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString()))
                 .setOnCheckedListener(isChecked -> {

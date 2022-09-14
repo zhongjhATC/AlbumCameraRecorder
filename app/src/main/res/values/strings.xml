@@ -42,6 +42,7 @@
     <string name="the_filter_height_shall_be_no_less_than_px">The filter height shall be no less than (px)</string>
     <string name="filter_image_scaling_up_to_1">Filter image scaling (up to 1)</string>
     <string name="whether_to_enable_the_original_image_option">Whether to enable the original image option</string>
+    <string name="whether_to_start_the_album_list_slide_hide">Whether to start the album list slide hide top and bottom controls, slide up hide, slide down display</string>
     <string name="maximum_original_size_valid_only_if_original_enable_is_true_m">Maximum original size, valid only if originalEnable is true (M)</string>
     <string name="the_recording_configuration">The recording configuration</string>
     <string name="turn_on_the_shooting_function">Turn on the shooting function</string>

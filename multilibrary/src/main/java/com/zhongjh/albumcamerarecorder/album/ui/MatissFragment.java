@@ -31,8 +31,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
@@ -55,6 +57,7 @@ import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.ColorFilterUtil;
+import com.zhongjh.common.utils.DisplayMetricsUtils;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -245,6 +248,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumCollection.onCreate(this, this);
         mAlbumCollection.onRestoreInstanceState(savedInstanceState);
         mAlbumCollection.loadAlbums();
+
+        // 关闭滑动隐藏布局功能
+        if (!mAlbumSpec.getSlidingHiddenEnable()) {
+            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mViewHolder.toolbar.getLayoutParams();
+            params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
+            mViewHolder.nestedScrollView.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
+        }
     }
 
     /**
@@ -689,6 +699,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public CoordinatorLayout root;
         public ImageView imgClose;
         public ProgressBar pbLoading;
+        private final NestedScrollView nestedScrollView;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -706,6 +717,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             this.root = rootView.findViewById(R.id.root);
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.pbLoading = rootView.findViewById(R.id.pbLoading);
+            this.nestedScrollView = rootView.findViewById(R.id.nestedScrollView);
         }
 
     }
