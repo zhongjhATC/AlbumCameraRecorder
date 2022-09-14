@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:background="#CCFFFFFF"
+        android:background="?attr/bottomToolbar.bg"
         app:tabGravity="fill"
         android:elevation="1dp"
         app:tabIndicatorHeight="1dp"

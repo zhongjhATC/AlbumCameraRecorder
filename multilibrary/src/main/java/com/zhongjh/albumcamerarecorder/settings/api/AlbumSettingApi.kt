@@ -107,4 +107,13 @@ interface AlbumSettingApi {
      */
     fun setOnCheckedListener(listener: OnCheckedListener): AlbumSetting
 
+    /**
+     * 是否启动相册列表滑动隐藏顶部和底部控件，上滑隐藏、下滑显示
+     * 默认关闭
+     *
+     * @param enable 是否启用该功能
+     * @return [AlbumSetting] this
+     */
+    fun slidingHiddenEnable(enable: Boolean) : AlbumSetting
+
 }

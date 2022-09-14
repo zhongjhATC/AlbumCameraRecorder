@@ -42,6 +42,7 @@
     <string name="the_filter_height_shall_be_no_less_than_px">过滤高度不少于(px)</string>
     <string name="filter_image_scaling_up_to_1">过滤图片缩放比例(最大为1)</string>
     <string name="whether_to_enable_the_original_image_option">是否开启原图选项</string>
+    <string name="whether_to_start_the_album_list_slide_hide">是否启动相册列表滑动隐藏顶部和底部控件，上滑隐藏、下滑显示</string>
     <string name="maximum_original_size_valid_only_if_original_enable_is_true_m">最大原图size,仅当originalEnable为true的时候才有效(M)</string>
     <string name="the_recording_configuration">录制配置</string>
     <string name="turn_on_the_shooting_function">开启拍摄功能</string>

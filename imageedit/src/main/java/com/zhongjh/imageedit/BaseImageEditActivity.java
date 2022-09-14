@@ -50,7 +50,7 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // 默认竖型
-        setRequestedOrientation(getIntent().getIntExtra(EXTRA_IMAGE_SCREEN_ORIENTATION,SCREEN_ORIENTATION_PORTRAIT));
+        setRequestedOrientation(getIntent().getIntExtra(EXTRA_IMAGE_SCREEN_ORIENTATION, SCREEN_ORIENTATION_PORTRAIT));
         StatusBarUtils.initStatusBar(BaseImageEditActivity.this);
         super.onCreate(savedInstanceState);
         Bitmap bitmap = getBitmap();
@@ -136,6 +136,8 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
             mTextDialog = new ImageTextEditDialog(this, this);
             mTextDialog.setOnShowListener(this);
             mTextDialog.setOnDismissListener(this);
+        } else {
+            mTextDialog.setCallback(this);
         }
         mTextDialog.show();
     }

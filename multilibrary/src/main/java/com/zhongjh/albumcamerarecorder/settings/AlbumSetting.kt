@@ -90,6 +90,11 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
+    override fun slidingHiddenEnable(enable: Boolean): AlbumSetting {
+        mAlbumSpec.slidingHiddenEnable = enable
+        return this
+    }
+
     companion object {
         private const val SCALE_ZERO = 0f
         private const val SCALE_ONE = 1f

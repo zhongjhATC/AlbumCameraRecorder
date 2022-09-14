@@ -65,6 +65,11 @@ object AlbumSpec  {
     var originalEnable = false
 
     /**
+     * 是否启动相册列表滑动隐藏顶部和底部控件，上滑隐藏、下滑显示
+     */
+    var slidingHiddenEnable = false
+
+    /**
      * 最大原图size,仅当originalEnable为true的时候才有效
      */
     var originalMaxSize = 0
