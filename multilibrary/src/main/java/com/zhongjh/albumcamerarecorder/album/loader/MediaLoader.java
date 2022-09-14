@@ -12,6 +12,7 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -28,7 +29,8 @@ public class MediaLoader {
      * 来自于多媒体的数据源标记
      */
     private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");
-    private static final String GROUP_BY_BUCKET_Id = " GROUP BY (bucket_id";
+    private static final String ORDER_BY = MediaStore.Files.FileColumns._ID + " DESC";
+    private static final String GROUP_BY_BUCKET_ID = " GROUP BY (bucket_id";
     private static final String COLUMN_COUNT = "count";
     private static final String COLUMN_BUCKET_ID = "bucket_id";
     private static final String COLUMN_BUCKET_DISPLAY_NAME = "bucket_display_name";
@@ -61,6 +63,11 @@ public class MediaLoader {
                         getSelectionArgs(),
                         // 排序
                         ORDER_BY);
+                if (data != null) {
+                    int count = data.getCount();
+                    int totalCount = 0;
+                    List<LocalMediaFolder> mediaFolders = new ArrayList<>();
+                }
                 return null;
             }
 
@@ -156,7 +163,7 @@ public class MediaLoader {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return stringBuilder.toString();
         } else {
-            return stringBuilder.append(")").append(GROUP_BY_BUCKET_Id).toString();
+            return stringBuilder.append(")").append(GROUP_BY_BUCKET_ID).toString();
         }
     }
 
@@ -171,7 +178,7 @@ public class MediaLoader {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return stringBuilder.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(fileSizeCondition).toString();
         } else {
-            return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(") AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_Id).toString();
+            return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(") AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_ID).toString();
         }
     }
 
@@ -186,7 +193,7 @@ public class MediaLoader {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return stringBuilder.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" AND ").append(fileSizeCondition).toString();
         } else {
-            return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(") AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_Id).toString();
+            return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(") AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_ID).toString();
         }
     }
 
