@@ -138,7 +138,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 异步线程的逻辑
      */
     private AlbumCompressFileTask mAlbumCompressFileTask;
-    private Cursor mCursor;
 
     private ViewHolder mViewHolder;
 
