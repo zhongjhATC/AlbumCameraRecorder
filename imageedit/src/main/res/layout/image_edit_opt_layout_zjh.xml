@@ -124,8 +124,8 @@
 
         <ImageButton
             android:id="@+id/btn_undo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/z_image_color"
+            android:layout_height="@dimen/z_image_color"
             android:background="@null"
             android:contentDescription="@string/z_image_undo"
             android:onClick="onClick"

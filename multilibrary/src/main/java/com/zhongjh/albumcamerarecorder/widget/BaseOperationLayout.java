@@ -18,7 +18,6 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton;
 import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.circularprogressview.CircularProgressListener;
-import com.zhongjh.common.utils.DisplayMetricsUtils;
 
 import java.util.ArrayList;
 
@@ -102,15 +101,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
     ObjectAnimator mAnimatorCancel;
 
     /**
-     * 屏幕宽度
-     */
-    int mScreenWidth;
-    /**
-     * 屏幕高度
-     */
-    int mScreenHeight;
-
-    /**
      * 创建
      *
      * @return ViewHolder
@@ -127,25 +117,26 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
     public BaseOperationLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        int[] widthAndHeight = DisplayMetricsUtils.getScreenWidthAndHeight(context);
-        mScreenWidth = widthAndHeight[0];
-        mScreenHeight = widthAndHeight[1];
         initView();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int specModeWidth = MeasureSpec.getMode(widthMeasureSpec);
-        int specModeHeight = MeasureSpec.getMode(heightMeasureSpec);
-        int height = mScreenHeight;
-        int width = mScreenWidth;
-        height = height / 3;
-        mAnimatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -width / 4F, 0);
-        mAnimatorCancel = ObjectAnimator.ofFloat(viewHolder.btnCancel, "translationX", width / 4F, 0);
+        // 获取宽的模式
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        // 获取高的模式
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        // 获取宽的尺寸
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        // 获取高的尺寸
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        heightSize = heightSize / 3;
+        mAnimatorConfirm = ObjectAnimator.ofFloat(viewHolder.btnConfirm, "translationX", -widthSize / 4F, 0);
+        mAnimatorCancel = ObjectAnimator.ofFloat(viewHolder.btnCancel, "translationX", widthSize / 4F, 0);
 
-        setMeasuredDimension(width, height);
+        setMeasuredDimension(widthSize, heightSize);
         // 传递新创建的宽高给子控件
-        super.onMeasure(MeasureSpec.makeMeasureSpec(width, specModeWidth), MeasureSpec.makeMeasureSpec(height, specModeHeight));
+        super.onMeasure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), MeasureSpec.makeMeasureSpec(heightSize, heightMode));
     }
 
     /**
@@ -364,7 +355,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
     /**
      * 多图片拍照后显示的右侧按钮
      */
-    public void startOperaeBtnAnimatorMulti() {
+    public void startOperationBtnAnimatorMulti() {
         // 如果本身隐藏的，就显示出来
         if (viewHolder.btnConfirm.getVisibility() == View.GONE) {
             // 显示提交按钮

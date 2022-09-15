@@ -856,7 +856,7 @@ public abstract class BaseCameraFragment
         }
 
         getPhotoVideoLayout().startTipAlphaAnimation();
-        getPhotoVideoLayout().startOperaeBtnAnimatorMulti();
+        getPhotoVideoLayout().startOperationBtnAnimatorMulti();
 
         // 重置按钮，因为每次点击，都会自动关闭
         getPhotoVideoLayout().getViewHolder().btnClickOrLong.resetState();
