@@ -142,5 +142,10 @@ enum class MimeType(val mimeTypeName: String, private val extensions: Set<String
             return mimeType?.startsWith("video") ?: false
         }
 
+        @JvmStatic
+        fun isAudio(mimeType: String?): Boolean {
+            return mimeType?.startsWith("audio") ?: false
+        }
+
     }
 }

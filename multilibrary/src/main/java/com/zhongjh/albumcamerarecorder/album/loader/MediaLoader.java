@@ -1,24 +1,32 @@
 package com.zhongjh.albumcamerarecorder.album.loader;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 
+import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
+import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 调用Android系统自带方法查询图片数据库
- * 1. 每个查询条件会判断 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,如果低于Q版本则加入Group by bucket_id
+ * 1. 每个查询条件会判断 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,如果低于Q版本则加入Group by bucket_id,理由是Q版本源码改变，已经无法Group by bucket_id了
  * 2. ContentResolver().query() 会生成 "WHERE (1 = 1) AND (xxxx)",所以 GROUP_BY_BUCKET_Id 要自带一个半括号"("
+ * 3. 同时为了达到Group by效果，>= Q的版本会查询所有数据，然后进行数据分组
  *
  * @author zhongjh
  * @date 2022/9/9
@@ -47,8 +55,7 @@ public class MediaLoader {
      * @param listener
      */
     public void loadAllAlbum(OnQueryDataListener<Object> listener) {
-        new ThreadUtils.SimpleTask<ArrayList<Object>>() {
-
+        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<ArrayList<Object>>() {
             @Override
             public ArrayList<Object> doInBackground() {
                 // 查询Android数据库
@@ -66,16 +73,25 @@ public class MediaLoader {
                 if (data != null) {
                     int count = data.getCount();
                     int totalCount = 0;
-                    List<LocalMediaFolder> mediaFolders = new ArrayList<>();
+                    List<Album> albums = new ArrayList<>();
+                    if (count > 0) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            // >= Q的版本会查询所有数据，需要针对bucket_id进行分组
+
+                        } else {
+
+                        }
+
+                    }
                 }
                 return null;
             }
 
             @Override
             public void onSuccess(ArrayList<Object> result) {
-                listener.onComplete(result);
+
             }
-        };
+        });
     }
 
     /**
@@ -154,7 +170,7 @@ public class MediaLoader {
      *
      * @param durationCondition 视频的时长条件字符串
      * @param fileSizeCondition 多媒体最大值查询条件字符串
-     * @return
+     * @return 查询条件字符串 - 所有
      */
     private static String getSelectionByAllCondition(String durationCondition, String fileSizeCondition) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -232,6 +248,71 @@ public class MediaLoader {
      */
     private static String[] getSelectionArgsBySingleMediaType(int mediaType) {
         return new String[]{String.valueOf(mediaType)};
+    }
+
+    /**
+     * 根据 bucketId 和 mimeType 获取uri
+     *
+     * @param bucketId bucketId
+     * @param mimeType mimeType
+     * @return uri
+     */
+    private static Uri getRealPathUri(long bucketId, String mimeType) {
+        Uri contentUri;
+        if (MimeType.isImageOrGif(mimeType)) {
+            contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        } else if (MimeType.isVideo(mimeType)) {
+            contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        } else if (MimeType.isAudio(mimeType)) {
+            contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        } else {
+            contentUri = MediaStore.Files.getContentUri("external");
+        }
+        return ContentUris.withAppendedId(contentUri, bucketId);
+    }
+
+    /**
+     * >= Q的版本会查询所有数据，需要针对bucket_id进行分组
+     *
+     * @param data   查询出来数据源，针对该数据源进行分组
+     * @param albums 最后整理成专辑添加入该列表
+     * @return totalCount 所有照片总数，用于后面添加一个"所有"专辑计算数量
+     */
+    private int setGroupByBucketId(Cursor data, List<Album> albums) {
+        int totalCount = 0;
+        Map<Long, Long> countMap = new HashMap<>(data.getCount());
+        // data 循环移动到下一位执行逻辑 添加到countMap，如果有同个bucket_id，则value+1
+        while (data.moveToNext()) {
+            long bucketId = data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID));
+            Long newCount = countMap.get(bucketId);
+            if (newCount == null) {
+                newCount = 1L;
+            } else {
+                newCount++;
+            }
+            countMap.put(bucketId, newCount);
+        }
+
+        if (data.moveToFirst()) {
+            Set<Long> hashSet = new HashSet<>();
+            // 先执行逻辑，data再移动到下一位执行逻辑
+            do {
+                long bucketId = data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID));
+                if (hashSet.contains(bucketId)) {
+                    continue;
+                }
+                String bucketDisplayName = data.getString(data.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME));
+                String mimeType = data.getString(data.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE));
+                Uri uri = getRealPathUri(bucketId, mimeType);
+                Long size = countMap.get(bucketId);
+                size = size == null ? 0 : size;
+                Album album = new Album(String.valueOf(bucketId), uri, bucketDisplayName, size);
+                albums.add(album);
+                hashSet.add(bucketId);
+                totalCount += size;
+            } while (data.moveToNext());
+        }
+        return totalCount;
     }
 
 }

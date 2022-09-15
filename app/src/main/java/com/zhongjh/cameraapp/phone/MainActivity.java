@@ -16,6 +16,8 @@ import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
+import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
+import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
@@ -144,7 +146,21 @@ public class MainActivity extends BaseActivity {
         mBinding.btnFileSize.setOnClickListener(v -> mBinding.tvFileSize.setText(AlbumCameraRecorderApi.getFileSize(getApplication())));
 
         // 删除文件缓存 文件目录：context.getExternalCacheDir()
-        mBinding.btnDeleteFileCache.setOnClickListener(v -> AlbumCameraRecorderApi.deleteCacheDirFile(getApplication()));
+//        mBinding.btnDeleteFileCache.setOnClickListener(v -> AlbumCameraRecorderApi.deleteCacheDirFile(getApplication()));
+
+        mBinding.btnDeleteFileCache.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MediaLoader mediaLoader = new MediaLoader(getApplicationContext());
+                mediaLoader.loadAllAlbum(new OnQueryDataListener<Object>() {
+                    @Override
+                    public void onComplete(List<Object> data) {
+
+                    }
+                });
+            }
+        });
+
     }
 
     @Override
