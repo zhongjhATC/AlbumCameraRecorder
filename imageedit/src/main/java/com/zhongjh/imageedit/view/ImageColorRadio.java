@@ -52,10 +52,10 @@ public class ImageColorRadio extends AppCompatRadioButton implements ValueAnimat
     }
 
     private void initialize(Context context, AttributeSet attrs) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IMGColorRadio);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ZIMGColorRadio);
 
-        mColor = a.getColor(R.styleable.IMGColorRadio_image_color, Color.WHITE);
-        mStrokeColor = a.getColor(R.styleable.IMGColorRadio_image_stroke_color, Color.WHITE);
+        mColor = a.getColor(R.styleable.ZIMGColorRadio_z_image_color, Color.WHITE);
+        mStrokeColor = a.getColor(R.styleable.ZIMGColorRadio_z_image_stroke_color, Color.WHITE);
 
         a.recycle();
 

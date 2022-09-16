@@ -8,7 +8,7 @@
             android:name=".ImageEditActivity"
             android:launchMode="singleTask"
             android:screenOrientation="locked"
-            android:theme="@style/ImageEditTheme"
+            android:theme="@style/ZImageEditTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
 
     </application>

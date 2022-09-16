@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ImageEditTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
+    <style name="ZImageEditTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
 
-    <style name="ImageTextDialog" parent="android:Theme.Holo.Dialog">
+    <style name="ZImageTextDialog" parent="android:Theme.Holo.Dialog">
 
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
@@ -19,18 +19,18 @@
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:backgroundDimAmount">0.8</item>
 
-        <item name="android:windowAnimationStyle">@style/ImageDialogAnimation</item>
+        <item name="android:windowAnimationStyle">@style/ZImageDialogAnimation</item>
 
     </style>
 
-    <style name="ImageDialogAnimation" parent="android:Animation.Dialog">
+    <style name="ZImageDialogAnimation" parent="android:Animation.Dialog">
 
         <item name="android:windowEnterAnimation">@anim/image_dialog_enter_zjh</item>
         <item name="android:windowExitAnimation">@anim/image_dialog_exit_zjh</item>
 
     </style>
 
-    <style name="ImageGalleryTheme" parent="Theme.AppCompat">
+    <style name="ZImageGalleryTheme" parent="Theme.AppCompat">
         <item name="z_image_gallery_span_count">4</item>
         <item name="z_image_gallery_select_shade">#90FFFFFF</item>
     </style>
