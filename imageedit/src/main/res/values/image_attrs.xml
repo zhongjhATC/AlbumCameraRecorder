@@ -4,10 +4,10 @@
     <attr name="z_image_gallery_span_count" format="integer" />
     <attr name="z_image_gallery_select_shade" format="color" />
 
-    <declare-styleable name="IMGColorRadio" tools:ignore="ResourceName">
+    <declare-styleable name="ZIMGColorRadio" tools:ignore="ResourceName">
 
-        <attr name="image_color" format="color" />
-        <attr name="image_stroke_color" format="color" />
+        <attr name="z_image_color" format="color" />
+        <attr name="z_image_stroke_color" format="color" />
 
     </declare-styleable>
 
