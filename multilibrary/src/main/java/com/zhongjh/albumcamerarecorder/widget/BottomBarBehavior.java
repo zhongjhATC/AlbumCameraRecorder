@@ -37,10 +37,12 @@ public class BottomBarBehavior extends CoordinatorLayout.Behavior<ConstraintLayo
 
 
     @Override
-    public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, ConstraintLayoutBehavior child, View dependency) {
+    public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, @NonNull ConstraintLayoutBehavior child, @NonNull View dependency) {
         // 顶部的AppBarLayout是paddingTop状态栏高度的
         child.setTranslationY(Math.abs(dependency.getTop() - statusBarHeight));
-        child.getOnListener().onDependentViewChanged(Math.abs(dependency.getTop() - statusBarHeight));
+        if (child.getOnListener() != null) {
+            child.getOnListener().onDependentViewChanged(Math.abs(dependency.getTop() - statusBarHeight));
+        }
         return true;
     }
 

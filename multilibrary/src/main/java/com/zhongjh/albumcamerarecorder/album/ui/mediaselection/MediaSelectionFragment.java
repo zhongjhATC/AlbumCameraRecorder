@@ -134,6 +134,7 @@ public class MediaSelectionFragment extends Fragment implements
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setNestedScrollingEnabled(false);
 
 
         // 加载线，recyclerView加载数据

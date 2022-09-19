@@ -187,11 +187,10 @@ public class MainActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(appName)) {
                     builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked));
                 } else {
-                    StringBuilder toSettingTipStr = new StringBuilder();
-                    toSettingTipStr.append(getString(R.string.z_multi_library_in_settings_apply));
-                    toSettingTipStr.append(appName);
-                    toSettingTipStr.append(getString(R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions));
-                    builder.setMessage(toSettingTipStr.toString());
+                    String toSettingTipStr = getString(R.string.z_multi_library_in_settings_apply) +
+                            appName +
+                            getString(R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions);
+                    builder.setMessage(toSettingTipStr);
                 }
                 builder.setTitle(getString(R.string.z_multi_library_hint));
                 builder.setOnDismissListener(dialog12 -> mIsShowDialog = false);

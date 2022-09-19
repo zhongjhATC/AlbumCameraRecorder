@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
+    android:background="?android:attr/colorPrimary"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?android:attr/colorPrimary">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -55,49 +55,41 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/white"
+        android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:paddingTop="@dimen/z_media_grid_spacing"
+        android:paddingBottom="@dimen/z_media_grid_spacing" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <FrameLayout
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:visibility="visible">
 
-            <com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout
-                android:id="@+id/container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                tools:visibility="visible" />
+        <TextView
+            android:id="@+id/emptyViewContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:text="@string/z_multi_library_empty_text"
+            android:textColor="?attr/album.emptyView.textColor"
+            android:textSize="16sp"
+            app:drawableTopCompat="?attr/album.emptyView" />
 
-            <FrameLayout
-                android:id="@+id/emptyView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <TextView
-                    android:id="@+id/emptyViewContent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:drawablePadding="8dp"
-                    android:gravity="center"
-                    android:text="@string/z_multi_library_empty_text"
-                    android:textColor="?attr/album.emptyView.textColor"
-                    android:textSize="16sp"
-                    app:drawableTopCompat="?attr/album.emptyView" />
-
-            </FrameLayout>
-
-        </RelativeLayout>
-
-    </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
 
     <com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior
         android:id="@+id/bottomToolbar"

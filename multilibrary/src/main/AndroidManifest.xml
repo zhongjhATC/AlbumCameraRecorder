@@ -16,22 +16,18 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:hardwareAccelerated="true"
-            android:screenOrientation="locked"
             android:launchMode="singleTop" />
         <activity
             android:name=".preview.SelectedPreviewActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="locked"
             android:launchMode="singleTop" />
         <activity
             android:name=".preview.AlbumPreviewActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="locked"
             android:launchMode="singleTop" />
         <activity
             android:name=".camera.ui.previewvideo.PreviewVideoActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="locked"
             android:launchMode="singleTop" />
 
     </application>

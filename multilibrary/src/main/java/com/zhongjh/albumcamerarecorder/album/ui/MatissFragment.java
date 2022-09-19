@@ -31,8 +31,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -40,7 +40,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaSelectionFragment;
+import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
@@ -52,7 +52,6 @@ import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior;
-import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
@@ -72,7 +71,7 @@ import java.util.ArrayList;
  * @date 2018/8/22
  */
 public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks,
-        MediaSelectionFragment.SelectionProvider,
+        MediaViewUtil.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
     private final String TAG = MatissFragment.this.getClass().getSimpleName();
@@ -88,10 +87,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 从预览界面回来
      */
     private ActivityResultLauncher<Intent> mPreviewActivityResult;
-    /**
-     * 上一个Fragment,因为切换相册后，数据要进行一次销毁才能读取
-     */
-    MediaSelectionFragment mFragmentLast;
     /**
      * 公共配置
      */
@@ -120,6 +115,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 左上角的下拉框适配器
      */
     private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;
+
+    /**
+     * 单独处理相册数据源的类
+     */
+    private MediaViewUtil mMediaViewUtil;
 
     /**
      * 是否原图
@@ -180,6 +180,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         initView(savedInstanceState);
         initActivityResult();
         initListener();
+        initMediaViewUtil();
         return view;
     }
 
@@ -251,9 +252,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
+            mViewHolder.recyclerview.setNestedScrollingEnabled(false);
             AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mViewHolder.toolbar.getLayoutParams();
             params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
-            mViewHolder.nestedScrollView.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
+            mViewHolder.emptyView.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
+            mViewHolder.recyclerview.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
         }
     }
 
@@ -346,6 +349,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     /**
+     * 初始化MediaViewUtil
+     */
+    private void initMediaViewUtil() {
+        mMediaViewUtil = new MediaViewUtil(getActivity(), mViewHolder.recyclerview, this, this, this);
+    }
+
+    /**
      * 初始化Activity的返回
      */
     private void initActivityResult() {
@@ -373,18 +383,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                         } else {
                             // 点击了返回
                             mSelectedCollection.overwrite(selected, collectionType);
-                            Fragment mediaSelectionFragment = getChildFragmentManager().findFragmentByTag(
-                                    MediaSelectionFragment.class.getSimpleName());
-                            if (mediaSelectionFragment instanceof MediaSelectionFragment) {
-                                if (result.getData().getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_IS_EDIT, false)) {
-                                    mIsRefresh = true;
-                                    albumsSpinnerNotifyData();
-                                    // 重新读取数据源
-                                    ((MediaSelectionFragment) mediaSelectionFragment).restartLoaderMediaGrid();
-                                } else {
-                                    // 刷新数据源
-                                    ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
-                                }
+                            if (result.getData().getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_IS_EDIT, false)) {
+                                mIsRefresh = true;
+                                albumsSpinnerNotifyData();
+                                // 重新读取数据源
+                                mMediaViewUtil.restartLoaderMediaGrid();
+                            } else {
+                                // 刷新数据源
+                                mMediaViewUtil.refreshMediaGrid();
                             }
                             // 刷新底部
                             updateBottomToolbar();
@@ -410,6 +416,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
+        mMediaViewUtil.onDestroyView();
         super.onDestroy();
     }
 
@@ -530,23 +537,16 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private void onAlbumSelected(Album album) {
         if (album.isAll() && album.isEmpty()) {
             // 如果是选择全部并且没有数据的话，显示空的view
-            mViewHolder.container.setVisibility(View.GONE);
+            mViewHolder.recyclerview.setVisibility(View.GONE);
             mViewHolder.emptyView.setVisibility(View.VISIBLE);
         } else {
-            // 如果有数据，则内嵌新的fragment，并且相应相关照片
-            mViewHolder.container.setVisibility(View.VISIBLE);
+            // 如果有数据，显示相应相关照片
+            mViewHolder.recyclerview.setVisibility(View.VISIBLE);
             mViewHolder.emptyView.setVisibility(View.GONE);
             if (!mIsRefresh) {
-                assert getArguments() != null;
-                if (mFragmentLast != null) {
-                    // 在实例化新的之前，先清除旧的数据才可以查询
-                    mFragmentLast.onDestroyData();
+                if (mMediaViewUtil != null) {
+                    mMediaViewUtil.load(album);
                 }
-                mFragmentLast = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
-                getChildFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, mFragmentLast, MediaSelectionFragment.class.getSimpleName())
-                        .commitAllowingStateLoss();
             }
         }
     }
@@ -670,7 +670,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 设置是否启用界面触摸，不可禁止中断、退出
      */
     private void setControlTouchEnable(boolean enable) {
-        mViewHolder.container.setEnabled(enable);
+        mViewHolder.recyclerview.setEnabled(enable);
         // 如果不可用就显示 加载中 view,否则隐藏
         if (!enable) {
             mViewHolder.pbLoading.setVisibility(View.VISIBLE);
@@ -693,13 +693,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public Group groupOriginal;
         public TextView buttonApply;
         public ConstraintLayoutBehavior bottomToolbar;
-        public ControlTouchFrameLayout container;
         public TextView emptyViewContent;
         public FrameLayout emptyView;
         public CoordinatorLayout root;
         public ImageView imgClose;
         public ProgressBar pbLoading;
-        private final NestedScrollView nestedScrollView;
+        public RecyclerView recyclerview;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -711,13 +710,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             this.groupOriginal = rootView.findViewById(R.id.groupOriginal);
             this.buttonApply = rootView.findViewById(R.id.buttonApply);
             this.bottomToolbar = rootView.findViewById(R.id.bottomToolbar);
-            this.container = rootView.findViewById(R.id.container);
             this.emptyViewContent = rootView.findViewById(R.id.emptyViewContent);
             this.emptyView = rootView.findViewById(R.id.emptyView);
             this.root = rootView.findViewById(R.id.root);
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.pbLoading = rootView.findViewById(R.id.pbLoading);
-            this.nestedScrollView = rootView.findViewById(R.id.nestedScrollView);
+            this.recyclerview = rootView.findViewById(R.id.recyclerview);
         }
 
     }
