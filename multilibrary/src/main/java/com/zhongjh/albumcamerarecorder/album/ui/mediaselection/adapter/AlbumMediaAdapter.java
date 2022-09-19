@@ -51,7 +51,7 @@ public class AlbumMediaAdapter extends
     private final AlbumSpec mAlbumSpec;
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
-    private int mImageResize;
+    private final int mImageResize;
 
     public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, int imageResize) {
         super(null);
