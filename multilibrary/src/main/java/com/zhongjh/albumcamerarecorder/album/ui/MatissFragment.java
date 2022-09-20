@@ -241,12 +241,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
         updateBottomToolbar();
 
-        mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(mActivity, null, false);
-        mAlbumsSpinner = new AlbumsSpinner(mActivity);
+        mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(getActivity(), null, false);
+        mAlbumsSpinner = new AlbumsSpinner(getActivity());
         mAlbumsSpinner.setSelectedTextView(mViewHolder.selectedAlbum);
         mAlbumsSpinner.setPopupAnchorView(mViewHolder.toolbar);
         mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
-        mAlbumCollection.onCreate(this, this);
+        mAlbumCollection.onCreate(getActivity(), this);
         mAlbumCollection.onRestoreInstanceState(savedInstanceState);
         mAlbumCollection.loadAlbums();
 
@@ -505,7 +505,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onAlbumLoadFinished(final Cursor cursor) {
-        // 更新相册列表
+        // 更新专辑列表
         mAlbumsSpinnerAdapter.swapCursor(cursor);
         // 选择默认相册
         Handler handler = new Handler(Looper.getMainLooper());
