@@ -56,6 +56,8 @@
     <string name="z_multi_library_show_thumbnails">展现的缩略图</string>
     <string name="z_multi_library_gif_label">gif标签</string>
 
+    <string name="z_multi_library_album_num">%1$s (%2$d)</string>
+
     <!-- endregion -->
 
     <string name="z_multi_library_light_touch_take_long_press_camera">轻触拍照，长按摄像</string>

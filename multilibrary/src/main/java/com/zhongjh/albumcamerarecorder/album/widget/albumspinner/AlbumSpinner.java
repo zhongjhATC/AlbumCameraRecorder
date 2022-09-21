@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.widget;
+package com.zhongjh.albumcamerarecorder.album.widget.albumspinner;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -32,7 +32,7 @@ public class AlbumSpinner extends PopupWindow {
     private final Context context;
     private final View window;
     private RecyclerView mRecyclerView;
-    private PictureAlbumDirectoryAdapter adapter;
+    private AlbumSpinnerAdapter adapter;
     private boolean isDismiss = false;
     private ImageView ivArrowView;
     private Drawable drawableUp, drawableDown;
@@ -92,7 +92,7 @@ public class AlbumSpinner extends PopupWindow {
 
     public void initView() {
         rootViewBg = window.findViewById(R.id.rootViewBg);
-        adapter = new PictureAlbumDirectoryAdapter(config);
+        adapter = new AlbumSpinnerAdapter(config);
         mRecyclerView = window.findViewById(R.id.folder_list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         mRecyclerView.setAdapter(adapter);
@@ -105,7 +105,7 @@ public class AlbumSpinner extends PopupWindow {
 
     public void bindFolder(List<LocalMediaFolder> folders) {
         adapter.setChooseMode(chooseMode);
-        adapter.bindFolderData(folders);
+        adapter.bindAlbums(folders);
         ViewGroup.LayoutParams lp = mRecyclerView.getLayoutParams();
         lp.height = folders.size() > FOLDER_MAX_COUNT ? maxHeight : ViewGroup.LayoutParams.WRAP_CONTENT;
     }
@@ -189,7 +189,7 @@ public class AlbumSpinner extends PopupWindow {
                     }
                 }
             }
-            adapter.bindFolderData(folders);
+            adapter.bindAlbums(folders);
         } catch (Exception e) {
             e.printStackTrace();
         }
