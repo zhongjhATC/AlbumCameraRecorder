@@ -11,7 +11,7 @@
     <attr name="album.dropdown.title.color" format="reference|color" />
     <attr name="album.dropdown.count.color" format="reference|color" />
     <attr name="album.thumbnail.placeholder" format="reference|color" /> <!-- 默认图片，颜色 -->
-    <attr name="listPopupWindowStyle" format="reference" />
+    <attr name="album.listPopupWindowStyle" format="reference" /> <!-- 专辑下拉选项框的样式 -->
     <attr name="page.bg" format="reference|color" />
     <attr name="preview.bottomToolbar.back.textColor" format="reference|color" />
     <attr name="preview.bottomToolbar.apply.textColor" format="reference|color" />
@@ -24,6 +24,17 @@
     <attr name="click.long.button.inner.circle.no.operation" format="reference|color" /> <!-- 内圆的未录制时颜色 -->
     <attr name="click.long.button.inner.circle.in.operation" format="reference|color" /> <!-- 内圆的录制中时颜色 -->
     <attr name="click.button.inner.circle.in.operation.interval" format="reference|color" /> <!-- 外圈的分段录制间隔 -->
+    <!-- endregion -->
+
+    <!-- region 专辑下拉选项框的样式 -->
+    <declare-styleable name="ListPopupWindowStyle">
+        <attr name="album.backgroundStyle" format="reference"/> <!-- 专辑选项的背景样式 -->
+        <attr name="album.checkDotStyle" format="reference" /> <!-- 专辑选中时候的样式 -->
+        <attr name="album.textColor" format="reference" /> <!-- 专辑字体颜色 -->
+        <attr name="album.textSize" format="dimension" /> <!-- 专辑字体大小 -->
+        <attr name="album.arrow.up.icon" format="reference" /> <!-- 上箭头 -->
+        <attr name="album.arrow.down.icon" format="reference" /> <!-- 下箭头 -->
+    </declare-styleable>
     <!-- endregion -->
 
     <!-- region 拍照录像相关属性 -->

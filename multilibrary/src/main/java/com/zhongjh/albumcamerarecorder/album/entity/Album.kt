@@ -49,6 +49,16 @@ class Album internal constructor(
     val isEmpty: Boolean
         get() = count == 0L
 
+    /**
+     * 是否进行了选择
+     */
+    var isChecked: Boolean = false
+
+    /**
+     * 当前专辑选择了多少个图片、视频
+     */
+    var checkedNum: Int = 0
+
     companion object {
 
         const val ALBUM_ID_ALL: String = (-1).toString()

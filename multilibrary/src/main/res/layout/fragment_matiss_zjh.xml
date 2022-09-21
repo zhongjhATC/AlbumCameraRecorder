@@ -35,19 +35,55 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:srcCompat="@drawable/ic_close_white_24dp" />
 
-                <TextView
+                <View
                     android:id="@+id/selectedAlbum"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"
-                    android:drawableRight="@drawable/ic_arrow_drop_down_white_24dp"
-                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+
+                    android:id="@+id/tvAlbumTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxEms="6"
+                    android:maxLines="1"
+                    android:text="@string/z_multi_library_album_name_all"
                     android:textColor="?attr/album.element.color"
                     android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:ignore="RtlHardcoded,UseCompatTextViewDrawableXml" />
+                    app:layout_constraintEnd_toStartOf="@+id/imgArrow"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/selectedAlbum" />
+
+                <ImageView
+                    android:id="@+id/imgArrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_arrow_drop_down_white_24dp"
+                    app:layout_constraintEnd_toStartOf="@+id/selectedAlbum"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tvAlbumTitle" />
+
+                <!--                <TextView-->
+                <!--                    android:id="@+id/selectedAlbum"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="match_parent"-->
+                <!--                    android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"-->
+                <!--                    android:drawableRight="@drawable/ic_arrow_drop_down_white_24dp"-->
+                <!--                    android:foreground="?android:attr/selectableItemBackground"-->
+                <!--                    android:gravity="center"-->
+                <!--                    android:textColor="?attr/album.element.color"-->
+                <!--                    android:textSize="20sp"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    tools:ignore="RtlHardcoded,UseCompatTextViewDrawableXml" />-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

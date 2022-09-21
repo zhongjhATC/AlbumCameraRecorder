@@ -1,6 +1,8 @@
 package com.zhongjh.albumcamerarecorder.album.widget.albumspinner;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.Gravity;
@@ -15,18 +17,20 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.luck.picture.lib.R;
-import com.luck.picture.lib.adapter.PictureAlbumDirectoryAdapter;
-import com.luck.picture.lib.config.PictureSelectionConfig;
-import com.luck.picture.lib.entity.LocalMedia;
-import com.luck.picture.lib.entity.LocalMediaFolder;
-import com.luck.picture.lib.listener.OnAlbumItemClickListener;
-import com.luck.picture.lib.tools.AnimUtils;
-import com.luck.picture.lib.tools.AttrsUtils;
-import com.luck.picture.lib.tools.ScreenUtils;
+import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
+import com.zhongjh.common.utils.AnimUtils;
+import com.zhongjh.common.utils.DisplayMetricsUtils;
 
 import java.util.List;
 
+/**
+ * 专辑选项控件
+ *
+ * @author zhongjh
+ * @date 2022/9/21
+ */
 public class AlbumSpinner extends PopupWindow {
     private static final int FOLDER_MAX_COUNT = 8;
     private final Context context;
@@ -35,92 +39,59 @@ public class AlbumSpinner extends PopupWindow {
     private AlbumSpinnerAdapter adapter;
     private boolean isDismiss = false;
     private ImageView ivArrowView;
-    private Drawable drawableUp, drawableDown;
-    private final int chooseMode;
-    private final PictureSelectionConfig config;
+    private final Drawable drawableUp;
+    private final Drawable drawableDown;
     private final int maxHeight;
     private View rootViewBg;
 
+    @SuppressLint("InflateParams")
     public AlbumSpinner(Context context) {
         this.context = context;
-        this.config = PictureSelectionConfig.getInstance();
-        this.chooseMode = config.chooseMode;
-        this.window = LayoutInflater.from(context).inflate(R.layout.picture_window_folder, null);
+        this.window = LayoutInflater.from(context).inflate(R.layout.view_album_spinner_zjh, null);
         this.setContentView(window);
         this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
         this.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
-        this.setAnimationStyle(R.style.PictureThemeWindowStyle);
+        this.setAnimationStyle(R.style.AlbumSpinnerThemeStyle);
         this.setFocusable(true);
         this.setOutsideTouchable(true);
         this.update();
-        if (PictureSelectionConfig.uiStyle != null) {
-            if (PictureSelectionConfig.uiStyle.picture_top_titleArrowUpDrawable != 0) {
-                this.drawableUp = ContextCompat.getDrawable(context, PictureSelectionConfig.uiStyle.picture_top_titleArrowUpDrawable);
-            }
-            if (PictureSelectionConfig.uiStyle.picture_top_titleArrowDownDrawable != 0) {
-                this.drawableDown = ContextCompat.getDrawable(context, PictureSelectionConfig.uiStyle.picture_top_titleArrowDownDrawable);
-            }
-        } else if (PictureSelectionConfig.style != null) {
-            if (PictureSelectionConfig.style.pictureTitleUpResId != 0) {
-                this.drawableUp = ContextCompat.getDrawable(context, PictureSelectionConfig.style.pictureTitleUpResId);
-            }
-            if (PictureSelectionConfig.style.pictureTitleDownResId != 0) {
-                this.drawableDown = ContextCompat.getDrawable(context, PictureSelectionConfig.style.pictureTitleDownResId);
-            }
-        } else {
-            if (config.isWeChatStyle) {
-                this.drawableUp = ContextCompat.getDrawable(context, R.drawable.picture_icon_wechat_up);
-                this.drawableDown = ContextCompat.getDrawable(context, R.drawable.picture_icon_wechat_down);
-            } else {
-                if (config.upResId != 0) {
-                    this.drawableUp = ContextCompat.getDrawable(context, config.upResId);
-                } else {
-                    // 兼容老的Theme方式
-                    this.drawableUp = AttrsUtils.getTypeValueDrawable(context, R.attr.picture_arrow_up_icon, R.drawable.picture_icon_arrow_up);
-                }
-                if (config.downResId != 0) {
-                    this.drawableDown = ContextCompat.getDrawable(context, config.downResId);
-                } else {
-                    // 兼容老的Theme方式 picture.arrow_down.icon
-                    this.drawableDown = AttrsUtils.getTypeValueDrawable(context, R.attr.picture_arrow_down_icon, R.drawable.picture_icon_arrow_down);
-                }
-            }
-        }
-        this.maxHeight = (int) (ScreenUtils.getScreenHeight(context) * 0.6);
+
+        // 获取上下箭头两个图片
+        TypedArray typedArray = AttrsUtils.getTypedArray(context, R.attr.album_listPopupWindowStyle);
+        Drawable arrowUpIcon = typedArray.getDrawable(R.styleable.ListPopupWindowStyle_album_arrow_up_icon);
+        Drawable arrowDownIcon = typedArray.getDrawable(R.styleable.ListPopupWindowStyle_album_arrow_down_icon);
+        this.drawableUp = arrowUpIcon == null ? ContextCompat.getDrawable(context, R.drawable.ic_round_keyboard_arrow_up_24) : arrowUpIcon;
+        this.drawableDown = arrowDownIcon == null ? ContextCompat.getDrawable(context, R.drawable.ic_round_keyboard_arrow_down_24) : arrowDownIcon;
+        this.maxHeight = (int) (DisplayMetricsUtils.getScreenHeight(context) * 0.6);
         initView();
     }
 
     public void initView() {
         rootViewBg = window.findViewById(R.id.rootViewBg);
-        adapter = new AlbumSpinnerAdapter(config);
+        adapter = new AlbumSpinnerAdapter();
         mRecyclerView = window.findViewById(R.id.folder_list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         mRecyclerView.setAdapter(adapter);
-        View rootView = window.findViewById(R.id.rootView);
         rootViewBg.setOnClickListener(v -> dismiss());
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            rootView.setOnClickListener(v -> dismiss());
-        }
     }
 
-    public void bindFolder(List<LocalMediaFolder> folders) {
-        adapter.setChooseMode(chooseMode);
+    public void bindFolder(List<Album> folders) {
         adapter.bindAlbums(folders);
         ViewGroup.LayoutParams lp = mRecyclerView.getLayoutParams();
         lp.height = folders.size() > FOLDER_MAX_COUNT ? maxHeight : ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 
-    public List<LocalMediaFolder> getFolderData() {
-        return adapter.getFolderData();
+    public List<Album> getAlbums() {
+        return adapter.getAlbums();
     }
 
     public boolean isEmpty() {
-        return adapter.getFolderData().size() == 0;
+        return adapter.getAlbums().size() == 0;
     }
 
-    public LocalMediaFolder getFolder(int position) {
-        return adapter.getFolderData().size() > 0
-                && position < adapter.getFolderData().size() ? adapter.getFolderData().get(position) : null;
+    public Album getAlbum(int position) {
+        return adapter.getAlbums().size() > 0
+                && position < adapter.getAlbums().size() ? adapter.getAlbums().get(position) : null;
     }
 
     public void setArrowImageView(ImageView ivArrowView) {
@@ -165,31 +136,31 @@ public class AlbumSpinner extends PopupWindow {
         ivArrowView.setImageDrawable(drawableDown);
         AnimUtils.rotateArrow(ivArrowView, false);
         isDismiss = true;
-        FolderPopWindow.super.dismiss();
+        AlbumSpinner.super.dismiss();
         isDismiss = false;
     }
 
     /**
      * 设置选中状态
      */
-    public void updateFolderCheckStatus(List<LocalMedia> result) {
+    public void updateFolderCheckStatus(List<Album> result) {
         try {
-            List<LocalMediaFolder> folders = adapter.getFolderData();
-            int size = folders.size();
+            List<Album> albums = adapter.getAlbums();
+            int size = albums.size();
             int resultSize = result.size();
             for (int i = 0; i < size; i++) {
-                LocalMediaFolder folder = folders.get(i);
-                folder.setCheckedNum(0);
+                Album album = albums.get(i);
+                album.setCheckedNum(0);
                 for (int j = 0; j < resultSize; j++) {
-                    LocalMedia media = result.get(j);
-                    if (folder.getName().equals(media.getParentFolderName())
-                            || folder.getBucketId() == -1) {
-                        folder.setCheckedNum(1);
+                    Album media = result.get(j);
+                    if (album.getDisplayName().equals(media.getDisplayName())
+                            || "-1".equals(album.getId())) {
+                        album.setCheckedNum(1);
                         break;
                     }
                 }
             }
-            adapter.bindAlbums(folders);
+            adapter.bindAlbums(albums);
         } catch (Exception e) {
             e.printStackTrace();
         }

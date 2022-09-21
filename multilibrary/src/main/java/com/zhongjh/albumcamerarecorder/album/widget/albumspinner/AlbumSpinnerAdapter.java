@@ -1,8 +1,8 @@
 package com.zhongjh.albumcamerarecorder.album.widget.albumspinner;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,19 +29,13 @@ import java.util.List;
 public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapter.ViewHolder> {
 
     private List<Album> albums = new ArrayList<>();
-    /**
-     * 默认图片
-     */
-    private final Drawable mPlaceholder;
-
-
 
     public void bindAlbums(List<Album> albums) {
         this.albums = albums;
         notifyItemRangeChanged(0, albums.size());
     }
 
-    public List<Album> getFolderData() {
+    public List<Album> getAlbums() {
         return albums;
     }
 
@@ -57,34 +52,19 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
         Album album = albums.get(position);
         String name = album.getDisplayName();
         long imageNum = album.getCount();
-//        boolean isChecked = album.isChecked();
-//        int checkedNum = album.getCheckedNum();
-//        holder.tvSign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
-//        holder.itemView.setSelected(isChecked);
-//        if (PictureSelectionConfig.uiStyle != null) {
-//            if (PictureSelectionConfig.uiStyle.picture_album_backgroundStyle != 0) {
-//                holder.itemView.setBackgroundResource(PictureSelectionConfig.uiStyle.picture_album_backgroundStyle);
-//            }
-//        } else if (PictureSelectionConfig.style != null) {
-//            if (PictureSelectionConfig.style.pictureAlbumStyle != 0) {
-//                holder.itemView.setBackgroundResource(PictureSelectionConfig.style.pictureAlbumStyle);
-//            }
-//        }
-
+        boolean isChecked = album.isChecked();
+        int checkedNum = album.getCheckedNum();
+        holder.tvSign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
+        holder.itemView.setSelected(isChecked);
+        TypedArray typedArray = holder.itemView.getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.listPopupWindowStyle});
+        holder.itemView.setBackgroundResource(typedArray.getInt(R.styleable.PopupWindow_android_popupBackground, 0));
         GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext(),
                 holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size),
-                mPlaceholder,
-                holder.ivFirstImage, album.getCoverUri());
-
-        if (PictureSelectionConfig.imageEngine != null) {
-            PictureSelectionConfig.imageEngine.loadFolderImage(holder.itemView.getContext(),
-                    imagePath, holder.ivFirstImage);
-        }
+                holder.placeholder,
+                holder.imgFirst, album.getCoverUri());
         Context context = holder.itemView.getContext();
-        String firstTitle = album.getOfAllType() != -1 ? album.getOfAllType() == PictureMimeType.ofAudio() ?
-                context.getString(R.string.picture_all_audio)
-                : context.getString(R.string.picture_camera_roll) : name;
-        holder.tvFolderName.setText(context.getString(R.string.picture_camera_roll_num, firstTitle, imageNum));
+        String firstTitle = "所有";
+        holder.tvName.setText(context.getString(R.string.z_multi_library_album_num, firstTitle, imageNum));
         holder.itemView.setOnClickListener(view -> {
             if (onAlbumItemClickListener != null) {
                 int size = albums.size();
@@ -94,7 +74,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
                 }
                 album.setChecked(true);
                 notifyItemRangeChanged(0, albums.size());
-                onAlbumItemClickListener.onItemClick(position, album.isCameraFolder(), album.getBucketId(), album.getName(), album.getData());
+                onAlbumItemClickListener.onItemClick(position, album);
             }
         });
     }
@@ -105,45 +85,33 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivFirstImage;
-        TextView tvFolderName, tvSign;
+        ImageView imgFirst;
+        TextView tvName, tvSign;
+        /**
+         * 默认图片
+         */
+        private final Drawable placeholder;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ivFirstImage = itemView.findViewById(R.id.first_image);
-            tvFolderName = itemView.findViewById(R.id.tv_folder_name);
-            tvSign = itemView.findViewById(R.id.tv_sign);
-            if (PictureSelectionConfig.uiStyle != null) {
-                if (PictureSelectionConfig.uiStyle.picture_album_checkDotStyle != 0) {
-                    tvSign.setBackgroundResource(PictureSelectionConfig.uiStyle.picture_album_checkDotStyle);
-                }
-                if (PictureSelectionConfig.uiStyle.picture_album_textColor != 0) {
-                    tvFolderName.setTextColor(PictureSelectionConfig.uiStyle.picture_album_textColor);
-                }
-                if (PictureSelectionConfig.uiStyle.picture_album_textSize > 0) {
-                    tvFolderName.setTextSize(PictureSelectionConfig.uiStyle.picture_album_textSize);
-                }
-            } else if (PictureSelectionConfig.style != null) {
-                if (PictureSelectionConfig.style.pictureFolderCheckedDotStyle != 0) {
-                    tvSign.setBackgroundResource(PictureSelectionConfig.style.pictureFolderCheckedDotStyle);
-                }
-                if (PictureSelectionConfig.style.folderTextColor != 0) {
-                    tvFolderName.setTextColor(PictureSelectionConfig.style.folderTextColor);
-                }
-                if (PictureSelectionConfig.style.folderTextSize > 0) {
-                    tvFolderName.setTextSize(PictureSelectionConfig.style.folderTextSize);
-                }
-            } else {
-                Drawable folderCheckedDotDrawable = AttrsUtils.getTypeValueDrawable(itemView.getContext(), R.attr.picture_folder_checked_dot, R.drawable.picture_orange_oval);
-                tvSign.setBackground(folderCheckedDotDrawable);
-                int folderTextColor = AttrsUtils.getTypeValueColor(itemView.getContext(), R.attr.picture_folder_textColor);
-                if (folderTextColor != 0) {
-                    tvFolderName.setTextColor(folderTextColor);
-                }
-                float folderTextSize = AttrsUtils.getTypeValueSize(itemView.getContext(), R.attr.picture_folder_textSize);
-                if (folderTextSize > 0) {
-                    tvFolderName.setTextSize(TypedValue.COMPLEX_UNIT_PX, folderTextSize);
-                }
+            imgFirst = itemView.findViewById(R.id.imgFirst);
+            tvName = itemView.findViewById(R.id.tvName);
+            tvSign = itemView.findViewById(R.id.tvSign);
+
+            TypedArray ta = itemView.getContext().getTheme().obtainStyledAttributes(
+                    new int[]{R.attr.album_thumbnail_placeholder});
+            placeholder = ta.getDrawable(0);
+            ta.recycle();
+
+            Drawable folderCheckedDotDrawable = AttrsUtils.getTypeValueDrawable(itemView.getContext(), R.attr.album_checkDotStyle, R.drawable.ic_orange_oval);
+            tvSign.setBackground(folderCheckedDotDrawable);
+            int folderTextColor = AttrsUtils.getTypeValueColor(itemView.getContext(), R.attr.album_textColor);
+            if (folderTextColor != 0) {
+                tvName.setTextColor(folderTextColor);
+            }
+            float folderTextSize = AttrsUtils.getTypeValueSize(itemView.getContext(), R.attr.album_textSize);
+            if (folderTextSize > 0) {
+                tvName.setTextSize(TypedValue.COMPLEX_UNIT_PX, folderTextSize);
             }
         }
     }

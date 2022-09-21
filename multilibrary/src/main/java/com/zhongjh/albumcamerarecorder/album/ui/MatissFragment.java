@@ -46,6 +46,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
+import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
@@ -111,6 +112,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 专辑下拉框控件
      */
     private AlbumsSpinner mAlbumsSpinner;
+    private AlbumSpinner mAlbumSpinner;
     /**
      * 左上角的下拉框适配器
      */
@@ -246,6 +248,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumsSpinner.setSelectedTextView(mViewHolder.selectedAlbum);
         mAlbumsSpinner.setPopupAnchorView(mViewHolder.toolbar);
         mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
+
+        mAlbumSpinner = new AlbumSpinner(mActivity);
+        mAlbumSpinner.setArrowImageView(mIvArrow);
+
         mAlbumCollection.onCreate(getActivity(), this);
         mAlbumCollection.onRestoreInstanceState(savedInstanceState);
         mAlbumCollection.loadAlbums();
