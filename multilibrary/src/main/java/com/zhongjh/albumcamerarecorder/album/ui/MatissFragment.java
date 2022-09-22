@@ -11,14 +11,11 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -44,7 +41,6 @@ import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
-import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
 import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
@@ -111,12 +107,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     /**
      * 专辑下拉框控件
      */
-    private AlbumsSpinner mAlbumsSpinner;
     private AlbumSpinner mAlbumSpinner;
-    /**
-     * 左上角的下拉框适配器
-     */
-    private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;
 
     /**
      * 单独处理相册数据源的类
@@ -135,11 +126,15 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     /**
      * 压缩异步线程
      */
-    ThreadUtils.SimpleTask<ArrayList<LocalFile>> mCompressFileTask;
+    private ThreadUtils.SimpleTask<ArrayList<LocalFile>> mCompressFileTask;
     /**
      * 异步线程的逻辑
      */
     private AlbumCompressFileTask mAlbumCompressFileTask;
+    /**
+     * 专辑Cursor转换Album实体
+     */
+    private ThreadUtils.SimpleTask<ArrayList<Album>> mCursorToAlbum;
 
     private ViewHolder mViewHolder;
 
@@ -243,14 +238,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
         updateBottomToolbar();
 
-        mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(getActivity(), null, false);
-        mAlbumsSpinner = new AlbumsSpinner(getActivity());
-        mAlbumsSpinner.setSelectedTextView(mViewHolder.selectedAlbum);
-        mAlbumsSpinner.setPopupAnchorView(mViewHolder.toolbar);
-        mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
-
         mAlbumSpinner = new AlbumSpinner(mActivity);
-        mAlbumSpinner.setArrowImageView(mIvArrow);
+        mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
+//        mAlbumSpinner.setOnAlbumItemClickListener(this);
 
         mAlbumCollection.onCreate(getActivity(), this);
         mAlbumCollection.onRestoreInstanceState(savedInstanceState);
@@ -273,24 +263,24 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 关闭事件
         mViewHolder.imgClose.setOnClickListener(v -> mActivity.finish());
 
-        // 下拉框选择的时候
-        mAlbumsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                // 设置缓存值
-                mAlbumCollection.setStateCurrentSelection(position);
-                // 移动数据光标到绝对位置
-                mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
-                // 获取该位置的专辑
-                Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
-                onAlbumSelected(album);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+//        // 下拉框选择的时候
+//        mAlbumsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+//                // 设置缓存值
+//                mAlbumCollection.setStateCurrentSelection(position);
+//                // 移动数据光标到绝对位置
+//                mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
+//                // 获取该位置的专辑
+//                Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
+//                onAlbumSelected(album);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
 
         // 预览事件
         mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {
@@ -511,23 +501,46 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     @Override
     public void onAlbumLoadFinished(final Cursor cursor) {
-        // 更新专辑列表
-        mAlbumsSpinnerAdapter.swapCursor(cursor);
-        // 选择默认相册
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> {
-            cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
-            mAlbumsSpinner.setSelection(mContext,
-                    mAlbumCollection.getCurrentSelection());
-            Album album = Album.valueOf(cursor);
-            onAlbumSelected(album);
-        });
+        if (mCursorToAlbum != null) {
+            // 取消当前的线程，重新运行
+            mCursorToAlbum.cancel();
+        }
+        mCursorToAlbum = new ThreadUtils.SimpleTask<ArrayList<Album>>() {
+            @Override
+            public ArrayList<Album> doInBackground() {
+                ArrayList<Album> items = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    items.add(Album.valueOf(cursor));
+                }
+                cursor.close();
+                return items;
+            }
+
+            @Override
+            public void onSuccess(ArrayList<Album> result) {
+                // 更新专辑列表
+                mAlbumSpinner.bindFolder(result);
+                // 可能因为别的原因销毁当前界面，回到当前选择的位置
+                mAlbumSpinner.dismiss();
+                Album album = result.get(mAlbumCollection.getCurrentSelection());
+                String displayName = album.getDisplayName(mContext);
+                if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {
+                    mViewHolder.tvAlbumTitle.setText(displayName);
+                } else {
+                    mViewHolder.tvAlbumTitle.setAlpha(0.0f);
+                    mViewHolder.tvAlbumTitle.setVisibility(View.VISIBLE);
+                    mViewHolder.tvAlbumTitle.setText(displayName);
+                    mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(mContext.getResources().getInteger(
+                            android.R.integer.config_longAnimTime)).start();
+                }
+                onAlbumSelected(album);
+            }
+        };
+        ThreadUtils.executeByIo(mCursorToAlbum);
     }
 
     @Override
     public void onAlbumReset() {
-        // 重置相册列表
-        mAlbumsSpinnerAdapter.swapCursor(null);
     }
 
     public void albumsSpinnerNotifyData() {
@@ -691,7 +704,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     public static class ViewHolder {
         public View rootView;
-        public TextView selectedAlbum;
+        public View selectedAlbum;
+        public TextView tvAlbumTitle;
+        public ImageView imgArrow;
         public Toolbar toolbar;
         public TextView buttonPreview;
         public CheckRadioView original;
@@ -709,6 +724,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public ViewHolder(View rootView) {
             this.rootView = rootView;
             this.selectedAlbum = rootView.findViewById(R.id.selectedAlbum);
+            this.tvAlbumTitle = rootView.findViewById(R.id.tvAlbumTitle);
+            this.imgArrow = rootView.findViewById(R.id.imgArrow);
             this.toolbar = rootView.findViewById(R.id.toolbar);
             this.buttonPreview = rootView.findViewById(R.id.buttonPreview);
             this.original = rootView.findViewById(R.id.original);

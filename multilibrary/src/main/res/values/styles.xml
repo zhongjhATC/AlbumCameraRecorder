@@ -43,6 +43,8 @@
         <item name="album.checkDotStyle">@drawable/ic_orange_oval</item> <!-- 专辑选中时候的样式 -->
         <item name="album.textColor">@color/text_color_4d</item> <!-- 专辑字体颜色 -->
         <item name="album.textSize">16sp</item> <!-- 专辑字体大小 -->
+<!--        <attr name="album.arrow.up.icon"></attr> &lt;!&ndash; 上箭头 &ndash;&gt;-->
+<!--        <attr name="album.arrow.down.icon"></attr> &lt;!&ndash; 下箭头 &ndash;&gt;-->
     </style>
 
     <!-- endregion ===================================== Theme Blue ===================================== -->

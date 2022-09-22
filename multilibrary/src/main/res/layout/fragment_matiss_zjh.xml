@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
-    android:background="?android:attr/colorPrimary"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorPrimary">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -37,14 +37,15 @@
 
                 <View
                     android:id="@+id/selectedAlbum"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/imgArrow"
+                    app:layout_constraintStart_toStartOf="@+id/tvAlbumTitle"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-
                     android:id="@+id/tvAlbumTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -53,37 +54,27 @@
                     android:gravity="center"
                     android:maxEms="6"
                     android:maxLines="1"
+                    android:paddingStart="18dp"
                     android:text="@string/z_multi_library_album_name_all"
                     android:textColor="?attr/album.element.color"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toStartOf="@+id/imgArrow"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/selectedAlbum" />
+                    app:layout_constraintStart_toEndOf="parent"
+                    tools:ignore="RtlSymmetry" />
 
                 <ImageView
                     android:id="@+id/imgArrow"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
+                    android:paddingEnd="18dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_arrow_drop_down_white_24dp"
-                    app:layout_constraintEnd_toStartOf="@+id/selectedAlbum"
+                    app:layout_constraintEnd_toStartOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tvAlbumTitle" />
-
-                <!--                <TextView-->
-                <!--                    android:id="@+id/selectedAlbum"-->
-                <!--                    android:layout_width="wrap_content"-->
-                <!--                    android:layout_height="match_parent"-->
-                <!--                    android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"-->
-                <!--                    android:drawableRight="@drawable/ic_arrow_drop_down_white_24dp"-->
-                <!--                    android:foreground="?android:attr/selectableItemBackground"-->
-                <!--                    android:gravity="center"-->
-                <!--                    android:textColor="?attr/album.element.color"-->
-                <!--                    android:textSize="20sp"-->
-                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-                <!--                    app:layout_constraintStart_toStartOf="parent"-->
-                <!--                    tools:ignore="RtlHardcoded,UseCompatTextViewDrawableXml" />-->
+                    app:layout_constraintStart_toEndOf="@+id/tvAlbumTitle"
+                    tools:ignore="ContentDescription,RtlSymmetry" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -92,17 +83,17 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:background="@color/white"
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:visibility="gone"
-        tools:visibility="visible"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:paddingTop="@dimen/z_media_grid_spacing"
-        android:paddingBottom="@dimen/z_media_grid_spacing" />
+        android:paddingBottom="@dimen/z_media_grid_spacing"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:visibility="visible" />
 
     <FrameLayout
         android:id="@+id/emptyView"
@@ -152,9 +143,9 @@
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/groupOriginal"
-            app:constraint_referenced_ids="originalLayout,original,tvOriginal"
             android:layout_width="0dp"
-            android:layout_height="0dp"/>
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="originalLayout,original,tvOriginal" />
 
         <View
             android:id="@+id/originalLayout"
@@ -172,9 +163,9 @@
             android:id="@+id/original"
             android:layout_width="32dp"
             android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
             android:paddingStart="16dp"
             android:paddingEnd="0dp"
-            android:layout_gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvOriginal"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -189,9 +180,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
+            android:enabled="true"
             android:paddingStart="0dp"
             android:paddingEnd="16dp"
-            android:enabled="true"
             android:text="@string/z_multi_library_button_original"
             android:textColor="?attr/bottomToolbar.preview.textColor"
             android:textSize="14sp"

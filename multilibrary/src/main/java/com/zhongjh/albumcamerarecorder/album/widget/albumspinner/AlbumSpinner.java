@@ -58,10 +58,16 @@ public class AlbumSpinner extends PopupWindow {
 
         // 获取上下箭头两个图片
         TypedArray typedArray = AttrsUtils.getTypedArray(context, R.attr.album_listPopupWindowStyle);
-        Drawable arrowUpIcon = typedArray.getDrawable(R.styleable.ListPopupWindowStyle_album_arrow_up_icon);
-        Drawable arrowDownIcon = typedArray.getDrawable(R.styleable.ListPopupWindowStyle_album_arrow_down_icon);
-        this.drawableUp = arrowUpIcon == null ? ContextCompat.getDrawable(context, R.drawable.ic_round_keyboard_arrow_up_24) : arrowUpIcon;
-        this.drawableDown = arrowDownIcon == null ? ContextCompat.getDrawable(context, R.drawable.ic_round_keyboard_arrow_down_24) : arrowDownIcon;
+        if (typedArray.hasValue(R.styleable.ListPopupWindowStyle_album_arrow_up_icon)) {
+            this.drawableUp = typedArray.getDrawable(R.styleable.ListPopupWindowStyle_album_arrow_up_icon);
+        } else {
+            this.drawableUp = ContextCompat.getDrawable(context, R.drawable.ic_round_keyboard_arrow_up_24);
+        }
+        if (typedArray.hasValue(R.styleable.ListPopupWindowStyle_album_arrow_down_icon)) {
+            this.drawableDown = typedArray.getDrawable(R.styleable.ListPopupWindowStyle_album_arrow_down_icon);
+        } else {
+            this.drawableDown = ContextCompat.getDrawable(context, R.drawable.ic_round_keyboard_arrow_down_24);
+        }
         this.maxHeight = (int) (DisplayMetricsUtils.getScreenHeight(context) * 0.6);
         initView();
     }
@@ -75,10 +81,10 @@ public class AlbumSpinner extends PopupWindow {
         rootViewBg.setOnClickListener(v -> dismiss());
     }
 
-    public void bindFolder(List<Album> folders) {
-        adapter.bindAlbums(folders);
+    public void bindFolder(List<Album> albums) {
+        adapter.bindAlbums(albums);
         ViewGroup.LayoutParams lp = mRecyclerView.getLayoutParams();
-        lp.height = folders.size() > FOLDER_MAX_COUNT ? maxHeight : ViewGroup.LayoutParams.WRAP_CONTENT;
+        lp.height = albums.size() > FOLDER_MAX_COUNT ? maxHeight : ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 
     public List<Album> getAlbums() {

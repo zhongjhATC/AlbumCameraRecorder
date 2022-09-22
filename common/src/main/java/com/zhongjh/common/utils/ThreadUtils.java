@@ -893,16 +893,14 @@ public final class ThreadUtils {
      *
      * @param tasks The tasks to cancel.
      */
-    public static void cancel(final List<Task> tasks) {
+    public static void cancel(final List<Task<?>> tasks) {
         if (tasks != null && tasks.size() != 0) {
-            for (Task task : tasks) {
+            for (Task<?> task : tasks) {
                 if (task == null) {
                     continue;
                 }
                 task.cancel();
             }
-        } else {
-            return;
         }
     }
 
