@@ -11,12 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,25 +104,28 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
             TypedValue typedValue = new TypedValue();
             itemView.getContext().getTheme().resolveAttribute(R.attr.album_listPopupWindowStyle, typedValue, true);
 
-            // 获取这四个属性
-            int[] attribute = new int[]{R.attr.album_backgroundStyle, R.attr.album_checkDotStyle, R.attr.album_textColor, R.attr.album_textSize};
-            TypedArray array = itemView.getContext().getTheme().obtainStyledAttributes(typedValue.resourceId, attribute);
-            int backgroundStyle = array.getColor(0, 0);
+            // item背景
+            int backgroundStyle = AttrsUtils.getTypeValueColor(itemView.getContext(), typedValue.resourceId,
+                    R.attr.album_backgroundStyle);
             if (backgroundStyle != 0) {
                 itemView.setBackgroundColor(backgroundStyle);
             }
-            Drawable folderCheckedDotDrawable = array.getDrawable(1);
-            if (folderCheckedDotDrawable == null) {
-                folderCheckedDotDrawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_orange_oval);
-            }
+
+            // 该专辑里面有图片被选择时
+            Drawable folderCheckedDotDrawable = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId,
+                    R.attr.album_checkDotStyle, R.drawable.ic_orange_oval);
             tvSign.setBackground(folderCheckedDotDrawable);
 
-            int folderTextColor = array.getColor(2, 0);
+            // 专辑字体颜色
+            int folderTextColor = AttrsUtils.getTypeValueColor(itemView.getContext(), typedValue.resourceId,
+                    R.attr.album_textColor);
             if (folderTextColor != 0) {
                 tvName.setTextColor(folderTextColor);
             }
 
-            int folderTextSize = array.getDimensionPixelSize(3, 0);
+            // 专辑字体大小
+            int folderTextSize = AttrsUtils.getTypeValueSizeForInt(itemView.getContext(), typedValue.resourceId,
+                    R.attr.album_textSize);
             if (folderTextSize != 0) {
                 tvName.setTextSize(TypedValue.COMPLEX_UNIT_PX, folderTextSize);
             }
