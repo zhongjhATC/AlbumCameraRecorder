@@ -240,7 +240,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         mAlbumSpinner = new AlbumSpinner(mActivity);
         mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
-//        mAlbumSpinner.setOnAlbumItemClickListener(this);
+        mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
 
         mAlbumCollection.onCreate(getActivity(), this);
         mAlbumCollection.onRestoreInstanceState(savedInstanceState);
@@ -263,24 +263,16 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         // 关闭事件
         mViewHolder.imgClose.setOnClickListener(v -> mActivity.finish());
 
-//        // 下拉框选择的时候
-//        mAlbumsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-//                // 设置缓存值
-//                mAlbumCollection.setStateCurrentSelection(position);
-//                // 移动数据光标到绝对位置
-//                mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
-//                // 获取该位置的专辑
-//                Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
-//                onAlbumSelected(album);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
+        // 下拉框选择的时候
+        mAlbumSpinner.setOnAlbumItemClickListener((position, album) -> {
+//            // 设置缓存值
+//            mAlbumCollection.setStateCurrentSelection(position);
+//            // 移动数据光标到绝对位置
+//            mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
+//            // 获取该位置的专辑
+//            Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
+//            onAlbumSelected(album);
+        });
 
         // 预览事件
         mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {

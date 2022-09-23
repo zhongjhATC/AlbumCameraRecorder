@@ -74,12 +74,17 @@ class Album internal constructor(
             val bucketDisplayName =
                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
             val count = cursor.getLong(cursor.getColumnIndex(AlbumLoader.COLUMN_COUNT))
-            return Album(
+            val album = Album(
                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID)),
                 Uri.parse(column ?: ""),
                 bucketDisplayName ?: "",
                 count
             )
+            // 设置默认第一个是选择所有
+            if (album.isAll) {
+                album.isChecked = true
+            }
+            return album
         }
     }
 }

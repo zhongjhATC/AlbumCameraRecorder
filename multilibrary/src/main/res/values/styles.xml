@@ -79,8 +79,7 @@
         <item name="preview.bottomToolbar.apply.textColor">
             @color/dracula_preview_bottom_toolbar_apply_zjh
         </item>
-        <item name="android:listPopupWindowStyle">@style/Popup.Dracula</item>
-        <item name="listPopupWindowStyle">@style/Popup.Dracula</item>
+        <item name="album.listPopupWindowStyle">@style/Popup.Dracula</item>
         <item name="capture.textColor">@color/dracula_capture</item>
         <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
 
@@ -100,8 +99,10 @@
     <style name="Popup.Dracula" parent="">
         <item name="album.backgroundStyle">@color/dracula_album_popup_bg</item> <!-- 专辑选项的背景样式 -->
         <item name="album.checkDotStyle">@drawable/ic_orange_oval</item> <!-- 专辑选中时候的样式 -->
-        <item name="album.textColor">@color/text_color_4d</item> <!-- 专辑字体颜色 -->
+        <item name="album.textColor">@color/white</item> <!-- 专辑字体颜色 -->
         <item name="album.textSize">16sp</item> <!-- 专辑字体大小 -->
+        <item name="album.arrow.up.icon">@drawable/ic_orange_oval</item> <!-- 专辑字体大小 -->
+        <item name="album.arrow.down.icon">@drawable/ic_orange_oval</item> <!-- 专辑字体大小 -->
     </style>
 
     <!-- endregion ===================================== Theme Dracula ===================================== -->

@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
+import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
 
 /**
@@ -18,8 +19,9 @@ public class AttrsUtils {
     /**
      * 获取TypedArray集合，做完相关操作记得释放
      * TypedArray.recycle();
+     *
      * @param context 上下文
-     * @param attr 资源
+     * @param attr    资源
      * @return TypedArray
      */
     public static TypedArray getTypedArray(Context context, int attr) {
@@ -153,6 +155,25 @@ public class AttrsUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return drawable == null ? ContextCompat.getDrawable(context, defaultResId) : drawable;
+    }
+
+    /**
+     * 通过resId获取资源系列，再获取它里面的某个资源
+     * attrs drawable
+     *
+     * @param context      上下文
+     * @param resId        资源系列一套
+     * @param attr         需要获取资源的id
+     * @param defaultResId 默认图片id
+     * @return 图片id
+     */
+    public static Drawable getTypeValueDrawable(Context context, @StyleRes int resId, int attr, int defaultResId) {
+        Drawable drawable;
+        int[] attribute = new int[]{attr};
+        TypedArray array = context.getTheme().obtainStyledAttributes(resId, attribute);
+        drawable = array.getDrawable(0);
+        array.recycle();
         return drawable == null ? ContextCompat.getDrawable(context, defaultResId) : drawable;
     }
 

@@ -27,7 +27,7 @@
     <!-- endregion -->
 
     <!-- region 专辑下拉选项框的样式 -->
-    <declare-styleable name="ListPopupWindowStyle">
+    <declare-styleable name="album.listPopupWindowStyle">
         <attr name="album.backgroundStyle" format="reference"/> <!-- 专辑选项的背景样式 -->
         <attr name="album.checkDotStyle" format="reference" /> <!-- 专辑选中时候的样式 -->
         <attr name="album.textColor" format="reference" /> <!-- 专辑字体颜色 -->

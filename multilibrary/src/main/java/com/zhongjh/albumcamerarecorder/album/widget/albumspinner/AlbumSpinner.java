@@ -2,9 +2,9 @@ package com.zhongjh.albumcamerarecorder.album.widget.albumspinner;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,8 +39,9 @@ public class AlbumSpinner extends PopupWindow {
     private AlbumSpinnerAdapter adapter;
     private boolean isDismiss = false;
     private ImageView ivArrowView;
-    private final Drawable drawableUp;
-    private final Drawable drawableDown;
+    private TextView tvAlbumTitle;
+    private Drawable drawableUp;
+    private Drawable drawableDown;
     private final int maxHeight;
     private View rootViewBg;
 
@@ -57,17 +58,12 @@ public class AlbumSpinner extends PopupWindow {
         this.update();
 
         // 获取上下箭头两个图片
-        TypedArray typedArray = AttrsUtils.getTypedArray(context, R.attr.album_listPopupWindowStyle);
-        if (typedArray.hasValue(R.styleable.ListPopupWindowStyle_album_arrow_up_icon)) {
-            this.drawableUp = typedArray.getDrawable(R.styleable.ListPopupWindowStyle_album_arrow_up_icon);
-        } else {
-            this.drawableUp = ContextCompat.getDrawable(context, R.drawable.ic_round_keyboard_arrow_up_24);
-        }
-        if (typedArray.hasValue(R.styleable.ListPopupWindowStyle_album_arrow_down_icon)) {
-            this.drawableDown = typedArray.getDrawable(R.styleable.ListPopupWindowStyle_album_arrow_down_icon);
-        } else {
-            this.drawableDown = ContextCompat.getDrawable(context, R.drawable.ic_round_keyboard_arrow_down_24);
-        }
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.album_listPopupWindowStyle, typedValue, true);
+        this.drawableUp = AttrsUtils.getTypeValueDrawable(context, typedValue.resourceId,
+                R.attr.album_arrow_up_icon, R.drawable.ic_round_keyboard_arrow_up_24);
+        this.drawableDown = AttrsUtils.getTypeValueDrawable(context, typedValue.resourceId,
+                R.attr.album_arrow_down_icon, R.drawable.ic_round_keyboard_arrow_down_24);
         this.maxHeight = (int) (DisplayMetricsUtils.getScreenHeight(context) * 0.6);
         initView();
     }
@@ -102,6 +98,12 @@ public class AlbumSpinner extends PopupWindow {
 
     public void setArrowImageView(ImageView ivArrowView) {
         this.ivArrowView = ivArrowView;
+        this.ivArrowView.setOnClickListener(v -> albumSpinnerOnClick());
+    }
+
+    public void setTitleTextView(TextView tvAlbumTitle) {
+        this.tvAlbumTitle = tvAlbumTitle;
+        this.tvAlbumTitle.setOnClickListener(v -> albumSpinnerOnClick());
     }
 
     @Override
@@ -169,6 +171,17 @@ public class AlbumSpinner extends PopupWindow {
             adapter.bindAlbums(albums);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 自动绑定相关View显示本身
+     */
+    public void albumSpinnerOnClick() {
+        if (this.isShowing()) {
+            this.dismiss();
+        } else {
+            this.showAsDropDown(tvAlbumTitle);
         }
     }
 }

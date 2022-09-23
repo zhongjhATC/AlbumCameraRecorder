@@ -11,12 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,21 +50,18 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Album album = albums.get(position);
-        String name = album.getDisplayName();
+        String name = album.getDisplayName(holder.itemView.getContext());
         long imageNum = album.getCount();
         boolean isChecked = album.isChecked();
         int checkedNum = album.getCheckedNum();
         holder.tvSign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
         holder.itemView.setSelected(isChecked);
-        TypedArray typedArray = holder.itemView.getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.listPopupWindowStyle});
-        holder.itemView.setBackgroundResource(typedArray.getInt(R.styleable.PopupWindow_android_popupBackground, 0));
         GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext(),
                 holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size),
                 holder.placeholder,
                 holder.imgFirst, album.getCoverUri());
         Context context = holder.itemView.getContext();
-        String firstTitle = "所有";
-        holder.tvName.setText(context.getString(R.string.z_multi_library_album_num, firstTitle, imageNum));
+        holder.tvName.setText(context.getString(R.string.z_multi_library_album_num, name, imageNum));
         holder.itemView.setOnClickListener(view -> {
             if (onAlbumItemClickListener != null) {
                 int size = albums.size();
@@ -73,7 +70,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
                     item.setChecked(false);
                 }
                 album.setChecked(true);
-                notifyItemRangeChanged(0, albums.size());
+                notifyItemRangeChanged(0, albums.size(), 0);
                 onAlbumItemClickListener.onItemClick(position, album);
             }
         });
@@ -103,14 +100,30 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
             placeholder = ta.getDrawable(0);
             ta.recycle();
 
-            Drawable folderCheckedDotDrawable = AttrsUtils.getTypeValueDrawable(itemView.getContext(), R.attr.album_checkDotStyle, R.drawable.ic_orange_oval);
+            // 获取下拉框的样式集合
+            TypedValue typedValue = new TypedValue();
+            itemView.getContext().getTheme().resolveAttribute(R.attr.album_listPopupWindowStyle, typedValue, true);
+
+            // 获取这四个属性
+            int[] attribute = new int[]{R.attr.album_backgroundStyle, R.attr.album_checkDotStyle, R.attr.album_textColor, R.attr.album_textSize};
+            TypedArray array = itemView.getContext().getTheme().obtainStyledAttributes(typedValue.resourceId, attribute);
+            int backgroundStyle = array.getColor(0, 0);
+            if (backgroundStyle != 0) {
+                itemView.setBackgroundColor(backgroundStyle);
+            }
+            Drawable folderCheckedDotDrawable = array.getDrawable(1);
+            if (folderCheckedDotDrawable == null) {
+                folderCheckedDotDrawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_orange_oval);
+            }
             tvSign.setBackground(folderCheckedDotDrawable);
-            int folderTextColor = AttrsUtils.getTypeValueColor(itemView.getContext(), R.attr.album_textColor);
+
+            int folderTextColor = array.getColor(2, 0);
             if (folderTextColor != 0) {
                 tvName.setTextColor(folderTextColor);
             }
-            float folderTextSize = AttrsUtils.getTypeValueSize(itemView.getContext(), R.attr.album_textSize);
-            if (folderTextSize > 0) {
+
+            int folderTextSize = array.getDimensionPixelSize(3, 0);
+            if (folderTextSize != 0) {
                 tvName.setTextSize(TypedValue.COMPLEX_UNIT_PX, folderTextSize);
             }
         }
