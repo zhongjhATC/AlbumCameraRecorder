@@ -26,6 +26,12 @@
     <attr name="click.button.inner.circle.in.operation.interval" format="reference|color" /> <!-- 外圈的分段录制间隔 -->
     <!-- endregion -->
 
+    <!-- region 底部 TabLayout 有关样式 -->
+    <attr name="tabLayout.bg" format="reference|color" /> <!-- 底部背景颜色 -->
+    <attr name="tabLayout.unselected.textColor" format="reference|color" /> <!-- 未选择时.文本颜色 -->
+    <attr name="tabLayout.selected.textColor" format="reference|color" /> <!-- 选择时.文本颜色 -->
+    <!-- endregion -->
+
     <!-- region 拍照录像相关属性 -->
 
     <declare-styleable name="OperationButtonZhongjh">
