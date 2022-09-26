@@ -71,7 +71,6 @@
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_arrow_drop_down_white_24dp"
                     app:layout_constraintEnd_toStartOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/tvAlbumTitle"

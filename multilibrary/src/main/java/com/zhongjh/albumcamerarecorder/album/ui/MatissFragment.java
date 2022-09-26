@@ -513,7 +513,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 // 更新专辑列表
                 mAlbumSpinner.bindFolder(result);
                 // 可能因为别的原因销毁当前界面，回到当前选择的位置
-                mAlbumSpinner.dismiss();
                 Album album = result.get(mAlbumCollection.getCurrentSelection());
                 String displayName = album.getDisplayName(mContext);
                 if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {

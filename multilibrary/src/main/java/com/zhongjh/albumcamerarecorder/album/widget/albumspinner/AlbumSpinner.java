@@ -98,6 +98,7 @@ public class AlbumSpinner extends PopupWindow {
 
     public void setArrowImageView(ImageView ivArrowView) {
         this.ivArrowView = ivArrowView;
+        this.ivArrowView.setImageDrawable(drawableDown);
         this.ivArrowView.setOnClickListener(v -> albumSpinnerOnClick());
     }
 
