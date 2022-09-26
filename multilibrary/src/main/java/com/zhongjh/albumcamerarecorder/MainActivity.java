@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -32,6 +33,7 @@ import com.zhongjh.albumcamerarecorder.album.MainFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.utils.HandleOnKeyUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
@@ -231,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
         if (!mIsInit) {
             mVpPager = findViewById(R.id.viewPager);
             mTabLayout = findViewById(R.id.tableLayout);
+            initTabLayoutStyle();
             adapterViewPager = new MyPagerAdapter(this, mSpec);
             mVpPager.setAdapter(adapterViewPager);
             mVpPager.setOffscreenPageLimit(3);
@@ -249,6 +252,27 @@ public class MainActivity extends AppCompatActivity {
                 mVpPager.setUserInputEnabled(false);
             }
             mIsInit = true;
+        }
+    }
+
+    /**
+     * 设置TabLayout样式
+     */
+    private void initTabLayoutStyle() {
+        TypedValue typedValue = new TypedValue();
+        this.getTheme().resolveAttribute(R.attr.main_tabLayout, typedValue, true);
+
+        int tabLayoutBg = AttrsUtils.getTypeValueColor(this, typedValue.resourceId,
+                R.attr.tabLayout_bg_zjh);
+        int tabLayoutUnselectedTextColor = AttrsUtils.getTypeValueColor(this, typedValue.resourceId,
+                R.attr.tabLayout_unselected_textColor);
+        int tabLayoutSelectedTextColor = AttrsUtils.getTypeValueColor(this, typedValue.resourceId,
+                R.attr.tabLayout_selected_textColor);
+        if (tabLayoutBg != 0) {
+            mTabLayout.setBackgroundColor(tabLayoutBg);
+        }
+        if (tabLayoutUnselectedTextColor != 0 && tabLayoutSelectedTextColor != 0) {
+            mTabLayout.setTabTextColors(tabLayoutUnselectedTextColor,tabLayoutSelectedTextColor);
         }
     }
 

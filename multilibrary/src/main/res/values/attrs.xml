@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <attr name="main.tabLayout" format="reference" /> <!-- 首页的底部的tabLayout样式 -->
     <attr name="toolbar.zhongjh" format="reference" />
     <attr name="album.element.color" format="reference|color" /> <!-- title文本颜色 -->
     <attr name="bottomToolbar.bg" format="reference|color" /> <!-- 底部背景颜色 -->
@@ -27,6 +28,9 @@
     <!-- endregion -->
 
     <!-- region 专辑下拉选项框的样式 -->
+    <!-- endregion -->
+
+    <!-- region 专辑下拉选项框的样式 -->
     <declare-styleable name="album.listPopupWindowStyle">
         <attr name="album.backgroundStyle" format="reference"/> <!-- 专辑选项的背景样式 -->
         <attr name="album.checkDotStyle" format="reference" /> <!-- 专辑选中时候的样式 -->
@@ -38,9 +42,11 @@
     <!-- endregion -->
 
     <!-- region 底部 TabLayout 有关样式 -->
-    <attr name="tabLayout.bg" format="reference|color" /> <!-- 底部背景颜色 -->
-    <attr name="tabLayout.unselected.textColor" format="reference|color" /> <!-- 未选择时.文本颜色 -->
-    <attr name="tabLayout.selected.textColor" format="reference|color" /> <!-- 选择时.文本颜色 -->
+    <declare-styleable name="main.tabLayout">
+        <attr name="tabLayout.bg.zjh" format="reference|color" /> <!-- 底部背景颜色 -->
+        <attr name="tabLayout.unselected.textColor" format="reference|color" /> <!-- 未选择时.文本颜色 -->
+        <attr name="tabLayout.selected.textColor" format="reference|color" /> <!-- 选择时.文本颜色 -->
+    </declare-styleable>
     <!-- endregion -->
 
     <!-- region 拍照录像相关属性 -->
