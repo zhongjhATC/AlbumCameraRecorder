@@ -105,11 +105,9 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
             itemView.getContext().getTheme().resolveAttribute(R.attr.album_listPopupWindowStyle, typedValue, true);
 
             // item背景
-            int backgroundStyle = AttrsUtils.getTypeValueColor(itemView.getContext(), typedValue.resourceId,
-                    R.attr.album_backgroundStyle);
-            if (backgroundStyle != 0) {
-                itemView.setBackgroundColor(backgroundStyle);
-            }
+            Drawable backgroundStyle = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId,
+                    R.attr.album_backgroundStyle, R.drawable.spinner_item_select_bg_white);
+            itemView.setBackground(backgroundStyle);
 
             // 该专辑里面有图片被选择时
             Drawable folderCheckedDotDrawable = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId,

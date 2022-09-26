@@ -18,7 +18,8 @@
     <color name="dracula_primary">#263237</color>
     <color name="dracula_primary_dark">#1D282C</color>
 
-    <color name="dracula_album_popup_bg">#34474E</color>
+    <color name="dracula_album_popup_bg">#F034474E</color>
+    <color name="dracula_album_popup_bg_select">#E0263237</color>
     <color name="dracula_album_dropdown_title_text">#DEFFFFFF</color>
     <color name="dracula_album_dropdown_count_text">#89FFFFFF</color>
     <color name="dracula_album_dropdown_thumbnail_placeholder">#455A64</color>
