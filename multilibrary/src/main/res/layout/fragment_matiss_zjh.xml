@@ -46,6 +46,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    app:layout_constraintVertical_chainStyle="packed"
                     android:id="@+id/tvAlbumTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -64,11 +65,11 @@
                     tools:ignore="RtlSymmetry" />
 
                 <ImageView
+                    android:layout_marginStart="8dp"
                     android:id="@+id/imgArrow"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
-                    android:paddingEnd="18dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_arrow_drop_down_white_24dp"
                     app:layout_constraintEnd_toStartOf="parent"

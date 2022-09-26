@@ -73,10 +73,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private TabLayoutMediator mLayoutMediator;
     /**
-     * viewPager
-     */
-    private ViewPager2 mVpPager;
-    /**
      * 默认索引
      */
     private int mDefaultPosition;
@@ -231,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void init() {
         if (!mIsInit) {
-            mVpPager = findViewById(R.id.viewPager);
+            ViewPager2 mVpPager = findViewById(R.id.viewPager);
             mTabLayout = findViewById(R.id.tableLayout);
             initTabLayoutStyle();
             adapterViewPager = new MyPagerAdapter(this, mSpec);
