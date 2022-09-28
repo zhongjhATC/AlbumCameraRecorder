@@ -265,13 +265,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
         // 下拉框选择的时候
         mAlbumSpinner.setOnAlbumItemClickListener((position, album) -> {
-//            // 设置缓存值
-//            mAlbumCollection.setStateCurrentSelection(position);
-//            // 移动数据光标到绝对位置
-//            mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
-//            // 获取该位置的专辑
-//            Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
-//            onAlbumSelected(album);
+            // 设置缓存值
+            mAlbumCollection.setStateCurrentSelection(position);
+            onAlbumSelected(album);
+            mAlbumSpinner.dismiss();
         });
 
         // 预览事件
