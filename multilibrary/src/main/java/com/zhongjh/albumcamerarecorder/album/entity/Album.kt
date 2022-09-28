@@ -40,6 +40,30 @@ class Album internal constructor(
         } else displayName
     }
 
+    fun equalsAlbum(album: Album): Boolean {
+        // coverUri
+        if (coverUri != album.coverUri) {
+            return false
+        }
+        // displayName
+        if (displayName != album.displayName) {
+            return false
+        }
+        // count
+        if (count != album.count) {
+            return false
+        }
+        // isChecked
+        if (isChecked != album.isChecked) {
+            return false
+        }
+        // checkedNum
+        if (checkedNum != album.checkedNum) {
+            return false
+        }
+        return true
+    }
+
     /**
      * 判断如果id = -1的话，就是查询全部的意思
      * @return 是否全部

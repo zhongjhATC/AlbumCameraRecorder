@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -31,8 +32,11 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
     private List<Album> albums = new ArrayList<>();
 
     public void bindAlbums(List<Album> albums) {
+        List<Album> oldAlbums = this.albums;
         this.albums = albums;
-        notifyItemRangeChanged(0, albums.size());
+        // 计算新老数据集差异，将差异更新到Adapter
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new AlbumCallback(oldAlbums, albums));
+        diffResult.dispatchUpdatesTo(this);
     }
 
     public List<Album> getAlbums() {
