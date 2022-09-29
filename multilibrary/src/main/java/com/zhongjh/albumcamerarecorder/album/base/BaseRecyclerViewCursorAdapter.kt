@@ -74,11 +74,9 @@ abstract class BaseRecyclerViewCursorAdapter<VH : RecyclerView.ViewHolder?>  :
             return
         }
         if (newCursor != null) {
-            notifyItemRangeRemoved(0, itemCount)
             cursor = newCursor
             mRowIdColumn = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
-            notifyItemRangeInserted(0,itemCount)
-//            notifyItemRangeChanged(0, itemCount)
+            notifyDataSetChanged()
         } else {
             notifyItemRangeRemoved(0, itemCount)
             cursor = null
