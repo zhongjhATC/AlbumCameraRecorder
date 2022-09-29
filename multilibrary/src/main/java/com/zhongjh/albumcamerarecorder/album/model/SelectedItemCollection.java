@@ -55,7 +55,7 @@ public class SelectedItemCollection {
 
     private final Context mContext;
     /**
-     * 数据源
+     * 选择数据源
      */
     private ArrayList<MultiMedia> mItems;
     /**
@@ -86,6 +86,7 @@ public class SelectedItemCollection {
             // 获取缓存的数据
             List<MultiMedia> saved = bundle.getParcelableArrayList(STATE_SELECTION);
             if (saved != null) {
+                Log.d("onSaveInstanceState",saved.size() + " onCreate");
                 if (isAllowRepeat) {
                     mItems = new ArrayList<>();
                     mItems.addAll(saved);
@@ -96,6 +97,7 @@ public class SelectedItemCollection {
 
             mCollectionType = bundle.getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
         }
+        Log.d("onSaveInstanceState",mItems.size() + " onCreate2");
     }
 
     /**
@@ -105,6 +107,7 @@ public class SelectedItemCollection {
      */
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(STATE_SELECTION, mItems);
+        Log.d("onSaveInstanceState",mItems.size() + " onSaveInstanceState");
         outState.putInt(STATE_COLLECTION_TYPE, mCollectionType);
     }
 
@@ -117,6 +120,7 @@ public class SelectedItemCollection {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, mItems);
         bundle.putInt(STATE_COLLECTION_TYPE, mCollectionType);
+        Log.d("onSaveInstanceState",mItems.size() + " getDataWithBundle");
         return bundle;
     }
 
@@ -126,6 +130,7 @@ public class SelectedItemCollection {
      * @param item 数据
      */
     public boolean add(MultiMedia item) {
+        Log.d("onSaveInstanceState",mItems.size() + " add");
         boolean added = mItems.add(item);
         // 如果只选中了图片Item， mCollectionType设置为COLLECTION_IMAGE
         // 如果只选中了图片影音资源，mCollectionType设置为COLLECTION_IMAGE
@@ -178,6 +183,7 @@ public class SelectedItemCollection {
                 }
             }
         }
+        Log.d("onSaveInstanceState",mItems.size() + " remove");
         return removed;
     }
 
@@ -195,6 +201,7 @@ public class SelectedItemCollection {
         }
         mItems.clear();
         mItems.addAll(items);
+        Log.d("onSaveInstanceState",mItems.size() + " overwrite");
     }
 
     /**
@@ -218,6 +225,7 @@ public class SelectedItemCollection {
             LocalFile localFile = new LocalFile(item);
             localFiles.add(localFile);
         }
+        Log.d("onSaveInstanceState",mItems.size() + " asListOfLocalFile");
         return localFiles;
     }
 
@@ -228,6 +236,7 @@ public class SelectedItemCollection {
         for (MultiMedia item : mItems) {
             updateMultiMediaPath(item);
         }
+        Log.d("onSaveInstanceState",mItems.size() + " updatePath");
     }
 
     /**
@@ -238,6 +247,7 @@ public class SelectedItemCollection {
      */
     private void updateMultiMediaPath(MultiMedia multiMedia) {
         multiMedia.analysesUriSetPathAndOriginalPath(mContext);
+        Log.d("onSaveInstanceState",mItems.size() + " updateMultiMediaPath");
     }
 
     /**
@@ -257,6 +267,7 @@ public class SelectedItemCollection {
      * @return 弹窗
      */
     public IncapableCause isAcceptable(MultiMedia item) {
+        Log.d("onSaveInstanceState",mItems.size() + " isAcceptable");
         boolean maxSelectableReached = false;
         int maxSelectable = 0;
         String type = "";
@@ -367,6 +378,7 @@ public class SelectedItemCollection {
      * @return boolean
      */
     public boolean maxSelectableReached() {
+        Log.d("onSaveInstanceState",mItems.size() + " maxSelectableReached");
         return mItems.size() == currentMaxSelectable();
     }
 
@@ -383,6 +395,7 @@ public class SelectedItemCollection {
                 mSelectedVideoCount++;
             }
         }
+        Log.d("onSaveInstanceState",mItems.size() + " getSelectCount");
     }
 
     /**
@@ -408,6 +421,7 @@ public class SelectedItemCollection {
 
         }
 
+        Log.d("onSaveInstanceState",mItems.size() + " currentMaxSelectable");
         return leastCount;
     }
 

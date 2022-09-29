@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.ui.mediaselection;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -72,6 +73,7 @@ public class MediaViewUtil implements
         // 需要先设置布局获取确定的spanCount，才能设置adapter
         mAdapter = new AlbumMediaAdapter(mActivity,
                 mSelectionProvider.provideSelectedItemCollection(), getImageResize());
+        Log.d("onSaveInstanceState"," mAdapter");
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);
         mAdapter.setHasStableIds(true);
