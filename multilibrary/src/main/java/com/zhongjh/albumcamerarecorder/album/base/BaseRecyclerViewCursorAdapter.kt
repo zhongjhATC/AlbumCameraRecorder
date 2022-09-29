@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @author zhongjh
  * @param <VH>
 </VH> */
-abstract class BaseRecyclerViewCursorAdapter<VH : RecyclerView.ViewHolder?> protected constructor(c: Cursor?) :
+abstract class BaseRecyclerViewCursorAdapter<VH : RecyclerView.ViewHolder?>  :
     RecyclerView.Adapter<VH>() {
     protected var cursor: Cursor? = null
         private set
@@ -74,10 +74,11 @@ abstract class BaseRecyclerViewCursorAdapter<VH : RecyclerView.ViewHolder?> prot
             return
         }
         if (newCursor != null) {
+            notifyItemRangeRemoved(0, itemCount)
             cursor = newCursor
             mRowIdColumn = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
-            // notify the observers about the new cursor
-            notifyDataSetChanged()
+            notifyItemRangeInserted(0,itemCount)
+//            notifyItemRangeChanged(0, itemCount)
         } else {
             notifyItemRangeRemoved(0, itemCount)
             cursor = null
@@ -90,7 +91,5 @@ abstract class BaseRecyclerViewCursorAdapter<VH : RecyclerView.ViewHolder?> prot
     }
 
     init {
-        setHasStableIds(true)
-        swapCursor(c)
     }
 }

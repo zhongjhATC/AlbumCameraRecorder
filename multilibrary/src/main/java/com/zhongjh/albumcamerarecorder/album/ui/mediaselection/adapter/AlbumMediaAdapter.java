@@ -54,7 +54,7 @@ public class AlbumMediaAdapter extends
     private final int mImageResize;
 
     public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, int imageResize) {
-        super(null);
+        super();
         mAlbumSpec = AlbumSpec.INSTANCE;
         mSelectedCollection = selectedCollection;
 

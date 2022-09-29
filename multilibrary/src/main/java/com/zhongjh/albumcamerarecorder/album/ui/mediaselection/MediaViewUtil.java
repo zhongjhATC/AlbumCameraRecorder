@@ -66,19 +66,23 @@ public class MediaViewUtil implements
         } else {
             spanCount = albumSpec.getSpanCount();
         }
+        // 删除动画
+        mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity.getApplicationContext(), spanCount));
         // 需要先设置布局获取确定的spanCount，才能设置adapter
         mAdapter = new AlbumMediaAdapter(mActivity,
                 mSelectionProvider.provideSelectedItemCollection(), getImageResize());
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);
+        mAdapter.setHasStableIds(true);
         mRecyclerView.setHasFixedSize(true);
-
 
         // 加载线，recyclerView加载数据
         int spacing = mActivity.getResources().getDimensionPixelSize(R.dimen.z_media_grid_spacing);
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
         mRecyclerView.setAdapter(mAdapter);
+
+
         mAlbumMediaCollection.onCreate(mActivity, new AlbumMediaCollection.AlbumMediaCallbacks() {
 
             /**
