@@ -29,9 +29,29 @@ class MainFragment : BaseFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        Log.d("MainFragment", "onDestroyView")
+        val matissFragment = childFragmentManager.findFragmentByTag("matissFragment")
+        if (matissFragment != null) {
+            childFragmentManager
+                    .beginTransaction().remove(matissFragment)
+        }
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        Log.d("MainFragment", "onDestroy")
+        val matissFragment = childFragmentManager.findFragmentByTag("matissFragment")
+        if (matissFragment != null) {
+            childFragmentManager
+                    .beginTransaction().remove(matissFragment)
+        }
+        super.onDestroy()
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         Log.d("MainFragment", "onCreateView")
         return inflater.inflate(R.layout.fragment_containerview_zjh, container, false)
@@ -41,13 +61,13 @@ class MainFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("MainFragment", "onViewCreated")
         val matissFragment = MatissFragment.newInstance(
-            arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
-                ?: 0
+                arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
+                        ?: 0
         )
         childFragmentManager
-            .beginTransaction()
-            .add(R.id.fragmentContainerView, matissFragment)
-            .commit()
+                .beginTransaction()
+                .add(R.id.fragmentContainerView, matissFragment!!, "matissFragment")
+                .commit()
     }
 
 }
