@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
@@ -268,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
             mTabLayout.setBackgroundColor(tabLayoutBg);
         }
         if (tabLayoutUnselectedTextColor != 0 && tabLayoutSelectedTextColor != 0) {
-            mTabLayout.setTabTextColors(tabLayoutUnselectedTextColor,tabLayoutSelectedTextColor);
+            mTabLayout.setTabTextColors(tabLayoutUnselectedTextColor, tabLayoutSelectedTextColor);
         }
     }
 
@@ -463,6 +464,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment createFragment(int position) {
             if (mTitles.get(position).equals(getString(R.string.z_multi_library_album))) {
+                Log.d("MainActivity", "createFragment");
                 if (numItems <= 1) {
                     return MainFragment.Companion.newInstance(0);
                 }

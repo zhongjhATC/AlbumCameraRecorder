@@ -169,7 +169,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("onSaveInstanceState"," onCreateView");
+        Log.d(TAG,"onSaveInstanceState onCreateView");
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
         this.view = view;
         mViewHolder = new ViewHolder(view);
@@ -233,7 +233,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (navigationIcon != null) {
             ColorFilterUtil.setColorFilterSrcIn(navigationIcon, color);
         }
-        Log.d("onSaveInstanceState"," initView");
+        Log.d(TAG,"onSaveInstanceState initView");
         mSelectedCollection.onCreate(savedInstanceState, false);
         if (savedInstanceState != null) {
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
