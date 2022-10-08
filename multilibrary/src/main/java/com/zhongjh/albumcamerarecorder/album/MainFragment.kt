@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,11 +33,13 @@ class MainFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("MainFragment", "onCreateView")
         return inflater.inflate(R.layout.fragment_containerview_zjh, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("MainFragment", "onViewCreated")
         val matissFragment = MatissFragment.newInstance(
             arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
                 ?: 0

@@ -484,6 +484,7 @@ public class MainActivity extends AppCompatActivity {
         public int getItemCount() {
             return numItems;
         }
+
     }
 
 }
