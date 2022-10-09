@@ -27,6 +27,8 @@ class MainFragment : BaseFragment() {
             args.putInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM, marginBottom)
             return mainFragment
         }
+
+        val MATISS_FRAGMENT_TAG = "matissFragment"
     }
 
     override fun onCreateView(
@@ -40,14 +42,16 @@ class MainFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("MainFragment", "onViewCreated")
-        var matissFragment = childFragmentManager.findFragmentByTag("matissFragment")
-        if (matissFragment == null) {
-            matissFragment = MatissFragment.newInstance(
+        // 先通过标签形式查找
+        val matissFragment = childFragmentManager.findFragmentByTag(MATISS_FRAGMENT_TAG)
+        // 如果不存在，则重新创建并添加，如果已经存在就不用处理了，因为FragmentStateAdapter已经帮我们处理了
+        matissFragment ?: let {
+            val newMatissFragment = MatissFragment.newInstance(
                     arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
                             ?: 0
             )
             childFragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainerView, matissFragment!!, "matissFragment")
+                    .add(R.id.fragmentContainerView, newMatissFragment, MATISS_FRAGMENT_TAG)
                     .commitAllowingStateLoss()
         }
     }
