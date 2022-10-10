@@ -60,7 +60,7 @@ import java.util.Set;
  *
  * @author zhongjh
  */
-public class MainActivity extends BaseActivity  implements AlbumCollection.AlbumCallbacks {
+public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivityTEST";
 
@@ -151,30 +151,7 @@ public class MainActivity extends BaseActivity  implements AlbumCollection.Album
 
         // 删除文件缓存 文件目录：context.getExternalCacheDir()
         mBinding.btnDeleteFileCache.setOnClickListener(v -> AlbumCameraRecorderApi.deleteCacheDirFile(getApplication()));
-
-
-        mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(this, null, false);
-        mAlbumsSpinner = new AlbumsSpinner(this);
-        mAlbumsSpinner.setSelectedTextView(mBinding.selectedAlbum);
-        mAlbumsSpinner.setPopupAnchorView(mBinding.ll);
-        mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
-        mAlbumCollection.onCreate(this, this);
-        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
-        mAlbumCollection.loadAlbums();
     }
-
-    /**
-     * 专辑下拉数据源
-     */
-    private final AlbumCollection mAlbumCollection = new AlbumCollection();
-    /**
-     * 专辑下拉框控件
-     */
-    private AlbumsSpinner mAlbumsSpinner;
-    /**
-     * 左上角的下拉框适配器
-     */
-    private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;
 
     @Override
     protected void onDestroy() {
@@ -683,24 +660,5 @@ public class MainActivity extends BaseActivity  implements AlbumCollection.Album
             return false;
         });
         popupMenu.show();
-    }
-
-    @Override
-    public void onAlbumLoadFinished(Cursor cursor) {
-        // 更新专辑列表
-        mAlbumsSpinnerAdapter.swapCursor(cursor);
-        // 选择默认相册
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> {
-            cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
-            mAlbumsSpinner.setSelection(MainActivity.this,
-                    mAlbumCollection.getCurrentSelection());
-        });
-    }
-
-    @Override
-    public void onAlbumReset() {
-        // 重置相册列表
-        mAlbumsSpinnerAdapter.swapCursor(null);
     }
 }
