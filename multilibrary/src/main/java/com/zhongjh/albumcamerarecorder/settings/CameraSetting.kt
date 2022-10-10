@@ -12,6 +12,7 @@ import com.zhongjh.common.coordinator.VideoMergeCoordinator
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
+import java.lang.ref.WeakReference
 
 /**
  * 有关拍摄界面的动态设置
@@ -36,7 +37,7 @@ class CameraSetting : CameraSettingApi {
      * 每次使用要重新赋值，因为会在每次关闭界面后删除该Fragment
      */
     var baseCameraFragment: BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter>? =
-        null
+            null
 
     override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter>): CameraSetting {
         this.baseCameraFragment = baseCameraFragment
@@ -135,12 +136,12 @@ class CameraSetting : CameraSettingApi {
     }
 
     override fun setOnCameraViewListener(listener: OnCameraViewListener): CameraSetting {
-        mCameraSpec.onCameraViewListener = listener
+        mCameraSpec.onCameraViewListener = WeakReference(listener).get()
         return this
     }
 
     override fun setOnCaptureListener(listener: OnCaptureListener): CameraSetting {
-        mCameraSpec.onCaptureListener = listener
+        mCameraSpec.onCaptureListener = WeakReference(listener).get()
         return this
     }
 
