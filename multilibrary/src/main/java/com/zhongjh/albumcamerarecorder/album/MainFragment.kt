@@ -28,7 +28,7 @@ class MainFragment : BaseFragment() {
             return mainFragment
         }
 
-        val MATISS_FRAGMENT_TAG = "matissFragment"
+        const val MATISS_FRAGMENT_TAG = "matissFragment"
     }
 
     override fun onCreateView(

@@ -20,8 +20,7 @@
             android:elevation="1dp"
             android:theme="?attr/toolbar.zhongjh"
             app:layout_scrollFlags="scroll|enterAlways"
-            tools:layout_height="50dp"
-            tools:targetApi="lollipop">
+            tools:layout_height="50dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -132,7 +131,7 @@
             android:id="@+id/buttonPreview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackground"
             android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
@@ -152,7 +151,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackground"
             android:orientation="horizontal"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="@+id/tvOriginal"
@@ -197,7 +196,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackground"
             android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"

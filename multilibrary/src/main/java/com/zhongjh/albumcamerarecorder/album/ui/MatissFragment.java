@@ -62,7 +62,8 @@ import com.zhongjh.common.widget.IncapableDialog;
 import java.util.ArrayList;
 
 /**
- * 相册
+ * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
+ * 相册列表具体功能是在MediaViewUtil实现
  *
  * @author zhongjh
  * @date 2018/8/22
@@ -169,7 +170,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG,"onSaveInstanceState onCreateView");
+        Log.d(TAG, "onSaveInstanceState onCreateView");
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
         this.view = view;
         mViewHolder = new ViewHolder(view);
@@ -233,7 +234,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (navigationIcon != null) {
             ColorFilterUtil.setColorFilterSrcIn(navigationIcon, color);
         }
-        Log.d(TAG,"onSaveInstanceState initView");
+        Log.d(TAG, "onSaveInstanceState initView");
         mSelectedCollection.onCreate(savedInstanceState, false);
         if (savedInstanceState != null) {
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
@@ -339,7 +340,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 初始化MediaViewUtil
      */
     private void initMediaViewUtil() {
-        Log.d("onSaveInstanceState"," initMediaViewUtil");
+        Log.d("onSaveInstanceState", " initMediaViewUtil");
         mMediaViewUtil = new MediaViewUtil(getActivity(), mViewHolder.recyclerview, this, this, this);
     }
 
@@ -391,11 +392,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mSelectedCollection.onSaveInstanceState(outState);
+        mAlbumCollection.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG,"MatissFragment onDestroy");
+        Log.d(TAG, "MatissFragment onDestroy");
         if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
             mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(MatissFragment.this.getClass());
             mGlobalSpec.setVideoCompressCoordinator(null);
@@ -557,6 +559,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (!mIsRefresh) {
                 if (mMediaViewUtil != null) {
                     mMediaViewUtil.load(album);
+                    mViewHolder.tvAlbumTitle.setText(album.getDisplayName(mContext));
                 }
             }
         }
