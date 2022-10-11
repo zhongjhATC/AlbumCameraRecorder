@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
 import com.zhongjh.common.utils.AnimUtils;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +35,7 @@ import java.util.List;
  */
 public class AlbumSpinner extends PopupWindow {
     private static final int FOLDER_MAX_COUNT = 8;
+
     private final Context context;
     private final View window;
     private RecyclerView mRecyclerView;
@@ -40,8 +43,8 @@ public class AlbumSpinner extends PopupWindow {
     private boolean isDismiss = false;
     private ImageView ivArrowView;
     private TextView tvAlbumTitle;
-    private Drawable drawableUp;
-    private Drawable drawableDown;
+    private final Drawable drawableUp;
+    private final Drawable drawableDown;
     private final int maxHeight;
     private View rootViewBg;
 
@@ -150,7 +153,7 @@ public class AlbumSpinner extends PopupWindow {
     }
 
     /**
-     * 设置选中状态
+     * 设置选中状态 - 红色圆点
      */
     public void updateFolderCheckStatus(List<Album> result) {
         try {
@@ -173,6 +176,22 @@ public class AlbumSpinner extends PopupWindow {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 设置选中状态
+     */
+    public void updateCheckStatus(List<Album> selects) {
+        List<Album> albums = adapter.getAlbums();
+        for (Album album : albums) {
+            for (Album select : selects) {
+                if (select.getDisplayName().equals(album.getDisplayName())) {
+                    album.setChecked(true);
+                    break;
+                }
+            }
+        }
+        adapter.bindAlbums(albums);
     }
 
     /**

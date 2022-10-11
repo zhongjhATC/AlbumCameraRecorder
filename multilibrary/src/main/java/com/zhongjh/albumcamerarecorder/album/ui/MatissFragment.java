@@ -183,6 +183,13 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mSelectedCollection.onSaveInstanceState(outState);
+        mAlbumCollection.onSaveInstanceState(outState);
+    }
+
     /**
      * 初始化配置
      */
@@ -389,13 +396,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mSelectedCollection.onSaveInstanceState(outState);
-        mAlbumCollection.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onDestroy() {
         Log.d(TAG, "MatissFragment onDestroy");
         if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
@@ -517,6 +517,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                 mAlbumSpinner.bindFolder(result);
                 // 可能因为别的原因销毁当前界面，回到当前选择的位置
                 Album album = result.get(mAlbumCollection.getCurrentSelection());
+                ArrayList<Album> albumChecks = new ArrayList<>();
+                albumChecks.add(album);
+                mAlbumSpinner.updateCheckStatus(albumChecks);
                 String displayName = album.getDisplayName(mContext);
                 if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {
                     mViewHolder.tvAlbumTitle.setText(displayName);

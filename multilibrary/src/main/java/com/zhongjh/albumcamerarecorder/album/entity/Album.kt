@@ -104,10 +104,6 @@ class Album internal constructor(
                 bucketDisplayName ?: "",
                 count
             )
-            // 设置默认第一个是选择所有
-            if (album.isAll) {
-                album.isChecked = true
-            }
             return album
         }
     }
