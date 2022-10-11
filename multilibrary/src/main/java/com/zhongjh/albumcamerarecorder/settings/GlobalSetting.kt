@@ -182,7 +182,7 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
     }
 
     override fun setOnImageCompressionInterface(listener: ImageCompressionInterface): GlobalSetting {
-        mGlobalSpec.imageCompressionInterface = listener
+        mGlobalSpec.imageCompressionInterface = WeakReference(listener).get()
         return this
     }
 

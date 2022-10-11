@@ -5,6 +5,7 @@ import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener
 import com.zhongjh.albumcamerarecorder.settings.api.AlbumSettingApi
 import com.zhongjh.common.enums.MimeType
+import java.lang.ref.WeakReference
 import java.util.*
 
 /**
@@ -81,12 +82,12 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
     }
 
     override fun setOnSelectedListener(listener: OnSelectedListener): AlbumSetting {
-        mAlbumSpec.onSelectedListener = listener
+        mAlbumSpec.onSelectedListener = WeakReference(listener).get()
         return this
     }
 
     override fun setOnCheckedListener(listener: OnCheckedListener): AlbumSetting {
-        mAlbumSpec.onCheckedListener = listener
+        mAlbumSpec.onCheckedListener = WeakReference(listener).get()
         return this
     }
 

@@ -11,14 +11,11 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -31,8 +28,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -40,19 +37,18 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaSelectionFragment;
+import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
-import com.zhongjh.albumcamerarecorder.album.widget.AlbumsSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
-import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
+import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
+import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior;
-import com.zhongjh.albumcamerarecorder.widget.ControlTouchFrameLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
@@ -66,13 +62,14 @@ import com.zhongjh.common.widget.IncapableDialog;
 import java.util.ArrayList;
 
 /**
- * 相册
+ * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
+ * 相册列表具体功能是在MediaViewUtil实现
  *
  * @author zhongjh
  * @date 2018/8/22
  */
 public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks,
-        MediaSelectionFragment.SelectionProvider,
+        MediaViewUtil.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
     private final String TAG = MatissFragment.this.getClass().getSimpleName();
@@ -88,10 +85,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 从预览界面回来
      */
     private ActivityResultLauncher<Intent> mPreviewActivityResult;
-    /**
-     * 上一个Fragment,因为切换相册后，数据要进行一次销毁才能读取
-     */
-    MediaSelectionFragment mFragmentLast;
     /**
      * 公共配置
      */
@@ -115,11 +108,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     /**
      * 专辑下拉框控件
      */
-    private AlbumsSpinner mAlbumsSpinner;
+    private AlbumSpinner mAlbumSpinner;
+
     /**
-     * 左上角的下拉框适配器
+     * 单独处理相册数据源的类
      */
-    private AlbumsSpinnerAdapter mAlbumsSpinnerAdapter;
+    private MediaViewUtil mMediaViewUtil;
 
     /**
      * 是否原图
@@ -133,11 +127,15 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     /**
      * 压缩异步线程
      */
-    ThreadUtils.SimpleTask<ArrayList<LocalFile>> mCompressFileTask;
+    private ThreadUtils.SimpleTask<ArrayList<LocalFile>> mCompressFileTask;
     /**
      * 异步线程的逻辑
      */
     private AlbumCompressFileTask mAlbumCompressFileTask;
+    /**
+     * 专辑Cursor转换Album实体
+     */
+    private ThreadUtils.SimpleTask<ArrayList<Album>> mCursorToAlbum;
 
     private ViewHolder mViewHolder;
 
@@ -177,7 +175,15 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         initView(savedInstanceState);
         initActivityResult();
         initListener();
+        initMediaViewUtil();
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mSelectedCollection.onSaveInstanceState(outState);
+        mAlbumCollection.onSaveInstanceState(outState);
     }
 
     /**
@@ -237,20 +243,21 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         }
         updateBottomToolbar();
 
-        mAlbumsSpinnerAdapter = new AlbumsSpinnerAdapter(mActivity, null, false);
-        mAlbumsSpinner = new AlbumsSpinner(mActivity);
-        mAlbumsSpinner.setSelectedTextView(mViewHolder.selectedAlbum);
-        mAlbumsSpinner.setPopupAnchorView(mViewHolder.toolbar);
-        mAlbumsSpinner.setAdapter(mAlbumsSpinnerAdapter);
-//        mAlbumCollection.onCreate(this, this);
-//        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
-//        mAlbumCollection.loadAlbums();
+        mAlbumSpinner = new AlbumSpinner(mActivity);
+        mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
+        mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
+
+        mAlbumCollection.onCreate(getActivity(), this);
+        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
+        mAlbumCollection.loadAlbums();
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
+            mViewHolder.recyclerview.setNestedScrollingEnabled(false);
             AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mViewHolder.toolbar.getLayoutParams();
             params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
-            mViewHolder.nestedScrollView.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
+            mViewHolder.emptyView.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
+            mViewHolder.recyclerview.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
         }
     }
 
@@ -262,22 +269,11 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mViewHolder.imgClose.setOnClickListener(v -> mActivity.finish());
 
         // 下拉框选择的时候
-        mAlbumsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                // 设置缓存值
-                mAlbumCollection.setStateCurrentSelection(position);
-                // 移动数据光标到绝对位置
-                mAlbumsSpinnerAdapter.getCursor().moveToPosition(position);
-                // 获取该位置的专辑
-                Album album = Album.valueOf(mAlbumsSpinnerAdapter.getCursor());
-                onAlbumSelected(album);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+        mAlbumSpinner.setOnAlbumItemClickListener((position, album) -> {
+            // 设置缓存值
+            mAlbumCollection.setStateCurrentSelection(position);
+            onAlbumSelected(album);
+            mAlbumSpinner.dismiss();
         });
 
         // 预览事件
@@ -343,6 +339,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     /**
+     * 初始化MediaViewUtil
+     */
+    private void initMediaViewUtil() {
+        Log.d("onSaveInstanceState", " initMediaViewUtil");
+        mMediaViewUtil = new MediaViewUtil(getActivity(), mViewHolder.recyclerview, this, this, this);
+    }
+
+    /**
      * 初始化Activity的返回
      */
     private void initActivityResult() {
@@ -370,18 +374,14 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                         } else {
                             // 点击了返回
                             mSelectedCollection.overwrite(selected, collectionType);
-                            Fragment mediaSelectionFragment = getChildFragmentManager().findFragmentByTag(
-                                    MediaSelectionFragment.class.getSimpleName());
-                            if (mediaSelectionFragment instanceof MediaSelectionFragment) {
-                                if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_IS_EDIT, false)) {
-                                    mIsRefresh = true;
-                                    albumsSpinnerNotifyData();
-                                    // 重新读取数据源
-                                    ((MediaSelectionFragment) mediaSelectionFragment).restartLoaderMediaGrid();
-                                } else {
-                                    // 刷新数据源
-                                    ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
-                                }
+                            if (result.getData().getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_IS_EDIT, false)) {
+                                mIsRefresh = true;
+                                albumsSpinnerNotifyData();
+                                // 重新读取数据源
+                                mMediaViewUtil.restartLoaderMediaGrid();
+                            } else {
+                                // 刷新数据源
+                                mMediaViewUtil.refreshMediaGrid();
                             }
                             // 刷新底部
                             updateBottomToolbar();
@@ -391,13 +391,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mSelectedCollection.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onDestroy() {
+        Log.d(TAG, "MatissFragment onDestroy");
         if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
             mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(MatissFragment.this.getClass());
             mGlobalSpec.setVideoCompressCoordinator(null);
@@ -407,6 +402,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
+        mMediaViewUtil.onDestroyView();
         super.onDestroy();
     }
 
@@ -493,34 +489,50 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         return count;
     }
 
-    /**
-     * 加载图片数据
-     *
-     * @param cursor 数据源
-     */
-    private void loadData(final Cursor cursor) {
-        // 更新相册列表
-        mAlbumsSpinnerAdapter.swapCursor(cursor);
-        // 选择默认相册
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> {
-            cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
-            mAlbumsSpinner.setSelection(mContext,
-                    mAlbumCollection.getCurrentSelection());
-            Album album = Album.valueOf(cursor);
-            onAlbumSelected(album);
-        });
-    }
-
     @Override
     public void onAlbumLoadFinished(final Cursor cursor) {
-        loadData(cursor);
+        if (mCursorToAlbum != null) {
+            // 取消当前的线程，重新运行
+            mCursorToAlbum.cancel();
+        }
+        mCursorToAlbum = new ThreadUtils.SimpleTask<ArrayList<Album>>() {
+            @Override
+            public ArrayList<Album> doInBackground() {
+                ArrayList<Album> items = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    items.add(Album.valueOf(cursor));
+                }
+                cursor.close();
+                return items;
+            }
+
+            @Override
+            public void onSuccess(ArrayList<Album> result) {
+                // 更新专辑列表
+                mAlbumSpinner.bindFolder(result);
+                // 可能因为别的原因销毁当前界面，回到当前选择的位置
+                Album album = result.get(mAlbumCollection.getCurrentSelection());
+                ArrayList<Album> albumChecks = new ArrayList<>();
+                albumChecks.add(album);
+                mAlbumSpinner.updateCheckStatus(albumChecks);
+                String displayName = album.getDisplayName(mContext);
+                if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {
+                    mViewHolder.tvAlbumTitle.setText(displayName);
+                } else {
+                    mViewHolder.tvAlbumTitle.setAlpha(0.0f);
+                    mViewHolder.tvAlbumTitle.setVisibility(View.VISIBLE);
+                    mViewHolder.tvAlbumTitle.setText(displayName);
+                    mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(mContext.getResources().getInteger(
+                            android.R.integer.config_longAnimTime)).start();
+                }
+                onAlbumSelected(album);
+            }
+        };
+        ThreadUtils.executeByIo(mCursorToAlbum);
     }
 
     @Override
     public void onAlbumReset() {
-        // 重置相册列表
-        mAlbumsSpinnerAdapter.swapCursor(null);
     }
 
     public void albumsSpinnerNotifyData() {
@@ -536,23 +548,17 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     private void onAlbumSelected(Album album) {
         if (album.isAll() && album.isEmpty()) {
             // 如果是选择全部并且没有数据的话，显示空的view
-            mViewHolder.container.setVisibility(View.GONE);
+            mViewHolder.recyclerview.setVisibility(View.GONE);
             mViewHolder.emptyView.setVisibility(View.VISIBLE);
         } else {
-            // 如果有数据，则内嵌新的fragment，并且相应相关照片
-            mViewHolder.container.setVisibility(View.VISIBLE);
+            // 如果有数据，显示相应相关照片
+            mViewHolder.recyclerview.setVisibility(View.VISIBLE);
             mViewHolder.emptyView.setVisibility(View.GONE);
             if (!mIsRefresh) {
-                assert getArguments() != null;
-                if (mFragmentLast != null) {
-                    // 在实例化新的之前，先清除旧的数据才可以查询
-                    mFragmentLast.onDestroyData();
+                if (mMediaViewUtil != null) {
+                    mMediaViewUtil.load(album);
+                    mViewHolder.tvAlbumTitle.setText(album.getDisplayName(mContext));
                 }
-                mFragmentLast = MediaSelectionFragment.newInstance(album, getArguments().getInt(ARGUMENTS_MARGIN_BOTTOM));
-                getChildFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, mFragmentLast, MediaSelectionFragment.class.getSimpleName())
-                        .commitAllowingStateLoss();
             }
         }
     }
@@ -684,7 +690,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 设置是否启用界面触摸，不可禁止中断、退出
      */
     private void setControlTouchEnable(boolean enable) {
-        mViewHolder.container.setEnabled(enable);
+        mViewHolder.recyclerview.setEnabled(enable);
         // 如果不可用就显示 加载中 view,否则隐藏
         if (!enable) {
             mViewHolder.pbLoading.setVisibility(View.VISIBLE);
@@ -699,7 +705,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     public static class ViewHolder {
         public View rootView;
-        public TextView selectedAlbum;
+        public View selectedAlbum;
+        public TextView tvAlbumTitle;
+        public ImageView imgArrow;
         public Toolbar toolbar;
         public TextView buttonPreview;
         public CheckRadioView original;
@@ -707,17 +715,18 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         public Group groupOriginal;
         public TextView buttonApply;
         public ConstraintLayoutBehavior bottomToolbar;
-        public ControlTouchFrameLayout container;
         public TextView emptyViewContent;
         public FrameLayout emptyView;
         public CoordinatorLayout root;
         public ImageView imgClose;
         public ProgressBar pbLoading;
-        private final NestedScrollView nestedScrollView;
+        public RecyclerView recyclerview;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
             this.selectedAlbum = rootView.findViewById(R.id.selectedAlbum);
+            this.tvAlbumTitle = rootView.findViewById(R.id.tvAlbumTitle);
+            this.imgArrow = rootView.findViewById(R.id.imgArrow);
             this.toolbar = rootView.findViewById(R.id.toolbar);
             this.buttonPreview = rootView.findViewById(R.id.buttonPreview);
             this.original = rootView.findViewById(R.id.original);
@@ -725,13 +734,12 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             this.groupOriginal = rootView.findViewById(R.id.groupOriginal);
             this.buttonApply = rootView.findViewById(R.id.buttonApply);
             this.bottomToolbar = rootView.findViewById(R.id.bottomToolbar);
-            this.container = rootView.findViewById(R.id.container);
             this.emptyViewContent = rootView.findViewById(R.id.emptyViewContent);
             this.emptyView = rootView.findViewById(R.id.emptyView);
             this.root = rootView.findViewById(R.id.root);
             this.imgClose = rootView.findViewById(R.id.imgClose);
             this.pbLoading = rootView.findViewById(R.id.pbLoading);
-            this.nestedScrollView = rootView.findViewById(R.id.nestedScrollView);
+            this.recyclerview = rootView.findViewById(R.id.recyclerview);
         }
 
     }

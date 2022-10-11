@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -36,6 +38,7 @@ import com.zhongjh.albumcamerarecorder.album.ui.main.MainFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil;
 import com.zhongjh.albumcamerarecorder.utils.HandleOnKeyUtil;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
@@ -65,6 +68,12 @@ public class MainActivity extends AppCompatActivity {
      * 跳转到设置界面
      */
     private static final int REQUEST_CODE_SETTING = 101;
+    /**
+     * 界面屏幕方向切换\切换别的界面时 会触发onSaveInstanceState
+     * 会存储该key的值设置为true
+     * 然后在恢复界面时根据该值进行相应处理
+     */
+    private static final String IS_SAVE_INSTANCE_STATE = "IS_SAVE_INSTANCE_STATE";
 
     /**
      * 底部控件
@@ -112,7 +121,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.activity_main_zjh);
-        requestPermissions();
+        requestPermissions(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_SAVE_INSTANCE_STATE, true);
     }
 
     @Override
@@ -159,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_SETTING) {
             // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
-            requestPermissions();
+            requestPermissions(null);
         }
     }
 
@@ -198,11 +213,10 @@ public class MainActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(appName)) {
                     builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked));
                 } else {
-                    StringBuilder toSettingTipStr = new StringBuilder();
-                    toSettingTipStr.append(getString(R.string.z_multi_library_in_settings_apply));
-                    toSettingTipStr.append(appName);
-                    toSettingTipStr.append(getString(R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions));
-                    builder.setMessage(toSettingTipStr.toString());
+                    String toSettingTipStr = getString(R.string.z_multi_library_in_settings_apply) +
+                            appName +
+                            getString(R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions);
+                    builder.setMessage(toSettingTipStr);
                 }
                 builder.setTitle(getString(R.string.z_multi_library_hint));
                 builder.setOnDismissListener(dialog12 -> mIsShowDialog = false);
@@ -230,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                 if (permissionsLength > 0) {
                     requestPermissionsDialog();
                 } else {
-                    requestPermissions();
+                    requestPermissions(null);
                 }
             }
         }
@@ -238,11 +252,14 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 初始化，在权限全部通过后才进行该初始化
+     *
+     * @param savedInstanceState 恢复的数值
      */
-    private void init() {
+    private void init(Bundle savedInstanceState) {
         if (!mIsInit) {
             ViewPager2 mVpPager = findViewById(R.id.viewPager);
             mTabLayout = findViewById(R.id.tableLayout);
+            initTabLayoutStyle();
             mTabLayout.setTag(R.id.z_tab_layout_translation_y, 0);
 
             // 获取高度，用于tabLayout的一些显示隐藏动画参数
@@ -257,8 +274,10 @@ public class MainActivity extends AppCompatActivity {
             adapterViewPager = new MyPagerAdapter(this, mSpec);
             mVpPager.setAdapter(adapterViewPager);
             mVpPager.setOffscreenPageLimit(3);
-            // 根据配置默认选第几个
-            mVpPager.setCurrentItem(mDefaultPosition, false);
+            if (savedInstanceState == null || !savedInstanceState.getBoolean(IS_SAVE_INSTANCE_STATE)) {
+                // 根据配置默认选第几个，如果是恢复界面的话，就不赋配置值
+                mVpPager.setCurrentItem(mDefaultPosition, false);
+            }
             // 判断只有一个的时候
             if (adapterViewPager.getItemCount() <= 1) {
                 // 则隐藏底部
@@ -276,9 +295,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 请求权限
+     * 设置TabLayout样式
      */
-    private void requestPermissions() {
+    private void initTabLayoutStyle() {
+        TypedValue typedValue = new TypedValue();
+        this.getTheme().resolveAttribute(R.attr.main_tabLayout, typedValue, true);
+
+        int tabLayoutBg = AttrsUtils.getTypeValueColor(this, typedValue.resourceId,
+                R.attr.tabLayout_bg_zjh);
+        int tabLayoutUnselectedTextColor = AttrsUtils.getTypeValueColor(this, typedValue.resourceId,
+                R.attr.tabLayout_unselected_textColor);
+        int tabLayoutSelectedTextColor = AttrsUtils.getTypeValueColor(this, typedValue.resourceId,
+                R.attr.tabLayout_selected_textColor);
+        if (tabLayoutBg != 0) {
+            mTabLayout.setBackgroundColor(tabLayoutBg);
+        }
+        if (tabLayoutUnselectedTextColor != 0 && tabLayoutSelectedTextColor != 0) {
+            mTabLayout.setTabTextColors(tabLayoutUnselectedTextColor, tabLayoutSelectedTextColor);
+        }
+    }
+
+    /**
+     * 请求权限
+     *
+     * @param savedInstanceState 恢复的数值
+     */
+    private void requestPermissions(Bundle savedInstanceState) {
         // 判断权限，权限通过才可以初始化相关
         ArrayList<String> needPermissions = getNeedPermissions();
         if (needPermissions.size() > 0) {
@@ -286,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions2(needPermissions);
         } else {
             // 没有所需要请求的权限，就进行初始化
-            init();
+            init(savedInstanceState);
         }
     }
 
@@ -343,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
             dialog.show();
         } else {
             // 没有所需要请求的权限，就进行初始化
-            init();
+            init(null);
         }
     }
 
@@ -391,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 显示或者隐藏底部
-     * 显示或者隐藏后，都用tag标记，为了[showHideTableLayoutAnimator]显示时回复数值
+     * 显示或者隐藏后，都用tag标记，为了[showHideTableLayoutAnimator]显示时恢复数值
      *
      * @param isShow 是否显示
      */

@@ -2,6 +2,7 @@
     <!-- region ===================================== Theme Blue ===================================== -->
 
     <style name="AppTheme.Blue" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="main.tabLayout">@style/TabLayout.Blue</item>
         <item name="colorPrimary">@color/blue_primary</item>
         <item name="colorPrimaryDark">@color/blue_primary_dark</item>
         <item name="toolbar.zhongjh">@style/Toolbar.Blue</item>
@@ -12,6 +13,7 @@
         </item>
         <item name="album.emptyView">@drawable/ic_empty_blue</item>
         <item name="album.emptyView.textColor">@color/blue_album_empty_view</item>
+        <item name="album.listPopupWindowStyle">@style/Popup.Blue</item>
         <item name="item.placeholder">@color/blue_item_placeholder</item>
         <item name="item.checkCircle.backgroundColor">@color/blue_item_checkCircle_backgroundColor
         </item>
@@ -26,7 +28,6 @@
         <item name="preview.bottomToolbar.apply.textColor">
             @color/blue_preview_bottom_toolbar_apply_zjh
         </item>
-        <item name="listPopupWindowStyle">@style/Popup.Blue</item>
         <item name="capture.textColor">@color/blue_capture</item>
         <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
         <item name="click.long.button.round.border">#ffffffff</item>
@@ -38,8 +39,19 @@
 
     </style>
 
-    <style name="Popup.Blue" parent="Widget.AppCompat.Light.ListPopupWindow">
-        <item name="android:popupBackground">@color/blue_album_popup_bg</item>
+    <style name="Popup.Blue" parent="">
+        <item name="album.backgroundStyle">@drawable/spinner_item_select_bg_white</item> <!-- 专辑选项的背景样式 -->
+        <item name="album.checkDotStyle">@drawable/ic_orange_oval</item> <!-- 专辑选中时候的样式 -->
+        <item name="album.textColor">@color/text_color_4d</item> <!-- 专辑字体颜色 -->
+        <item name="album.textSize">16sp</item> <!-- 专辑字体大小 -->
+        <item name="album.arrow.up.icon">@drawable/ic_round_keyboard_arrow_up_24</item> <!-- 上箭头 -->
+        <item name="album.arrow.down.icon">@drawable/ic_round_keyboard_arrow_down_24</item> <!-- 下箭头 -->
+    </style>
+
+    <style name="TabLayout.Blue" parent="">
+        <item name="tabLayout.bg.zjh">@color/blue_bottom_toolbar_bg</item>  <!-- 底部tabLayout背景颜色 -->
+        <item name="tabLayout.unselected.textColor">@color/blue_tabLayout_unselected_textColor</item> <!-- 未选择时.文本颜色 -->
+        <item name="tabLayout.selected.textColor">@color/blue_primary</item> <!-- 选择时.文本颜色 -->
     </style>
 
     <!-- endregion ===================================== Theme Blue ===================================== -->
@@ -47,6 +59,7 @@
     <!-- region ===================================== Theme Dracula  ===================================== -->
 
     <style name="AppTheme.Dracula" parent="Theme.AppCompat.NoActionBar">
+        <item name="main.tabLayout">@style/TabLayout.Dracula</item>
         <item name="colorPrimary">@color/dracula_primary</item>
         <item name="colorPrimaryDark">@color/dracula_primary_dark</item>
         <item name="toolbar.zhongjh">@style/Toolbar.Dracula</item>
@@ -65,7 +78,8 @@
         <item name="item.checkCircle.borderColor">@color/dracula_item_checkCircle_borderColor</item>
         <item name="page.bg">@color/dracula_page_bg</item>
         <item name="bottomToolbar.bg">@color/dracula_bottom_toolbar_bg</item>
-        <item name="bottomToolbar.preview.textColor">@color/dracula_bottom_toolbar_preview_zjh</item>
+        <item name="bottomToolbar.preview.textColor">@color/dracula_bottom_toolbar_preview_zjh
+        </item>
         <item name="bottomToolbar.apply.textColor">@color/dracula_bottom_toolbar_apply_zjh</item>
         <item name="preview.bottomToolbar.back.textColor">
             @color/dracula_preview_bottom_toolbar_back_text
@@ -73,14 +87,16 @@
         <item name="preview.bottomToolbar.apply.textColor">
             @color/dracula_preview_bottom_toolbar_apply_zjh
         </item>
-        <item name="android:listPopupWindowStyle">@style/Popup.Dracula</item>
-        <item name="listPopupWindowStyle">@style/Popup.Dracula</item>
+        <item name="album.listPopupWindowStyle">@style/Popup.Dracula</item>
         <item name="capture.textColor">@color/dracula_capture</item>
         <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
+
         <!-- 录制的按钮样式 -->
         <item name="click.long.button.round.border">#ffffffff</item> <!-- 按钮外圈颜色 -->
-        <item name="click.long.button.inner.circle.in.operation">@color/dracula_primary
-        </item> <!-- 按钮内圈长按中的颜色 -->
+        <!-- 按钮内圈长按中的颜色 -->
+        <item name="click.long.button.inner.circle.in.operation">
+            @color/dracula_primary
+        </item>
         <item name="click.long.button.inner.circle.no.operation">#99ffffff</item> <!-- 按钮内圈默认的颜色 -->
     </style>
 
@@ -88,8 +104,19 @@
 
     </style>
 
-    <style name="Popup.Dracula" parent="Widget.AppCompat.ListPopupWindow">
-        <item name="android:popupBackground">@color/dracula_album_popup_bg</item>
+    <style name="Popup.Dracula" parent="">
+        <item name="album.backgroundStyle">@drawable/spinner_item_select_bg_dracula</item> <!-- 专辑选项的背景样式 -->
+        <item name="album.checkDotStyle">@drawable/ic_orange_oval</item> <!-- 专辑选中时候的样式 -->
+        <item name="album.textColor">@color/white</item> <!-- 专辑字体颜色 -->
+        <item name="album.textSize">16sp</item> <!-- 专辑字体大小 -->
+        <item name="album.arrow.up.icon">@drawable/ic_round_keyboard_arrow_up_24</item> <!-- 上箭头 -->
+        <item name="album.arrow.down.icon">@drawable/ic_round_keyboard_arrow_down_24</item> <!-- 下箭头 -->
+    </style>
+
+    <style name="TabLayout.Dracula" parent="">
+        <item name="tabLayout.bg.zjh">@color/dracula_bottom_toolbar_bg</item>  <!-- 底部tabLayout背景颜色 -->
+        <item name="tabLayout.unselected.textColor">@color/dracula_tabLayout_unselected_textColor</item> <!-- 未选择时.文本颜色 -->
+        <item name="tabLayout.selected.textColor">@color/dracula_primary</item> <!-- 选择时.文本颜色 -->
     </style>
 
     <!-- endregion ===================================== Theme Dracula ===================================== -->
@@ -104,21 +131,26 @@
     </style>
 
     <declare-styleable name="CircularProgressButton">
-        <attr name="cpb_selectorIdle" format="reference"/>
-        <attr name="cpb_selectorComplete" format="reference"/>
-        <attr name="cpb_selectorError" format="reference"/>
-        <attr name="cpb_textComplete" format="string"/>
-        <attr name="cpb_textIdle" format="string"/>
-        <attr name="cpb_textError" format="string"/>
-        <attr name="cpb_textProgress" format="string"/>
-        <attr name="cpb_colorProgress" format="color"/>
-        <attr name="cpb_colorIndicator" format="color"/>
-        <attr name="cpb_colorIndicatorBackground" format="color"/>
-        <attr name="cpb_iconError" format="reference"/>
-        <attr name="cpb_iconComplete" format="reference"/>
-        <attr name="cpb_cornerRadius" format="dimension"/>
-        <attr name="cpb_paddingProgress" format="dimension"/>
+        <attr name="cpb_selectorIdle" format="reference" />
+        <attr name="cpb_selectorComplete" format="reference" />
+        <attr name="cpb_selectorError" format="reference" />
+        <attr name="cpb_textComplete" format="string" />
+        <attr name="cpb_textIdle" format="string" />
+        <attr name="cpb_textError" format="string" />
+        <attr name="cpb_textProgress" format="string" />
+        <attr name="cpb_colorProgress" format="color" />
+        <attr name="cpb_colorIndicator" format="color" />
+        <attr name="cpb_colorIndicatorBackground" format="color" />
+        <attr name="cpb_iconError" format="reference" />
+        <attr name="cpb_iconComplete" format="reference" />
+        <attr name="cpb_cornerRadius" format="dimension" />
+        <attr name="cpb_paddingProgress" format="dimension" />
     </declare-styleable>
+
+    <style name="AlbumSpinnerThemeStyle">
+        <item name="android:windowEnterAnimation">@anim/album_spinner_show_zjh</item>
+        <item name="android:windowExitAnimation">@anim/album_spinner_dismiss_zjh</item>
+    </style>
 
 
 </resources>

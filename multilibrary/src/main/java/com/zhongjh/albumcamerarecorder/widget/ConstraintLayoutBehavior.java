@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -14,20 +15,16 @@ import androidx.constraintlayout.widget.ConstraintLayout;
  */
 public class ConstraintLayoutBehavior extends ConstraintLayout {
 
-    public ConstraintLayoutBehavior(Context context) {
-        this(context, null);
+    public ConstraintLayoutBehavior(@NonNull Context context) {
+        super(context);
     }
 
-    public ConstraintLayoutBehavior(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
+    public ConstraintLayoutBehavior(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
     }
 
-    public ConstraintLayoutBehavior(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-    }
-
-    public ConstraintLayoutBehavior(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+    public ConstraintLayoutBehavior(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
 
     public Listener getOnListener() {

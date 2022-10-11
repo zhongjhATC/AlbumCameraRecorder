@@ -40,6 +40,30 @@ class Album internal constructor(
         } else displayName
     }
 
+    fun equalsAlbum(album: Album): Boolean {
+        // coverUri
+        if (coverUri != album.coverUri) {
+            return false
+        }
+        // displayName
+        if (displayName != album.displayName) {
+            return false
+        }
+        // count
+        if (count != album.count) {
+            return false
+        }
+        // isChecked
+        if (isChecked != album.isChecked) {
+            return false
+        }
+        // checkedNum
+        if (checkedNum != album.checkedNum) {
+            return false
+        }
+        return true
+    }
+
     /**
      * 判断如果id = -1的话，就是查询全部的意思
      * @return 是否全部
@@ -48,6 +72,16 @@ class Album internal constructor(
         get() = ALBUM_ID_ALL == id
     val isEmpty: Boolean
         get() = count == 0L
+
+    /**
+     * 是否进行了选择
+     */
+    var isChecked: Boolean = false
+
+    /**
+     * 当前专辑选择了多少个图片、视频
+     */
+    var checkedNum: Int = 0
 
     companion object {
 
@@ -64,12 +98,13 @@ class Album internal constructor(
             val bucketDisplayName =
                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
             val count = cursor.getLong(cursor.getColumnIndex(AlbumLoader.COLUMN_COUNT))
-            return Album(
+            val album = Album(
                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID)),
                 Uri.parse(column ?: ""),
                 bucketDisplayName ?: "",
                 count
             )
+            return album
         }
     }
 }

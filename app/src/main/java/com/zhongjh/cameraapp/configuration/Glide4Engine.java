@@ -37,7 +37,7 @@ public class Glide4Engine implements ImageEngine {
 
     @Override
     public void loadThumbnail(@NotNull Context context, int resize, @NotNull Drawable placeholder, @NotNull ImageView imageView, @NotNull Uri uri) {
-        Glide.with(context)
+        Glide.with(context.getApplicationContext())
                 .asBitmap() // some .jpeg files are actually gif
                 .load(uri)
                 .apply(new RequestOptions()

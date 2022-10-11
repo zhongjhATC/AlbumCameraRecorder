@@ -75,7 +75,7 @@ public class BaseCameraPicturePresenter
     /**
      * 图片,单图或者多图都会加入该列表
      */
-    List<BitmapData> bitmapDatas = new ArrayList<>();
+    List<BitmapData> bitmapData = new ArrayList<>();
     /**
      * 照片File,用于后面能随时删除
      */
@@ -136,7 +136,7 @@ public class BaseCameraPicturePresenter
     @Override
     public void initMultiplePhotoAdapter() {
         // 初始化多图适配器，先判断是不是多图配置
-        photoAdapter = new PhotoAdapter(baseCameraFragment.getMainActivity(), baseCameraFragment.getGlobalSpec(), bitmapDatas, this);
+        photoAdapter = new PhotoAdapter(baseCameraFragment.getMainActivity(), baseCameraFragment.getGlobalSpec(), bitmapData, this);
         if (baseCameraFragment.getRecyclerViewPhoto() != null) {
             if (SelectableUtils.getImageMaxCount() > 1) {
                 baseCameraFragment.getRecyclerViewPhoto().setLayoutManager(new LinearLayoutManager(baseCameraFragment.getMyContext(), RecyclerView.HORIZONTAL, false));
@@ -260,25 +260,25 @@ public class BaseCameraPicturePresenter
         // 判断是否多个图片
         if (SelectableUtils.getImageMaxCount() > 1) {
             // 添加入数据源
-            bitmapDatas.add(bitmapData);
+            this.bitmapData.add(bitmapData);
             // 更新最后一个添加
             photoAdapter.notifyItemInserted(photoAdapter.getItemCount() - 1);
             photoAdapter.notifyItemRangeChanged(photoAdapter.getItemCount() - 1, photoAdapter.getItemCount());
             baseCameraFragment.showMultiplePicture();
         } else {
-            bitmapDatas.add(bitmapData);
+            this.bitmapData.add(bitmapData);
             photoFile = file;
             baseCameraFragment.showSinglePicture(bitmapData, file, uri);
         }
 
-        if (bitmapDatas.size() > 0) {
+        if (this.bitmapData.size() > 0) {
             // 母窗体禁止滑动
             baseCameraFragment.getMainActivity().showHideTableLayout(false);
         }
 
         // 回调接口：添加图片后剩下的相关数据
         if (baseCameraFragment.getCameraSpec().getOnCaptureListener() != null) {
-            baseCameraFragment.getCameraSpec().getOnCaptureListener().add(bitmapDatas, bitmapDatas.size() - 1);
+            baseCameraFragment.getCameraSpec().getOnCaptureListener().add(this.bitmapData, this.bitmapData.size() - 1);
         }
     }
 
@@ -286,9 +286,9 @@ public class BaseCameraPicturePresenter
      * 刷新多个图片
      */
     @Override
-    public void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas) {
-        this.bitmapDatas = bitmapDatas;
-        photoAdapter.setListData(this.bitmapDatas);
+    public void refreshMultiPhoto(ArrayList<BitmapData> bitmapData) {
+        this.bitmapData = bitmapData;
+        photoAdapter.setListData(this.bitmapData);
     }
 
     /**
@@ -312,9 +312,9 @@ public class BaseCameraPicturePresenter
         singlePhotoUri = uri;
 
         // 重置mCaptureBitmaps
-        bitmapDatas.clear();
+        bitmapData.clear();
         BitmapData bitmapData = new BitmapData(photoFile.getPath(), uri, width, height);
-        this.bitmapDatas.add(bitmapData);
+        this.bitmapData.add(bitmapData);
 
         // 这样可以重置大小
         if (baseCameraFragment.getSinglePhotoView() != null) {
@@ -336,7 +336,7 @@ public class BaseCameraPicturePresenter
                 // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
                 ArrayList<LocalFile> newFiles = new ArrayList<>();
                 // 将 缓存文件 拷贝到 配置目录
-                for (BitmapData item : bitmapDatas) {
+                for (BitmapData item : bitmapData) {
                     File oldFile = new File(item.getPath());
                     // 压缩图片
                     File compressionFile;
@@ -358,7 +358,7 @@ public class BaseCameraPicturePresenter
                     FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
                         if (ioProgress >= 1) {
                             // 每次迁移完一个文件的进度
-                            int progress = 100 / bitmapDatas.size();
+                            int progress = 100 / bitmapData.size();
                             ThreadUtils.runOnUiThread(() -> baseCameraFragment.setProgress(progress));
                         }
                     });
@@ -407,7 +407,7 @@ public class BaseCameraPicturePresenter
      */
     @Override
     public void clearBitmapDatas() {
-        bitmapDatas.clear();
+        bitmapData.clear();
     }
 
     /**
@@ -442,15 +442,15 @@ public class BaseCameraPicturePresenter
         FileUtil.deleteFile(bitmapData.getPath());
 
         // 判断如果删除光图片的时候，母窗体启动滑动
-        if (bitmapDatas.size() <= 0) {
+        if (this.bitmapData.size() <= 0) {
             baseCameraFragment.getMainActivity().showHideTableLayout(true);
         }
         if (baseCameraFragment.getCameraSpec().getOnCaptureListener() != null) {
-            baseCameraFragment.getCameraSpec().getOnCaptureListener().remove(bitmapDatas, position);
+            baseCameraFragment.getCameraSpec().getOnCaptureListener().remove(this.bitmapData, position);
         }
 
         // 当列表全部删掉隐藏列表框的UI
-        if (bitmapDatas.size() <= 0) {
+        if (this.bitmapData.size() <= 0) {
             baseCameraFragment.hideViewByMultipleZero();
         }
     }

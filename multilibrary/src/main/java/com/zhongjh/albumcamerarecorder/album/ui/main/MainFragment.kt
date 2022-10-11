@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,25 +27,33 @@ class MainFragment : BaseFragment() {
             args.putInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM, marginBottom)
             return mainFragment
         }
+
+        const val MATISS_FRAGMENT_TAG = "matissFragment"
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
+        Log.d("MainFragment", "onCreateView")
         return inflater.inflate(R.layout.fragment_containerview_zjh, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val matissFragment = MatissFragment.newInstance(
-            arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
-                ?: 0
-        )
-        childFragmentManager
-            .beginTransaction()
-            .add(R.id.fragmentContainerView, matissFragment)
-            .commit()
+        Log.d("MainFragment", "onViewCreated")
+        // 先通过标签形式查找
+        val matissFragment = childFragmentManager.findFragmentByTag(MATISS_FRAGMENT_TAG)
+        // 如果不存在，则重新创建并添加，如果已经存在就不用处理了，因为FragmentStateAdapter已经帮我们处理了
+        matissFragment ?: let {
+            val newMatissFragment = MatissFragment.newInstance(
+                    arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
+                            ?: 0
+            )
+            childFragmentManager.beginTransaction()
+                    .add(R.id.fragmentContainerView, newMatissFragment, MATISS_FRAGMENT_TAG)
+                    .commitAllowingStateLoss()
+        }
     }
 
 }

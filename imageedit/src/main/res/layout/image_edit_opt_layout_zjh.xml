@@ -77,38 +77,38 @@
                     android:layout_height="@dimen/z_image_color"
                     android:layout_margin="@dimen/z_image_color_margin"
                     android:button="@null"
-                    app:image_color="@color/z_image_color_red" />
+                    app:z_image_color="@color/z_image_color_red" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/z_image_color"
                     android:layout_height="@dimen/z_image_color"
                     android:layout_margin="@dimen/z_image_color_margin"
-                    app:image_color="@color/z_image_color_black" />
+                    app:z_image_color="@color/z_image_color_black" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/z_image_color"
                     android:layout_height="@dimen/z_image_color"
                     android:layout_margin="@dimen/z_image_color_margin"
 
-                    app:image_color="@color/z_image_color_white" />
+                    app:z_image_color="@color/z_image_color_white" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/z_image_color"
                     android:layout_height="@dimen/z_image_color"
                     android:layout_margin="@dimen/z_image_color_margin"
-                    app:image_color="@color/z_image_color_cyan" />
+                    app:z_image_color="@color/z_image_color_cyan" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/z_image_color"
                     android:layout_height="@dimen/z_image_color"
                     android:layout_margin="@dimen/z_image_color_margin"
-                    app:image_color="@color/z_image_color_yellow" />
+                    app:z_image_color="@color/z_image_color_yellow" />
 
                 <com.zhongjh.imageedit.view.ImageColorRadio
                     android:layout_width="@dimen/z_image_color"
                     android:layout_height="@dimen/z_image_color"
                     android:layout_margin="@dimen/z_image_color_margin"
-                    app:image_color="@color/z_image_color_blue" />
+                    app:z_image_color="@color/z_image_color_blue" />
 
             </com.zhongjh.imageedit.view.ImageColorGroup>
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +38,13 @@ public class AlbumMediaAdapter extends
     private final AlbumSpec mAlbumSpec;
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
-    private int mImageResize;
+    private final int mImageResize;
 
     public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, int imageResize) {
-        super(null);
+        super();
         mAlbumSpec = AlbumSpec.INSTANCE;
         mSelectedCollection = selectedCollection;
+        Log.d("onSaveInstanceState",mSelectedCollection.asList().size() + " AlbumMediaAdapter");
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.item_placeholder});
         mPlaceholder = ta.getDrawable(0);
@@ -61,6 +63,7 @@ public class AlbumMediaAdapter extends
 
     @Override
     protected void onBindViewHolder(final RecyclerView.ViewHolder holder, Cursor cursor) {
+        Log.d("onSaveInstanceState",mSelectedCollection.asList().size() + " onBindViewHolder");
         // 相片的item
         MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
 
@@ -85,6 +88,7 @@ public class AlbumMediaAdapter extends
      * @param mediaGrid holder
      */
     private void setCheckStatus(MultiMedia item, MediaGrid mediaGrid) {
+        Log.d("onSaveInstanceState",mSelectedCollection.asList().size() + " setCheckStatus");
         // 是否多选时,显示数字
         if (mAlbumSpec.getCountable()) {
             int checkedNum = mSelectedCollection.checkedNumOf(item);
@@ -128,6 +132,7 @@ public class AlbumMediaAdapter extends
 
     @Override
     public void onCheckViewClicked(CheckView checkView, MultiMedia item, RecyclerView.ViewHolder holder) {
+        Log.d("onSaveInstanceState",mSelectedCollection.asList().size() + " onCheckViewClicked");
         // 是否多选模式,显示数字
         if (mAlbumSpec.getCountable()) {
             // 获取当前选择的第几个

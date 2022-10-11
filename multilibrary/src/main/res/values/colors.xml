@@ -21,4 +21,8 @@
     <color name="operation_background_pressed_end">#cc000000</color>
     <color name="operation_stroke">#ffffffff</color>
 
+    <color name="sign_color_e0ff6100">#E0FF6100</color>
+    <color name="text_color_4d">#4d4d4d</color>
+    <color name="spinner_bottom_line_color">#80000000</color>
+
 </resources>
