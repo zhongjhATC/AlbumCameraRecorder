@@ -43,9 +43,9 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
-import com.zhongjh.albumcamerarecorder.preview.AlbumPreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.SelectedPreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior;
@@ -247,9 +247,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
         mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
 
-        mAlbumCollection.onCreate(getActivity(), this);
-        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
-        mAlbumCollection.loadAlbums();
+//        mAlbumCollection.onCreate(this, this);
+//        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
+//        mAlbumCollection.loadAlbums();
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
@@ -374,7 +374,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
                         } else {
                             // 点击了返回
                             mSelectedCollection.overwrite(selected, collectionType);
-                            if (result.getData().getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_IS_EDIT, false)) {
+                            if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_IS_EDIT, false)) {
                                 mIsRefresh = true;
                                 albumsSpinnerNotifyData();
                                 // 重新读取数据源
