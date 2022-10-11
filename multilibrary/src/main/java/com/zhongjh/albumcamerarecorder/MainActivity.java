@@ -64,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
      * 跳转到设置界面
      */
     private static final int REQUEST_CODE_SETTING = 101;
+    /**
+     * 界面屏幕方向切换\切换别的界面时 会触发onSaveInstanceState
+     * 会存储该key的值设置为true
+     * 然后在恢复界面时根据该值进行相应处理
+     */
+    private static final String IS_SAVE_INSTANCE_STATE = "IS_SAVE_INSTANCE_STATE";
 
     /**
      * 底部控件
@@ -103,7 +109,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.activity_main_zjh);
-        requestPermissions();
+        requestPermissions(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_SAVE_INSTANCE_STATE, true);
     }
 
     @Override
@@ -147,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_SETTING) {
             // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
-            requestPermissions();
+            requestPermissions(null);
         }
     }
 
@@ -217,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 if (permissionsLength > 0) {
                     requestPermissionsDialog();
                 } else {
-                    requestPermissions();
+                    requestPermissions(null);
                 }
             }
         }
@@ -225,8 +237,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 初始化，在权限全部通过后才进行该初始化
+     *
+     * @param savedInstanceState 恢复的数值
      */
-    private void init() {
+    private void init(Bundle savedInstanceState) {
         if (!mIsInit) {
             ViewPager2 mVpPager = findViewById(R.id.viewPager);
             mTabLayout = findViewById(R.id.tableLayout);
@@ -234,8 +248,10 @@ public class MainActivity extends AppCompatActivity {
             adapterViewPager = new MyPagerAdapter(this, mSpec);
             mVpPager.setAdapter(adapterViewPager);
             mVpPager.setOffscreenPageLimit(3);
-            // 根据配置默认选第几个
-            mVpPager.setCurrentItem(mDefaultPosition, false);
+            if (savedInstanceState == null || !savedInstanceState.getBoolean(IS_SAVE_INSTANCE_STATE)) {
+                // 根据配置默认选第几个，如果是恢复界面的话，就不赋配置值
+                mVpPager.setCurrentItem(mDefaultPosition, false);
+            }
             // 判断只有一个的时候
             if (adapterViewPager.getItemCount() <= 1) {
                 // 则隐藏底部
@@ -248,6 +264,23 @@ public class MainActivity extends AppCompatActivity {
                 // 禁滑viewPager
                 mVpPager.setUserInputEnabled(false);
             }
+
+            mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    Log.d("tabLayout", "onTabSelected");
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                    Log.d("tabLayout", "onTabUnselected");
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+                    Log.d("tabLayout", "onTabReselected");
+                }
+            });
             mIsInit = true;
         }
     }
@@ -275,8 +308,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 请求权限
+     *
+     * @param savedInstanceState 恢复的数值
      */
-    private void requestPermissions() {
+    private void requestPermissions(Bundle savedInstanceState) {
         // 判断权限，权限通过才可以初始化相关
         ArrayList<String> needPermissions = getNeedPermissions();
         if (needPermissions.size() > 0) {
@@ -284,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions2(needPermissions);
         } else {
             // 没有所需要请求的权限，就进行初始化
-            init();
+            init(savedInstanceState);
         }
     }
 
@@ -341,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
             dialog.show();
         } else {
             // 没有所需要请求的权限，就进行初始化
-            init();
+            init(null);
         }
     }
 
