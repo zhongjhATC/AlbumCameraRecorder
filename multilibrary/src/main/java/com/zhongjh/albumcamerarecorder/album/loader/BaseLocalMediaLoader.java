@@ -58,10 +58,15 @@ public abstract class BaseLocalMediaLoader {
             "COUNT(*) AS " + COLUMN_COUNT};
 
     /**
-     * query album cover
+     * 查询专辑封面
      *
-     * @param bucketId
+     * @param bucketId 专辑id
      */
     public abstract String getAlbumFirstCover(long bucketId);
+
+    /**
+     * query album list
+     */
+    public abstract void loadAllAlbum(OnQueryAllAlbumListener<LocalMediaFolder> query);
 
 }
