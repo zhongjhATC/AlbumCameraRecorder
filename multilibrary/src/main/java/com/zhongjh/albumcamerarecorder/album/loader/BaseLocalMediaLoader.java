@@ -1,7 +1,14 @@
 package com.zhongjh.albumcamerarecorder.album.loader;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.provider.MediaStore;
+import android.text.TextUtils;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 加载图像和视频的接口，区分全部和分页
@@ -68,5 +75,108 @@ public abstract class BaseLocalMediaLoader {
      * query album list
      */
     public abstract void loadAllAlbum(OnQueryAllAlbumListener<LocalMediaFolder> query);
+
+    /**
+     * 页面查询指定内容
+     *
+     * @param bucketId 专辑id
+     * @param page 第几页
+     * @param pageSize 每页多少条
+     */
+    public abstract void loadPageMediaData(long bucketId, int page, int pageSize, OnQueryDataResultListener<LocalMedia> query);
+
+    /**
+     * 页面查询指定内容
+     */
+    public abstract void loadOnlyInAppDirAllMedia(OnQueryAlbumListener<LocalMediaFolder> query);
+
+    /**
+     * 一个过滤器声明要返回哪些行
+     * 格式为SQL WHERE子句(不包括WHERE本身)
+     * 传递null将返回给定URI的所有行
+     */
+    protected abstract String getSelection();
+
+    /**
+     * 你可以在selection中包含?s，它将被selectionArgs中的值替换
+     * 按它们在选项中出现的顺序。这些值将被绑定为字符串。
+     */
+    protected abstract String[] getSelectionArgs();
+
+    /**
+     * How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER BY itself).
+     * Passing null will use the default sort order, which may be unordered.
+     */
+    protected abstract String getSortOrder();
+
+    /**
+     * parse LocalMedia
+     *
+     * @param data      Cursor
+     * @param isUsePool object pool
+     */
+    protected abstract LocalMedia parseLocalMedia(Cursor data, boolean isUsePool);
+
+    /**
+     * Get video (maximum or minimum time)
+     *
+     * @return
+     */
+    protected String getDurationCondition() {
+        long maxS = getConfig().filterVideoMaxSecond == 0 ? Long.MAX_VALUE : getConfig().filterVideoMaxSecond;
+        return String.format(Locale.CHINA, "%d <%s " + COLUMN_DURATION + " and " + COLUMN_DURATION + " <= %d",
+                Math.max((long) 0, getConfig().filterVideoMinSecond), "=", maxS);
+    }
+
+    /**
+     * Get media size (maxFileSize or miniFileSize)
+     *
+     * @return
+     */
+    protected String getFileSizeCondition() {
+        long maxS = getConfig().filterMaxFileSize == 0 ? Long.MAX_VALUE : getConfig().filterMaxFileSize;
+        return String.format(Locale.CHINA, "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
+                Math.max(0, getConfig().filterMinFileSize), "=", maxS);
+    }
+
+    /**
+     * getQueryMimeCondition
+     *
+     * @return
+     */
+    protected String getQueryMimeCondition() {
+        List<String> filters = getConfig().queryOnlyList;
+        HashSet<String> filterSet = new HashSet<>(filters);
+        Iterator<String> iterator = filterSet.iterator();
+        StringBuilder stringBuilder = new StringBuilder();
+        int index = -1;
+        while (iterator.hasNext()) {
+            String value = iterator.next();
+            if (TextUtils.isEmpty(value)) {
+                continue;
+            }
+            if (getConfig().chooseMode == SelectMimeType.ofVideo()) {
+                if (value.startsWith(PictureMimeType.MIME_TYPE_PREFIX_IMAGE) || value.startsWith(PictureMimeType.MIME_TYPE_PREFIX_AUDIO)) {
+                    continue;
+                }
+            } else if (getConfig().chooseMode == SelectMimeType.ofImage()) {
+                if (value.startsWith(PictureMimeType.MIME_TYPE_PREFIX_AUDIO) || value.startsWith(PictureMimeType.MIME_TYPE_PREFIX_VIDEO)) {
+                    continue;
+                }
+            } else if (getConfig().chooseMode == SelectMimeType.ofAudio()) {
+                if (value.startsWith(PictureMimeType.MIME_TYPE_PREFIX_VIDEO) || value.startsWith(PictureMimeType.MIME_TYPE_PREFIX_IMAGE)) {
+                    continue;
+                }
+            }
+            index++;
+            stringBuilder.append(index == 0 ? " AND " : " OR ").append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(value).append("'");
+        }
+        if (getConfig().chooseMode != SelectMimeType.ofVideo()) {
+            if (!getConfig().isGif && !filterSet.contains(PictureMimeType.ofGIF())) {
+                stringBuilder.append(NOT_GIF);
+            }
+        }
+        return stringBuilder.toString();
+    }
 
 }
