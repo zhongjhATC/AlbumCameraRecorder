@@ -82,7 +82,7 @@ public class MediaLoader {
                         } else {
                             data.moveToFirst();
                             do {
-//                                a();
+                                a();
                             } while (data.moveToNext());
                         }
 
@@ -320,12 +320,12 @@ public class MediaLoader {
         return totalCount;
     }
 
-//    private void a(Cursor data, ) {
-//        long bucketId = data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID));
-//        String bucketDisplayName = data.getString(data.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME));
-//        int size = data.getInt(data.getColumnIndex(COLUMN_COUNT));
-//        String url = data.getString(data.getColumnIndex(MediaStore.MediaColumns.DATA));
-//        Album album = new Album(String.valueOf(bucketId), url, bucketDisplayName, size);
-//    }
+    private void a(Cursor data, ) {
+        long bucketId = data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID));
+        String bucketDisplayName = data.getString(data.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME));
+        int size = data.getInt(data.getColumnIndex(COLUMN_COUNT));
+        String url = data.getString(data.getColumnIndex(MediaStore.MediaColumns.DATA));
+        Album album = new Album(String.valueOf(bucketId), url, bucketDisplayName, size);
+    }
 
 }
