@@ -5,6 +5,13 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
+import com.zhongjh.albumcamerarecorder.album.listener.OnQueryAlbumListener;
+import com.zhongjh.albumcamerarecorder.album.listener.OnQueryAllAlbumListener;
+import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataResultListener;
+import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -74,7 +81,7 @@ public abstract class BaseLocalMediaLoader {
     /**
      * query album list
      */
-    public abstract void loadAllAlbum(OnQueryAllAlbumListener<LocalMediaFolder> query);
+    public abstract void loadAllAlbum(OnQueryAllAlbumListener<Album> query);
 
     /**
      * 页面查询指定内容
@@ -88,7 +95,7 @@ public abstract class BaseLocalMediaLoader {
     /**
      * 页面查询指定内容
      */
-    public abstract void loadOnlyInAppDirAllMedia(OnQueryAlbumListener<LocalMediaFolder> query);
+    public abstract void loadOnlyInAppDirAllMedia(OnQueryAlbumListener<Album> query);
 
     /**
      * 一个过滤器声明要返回哪些行
@@ -104,34 +111,34 @@ public abstract class BaseLocalMediaLoader {
     protected abstract String[] getSelectionArgs();
 
     /**
-     * How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER BY itself).
-     * Passing null will use the default sort order, which may be unordered.
+     * 如何对格式化为SQL order BY子句的行进行排序(不包括order BY本身)。
+     * 传递null将使用默认排序顺序，这可能是无序的。
      */
     protected abstract String getSortOrder();
 
     /**
-     * parse LocalMedia
+     * 解析LocalMedia
      *
-     * @param data      Cursor
-     * @param isUsePool object pool
+     * @param data      游标
+     * @param isUsePool 对象池
      */
     protected abstract LocalMedia parseLocalMedia(Cursor data, boolean isUsePool);
 
     /**
-     * Get video (maximum or minimum time)
+     * 获取视频(最长或最短时间)
      *
-     * @return
+     * @return String
      */
     protected String getDurationCondition() {
-        long maxS = getConfig().filterVideoMaxSecond == 0 ? Long.MAX_VALUE : getConfig().filterVideoMaxSecond;
+        long maxS = mCameraSpec.maxDuration.filterVideoMaxSecond == 0 ? Long.MAX_VALUE : getConfig().filterVideoMaxSecond;
         return String.format(Locale.CHINA, "%d <%s " + COLUMN_DURATION + " and " + COLUMN_DURATION + " <= %d",
                 Math.max((long) 0, getConfig().filterVideoMinSecond), "=", maxS);
     }
 
     /**
-     * Get media size (maxFileSize or miniFileSize)
+     * 获取媒体大小(maxFileSize或miniFileSize)
      *
-     * @return
+     * @return String
      */
     protected String getFileSizeCondition() {
         long maxS = getConfig().filterMaxFileSize == 0 ? Long.MAX_VALUE : getConfig().filterMaxFileSize;
@@ -140,9 +147,9 @@ public abstract class BaseLocalMediaLoader {
     }
 
     /**
-     * getQueryMimeCondition
+     * 查询Mime条件
      *
-     * @return
+     * @return String
      */
     protected String getQueryMimeCondition() {
         List<String> filters = getConfig().queryOnlyList;
