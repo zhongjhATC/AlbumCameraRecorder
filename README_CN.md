@@ -149,11 +149,14 @@
             android:name="android.support.FILE_PROVIDER_PATHS"
             android:resource="@xml/file_paths_public" />
     </provider>
+    
+#### 如果还有别的常见问题，具体可以看[可能会发生的问题](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)搜索报错关键字    
 
 #### 如果你需要修改拍摄录制的界面和逻辑
 简单扩展请参考Demo，如果需要深入扩展了解更多[CameraFragment架构简洁](https://juejin.cn/post/7136108758010167304/)
 
-#### 如果还有别的常见问题，具体可以看[可能会发生的问题](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)搜索报错关键字
+#### 如果你需要修改相机的拍摄、录制的参数
+因为里面的相机来自于[CameraView](https://github.com/natario1/CameraView)，所以修改分辨率、录制时关闭录音等各种功能可以进入查看更多接口，那么如何通过我们这个库获取CameraView,可以在Demo实例中学习使用
 
 #### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
 
