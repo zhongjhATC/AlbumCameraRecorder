@@ -169,7 +169,7 @@ public abstract class BaseCameraFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = setContentView(inflater,container);
+        View view = setContentView(inflater, container);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
         initView(view, savedInstanceState);
         initData();
@@ -648,7 +648,6 @@ public abstract class BaseCameraFragment
             globalSpec.getOnResultCallbackListener().onResult(newFiles);
         }
         mainActivity.finish();
-        setUiEnableTrue();
     }
 
     /**
@@ -937,6 +936,8 @@ public abstract class BaseCameraFragment
         if (getSwitchView() != null) {
             getSwitchView().setEnabled(true);
         }
+        getPhotoVideoLayout().setConfirmEnable(true);
+        getPhotoVideoLayout().setClickOrLongEnable(true);
         // 重置按钮进度
         getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
     }
@@ -953,6 +954,8 @@ public abstract class BaseCameraFragment
         if (getSwitchView() != null) {
             getSwitchView().setEnabled(false);
         }
+        getPhotoVideoLayout().setConfirmEnable(false);
+        getPhotoVideoLayout().setClickOrLongEnable(false);
     }
 
     /**

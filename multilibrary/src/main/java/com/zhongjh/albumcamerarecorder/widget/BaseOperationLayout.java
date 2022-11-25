@@ -272,11 +272,15 @@ public abstract class BaseOperationLayout extends FrameLayout {
             }
 
             @Override
-            public void onClick() {
+            public void onClickByGeneralMode() {
                 if (mOperateListener != null) {
                     mOperateListener.cancel();
                 }
                 startTipAlphaAnimation();
+            }
+
+            @Override
+            public void onClickByProgressMode() {
             }
         });
     }
@@ -308,7 +312,12 @@ public abstract class BaseOperationLayout extends FrameLayout {
             }
 
             @Override
-            public void onClick() {
+            public void onClickByGeneralMode() {
+
+            }
+
+            @Override
+            public void onClickByProgressMode() {
                 if (mOperateListener != null) {
                     mOperateListener.confirm();
                 }
@@ -469,6 +478,23 @@ public abstract class BaseOperationLayout extends FrameLayout {
         if (viewHolder.tvSectionRecord != null) {
             viewHolder.tvSectionRecord.setEnabled(enabled);
         }
+    }
+
+    /**
+     * 设置提交按钮是否可点击
+     *
+     * @param enabled 是否可点击
+     */
+    public void setConfirmEnable(boolean enabled) {
+        viewHolder.btnConfirm.setEnabled(enabled);
+    }
+
+    /**
+     * 设置中间按钮是否可点击
+     * @param enabled 是否可点击
+     */
+    public void setClickOrLongEnable(boolean enabled) {
+        viewHolder.btnClickOrLong.setTouchable(enabled);
     }
 
     /**

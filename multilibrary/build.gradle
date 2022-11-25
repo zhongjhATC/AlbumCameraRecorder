@@ -62,7 +62,7 @@ dependencies {
     api 'com.otaliastudios:cameraview:2.7.1'
 
     // 自制按钮进度 https://github.com/zhongjhATC/CircularProgressView
-    api 'com.github.zhongjhATC:CircularProgressView:1.7'
+    api 'com.github.zhongjhATC:CircularProgressView:1.8'
 
     compileOnly project(':common')
     compileOnly project(':imageedit')
