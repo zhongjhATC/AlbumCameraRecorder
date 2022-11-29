@@ -120,6 +120,10 @@ public class ClickOrLongButton extends View {
      */
     private int mMinDurationAnimation = 1500;
     /**
+     * 当前状态的动画预备时间
+     */
+    private int mMinDurationAnimationCurrent = mMinDurationAnimation;
+    /**
      * 记录当前录制的总共多长的时间秒
      */
     private long mRecordedTime;
@@ -185,6 +189,7 @@ public class ClickOrLongButton extends View {
      * 如果中间中断或者重置，那就直接减1，就说明中断流程
      */
     private int step;
+
     /**
      * 当前状态
      */
@@ -214,10 +219,10 @@ public class ClickOrLongButton extends View {
             }
             if (mIsSectionMode && mCurrentLocation.size() > 0) {
                 // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
-                mMinDurationAnimation = 0;
+                mMinDurationAnimationCurrent = 0;
             }
             long timeLapse = System.currentTimeMillis() - btnPressTime;
-            mRecordedTime = (timeLapse - mMinDurationAnimation);
+            mRecordedTime = (timeLapse - mMinDurationAnimationCurrent);
             mRecordedTimeSection = mRecordedTime;
             mRecordedTime = mRecordedTime + mCurrentSumTime;
             float percent = mRecordedTime / timeLimitInMils;
@@ -244,10 +249,12 @@ public class ClickOrLongButton extends View {
      * @param percent   当前百分比
      */
     private void startAnimation(long timeLapse, float percent) {
-        if (timeLapse >= mMinDurationAnimation) {
+        Log.d(TAG, "startAnimation timeLapse " + timeLapse);
+        Log.d(TAG, "startAnimation mMinDurationAnimationCurrent " + mMinDurationAnimationCurrent);
+        if (timeLapse >= mMinDurationAnimationCurrent) {
             synchronized (ClickOrLongButton.this) {
                 if (recordState == RECORD_NOT_STARTED) {
-                    recordState = RECORD_STARTED;
+                    setRecordState(RECORD_STARTED);
                     if (mClickOrLongListener != null) {
                         Log.d(TAG, "timeLapse " + timeLapse);
                         mClickOrLongListener.onLongClick();
@@ -270,7 +277,7 @@ public class ClickOrLongButton extends View {
             outMostWhiteCirclePaint.setColor(colorRoundBorder);
             percentInDegree = (360.0F * percent);
             if (mIsSectionMode) {
-                if (mCurrentLocation.size() > 0 || (timeLapse - mMinDurationAnimation) >= mMinDurationAnimation) {
+                if (mCurrentLocation.size() > 0 || (timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
                     mCurrentSumNumberDegrees = percentInDegree;
                 }
             }
@@ -556,10 +563,10 @@ public class ClickOrLongButton extends View {
                         mClickOrLongListener.onLongClickEnd(mRecordedTime);
                     }
                 }
-                recordState = RECORD_ENDED;
+                setRecordState(RECORD_ENDED);
             } else if (recordState == RECORD_ENDED) {
                 // 回到初始状态
-                recordState = RECORD_NOT_STARTED;
+                setRecordState(RECORD_NOT_STARTED);
             } else {
                 // 如果只支持长按事件则不触发
                 if (mClickOrLongListener != null &&
@@ -640,7 +647,7 @@ public class ClickOrLongButton extends View {
     private void startTicking() {
         synchronized (ClickOrLongButton.this) {
             if (recordState != RECORD_NOT_STARTED) {
-                recordState = RECORD_NOT_STARTED;
+                setRecordState(RECORD_NOT_STARTED);
             }
         }
         btnPressTime = System.currentTimeMillis();
@@ -693,6 +700,7 @@ public class ClickOrLongButton extends View {
     public void setMinDuration(int duration) {
         mMinDuration = duration;
         mMinDurationAnimation = duration;
+        mMinDurationAnimationCurrent = mMinDurationAnimation;
     }
 
     /**
@@ -746,7 +754,7 @@ public class ClickOrLongButton extends View {
     public void setButtonFeatures(int buttonStateBoth) {
         this.mButtonState = buttonStateBoth;
         if (buttonStateBoth == BUTTON_STATE_CLICK_AND_HOLD) {
-            mMinDurationAnimation = 0;
+            mMinDurationAnimationCurrent = 0;
         }
     }
 
@@ -765,7 +773,15 @@ public class ClickOrLongButton extends View {
      */
     public void resetState() {
         // 回到初始状态
-        recordState = RECORD_NOT_STARTED;
+        setRecordState(RECORD_NOT_STARTED);
+        // 预备时间也恢复到初始设置时的时间
+        mMinDurationAnimationCurrent = mMinDurationAnimation;
+        Log.d(TAG, "resetState");
+    }
+
+    private void setRecordState(int recordState) {
+        this.recordState = recordState;
+        Log.d(TAG, "setRecordState: " + recordState);
     }
 
     // endregion

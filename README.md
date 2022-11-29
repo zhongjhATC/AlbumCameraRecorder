@@ -55,19 +55,19 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 
 	dependencies {
 	     // if you want to simplify the code and at the same time use multilibrary and progresslibrary, albumCameraRecorderCommon, can directly use the combined library
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.80X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.81X'
 
 	     // Public library, if not using the combined library above
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.80X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.81X'
 	     // core lib, call display album, screen recording, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.80X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.81X'
          // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.80X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.81X'
 
          // use it with editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.80X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.81X'
 	     // For editing video
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.80X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.81X'
 	}
 
 ## snapshoot
@@ -153,10 +153,13 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
             android:resource="@xml/file_paths_public" />
     </provider>
 
+#### If there are other common problems, you can see the [website](https://github.com/zhongjhATC/AlbumCameraRecorder/issues) search error keywords
+
 #### If you need to modify the shooting and recording interface and logic
 Please refer to Demo for simple extensions. If you need to go deeper to learn more about extensions [simple architecture of CameraFragment](https://juejin.cn/post/7136108758010167304/)
 
-#### If there are other common problems, you can see the [website](https://github.com/zhongjhATC/AlbumCameraRecorder/issues) search error keywords
+#### If you need to modify the camera shooting, recording parameters
+Because the inside of the camera from the [CameraView] (https://github.com/natario1/CameraView), so change resolution, closed when the tape recording and other functions can access to view more interfaces,So how do we get the CameraView from our library that we can use in our Demo instance
 
 #### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java) for details.
 

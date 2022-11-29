@@ -58,19 +58,19 @@
 
 	dependencies {
 	     // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.80X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.81X'
 
 	     // 公共库，如果不使用上面的combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.80X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.81X'
 	     // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.80X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.81X'
          // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.80X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.81X'
 
          // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.80X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.81X'
 	     // 配套编辑视频使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.80X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.81X'
 	}
 
 ## 快照
@@ -149,11 +149,14 @@
             android:name="android.support.FILE_PROVIDER_PATHS"
             android:resource="@xml/file_paths_public" />
     </provider>
+    
+#### 如果还有别的常见问题，具体可以看[可能会发生的问题](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)搜索报错关键字    
 
 #### 如果你需要修改拍摄录制的界面和逻辑
 简单扩展请参考Demo，如果需要深入扩展了解更多[CameraFragment架构简洁](https://juejin.cn/post/7136108758010167304/)
 
-#### 如果还有别的常见问题，具体可以看[可能会发生的问题](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)搜索报错关键字
+#### 如果你需要修改相机的拍摄、录制的参数
+因为里面的相机来自于[CameraView](https://github.com/natario1/CameraView)，所以修改分辨率、录制时关闭录音等各种功能可以进入查看更多接口，那么如何通过我们这个库获取CameraView,可以在Demo实例中学习使用
 
 #### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
 

@@ -20,9 +20,7 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
  */
 public class PhotoVideoLayout extends BaseOperationLayout {
 
-
     private RecordListener mRecordListener;
-
 
     /**
      * 操作按钮的Listener
