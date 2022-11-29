@@ -913,6 +913,8 @@ public abstract class BaseCameraFragment
 
         // 恢复底部按钮
         getPhotoVideoLayout().reset();
+        // 恢复底部按钮操作模式
+        initPvLayoutButtonFeatures();
     }
 
     /**
