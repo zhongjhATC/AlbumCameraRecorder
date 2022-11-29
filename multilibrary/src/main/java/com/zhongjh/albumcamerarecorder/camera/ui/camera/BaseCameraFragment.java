@@ -487,8 +487,7 @@ public abstract class BaseCameraFragment
 
             @Override
             public void startProgress() {
-                Log.d(TAG, "startProgress " + getState().toString());
-                getCameraStateManagement().pvLayoutCommit();
+
             }
 
             @Override
