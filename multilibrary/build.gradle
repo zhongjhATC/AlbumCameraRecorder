@@ -4,9 +4,6 @@ plugins {
     // 插件提供的其他特性,@Parcelize、View binding and caching
     id 'kotlin-android-extensions'
 }
-//============================== JitPack 上传插件配置 =====================
-apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.zhongjhATC'
 
 android {
     compileSdkVersion rootProject.ext.androidCompileSdkVersion
