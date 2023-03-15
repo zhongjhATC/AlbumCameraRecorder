@@ -53,7 +53,7 @@
 
     <declare-styleable name="OperationButtonZhongjh">
         <!-- 操作类型的按钮 -->
-        <attr name="type">
+        <attr name="operationButtonZhongjhType">
             <enum name="cancel" value="0" />
             <enum name="confirm" value="1" />
         </attr>
