@@ -80,17 +80,21 @@ public class MediaLoader {
                 if (data != null) {
                     int count = data.getCount();
                     int totalCount = 0;
-                    List<Album2> Albums = new ArrayList<>();
+                    List<Album2> albums = new ArrayList<>();
                     if (count > 0) {
                         if (SdkVersionUtils.isQ()) {
                             // >= Q的版本会查询所有数据，需要针对bucket_id进行分组
-                            totalCount = setGroupByBucketIdBy29(data, Albums);
+                            totalCount = setGroupByBucketIdBy29(data, albums);
                         } else {
-                            totalCount = setGroupByBucketId(data, Albums);
+                            totalCount = setGroupByBucketId(data, albums);
                         }
                     }
                     // 添加一个所有相机胶卷专辑
                     Album2 allAlbum = new Album2();
+                    if (data.moveToFirst()) {
+                        allMediaFolder.setFirstImagePath(SdkVersionUtils.isQ() ? getFirstUri(data) : getFirstUrl(data));
+                        allMediaFolder.setFirstMimeType(getFirstCoverMimeType(data));
+                    }
                 }
 
 
