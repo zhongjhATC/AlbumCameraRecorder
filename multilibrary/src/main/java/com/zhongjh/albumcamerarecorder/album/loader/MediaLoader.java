@@ -12,7 +12,9 @@ import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.SdkVersionUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import java.util.ArrayList;
@@ -51,20 +53,20 @@ public class MediaLoader {
     }
 
     /**
-     * 获取所有专辑
+     * 获取所有多媒体
      *
-     * @param listener
+     * @param listener 回调事件
      */
-    public void loadAllAlbum(OnQueryDataListener<Object> listener) {
-        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<ArrayList<Object>>() {
+    public void loadAllMedia(OnQueryDataListener<LocalFile> listener) {
+        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
             @Override
-            public ArrayList<Object> doInBackground() {
+            public ArrayList<LocalFile> doInBackground() {
                 // 查询Android数据库
                 Cursor data = mContext.getContentResolver().query(
                         // 查询数据来源的标记
                         QUERY_URI,
                         // 需要查询的列
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? PROJECTION_29 : PROJECTION,
+                        SdkVersionUtils.isQ() ? PROJECTION_29 : PROJECTION,
                         // 查询条件
                         getCondition(),
                         // 配合上面的参数使用，上面的参数使用占位符"?"，那么这个参的数据会替换掉占位符"?"
@@ -74,11 +76,11 @@ public class MediaLoader {
                 if (data != null) {
                     int count = data.getCount();
                     int totalCount = 0;
-                    List<Album2> albums = new ArrayList<>();
+                    List<LocalFile> localFiles = new ArrayList<>();
                     if (count > 0) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        if (SdkVersionUtils.isQ()) {
                             // >= Q的版本会查询所有数据，需要针对bucket_id进行分组
-                            totalCount = setGroupByBucketId(data, albums);
+                            totalCount = setGroupByBucketId(data, localFiles);
                         } else {
                             data.moveToFirst();
                             do {
@@ -92,7 +94,7 @@ public class MediaLoader {
             }
 
             @Override
-            public void onSuccess(ArrayList<Object> result) {
+            public void onSuccess(ArrayList<LocalFile> result) {
 
             }
         });
@@ -284,10 +286,10 @@ public class MediaLoader {
      */
     private int setGroupByBucketId(Cursor data, List<Album2> albums) {
         int totalCount = 0;
-        Map<Long, Long> countMap = new HashMap<>(data.getCount());
+        Map<Long, Long> countMap = new HashMap<>();
         // data 循环移动到下一位执行逻辑 添加到countMap，如果有同个bucket_id，则value+1
         while (data.moveToNext()) {
-            long bucketId = data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID));
+            long bucketId = data.getLong(data.getColumnIndexOrThrow(COLUMN_BUCKET_ID));
             Long newCount = countMap.get(bucketId);
             if (newCount == null) {
                 newCount = 1L;
@@ -302,12 +304,12 @@ public class MediaLoader {
             Set<Long> hashSet = new HashSet<>();
             // 先执行逻辑，data再移动到下一位执行逻辑
             do {
-                long bucketId = data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID));
+                long bucketId = data.getLong(data.getColumnIndexOrThrow(COLUMN_BUCKET_ID));
                 if (hashSet.contains(bucketId)) {
                     continue;
                 }
-                String bucketDisplayName = data.getString(data.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME));
-                String mimeType = data.getString(data.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE));
+                String bucketDisplayName = data.getString(data.getColumnIndexOrThrow(COLUMN_BUCKET_DISPLAY_NAME));
+                String mimeType = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE));
                 String uri = getRealPathUri(bucketId, mimeType);
                 Long size = countMap.get(bucketId);
                 size = size == null ? 0 : size;
@@ -321,10 +323,10 @@ public class MediaLoader {
     }
 
     private void a(Cursor data, ) {
-        long bucketId = data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID));
-        String bucketDisplayName = data.getString(data.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME));
-        int size = data.getInt(data.getColumnIndex(COLUMN_COUNT));
-        String url = data.getString(data.getColumnIndex(MediaStore.MediaColumns.DATA));
+        long bucketId = data.getLong(data.getColumnIndexOrThrow(COLUMN_BUCKET_ID));
+        String bucketDisplayName = data.getString(data.getColumnIndexOrThrow(COLUMN_BUCKET_DISPLAY_NAME));
+        int size = data.getInt(data.getColumnIndexOrThrow(COLUMN_COUNT));
+        String url = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
         Album album = new Album(String.valueOf(bucketId), url, bucketDisplayName, size);
     }
 

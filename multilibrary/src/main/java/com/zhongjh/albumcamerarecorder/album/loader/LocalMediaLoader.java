@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.album.loader;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
@@ -10,7 +11,8 @@ import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryAlbumListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryAllAlbumListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataResultListener;
-import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
+import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
+import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,11 +20,12 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 加载图像和视频的接口，区分全部和分页
+ * 加载图像和视频的逻辑实现
+ * 仿LocalMediaPageLoader
  *
  * @author zhongjh
  */
-public abstract class BaseLocalMediaLoader {
+public abstract class LocalMediaLoader {
 
     protected static final String COLUMN_COUNT = "count";
     protected static final String COLUMN_BUCKET_ID = "bucket_id";
@@ -31,9 +34,15 @@ public abstract class BaseLocalMediaLoader {
     protected static final String COLUMN_ORIENTATION = "orientation";
 
     private final Context mContext;
+    /**
+     * 拍摄配置
+     */
+    private AlbumSpec albumSpec;
 
-    public BaseLocalMediaLoader(Context context) {
+    public LocalMediaLoader(Context context) {
         this.mContext = context;
+        // 初始化相关配置
+        albumSpec = AlbumSpec.INSTANCE;
     }
 
     /**
@@ -87,7 +96,7 @@ public abstract class BaseLocalMediaLoader {
      * 页面查询指定内容
      *
      * @param bucketId 专辑id
-     * @param page 第几页
+     * @param page     第几页
      * @param pageSize 每页多少条
      */
     public abstract void loadPageMediaData(long bucketId, int page, int pageSize, OnQueryDataResultListener<LocalMedia> query);
@@ -130,9 +139,19 @@ public abstract class BaseLocalMediaLoader {
      * @return String
      */
     protected String getDurationCondition() {
-        long maxS = mCameraSpec.maxDuration.filterVideoMaxSecond == 0 ? Long.MAX_VALUE : getConfig().filterVideoMaxSecond;
-        return String.format(Locale.CHINA, "%d <%s " + COLUMN_DURATION + " and " + COLUMN_DURATION + " <= %d",
-                Math.max((long) 0, getConfig().filterVideoMinSecond), "=", maxS);
+        String duration;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            duration = MediaStore.MediaColumns.DURATION;
+        } else {
+            duration = COLUMN_DURATION;
+        }
+        long maxS = albumSpec.getVideoMaxSecond() == 0 ? Long.MAX_VALUE : albumSpec.getVideoMaxSecond();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return String.format(Locale.CHINA, "%d <%s " + duration + " and " + duration + " <= %d",
+                    Math.max((long) 0, albumSpec.getVideoMinSecond()),
+                    Math.max((long) 0, albumSpec.getVideoMinSecond()) == 0 ? "" : "=",
+                    maxS);
+        }
     }
 
     /**

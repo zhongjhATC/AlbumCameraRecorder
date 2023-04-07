@@ -16,7 +16,7 @@ import java.util.*
  * @author zhongjh
  * @date 2018/12/27
  */
-object AlbumSpec  {
+object AlbumSpec {
 
     // region start 属性
     /**
@@ -76,6 +76,16 @@ object AlbumSpec  {
     var onCheckedListener: OnCheckedListener? = null
     var baseFilters: ArrayList<BaseFilter>? = null
 
+    /**
+     * 用于筛选视频最长阈值
+     */
+    var videoMaxSecond = 0
+
+    /**
+     * 用于筛选视频最短阈值
+     */
+    var videoMinSecond = 0
+
     // endregion end 属性
 
     val cleanInstance = AlbumSpec
@@ -98,6 +108,10 @@ object AlbumSpec  {
         thumbnailScale = 0.5f
         originalEnable = false
         originalMaxSize = Int.MAX_VALUE
+        // 筛选最长的播放时间
+        videoMaxSecond = 0
+        // 筛选最短的播放时间
+        videoMinSecond = 0
     }
 
     /**
