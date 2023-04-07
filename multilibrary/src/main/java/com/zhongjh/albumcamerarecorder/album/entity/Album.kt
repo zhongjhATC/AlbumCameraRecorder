@@ -94,17 +94,16 @@ class Album internal constructor(
          */
         @JvmStatic
         fun valueOf(cursor: Cursor): Album {
-            val column = cursor.getString(cursor.getColumnIndex(AlbumLoader.COLUMN_URI))
+            val column = cursor.getString(cursor.getColumnIndexOrThrow(AlbumLoader.COLUMN_URI))
             val bucketDisplayName =
-                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
-            val count = cursor.getLong(cursor.getColumnIndex(AlbumLoader.COLUMN_COUNT))
-            val album = Album(
-                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
+            val count = cursor.getLong(cursor.getColumnIndexOrThrow(AlbumLoader.COLUMN_COUNT))
+            return Album(
+                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_ID)),
                 Uri.parse(column ?: ""),
                 bucketDisplayName ?: "",
                 count
             )
-            return album
         }
     }
 }

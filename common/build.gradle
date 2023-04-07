@@ -3,9 +3,6 @@ plugins {
     id 'kotlin-android-extensions'
     id 'kotlin-android'
 }
-//============================== JitPack 上传插件配置 =====================
-apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.zhongjhATC'
 
 android {
     compileSdkVersion rootProject.ext.androidCompileSdkVersion

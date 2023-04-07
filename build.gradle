@@ -1,16 +1,16 @@
 buildscript {
-    ext.kotlin_version = '1.6.0'
+    ext.kotlin_version = '1.7.20'
     repositories {
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        // 有时候碰到编译不了的提示maven下载失败或者https的问题，就调整下maven顺序
         google()
         jcenter()
         mavenCentral()
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.0.1"
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        classpath "com.android.tools.build:gradle:7.3.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -19,11 +19,12 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        // 有时候碰到编译不了的提示maven下载失败或者https的问题，就调整下maven顺序
         google()
         jcenter()
         mavenCentral()
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
         maven { url "https://jitpack.io" }
     }
 }
@@ -33,8 +34,8 @@ ext {
     versionCode = 1117
     versionName = '1.1.17'
 
-    androidCompileSdkVersion = 30
-    androidBuildToolsVersion = '30.0.3'
+    androidCompileSdkVersion = 33
+    androidBuildToolsVersion = '33.0.0'
     recyclerviewSdkVersion = '1.2.1'
     appcompatSdkVersion = '1.3.1'
     constraintlayoutSdkVersion = '2.1.4'
@@ -42,7 +43,7 @@ ext {
     documentfileSdkVersion = '1.0.1'
     androidMaterialSdkVersion = '1.2.1'
     minSdkVersion = 21
-    targetSdkVersion = 30
+    targetSdkVersion = 33
 
     junitVersion = '4.12'
 

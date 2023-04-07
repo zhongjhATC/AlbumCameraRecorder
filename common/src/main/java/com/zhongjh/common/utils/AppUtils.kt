@@ -1,6 +1,8 @@
 package com.zhongjh.common.utils
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 
 /**
  *
@@ -9,15 +11,23 @@ import android.content.Context
  * @date 2021/9/10
  */
 object AppUtils {
+
     /**
      * 获取应用程序名称
      */
     @JvmStatic
     fun getAppName(context: Context): String {
-        val packageManager = context.packageManager
-        val packageInfo = packageManager.getPackageInfo(
-                context.packageName, 0)
-        val labelRes = packageInfo.applicationInfo.labelRes
-        return context.resources.getString(labelRes)
+        val appInfo: ApplicationInfo
+        try {
+            appInfo = context.packageManager.getApplicationInfo(
+                context.packageName,
+                PackageManager.GET_META_DATA
+            )
+            return appInfo.loadLabel(context.packageManager).toString()
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return "AlbumCameraRecorder"
     }
+
 }
