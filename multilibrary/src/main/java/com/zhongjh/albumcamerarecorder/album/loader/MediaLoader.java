@@ -12,7 +12,6 @@ import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
-import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.SdkVersionUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -30,6 +29,9 @@ import java.util.Set;
  * 1. 每个查询条件会判断 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,如果低于Q版本则加入Group by bucket_id,理由是Q版本源码改变，已经无法Group by bucket_id了
  * 2. ContentResolver().query() 会生成 "WHERE (1 = 1) AND (xxxx)",所以 GROUP_BY_BUCKET_Id 要自带一个半括号"("
  * 3. 同时为了达到Group by效果，>= Q的版本会查询所有数据，然后进行数据分组
+ * <p>
+ * loadAllMedia 是获取专辑的
+ * loadPageMediaData 这个是获取图片的
  *
  * @author zhongjh
  * @date 2022/9/9
@@ -53,21 +55,23 @@ public class MediaLoader {
     }
 
     /**
-     * 获取所有多媒体
+     * 获取所有文件夹
+     * 会通过 SdkVersionUtils.isQ 判断
+     * SDK 29 以下的版本可以直接获取Data和
      *
      * @param listener 回调事件
      */
-    public void loadAllMedia(OnQueryDataListener<LocalFile> listener) {
-        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
+    public void loadAllMedia(OnQueryDataListener<Album2> listener) {
+        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<ArrayList<Album2>>() {
             @Override
-            public ArrayList<LocalFile> doInBackground() {
+            public ArrayList<Album2> doInBackground() {
                 // 查询Android数据库
                 Cursor data = mContext.getContentResolver().query(
                         // 查询数据来源的标记
                         QUERY_URI,
                         // 需要查询的列
                         SdkVersionUtils.isQ() ? PROJECTION_29 : PROJECTION,
-                        // 查询条件
+                        // 查询条件，包括group by
                         getCondition(),
                         // 配合上面的参数使用，上面的参数使用占位符"?"，那么这个参的数据会替换掉占位符"?"
                         getSelectionArgs(),
@@ -76,25 +80,25 @@ public class MediaLoader {
                 if (data != null) {
                     int count = data.getCount();
                     int totalCount = 0;
-                    List<LocalFile> localFiles = new ArrayList<>();
+                    List<Album2> Albums = new ArrayList<>();
                     if (count > 0) {
                         if (SdkVersionUtils.isQ()) {
                             // >= Q的版本会查询所有数据，需要针对bucket_id进行分组
-                            totalCount = setGroupByBucketId(data, localFiles);
+                            totalCount = setGroupByBucketIdBy29(data, Albums);
                         } else {
-                            data.moveToFirst();
-                            do {
-                                a();
-                            } while (data.moveToNext());
+                            totalCount = setGroupByBucketId(data, Albums);
                         }
-
                     }
+                    // 添加一个所有相机胶卷专辑
+                    Album2 allAlbum = new Album2();
                 }
+
+
                 return null;
             }
 
             @Override
-            public void onSuccess(ArrayList<LocalFile> result) {
+            public void onSuccess(ArrayList<Album2> result) {
 
             }
         });
@@ -278,13 +282,13 @@ public class MediaLoader {
     }
 
     /**
-     * >= Q的版本会查询所有数据，需要针对bucket_id进行分组
+     * >= Q的版本会查询所有数据，需要代码针对bucket_id进行分组
      *
      * @param data   查询出来数据源，针对该数据源进行分组
      * @param albums 最后整理成专辑添加入该列表
      * @return totalCount 所有照片总数，用于后面添加一个"所有"专辑计算数量
      */
-    private int setGroupByBucketId(Cursor data, List<Album2> albums) {
+    private int setGroupByBucketIdBy29(Cursor data, List<Album2> albums) {
         int totalCount = 0;
         Map<Long, Long> countMap = new HashMap<>();
         // data 循环移动到下一位执行逻辑 添加到countMap，如果有同个bucket_id，则value+1
@@ -310,10 +314,11 @@ public class MediaLoader {
                 }
                 String bucketDisplayName = data.getString(data.getColumnIndexOrThrow(COLUMN_BUCKET_DISPLAY_NAME));
                 String mimeType = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE));
-                String uri = getRealPathUri(bucketId, mimeType);
                 Long size = countMap.get(bucketId);
                 size = size == null ? 0 : size;
-                Album2 album = new Album2(String.valueOf(bucketId), uri, bucketDisplayName, size);
+                long id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
+                String firstImagePath = getRealPathUri(id, mimeType);
+                Album2 album = new Album2(String.valueOf(bucketId), firstImagePath, bucketDisplayName, size);
                 albums.add(album);
                 hashSet.add(bucketId);
                 totalCount += size;
@@ -322,12 +327,26 @@ public class MediaLoader {
         return totalCount;
     }
 
-    private void a(Cursor data, ) {
-        long bucketId = data.getLong(data.getColumnIndexOrThrow(COLUMN_BUCKET_ID));
-        String bucketDisplayName = data.getString(data.getColumnIndexOrThrow(COLUMN_BUCKET_DISPLAY_NAME));
-        int size = data.getInt(data.getColumnIndexOrThrow(COLUMN_COUNT));
-        String url = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
-        Album album = new Album(String.valueOf(bucketId), url, bucketDisplayName, size);
+    /**
+     * < Q的版本会查询所有数据，数据库查询已经针对bucket_id分组
+     *
+     * @param data   查询出来数据源，进行相关处理
+     * @param albums 最后整理成专辑添加入该列表
+     * @return totalCount 所有照片总数，用于后面添加一个"所有"专辑计算数量
+     */
+    private int setGroupByBucketId(Cursor data, List<Album2> albums) {
+        int totalCount = 0;
+        data.moveToFirst();
+        do {
+            long bucketId = data.getLong(data.getColumnIndexOrThrow(COLUMN_BUCKET_ID));
+            String bucketDisplayName = data.getString(data.getColumnIndexOrThrow(COLUMN_BUCKET_DISPLAY_NAME));
+            int size = data.getInt(data.getColumnIndexOrThrow(COLUMN_COUNT));
+            String url = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+            Album2 album = new Album2(String.valueOf(bucketId), url, bucketDisplayName, size);
+            albums.add(album);
+            totalCount += size;
+        } while (data.moveToNext());
+        return totalCount;
     }
 
 }
