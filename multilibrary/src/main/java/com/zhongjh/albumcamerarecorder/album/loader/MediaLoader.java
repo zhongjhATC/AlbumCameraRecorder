@@ -7,11 +7,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
+import com.zhongjh.albumcamerarecorder.album.utils.SortUtils;
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.SdkVersionUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -49,6 +52,7 @@ public class MediaLoader {
     private static final String COLUMN_BUCKET_DISPLAY_NAME = "bucket_display_name";
 
     private final Context mContext;
+    private GlobalSpec globalSpec = GlobalSpec.INSTANCE;
 
     public MediaLoader(Context context) {
         this.mContext = context;
@@ -80,7 +84,7 @@ public class MediaLoader {
                 if (data != null) {
                     int count = data.getCount();
                     int totalCount = 0;
-                    List<Album2> albums = new ArrayList<>();
+                    ArrayList<Album2> albums = new ArrayList<>();
                     if (count > 0) {
                         if (SdkVersionUtils.isQ()) {
                             // >= Q的版本会查询所有数据，需要针对bucket_id进行分组
@@ -95,15 +99,25 @@ public class MediaLoader {
                         allAlbum.setFirstImagePath(SdkVersionUtils.isQ() ? getFirstUri(data) : getFirstUrl(data));
                         allAlbum.setFirstMimeType(getFirstCoverMimeType(data));
                     }
+                    SortUtils.sortFolder(albums);
+                    // 多媒体总数
+                    allAlbum.setCount(totalCount);
+                    allAlbum.setChecked(true);
+                    allAlbum.setId(-1);
+                    String bucketDisplayName = mContext.getString(R.string.z_multi_library_album_name_all);
+                    allAlbum.setName(bucketDisplayName);
+                    allAlbum.setType(globalSpec.getMimeTypeSet(ModuleTypes.ALBUM));
+                    albums.add(0, allAlbum);
+                    return albums;
                 }
-
-
-                return null;
+                return new ArrayList<>();
             }
 
             @Override
             public void onSuccess(ArrayList<Album2> result) {
-
+                if (listener != null) {
+                    listener.onComplete(result);
+                }
             }
         });
     }
@@ -323,10 +337,10 @@ public class MediaLoader {
                 long id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
                 String firstImagePath = getRealPathUri(id, mimeType);
                 Album2 album = new Album2();
-                album.setId(String.valueOf(bucketId));
+                album.setId(bucketId);
                 album.setFirstImagePath(firstImagePath);
-                album.setDisplayName(bucketDisplayName);
-                album.setCount(size);
+                album.setName(bucketDisplayName);
+                album.setCount(Integer.parseInt(String.valueOf(size)));
                 albums.add(album);
                 hashSet.add(bucketId);
                 totalCount += size;
@@ -351,9 +365,9 @@ public class MediaLoader {
             int size = data.getInt(data.getColumnIndexOrThrow(COLUMN_COUNT));
             String url = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
             Album2 album = new Album2();
-            album.setId(String.valueOf(bucketId));
+            album.setId(bucketId);
             album.setFirstImagePath(url);
-            album.setDisplayName(bucketDisplayName);
+            album.setName(bucketDisplayName);
             album.setCount(size);
             albums.add(album);
             totalCount += size;

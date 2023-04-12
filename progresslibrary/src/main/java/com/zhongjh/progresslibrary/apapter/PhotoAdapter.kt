@@ -119,7 +119,11 @@ class PhotoAdapter(
         // 设置图片
         if (isShowAddItem(position)) {
             // 加载➕图
-            holder.mpvImage.setImageResource(R.drawable.selector_image_add_zhongjh)
+            if (photoAdapterEntity.addDrawable != null) {
+                holder.mpvImage.setImageDrawable(photoAdapterEntity.addDrawable)
+            } else {
+                holder.mpvImage.setImageResource(R.drawable.selector_image_add_zhongjh)
+            }
             // 隐藏close
             holder.vClose.visibility = View.GONE
             holder.vClose.setOnClickListener(null)

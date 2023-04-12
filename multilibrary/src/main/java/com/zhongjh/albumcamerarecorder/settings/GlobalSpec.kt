@@ -138,6 +138,7 @@ object GlobalSpec {
     }
 
     /**
+     * 传递子模块的类型，如果子模块有类型限制，则优先子模块的限制，如果没有，才轮到公共模块的限制
      * @return 返回 mime 的类型，MimeType.allOf()
      */
     fun getMimeTypeSet(@ModuleTypes moduleTypes: Int): Set<MimeType> {
