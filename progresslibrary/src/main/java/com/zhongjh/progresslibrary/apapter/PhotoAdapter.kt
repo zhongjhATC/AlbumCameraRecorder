@@ -45,10 +45,22 @@ import java.util.*
  * @param maskingTextContent 有关遮罩层：文字内容
  * @param addDrawable        添加的图片资源
  */
-class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage: GridLayoutManager, private val maskProgressLayout: MaskProgressLayout,
-                   private val imageEngine: ImageEngine, private val placeholder: Drawable, var isOperation: Boolean, var maxMediaCount: Int,
-                   private val maskingColor: Int, private val maskingTextSize: Int, private val maskingTextColor: Int, private val maskingTextContent: String,
-                   private val deleteColor: Int, private val deleteImage: Drawable?, private val addDrawable: Drawable?) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
+class PhotoAdapter(
+    private val mContext: Context,
+    private val mGridLayoutManage: GridLayoutManager,
+    private val maskProgressLayout: MaskProgressLayout,
+    private val imageEngine: ImageEngine,
+    private val placeholder: Drawable,
+    var isOperation: Boolean,
+    var maxMediaCount: Int,
+    private val maskingColor: Int,
+    private val maskingTextSize: Int,
+    private val maskingTextColor: Int,
+    private val maskingTextContent: String,
+    private val deleteColor: Int,
+    private val deleteImage: Drawable?,
+    private val addDrawable: Drawable?
+) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
     companion object {
         val TAG: String = PhotoAdapter::class.java.simpleName
@@ -124,7 +136,11 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         // 设置图片
         if (isShowAddItem(position)) {
             // 加载➕图
-            holder.mpvImage.setImageResource(R.drawable.selector_image_add_zhongjh)
+            if (addDrawable != null) {
+                holder.mpvImage.setImageDrawable(addDrawable)
+            } else {
+                holder.mpvImage.setImageResource(R.drawable.selector_image_add_zhongjh)
+            }
             // 隐藏close
             holder.vClose.visibility = View.GONE
             holder.vClose.setOnClickListener(null)
@@ -136,7 +152,13 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
                     mMultiMediaViewAdd.maskProgressView = holder.mpvImage
                     mMultiMediaViewAdd.itemView = holder.itemView
                     // 点击加载➕图
-                    listener?.onItemAdd(v, mMultiMediaViewAdd, mImageCount, mVideoCount, maskProgressLayout.audioList.size)
+                    listener?.onItemAdd(
+                        v,
+                        mMultiMediaViewAdd,
+                        mImageCount,
+                        mVideoCount,
+                        maskProgressLayout.audioList.size
+                    )
                 }
             })
             holder.mpvImage.reset()
@@ -151,7 +173,8 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
             if (multiMediaView.isVideo()) {
                 // 视频处理，判断是否显示播放按钮
                 holder.tvVideoDuration.visibility = View.VISIBLE
-                holder.tvVideoDuration.text = DateUtils.formatElapsedTime(multiMediaView.duration / 1000)
+                holder.tvVideoDuration.text =
+                    DateUtils.formatElapsedTime(multiMediaView.duration / 1000)
             } else if (multiMediaView.isImageOrGif()) {
                 holder.tvVideoDuration.visibility = View.GONE
             }
@@ -187,7 +210,8 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
                             // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
                             if (TextUtils.isEmpty(multiMediaView.path) && multiMediaView.uri == null) {
                                 // 执行下载事件
-                                val isContinue = listener!!.onItemVideoStartDownload(v, multiMediaView)
+                                val isContinue =
+                                    listener!!.onItemVideoStartDownload(v, multiMediaView)
                                 if (isContinue) {
                                     // 点击事件
                                     listener!!.onItemClick(v, multiMediaView)
@@ -387,9 +411,10 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
     private fun isRemoveAdd() {
         // 判断是否等于最大数量,并且是可操作的才进行去掉add
         if (list.size + maskProgressLayout.audioList.size >= maxMediaCount
-                && isOperation) {
+            && isOperation
+        ) {
             notifyItemRemoved(list.size)
-            notifyItemRangeChanged(list.size,  list.size)
+            notifyItemRangeChanged(list.size, list.size)
         }
     }
 
@@ -449,18 +474,26 @@ class PhotoAdapter(private val mContext: Context, private val mGridLayoutManage:
         /**
          * 加载图片
          */
-        internal fun loadImage(context: Context, imageEngine: ImageEngine,
-                               placeholder: Drawable, multiMediaView: MultiMediaView, height: Int) {
+        internal fun loadImage(
+            context: Context, imageEngine: ImageEngine,
+            placeholder: Drawable, multiMediaView: MultiMediaView, height: Int
+        ) {
             // 加载图片
             if (multiMediaView.uri != null) {
-                imageEngine.loadThumbnail(context, height, placeholder,
-                        mpvImage, multiMediaView.uri!!)
+                imageEngine.loadThumbnail(
+                    context, height, placeholder,
+                    mpvImage, multiMediaView.uri!!
+                )
             } else if (!TextUtils.isEmpty(multiMediaView.path)) {
-                imageEngine.loadThumbnail(context, height, placeholder,
-                        mpvImage, Uri.fromFile(File(multiMediaView.path!!)))
+                imageEngine.loadThumbnail(
+                    context, height, placeholder,
+                    mpvImage, Uri.fromFile(File(multiMediaView.path!!))
+                )
             } else if (!TextUtils.isEmpty(multiMediaView.url)) {
-                imageEngine.loadUrlThumbnail(context, height, placeholder,
-                        mpvImage, multiMediaView.url!!)
+                imageEngine.loadUrlThumbnail(
+                    context, height, placeholder,
+                    mpvImage, multiMediaView.url!!
+                )
             }
         }
 
