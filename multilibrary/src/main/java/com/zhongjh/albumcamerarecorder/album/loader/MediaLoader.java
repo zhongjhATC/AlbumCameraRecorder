@@ -55,7 +55,7 @@ public class MediaLoader {
     }
 
     /**
-     * 获取所有文件夹
+     * 获取所有文件夹(专辑)
      * 会通过 SdkVersionUtils.isQ 判断
      * SDK 29 以下的版本可以直接获取Data和
      *
@@ -92,8 +92,8 @@ public class MediaLoader {
                     // 添加一个所有相机胶卷专辑
                     Album2 allAlbum = new Album2();
                     if (data.moveToFirst()) {
-                        allMediaFolder.setFirstImagePath(SdkVersionUtils.isQ() ? getFirstUri(data) : getFirstUrl(data));
-                        allMediaFolder.setFirstMimeType(getFirstCoverMimeType(data));
+                        allAlbum.setFirstImagePath(SdkVersionUtils.isQ() ? getFirstUri(data) : getFirstUrl(data));
+                        allAlbum.setFirstMimeType(getFirstCoverMimeType(data));
                     }
                 }
 
@@ -322,7 +322,11 @@ public class MediaLoader {
                 size = size == null ? 0 : size;
                 long id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
                 String firstImagePath = getRealPathUri(id, mimeType);
-                Album2 album = new Album2(String.valueOf(bucketId), firstImagePath, bucketDisplayName, size);
+                Album2 album = new Album2();
+                album.setId(String.valueOf(bucketId));
+                album.setFirstImagePath(firstImagePath);
+                album.setDisplayName(bucketDisplayName);
+                album.setCount(size);
                 albums.add(album);
                 hashSet.add(bucketId);
                 totalCount += size;
@@ -346,11 +350,47 @@ public class MediaLoader {
             String bucketDisplayName = data.getString(data.getColumnIndexOrThrow(COLUMN_BUCKET_DISPLAY_NAME));
             int size = data.getInt(data.getColumnIndexOrThrow(COLUMN_COUNT));
             String url = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
-            Album2 album = new Album2(String.valueOf(bucketId), url, bucketDisplayName, size);
+            Album2 album = new Album2();
+            album.setId(String.valueOf(bucketId));
+            album.setFirstImagePath(url);
+            album.setDisplayName(bucketDisplayName);
+            album.setCount(size);
             albums.add(album);
             totalCount += size;
         } while (data.moveToNext());
         return totalCount;
+    }
+
+    /**
+     * 根据游标获取uri
+     *
+     * @param cursor 游标
+     * @return uri
+     */
+    private static String getFirstUri(Cursor cursor) {
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
+        String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE));
+        return getRealPathUri(id, mimeType);
+    }
+
+    /**
+     * 根据游标获取mimeType
+     *
+     * @param cursor 游标
+     * @return mimeType
+     */
+    private static String getFirstCoverMimeType(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE));
+    }
+
+    /**
+     * 根据游标获取path
+     *
+     * @param cursor 游标
+     * @return url path
+     */
+    private static String getFirstUrl(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA));
     }
 
 }
