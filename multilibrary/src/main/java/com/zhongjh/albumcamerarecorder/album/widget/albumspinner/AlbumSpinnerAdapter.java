@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
 
@@ -29,17 +30,17 @@ import java.util.List;
  */
 public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapter.ViewHolder> {
 
-    private List<Album> albums = new ArrayList<>();
+    private List<Album2> albums = new ArrayList<>();
 
-    public void bindAlbums(List<Album> albums) {
-        List<Album> oldAlbums = this.albums;
+    public void bindAlbums(List<Album2> albums) {
+        List<Album2> oldAlbums = this.albums;
         this.albums = albums;
         // 计算新老数据集差异，将差异更新到Adapter
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new AlbumCallback(oldAlbums, albums));
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public List<Album> getAlbums() {
+    public List<Album2> getAlbums() {
         return albums;
     }
 
@@ -53,24 +54,24 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Album album = albums.get(position);
-        String name = album.getDisplayName(holder.itemView.getContext());
+        Album2 album = albums.get(position);
+        String name = album.getName();
         long imageNum = album.getCount();
         boolean isChecked = album.isChecked();
-        int checkedNum = album.getCheckedNum();
+        int checkedNum = album.getCheckedCount();
         holder.tvSign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
         holder.itemView.setSelected(isChecked);
         GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext(),
                 holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size),
                 holder.placeholder,
-                holder.imgFirst, album.getCoverUri());
+                holder.imgFirst, album.getFirstImagePath());
         Context context = holder.itemView.getContext();
         holder.tvName.setText(context.getString(R.string.z_multi_library_album_num, name, imageNum));
         holder.itemView.setOnClickListener(view -> {
             if (onAlbumItemClickListener != null) {
                 int size = albums.size();
                 for (int i = 0; i < size; i++) {
-                    Album item = albums.get(i);
+                    Album2 item = albums.get(i);
                     item.setChecked(false);
                 }
                 album.setChecked(true);

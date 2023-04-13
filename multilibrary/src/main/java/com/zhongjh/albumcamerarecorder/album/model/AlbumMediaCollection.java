@@ -26,7 +26,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.loader.AlbumMediaLoader;
 
 import java.lang.ref.WeakReference;
@@ -50,7 +50,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
     @SuppressWarnings("all")
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Context context = mContext.get();
-        Album album = null;
+        Album2 album = null;
         if (args != null) {
             album = args.getParcelable(ARGS_ALBUM);
         }
@@ -98,7 +98,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
      * @param target   专辑
      * @param loaderId 因为两个Fragment共存的原因，所以要区分id
      */
-    public void load(@Nullable Album target, int loaderId) {
+    public void load(@Nullable Album2 target, int loaderId) {
         mLoaderId = loaderId;
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);
@@ -117,7 +117,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
      *
      * @param target 专辑
      */
-    public void restartLoader(@Nullable Album target) {
+    public void restartLoader(@Nullable Album2 target) {
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);
         mLoaderManager.restartLoader(mLoaderId, args, this);

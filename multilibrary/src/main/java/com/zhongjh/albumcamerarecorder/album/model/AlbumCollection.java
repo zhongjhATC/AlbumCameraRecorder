@@ -71,8 +71,8 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     public void onCreate(MainModel mainModel, AlbumCallbacks callbacks) {
-        mContext = new WeakReference<>(mainModel.getApplication());
-        mLoaderManager = LoaderManager.getInstance(mainModel.getApplication());
+//        mContext = new WeakReference<>(mainModel.getApplication());
+//        mLoaderManager = LoaderManager.getInstance(mainModel.getApplication());
         mCallbacks = callbacks;
     }
 

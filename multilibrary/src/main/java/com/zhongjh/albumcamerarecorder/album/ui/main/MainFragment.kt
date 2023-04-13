@@ -5,9 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.zhongjh.albumcamerarecorder.BaseFragment
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment
+
 
 /**
  * 一个容器，容纳 MatissFragment和别的例如 PreviewFragment,一切都是为了过渡动画
@@ -15,6 +17,8 @@ import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment
  * @date 2022/7/26
  */
 class MainFragment : BaseFragment() {
+
+    private lateinit var viewModel: MainModel
 
     companion object {
         /**
@@ -32,9 +36,10 @@ class MainFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
+        viewModel = ViewModelProvider(this)[com.zhongjh.albumcamerarecorder.album.ui.main.MainModel::class.java]
         Log.d("MainFragment", "onCreateView")
         return inflater.inflate(R.layout.fragment_containerview_zjh, container, false)
     }
@@ -47,13 +52,12 @@ class MainFragment : BaseFragment() {
         // 如果不存在，则重新创建并添加，如果已经存在就不用处理了，因为FragmentStateAdapter已经帮我们处理了
         matissFragment ?: let {
             val newMatissFragment = MatissFragment.newInstance(
-                    arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
-                            ?: 0
+                arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
+                    ?: 0
             )
             childFragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainerView, newMatissFragment, MATISS_FRAGMENT_TAG)
-                    .commitAllowingStateLoss()
+                .add(R.id.fragmentContainerView, newMatissFragment, MATISS_FRAGMENT_TAG)
+                .commitAllowingStateLoss()
         }
     }
-
 }

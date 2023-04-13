@@ -1,13 +1,16 @@
 package com.zhongjh.albumcamerarecorder.album.ui.main;
 
 import android.app.Application;
-import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModel;
 
-import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
-import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
+import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader;
+
+import java.util.List;
 
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
@@ -16,45 +19,29 @@ import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
  * @author zhongjh
  * @date 2022/9/7
  */
-public class MainModel extends AndroidViewModel implements AlbumCollection.AlbumCallbacks {
+public class MainModel extends AndroidViewModel {
 
-    /**
-     * 专辑下拉数据源
-     */
-    private final AlbumCollection mAlbumCollection = new AlbumCollection();
-    /**
-     * 相册下拉数据源
-     */
-    private final AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
-    /**
-     * 当前选择的专辑索引
-     */
-    private int currentSelection;
+    MediaLoader mMediaLoader;
 
     public MainModel(@NonNull Application application) {
         super(application);
-        mAlbumCollection.onCreate(this,this);
-        mAlbumCollection.loadAlbums();
+        mMediaLoader = new MediaLoader(application);
     }
 
+    /**
+     * 获取所有专辑
+     */
+    public void loadAllAlbum(OnQueryDataListener<Album2> onQueryDataListener) {
+        mMediaLoader.loadAllMedia(onQueryDataListener);
+    }
+
+    /**
+     * 由于屏幕旋转导致的Activity重建，该方法不会被调用
+     * <p>
+     * 只有ViewModel已经没有任何Activity与之有关联，系统则会调用该方法，你可以在此清理资源
+     */
     @Override
-    public void onAlbumLoadFinished(Cursor cursor) {
-//        // 加载完专辑数据后,也加载相应的图片数据
-//        mAlbumMediaCollection.onCreate(this,this);
-//        mAlbumMediaCollection.load(album, LOADER_MEDIA_ID);
+    protected void onCleared() {
+        super.onCleared();
     }
-
-    @Override
-    public void onAlbumReset() {
-
-    }
-
-    public int getCurrentSelection() {
-        return currentSelection;
-    }
-
-    public void setStateCurrentSelection(int currentSelection) {
-        this.currentSelection = currentSelection;
-    }
-
 }

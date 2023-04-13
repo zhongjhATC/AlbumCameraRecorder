@@ -25,7 +25,7 @@ import android.provider.MediaStore;
 import androidx.loader.content.CursorLoader;
 
 
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.common.utils.MediaStoreCompat;
 
@@ -122,7 +122,7 @@ public class AlbumMediaLoader extends CursorLoader {
      * @param album 专辑
      * @return 游标数据源
      */
-    public static CursorLoader newInstance(Context context, Album album) {
+    public static CursorLoader newInstance(Context context, Album2 album) {
         String selection;
         String[] selectionArgs;
         if (album.isAll()) {
@@ -140,14 +140,14 @@ public class AlbumMediaLoader extends CursorLoader {
             if (AlbumSpec.INSTANCE.onlyShowImages()) {
                 selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionAlbumArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE,
-                        album.getId());
+                        String.valueOf(album.getId()));
             } else if (AlbumSpec.INSTANCE.onlyShowVideos()) {
                 selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionAlbumArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO,
-                        album.getId());
+                        String.valueOf(album.getId()));
             } else {
                 selection = SELECTION_ALBUM;
-                selectionArgs = getSelectionAlbumArgs(album.getId());
+                selectionArgs = getSelectionAlbumArgs(String.valueOf(album.getId()));
             }
         }
         return new AlbumMediaLoader(context, selection, selectionArgs);

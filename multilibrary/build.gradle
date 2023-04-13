@@ -48,8 +48,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$rootProject.ext.recyclerviewSdkVersion"
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintlayoutSdkVersion"
-    // 将生命周期定义为一套标准的行为模式
-    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.ext.lifecycle_version"
+
     // 使用AsyncLayoutInflater异步加载布局
     implementation 'androidx.asynclayoutinflater:asynclayoutinflater:1.0.0'
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"

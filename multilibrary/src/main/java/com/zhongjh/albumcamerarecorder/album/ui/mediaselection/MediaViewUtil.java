@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
@@ -45,7 +45,7 @@ public class MediaViewUtil implements
     private final AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
     private final RecyclerView mRecyclerView;
     private AlbumMediaAdapter mAdapter;
-    private Album mAlbum;
+    private Album2 mAlbum;
     /**
      * 选择接口事件
      */
@@ -127,7 +127,7 @@ public class MediaViewUtil implements
      *
      * @param album 专辑
      */
-    public void load(Album album) {
+    public void load(Album2 album) {
         mAlbum = album;
         mAlbumMediaCollection.restartLoader(mAlbum);
     }
@@ -177,7 +177,7 @@ public class MediaViewUtil implements
     }
 
     @Override
-    public void onMediaClick(Album album, ImageView imageView, MultiMedia item, int adapterPosition) {
+    public void onMediaClick(Album2 album, ImageView imageView, MultiMedia item, int adapterPosition) {
         if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onMediaClick(mAlbum, imageView,
                     item, adapterPosition);

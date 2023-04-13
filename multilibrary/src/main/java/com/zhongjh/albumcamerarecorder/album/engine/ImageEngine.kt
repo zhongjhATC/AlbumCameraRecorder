@@ -20,32 +20,14 @@ interface ImageEngine {
      * @param resize      原始图像的所需大小
      * @param placeholder 尚未加载图像时可绘制的占位符
      * @param imageView   ImageView控件
-     * @param uri         加载图像的URI
+     * @param path        加载图像的path,API 29版本以上的是uri
      */
     fun loadThumbnail(
         context: Context,
         resize: Int,
         placeholder: Drawable,
         imageView: ImageView,
-        uri: Uri
-    )
-
-    /**
-     * 加载GIF图像资源的缩略图。如果只是一个缩略图，你不必加载动画gif
-     * 场景仅用于相册
-     *
-     * @param context     上下文
-     * @param resize      原始图像的所需大小
-     * @param placeholder 尚未加载图像时可绘制的占位符
-     * @param imageView   ImageView控件
-     * @param uri         加载图像的URI
-     */
-    fun loadGifThumbnail(
-        context: Context,
-        resize: Int,
-        placeholder: Drawable,
-        imageView: ImageView,
-        uri: Uri
+        path: String
     )
 
     /**
@@ -100,11 +82,7 @@ interface ImageEngine {
      * @param uri       加载图像的uri
      */
     fun loadGifImage(
-        context: Context,
-        resizeX: Int,
-        resizeY: Int,
-        imageView: ImageView,
-        uri: Uri
+        context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri
     )
 
     /**

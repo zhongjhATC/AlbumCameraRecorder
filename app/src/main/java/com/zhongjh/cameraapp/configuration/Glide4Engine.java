@@ -31,28 +31,16 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * {@link ImageEngine} implementation using Glide.
+ *
  * @author zhongjh
  */
 public class Glide4Engine implements ImageEngine {
 
     @Override
-    public void loadThumbnail(@NotNull Context context, int resize, @NotNull Drawable placeholder, @NotNull ImageView imageView, @NotNull Uri uri) {
-        Glide.with(context.getApplicationContext())
-                .asBitmap() // some .jpeg files are actually gif
-                .load(uri)
-                .apply(new RequestOptions()
-                        .override(resize, resize)
-                        .placeholder(placeholder)
-                        .centerCrop())
-                .into(imageView);
-    }
-
-    @Override
-    public void loadGifThumbnail(@NotNull Context context, int resize, @NotNull Drawable placeholder, @NotNull ImageView imageView,
-                                 @NotNull Uri uri) {
+    public void loadThumbnail(@NotNull Context context, int resize, @NotNull Drawable placeholder, @NotNull ImageView imageView, @NotNull String path) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
-                .load(uri)
+                .load(path)
                 .apply(new RequestOptions()
                         .override(resize, resize)
                         .placeholder(placeholder)
@@ -121,5 +109,4 @@ public class Glide4Engine implements ImageEngine {
     public boolean supportAnimatedGif() {
         return true;
     }
-
 }
