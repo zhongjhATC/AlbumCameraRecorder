@@ -60,6 +60,14 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
         int checkedNum = album.getCheckedNum();
         holder.tvSign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
         holder.itemView.setSelected(isChecked);
+        if (isChecked)
+        {
+            holder.ivAlbumSelected.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            holder.ivAlbumSelected.setVisibility(View.GONE);
+        }
         GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext(),
                 holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size),
                 holder.placeholder,
@@ -86,7 +94,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgFirst;
+        ImageView imgFirst,ivAlbumSelected;
         TextView tvName, tvSign;
         /**
          * 默认图片
@@ -98,6 +106,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
             imgFirst = itemView.findViewById(R.id.imgFirst);
             tvName = itemView.findViewById(R.id.tvName);
             tvSign = itemView.findViewById(R.id.tvSign);
+            ivAlbumSelected = itemView.findViewById(R.id.iv_album_selected);
 
             TypedArray ta = itemView.getContext().getTheme().obtainStyledAttributes(
                     new int[]{R.attr.album_thumbnail_placeholder});
@@ -109,9 +118,9 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
             itemView.getContext().getTheme().resolveAttribute(R.attr.album_listPopupWindowStyle, typedValue, true);
 
             // item背景
-            Drawable backgroundStyle = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId,
-                    R.attr.album_backgroundStyle, R.drawable.spinner_item_select_bg_white);
-            itemView.setBackground(backgroundStyle);
+//            Drawable backgroundStyle = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId,
+//                    R.attr.album_backgroundStyle, R.drawable.spinner_item_select_bg_white);
+//            itemView.setBackground(backgroundStyle);
 
             // 该专辑里面有图片被选择时
             Drawable folderCheckedDotDrawable = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId,

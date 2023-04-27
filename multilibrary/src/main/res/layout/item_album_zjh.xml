@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/spinner_item_select_bg_white"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
     android:orientation="vertical"
     android:padding="6dp">
 
@@ -33,5 +34,14 @@
         android:text="@string/z_multi_library_album_num"
         android:textColor="@color/text_color_4d"
         android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/iv_album_selected"
+        android:src="@drawable/ic_album_item_selected_zjh"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="0dp"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

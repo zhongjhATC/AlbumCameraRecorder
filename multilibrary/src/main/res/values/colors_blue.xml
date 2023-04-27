@@ -26,7 +26,7 @@
     <color name="blue_album_empty_view">#4D000000</color>
 
     <color name="blue_item_placeholder">#EAEEF4</color>
-    <color name="blue_item_checkCircle_backgroundColor">#1E8AE8</color>
+    <color name="blue_item_checkCircle_backgroundColor">#0099ff</color>
     <color name="blue_item_checkCircle_borderColor">#FFFFFF</color>
     <color name="blue_capture">#424242</color>
 

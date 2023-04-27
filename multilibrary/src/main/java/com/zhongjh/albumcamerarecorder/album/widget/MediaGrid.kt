@@ -36,6 +36,11 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
     private lateinit var mVideoDuration: TextView
 
     /**
+     * 选中文件蒙版
+     */
+    private lateinit var mSelectMask: View
+
+    /**
      * 值
      */
     private lateinit var mMedia: MultiMedia
@@ -62,6 +67,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
         LayoutInflater.from(context).inflate(R.layout.media_grid_content_zjh, this, true)
         mThumbnail = findViewById(R.id.media_thumbnail)
         mCheckView = findViewById(R.id.checkView)
+        mSelectMask = findViewById(R.id.view_mask)
         mGifTag = findViewById(R.id.gif)
         mVideoDuration = findViewById(R.id.video_duration)
         mThumbnail.setOnClickListener(this)
@@ -135,6 +141,11 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      */
     fun setChecked(checked: Boolean) {
         mCheckView.setChecked(checked)
+    }
+
+    fun setSelectMaskVisibility(visibility:Int)
+    {
+        mSelectMask.visibility = visibility
     }
 
     /**
