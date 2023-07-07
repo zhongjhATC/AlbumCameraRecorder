@@ -27,6 +27,14 @@
     <attr name="click.button.inner.circle.in.operation.interval" format="reference|color" /> <!-- 外圈的分段录制间隔 -->
     <!-- endregion -->
 
+    <!-- region 展示视频界面的样式 -->
+    <attr name="preview.video.button.confirm.text.color" format="reference|color" /> <!-- 提交按钮的文字的颜色 -->
+    <attr name="preview.video.button.confirm.background.color.idle" format="reference|color" /> <!-- 提交按钮的背景颜色 -->
+    <attr name="preview.video.button.confirm.icon.complete" format="reference|color" /> <!-- 提交按钮的完成时图标 -->
+    <attr name="preview.video.button.confirm.icon.error" format="reference|color" /> <!-- 提交按钮的失败时图标 -->
+    <!-- endregion -->
+
+
     <!-- region 专辑下拉选项框的样式 -->
     <!-- endregion -->
 

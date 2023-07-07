@@ -30,9 +30,19 @@
         </item>
         <item name="capture.textColor">@color/blue_capture</item>
         <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
+
+        <!-- 录制的按钮样式 -->
+        <!-- 按钮外圈颜色 -->
         <item name="click.long.button.round.border">#ffffffff</item>
+        <!-- 按钮内圈长按中的颜色 -->
         <item name="click.long.button.inner.circle.in.operation">@color/blue_primary</item>
+        <!-- 按钮内圈默认的颜色 -->
         <item name="click.long.button.inner.circle.no.operation">#99ffffff</item>
+
+        <!-- 展示视频界面的样式 -->
+        <item name="preview.video.button.confirm.text.color"></item>
+        <!-- 右上角按钮的文字颜色 -->
+
     </style>
 
     <style name="Toolbar.Blue" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -92,12 +102,12 @@
         <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
 
         <!-- 录制的按钮样式 -->
-        <item name="click.long.button.round.border">#ffffffff</item> <!-- 按钮外圈颜色 -->
+        <!-- 按钮外圈颜色 -->
+        <item name="click.long.button.round.border">#ffffffff</item>
         <!-- 按钮内圈长按中的颜色 -->
-        <item name="click.long.button.inner.circle.in.operation">
-            @color/dracula_primary
-        </item>
-        <item name="click.long.button.inner.circle.no.operation">#99ffffff</item> <!-- 按钮内圈默认的颜色 -->
+        <item name="click.long.button.inner.circle.in.operation">@color/dracula_primary</item>
+        <!-- 按钮内圈默认的颜色 -->
+        <item name="click.long.button.inner.circle.no.operation">#99ffffff</item>
     </style>
 
     <style name="Toolbar.Dracula" parent="ThemeOverlay.AppCompat.Dark.ActionBar">

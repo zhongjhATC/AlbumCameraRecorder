@@ -60,8 +60,9 @@
     <string name="configure_upperlimit_version">This is flexible configuration can choose xx pictures,xx videos,xx audio usage</string>
     <string name="open_the_default_data_set">Open the default data set</string>
     <string name="instant_preview">Instant preview</string>
-    <string name="blue_style">Blue style</string>
-    <string name="black_style">Black style</string>
+    <string name="blue_style">Blue Style</string>
+    <string name="black_style">Black Style</string>
+    <string name="green_style">Green Style</string>
     <string name="you_can_turn_it_back_on">You can turn it back on</string>
     <string name="please_open_it_in_settings_permission_management">Please open it in Settings - Permission Management</string>
     <string name="download_failed">Download failed</string>
