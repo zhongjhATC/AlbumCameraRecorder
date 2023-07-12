@@ -12,25 +12,18 @@ import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
  * @author zhongjh
  */
 class PicassoEngine : ImageEngine {
-    
+
     override fun loadThumbnail(
         context: Context,
         resize: Int,
         placeholder: Drawable,
         imageView: ImageView,
-        uri: Uri
+        path: String
     ) {
-        Picasso.with(context).load(uri).placeholder(placeholder)
+        Picasso.with(context).load(path).placeholder(placeholder)
             .resize(resize, resize)
             .centerCrop()
             .into(imageView)
-    }
-
-    override fun loadGifThumbnail(
-        context: Context, resize: Int, placeholder: Drawable, imageView: ImageView,
-        uri: Uri
-    ) {
-        loadThumbnail(context, resize, placeholder, imageView, uri)
     }
 
     override fun loadImage(

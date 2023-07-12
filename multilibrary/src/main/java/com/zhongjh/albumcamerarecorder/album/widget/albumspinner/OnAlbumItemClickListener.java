@@ -1,6 +1,6 @@
 package com.zhongjh.albumcamerarecorder.album.widget.albumspinner;
 
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 
 /**
  * 专辑目录事件
@@ -14,5 +14,5 @@ public interface OnAlbumItemClickListener {
      * @param position 索引
      * @param album 专辑
      */
-    void onItemClick(int position, Album album);
+    void onItemClick(int position, Album2 album);
 }

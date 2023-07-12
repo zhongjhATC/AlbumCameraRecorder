@@ -141,19 +141,11 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      * 设置图片或者gif图片
      */
     private fun setImage() {
-        if (mMedia.uri == null) {
-            return
-        }
-        mImageView.transitionName = mMedia.id.toString()
-        if (mMedia.isGif()) {
-            imageEngine.loadGifThumbnail(
-                context, mPreBindInfo.mResize,
-                mPreBindInfo.mPlaceholder, mImageView, mMedia.uri!!
-            )
-        } else {
+        mMedia.path?.let {
+            mImageView.transitionName = mMedia.id.toString()
             imageEngine.loadThumbnail(
                 context, mPreBindInfo.mResize,
-                mPreBindInfo.mPlaceholder, mImageView, mMedia.uri!!
+                mPreBindInfo.mPlaceholder, mImageView, it
             )
         }
     }

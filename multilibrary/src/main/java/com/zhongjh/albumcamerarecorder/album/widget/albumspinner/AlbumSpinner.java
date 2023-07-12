@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,12 +18,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
 import com.zhongjh.common.utils.AnimUtils;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,13 +78,13 @@ public class AlbumSpinner extends PopupWindow {
         rootViewBg.setOnClickListener(v -> dismiss());
     }
 
-    public void bindFolder(List<Album> albums) {
+    public void bindFolder(List<Album2> albums) {
         adapter.bindAlbums(albums);
         ViewGroup.LayoutParams lp = mRecyclerView.getLayoutParams();
         lp.height = albums.size() > FOLDER_MAX_COUNT ? maxHeight : ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 
-    public List<Album> getAlbums() {
+    public List<Album2> getAlbums() {
         return adapter.getAlbums();
     }
 
@@ -94,7 +92,7 @@ public class AlbumSpinner extends PopupWindow {
         return adapter.getAlbums().size() == 0;
     }
 
-    public Album getAlbum(int position) {
+    public Album2 getAlbum(int position) {
         return adapter.getAlbums().size() > 0
                 && position < adapter.getAlbums().size() ? adapter.getAlbums().get(position) : null;
     }
@@ -155,19 +153,19 @@ public class AlbumSpinner extends PopupWindow {
     /**
      * 设置选中状态 - 红色圆点
      */
-    public void updateFolderCheckStatus(List<Album> result) {
+    public void updateFolderCheckStatus(List<Album2> result) {
         try {
-            List<Album> albums = adapter.getAlbums();
+            List<Album2> albums = adapter.getAlbums();
             int size = albums.size();
             int resultSize = result.size();
             for (int i = 0; i < size; i++) {
-                Album album = albums.get(i);
-                album.setCheckedNum(0);
+                Album2 album = albums.get(i);
+                album.setCheckedCount(0);
                 for (int j = 0; j < resultSize; j++) {
-                    Album media = result.get(j);
-                    if (album.getDisplayName().equals(media.getDisplayName())
-                            || "-1".equals(album.getId())) {
-                        album.setCheckedNum(1);
+                    Album2 media = result.get(j);
+                    if (album.getName().equals(media.getName())
+                            || -1 == album.getId()) {
+                        album.setCheckedCount(1);
                         break;
                     }
                 }
@@ -181,11 +179,11 @@ public class AlbumSpinner extends PopupWindow {
     /**
      * 设置选中状态
      */
-    public void updateCheckStatus(List<Album> selects) {
-        List<Album> albums = adapter.getAlbums();
-        for (Album album : albums) {
-            for (Album select : selects) {
-                if (select.getDisplayName().equals(album.getDisplayName())) {
+    public void updateCheckStatus(List<Album2> selects) {
+        List<Album2> albums = adapter.getAlbums();
+        for (Album2 album : albums) {
+            for (Album2 select : selects) {
+                if (select.getName().equals(album.getName())) {
                     album.setChecked(true);
                     break;
                 }

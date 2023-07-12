@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.base.BaseRecyclerViewCursorAdapter;
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.album.widget.MediaGrid;
@@ -249,7 +249,7 @@ public class AlbumMediaAdapter extends
          * @param item            选项
          * @param adapterPosition 索引
          */
-        void onMediaClick(Album album, ImageView imageView, MultiMedia item, int adapterPosition);
+        void onMediaClick(Album2 album, ImageView imageView, MultiMedia item, int adapterPosition);
     }
 
     private static class MediaViewHolder extends RecyclerView.ViewHolder {

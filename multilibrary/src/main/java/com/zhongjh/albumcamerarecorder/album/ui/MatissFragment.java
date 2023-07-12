@@ -29,15 +29,17 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
@@ -61,6 +63,7 @@ import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
@@ -69,7 +72,7 @@ import java.util.ArrayList;
  * @author zhongjh
  * @date 2018/8/22
  */
-public class MatissFragment extends Fragment implements AlbumCollection.AlbumCallbacks,
+public class MatissFragment extends Fragment implements OnQueryDataListener<Album2>,
         MediaViewUtil.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
@@ -82,6 +85,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
 
     private Context mContext;
     private MainActivity mActivity;
+    private MainModel mMainModel;
     /**
      * 从预览界面回来
      */
@@ -133,10 +137,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      * 异步线程的逻辑
      */
     private AlbumCompressFileTask mAlbumCompressFileTask;
-    /**
-     * 专辑Cursor转换Album实体
-     */
-    private ThreadUtils.SimpleTask<ArrayList<Album>> mCursorToAlbum;
 
     private ViewHolder mViewHolder;
 
@@ -154,10 +154,10 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof Activity) {
-            this.mActivity = (MainActivity) context;
-            this.mContext = context.getApplicationContext();
-        }
+        this.mActivity = (MainActivity) context;
+        this.mContext = context.getApplicationContext();
+        this.mMainModel = new ViewModelProvider(requireParentFragment())
+                .get(MainModel.class);
         mSelectedCollection = new SelectedItemCollection(getContext());
     }
 
@@ -248,9 +248,8 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
         mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
 
-//        mAlbumCollection.onCreate(this, this);
-//        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
-//        mAlbumCollection.loadAlbums();
+        // 获取专辑数据
+        mMainModel.loadAllAlbum(this);
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
@@ -490,52 +489,6 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         return count;
     }
 
-    @Override
-    public void onAlbumLoadFinished(final Cursor cursor) {
-        if (mCursorToAlbum != null) {
-            // 取消当前的线程，重新运行
-            mCursorToAlbum.cancel();
-        }
-        mCursorToAlbum = new ThreadUtils.SimpleTask<ArrayList<Album>>() {
-            @Override
-            public ArrayList<Album> doInBackground() {
-                ArrayList<Album> items = new ArrayList<>();
-                while (cursor.moveToNext()) {
-                    items.add(Album.valueOf(cursor));
-                }
-                cursor.close();
-                return items;
-            }
-
-            @Override
-            public void onSuccess(ArrayList<Album> result) {
-                // 更新专辑列表
-                mAlbumSpinner.bindFolder(result);
-                // 可能因为别的原因销毁当前界面，回到当前选择的位置
-                Album album = result.get(mAlbumCollection.getCurrentSelection());
-                ArrayList<Album> albumChecks = new ArrayList<>();
-                albumChecks.add(album);
-                mAlbumSpinner.updateCheckStatus(albumChecks);
-                String displayName = album.getDisplayName(mContext);
-                if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {
-                    mViewHolder.tvAlbumTitle.setText(displayName);
-                } else {
-                    mViewHolder.tvAlbumTitle.setAlpha(0.0f);
-                    mViewHolder.tvAlbumTitle.setVisibility(View.VISIBLE);
-                    mViewHolder.tvAlbumTitle.setText(displayName);
-                    mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(mContext.getResources().getInteger(
-                            android.R.integer.config_longAnimTime)).start();
-                }
-                onAlbumSelected(album);
-            }
-        };
-        ThreadUtils.executeByIo(mCursorToAlbum);
-    }
-
-    @Override
-    public void onAlbumReset() {
-    }
-
     public void albumsSpinnerNotifyData() {
         mAlbumCollection.mLoadFinished = false;
         mAlbumCollection.restartLoadAlbums();
@@ -546,7 +499,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
      *
      * @param album 专辑
      */
-    private void onAlbumSelected(Album album) {
+    private void onAlbumSelected(Album2 album) {
         if (album.isAll() && album.isEmpty()) {
             // 如果是选择全部并且没有数据的话，显示空的view
             mViewHolder.recyclerview.setVisibility(View.GONE);
@@ -558,7 +511,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (!mIsRefresh) {
                 if (mMediaViewUtil != null) {
                     mMediaViewUtil.load(album);
-                    mViewHolder.tvAlbumTitle.setText(album.getDisplayName(mContext));
+                    mViewHolder.tvAlbumTitle.setText(album.getName());
                 }
             }
         }
@@ -578,7 +531,7 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
     }
 
     @Override
-    public void onMediaClick(Album album, ImageView imageView, MultiMedia item, int adapterPosition) {
+    public void onMediaClick(Album2 album, ImageView imageView, MultiMedia item, int adapterPosition) {
         // 隐藏底部控件
         mActivity.showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment();
@@ -702,6 +655,33 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             mViewHolder.buttonApply.setVisibility(View.VISIBLE);
             mViewHolder.buttonPreview.setEnabled(true);
         }
+    }
+
+    /**
+     * 专辑加载完毕
+     *
+     * @param data 查询后的数据源
+     */
+    @Override
+    public void onComplete(List<Album2> data) {
+        // 更新专辑列表
+        mAlbumSpinner.bindFolder(data);
+        // 可能因为别的原因销毁当前界面，回到当前选择的位置
+        Album2 album = data.get(mAlbumCollection.getCurrentSelection());
+        ArrayList<Album2> albumChecks = new ArrayList<>();
+        albumChecks.add(album);
+        mAlbumSpinner.updateCheckStatus(albumChecks);
+        String displayName = album.getName();
+        if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {
+            mViewHolder.tvAlbumTitle.setText(displayName);
+        } else {
+            mViewHolder.tvAlbumTitle.setAlpha(0.0f);
+            mViewHolder.tvAlbumTitle.setVisibility(View.VISIBLE);
+            mViewHolder.tvAlbumTitle.setText(displayName);
+            mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(mContext.getResources().getInteger(
+                    android.R.integer.config_longAnimTime)).start();
+        }
+        onAlbumSelected(album);
     }
 
     public static class ViewHolder {

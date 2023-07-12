@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
@@ -42,7 +43,7 @@ public class PreviewFragment extends BasePreviewFragment implements
         View view = super.onCreateView(inflater, container, savedInstanceState);
         mCollection.onCreate(mActivity, this);
         if (getArguments() != null) {
-            Album album = getArguments().getParcelable(EXTRA_ALBUM);
+            Album2 album = getArguments().getParcelable(EXTRA_ALBUM);
             ArrayList<MultiMedia> items = null;
             if (album != null) {
                 // 如果有专辑，则根据专辑加载数据
