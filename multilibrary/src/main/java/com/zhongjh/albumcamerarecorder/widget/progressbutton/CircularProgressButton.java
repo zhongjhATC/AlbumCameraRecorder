@@ -193,6 +193,30 @@ public class CircularProgressButton extends AppCompatButton {
         }
     }
 
+    /**
+     * 本来用这些代码取view的attr，但是因为代码动态设置背景颜色不生效，故只能该view直接取Activity的attr
+     * int idleStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorIdle,
+     * R.color.cpb_idle_state_selector_zjh);
+     * <p>
+     * int completeStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorComplete,
+     * R.color.cpb_complete_state_selector_zjh);
+     * mCompleteColorState = ResourcesCompat.getColorStateList(getResources(), completeStateSelector, mContext.getTheme());
+     * <p>
+     * int errorStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorError,
+     * R.color.cpb_error_state_selector_zjh);
+     * mErrorColorState = ResourcesCompat.getColorStateList(getResources(), errorStateSelector, mContext.getTheme());
+     * <p>
+     * mIconComplete = attr.getResourceId(R.styleable.CircularProgressButton_cpb_iconComplete, 0);
+     * mIconError = attr.getResourceId(R.styleable.CircularProgressButton_cpb_iconError, 0);
+     * <p>
+     * mColorIndicatorBackground = attr.getColor(R.styleable.CircularProgressButton_cpb_colorIndicatorBackground, grey);
+     * <p>
+     * int white = getColor(R.color.cpb_white);
+     * int grey = getColor(R.color.cpb_grey);
+     *
+     * @param context      上下文
+     * @param attributeSet 属性
+     */
     private void initAttributes(Context context, AttributeSet attributeSet) {
         TypedArray attr = getTypedArray(context, attributeSet, R.styleable.CircularProgressButton);
         if (attr == null) {
@@ -200,37 +224,46 @@ public class CircularProgressButton extends AppCompatButton {
         }
 
         try {
+            // 由Activity主题提供的样式：提交按钮的文字的颜色
+            TypedArray confirmTextColor = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_text_color});
+            int confirmTextColorDefault = ResourcesCompat.getColor(getResources(), R.color.white, mContext.getTheme());
+            setTextColor(confirmTextColor.getColor(0, confirmTextColorDefault));
+
+            // 由Activity主题提供的样式：提交按钮的背景 - 深颜色
+            ColorStateList confirmBackground = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_background_color}).getColorStateList(0);
+            ColorStateList confirmBackgroundDefault = ResourcesCompat.getColorStateList(getResources(), R.color.operation_background, mContext.getTheme());
+
+            // 由Activity主题提供的样式：提交按钮的背景 - 浅颜色
+            TypedArray confirmBackgroundProgress = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_background_progress_color});
+            int confirmBackgroundProgressDefault = ResourcesCompat.getColor(getResources(), R.color.white, mContext.getTheme());
+
+            mIdleColorState = confirmBackground != null ? confirmBackground : confirmBackgroundDefault;
+            mCompleteColorState = confirmBackground != null ? confirmBackground : confirmBackgroundDefault;
+            mErrorColorState = confirmBackground != null ? confirmBackground : confirmBackgroundDefault;
+
+            // 由Activity主题提供的样式：提交按钮的完成时图标
+            TypedArray confirmComplete = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_icon_complete});
+            mIconComplete = confirmComplete.getResourceId(0, R.drawable.ic_baseline_done);
+
+            // 由Activity主题提供的样式：提交按钮的失败时图标
+            TypedArray confirmError = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_icon_error});
+            mIconError = confirmError.getResourceId(0, R.drawable.ic_baseline_close_24);
 
             mIdleText = attr.getString(R.styleable.CircularProgressButton_cpb_textIdle);
             mCompleteText = attr.getString(R.styleable.CircularProgressButton_cpb_textComplete);
             mErrorText = attr.getString(R.styleable.CircularProgressButton_cpb_textError);
             mProgressText = attr.getString(R.styleable.CircularProgressButton_cpb_textProgress);
 
-            mIconComplete = attr.getResourceId(R.styleable.CircularProgressButton_cpb_iconComplete, 0);
-            mIconError = attr.getResourceId(R.styleable.CircularProgressButton_cpb_iconError, 0);
             mCornerRadius = attr.getDimension(R.styleable.CircularProgressButton_cpb_cornerRadius, 0);
             mPaddingProgress = attr.getDimensionPixelSize(R.styleable.CircularProgressButton_cpb_paddingProgress, 0);
 
             int blue = getColor(R.color.cpb_blue);
-            int white = getColor(R.color.cpb_white);
-            int grey = getColor(R.color.cpb_grey);
 
-            int idleStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorIdle,
-                    R.color.cpb_idle_state_selector_zjh);
-            mIdleColorState = ResourcesCompat.getColorStateList(getResources(), idleStateSelector, mContext.getTheme());
-
-            int completeStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorComplete,
-                    R.color.cpb_complete_state_selector_zjh);
-            mCompleteColorState = ResourcesCompat.getColorStateList(getResources(), completeStateSelector, mContext.getTheme());
-
-            int errorStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorError,
-                    R.color.cpb_error_state_selector_zjh);
-            mErrorColorState = ResourcesCompat.getColorStateList(getResources(), errorStateSelector, mContext.getTheme());
-
-            mColorProgress = attr.getColor(R.styleable.CircularProgressButton_cpb_colorProgress, white);
             mColorIndicator = attr.getColor(R.styleable.CircularProgressButton_cpb_colorIndicator, blue);
-            mColorIndicatorBackground =
-                    attr.getColor(R.styleable.CircularProgressButton_cpb_colorIndicatorBackground, grey);
+            // 进度时的内圆样式
+            mColorProgress = confirmBackgroundProgress.getColor(0, confirmBackgroundProgressDefault);
+            // 进度时的周边线样式
+            mColorIndicatorBackground = getNormalColor(mIdleColorState);
         } finally {
             attr.recycle();
         }

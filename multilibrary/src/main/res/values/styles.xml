@@ -30,9 +30,30 @@
         </item>
         <item name="capture.textColor">@color/blue_capture</item>
         <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
+
+        <!-- 录制的按钮样式 -->
+        <!-- 按钮外圈颜色 -->
         <item name="click.long.button.round.border">#ffffffff</item>
+        <!-- 按钮内圈长按中的颜色 -->
         <item name="click.long.button.inner.circle.in.operation">@color/blue_primary</item>
+        <!-- 按钮内圈默认的颜色 -->
         <item name="click.long.button.inner.circle.no.operation">#99ffffff</item>
+
+        <!-- 展示视频界面的样式 -->
+        <!-- 提交按钮的文字的颜色 -->
+        <item name="preview.video.button.confirm.text.color">@color/white</item>
+        <!-- 提交按钮的背景颜色 - 深色 -->
+        <item name="preview.video.button.confirm.background.color">
+            @color/operation_background
+        </item>
+        <!-- 提交按钮的背景颜色 - 浅色 -->
+        <item name="preview.video.button.confirm.background.progress.color">
+            @color/white
+        </item>
+        <!-- 提交按钮的完成时图标 -->
+        <item name="preview.video.button.confirm.icon.complete">@drawable/ic_baseline_done</item>
+        <!-- 提交按钮的失败时图标 -->
+        <item name="preview.video.button.confirm.icon.error">@drawable/ic_baseline_close_24</item>
     </style>
 
     <style name="Toolbar.Blue" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -40,17 +61,20 @@
     </style>
 
     <style name="Popup.Blue" parent="">
-        <item name="album.backgroundStyle">@drawable/spinner_item_select_bg_white</item> <!-- 专辑选项的背景样式 -->
+        <item name="album.backgroundStyle">@drawable/spinner_item_select_bg_white
+        </item> <!-- 专辑选项的背景样式 -->
         <item name="album.checkDotStyle">@drawable/ic_orange_oval</item> <!-- 专辑选中时候的样式 -->
         <item name="album.textColor">@color/text_color_4d</item> <!-- 专辑字体颜色 -->
         <item name="album.textSize">16sp</item> <!-- 专辑字体大小 -->
         <item name="album.arrow.up.icon">@drawable/ic_round_keyboard_arrow_up_24</item> <!-- 上箭头 -->
-        <item name="album.arrow.down.icon">@drawable/ic_round_keyboard_arrow_down_24</item> <!-- 下箭头 -->
+        <item name="album.arrow.down.icon">@drawable/ic_round_keyboard_arrow_down_24
+        </item> <!-- 下箭头 -->
     </style>
 
     <style name="TabLayout.Blue" parent="">
         <item name="tabLayout.bg.zjh">@color/blue_bottom_toolbar_bg</item>  <!-- 底部tabLayout背景颜色 -->
-        <item name="tabLayout.unselected.textColor">@color/blue_tabLayout_unselected_textColor</item> <!-- 未选择时.文本颜色 -->
+        <item name="tabLayout.unselected.textColor">@color/blue_tabLayout_unselected_textColor
+        </item> <!-- 未选择时.文本颜色 -->
         <item name="tabLayout.selected.textColor">@color/blue_primary</item> <!-- 选择时.文本颜色 -->
     </style>
 
@@ -92,12 +116,28 @@
         <item name="android:windowIsTranslucent">false</item> <!-- 如果设置为true,api 26会闪退 -->
 
         <!-- 录制的按钮样式 -->
-        <item name="click.long.button.round.border">#ffffffff</item> <!-- 按钮外圈颜色 -->
+        <!-- 按钮外圈颜色 -->
+        <item name="click.long.button.round.border">#ffffffff</item>
         <!-- 按钮内圈长按中的颜色 -->
-        <item name="click.long.button.inner.circle.in.operation">
-            @color/dracula_primary
+        <item name="click.long.button.inner.circle.in.operation">@color/dracula_primary</item>
+        <!-- 按钮内圈默认的颜色 -->
+        <item name="click.long.button.inner.circle.no.operation">#99ffffff</item>
+
+        <!-- 展示视频界面的样式 -->
+        <!-- 提交按钮的文字的颜色 -->
+        <item name="preview.video.button.confirm.text.color">@color/white</item>
+        <!-- 提交按钮的背景颜色 - 深色 -->
+        <item name="preview.video.button.confirm.background.color">
+            @color/operation_background
         </item>
-        <item name="click.long.button.inner.circle.no.operation">#99ffffff</item> <!-- 按钮内圈默认的颜色 -->
+        <!-- 提交按钮的背景颜色 - 浅色 -->
+        <item name="preview.video.button.confirm.background.progress.color">
+            @color/white
+        </item>
+        <!-- 提交按钮的完成时图标 -->
+        <item name="preview.video.button.confirm.icon.complete">@drawable/ic_baseline_done</item>
+        <!-- 提交按钮的失败时图标 -->
+        <item name="preview.video.button.confirm.icon.error">@drawable/ic_baseline_close_24</item>
     </style>
 
     <style name="Toolbar.Dracula" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -105,17 +145,21 @@
     </style>
 
     <style name="Popup.Dracula" parent="">
-        <item name="album.backgroundStyle">@drawable/spinner_item_select_bg_dracula</item> <!-- 专辑选项的背景样式 -->
+        <item name="album.backgroundStyle">@drawable/spinner_item_select_bg_dracula
+        </item> <!-- 专辑选项的背景样式 -->
         <item name="album.checkDotStyle">@drawable/ic_orange_oval</item> <!-- 专辑选中时候的样式 -->
         <item name="album.textColor">@color/white</item> <!-- 专辑字体颜色 -->
         <item name="album.textSize">16sp</item> <!-- 专辑字体大小 -->
         <item name="album.arrow.up.icon">@drawable/ic_round_keyboard_arrow_up_24</item> <!-- 上箭头 -->
-        <item name="album.arrow.down.icon">@drawable/ic_round_keyboard_arrow_down_24</item> <!-- 下箭头 -->
+        <item name="album.arrow.down.icon">@drawable/ic_round_keyboard_arrow_down_24
+        </item> <!-- 下箭头 -->
     </style>
 
     <style name="TabLayout.Dracula" parent="">
-        <item name="tabLayout.bg.zjh">@color/dracula_bottom_toolbar_bg</item>  <!-- 底部tabLayout背景颜色 -->
-        <item name="tabLayout.unselected.textColor">@color/dracula_tabLayout_unselected_textColor</item> <!-- 未选择时.文本颜色 -->
+        <item name="tabLayout.bg.zjh">@color/dracula_bottom_toolbar_bg
+        </item>  <!-- 底部tabLayout背景颜色 -->
+        <item name="tabLayout.unselected.textColor">@color/dracula_tabLayout_unselected_textColor
+        </item> <!-- 未选择时.文本颜色 -->
         <item name="tabLayout.selected.textColor">@color/dracula_primary</item> <!-- 选择时.文本颜色 -->
     </style>
 

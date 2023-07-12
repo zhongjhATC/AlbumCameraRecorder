@@ -42,19 +42,20 @@
             android:id="@+id/btnConfirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/cpb_white"
-            android:gravity="center"
             android:layout_margin="16dp"
-            app:cpb_cornerRadius="24dp"
+            android:gravity="center"
+            android:textColor="@color/cpb_white"
             app:cpb_colorIndicator="@color/operation_background_pressed"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:cpb_cornerRadius="24dp"
+            app:cpb_iconComplete="@drawable/ic_baseline_done"
+            app:cpb_iconError="@drawable/ic_baseline_close_24"
             app:cpb_selectorComplete="@color/operation_background"
             app:cpb_selectorError="@color/operation_background"
             app:cpb_selectorIdle="@color/operation_background"
-            app:cpb_iconComplete="@drawable/ic_baseline_done"
-            app:cpb_iconError="@drawable/ic_baseline_close_24"
-            app:cpb_textIdle="@string/z_multi_library_confirm" />
+            app:cpb_textIdle="@string/z_multi_library_confirm"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

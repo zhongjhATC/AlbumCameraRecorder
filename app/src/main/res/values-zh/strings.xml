@@ -62,6 +62,7 @@
     <string name="instant_preview">直接预览</string>
     <string name="blue_style">蓝色样式</string>
     <string name="black_style">黑色样式</string>
+    <string name="green_style">绿色样式</string>
     <string name="you_can_turn_it_back_on">你可以重新打开相关功能</string>
     <string name="please_open_it_in_settings_permission_management">请到设置-权限管理中开启</string>
     <string name="download_failed">下载失败</string>
