@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalFile;
@@ -118,20 +119,30 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected boolean getPermissions(boolean isBrowse) {
         this.isBrowse = isBrowse;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager
-                    .PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager
-                            .PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager
-                            .PERMISSION_GRANTED) {
-                return true;
+            // 存储功能必须验证,兼容Android SDK 33
+            ArrayList<String> permissions = new ArrayList<>();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+                }
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+                }
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
+                }
             } else {
-                //不具有获取权限，需要进行权限申请
-                ActivityCompat.requestPermissions(BaseActivity.this, new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.CAMERA}, GET_PERMISSION_REQUEST);
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                }
+            }
+            if (permissions.size() > 0) {
+                // 请求权限
+                ActivityCompat.requestPermissions(BaseActivity.this, permissions.toArray(new String[0]), GET_PERMISSION_REQUEST);
                 return false;
+            } else {
+                // 没有所需要请求的权限，就进行初始化
+                return true;
             }
         } else {
             return true;

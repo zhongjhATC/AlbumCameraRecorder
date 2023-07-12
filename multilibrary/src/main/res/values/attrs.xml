@@ -29,7 +29,8 @@
 
     <!-- region 展示视频界面的样式 -->
     <attr name="preview.video.button.confirm.text.color" format="reference|color" /> <!-- 提交按钮的文字的颜色 -->
-    <attr name="preview.video.button.confirm.background.color.idle" format="reference|color" /> <!-- 提交按钮的背景颜色 -->
+    <attr name="preview.video.button.confirm.background.color" format="reference|color" /> <!-- 提交按钮的背景颜色 - 深色 -->
+    <attr name="preview.video.button.confirm.background.progress.color" format="reference|color" /> <!-- 提交按钮的背景颜色 - 浅色 -->
     <attr name="preview.video.button.confirm.icon.complete" format="reference|color" /> <!-- 提交按钮的完成时图标 -->
     <attr name="preview.video.button.confirm.icon.error" format="reference|color" /> <!-- 提交按钮的失败时图标 -->
     <!-- endregion -->
