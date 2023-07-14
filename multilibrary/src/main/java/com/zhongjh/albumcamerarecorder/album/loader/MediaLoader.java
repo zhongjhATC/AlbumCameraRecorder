@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
@@ -41,6 +42,7 @@ import java.util.Set;
  */
 public class MediaLoader {
 
+    private final String TAG = "MediaLoader";
     /**
      * 来自于多媒体的数据源标记
      */
@@ -116,8 +118,14 @@ public class MediaLoader {
             @Override
             public void onSuccess(ArrayList<Album2> result) {
                 if (listener != null) {
+                    Log.d(TAG, "专辑数组长度" + result.size());
                     listener.onComplete(result);
                 }
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
             }
         });
     }
@@ -179,18 +187,17 @@ public class MediaLoader {
      * @return 视频的时长条件字符串
      */
     private String getDurationCondition() {
-        long maxS = CameraSpec.INSTANCE.getMaxDuration() == 0 ? Long.MAX_VALUE : CameraSpec.INSTANCE.getMaxDuration();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return String.format(Locale.CHINA, "%d <%s " + MediaStore.MediaColumns.DURATION + " and " + MediaStore.MediaColumns.DURATION + " <= %d",
-                    Math.max((long) 0, CameraSpec.INSTANCE.getMinDuration()),
-                    Math.max((long) 0, CameraSpec.INSTANCE.getMinDuration()) == 0 ? "" : "=",
-                    maxS);
+        long maxS = AlbumSpec.INSTANCE.getVideoMaxSecond() == 0 ? Long.MAX_VALUE : AlbumSpec.INSTANCE.getVideoMaxSecond();
+        String duration;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            duration = MediaStore.MediaColumns.DURATION;
         } else {
-            return String.format(Locale.CHINA, "%d <%s duration and duration <= %d",
-                    Math.max((long) 0, CameraSpec.INSTANCE.getMinDuration()),
-                    Math.max((long) 0, CameraSpec.INSTANCE.getMinDuration()) == 0 ? "" : "=",
-                    maxS);
+            duration = "duration";
         }
+        return String.format(Locale.CHINA, "%d <%s " + duration + " and " + duration + " <= %d",
+                Math.max((long) 0, AlbumSpec.INSTANCE.getVideoMinSecond()),
+                Math.max((long) 0, AlbumSpec.INSTANCE.getVideoMinSecond()) == 0 ? "" : "=",
+                maxS);
     }
 
     /**
@@ -203,7 +210,7 @@ public class MediaLoader {
     private static String getSelectionByAllCondition(String durationCondition, String fileSizeCondition) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" OR ")
-                .append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=? AND ").append(durationCondition).append(") AND ").append(fileSizeCondition);
+                .append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=? AND ").append(") ");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return stringBuilder.toString();
         } else {
