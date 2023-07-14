@@ -72,7 +72,7 @@ object AlbumSpec {
     /**
      * 最大原图size,仅当originalEnable为true的时候才有效
      */
-    var originalMaxSize = 0
+    var originalMaxSize = Int.MAX_VALUE
     var onCheckedListener: OnCheckedListener? = null
     var baseFilters: ArrayList<BaseFilter>? = null
 

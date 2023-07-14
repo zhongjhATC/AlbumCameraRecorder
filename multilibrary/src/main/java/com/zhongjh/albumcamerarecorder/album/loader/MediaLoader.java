@@ -36,6 +36,12 @@ import java.util.Set;
  * <p>
  * loadAllMedia 是获取专辑的
  * loadPageMediaData 这个是获取图片的
+ * <p>
+ * 参考pictureselector的master分支的LocalMediaPageLoader类
+ *
+ * Q版本以下直接使用COUNT(*)会报错以下错误：
+ * java.lang.IllegalArgumentException: Invalid column COUNT(*) AS count
+ * 所以需要做相关兼容
  *
  * @author zhongjh
  * @date 2022/9/9
@@ -63,7 +69,7 @@ public class MediaLoader {
     /**
      * 获取所有文件夹(专辑)
      * 会通过 SdkVersionUtils.isQ 判断
-     * SDK 29 以下的版本可以直接获取Data和
+     * SDK 29 以下的版本可以直接通过sql语句获取Data和针对bucket_id分组
      *
      * @param listener 回调事件
      */
@@ -165,7 +171,9 @@ public class MediaLoader {
             return getSelectionByVideoCondition(fileSizeCondition);
         } else {
             // 查询所有
-            return getSelectionByAllCondition(getDurationCondition(), fileSizeCondition);
+            String sql = getSelectionByAllCondition(getDurationCondition(), fileSizeCondition);
+            Log.d(TAG, "sql: " + sql);
+            return sql;
         }
     }
 
@@ -176,9 +184,8 @@ public class MediaLoader {
      */
     private String getFileSizeCondition() {
         // 获取文件最大值
-        long maxFileSize = AlbumSpec.INSTANCE.getOriginalMaxSize() == 0 ? Long.MAX_VALUE : AlbumSpec.INSTANCE.getOriginalMaxSize();
         return String.format(Locale.CHINA, MediaStore.MediaColumns.SIZE + " > 0 and " + MediaStore.MediaColumns.SIZE + " <= %d",
-                maxFileSize);
+                Long.MAX_VALUE);
     }
 
     /**
@@ -189,7 +196,7 @@ public class MediaLoader {
     private String getDurationCondition() {
         long maxS = AlbumSpec.INSTANCE.getVideoMaxSecond() == 0 ? Long.MAX_VALUE : AlbumSpec.INSTANCE.getVideoMaxSecond();
         String duration;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+        if (SdkVersionUtils.isQ()) {
             duration = MediaStore.MediaColumns.DURATION;
         } else {
             duration = "duration";
@@ -209,8 +216,8 @@ public class MediaLoader {
      */
     private static String getSelectionByAllCondition(String durationCondition, String fileSizeCondition) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" OR ")
-                .append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=? AND ").append(") ");
+        stringBuilder.append("((").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" OR ")
+                .append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?) AND ").append(durationCondition).append(") AND ").append(fileSizeCondition);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return stringBuilder.toString();
         } else {
