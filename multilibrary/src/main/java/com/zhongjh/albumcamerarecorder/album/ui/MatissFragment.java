@@ -85,7 +85,7 @@ public class MatissFragment extends Fragment implements OnQueryDataListener<Albu
 
     private Context mContext;
     private MainActivity mActivity;
-//    private MainModel mMainModel;
+    private MainModel mMainModel;
     /**
      * 从预览界面回来
      */
@@ -156,8 +156,8 @@ public class MatissFragment extends Fragment implements OnQueryDataListener<Albu
         super.onAttach(context);
         this.mActivity = (MainActivity) context;
         this.mContext = context.getApplicationContext();
-//        this.mMainModel = new ViewModelProvider(requireParentFragment())
-//                .get(MainModel.class);
+        this.mMainModel = new ViewModelProvider(requireParentFragment())
+                .get(MainModel.class);
         mSelectedCollection = new SelectedItemCollection(mContext);
     }
 
@@ -248,8 +248,8 @@ public class MatissFragment extends Fragment implements OnQueryDataListener<Albu
         mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
         mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
 
-//        // 获取专辑数据
-//        mMainModel.loadAllAlbum(this);
+        // 获取专辑数据
+        mMainModel.loadAllAlbum(this);
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
