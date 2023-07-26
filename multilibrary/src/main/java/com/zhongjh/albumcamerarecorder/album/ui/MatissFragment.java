@@ -4,11 +4,9 @@ package com.zhongjh.albumcamerarecorder.album.ui;
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -151,6 +149,11 @@ public class MatissFragment extends Fragment implements OnQueryDataListener<Albu
         return matissFragment;
     }
 
+    /**
+     * 先执行onAttach生命周期再执行onCreateView
+     *
+     * @param context 上下文
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);

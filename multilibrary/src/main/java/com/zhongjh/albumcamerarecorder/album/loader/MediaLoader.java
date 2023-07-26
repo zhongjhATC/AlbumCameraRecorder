@@ -5,16 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
+import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataPageListener;
 import com.zhongjh.albumcamerarecorder.album.utils.SortUtils;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
-import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.SdkVersionUtils;
@@ -38,7 +40,7 @@ import java.util.Set;
  * loadPageMediaData 这个是获取图片的
  * <p>
  * 参考pictureselector的master分支的LocalMediaPageLoader类
- *
+ * <p>
  * Q版本以下直接使用COUNT(*)会报错以下错误：
  * java.lang.IllegalArgumentException: Invalid column COUNT(*) AS count
  * 所以需要做相关兼容
@@ -46,7 +48,7 @@ import java.util.Set;
  * @author zhongjh
  * @date 2022/9/9
  */
-public class MediaLoader {
+public class MediaLoader extends BaseMediaLoader {
 
     private final String TAG = "MediaLoader";
     /**
@@ -56,7 +58,6 @@ public class MediaLoader {
     private static final String ORDER_BY = MediaStore.Files.FileColumns._ID + " DESC";
     private static final String GROUP_BY_BUCKET_ID = " GROUP BY (bucket_id";
     private static final String COLUMN_COUNT = "count";
-    private static final String COLUMN_BUCKET_ID = "bucket_id";
     private static final String COLUMN_BUCKET_DISPLAY_NAME = "bucket_display_name";
 
     private final Context mContext;
@@ -84,7 +85,7 @@ public class MediaLoader {
                         // 需要查询的列
                         SdkVersionUtils.isQ() ? PROJECTION_29 : PROJECTION,
                         // 查询条件，包括group by
-                        getCondition(),
+                        getSelection(),
                         // 配合上面的参数使用，上面的参数使用占位符"?"，那么这个参的数据会替换掉占位符"?"
                         getSelectionArgs(),
                         // 排序
@@ -161,7 +162,7 @@ public class MediaLoader {
      *
      * @return 查询条件字符串
      */
-    private String getCondition() {
+    private String getSelection() {
         String fileSizeCondition = getFileSizeCondition();
         if (AlbumSpec.INSTANCE.onlyShowImages()) {
             // 只查询图片
@@ -177,35 +178,6 @@ public class MediaLoader {
         }
     }
 
-    /**
-     * 构造多媒体最大值查询条件的字符串
-     *
-     * @return 多媒体最大值查询条件的构造字符串
-     */
-    private String getFileSizeCondition() {
-        // 获取文件最大值
-        return String.format(Locale.CHINA, MediaStore.MediaColumns.SIZE + " > 0 and " + MediaStore.MediaColumns.SIZE + " <= %d",
-                Long.MAX_VALUE);
-    }
-
-    /**
-     * 构造视频的时长条件字符串
-     *
-     * @return 视频的时长条件字符串
-     */
-    private String getDurationCondition() {
-        long maxS = AlbumSpec.INSTANCE.getVideoMaxSecond() == 0 ? Long.MAX_VALUE : AlbumSpec.INSTANCE.getVideoMaxSecond();
-        String duration;
-        if (SdkVersionUtils.isQ()) {
-            duration = MediaStore.MediaColumns.DURATION;
-        } else {
-            duration = "duration";
-        }
-        return String.format(Locale.CHINA, "%d <%s " + duration + " and " + duration + " <= %d",
-                Math.max((long) 0, AlbumSpec.INSTANCE.getVideoMinSecond()),
-                Math.max((long) 0, AlbumSpec.INSTANCE.getVideoMinSecond()) == 0 ? "" : "=",
-                maxS);
-    }
 
     /**
      * 构造查询条件字符串 - 所有
