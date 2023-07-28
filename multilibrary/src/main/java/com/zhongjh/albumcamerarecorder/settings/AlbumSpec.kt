@@ -25,6 +25,24 @@ object AlbumSpec {
     var mimeTypeSet: Set<MimeType>? = null
 
     /**
+     * 是否支持gif,默认为true
+     * 当设置为false的时候，会在相册数据源剔除掉gif文件
+     */
+    var isSupportGif = true
+
+    /**
+     * 是否支持webp,默认为true
+     * 当设置为false的时候，会在相册数据源剔除掉gif文件
+     */
+    var isSupportWebp = true
+
+    /**
+     * 是否支持bmp,默认为true
+     * 当设置为false的时候，会在相册数据源剔除掉gif文件
+     */
+    var isSupportBmp = true
+
+    /**
      * 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
      */
     var mediaTypeExclusive = false
@@ -100,7 +118,10 @@ object AlbumSpec {
      */
     private fun reset() {
         mimeTypeSet = null
-        mediaTypeExclusive = true
+        isSupportGif = true
+        isSupportWebp = true
+        isSupportBmp = true
+        mediaTypeExclusive = false
         showSingleMediaType = false
         countable = true
         baseFilters = null

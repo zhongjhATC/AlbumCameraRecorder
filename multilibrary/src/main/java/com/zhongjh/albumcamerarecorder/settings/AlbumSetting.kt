@@ -36,6 +36,21 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
+    override fun isSupportGif(isSupport: Boolean): AlbumSetting {
+        mAlbumSpec.isSupportGif = isSupport
+        return this
+    }
+
+    override fun isSupportWebp(isSupport: Boolean): AlbumSetting {
+        mAlbumSpec.isSupportWebp = isSupport
+        return this
+    }
+
+    override fun isSupportBmp(isSupport: Boolean): AlbumSetting {
+        mAlbumSpec.isSupportBmp = isSupport
+        return this
+    }
+
     override fun showSingleMediaType(showSingleMediaType: Boolean): AlbumSetting {
         mAlbumSpec.showSingleMediaType = showSingleMediaType
         return this

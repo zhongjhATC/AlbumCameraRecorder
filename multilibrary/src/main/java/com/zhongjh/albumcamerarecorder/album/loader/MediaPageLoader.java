@@ -1,17 +1,27 @@
 package com.zhongjh.albumcamerarecorder.album.loader;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataPageListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.MimeTypeUtils;
 import com.zhongjh.common.utils.SdkVersionUtils;
 import com.zhongjh.common.utils.ThreadUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 用于查询分页的相册多媒体数据
@@ -20,6 +30,29 @@ import com.zhongjh.common.utils.ThreadUtils;
  * @date 2023/7/26
  */
 public class MediaPageLoader extends BaseMediaLoader {
+
+    private final String TAG = "MediaPageLoader";
+
+    /**
+     * Media file database field
+     */
+    @SuppressLint("InlinedApi")
+    private static final String[] PROJECTION_PAGE = {
+            MediaStore.Files.FileColumns._ID,
+            MediaStore.MediaColumns.DATA,
+            MediaStore.MediaColumns.MIME_TYPE,
+            MediaStore.MediaColumns.WIDTH,
+            MediaStore.MediaColumns.HEIGHT,
+            MediaStore.MediaColumns.DURATION,
+            MediaStore.MediaColumns.SIZE,
+            MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+            MediaStore.MediaColumns.DISPLAY_NAME,
+            COLUMN_BUCKET_ID,
+            MediaStore.MediaColumns.DATE_ADDED};
+
+    public MediaPageLoader(Context context) {
+        super(context);
+    }
 
     /**
      * 查询指定目录(页)中的数据
@@ -35,6 +68,13 @@ public class MediaPageLoader extends BaseMediaLoader {
                     if (SdkVersionUtils.isR()) {
                         Bundle queryArgs = createQueryArgsBundle(getPageSelection(bucketId), getPageSelectionArgs(bucketId), limit, (page - 1) * pageSize);
                         data = mContext.getContentResolver().query(QUERY_URI, PROJECTION_PAGE, queryArgs, null);
+                    } else {
+                        String orderBy = page == -1 ? MediaStore.Files.FileColumns._ID + " DESC" : MediaStore.Files.FileColumns._ID + " DESC limit " + limit + " offset " + (page - 1) * pageSize;
+                        data = mContext.getContentResolver().query(QUERY_URI, PROJECTION_PAGE, getPageSelection(bucketId), getPageSelectionArgs(bucketId), orderBy);
+                    }
+                    // 构造数据
+                    if (data != null) {
+
                     }
                 } catch (Exception exception) {
                     exception.printStackTrace();
@@ -95,7 +135,6 @@ public class MediaPageLoader extends BaseMediaLoader {
             Log.d(TAG, "sql: " + sql);
             return sql;
         }
-        return null;
     }
 
     /**
@@ -159,32 +198,28 @@ public class MediaPageLoader extends BaseMediaLoader {
      * @return 参数集合
      */
     private String[] getPageSelectionArgs(long bucketId) {
-        switch (config.chooseMode) {
-            case PictureConfig.TYPE_ALL:
-                if (bucketId == -1) {
-                    // ofAll
-                    return new String[]{
-                            String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
-                            String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
-                    };
-                }
-                //  Gets the specified album directory
+        if (AlbumSpec.INSTANCE.onlyShowImages()) {
+            // 只查询图片
+            return getSelectionArgsForPageSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE, bucketId);
+        } else if (AlbumSpec.INSTANCE.onlyShowVideos()) {
+            // 只查询视频
+            return getSelectionArgsForPageSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO, bucketId);
+        } else {
+            // 查询所有
+            if (bucketId == -1) {
+                // 查询全部
                 return new String[]{
                         String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
                         String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
-                        ValueOf.toString(bucketId)
                 };
-            case PictureConfig.TYPE_IMAGE:
-                // Get photo
-                return getSelectionArgsForPageSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE, bucketId);
-            case PictureConfig.TYPE_VIDEO:
-                // Get video
-                return getSelectionArgsForPageSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO, bucketId);
-            case PictureConfig.TYPE_AUDIO:
-                // Get audio
-                return getSelectionArgsForPageSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO, bucketId);
+            }
+            //  基于专辑ID查询全部
+            return new String[]{
+                    String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
+                    String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
+                    String.valueOf(bucketId)
+            };
         }
-        return null;
     }
 
     /**
@@ -195,6 +230,64 @@ public class MediaPageLoader extends BaseMediaLoader {
      */
     private static String[] getSelectionArgsForPageSingleMediaType(int mediaType, long bucketId) {
         return bucketId == -1 ? new String[]{String.valueOf(mediaType)} : new String[]{String.valueOf(mediaType), String.valueOf(bucketId)};
+    }
+
+    /**
+     * 将Cursor data数据构造回LocalMedia返回
+     *
+     * @param data Cursor数据
+     * @return List<LocalMedia>
+     */
+    private List<LocalMedia> getLocalMedias(Cursor data) {
+        List<LocalMedia> result = new ArrayList<>();
+        if (data.getCount() > 0) {
+            int idColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[0]);
+            int dataColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[1]);
+            int mimeTypeColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[2]);
+            int widthColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[3]);
+            int heightColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[4]);
+            int durationColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[5]);
+            int sizeColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[6]);
+            int folderNameColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[7]);
+            int fileNameColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[8]);
+            int bucketIdColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[9]);
+            int dateAddedColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[10]);
+            data.moveToFirst();
+            do {
+                long id = data.getLong(idColumn);
+                String mimeType = data.getString(mimeTypeColumn);
+                mimeType = TextUtils.isEmpty(mimeType) ? MimeType.JPEG.getMimeTypeName() : mimeType;
+                String absolutePath = data.getString(dataColumn);
+                String url = SdkVersionUtils.isQ() ? MediaLoader.getRealPathUri(id, mimeType) : absolutePath;
+                if (TextUtils.isEmpty(absolutePath) || new File(absolutePath).exists()) {
+                    continue;
+                }
+                // 解决了部分获取mimeType后返回image/*格式的问题，比如小米8、9、10和其他型号会有该问题
+                if (mimeType.endsWith("image/*")) {
+                    if (MimeTypeUtils.isContent(url)) {
+                        mimeType = MimeTypeUtils.getImageMimeType(absolutePath);
+                    } else {
+                        mimeType = MimeTypeUtils.getImageMimeType(url);
+                    }
+                    if (!albumSpec.isSupportGif()) {
+                        if (MimeTypeUtils.isGif(mimeType)) {
+                            continue;
+                        }
+                    }
+                }
+                // 后面可以在这里增加筛选 image/webp image/bmp
+                int width = data.getInt(widthColumn);
+                int height = data.getInt(heightColumn);
+                long duration = data.getLong(durationColumn);
+                long size = data.getLong(sizeColumn);
+                String folderName = data.getString(folderNameColumn);
+                String fileName = data.getString(fileNameColumn);
+                long bucketId = data.getLong(bucketIdColumn);
+                // 后面可以在这里增加筛选文件比配置大的continue
+
+
+            }
+        }
     }
 
 }

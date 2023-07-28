@@ -1,9 +1,12 @@
 package com.zhongjh.albumcamerarecorder.album.loader;
 
 
+import android.content.Context;
+import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.utils.SdkVersionUtils;
 
 import java.util.Locale;
@@ -15,7 +18,19 @@ import java.util.Locale;
  */
 public class BaseMediaLoader {
 
+    /**
+     * 来自于多媒体的数据源标记
+     */
+    protected static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");
     protected static final String COLUMN_BUCKET_ID = "bucket_id";
+
+    protected final Context mContext;
+    protected final GlobalSpec globalSpec = GlobalSpec.INSTANCE;
+    protected final AlbumSpec albumSpec = AlbumSpec.INSTANCE;
+
+    public BaseMediaLoader(Context context) {
+        this.mContext = context;
+    }
 
     /**
      * 构造多媒体最大值查询条件的字符串

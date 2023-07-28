@@ -21,6 +21,30 @@ interface AlbumSettingApi {
     fun mimeTypeSet(mimeTypes: Set<MimeType>): AlbumSetting
 
     /**
+     * 是否支持gif,默认为true
+     * 当设置为false的时候，会在相册数据源剔除掉gif文件
+     * @param isSupport 是否支持
+     * @return [AlbumSetting] this
+     */
+    fun isSupportGif(isSupport: Boolean): AlbumSetting
+
+    /**
+     * 是否支持webp,默认为true
+     * 当设置为false的时候，会在相册数据源剔除掉webp文件
+     * @param isSupport 是否支持
+     * @return [AlbumSetting] this
+     */
+    fun isSupportWebp(isSupport: Boolean): AlbumSetting
+
+    /**
+     * 是否支持bmp,默认为true
+     * 当设置为false的时候，会在相册数据源剔除掉webp文件
+     * @param isSupport 是否支持
+     * @return [AlbumSetting] this
+     */
+    fun isSupportBmp(isSupport: Boolean): AlbumSetting
+
+    /**
      * 如果选择的媒体仅为图像或视频，是否仅显示一种媒体类型。
      *
      * @param showSingleMediaType 是否只显示一种媒体类型，图像或视频。
@@ -92,8 +116,6 @@ interface AlbumSettingApi {
     /**
      * 当用户选择或取消选择某个内容时，立即为回调设置侦听器。
      *
-     *
-     *
      * @param listener [OnSelectedListener]
      * @return [AlbumSetting] this
      */
@@ -114,6 +136,6 @@ interface AlbumSettingApi {
      * @param enable 是否启用该功能
      * @return [AlbumSetting] this
      */
-    fun slidingHiddenEnable(enable: Boolean) : AlbumSetting
+    fun slidingHiddenEnable(enable: Boolean): AlbumSetting
 
 }

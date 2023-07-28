@@ -5,15 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
-import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataPageListener;
 import com.zhongjh.albumcamerarecorder.album.utils.SortUtils;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -26,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,20 +47,14 @@ import java.util.Set;
 public class MediaLoader extends BaseMediaLoader {
 
     private final String TAG = "MediaLoader";
-    /**
-     * 来自于多媒体的数据源标记
-     */
-    private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");
+
     private static final String ORDER_BY = MediaStore.Files.FileColumns._ID + " DESC";
     private static final String GROUP_BY_BUCKET_ID = " GROUP BY (bucket_id";
     private static final String COLUMN_COUNT = "count";
     private static final String COLUMN_BUCKET_DISPLAY_NAME = "bucket_display_name";
 
-    private final Context mContext;
-    private GlobalSpec globalSpec = GlobalSpec.INSTANCE;
-
     public MediaLoader(Context context) {
-        this.mContext = context;
+        super(context);
     }
 
     /**
@@ -271,7 +261,7 @@ public class MediaLoader extends BaseMediaLoader {
      * @param mimeType mimeType
      * @return uri
      */
-    private static String getRealPathUri(long bucketId, String mimeType) {
+    public static String getRealPathUri(long bucketId, String mimeType) {
         Uri contentUri;
         if (MimeType.isImageOrGif(mimeType)) {
             contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
