@@ -6,6 +6,7 @@ import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import androidx.collection.ArraySet
 import com.zhongjh.common.utils.BasePhotoMetadataUtils
+import java.io.File
 import java.util.*
 
 /**
@@ -18,60 +19,120 @@ import java.util.*
 enum class MimeType(val mimeTypeName: String, private val extensions: Set<String>) {
 
     // ============== 图片 ==============
-    JPEG("image/jpeg", ArraySet(listOf(
-            "jpg",
-            "jpeg"
-    ))),
-    PNG("image/png", ArraySet(listOf(
-            "png"
-    ))),
-    GIF("image/gif", ArraySet(listOf(
-            "gif"
-    ))),
-    BMP("image/x-ms-bmp", ArraySet(listOf(
-            "bmp"
-    ))),
-    WEBP("image/webp", ArraySet(listOf(
-            "webp"
-    ))),
+    JPEG(
+        "image/jpeg", ArraySet(
+            listOf(
+                "jpg",
+                "jpeg"
+            )
+        )
+    ),
+    PNG(
+        "image/png", ArraySet(
+            listOf(
+                "png"
+            )
+        )
+    ),
+    GIF(
+        "image/gif", ArraySet(
+            listOf(
+                "gif"
+            )
+        )
+    ),
+    BMP(
+        "image/bmp", ArraySet(
+            listOf(
+                "bmp"
+            )
+        )
+    ),
+    WEBP(
+        "image/webp", ArraySet(
+            listOf(
+                "webp"
+            )
+        )
+    ),
 
     // ============== 音频 ==============
-    AAC("video/aac", ArraySet(listOf(
-            "aac"
-    ))),
+    AAC(
+        "video/aac", ArraySet(
+            listOf(
+                "aac"
+            )
+        )
+    ),
 
     // ============== 视频 ==============
-    MPEG("video/mpeg", ArraySet(listOf(
-            "mpeg",
-            "mpg"
-    ))),
-    MP4("video/mp4", ArraySet(listOf(
-            "mp4",
-            "m4v"
-    ))),
-    QUICKTIME("video/quicktime", ArraySet(listOf(
-            "mov"
-    ))),
-    THREEGPP("video/3gpp", ArraySet(listOf(
-            "3gp",
-            "3gpp"
-    ))),
-    THREEGPP2("video/3gpp2", ArraySet(listOf(
-            "3g2",
-            "3gpp2"
-    ))),
-    MKV("video/x-matroska", ArraySet(listOf(
-            "mkv"
-    ))),
-    WEBM("video/webm", ArraySet(listOf(
-            "webm"
-    ))),
-    TS("video/mp2ts", ArraySet(listOf(
-            "ts"
-    ))),
-    AVI("video/avi", ArraySet(listOf(
-            "avi"
-    )));
+    MPEG(
+        "video/mpeg", ArraySet(
+            listOf(
+                "mpeg",
+                "mpg"
+            )
+        )
+    ),
+    MP4(
+        "video/mp4", ArraySet(
+            listOf(
+                "mp4",
+                "m4v"
+            )
+        )
+    ),
+    QUICKTIME(
+        "video/quicktime", ArraySet(
+            listOf(
+                "mov"
+            )
+        )
+    ),
+    THREEGPP(
+        "video/3gpp", ArraySet(
+            listOf(
+                "3gp",
+                "3gpp"
+            )
+        )
+    ),
+    THREEGPP2(
+        "video/3gpp2", ArraySet(
+            listOf(
+                "3g2",
+                "3gpp2"
+            )
+        )
+    ),
+    MKV(
+        "video/x-matroska", ArraySet(
+            listOf(
+                "mkv"
+            )
+        )
+    ),
+    WEBM(
+        "video/webm", ArraySet(
+            listOf(
+                "webm"
+            )
+        )
+    ),
+    TS(
+        "video/mp2ts", ArraySet(
+            listOf(
+                "ts"
+            )
+        )
+    ),
+    AVI(
+        "video/avi", ArraySet(
+            listOf(
+                "avi"
+            )
+        )
+    );
 
     override fun toString(): String {
         return mimeTypeName
@@ -109,7 +170,9 @@ enum class MimeType(val mimeTypeName: String, private val extensions: Set<String
         return false
     }
 
-
+    /**
+     * 类型工具类
+     */
     companion object {
 
         @JvmStatic
@@ -145,6 +208,69 @@ enum class MimeType(val mimeTypeName: String, private val extensions: Set<String
         @JvmStatic
         fun isAudio(mimeType: String?): Boolean {
             return mimeType?.startsWith("audio") ?: false
+        }
+
+        /**
+         * is content://
+         *
+         * @param uri uri
+         * @return 判断uri是否content类型
+         */
+        @JvmStatic
+        fun isContent(uri: String): Boolean {
+            return if (TextUtils.isEmpty(uri)) {
+                false
+            } else {
+                uri.startsWith("content://")
+            }
+        }
+
+        /**
+         * 获取图片的mimeType
+         *
+         * @param path
+         * @return
+         */
+        @JvmStatic
+        fun getImageMimeType(path: String?): String {
+            try {
+                path?.let {
+                    val file = File(path)
+                    val fileName = file.name
+                    val beginIndex = fileName.lastIndexOf(".")
+                    val temp = if (beginIndex == -1) "jpeg" else fileName.substring(beginIndex + 1)
+                    return "image/$temp"
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return JPEG.mimeTypeName
+            }
+            return JPEG.mimeTypeName
+        }
+
+        /**
+         * isGif
+         *
+         * @param mimeType
+         * @return
+         */
+        @JvmStatic
+        fun isGif(mimeType: String?): Boolean {
+            return mimeType != null && (mimeType == GIF.mimeTypeName || mimeType == "image/GIF")
+        }
+
+        /**
+         * isWebp
+         *
+         * @param mimeType
+         * @return
+         */
+        @JvmStatic
+        fun isWebp(mimeType: String?): Boolean {
+            return mimeType != null && mimeType.equals(
+                WEBP.mimeTypeName,
+                ignoreCase = true
+            )
         }
 
     }

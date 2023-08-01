@@ -13,9 +13,9 @@ import android.util.Log;
 import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
 import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataPageListener;
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.utils.MimeTypeUtils;
 import com.zhongjh.common.utils.SdkVersionUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
@@ -74,19 +74,27 @@ public class MediaPageLoader extends BaseMediaLoader {
                     }
                     // 构造数据
                     if (data != null) {
-
+                        List<LocalMedia> result = getLocalMedias(data);
+                        return new MediaData(data.getCount() > 0, result);
                     }
                 } catch (Exception exception) {
                     exception.printStackTrace();
                     Log.i(TAG, "loadMedia Page Data Error: " + exception.getMessage());
                     return new MediaData();
+                } finally {
+                    if (data != null && !data.isClosed()) {
+                        data.close();
+                    }
                 }
-                return null;
+                return new MediaData();
             }
 
             @Override
             public void onSuccess(MediaData result) {
-
+                PictureThreadUtils.cancel(PictureThreadUtils.getIoPool());
+                if (listener != null) {
+                    listener.onComplete(result.data != null ? result.data : new ArrayList<>(), page, result.isHasNextMore);
+                }
             }
         });
     }
@@ -264,18 +272,28 @@ public class MediaPageLoader extends BaseMediaLoader {
                 }
                 // 解决了部分获取mimeType后返回image/*格式的问题，比如小米8、9、10和其他型号会有该问题
                 if (mimeType.endsWith("image/*")) {
-                    if (MimeTypeUtils.isContent(url)) {
-                        mimeType = MimeTypeUtils.getImageMimeType(absolutePath);
+                    if (MimeType.isContent(url)) {
+                        mimeType = MimeType.getImageMimeType(absolutePath);
                     } else {
-                        mimeType = MimeTypeUtils.getImageMimeType(url);
+                        mimeType = MimeType.getImageMimeType(url);
                     }
                     if (!albumSpec.isSupportGif()) {
-                        if (MimeTypeUtils.isGif(mimeType)) {
+                        if (MimeType.isGif(mimeType)) {
                             continue;
                         }
                     }
                 }
                 // 后面可以在这里增加筛选 image/webp image/bmp
+                if (!albumSpec.isSupportWebp()) {
+                    if (mimeType.startsWith(MimeType.WEBP.getMimeTypeName())) {
+                        continue;
+                    }
+                }
+                if (!albumSpec.isSupportBmp()) {
+                    if (mimeType.startsWith(MimeType.BMP.getMimeTypeName())) {
+                        continue;
+                    }
+                }
                 int width = data.getInt(widthColumn);
                 int height = data.getInt(heightColumn);
                 long duration = data.getLong(durationColumn);
@@ -283,11 +301,31 @@ public class MediaPageLoader extends BaseMediaLoader {
                 String folderName = data.getString(folderNameColumn);
                 String fileName = data.getString(fileNameColumn);
                 long bucketId = data.getLong(bucketIdColumn);
-                // 后面可以在这里增加筛选文件比配置大的continue
 
-
-            }
+                if (MimeType.isVideo(mimeType)) {
+                    if (albumSpec.getVideoMinSecond() > 0 && duration < albumSpec.getVideoMinSecond()) {
+                        // 如果设置了视频最小时长就判断最小时长值
+                        continue;
+                    }
+                    if (albumSpec.getVideoMaxSecond() > 0 && duration > albumSpec.getVideoMinSecond()) {
+                        // 如果设置了视频最大时长就判断最大时长值
+                        continue;
+                    }
+                    if (duration == 0) {
+                        // 如果长度为 0，则处理并过滤掉损坏的视频
+                        continue;
+                    }
+                    if (size <= 0) {
+                        // 视频大小为 0 过滤掉
+                        continue;
+                    }
+                }
+                LocalMedia image = LocalMedia.parseLocalMedia(id, url, absolutePath, fileName, folderName, duration,
+                        globalSpec.getMimeTypeSet(ModuleTypes.ALBUM), mimeType, width, height, size, bucketId, data.getLong(dateAddedColumn));
+                result.add(image);
+            } while (data.moveToNext());
         }
+        return result;
     }
 
 }

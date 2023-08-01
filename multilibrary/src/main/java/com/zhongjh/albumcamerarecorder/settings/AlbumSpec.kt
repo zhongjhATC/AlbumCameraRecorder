@@ -8,7 +8,6 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.singleImageVideo
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
-import java.util.*
 
 /**
  * 相册的设置
@@ -95,14 +94,24 @@ object AlbumSpec {
     var baseFilters: ArrayList<BaseFilter>? = null
 
     /**
-     * 用于筛选视频最长阈值
+     * 用于筛选视频最长时长
      */
     var videoMaxSecond = 0
 
     /**
-     * 用于筛选视频最短阈值
+     * 用于筛选视频最短时长
      */
     var videoMinSecond = 0
+
+    /**
+     * 用于过滤文件大小的最大值
+     */
+    var filterMaxFileSize: Long = 0
+
+    /**
+     * 用于过滤文件大小的最小值
+     */
+    var filterMinFileSize: Long = 1024
 
     // endregion end 属性
 
@@ -133,6 +142,8 @@ object AlbumSpec {
         videoMaxSecond = 0
         // 筛选最短的播放时间
         videoMinSecond = 0
+        filterMaxFileSize = 0
+        filterMinFileSize = 0
     }
 
     /**

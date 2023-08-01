@@ -8,6 +8,7 @@ import android.os.Build
 import android.text.TextUtils
 import androidx.exifinterface.media.ExifInterface
 import com.zhongjh.common.entity.MediaExtraInfo
+import com.zhongjh.common.enums.MimeType
 import java.io.IOException
 import java.io.InputStream
 
@@ -41,7 +42,7 @@ object MediaUtils {
         val exifInterface: ExifInterface
         var inputStream: InputStream? = null
         try {
-            if (MimeTypeUtils.isContent(path)) {
+            if (MimeType.isContent(path)) {
                 inputStream = context.contentResolver.openInputStream(Uri.parse(path))
                 exifInterface = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     ExifInterface(inputStream!!)
@@ -77,7 +78,7 @@ object MediaUtils {
         val mediaExtraInfo = MediaExtraInfo()
         val retriever = MediaMetadataRetriever()
         try {
-            if (MimeTypeUtils.isContent(path)) {
+            if (MimeType.isContent(path)) {
                 retriever.setDataSource(context, Uri.parse(path))
             } else {
                 retriever.setDataSource(path)
@@ -119,7 +120,7 @@ object MediaUtils {
         val mediaExtraInfo = MediaExtraInfo()
         val retriever = MediaMetadataRetriever()
         try {
-            if (MimeTypeUtils.isContent(path)) {
+            if (MimeType.isContent(path)) {
                 retriever.setDataSource(context, Uri.parse(path))
             } else {
                 retriever.setDataSource(path)

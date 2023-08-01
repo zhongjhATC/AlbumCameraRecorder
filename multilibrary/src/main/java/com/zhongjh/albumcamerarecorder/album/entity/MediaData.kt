@@ -18,4 +18,11 @@ class MediaData {
      */
     var data: List<LocalMedia>? = null
 
+    constructor()
+
+    constructor(isHasNextMore: Boolean, data: List<LocalMedia>?) {
+        this.isHasNextMore = isHasNextMore
+        this.data = data
+    }
+
 }

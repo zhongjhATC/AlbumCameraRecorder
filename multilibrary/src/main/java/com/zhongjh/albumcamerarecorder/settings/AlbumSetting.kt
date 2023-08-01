@@ -79,6 +79,26 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
+    override fun videoMaxSecond(videoMaxSecond: Int): AlbumSetting {
+        mAlbumSpec.videoMaxSecond = videoMaxSecond
+        return this
+    }
+
+    override fun videoMinSecond(videoMinSecond: Int): AlbumSetting {
+        mAlbumSpec.videoMinSecond = videoMinSecond
+        return this
+    }
+
+    override fun filterMaxFileSize(filterMaxFileSize: Long): AlbumSetting {
+        mAlbumSpec.filterMaxFileSize = filterMaxFileSize
+        return this
+    }
+
+    override fun filterMinFileSize(filterMinFileSize: Long): AlbumSetting {
+        mAlbumSpec.filterMinFileSize = filterMinFileSize
+        return this
+    }
+
     override fun spanCount(spanCount: Int): AlbumSetting {
         require(spanCount >= 1) { "spanCount cannot be less than 1" }
         mAlbumSpec.spanCount = spanCount

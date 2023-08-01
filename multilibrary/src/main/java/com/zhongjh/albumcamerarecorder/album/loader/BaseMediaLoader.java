@@ -38,9 +38,11 @@ public class BaseMediaLoader {
      * @return 多媒体最大值查询条件的构造字符串
      */
     protected String getFileSizeCondition() {
-        // 获取文件最大值
-        return String.format(Locale.CHINA, MediaStore.MediaColumns.SIZE + " > 0 and " + MediaStore.MediaColumns.SIZE + " <= %d",
-                Long.MAX_VALUE);
+        long maxS = albumSpec.getFilterMaxFileSize() == 0 ? Long.MAX_VALUE : albumSpec.getFilterMaxFileSize();
+        return String.format(Locale.CHINA, "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
+                Math.max(0, albumSpec.getFilterMinFileSize()),
+                Math.max(0, albumSpec.getFilterMinFileSize()) == 0 ? "" : "=",
+                maxS);
     }
 
     /**

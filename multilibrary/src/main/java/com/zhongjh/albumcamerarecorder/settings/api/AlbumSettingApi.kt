@@ -87,6 +87,38 @@ interface AlbumSettingApi {
     fun maxOriginalSize(size: Int): AlbumSetting
 
     /**
+     * 筛选视频最大秒数时长
+     *
+     * @param videoMaxSecond 视频最大秒数，默认值为0即是无限制
+     * @return [AlbumSetting] this
+     */
+    fun videoMaxSecond(videoMaxSecond: Int): AlbumSetting
+
+    /**
+     * 筛选视频最小秒数时长
+     *
+     * @param videoMinSecond 视频最小秒数，默认值为0即是无限制
+     * @return [AlbumSetting] this
+     */
+    fun videoMinSecond(videoMinSecond: Int): AlbumSetting
+
+    /**
+     * 用于过滤文件大小的最大值
+     *
+     * @param filterMaxFileSize 文件大小的最大值
+     * @return [AlbumSetting] this
+     */
+    fun filterMaxFileSize(filterMaxFileSize: Long): AlbumSetting
+
+    /**
+     * 用于过滤文件大小的最小值
+     *
+     * @param filterMinFileSize 文件大小的最小值
+     * @return [AlbumSetting] this
+     */
+    fun filterMinFileSize(filterMinFileSize: Long): AlbumSetting
+
+    /**
      * 设置媒体网格的固定跨度计数。不同屏幕方向相同。
      *
      * 设置时将忽略 [.gridExpectedSize] 此项.

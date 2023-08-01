@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.entity;
 
 import android.os.Parcelable
+import com.zhongjh.common.enums.MimeType
 import kotlinx.android.parcel.Parcelize;
 
 /**
@@ -79,9 +80,9 @@ class LocalMedia : Parcelable {
     var mimeType: String = ""
 
     /**
-     * 画廊选择模式
+     * 类型
      */
-    var chooseModel: Int = 0
+    var chooseModel: Set<MimeType> = MimeType.ofAll()
 
     /**
      * 是否被压缩
@@ -160,5 +161,60 @@ class LocalMedia : Parcelable {
      * 文件创建时间
      */
     var dateAddedTime: Long = 0
+
+    companion object {
+
+        /**
+         * 构造LocalMedia
+         *
+         * @param id               资源id
+         * @param path             资源路径
+         * @param realPath     资源绝对路径
+         * @param fileName         文件名
+         * @param parentFolderName 文件所在相册目录名称
+         * @param duration         视频/音频时长
+         * @param chooseModel      相册选择模式
+         * @param mimeType         资源类型
+         * @param width            资源宽
+         * @param height           资源高
+         * @param size             资源大小
+         * @param bucketId         文件目录id
+         * @param dateAdded  资源添加时间
+         * @return
+         */
+        @JvmStatic
+        fun parseLocalMedia(
+            id: Long,
+            path: String,
+            realPath: String,
+            fileName: String,
+            parentFolderName: String,
+            duration: Long,
+            chooseModel: Set<MimeType>,
+            mimeType: String,
+            width: Int,
+            height: Int,
+            size: Long,
+            bucketId: Long,
+            dateAdded: Long
+        ): LocalMedia {
+            val localMedia = LocalMedia()
+            localMedia.id = id
+            localMedia.path = path
+            localMedia.realPath = realPath
+            localMedia.fileName = fileName
+            localMedia.parentFolderName = parentFolderName
+            localMedia.duration = duration
+            localMedia.chooseModel = chooseModel
+            localMedia.mimeType = mimeType
+            localMedia.width = width
+            localMedia.height = height
+            localMedia.size = size
+            localMedia.bucketId = bucketId
+            localMedia.dateAddedTime = dateAdded
+            return localMedia
+        }
+
+    }
 
 }
