@@ -660,6 +660,11 @@ public abstract class BaseCameraFragment
         setUiEnableTrue();
     }
 
+    @Override
+    public void cancel() {
+        setUiEnableTrue();
+    }
+
     /**
      * 提交视频成功后，返回数据给上一个页面
      *

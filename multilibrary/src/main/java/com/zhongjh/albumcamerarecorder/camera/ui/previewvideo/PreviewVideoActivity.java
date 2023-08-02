@@ -288,6 +288,12 @@ public class PreviewVideoActivity extends AppCompatActivity {
                 super.onFail(t);
                 mIsRun = false;
             }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+                mIsRun = false;
+            }
         };
         return mMoveVideoFileTask;
     }

@@ -96,6 +96,16 @@ public class MediaPageLoader extends BaseMediaLoader {
                     listener.onComplete(result.data != null ? result.data : new ArrayList<>(), page, result.isHasNextMore);
                 }
             }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+            }
         });
     }
 

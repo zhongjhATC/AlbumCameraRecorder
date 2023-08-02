@@ -604,9 +604,19 @@ public class SoundRecordingFragment extends BaseFragment {
 
             @Override
             public void onSuccess(Boolean result) {
-                if (result) {
-                    mViewHolder.pvLayout.setEnabled(true);
-                }
+                mViewHolder.pvLayout.setEnabled(true);
+            }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+                mViewHolder.pvLayout.setEnabled(true);
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                mViewHolder.pvLayout.setEnabled(true);
             }
         };
         return mStopRecordingTask;

@@ -614,10 +614,17 @@ public class MatissFragment extends Fragment implements OnQueryDataListener<Albu
 
             @Override
             public void onFail(Throwable t) {
+                super.onFail(t);
                 // 结束loading
                 setControlTouchEnable(true);
                 Toast.makeText(mActivity.getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                super.onFail(t);
+            }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+                // 结束loading
+                setControlTouchEnable(true);
             }
         };
         return mCompressFileTask;

@@ -388,6 +388,12 @@ public class BaseCameraPicturePresenter
                 super.onFail(t);
                 baseCameraFragment.commitFail(t);
             }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+                baseCameraFragment.cancel();
+            }
         };
         return movePictureFileTask;
     }

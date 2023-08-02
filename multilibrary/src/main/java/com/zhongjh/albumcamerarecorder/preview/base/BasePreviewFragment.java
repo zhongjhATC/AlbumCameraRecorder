@@ -677,6 +677,18 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
             public void onSuccess(Void result) {
                 setResultOk(true);
             }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+                setResultOk(true);
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                setResultOk(true);
+            }
         };
         return mMoveFileTask;
     }
@@ -727,6 +739,13 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
                 super.onFail(t);
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "getCompressFileTask onFail " + t.getMessage());
+                setResultOk(true);
+            }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+                setResultOk(true);
             }
         };
         return mCompressFileTask;

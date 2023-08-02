@@ -32,6 +32,11 @@ public interface ICameraFragment {
     void commitFail(Throwable throwable);
 
     /**
+     * 取消提交数据
+     */
+    void cancel();
+
+    /**
      * 提交视频成功后，返回数据给上一个页面
      * @param intentPreviewVideo 从预览视频界面返回来的数据intent
      */
