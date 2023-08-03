@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.listener;
 
+import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
+
 import java.util.List;
 
 /**
@@ -8,7 +10,7 @@ import java.util.List;
  * @author zhongjh
  * @date 2023/7/26
  */
-public interface OnQueryDataPageListener<T> {
+public interface OnLoadPageMediaDataListener {
 
     /**
      * 查询完成后会回调该事件
@@ -17,6 +19,6 @@ public interface OnQueryDataPageListener<T> {
      * @param currentPage 当前第几页
      * @param isHasMore   是否有下一页
      */
-    void onComplete(List<T> data, int currentPage, boolean isHasMore);
+    void onLoadPageMediaDataComplete(List<LocalMedia> data, int currentPage, boolean isHasMore);
 
 }

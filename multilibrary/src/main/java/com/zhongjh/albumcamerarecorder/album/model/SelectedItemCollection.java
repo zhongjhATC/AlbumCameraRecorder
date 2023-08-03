@@ -418,7 +418,6 @@ public class SelectedItemCollection {
                 // 返回视频+图片
                 leastCount = SelectableUtils.getImageVideoMaxCount();
             }
-
         }
 
         Log.d("onSaveInstanceState",mItems.size() + " currentMaxSelectable");

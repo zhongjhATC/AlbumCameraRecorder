@@ -12,6 +12,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.MediaGridInset;
@@ -29,11 +30,13 @@ public class MediaViewUtil implements
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
     public MediaViewUtil(FragmentActivity activity,
+                         MainModel mainModel,
                          RecyclerView recyclerView,
                          SelectionProvider selectionProvider,
                          AlbumMediaAdapter.CheckStateListener checkStateListener,
                          AlbumMediaAdapter.OnMediaClickListener onMediaClickListener) {
         mActivity = activity;
+        mMainModel = mainModel;
         mRecyclerView = recyclerView;
         mSelectionProvider = selectionProvider;
         mCheckStateListener = checkStateListener;
@@ -42,7 +45,7 @@ public class MediaViewUtil implements
     }
 
     private final FragmentActivity mActivity;
-    private final AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
+    private final MainModel mMainModel;
     private final RecyclerView mRecyclerView;
     private AlbumMediaAdapter mAdapter;
     private Album2 mAlbum;
@@ -84,29 +87,7 @@ public class MediaViewUtil implements
         int spacing = mActivity.getResources().getDimensionPixelSize(R.dimen.z_media_grid_spacing);
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
         mRecyclerView.setAdapter(mAdapter);
-
-
-        mAlbumMediaCollection.onCreate(mActivity, new AlbumMediaCollection.AlbumMediaCallbacks() {
-
-            /**
-             * 加载数据完毕
-             *
-             * @param cursor 光标数据
-             */
-            @Override
-            public void onAlbumMediaLoad(Cursor cursor) {
-                mAdapter.swapCursor(cursor);
-            }
-
-            /**
-             * 当一个已创建的加载器被重置从而使其数据无效时，此方法被调用
-             */
-            @Override
-            public void onAlbumMediaReset() {
-                // 此处是用于上面的onLoadFinished()的游标将被关闭时执行，我们需确保我们不再使用它
-                mAdapter.swapCursor(null);
-            }
-        });
+        mAdapter.swapCursor(cursor);
     }
 
     public void onDestroyView() {
@@ -115,11 +96,14 @@ public class MediaViewUtil implements
         mCheckStateListener = null;
         mOnMediaClickListener = null;
         mAdapter = null;
-        onDestroyData();
     }
 
-    public void onDestroyData() {
-        mAlbumMediaCollection.onDestroy();
+    /**
+     * 重新获取数据源
+     */
+    public void restartLoaderMediaGrid() {
+        mMainModel.loadPageMediaData(mAlbum.getId(),);
+        mAlbumMediaCollection.restartLoader(mAlbum);
     }
 
     /**
@@ -137,13 +121,6 @@ public class MediaViewUtil implements
      */
     public void refreshMediaGrid() {
         mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
-    }
-
-    /**
-     * 重新获取数据源
-     */
-    public void restartLoaderMediaGrid() {
-        mAlbumMediaCollection.restartLoader(mAlbum);
     }
 
     /**

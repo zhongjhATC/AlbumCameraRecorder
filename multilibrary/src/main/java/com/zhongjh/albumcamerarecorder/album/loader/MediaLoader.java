@@ -10,11 +10,10 @@ import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
+import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener;
 import com.zhongjh.albumcamerarecorder.album.utils.SortUtils;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.SdkVersionUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -64,7 +63,7 @@ public class MediaLoader extends BaseMediaLoader {
      *
      * @param listener 回调事件
      */
-    public void loadAllMedia(OnQueryDataListener<Album2> listener) {
+    public void loadAllMedia(OnLoadAllAlbumListener listener) {
         ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<ArrayList<Album2>>() {
             @Override
             public ArrayList<Album2> doInBackground() {
@@ -116,7 +115,7 @@ public class MediaLoader extends BaseMediaLoader {
             public void onSuccess(ArrayList<Album2> result) {
                 if (listener != null) {
                     Log.d(TAG, "专辑数组长度" + result.size());
-                    listener.onComplete(result);
+                    listener.onLoadAllAlbumComplete(result);
                 }
             }
 

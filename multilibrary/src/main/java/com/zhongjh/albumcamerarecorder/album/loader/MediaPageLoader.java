@@ -12,7 +12,7 @@ import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
-import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataPageListener;
+import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.common.enums.MimeType;
@@ -56,13 +56,19 @@ public class MediaPageLoader extends BaseMediaLoader {
 
     /**
      * 查询指定目录(页)中的数据
+     *
+     * @param bucketId 专辑id
+     * @param page     当前页码
+     * @param limit    数据取多少个
+     * @param pageSize 每页多少个
+     * @param listener 回调事件
      */
     public void loadPageMediaData(long bucketId, int page, int limit, int pageSize,
-                                  OnQueryDataPageListener<MediaData> listener) {
+                                  OnLoadPageMediaDataListener listener) {
         ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<MediaData>() {
 
             @Override
-            public MediaData doInBackground() throws Throwable {
+            public MediaData doInBackground() {
                 Cursor data = null;
                 try {
                     if (SdkVersionUtils.isR()) {
@@ -91,9 +97,8 @@ public class MediaPageLoader extends BaseMediaLoader {
 
             @Override
             public void onSuccess(MediaData result) {
-                PictureThreadUtils.cancel(PictureThreadUtils.getIoPool());
                 if (listener != null) {
-                    listener.onComplete(result.data != null ? result.data : new ArrayList<>(), page, result.isHasNextMore);
+                    listener.onLoadPageMediaDataComplete(result.getData() != null ? result.getData() : new ArrayList<>(), page, result.isHasNextMore());
                 }
             }
 
@@ -115,9 +120,9 @@ public class MediaPageLoader extends BaseMediaLoader {
      *
      * @param selection     查询语句
      * @param selectionArgs 查询参数
-     * @param limitCount
-     * @param offset
-     * @return
+     * @param limitCount    几条开始
+     * @param offset        偏移
+     * @return bundle
      */
     public static Bundle createQueryArgsBundle(String selection, String[] selectionArgs, int limitCount, int offset) {
         Bundle queryArgs = new Bundle();

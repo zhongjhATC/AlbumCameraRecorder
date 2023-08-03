@@ -34,7 +34,9 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataListener;
+import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
+import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener;
+import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
@@ -70,7 +72,7 @@ import java.util.List;
  * @author zhongjh
  * @date 2018/8/22
  */
-public class MatissFragment extends Fragment implements OnQueryDataListener<Album2>,
+public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, OnLoadPageMediaDataListener,
         MediaViewUtil.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
@@ -513,9 +515,10 @@ public class MatissFragment extends Fragment implements OnQueryDataListener<Albu
             mViewHolder.emptyView.setVisibility(View.GONE);
             if (!mIsRefresh) {
                 if (mMediaViewUtil != null) {
-                    mMediaViewUtil.load(album);
-                    mViewHolder.tvAlbumTitle.setText(album.getName());
+
                 }
+                mMainModel.loadPageMediaData(album.getId(), 1, 20, 1, this);
+                mViewHolder.tvAlbumTitle.setText(album.getName());
             }
         }
     }
@@ -673,7 +676,7 @@ public class MatissFragment extends Fragment implements OnQueryDataListener<Albu
      * @param data 查询后的数据源
      */
     @Override
-    public void onComplete(List<Album2> data) {
+    public void onLoadAllAlbumComplete(List<Album2> data) {
         // 更新专辑列表
         mAlbumSpinner.bindFolder(data);
         // 可能因为别的原因销毁当前界面，回到当前选择的位置
@@ -692,6 +695,11 @@ public class MatissFragment extends Fragment implements OnQueryDataListener<Albu
                     android.R.integer.config_longAnimTime)).start();
         }
         onAlbumSelected(album);
+    }
+
+    @Override
+    public void onLoadPageMediaDataComplete(List<LocalMedia> data, int currentPage, boolean isHasMore) {
+
     }
 
     public static class ViewHolder {

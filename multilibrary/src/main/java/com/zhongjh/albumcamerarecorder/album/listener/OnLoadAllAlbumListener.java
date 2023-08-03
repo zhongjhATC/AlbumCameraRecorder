@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.listener;
 
+import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+
 import java.util.List;
 
 /**
@@ -8,13 +10,13 @@ import java.util.List;
  * @author zhongjh
  * @date 2022/9/9
  */
-public interface OnQueryDataListener<T> {
+public interface OnLoadAllAlbumListener {
 
     /**
      * 查询完成后会回调该事件
      *
      * @param data 查询后的数据源
      */
-    void onComplete(List<T> data);
+    void onLoadAllAlbumComplete(List<Album2> data);
 
 }
