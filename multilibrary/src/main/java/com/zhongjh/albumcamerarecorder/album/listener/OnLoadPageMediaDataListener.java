@@ -1,6 +1,6 @@
 package com.zhongjh.albumcamerarecorder.album.listener;
 
-import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
+import com.zhongjh.common.entity.LocalMedia;
 
 import java.util.List;
 

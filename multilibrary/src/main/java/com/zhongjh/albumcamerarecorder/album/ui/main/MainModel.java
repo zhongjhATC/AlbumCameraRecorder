@@ -5,8 +5,6 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader;
@@ -46,9 +44,9 @@ public class MainModel extends AndroidViewModel {
      * @param pageSize 每页多少个
      * @param listener 回调事件
      */
-    public void loadPageMediaData(long bucketId, int page, int limit, int pageSize,
+    public void loadPageMediaData(long bucketId, int page, int pageSize,
                                   OnLoadPageMediaDataListener listener) {
-        mMediaPageLoader.loadPageMediaData(bucketId, page, limit, pageSize, listener);
+        mMediaPageLoader.loadPageMediaData(bucketId, page, pageSize, pageSize, listener);
     }
 
     /**

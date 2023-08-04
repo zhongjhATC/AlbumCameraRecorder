@@ -47,6 +47,11 @@ object AlbumSpec {
     var mediaTypeExclusive = false
 
     /**
+     * 每页多少个文件
+     */
+    var pageSize: Int = 60
+
+    /**
      * 仅仅显示一个多媒体类型
      */
     var showSingleMediaType = false
@@ -131,6 +136,7 @@ object AlbumSpec {
         isSupportWebp = true
         isSupportBmp = true
         mediaTypeExclusive = false
+        pageSize = 60
         showSingleMediaType = false
         countable = true
         baseFilters = null

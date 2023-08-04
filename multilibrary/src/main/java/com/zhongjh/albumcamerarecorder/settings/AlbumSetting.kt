@@ -51,6 +51,11 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
+    override fun pageSize(pageSize: Int): AlbumSetting {
+        mAlbumSpec.pageSize = pageSize
+        return this
+    }
+
     override fun showSingleMediaType(showSingleMediaType: Boolean): AlbumSetting {
         mAlbumSpec.showSingleMediaType = showSingleMediaType
         return this

@@ -11,17 +11,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.base.BaseRecyclerViewCursorAdapter;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGrid;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
-import com.zhongjh.albumcamerarecorder.album.widget.MediaGrid;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.MultiMedia;
+
+import java.util.List;
 
 /**
  * 相册适配器
@@ -29,13 +33,14 @@ import com.zhongjh.common.entity.MultiMedia;
  * @author zhongjh
  */
 public class AlbumMediaAdapter extends
-        BaseRecyclerViewCursorAdapter<RecyclerView.ViewHolder> implements
+        RecyclerView.Adapter<RecyclerView.ViewHolder> implements
         MediaGrid.OnMediaGridClickListener {
 
     private static final int VIEW_TYPE_MEDIA = 0x02;
     private final SelectedItemCollection mSelectedCollection;
     private final Drawable mPlaceholder;
     private final AlbumSpec mAlbumSpec;
+    private List<LocalMedia> data;
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
     private final int mImageResize;
@@ -44,13 +49,21 @@ public class AlbumMediaAdapter extends
         super();
         mAlbumSpec = AlbumSpec.INSTANCE;
         mSelectedCollection = selectedCollection;
-        Log.d("onSaveInstanceState",mSelectedCollection.asList().size() + " AlbumMediaAdapter");
+        Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " AlbumMediaAdapter");
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.item_placeholder});
         mPlaceholder = ta.getDrawable(0);
         ta.recycle();
 
         mImageResize = imageResize;
+    }
+
+    public void setData(List<LocalMedia> data) {
+        List<LocalMedia> oldLocalMedia = this.data;
+        this.data = data;
+        // 计算新老数据集差异，将差异更新到Adapter
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new LocalMediaCallback(oldLocalMedia, this.data));
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull
@@ -60,14 +73,13 @@ public class AlbumMediaAdapter extends
         return new MediaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.media_grid_item_zjh, parent, false));
     }
 
-
     @Override
-    protected void onBindViewHolder(final RecyclerView.ViewHolder holder, Cursor cursor) {
-        Log.d("onSaveInstanceState",mSelectedCollection.asList().size() + " onBindViewHolder");
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " onBindViewHolder");
         // 相片的item
         MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
 
-        final MultiMedia item = MultiMedia.valueOf(cursor);
+        LocalMedia item = this.data.get(position);
         // 传递相关的值
         mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
                 mImageResize,
@@ -81,14 +93,19 @@ public class AlbumMediaAdapter extends
         setCheckStatus(item, mediaViewHolder.mMediaGrid);
     }
 
+    @Override
+    public int getItemCount() {
+        return this.data.size();
+    }
+
     /**
      * 设置当前选择状态
      *
      * @param item      数据
      * @param mediaGrid holder
      */
-    private void setCheckStatus(MultiMedia item, MediaGrid mediaGrid) {
-        Log.d("onSaveInstanceState",mSelectedCollection.asList().size() + " setCheckStatus");
+    private void setCheckStatus(LocalMedia item, MediaGrid mediaGrid) {
+        Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " setCheckStatus");
         // 是否多选时,显示数字
         if (mAlbumSpec.getCountable()) {
             int checkedNum = mSelectedCollection.checkedNumOf(item);
@@ -121,18 +138,16 @@ public class AlbumMediaAdapter extends
         }
     }
 
-
     @Override
-    public void onThumbnailClicked(ImageView imageView, MultiMedia item, RecyclerView.ViewHolder holder) {
+    public void onThumbnailClicked(@Nullable ImageView imageView, @Nullable LocalMedia item, @Nullable RecyclerView.ViewHolder holder) {
         if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onMediaClick(null, imageView, item, holder.getBindingAdapterPosition());
         }
     }
 
-
     @Override
-    public void onCheckViewClicked(CheckView checkView, MultiMedia item, RecyclerView.ViewHolder holder) {
-        Log.d("onSaveInstanceState",mSelectedCollection.asList().size() + " onCheckViewClicked");
+    public void onCheckViewClicked(@Nullable CheckView checkView, @Nullable LocalMedia item, @Nullable RecyclerView.ViewHolder holder) {
+        Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " onCheckViewClicked");
         // 是否多选模式,显示数字
         if (mAlbumSpec.getCountable()) {
             // 获取当前选择的第几个
@@ -176,17 +191,6 @@ public class AlbumMediaAdapter extends
         if (mCheckStateListener != null) {
             mCheckStateListener.onUpdate();
         }
-    }
-
-    /**
-     * 返回类型
-     *
-     * @param position 索引
-     * @param cursor   数据源
-     */
-    @Override
-    public int getItemViewType(int position, Cursor cursor) {
-        return VIEW_TYPE_MEDIA;
     }
 
     /**

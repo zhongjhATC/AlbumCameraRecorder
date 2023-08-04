@@ -10,7 +10,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;

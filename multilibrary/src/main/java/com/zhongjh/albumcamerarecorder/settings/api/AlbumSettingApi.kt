@@ -45,6 +45,12 @@ interface AlbumSettingApi {
     fun isSupportBmp(isSupport: Boolean): AlbumSetting
 
     /**
+     * 相册以分页形式展开
+     * @param pageSize 每页多少个文件
+     */
+    fun pageSize(pageSize: Int): AlbumSetting
+
+    /**
      * 如果选择的媒体仅为图像或视频，是否仅显示一种媒体类型。
      *
      * @param showSingleMediaType 是否只显示一种媒体类型，图像或视频。

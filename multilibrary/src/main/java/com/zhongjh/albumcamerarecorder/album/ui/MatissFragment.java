@@ -34,7 +34,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
@@ -348,7 +348,7 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
      */
     private void initMediaViewUtil() {
         Log.d("onSaveInstanceState", " initMediaViewUtil");
-        mMediaViewUtil = new MediaViewUtil(getActivity(), mViewHolder.recyclerview, this, this, this);
+        mMediaViewUtil = new MediaViewUtil(getActivity(), mMainModel, mViewHolder.recyclerview, this, this, this);
     }
 
     /**
@@ -515,10 +515,9 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
             mViewHolder.emptyView.setVisibility(View.GONE);
             if (!mIsRefresh) {
                 if (mMediaViewUtil != null) {
-
+                    mMediaViewUtil.load(album);
+                    mViewHolder.tvAlbumTitle.setText(album.getName());
                 }
-                mMainModel.loadPageMediaData(album.getId(), 1, 20, 1, this);
-                mViewHolder.tvAlbumTitle.setText(album.getName());
             }
         }
     }

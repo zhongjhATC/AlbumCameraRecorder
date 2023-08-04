@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.widget
+package com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -10,14 +10,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.albumcamerarecorder.album.widget.CheckView
+import com.zhongjh.albumcamerarecorder.album.widget.SquareFrameLayout
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.imageEngine
-import com.zhongjh.common.entity.MultiMedia
 
 /**
  * @author zhongjh
  */
 class MediaGrid : SquareFrameLayout, View.OnClickListener {
 
+    /**
+     * 图片控件
+     */
     private lateinit var mImageView: ImageView
 
     /**
@@ -38,7 +43,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
     /**
      * 值
      */
-    private lateinit var mMedia: MultiMedia
+    private lateinit var mMedia: LocalMedia
 
     /**
      * 控件 和一些别的变量
@@ -87,7 +92,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      *
      * @param item 值
      */
-    fun bindMedia(item: MultiMedia) {
+    fun bindMedia(item: LocalMedia) {
         mMedia = item
         setGifTag()
         initCheckView()
@@ -141,13 +146,11 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      * 设置图片或者gif图片
      */
     private fun setImage() {
-        mMedia.path?.let {
-            mImageView.transitionName = mMedia.id.toString()
-            imageEngine.loadThumbnail(
-                context, mPreBindInfo.mResize,
-                mPreBindInfo.mPlaceholder, mImageView, it
-            )
-        }
+        mImageView.transitionName = mMedia.id.toString()
+        imageEngine.loadThumbnail(
+            context, mPreBindInfo.mResize,
+            mPreBindInfo.mPlaceholder, mImageView, mMedia.path
+        )
     }
 
     /**
@@ -177,7 +180,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
          */
         fun onThumbnailClicked(
             imageView: ImageView?,
-            item: MultiMedia?,
+            item: LocalMedia?,
             holder: RecyclerView.ViewHolder?
         )
 
@@ -190,7 +193,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
          */
         fun onCheckViewClicked(
             checkView: CheckView?,
-            item: MultiMedia?,
+            item: LocalMedia?,
             holder: RecyclerView.ViewHolder?
         )
     }

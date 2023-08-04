@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.entity
 
+import com.zhongjh.common.entity.LocalMedia
+
 /**
  * 封装多媒体文件集合的类
  *

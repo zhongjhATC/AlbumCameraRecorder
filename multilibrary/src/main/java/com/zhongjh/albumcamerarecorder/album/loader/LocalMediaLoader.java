@@ -7,7 +7,7 @@
 //import android.text.TextUtils;
 //
 //import com.zhongjh.albumcamerarecorder.album.entity.Album;
-//import com.zhongjh.albumcamerarecorder.album.entity.LocalMedia;
+//import com.zhongjh.common.entity.LocalMedia;
 //import com.zhongjh.albumcamerarecorder.album.listener.OnQueryAlbumListener;
 //import com.zhongjh.albumcamerarecorder.album.listener.OnQueryAllAlbumListener;
 //import com.zhongjh.albumcamerarecorder.album.listener.OnQueryDataResultListener;

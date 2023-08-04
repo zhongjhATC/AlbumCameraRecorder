@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder.album.ui.mediaselection;
 
-import android.database.Cursor;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -10,14 +9,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
+import com.zhongjh.common.entity.LocalMedia;
+import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
-import com.zhongjh.albumcamerarecorder.album.widget.MediaGridInset;
+import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGridInset;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.common.entity.MultiMedia;
+
+import java.util.List;
 
 /**
  * 以前是MediaSelectionFragment,现在为了能滑动影响上下布局，放弃Fragment布局，直接使用RecyclerView
@@ -49,6 +51,11 @@ public class MediaViewUtil implements
     private final RecyclerView mRecyclerView;
     private AlbumMediaAdapter mAdapter;
     private Album2 mAlbum;
+    private AlbumSpec mAlbumSpec;
+    /**
+     * 分页相册的当前页码
+     */
+    private int mPage = 0;
     /**
      * 选择接口事件
      */
@@ -65,11 +72,11 @@ public class MediaViewUtil implements
     private void init() {
         // 先设置recyclerView的布局
         int spanCount;
-        AlbumSpec albumSpec = AlbumSpec.INSTANCE;
-        if (albumSpec.getGridExpectedSize() > 0) {
-            spanCount = UiUtils.spanCount(mActivity, albumSpec.getGridExpectedSize());
+        mAlbumSpec = AlbumSpec.INSTANCE;
+        if (mAlbumSpec.getGridExpectedSize() > 0) {
+            spanCount = UiUtils.spanCount(mActivity, mAlbumSpec.getGridExpectedSize());
         } else {
-            spanCount = albumSpec.getSpanCount();
+            spanCount = mAlbumSpec.getSpanCount();
         }
         // 删除动画
         mRecyclerView.setItemAnimator(null);
@@ -87,7 +94,6 @@ public class MediaViewUtil implements
         int spacing = mActivity.getResources().getDimensionPixelSize(R.dimen.z_media_grid_spacing);
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.swapCursor(cursor);
     }
 
     public void onDestroyView() {
@@ -102,8 +108,12 @@ public class MediaViewUtil implements
      * 重新获取数据源
      */
     public void restartLoaderMediaGrid() {
-        mMainModel.loadPageMediaData(mAlbum.getId(),);
-        mAlbumMediaCollection.restartLoader(mAlbum);
+        mMainModel.loadPageMediaData(mAlbum.getId(), mPage, mAlbumSpec.getPageSize(), new OnLoadPageMediaDataListener() {
+            @Override
+            public void onLoadPageMediaDataComplete(List<LocalMedia> data, int currentPage, boolean isHasMore) {
+                mAdapter.setData(data);
+            }
+        });
     }
 
     /**
@@ -113,7 +123,7 @@ public class MediaViewUtil implements
      */
     public void load(Album2 album) {
         mAlbum = album;
-        mAlbumMediaCollection.restartLoader(mAlbum);
+        restartLoaderMediaGrid();
     }
 
     /**
