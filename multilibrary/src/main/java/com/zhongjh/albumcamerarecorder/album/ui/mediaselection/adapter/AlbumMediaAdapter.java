@@ -36,7 +36,6 @@ public class AlbumMediaAdapter extends
         RecyclerView.Adapter<RecyclerView.ViewHolder> implements
         MediaGrid.OnMediaGridClickListener {
 
-    private static final int VIEW_TYPE_MEDIA = 0x02;
     private final SelectedItemCollection mSelectedCollection;
     private final Drawable mPlaceholder;
     private final AlbumSpec mAlbumSpec;
@@ -175,7 +174,6 @@ public class AlbumMediaAdapter extends
                 // 刷新数据源
                 notifyCheckStateChanged();
             } else {
-
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
                     mSelectedCollection.add(item);
                     notifyCheckStateChanged();
