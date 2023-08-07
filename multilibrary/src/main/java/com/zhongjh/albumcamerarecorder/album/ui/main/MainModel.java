@@ -40,7 +40,6 @@ public class MainModel extends AndroidViewModel {
      *
      * @param bucketId 专辑id
      * @param page     当前页码
-     * @param limit    数据取多少个
      * @param pageSize 每页多少个
      * @param listener 回调事件
      */

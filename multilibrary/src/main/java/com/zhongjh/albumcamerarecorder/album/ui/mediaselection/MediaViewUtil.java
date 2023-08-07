@@ -74,7 +74,7 @@ public class MediaViewUtil implements
         int spanCount;
         mAlbumSpec = AlbumSpec.INSTANCE;
         if (mAlbumSpec.getGridExpectedSize() > 0) {
-            spanCount = UiUtils.spanCount(mActivity, mAlbumSpec.getGridExpectedSize());
+            spanCount = UiUtils.spanCount(mActivity.getApplicationContext(), mAlbumSpec.getGridExpectedSize());
         } else {
             spanCount = mAlbumSpec.getSpanCount();
         }
@@ -82,7 +82,7 @@ public class MediaViewUtil implements
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity.getApplicationContext(), spanCount));
         // 需要先设置布局获取确定的spanCount，才能设置adapter
-        mAdapter = new AlbumMediaAdapter(mActivity,
+        mAdapter = new AlbumMediaAdapter(mActivity.getApplicationContext(),
                 mSelectionProvider.provideSelectedItemCollection(), getImageResize());
         Log.d("onSaveInstanceState", " mAdapter");
         mAdapter.registerCheckStateListener(this);
