@@ -108,6 +108,7 @@ public class AlbumMediaAdapter extends
         Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " setCheckStatus");
         // 是否多选时,显示数字
         if (mAlbumSpec.getCountable()) {
+            // 显示数字
             int checkedNum = mSelectedCollection.checkedNumOf(item);
             if (checkedNum > 0) {
                 // 设置启用,设置数量
@@ -124,7 +125,7 @@ public class AlbumMediaAdapter extends
                 }
             }
         } else {
-            // 不显示字的情况
+            // 不显示数字
             boolean selected = mSelectedCollection.isSelected(item);
             // 如果被选中了，就设置选择
             if (selected) {
