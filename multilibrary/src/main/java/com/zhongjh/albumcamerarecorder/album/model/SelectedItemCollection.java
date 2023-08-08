@@ -258,6 +258,9 @@ public class SelectedItemCollection {
      */
     public boolean isSelected(MultiMedia item) {
         return mItems.contains(item);
+
+
+
     }
 
     /**

@@ -1,19 +1,15 @@
-package com.zhongjh.albumcamerarecorder.album.ui.main;
+package com.zhongjh.albumcamerarecorder.album.ui.main
 
-import android.app.Application;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
-import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener;
-import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
-import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader;
-import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader;
-
-import java.util.List;
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
+import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
+import androidx.lifecycle.MutableLiveData
+import com.zhongjh.albumcamerarecorder.album.entity.Album2
+import androidx.lifecycle.LiveData
+import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener
+import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener
+import com.zhongjh.common.entity.LocalMedia
 
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
@@ -22,52 +18,51 @@ import java.util.List;
  * @author zhongjh
  * @date 2022/9/7
  */
-public class MainModel extends AndroidViewModel {
+class MainModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * 数据库操作类
      */
-    MediaLoader mMediaLoader;
+    var mMediaLoader: MediaLoader
+
     /**
      * 数据库操作类
      */
-    MediaPageLoader mMediaPageLoader;
+    var mMediaPageLoader: MediaPageLoader
+
     /**
      * 文件夹数据列表
      */
-    private MutableLiveData<List<Album2>> albums;
+    private val albums: MutableLiveData<List<Album2>> by lazy {
+        MutableLiveData<List<Album2>>().also {
+            loadAllAlbum()
+        }
+    }
+
     /**
      * 当前所选择的文件夹
      */
-    private int mCurrentSelection;
+    var currentSelection = 0
+        private set
 
-    public LiveData<List<Album2>> getAlbums() {
-        if (albums == null) {
-            albums = new MutableLiveData<>();
-            loadAllAlbum();
-        }
-        return albums;
+    fun getAlbums(): LiveData<List<Album2>> {
+        return albums
     }
 
-    public MainModel(@NonNull Application application) {
-        super(application);
-        mMediaLoader = new MediaLoader(application);
-        mMediaPageLoader = new MediaPageLoader(application);
+    init {
+        mMediaLoader = MediaLoader(application)
+        mMediaPageLoader = MediaPageLoader(application)
     }
 
-    public int getCurrentSelection() {
-        return mCurrentSelection;
-    }
-
-    public void setStateCurrentSelection(int currentSelection) {
-        this.mCurrentSelection = currentSelection;
+    fun setStateCurrentSelection(currentSelection: Int) {
+        this.currentSelection = currentSelection
     }
 
     /**
      * 获取所有专辑
      */
-    private void loadAllAlbum() {
-        mMediaLoader.loadAllMedia(data -> albums.postValue(data));
+    private fun loadAllAlbum() {
+        mMediaLoader.loadAllMedia { data: List<Album2> -> this.albums.postValue(data) }
     }
 
     /**
@@ -78,19 +73,21 @@ public class MainModel extends AndroidViewModel {
      * @param pageSize 每页多少个
      * @param listener 回调事件
      */
-    public void loadPageMediaData(long bucketId, int page, int pageSize,
-                                  OnLoadPageMediaDataListener listener) {
-        mMediaPageLoader.loadPageMediaData(bucketId, page, pageSize, pageSize, listener);
+    fun loadPageMediaData(
+        bucketId: Long, page: Int, pageSize: Int,
+        listener: OnLoadPageMediaDataListener
+    ) {
+        mMediaPageLoader.loadPageMediaData(bucketId, page, pageSize, pageSize, OnLoadPageMediaDataListener())
     }
 
     /**
      * 由于屏幕旋转导致的Activity重建，该方法不会被调用
-     * <p>
+     *
+     *
      * 只有ViewModel已经没有任何Activity与之有关联，系统则会调用该方法，你可以在此清理资源
      */
-    @Override
-    protected void onCleared() {
-        super.onCleared();
+    override fun onCleared() {
+        super.onCleared()
     }
 
     /**
@@ -100,13 +97,12 @@ public class MainModel extends AndroidViewModel {
      * @param item  当前数据
      * @return 索引
      */
-    @JvmStatic
-    fun checkedNumOf(items: List<LocalMedia>, item: LocalMedia): Int {
+    fun checkedNumOf(item: LocalMedia): Int {
         var index = -1
         // 一般用于相册数据的获取索引
         for (i in items.indices) {
             if (items[i].path == item.path
-                    && items[i].id == item.id
+                && items[i].id == item.id
             ) {
                 index = i
                 break
@@ -119,4 +115,5 @@ public class MainModel extends AndroidViewModel {
             index + 1
         }
     }
+
 }
