@@ -34,10 +34,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
-import com.zhongjh.albumcamerarecorder.album.model.AlbumCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
@@ -53,6 +50,7 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.ColorFilterUtil;
@@ -72,7 +70,7 @@ import java.util.List;
  * @author zhongjh
  * @date 2018/8/22
  */
-public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, OnLoadPageMediaDataListener,
+public class MatissFragment extends Fragment implements OnLoadPageMediaDataListener,
         MediaViewUtil.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
@@ -103,10 +101,6 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
      */
     private MediaStoreCompat mVideoMediaStoreCompat;
 
-    /**
-     * 专辑下拉数据源
-     */
-    private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection;
     private AlbumSpec mAlbumSpec;
 
@@ -182,6 +176,7 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
         initActivityResult();
         initListener();
         initMediaViewUtil();
+        initObserveData();
         return view;
     }
 
@@ -189,7 +184,6 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mSelectedCollection.onSaveInstanceState(outState);
-        mAlbumCollection.onSaveInstanceState(outState);
     }
 
     /**
@@ -254,7 +248,7 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
         mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
 
         // 获取专辑数据
-        mMainModel.loadAllAlbum(this);
+        mMainModel.getAlbums();
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
@@ -276,7 +270,7 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
         // 下拉框选择的时候
         mAlbumSpinner.setOnAlbumItemClickListener((position, album) -> {
             // 设置缓存值
-            mAlbumCollection.setStateCurrentSelection(position);
+            mMainModel.setStateCurrentSelection(position);
             onAlbumSelected(album);
             mAlbumSpinner.dismiss();
         });
@@ -352,6 +346,33 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
     }
 
     /**
+     * 初始化数据的监控
+     */
+    private void initObserveData() {
+        // 专辑加载完毕
+        mMainModel.getAlbums().observe(this.mActivity, data -> {
+            // 更新专辑列表
+            mAlbumSpinner.bindFolder(data);
+            // 可能因为别的原因销毁当前界面，回到当前选择的位置
+            Album2 album = data.get(mMainModel.getCurrentSelection());
+            ArrayList<Album2> albumChecks = new ArrayList<>();
+            albumChecks.add(album);
+            mAlbumSpinner.updateCheckStatus(albumChecks);
+            String displayName = album.getName();
+            if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {
+                mViewHolder.tvAlbumTitle.setText(displayName);
+            } else {
+                mViewHolder.tvAlbumTitle.setAlpha(0.0f);
+                mViewHolder.tvAlbumTitle.setVisibility(View.VISIBLE);
+                mViewHolder.tvAlbumTitle.setText(displayName);
+                mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(mContext.getResources().getInteger(
+                        android.R.integer.config_longAnimTime)).start();
+            }
+            onAlbumSelected(album);
+        });
+    }
+
+    /**
      * 初始化Activity的返回
      */
     private void initActivityResult() {
@@ -381,7 +402,6 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
                             mSelectedCollection.overwrite(selected, collectionType);
                             if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_IS_EDIT, false)) {
                                 mIsRefresh = true;
-                                albumsSpinnerNotifyData();
                                 // 重新读取数据源
                                 mMediaViewUtil.restartLoaderMediaGrid();
                             } else {
@@ -402,8 +422,6 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
             mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(MatissFragment.this.getClass());
             mGlobalSpec.setVideoCompressCoordinator(null);
         }
-        // 销毁相册model
-        mAlbumCollection.onDestroy();
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
@@ -492,11 +510,6 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
             }
         }
         return count;
-    }
-
-    public void albumsSpinnerNotifyData() {
-        mAlbumCollection.mLoadFinished = false;
-        mAlbumCollection.restartLoadAlbums();
     }
 
     /**
@@ -667,33 +680,6 @@ public class MatissFragment extends Fragment implements OnLoadAllAlbumListener, 
             mViewHolder.buttonApply.setVisibility(View.VISIBLE);
             mViewHolder.buttonPreview.setEnabled(true);
         }
-    }
-
-    /**
-     * 专辑加载完毕
-     *
-     * @param data 查询后的数据源
-     */
-    @Override
-    public void onLoadAllAlbumComplete(List<Album2> data) {
-        // 更新专辑列表
-        mAlbumSpinner.bindFolder(data);
-        // 可能因为别的原因销毁当前界面，回到当前选择的位置
-        Album2 album = data.get(mAlbumCollection.getCurrentSelection());
-        ArrayList<Album2> albumChecks = new ArrayList<>();
-        albumChecks.add(album);
-        mAlbumSpinner.updateCheckStatus(albumChecks);
-        String displayName = album.getName();
-        if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {
-            mViewHolder.tvAlbumTitle.setText(displayName);
-        } else {
-            mViewHolder.tvAlbumTitle.setAlpha(0.0f);
-            mViewHolder.tvAlbumTitle.setVisibility(View.VISIBLE);
-            mViewHolder.tvAlbumTitle.setText(displayName);
-            mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(mContext.getResources().getInteger(
-                    android.R.integer.config_longAnimTime)).start();
-        }
-        onAlbumSelected(album);
     }
 
     @Override

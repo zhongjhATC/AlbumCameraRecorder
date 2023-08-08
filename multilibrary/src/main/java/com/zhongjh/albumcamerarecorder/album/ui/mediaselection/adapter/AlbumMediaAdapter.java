@@ -108,7 +108,7 @@ public class AlbumMediaAdapter extends
         // 是否多选时,显示数字
         if (mAlbumSpec.getCountable()) {
             // 显示数字
-            int checkedNum = mSelectedCollection.checkedNumOf(item);
+            int checkedNum = LocalMedia.checkedNumOf(data, item);
             if (checkedNum > 0) {
                 // 设置启用,设置数量
                 mediaGrid.setCheckEnabled(true);

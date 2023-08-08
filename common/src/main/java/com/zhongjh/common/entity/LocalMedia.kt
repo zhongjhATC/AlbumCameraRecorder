@@ -359,19 +359,6 @@ class LocalMedia : Parcelable {
             return localMedia
         }
 
-
-        /**
-         * 获取相同数据的索引
-         *
-         * @param items 数据列表
-         * @param item  当前数据
-         * @return 索引
-         */
-        @JvmStatic
-        fun checkedNumOf(items: List<LocalMedia>, item: LocalMedia): Int {
-            
-        }
-
     }
 
 }
