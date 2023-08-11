@@ -2,13 +2,12 @@ package com.zhongjh.albumcamerarecorder.album.ui.main
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
-import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
-import androidx.lifecycle.LiveData
-import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener
+import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
+import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
 import com.zhongjh.common.entity.LocalMedia
 
 /**
@@ -38,6 +37,11 @@ class MainModel(application: Application) : AndroidViewModel(application) {
             loadAllAlbum()
         }
     }
+
+    /**
+     * 多媒体文件数据
+     */
+    private val localMedias: MutableLiveData<List<LocalMedia>>? = null
 
     /**
      * 当前所选择的文件夹
@@ -71,13 +75,13 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * @param bucketId 专辑id
      * @param page     当前页码
      * @param pageSize 每页多少个
-     * @param listener 回调事件
      */
-    fun loadPageMediaData(
-        bucketId: Long, page: Int, pageSize: Int,
-        listener: OnLoadPageMediaDataListener
-    ) {
-        mMediaPageLoader.loadPageMediaData(bucketId, page, pageSize, pageSize, OnLoadPageMediaDataListener())
+    fun loadPageMediaData(bucketId: Long, page: Int, pageSize: Int) {
+        mMediaPageLoader.loadPageMediaData(
+            bucketId, page, pageSize, pageSize
+        ) { data, currentPage, isHasMore ->
+            localMedias.postValue(data)
+        }
     }
 
     /**
