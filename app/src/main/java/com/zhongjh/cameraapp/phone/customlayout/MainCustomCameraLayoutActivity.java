@@ -20,6 +20,7 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameralayoutBinding;
 import com.zhongjh.cameraapp.phone.customlayout.camera1.CameraFragment1;
 import com.zhongjh.cameraapp.phone.customlayout.camera2.CameraFragment2;
+import com.zhongjh.cameraapp.phone.customlayout.camera3.CameraFragment3;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
@@ -138,8 +139,12 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         // 每次使用要重新赋值，因为会在每次关闭界面后删除该Fragment
         if (mBinding.radioButton1.isChecked()) {
             cameraSetting.setBaseCameraFragment(CameraFragment1.newInstance());
-        } else if(mBinding.radioButton2.isChecked()) {
+        } else if (mBinding.radioButton2.isChecked()) {
             cameraSetting.setBaseCameraFragment(CameraFragment2.newInstance());
+        } else if (mBinding.radioButton3.isChecked()) {
+            cameraSetting.setBaseCameraFragment(CameraFragment3.newInstance());
+            // 添加水印,演示动态文字
+            cameraSetting.watermarkResource(R.layout.watermark_text);
         }
 
 
