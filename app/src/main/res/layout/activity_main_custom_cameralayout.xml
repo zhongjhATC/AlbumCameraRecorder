@@ -34,6 +34,12 @@
                     android:layout_height="wrap_content"
                     android:text="修改拍照时图片逻辑" />
 
+                <RadioButton
+                    android:id="@+id/radioButton3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="动态水印" />
+
             </RadioGroup>
 
             <com.zhongjh.progresslibrary.widget.MaskProgressLayout
