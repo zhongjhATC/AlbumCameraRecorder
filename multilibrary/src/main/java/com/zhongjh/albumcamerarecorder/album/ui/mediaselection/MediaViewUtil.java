@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -94,6 +95,14 @@ public class MediaViewUtil implements
         int spacing = mActivity.getResources().getDimensionPixelSize(R.dimen.z_media_grid_spacing);
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
         mRecyclerView.setAdapter(mAdapter);
+
+        // 监听到新的相册数据
+        mMainModel.getLocalMedias().observe(mActivity, new Observer<List<LocalMedia>>() {
+            @Override
+            public void onChanged(List<LocalMedia> localMedia) {
+                mAdapter.setData(localMedia);
+            }
+        });
     }
 
     public void onDestroyView() {
@@ -108,12 +117,7 @@ public class MediaViewUtil implements
      * 重新获取数据源
      */
     public void restartLoaderMediaGrid() {
-        mMainModel.loadPageMediaData(mAlbum.getId(), mPage, mAlbumSpec.getPageSize(), new OnLoadPageMediaDataListener() {
-            @Override
-            public void onLoadPageMediaDataComplete(List<LocalMedia> data, int currentPage, boolean isHasMore) {
-                mAdapter.setData(data);
-            }
-        });
+        mMainModel.loadPageMediaData(mAlbum.getId(), mPage, mAlbumSpec.getPageSize());
     }
 
     /**

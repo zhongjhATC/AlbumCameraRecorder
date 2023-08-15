@@ -41,7 +41,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 多媒体文件数据
      */
-    private val localMedias: MutableLiveData<List<LocalMedia>>? = null
+    private lateinit var localMedias: MutableLiveData<List<LocalMedia>>
 
     /**
      * 当前所选择的文件夹
@@ -51,6 +51,10 @@ class MainModel(application: Application) : AndroidViewModel(application) {
 
     fun getAlbums(): LiveData<List<Album2>> {
         return albums
+    }
+
+    fun getLocalMedias(): LiveData<List<LocalMedia>> {
+        return localMedias
     }
 
     init {
@@ -97,19 +101,20 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 获取相同数据的索引
      *
-     * @param items 数据列表
      * @param item  当前数据
      * @return 索引
      */
     fun checkedNumOf(item: LocalMedia): Int {
         var index = -1
-        // 一般用于相册数据的获取索引
-        for (i in items.indices) {
-            if (items[i].path == item.path
-                && items[i].id == item.id
-            ) {
-                index = i
-                break
+        localMedias.value?.let {
+            // 一般用于相册数据的获取索引
+            for (i in it.indices) {
+                if (it[i].path == item.path
+                    && it[i].id == item.id
+                ) {
+                    index = i
+                    break
+                }
             }
         }
         // 如果选择的为 -1 就是未选状态，否则选择基础数量+1
