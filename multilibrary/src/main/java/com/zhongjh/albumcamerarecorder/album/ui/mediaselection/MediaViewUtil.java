@@ -69,15 +69,15 @@ public class MediaViewUtil implements
         int spanCount;
         mAlbumSpec = AlbumSpec.INSTANCE;
         if (mAlbumSpec.getGridExpectedSize() > 0) {
-            spanCount = UiUtils.spanCount(mActivity.getApplicationContext(), mAlbumSpec.getGridExpectedSize());
+            spanCount = UiUtils.spanCount(mActivity, mAlbumSpec.getGridExpectedSize());
         } else {
             spanCount = mAlbumSpec.getSpanCount();
         }
         // 删除动画
         mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity.getApplicationContext(), spanCount));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity, spanCount));
         // 需要先设置布局获取确定的spanCount，才能设置adapter
-        mAdapter = new AlbumMediaAdapter(mActivity.getApplicationContext(), mMainModel, getImageResize());
+        mAdapter = new AlbumMediaAdapter(mActivity, mMainModel, getImageResize());
         Log.d("onSaveInstanceState", " mAdapter");
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);
@@ -142,8 +142,8 @@ public class MediaViewUtil implements
         if (lm != null) {
             spanCount = ((GridLayoutManager) lm).getSpanCount();
         }
-        int screenWidth = mActivity.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
-        int availableWidth = screenWidth - mActivity.getApplicationContext().getResources().getDimensionPixelSize(
+        int screenWidth = mActivity.getResources().getDisplayMetrics().widthPixels;
+        int availableWidth = screenWidth - mActivity.getResources().getDimensionPixelSize(
                 R.dimen.z_media_grid_spacing) * (spanCount - 1);
         // 图片调整后的大小：获取列表的每个格子的宽度
         imageResize = availableWidth / spanCount;
