@@ -39,9 +39,9 @@ public class BaseMediaLoader {
      */
     protected String getFileSizeCondition() {
         long maxS = albumSpec.getFilterMaxFileSize() == 0 ? Long.MAX_VALUE : albumSpec.getFilterMaxFileSize();
-        return String.format(Locale.CHINA, "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
-                Math.max(0, albumSpec.getFilterMinFileSize()),
+        return String.format(Locale.CHINA, MediaStore.MediaColumns.SIZE + ">%s %d and " + MediaStore.MediaColumns.SIZE + " <= %d",
                 Math.max(0, albumSpec.getFilterMinFileSize()) == 0 ? "" : "=",
+                Math.max(0, albumSpec.getFilterMinFileSize()),
                 maxS);
     }
 
@@ -58,9 +58,9 @@ public class BaseMediaLoader {
         } else {
             duration = "duration";
         }
-        return String.format(Locale.CHINA, "%d <%s " + duration + " and " + duration + " <= %d",
-                Math.max((long) 0, AlbumSpec.INSTANCE.getVideoMinSecond()),
+        return String.format(Locale.CHINA, duration + ">%s %d and " + duration + " <= %d",
                 Math.max((long) 0, AlbumSpec.INSTANCE.getVideoMinSecond()) == 0 ? "" : "=",
+                Math.max((long) 0, AlbumSpec.INSTANCE.getVideoMinSecond()),
                 maxS);
     }
 

@@ -54,7 +54,7 @@ public class MediaViewUtil implements
     /**
      * 分页相册的当前页码
      */
-    private int mPage = 0;
+    private int mPage = 1;
     /**
      * 单选事件
      */
@@ -77,7 +77,7 @@ public class MediaViewUtil implements
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity.getApplicationContext(), spanCount));
         // 需要先设置布局获取确定的spanCount，才能设置adapter
-        mAdapter = new AlbumMediaAdapter(mActivity.getApplicationContext(),mMainModel, getImageResize());
+        mAdapter = new AlbumMediaAdapter(mActivity.getApplicationContext(), mMainModel, getImageResize());
         Log.d("onSaveInstanceState", " mAdapter");
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);

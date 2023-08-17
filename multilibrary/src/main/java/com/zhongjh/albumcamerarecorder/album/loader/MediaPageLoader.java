@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class MediaPageLoader extends BaseMediaLoader {
 
-    private final String TAG = "MediaPageLoader";
+    private static final String TAG = "MediaPageLoader";
 
     /**
      * Media file database field
@@ -78,8 +78,10 @@ public class MediaPageLoader extends BaseMediaLoader {
                         String orderBy = page == -1 ? MediaStore.Files.FileColumns._ID + " DESC" : MediaStore.Files.FileColumns._ID + " DESC limit " + limit + " offset " + (page - 1) * pageSize;
                         data = mContext.getContentResolver().query(QUERY_URI, PROJECTION_PAGE, getPageSelection(bucketId), getPageSelectionArgs(bucketId), orderBy);
                     }
+
                     // 构造数据
                     if (data != null) {
+                        Log.i(TAG, "dataCount: " + data.getCount());
                         List<LocalMedia> result = getLocalMedias(data);
                         return new MediaData(data.getCount() > 0, result);
                     }
@@ -130,8 +132,10 @@ public class MediaPageLoader extends BaseMediaLoader {
             queryArgs.putString(ContentResolver.QUERY_ARG_SQL_SELECTION, selection);
             queryArgs.putStringArray(ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS, selectionArgs);
             queryArgs.putString(ContentResolver.QUERY_ARG_SQL_SORT_ORDER, MediaStore.Files.FileColumns._ID + " DESC");
+            Log.d(TAG, "selection: " + selection);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 queryArgs.putString(ContentResolver.QUERY_ARG_SQL_LIMIT, limitCount + " offset " + offset);
+                Log.d(TAG, "limitCount: " + limitCount + " offset " + offset);
             }
         }
         return queryArgs;
@@ -281,16 +285,16 @@ public class MediaPageLoader extends BaseMediaLoader {
                 String mimeType = data.getString(mimeTypeColumn);
                 mimeType = TextUtils.isEmpty(mimeType) ? MimeType.JPEG.getMimeTypeName() : mimeType;
                 String absolutePath = data.getString(dataColumn);
-                String url = SdkVersionUtils.isQ() ? MediaLoader.getRealPathUri(id, mimeType) : absolutePath;
-                if (TextUtils.isEmpty(absolutePath) || new File(absolutePath).exists()) {
+                String uri = SdkVersionUtils.isQ() ? MediaLoader.getRealPathUri(id, mimeType) : absolutePath;
+                if (TextUtils.isEmpty(absolutePath)) {
                     continue;
                 }
                 // 解决了部分获取mimeType后返回image/*格式的问题，比如小米8、9、10和其他型号会有该问题
                 if (mimeType.endsWith("image/*")) {
-                    if (MimeType.isContent(url)) {
+                    if (MimeType.isContent(uri)) {
                         mimeType = MimeType.getImageMimeType(absolutePath);
                     } else {
-                        mimeType = MimeType.getImageMimeType(url);
+                        mimeType = MimeType.getImageMimeType(uri);
                     }
                     if (!albumSpec.isSupportGif()) {
                         if (MimeType.isGif(mimeType)) {
@@ -335,11 +339,12 @@ public class MediaPageLoader extends BaseMediaLoader {
                         continue;
                     }
                 }
-                LocalMedia image = LocalMedia.parseLocalMedia(id, url, absolutePath, fileName, folderName, duration,
+                LocalMedia image = LocalMedia.parseLocalMedia(id, uri, absolutePath, fileName, folderName, duration,
                         globalSpec.getMimeTypeSet(ModuleTypes.ALBUM), mimeType, width, height, size, bucketId, data.getLong(dateAddedColumn));
                 result.add(image);
             } while (data.moveToNext());
         }
+        Log.d(TAG, "result.size(): " + result.size());
         return result;
     }
 

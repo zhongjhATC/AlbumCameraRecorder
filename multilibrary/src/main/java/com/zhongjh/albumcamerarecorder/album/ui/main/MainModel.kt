@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.ui.main
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +19,8 @@ import com.zhongjh.common.entity.LocalMedia
  */
 class MainModel(application: Application) : AndroidViewModel(application) {
 
+    private val tag: String = this@MainModel.javaClass.simpleName
+
     /**
      * 数据库操作文件夹类
      */
@@ -31,7 +34,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 当前选择的数据操作文件类
      */
-    var selectedData : SelectedData
+    var selectedData: SelectedData
 
     /**
      * 文件夹数据集
@@ -45,7 +48,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 多媒体文件数据集
      */
-    private lateinit var localMedias: MutableLiveData<List<LocalMedia>>
+    private var localMedias = MutableLiveData<List<LocalMedia>>()
 
     /**
      * 当前所选择的文件夹
@@ -86,6 +89,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * @param pageSize 每页多少个
      */
     fun loadPageMediaData(bucketId: Long, page: Int, pageSize: Int) {
+        Log.d(tag, "bucketId : $bucketId")
         mediaPageLoader.loadPageMediaData(
             bucketId, page, pageSize, pageSize
         ) { data, currentPage, isHasMore ->
