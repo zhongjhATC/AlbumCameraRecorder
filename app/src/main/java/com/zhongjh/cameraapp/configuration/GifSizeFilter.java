@@ -20,6 +20,7 @@ import android.graphics.Point;
 
 
 import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MimeType;
 
@@ -52,16 +53,17 @@ public class GifSizeFilter extends BaseFilter {
     }
 
     @Override
-    public IncapableCause filter(@NotNull Context context, @NotNull MultiMedia item) {
-        if (!needFiltering(context, item)) {
+    public IncapableCause filter(@NotNull Context context, @NotNull LocalMedia item) {
+        if (!needFiltering(item)) {
             return null;
         }
-
-        Point size = PhotoMetadataUtils.getBitmapBound(context.getContentResolver(), item.getUri());
-        if (size.x < mMinWidth || size.y < mMinHeight || item.getSize() > mMaxSize) {
-            return new IncapableCause(IncapableCause.DIALOG, context.getString(R.string.error_gif, mMinWidth,
-                    String.valueOf(PhotoMetadataUtils.getSizeInMb(mMaxSize))));
-        }
+        
+// TODO 这个重构代码需要恢复注释，修改实体MultiMedia 改成local
+//        Point size = PhotoMetadataUtils.getBitmapBound(context.getContentResolver(), item.getPath());
+//        if (size.x < mMinWidth || size.y < mMinHeight || item.getSize() > mMaxSize) {
+//            return new IncapableCause(IncapableCause.DIALOG, context.getString(R.string.error_gif, mMinWidth,
+//                    String.valueOf(PhotoMetadataUtils.getSizeInMb(mMaxSize))));
+//        }
         return null;
     }
 

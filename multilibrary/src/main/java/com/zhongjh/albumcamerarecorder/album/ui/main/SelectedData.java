@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.model;
+package com.zhongjh.albumcamerarecorder.album.ui.main;
 
 import static com.zhongjh.common.enums.Constant.IMAGE;
 import static com.zhongjh.common.enums.Constant.IMAGE_VIDEO;
@@ -6,35 +6,27 @@ import static com.zhongjh.common.enums.Constant.VIDEO;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
+import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.IncapableCause;
-import com.zhongjh.common.entity.LocalFile;
-import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.entity.LocalMedia;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * 选择的数据源
+ * 选择数据源,处理相关逻辑
+ * 这是贯穿相册的整个数据
  *
  * @author zhongjh
- * @date 2018/8/28
  */
-public class SelectedItemCollection {
-
-    /**
-     * 数据源的标记
-     */
-    public static final String STATE_SELECTION = "state_selection";
-    public static final String STATE_COLLECTION_TYPE = "state_collection_type";
+public class SelectedData {
 
     /**
      * 空的数据类型
@@ -52,16 +44,19 @@ public class SelectedItemCollection {
      * 图像和视频混合类型
      */
     private static final int COLLECTION_MIXED = COLLECTION_IMAGE | COLLECTION_VIDEO;
-
+    /**
+     * 上下文
+     */
     private final Context mContext;
     /**
      * 选择数据源
      */
-    private ArrayList<MultiMedia> mItems;
+    List<LocalMedia> mLocalMedias = new ArrayList<>();
     /**
      * 当前选择的所有类型，列表如果包含了图片和视频，就会变成混合类型
      */
     private int mCollectionType = COLLECTION_UNDEFINED;
+
     /**
      * 当前选择的视频数量
      */
@@ -71,57 +66,8 @@ public class SelectedItemCollection {
      */
     private int mSelectedImageCount;
 
-    public SelectedItemCollection(Context context) {
+    public SelectedData(Context context) {
         mContext = context;
-    }
-
-    /**
-     * @param bundle        数据源
-     * @param isAllowRepeat 是否允许重复
-     */
-    public void onCreate(Bundle bundle, boolean isAllowRepeat) {
-        if (bundle == null) {
-            mItems = new ArrayList<>();
-        } else {
-            // 获取缓存的数据
-            List<MultiMedia> saved = bundle.getParcelableArrayList(STATE_SELECTION);
-            if (saved != null) {
-                Log.d("onSaveInstanceState",saved.size() + " onCreate");
-                if (isAllowRepeat) {
-                    mItems = new ArrayList<>();
-                    mItems.addAll(saved);
-                } else {
-                    mItems = new ArrayList<>(saved);
-                }
-            }
-
-            mCollectionType = bundle.getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
-        }
-        Log.d("onSaveInstanceState",mItems.size() + " onCreate2");
-    }
-
-    /**
-     * 缓存数据
-     *
-     * @param outState 缓存
-     */
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(STATE_SELECTION, mItems);
-        Log.d("onSaveInstanceState",mItems.size() + " onSaveInstanceState");
-        outState.putInt(STATE_COLLECTION_TYPE, mCollectionType);
-    }
-
-    /**
-     * 将数据保存进Bundle并且返回
-     *
-     * @return Bundle
-     */
-    public Bundle getDataWithBundle() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, mItems);
-        bundle.putInt(STATE_COLLECTION_TYPE, mCollectionType);
-        Log.d("onSaveInstanceState",mItems.size() + " getDataWithBundle");
-        return bundle;
     }
 
     /**
@@ -129,12 +75,12 @@ public class SelectedItemCollection {
      *
      * @param item 数据
      */
-    public boolean add(MultiMedia item) {
-        Log.d("onSaveInstanceState",mItems.size() + " add");
-        boolean added = mItems.add(item);
-        // 如果只选中了图片Item， mCollectionType设置为COLLECTION_IMAGE
-        // 如果只选中了图片影音资源，mCollectionType设置为COLLECTION_IMAGE
-        // 如果两种都选择了，mCollectionType设置为COLLECTION_MIXED
+    public boolean add(LocalMedia item) {
+        Log.d("onSaveInstanceState", mLocalMedias.size() + " add");
+        boolean added = mLocalMedias.add(item);
+        // 如果只选中了图片Item， mCollectionType 设置为 COLLECTION_IMAGE
+        // 如果只选中了图片影音资源，mCollectionType 设置为 COLLECTION_IMAGE
+        // 如果两种都选择了，mCollectionType 设置为 COLLECTION_MIXED
         if (added) {
             // 如果是空的数据源
             if (mCollectionType == COLLECTION_UNDEFINED) {
@@ -168,12 +114,12 @@ public class SelectedItemCollection {
      * @param item 数据
      * @return 是否删除成功
      */
-    public boolean remove(MultiMedia item) {
+    public boolean remove(LocalMedia item) {
         boolean removed;
-        MultiMedia multiMedia = MultiMedia.checkedMultiMediaOf(mItems, item);
-        removed = mItems.remove(multiMedia);
+        LocalMedia localMedia = LocalMediaUtils.checkedLocalMediaOf(mLocalMedias, item);
+        removed = mLocalMedias.remove(localMedia);
         if (removed) {
-            if (mItems.size() == 0) {
+            if (mLocalMedias.size() == 0) {
                 // 如果删除后没有数据，设置当前类型为空
                 mCollectionType = COLLECTION_UNDEFINED;
             } else {
@@ -183,7 +129,7 @@ public class SelectedItemCollection {
                 }
             }
         }
-        Log.d("onSaveInstanceState",mItems.size() + " remove");
+        Log.d("onSaveInstanceState", mLocalMedias.size() + " remove");
         return removed;
     }
 
@@ -193,15 +139,15 @@ public class SelectedItemCollection {
      * @param items          数据源
      * @param collectionType 类型
      */
-    public void overwrite(ArrayList<MultiMedia> items, int collectionType) {
+    public void overwrite(ArrayList<LocalMedia> items, int collectionType) {
         if (items.size() == 0) {
             mCollectionType = COLLECTION_UNDEFINED;
         } else {
             mCollectionType = collectionType;
         }
-        mItems.clear();
-        mItems.addAll(items);
-        Log.d("onSaveInstanceState",mItems.size() + " overwrite");
+        mLocalMedias.clear();
+        mLocalMedias.addAll(items);
+        Log.d("onSaveInstanceState", mLocalMedias.size() + " overwrite");
     }
 
     /**
@@ -209,45 +155,8 @@ public class SelectedItemCollection {
      *
      * @return list<Item>
      */
-    public List<MultiMedia> asList() {
-        return mItems;
-    }
-
-    /**
-     * 获取LocalFile的集合
-     *
-     * @return list<LocalFile>
-     */
-    public ArrayList<LocalFile> asListOfLocalFile() {
-        ArrayList<LocalFile> localFiles = new ArrayList<>();
-        for (MultiMedia item : mItems) {
-            updateMultiMediaPath(item);
-            LocalFile localFile = new LocalFile(item);
-            localFiles.add(localFile);
-        }
-        Log.d("onSaveInstanceState",mItems.size() + " asListOfLocalFile");
-        return localFiles;
-    }
-
-    /**
-     * 更新path
-     */
-    public void updatePath() {
-        for (MultiMedia item : mItems) {
-            updateMultiMediaPath(item);
-        }
-        Log.d("onSaveInstanceState",mItems.size() + " updatePath");
-    }
-
-    /**
-     * 更新 MultiMedia 的path
-     * 如果为 null 则更新真实地址
-     *
-     * @param multiMedia multiMedia
-     */
-    private void updateMultiMediaPath(MultiMedia multiMedia) {
-        multiMedia.analysesUriSetPathAndOriginalPath(mContext);
-        Log.d("onSaveInstanceState",mItems.size() + " updateMultiMediaPath");
+    public List<LocalMedia> asList() {
+        return mLocalMedias;
     }
 
     /**
@@ -256,8 +165,8 @@ public class SelectedItemCollection {
      * @param item 数据源
      * @return 返回是否选择
      */
-    public boolean isSelected(MultiMedia item) {
-        return mItems.contains(item);
+    public boolean isSelected(LocalMedia item) {
+        return mLocalMedias.contains(item);
     }
 
     /**
@@ -266,8 +175,8 @@ public class SelectedItemCollection {
      * @param item 数据item
      * @return 弹窗
      */
-    public IncapableCause isAcceptable(MultiMedia item) {
-        Log.d("onSaveInstanceState",mItems.size() + " isAcceptable");
+    public IncapableCause isAcceptable(LocalMedia item) {
+        Log.d("onSaveInstanceState", mLocalMedias.size() + " isAcceptable");
         boolean maxSelectableReached = false;
         int maxSelectable = 0;
         String type = "";
@@ -311,7 +220,7 @@ public class SelectedItemCollection {
      * @param type                 类型
      * @return 弹窗
      */
-    public IncapableCause newIncapableCause(MultiMedia item, boolean maxSelectableReached, int maxSelectable, boolean isMashup, String type) {
+    public IncapableCause newIncapableCause(LocalMedia item, boolean maxSelectableReached, int maxSelectable, boolean isMashup, String type) {
         // 检查是否超过最大设置数量
         if (maxSelectableReached) {
             String cause;
@@ -327,7 +236,7 @@ public class SelectedItemCollection {
             return new IncapableCause(mContext.getString(R.string.z_multi_library_error_type_conflict));
         }
         // 过滤文件
-        return PhotoMetadataUtils.isAcceptable(mContext, item);
+        return LocalMediaUtils.isAcceptable(mContext, item);
     }
 
     /**
@@ -378,8 +287,8 @@ public class SelectedItemCollection {
      * @return boolean
      */
     public boolean maxSelectableReached() {
-        Log.d("onSaveInstanceState",mItems.size() + " maxSelectableReached");
-        return mItems.size() == currentMaxSelectable();
+        Log.d("onSaveInstanceState", mLocalMedias.size() + " maxSelectableReached");
+        return mLocalMedias.size() == currentMaxSelectable();
     }
 
     /**
@@ -388,14 +297,14 @@ public class SelectedItemCollection {
     private void getSelectCount() {
         mSelectedImageCount = 0;
         mSelectedVideoCount = 0;
-        for (MultiMedia multiMedia : mItems) {
-            if (multiMedia.getMimeType().startsWith("image")) {
+        for (LocalMedia localMedia : mLocalMedias) {
+            if (localMedia.getMimeType().startsWith("image")) {
                 mSelectedImageCount++;
-            } else if (multiMedia.getMimeType().startsWith("video")) {
+            } else if (localMedia.getMimeType().startsWith("video")) {
                 mSelectedVideoCount++;
             }
         }
-        Log.d("onSaveInstanceState",mItems.size() + " getSelectCount");
+        Log.d("onSaveInstanceState", mLocalMedias.size() + " getSelectCount");
     }
 
     /**
@@ -420,7 +329,7 @@ public class SelectedItemCollection {
             }
         }
 
-        Log.d("onSaveInstanceState",mItems.size() + " currentMaxSelectable");
+        Log.d("onSaveInstanceState", mLocalMedias.size() + " currentMaxSelectable");
         return leastCount;
     }
 
@@ -429,7 +338,7 @@ public class SelectedItemCollection {
      * Determine whether there will be conflict media types. A user can only select images and videos at the same time
      * while {@link AlbumSpec#getMediaTypeExclusive} is set to false.
      */
-    private boolean typeConflict(MultiMedia item) {
+    private boolean typeConflict(LocalMedia item) {
         // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
         return AlbumSpec.INSTANCE.getMediaTypeExclusive()
                 && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_MIXED))
@@ -442,7 +351,7 @@ public class SelectedItemCollection {
      * @return 数据源长度
      */
     public int count() {
-        return mItems.size();
+        return mLocalMedias.size();
     }
 
     /**
@@ -451,8 +360,8 @@ public class SelectedItemCollection {
      * @param item 数据
      * @return 选择的索引，最终返回的选择了第几个
      */
-    public int checkedNumOf(MultiMedia item) {
-        return MultiMedia.checkedNumOf(new ArrayList<>(mItems), item);
+    public int checkedNumOf(LocalMedia item) {
+        return LocalMediaUtils.checkedNumOf(new ArrayList<>(mLocalMedias), item);
     }
 
 }

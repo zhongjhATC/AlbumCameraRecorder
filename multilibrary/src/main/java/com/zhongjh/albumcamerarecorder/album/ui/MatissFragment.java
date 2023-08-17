@@ -342,7 +342,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
      */
     private void initMediaViewUtil() {
         Log.d("onSaveInstanceState", " initMediaViewUtil");
-        mMediaViewUtil = new MediaViewUtil(getActivity(), mMainModel, mViewHolder.recyclerview, this, this, this);
+        mMediaViewUtil = new MediaViewUtil(getActivity(), mMainModel, mViewHolder.recyclerview, this, this);
     }
 
     /**
@@ -549,7 +549,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     }
 
     @Override
-    public void onMediaClick(Album2 album, ImageView imageView, MultiMedia item, int adapterPosition) {
+    public void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition) {
         // 隐藏底部控件
         mActivity.showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment();

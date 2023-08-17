@@ -2,7 +2,7 @@ package com.zhongjh.albumcamerarecorder.album.filter
 
 import android.content.Context
 import com.zhongjh.common.entity.IncapableCause
-import com.zhongjh.common.entity.MultiMedia
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 
 /**
@@ -25,14 +25,14 @@ abstract class BaseFilter {
      * @param item item
      * @return null if selectable, [IncapableCause] if not selectable.
      */
-    abstract fun filter(context: Context, item: MultiMedia): IncapableCause?
+    abstract fun filter(context: Context, item: LocalMedia): IncapableCause?
 
     /**
-     * Whether an [MultiMedia] need filtering.
+     * Whether an [LocalMedia] need filtering.
      */
-    protected fun needFiltering(context: Context, item: MultiMedia): Boolean {
+    protected fun needFiltering(item: LocalMedia): Boolean {
         for (type in constraintTypes()) {
-            if (type.checkType(context.contentResolver, item.uri)) {
+            if (type.checkType(item.path)) {
                 return true
             }
         }

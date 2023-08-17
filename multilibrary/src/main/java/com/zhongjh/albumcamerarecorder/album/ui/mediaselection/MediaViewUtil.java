@@ -35,13 +35,11 @@ public class MediaViewUtil implements
     public MediaViewUtil(FragmentActivity activity,
                          MainModel mainModel,
                          RecyclerView recyclerView,
-                         SelectionProvider selectionProvider,
                          AlbumMediaAdapter.CheckStateListener checkStateListener,
                          AlbumMediaAdapter.OnMediaClickListener onMediaClickListener) {
         mActivity = activity;
         mMainModel = mainModel;
         mRecyclerView = recyclerView;
-        mSelectionProvider = selectionProvider;
         mCheckStateListener = checkStateListener;
         mOnMediaClickListener = onMediaClickListener;
         init();
@@ -57,10 +55,6 @@ public class MediaViewUtil implements
      * 分页相册的当前页码
      */
     private int mPage = 0;
-    /**
-     * 选择接口事件
-     */
-    private final SelectionProvider mSelectionProvider;
     /**
      * 单选事件
      */
@@ -83,8 +77,7 @@ public class MediaViewUtil implements
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity.getApplicationContext(), spanCount));
         // 需要先设置布局获取确定的spanCount，才能设置adapter
-        mAdapter = new AlbumMediaAdapter(mActivity.getApplicationContext(),
-                mSelectionProvider.provideSelectedItemCollection(), getImageResize());
+        mAdapter = new AlbumMediaAdapter(mActivity.getApplicationContext(),mMainModel, getImageResize());
         Log.d("onSaveInstanceState", " mAdapter");
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);
@@ -168,7 +161,7 @@ public class MediaViewUtil implements
     }
 
     @Override
-    public void onMediaClick(Album2 album, ImageView imageView, MultiMedia item, int adapterPosition) {
+    public void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition) {
         if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onMediaClick(mAlbum, imageView,
                     item, adapterPosition);

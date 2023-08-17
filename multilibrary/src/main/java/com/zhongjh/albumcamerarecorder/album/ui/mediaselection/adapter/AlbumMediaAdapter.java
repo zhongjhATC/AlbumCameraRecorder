@@ -2,7 +2,6 @@ package com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,14 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
+import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGrid;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.common.entity.IncapableCause;
-import com.zhongjh.common.entity.MultiMedia;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,19 +36,19 @@ public class AlbumMediaAdapter extends
         RecyclerView.Adapter<RecyclerView.ViewHolder> implements
         MediaGrid.OnMediaGridClickListener {
 
-    private final SelectedItemCollection mSelectedCollection;
+    private final MainModel mMainModel;
     private final Drawable mPlaceholder;
     private final AlbumSpec mAlbumSpec;
-    private List<LocalMedia> data;
+    private List<LocalMedia> data = new ArrayList<>();
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
     private final int mImageResize;
 
-    public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, int imageResize) {
+    public AlbumMediaAdapter(Context context, MainModel mainModel, int imageResize) {
         super();
         mAlbumSpec = AlbumSpec.INSTANCE;
-        mSelectedCollection = selectedCollection;
-        Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " AlbumMediaAdapter");
+        mMainModel = mainModel;
+        Log.d("onSaveInstanceState", mMainModel.getSelectedData().asList().size() + " AlbumMediaAdapter");
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.item_placeholder});
         mPlaceholder = ta.getDrawable(0);
@@ -74,7 +74,7 @@ public class AlbumMediaAdapter extends
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " onBindViewHolder");
+        Log.d("onSaveInstanceState", mMainModel.getSelectedData().asList().size() + " onBindViewHolder");
         // 相片的item
         MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
 
@@ -104,18 +104,18 @@ public class AlbumMediaAdapter extends
      * @param mediaGrid holder
      */
     private void setCheckStatus(LocalMedia item, MediaGrid mediaGrid) {
-        Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " setCheckStatus");
+        Log.d("onSaveInstanceState", mMainModel.getSelectedData().asList().size() + " setCheckStatus");
         // 是否多选时,显示数字
         if (mAlbumSpec.getCountable()) {
             // 显示数字
-            int checkedNum = LocalMedia.checkedNumOf(data, item);
+            int checkedNum = LocalMediaUtils.checkedNumOf(data, item);
             if (checkedNum > 0) {
                 // 设置启用,设置数量
                 mediaGrid.setCheckEnabled(true);
                 mediaGrid.setCheckedNum(checkedNum);
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                if (mSelectedCollection.maxSelectableReached()) {
+                if (mMainModel.getSelectedData().maxSelectableReached()) {
                     mediaGrid.setCheckEnabled(false);
                     mediaGrid.setCheckedNum(CheckView.UNCHECKED);
                 } else {
@@ -125,14 +125,14 @@ public class AlbumMediaAdapter extends
             }
         } else {
             // 不显示数字
-            boolean selected = mSelectedCollection.isSelected(item);
+            boolean selected = mMainModel.getSelectedData().isSelected(item);
             // 如果被选中了，就设置选择
             if (selected) {
                 mediaGrid.setCheckEnabled(true);
                 mediaGrid.setChecked(true);
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                mediaGrid.setCheckEnabled(!mSelectedCollection.maxSelectableReached());
+                mediaGrid.setCheckEnabled(!mMainModel.getSelectedData().maxSelectableReached());
                 mediaGrid.setChecked(false);
             }
         }
@@ -147,35 +147,35 @@ public class AlbumMediaAdapter extends
 
     @Override
     public void onCheckViewClicked(@Nullable CheckView checkView, @Nullable LocalMedia item, @Nullable RecyclerView.ViewHolder holder) {
-        Log.d("onSaveInstanceState", mSelectedCollection.asList().size() + " onCheckViewClicked");
+        Log.d("onSaveInstanceState", mMainModel.getSelectedData().asList().size() + " onCheckViewClicked");
         // 是否多选模式,显示数字
         if (mAlbumSpec.getCountable()) {
             // 获取当前选择的第几个
-            int checkedNum = mSelectedCollection.checkedNumOf(item);
+            int checkedNum = mMainModel.getSelectedData().checkedNumOf(item);
             if (checkedNum == CheckView.UNCHECKED) {
                 // 如果当前数据是未选状态
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
                     // 添加选择了当前数据
-                    mSelectedCollection.add(item);
+                    mMainModel.getSelectedData().add(item);
                     // 刷新数据源
                     notifyCheckStateChanged();
                 }
             } else {
                 // 删除当前选择
-                mSelectedCollection.remove(item);
+                mMainModel.getSelectedData().remove(item);
                 // 刷新数据
                 notifyCheckStateChanged();
             }
         } else {
             // 不是多选模式
-            if (mSelectedCollection.isSelected(item)) {
+            if (mMainModel.getSelectedData().isSelected(item)) {
                 // 如果当前已经被选中，再次选择就是取消了
-                mSelectedCollection.remove(item);
+                mMainModel.getSelectedData().remove(item);
                 // 刷新数据源
                 notifyCheckStateChanged();
             } else {
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
-                    mSelectedCollection.add(item);
+                    mMainModel.getSelectedData().add(item);
                     notifyCheckStateChanged();
                 }
             }
@@ -198,8 +198,8 @@ public class AlbumMediaAdapter extends
      * @param context 上下文
      * @param item    数据源
      */
-    private boolean assertAddSelection(Context context, MultiMedia item) {
-        IncapableCause cause = mSelectedCollection.isAcceptable(item);
+    private boolean assertAddSelection(Context context, LocalMedia item) {
+        IncapableCause cause = mMainModel.getSelectedData().isAcceptable(item);
         IncapableCause.handleCause(context, cause);
         return cause == null;
     }
@@ -252,7 +252,7 @@ public class AlbumMediaAdapter extends
          * @param item            选项
          * @param adapterPosition 索引
          */
-        void onMediaClick(Album2 album, ImageView imageView, MultiMedia item, int adapterPosition);
+        void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition);
     }
 
     private static class MediaViewHolder extends RecyclerView.ViewHolder {

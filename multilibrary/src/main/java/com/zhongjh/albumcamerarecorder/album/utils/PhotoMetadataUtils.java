@@ -119,15 +119,16 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
             return new IncapableCause(context.getString(R.string.z_multi_library_error_file_type));
         }
 
-        // 过滤不符合用户设定的资源 Filter提供抽象方法，由用户自行设置过滤规则
-        if (AlbumSpec.INSTANCE.getBaseFilters() != null) {
-            for (BaseFilter baseFilter : AlbumSpec.INSTANCE.getBaseFilters()) {
-                IncapableCause incapableCause = baseFilter.filter(context, item);
-                if (incapableCause != null) {
-                    return incapableCause;
-                }
-            }
-        }
+        // TODO 这个重构代码需要恢复注释，修改实体MultiMedia 改成local
+//        // 过滤不符合用户设定的资源 Filter提供抽象方法，由用户自行设置过滤规则
+//        if (AlbumSpec.INSTANCE.getBaseFilters() != null) {
+//            for (BaseFilter baseFilter : AlbumSpec.INSTANCE.getBaseFilters()) {
+//                IncapableCause incapableCause = baseFilter.filter(context, item);
+//                if (incapableCause != null) {
+//                    return incapableCause;
+//                }
+//            }
+//        }
         return null;
     }
 
