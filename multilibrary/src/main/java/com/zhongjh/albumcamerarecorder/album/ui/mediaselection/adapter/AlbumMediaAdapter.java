@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
 import com.zhongjh.common.entity.LocalMedia;
@@ -37,10 +38,12 @@ public class AlbumMediaAdapter extends
         RecyclerView.Adapter<RecyclerView.ViewHolder> implements
         MediaGrid.OnMediaGridClickListener {
 
+    private final String TAG = AlbumMediaAdapter.this.getClass().getSimpleName();
+
     private final MainModel mMainModel;
     private final Drawable mPlaceholder;
     private final AlbumSpec mAlbumSpec;
-    private List<LocalMedia> data = new ArrayList<>();
+    private final List<LocalMedia> data = new ArrayList<>();
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
     private final int mImageResize;
@@ -65,6 +68,7 @@ public class AlbumMediaAdapter extends
      */
     @SuppressLint("NotifyDataSetChanged")
     public void setData(List<LocalMedia> data) {
+        Log.d(TAG, "setData size:" + data.size());
         this.data.clear();
         this.data.addAll(data);
         notifyDataSetChanged();
@@ -76,9 +80,11 @@ public class AlbumMediaAdapter extends
      * @param data 数据源
      */
     public void addData(List<LocalMedia> data) {
+        Log.d(TAG, "addData size:" + data.size());
         int positionStart = this.data.size();
         this.data.addAll(data);
-        notifyItemRangeChanged(positionStart, this.data.size());
+        notifyDataSetChanged();
+//        notifyItemRangeChanged(positionStart, this.data.size());
     }
 
     @NonNull
@@ -95,6 +101,10 @@ public class AlbumMediaAdapter extends
         MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
 
         LocalMedia item = this.data.get(position);
+        Log.d(TAG,"position: " + position);
+        if (position == 0) {
+            Log.d(TAG,"path: " + item.getPath());
+        }
         // 传递相关的值
         mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
                 mImageResize,
@@ -110,6 +120,7 @@ public class AlbumMediaAdapter extends
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "data.size(): " + data.size());
         return this.data.size();
     }
 
