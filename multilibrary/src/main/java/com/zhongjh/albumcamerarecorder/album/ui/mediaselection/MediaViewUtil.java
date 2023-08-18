@@ -4,23 +4,19 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGridInset;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
-import com.zhongjh.common.entity.MultiMedia;
-
-import java.util.List;
 
 /**
  * 以前是MediaSelectionFragment,现在为了能滑动影响上下布局，放弃Fragment布局，直接使用RecyclerView
@@ -34,7 +30,7 @@ public class MediaViewUtil implements
 
     public MediaViewUtil(FragmentActivity activity,
                          MainModel mainModel,
-                         RecyclerView recyclerView,
+                         RecyclerLoadMoreView recyclerView,
                          AlbumMediaAdapter.CheckStateListener checkStateListener,
                          AlbumMediaAdapter.OnMediaClickListener onMediaClickListener) {
         mActivity = activity;
@@ -47,14 +43,10 @@ public class MediaViewUtil implements
 
     private final FragmentActivity mActivity;
     private final MainModel mMainModel;
-    private final RecyclerView mRecyclerView;
+    private final RecyclerLoadMoreView mRecyclerView;
     private AlbumMediaAdapter mAdapter;
     private Album2 mAlbum;
     private AlbumSpec mAlbumSpec;
-    /**
-     * 分页相册的当前页码
-     */
-    private int mPage = 1;
     /**
      * 单选事件
      */
@@ -89,11 +81,18 @@ public class MediaViewUtil implements
         mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
         mRecyclerView.setAdapter(mAdapter);
 
+        // 加载更多事件
+        mRecyclerView.setOnRecyclerViewLoadMoreListener(() -> mMainModel.addAllPageMediaData(mAlbum.getId(), mAlbumSpec.getPageSize()));
+
         // 监听到新的相册数据
-        mMainModel.getLocalMedias().observe(mActivity, new Observer<List<LocalMedia>>() {
-            @Override
-            public void onChanged(List<LocalMedia> localMedia) {
-                mAdapter.setData(localMedia);
+        mMainModel.getLocalMedias().observe(mActivity, mediaData -> {
+            // 如果没有数据，则关闭下拉加载
+            mRecyclerView.setEnabledLoadMore(!mediaData.getData().isEmpty());
+            if (mMainModel.getPage() == 1) {
+                mAdapter.setData(mediaData.getData());
+                mRecyclerView.scrollToPosition(0);
+            } else {
+                mAdapter.addData(mediaData.getData());
             }
         });
     }
@@ -109,8 +108,8 @@ public class MediaViewUtil implements
     /**
      * 重新获取数据源
      */
-    public void restartLoaderMediaGrid() {
-        mMainModel.loadPageMediaData(mAlbum.getId(), mPage, mAlbumSpec.getPageSize());
+    public void reloadPageMediaData() {
+        mMainModel.reloadPageMediaData(mAlbum.getId(), mAlbumSpec.getPageSize());
     }
 
     /**
@@ -120,7 +119,7 @@ public class MediaViewUtil implements
      */
     public void load(Album2 album) {
         mAlbum = album;
-        restartLoaderMediaGrid();
+        reloadPageMediaData();
     }
 
     /**

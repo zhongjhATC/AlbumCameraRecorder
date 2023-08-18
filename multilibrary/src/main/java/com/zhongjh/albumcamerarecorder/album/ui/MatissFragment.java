@@ -28,7 +28,6 @@ import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -43,6 +42,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
+import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
@@ -403,7 +403,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
                             if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_IS_EDIT, false)) {
                                 mIsRefresh = true;
                                 // 重新读取数据源
-                                mMediaViewUtil.restartLoaderMediaGrid();
+                                mMediaViewUtil.reloadPageMediaData();
                             } else {
                                 // 刷新数据源
                                 mMediaViewUtil.refreshMediaGrid();
@@ -704,7 +704,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         public CoordinatorLayout root;
         public ImageView imgClose;
         public ProgressBar pbLoading;
-        public RecyclerView recyclerview;
+        public RecyclerLoadMoreView recyclerview;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;

@@ -39,7 +39,7 @@ class MainFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(this)[com.zhongjh.albumcamerarecorder.album.ui.main.MainModel::class.java]
+        viewModel = ViewModelProvider(this)[MainModel::class.java]
         Log.d("MainFragment", "onCreateView")
         return inflater.inflate(R.layout.fragment_containerview_zjh, container, false)
     }

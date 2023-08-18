@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -57,12 +58,27 @@ public class AlbumMediaAdapter extends
         mImageResize = imageResize;
     }
 
+    /**
+     * 重新赋值数据
+     *
+     * @param data 数据源
+     */
+    @SuppressLint("NotifyDataSetChanged")
     public void setData(List<LocalMedia> data) {
-        List<LocalMedia> oldLocalMedia = this.data;
-        this.data = data;
-        // 计算新老数据集差异，将差异更新到Adapter
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new LocalMediaCallback(oldLocalMedia, this.data));
-        diffResult.dispatchUpdatesTo(this);
+        this.data.clear();
+        this.data.addAll(data);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 添加数据
+     *
+     * @param data 数据源
+     */
+    public void addData(List<LocalMedia> data) {
+        int positionStart = this.data.size();
+        this.data.addAll(data);
+        notifyItemRangeChanged(positionStart, this.data.size());
     }
 
     @NonNull

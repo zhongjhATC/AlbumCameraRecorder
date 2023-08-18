@@ -8,23 +8,13 @@ import com.zhongjh.common.entity.LocalMedia
  * @author zhongjh
  * @date 2023/7/26
  */
-class MediaData {
-
-    /**
-     * 是否包含下一页
-     */
-    var isHasNextMore = false
-
+class MediaData(
     /**
      * 多媒体文件集合
      */
-    var data: List<LocalMedia>? = null
-
-    constructor()
-
-    constructor(isHasNextMore: Boolean, data: List<LocalMedia>?) {
-        this.isHasNextMore = isHasNextMore
-        this.data = data
-    }
-
-}
+    var data: List<LocalMedia>,
+    /**
+     * 是否包含下一页
+     */
+    var isHasNextMore: Boolean
+)

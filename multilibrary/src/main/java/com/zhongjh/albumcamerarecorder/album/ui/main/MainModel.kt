@@ -6,9 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
+import com.zhongjh.albumcamerarecorder.album.entity.MediaData
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
-import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.albumcamerarecorder.settings.AlbumSpec.pageSize
 
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
@@ -29,7 +30,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 数据库操作文件类
      */
-    var mediaPageLoader: MediaPageLoader
+    private var mediaPageLoader: MediaPageLoader
 
     /**
      * 当前选择的数据操作文件类
@@ -48,7 +49,12 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 多媒体文件数据集
      */
-    private var localMedias = MutableLiveData<List<LocalMedia>>()
+    private var localMedias = MutableLiveData<MediaData>()
+
+    /**
+     * 分页相册的当前页码
+     */
+    var page = 1
 
     /**
      * 当前所选择的文件夹
@@ -60,7 +66,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
         return albums
     }
 
-    fun getLocalMedias(): LiveData<List<LocalMedia>> {
+    fun getLocalMedias(): LiveData<MediaData> {
         return localMedias
     }
 
@@ -82,6 +88,28 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * 重新获取数据
+     *
+     * @param bucketId 专辑id
+     * @param pageSize 每页多少个
+     */
+    fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
+        page = 1
+        loadPageMediaData(bucketId, page, pageSize)
+    }
+
+    /**
+     * 下拉加载数据
+     *
+     * @param bucketId 专辑id
+     * @param pageSize 每页多少个
+     */
+    fun addAllPageMediaData(bucketId: Long, pageSize: Int) {
+        page += 1
+        loadPageMediaData(bucketId, page, pageSize)
+    }
+
+    /**
      * 获取所有数据
      *
      * @param bucketId 专辑id
@@ -93,7 +121,8 @@ class MainModel(application: Application) : AndroidViewModel(application) {
         mediaPageLoader.loadPageMediaData(
             bucketId, page, pageSize, pageSize
         ) { data, currentPage, isHasMore ->
-            localMedias.postValue(data)
+            val mediaData = MediaData(data, isHasMore)
+            localMedias.postValue(mediaData)
         }
     }
 

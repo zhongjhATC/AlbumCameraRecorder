@@ -10,16 +10,15 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.SdkVersionUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,24 +82,24 @@ public class MediaPageLoader extends BaseMediaLoader {
                     if (data != null) {
                         Log.i(TAG, "dataCount: " + data.getCount());
                         List<LocalMedia> result = getLocalMedias(data);
-                        return new MediaData(data.getCount() > 0, result);
+                        return new MediaData(result, data.getCount() > 0);
                     }
                 } catch (Exception exception) {
                     exception.printStackTrace();
                     Log.i(TAG, "loadMedia Page Data Error: " + exception.getMessage());
-                    return new MediaData();
+                    return new MediaData(new ArrayList<>(), false);
                 } finally {
                     if (data != null && !data.isClosed()) {
                         data.close();
                     }
                 }
-                return new MediaData();
+                return new MediaData(new ArrayList<>(), false);
             }
 
             @Override
             public void onSuccess(MediaData result) {
                 if (listener != null) {
-                    listener.onLoadPageMediaDataComplete(result.getData() != null ? result.getData() : new ArrayList<>(), page, result.isHasNextMore());
+                    listener.onLoadPageMediaDataComplete(result.getData(), page, result.isHasNextMore());
                 }
             }
 
@@ -113,6 +112,7 @@ public class MediaPageLoader extends BaseMediaLoader {
             public void onFail(Throwable t) {
                 super.onFail(t);
             }
+
         });
     }
 
