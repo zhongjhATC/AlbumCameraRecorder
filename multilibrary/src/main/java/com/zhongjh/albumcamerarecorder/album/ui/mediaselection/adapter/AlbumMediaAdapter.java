@@ -84,7 +84,7 @@ public class AlbumMediaAdapter extends
         Log.d(TAG, "addData size:" + data.size());
         int positionStart = this.data.size();
         this.data.addAll(data);
-        notifyItemRangeChanged(positionStart, this.data.size());
+        notifyItemInserted(positionStart);
     }
 
     @NonNull
@@ -101,9 +101,9 @@ public class AlbumMediaAdapter extends
         MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
 
         LocalMedia item = this.data.get(position);
-        Log.d(TAG,"position: " + position);
+        Log.d(TAG, "position: " + position);
         if (position == 0) {
-            Log.d(TAG,"path: " + item.getPath());
+            Log.d(TAG, "path: " + item.getPath());
         }
         // 传递相关的值
         mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
@@ -124,8 +124,14 @@ public class AlbumMediaAdapter extends
     }
 
     @Override
+    public long getItemId(int position) {
+        // 需要返回id，否则不会重复调用onBindViewHolder，因为设置了mAdapter.setHasStableIds(true)
+        return this.data.get(position).getId();
+    }
+
+    @Override
     public int getItemViewType(int position) {
-        // 需要返回类型，否则不会重复调用onBindViewHolder
+
         return VIEW_TYPE_MEDIA;
     }
 
