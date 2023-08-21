@@ -39,6 +39,7 @@ public class AlbumMediaAdapter extends
         MediaGrid.OnMediaGridClickListener {
 
     private final String TAG = AlbumMediaAdapter.this.getClass().getSimpleName();
+    private static final int VIEW_TYPE_MEDIA = 0x01;
 
     private final MainModel mMainModel;
     private final Drawable mPlaceholder;
@@ -120,7 +121,8 @@ public class AlbumMediaAdapter extends
 
     @Override
     public int getItemViewType(int position) {
-        return position;
+        // 需要返回类型，否则不会重复调用onBindViewHolder
+        return VIEW_TYPE_MEDIA;
     }
 
     @Override
