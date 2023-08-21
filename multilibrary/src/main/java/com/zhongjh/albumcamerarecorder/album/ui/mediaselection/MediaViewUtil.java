@@ -82,12 +82,12 @@ public class MediaViewUtil implements
         mRecyclerView.setAdapter(mAdapter);
 
         // 加载更多事件
-        mRecyclerView.setOnRecyclerViewLoadMoreListener(() -> mMainModel.addAllPageMediaData(mAlbum.getId(), mAlbumSpec.getPageSize()));
+//        mRecyclerView.setOnRecyclerViewLoadMoreListener(() -> mMainModel.addAllPageMediaData(mAlbum.getId(), mAlbumSpec.getPageSize()));
 
         // 监听到新的相册数据
         mMainModel.getLocalMedias().observe(mActivity, mediaData -> {
             // 如果没有数据，则关闭下拉加载
-            mRecyclerView.setEnabledLoadMore(!mediaData.getData().isEmpty());
+//            mRecyclerView.setEnabledLoadMore(!mediaData.getData().isEmpty());
             if (mMainModel.getPage() == 1) {
                 mAdapter.setData(mediaData.getData());
                 mRecyclerView.scrollToPosition(0);

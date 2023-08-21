@@ -84,8 +84,7 @@ public class AlbumMediaAdapter extends
         Log.d(TAG, "addData size:" + data.size());
         int positionStart = this.data.size();
         this.data.addAll(data);
-        notifyDataSetChanged();
-//        notifyItemRangeChanged(positionStart, this.data.size());
+        notifyItemRangeChanged(positionStart, this.data.size());
     }
 
     @NonNull
@@ -117,6 +116,11 @@ public class AlbumMediaAdapter extends
         mediaViewHolder.mMediaGrid.bindMedia(item);
         mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this);
         setCheckStatus(item, mediaViewHolder.mMediaGrid);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
     }
 
     @Override
