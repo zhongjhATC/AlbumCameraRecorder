@@ -119,6 +119,11 @@ public class AlbumMediaAdapter extends
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public int getItemCount() {
         Log.d(TAG, "data.size(): " + data.size());
         return this.data.size();
