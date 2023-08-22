@@ -1,8 +1,14 @@
 package com.zhongjh.common.entity;
 
+import android.content.Context
+import android.net.Uri
 import android.os.Parcelable
+import android.text.TextUtils
 import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.utils.MediaStoreCompat
+import com.zhongjh.common.utils.MediaUtils
 import kotlinx.android.parcel.Parcelize
+import java.io.File
 
 /**
  * 多媒体文件
@@ -11,7 +17,7 @@ import kotlinx.android.parcel.Parcelize
  * @date 2023/7/26
  */
 @Parcelize
-class LocalMedia : Parcelable {
+class LocalMedia() : Parcelable {
 
     /**
      * 文件id
@@ -163,6 +169,18 @@ class LocalMedia : Parcelable {
     var dateAddedTime: Long = 0
 
     /**
+     * 赋值一个新的path，借由这个新的path，修改相关参数
+     */
+    constructor(
+        context: Context,
+        localMedia: LocalMedia,
+        compressionFile: File,
+        isCompress: Boolean
+    ) : this() {
+        updateFile(context, localMedia, compressionFile, isCompress)
+    }
+
+    /**
      * 用于 DiffUtil.Callback 进行判断
      */
     fun equalsLocalMedia(localMedia: LocalMedia): Boolean {
@@ -257,6 +275,15 @@ class LocalMedia : Parcelable {
     }
 
     /**
+     * 场景：图片进行编辑后的赋值
+     * 处理编辑后的赋值
+     */
+    fun handleEditValue(newPath: String) {
+        this.path = newPath
+        this.originalPath = newPath
+    }
+
+    /**
      * 不包含gif
      */
     fun isImage(): Boolean {
@@ -304,6 +331,47 @@ class LocalMedia : Parcelable {
                 || mimeType == MimeType.WEBM.toString()
                 || mimeType == MimeType.TS.toString()
                 || mimeType == MimeType.AVI.toString()
+    }
+
+    /**
+     * 场景：在相册预览等界面迁移图片到配置文件夹处，重新生成新的地址
+     * 修改新的file
+     */
+    fun updateFile(
+        context: Context,
+        localMedia: LocalMedia,
+        compressionFile: File,
+        isCompress: Boolean
+    ) {
+        id = localMedia.id
+        this.path = compressionFile.absolutePath
+        // 如果支持压缩，则原图是压缩前的，否则原图跟path是一样的
+        if (isCompress) {
+            this.originalPath = localMedia.originalPath ?: ""
+        } else {
+            this.originalPath = this.path
+        }
+        mimeType = localMedia.mimeType ?: ""
+        size = compressionFile.length()
+        duration = localMedia.duration
+        isOriginal = localMedia.isOriginal
+        if (isImageOrGif()) {
+            val imageWidthAndHeight: IntArray =
+                MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
+            width = imageWidthAndHeight[0]
+            height = imageWidthAndHeight[1]
+        } else if (isVideo()) {
+            // 有些手机视频拍照没有宽高的
+            if (localMedia.width == 0) {
+                val mediaExtraInfo = MediaUtils.getVideoSize(context, compressionFile.absolutePath)
+                width = mediaExtraInfo.width
+                height = mediaExtraInfo.height
+                duration = mediaExtraInfo.duration
+            } else {
+                width = localMedia.width
+                height = localMedia.height
+            }
+        }
     }
 
     companion object {

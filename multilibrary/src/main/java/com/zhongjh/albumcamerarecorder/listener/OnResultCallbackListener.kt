@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.listener
 
 import com.zhongjh.common.entity.LocalFile
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.MultiMedia
 
 /**
@@ -15,7 +16,7 @@ interface OnResultCallbackListener {
      *
      * @param result 控件返回的相关数据
      */
-    fun onResult(result: List<LocalFile>)
+    fun onResult(result: List<LocalMedia>)
 
     /**
      * return LocalMedia result
@@ -23,5 +24,5 @@ interface OnResultCallbackListener {
      * @param result 控件返回的相关数据,跟九宫格挂钩
      * @param apply  是否预览界面点击了同意
      */
-    fun onResultFromPreview(result: List<MultiMedia>, apply: Boolean)
+    fun onResultFromPreview(result: List<LocalMedia>, apply: Boolean)
 }

@@ -59,6 +59,7 @@ import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.StatusBarUtils;
@@ -634,9 +635,10 @@ public abstract class BaseCameraFragment
 
     /**
      * 提交图片成功后，返回数据给上一个页面
+     * @param newFiles
      */
     @Override
-    public void commitPictureSuccess(ArrayList<LocalFile> newFiles) {
+    public void commitPictureSuccess(ArrayList<LocalMedia> newFiles) {
         Log.d(TAG, "mMovePictureFileTask onSuccess");
         isCommit = true;
         if (globalSpec.getOnResultCallbackListener() == null) {
@@ -672,17 +674,17 @@ public abstract class BaseCameraFragment
      */
     @Override
     public void commitVideoSuccess(Intent intentPreviewVideo) {
-        ArrayList<LocalFile> localFiles = new ArrayList<>();
-        LocalFile localFile = intentPreviewVideo.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
-        localFiles.add(localFile);
+        ArrayList<LocalMedia> localMedias = new ArrayList<>();
+        LocalMedia localMedia = intentPreviewVideo.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
+        localMedias.add(localMedia);
         isCommit = true;
         if (globalSpec.getOnResultCallbackListener() == null) {
             // 获取视频路径
             Intent intent = new Intent();
-            intent.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+            intent.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localMedias);
             mainActivity.setResult(RESULT_OK, intent);
         } else {
-            globalSpec.getOnResultCallbackListener().onResult(localFiles);
+            globalSpec.getOnResultCallbackListener().onResult(localMedias);
         }
         mainActivity.finish();
     }

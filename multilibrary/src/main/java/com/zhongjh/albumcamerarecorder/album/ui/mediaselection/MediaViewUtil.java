@@ -11,7 +11,6 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
@@ -165,17 +164,5 @@ public class MediaViewUtil implements
             mOnMediaClickListener.onMediaClick(mAlbum, imageView,
                     item, adapterPosition);
         }
-    }
-
-    /**
-     * 点击接口
-     */
-    public interface SelectionProvider {
-        /**
-         * 用于获取当前选择的数据
-         *
-         * @return 当前选择的数据
-         */
-        SelectedItemCollection provideSelectedItemCollection();
     }
 }

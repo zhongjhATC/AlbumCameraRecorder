@@ -179,9 +179,9 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
          * @param holder    控件
          */
         fun onThumbnailClicked(
-            imageView: ImageView?,
-            item: LocalMedia?,
-            holder: RecyclerView.ViewHolder?
+            imageView: ImageView,
+            item: LocalMedia,
+            holder: RecyclerView.ViewHolder
         )
 
         /**
@@ -192,9 +192,9 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
          * @param holder    控件
          */
         fun onCheckViewClicked(
-            checkView: CheckView?,
-            item: LocalMedia?,
-            holder: RecyclerView.ViewHolder?
+            checkView: CheckView,
+            item: LocalMedia,
+            holder: RecyclerView.ViewHolder
         )
     }
 

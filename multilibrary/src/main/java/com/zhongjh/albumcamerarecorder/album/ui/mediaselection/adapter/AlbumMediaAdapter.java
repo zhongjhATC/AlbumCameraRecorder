@@ -12,19 +12,17 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
-import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
-import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGrid;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
+import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
 import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.LocalMedia;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +51,7 @@ public class AlbumMediaAdapter extends
         super();
         mAlbumSpec = AlbumSpec.INSTANCE;
         mMainModel = mainModel;
-        Log.d("onSaveInstanceState", mMainModel.getSelectedData().asList().size() + " AlbumMediaAdapter");
+        Log.d("onSaveInstanceState", mMainModel.getSelectedData().getLocalMedias().size() + " AlbumMediaAdapter");
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.item_placeholder});
         mPlaceholder = ta.getDrawable(0);
@@ -96,7 +94,7 @@ public class AlbumMediaAdapter extends
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Log.d("onSaveInstanceState", mMainModel.getSelectedData().asList().size() + " onBindViewHolder");
+        Log.d("onSaveInstanceState", mMainModel.getSelectedData().getLocalMedias().size() + " onBindViewHolder");
         // 相片的item
         MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
 
@@ -130,12 +128,6 @@ public class AlbumMediaAdapter extends
     }
 
     @Override
-    public int getItemViewType(int position) {
-
-        return VIEW_TYPE_MEDIA;
-    }
-
-    @Override
     public int getItemCount() {
         Log.d(TAG, "data.size(): " + data.size());
         return this.data.size();
@@ -148,7 +140,7 @@ public class AlbumMediaAdapter extends
      * @param mediaGrid holder
      */
     private void setCheckStatus(LocalMedia item, MediaGrid mediaGrid) {
-        Log.d("onSaveInstanceState", mMainModel.getSelectedData().asList().size() + " setCheckStatus");
+        Log.d("onSaveInstanceState", mMainModel.getSelectedData().getLocalMedias().size() + " setCheckStatus");
         // 是否多选时,显示数字
         if (mAlbumSpec.getCountable()) {
             // 显示数字
@@ -183,15 +175,15 @@ public class AlbumMediaAdapter extends
     }
 
     @Override
-    public void onThumbnailClicked(@Nullable ImageView imageView, @Nullable LocalMedia item, @Nullable RecyclerView.ViewHolder holder) {
+    public void onThumbnailClicked(@NonNull ImageView imageView, @NonNull LocalMedia item, @NonNull RecyclerView.ViewHolder holder) {
         if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onMediaClick(null, imageView, item, holder.getBindingAdapterPosition());
         }
     }
 
     @Override
-    public void onCheckViewClicked(@Nullable CheckView checkView, @Nullable LocalMedia item, @Nullable RecyclerView.ViewHolder holder) {
-        Log.d("onSaveInstanceState", mMainModel.getSelectedData().asList().size() + " onCheckViewClicked");
+    public void onCheckViewClicked(@NonNull CheckView checkView, @NonNull LocalMedia item, @NonNull RecyclerView.ViewHolder holder) {
+        Log.d("onSaveInstanceState", mMainModel.getSelectedData().getLocalMedias().size() + " onCheckViewClicked");
         // 是否多选模式,显示数字
         if (mAlbumSpec.getCountable()) {
             // 获取当前选择的第几个
@@ -229,6 +221,7 @@ public class AlbumMediaAdapter extends
     /**
      * 刷新数据
      */
+    @SuppressLint("NotifyDataSetChanged")
     private void notifyCheckStateChanged() {
         notifyDataSetChanged();
         if (mCheckStateListener != null) {

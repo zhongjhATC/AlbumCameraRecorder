@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.LocalMedia;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public interface ICameraFragment {
      * 提交图片成功后，返回数据给上一个页面
      * @param newFiles 多媒体数据
      */
-    void commitPictureSuccess(ArrayList<LocalFile> newFiles);
+    void commitPictureSuccess(ArrayList<LocalMedia> newFiles);
 
     /**
      * 确认提交数据中途报错，失败

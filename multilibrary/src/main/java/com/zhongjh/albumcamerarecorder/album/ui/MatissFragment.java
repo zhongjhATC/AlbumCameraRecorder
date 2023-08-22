@@ -49,9 +49,7 @@ import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior;
-import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.ColorFilterUtil;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
@@ -71,7 +69,6 @@ import java.util.List;
  * @date 2018/8/22
  */
 public class MatissFragment extends Fragment implements OnLoadPageMediaDataListener,
-        MediaViewUtil.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
     private final String TAG = MatissFragment.this.getClass().getSimpleName();
@@ -101,7 +98,6 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
      */
     private MediaStoreCompat mVideoMediaStoreCompat;
 
-    private SelectedItemCollection mSelectedCollection;
     private AlbumSpec mAlbumSpec;
 
     /**
@@ -126,7 +122,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     /**
      * 压缩异步线程
      */
-    private ThreadUtils.SimpleTask<ArrayList<LocalFile>> mCompressFileTask;
+    private ThreadUtils.SimpleTask<ArrayList<LocalMedia>> mCompressFileTask;
     /**
      * 异步线程的逻辑
      */
@@ -157,7 +153,6 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         this.mContext = context.getApplicationContext();
         this.mMainModel = new ViewModelProvider(requireParentFragment())
                 .get(MainModel.class);
-        mSelectedCollection = new SelectedItemCollection(mContext);
     }
 
     @Override
@@ -178,12 +173,6 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         initMediaViewUtil();
         initObserveData();
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mSelectedCollection.onSaveInstanceState(outState);
     }
 
     /**
@@ -237,7 +226,6 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         if (navigationIcon != null) {
             ColorFilterUtil.setColorFilterSrcIn(navigationIcon, color);
         }
-        mSelectedCollection.onCreate(savedInstanceState, false);
         if (savedInstanceState != null) {
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
@@ -280,7 +268,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
             @Override
             public void onListener(@NonNull View v) {
                 Intent intent = new Intent(mActivity, PreviewActivity.class);
-                intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+                intent.putParcelableArrayListExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mMainModel.getSelectedData().getLocalMedias());
                 intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                 intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
                 mPreviewActivityResult.launch(intent);
@@ -294,12 +282,12 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         mViewHolder.buttonApply.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NonNull View v) {
-                ArrayList<LocalFile> localFiles = mSelectedCollection.asListOfLocalFile();
+                ArrayList<LocalMedia> localMediaArrayList = mMainModel.getSelectedData().getLocalMedias();
                 // 设置是否原图状态
-                for (LocalFile localFile : localFiles) {
-                    localFile.setOriginal(mOriginalEnable);
+                for (LocalMedia localMedia : localMediaArrayList) {
+                    localMedia.setOriginal(mOriginalEnable);
                 }
-                compressFile(localFiles);
+                compressFile(localMediaArrayList);
             }
         });
 
@@ -385,7 +373,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
                     if (result.getData() != null) {
                         Bundle resultBundle = result.getData().getBundleExtra(BasePreviewFragment.EXTRA_RESULT_BUNDLE);
                         // 获取选择的数据
-                        ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                        ArrayList<LocalMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
                         // 是否启用原图
                         mOriginalEnable = result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
                         int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
@@ -393,13 +381,13 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
                         // 如果在预览界面点击了确定
                         if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
                             if (selected != null) {
-                                ArrayList<LocalFile> localFiles = new ArrayList<>(selected);
+                                ArrayList<LocalMedia> localFiles = new ArrayList<>(selected);
                                 // 不用处理压缩，压缩处理已经在预览界面处理了
                                 setResultOk(localFiles);
                             }
                         } else {
                             // 点击了返回
-                            mSelectedCollection.overwrite(selected, collectionType);
+                            mMainModel.getSelectedData().overwrite(selected, collectionType);
                             if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_IS_EDIT, false)) {
                                 mIsRefresh = true;
                                 // 重新读取数据源
@@ -438,7 +426,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
      * 更新底部数据
      */
     private void updateBottomToolbar() {
-        int selectedCount = mSelectedCollection.count();
+        int selectedCount = mMainModel.getSelectedData().count();
 
         if (selectedCount == 0) {
             // 如果没有数据，则设置不可点击
@@ -497,9 +485,9 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
      */
     private int countOverMaxSize() {
         int count = 0;
-        int selectedCount = mSelectedCollection.count();
+        int selectedCount = mMainModel.getSelectedData().count();
         for (int i = 0; i < selectedCount; i++) {
-            MultiMedia item = mSelectedCollection.asList().get(i);
+            LocalMedia item = mMainModel.getSelectedData().getLocalMedias().get(i);
 
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
@@ -541,10 +529,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         updateBottomToolbar();
         // 触发选择的接口事件
         if (mAlbumSpec.getOnSelectedListener() != null) {
-            mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
-        } else {
-            // 如果没有触发选择，也照样触发该事件赋值path
-            mSelectedCollection.updatePath();
+            mAlbumSpec.getOnSelectedListener().onSelected(mMainModel.getSelectedData().getLocalMedias());
         }
     }
 
@@ -556,7 +541,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         Bundle bundle = new Bundle();
         bundle.putParcelable(PreviewFragment.EXTRA_ALBUM, album);
         bundle.putParcelable(PreviewFragment.EXTRA_ITEM, item);
-        bundle.putBundle(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+        bundle.putParcelableArrayList(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mMainModel.getSelectedData().getLocalMedias());
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
         fragment.setArguments(bundle);
@@ -568,11 +553,6 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
                 .replace(R.id.fragmentContainerView, fragment)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    @Override
-    public SelectedItemCollection provideSelectedItemCollection() {
-        return mSelectedCollection;
     }
 
     /**
@@ -599,31 +579,31 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     /**
      * 压缩文件开始
      *
-     * @param localFiles 本地数据包含别的参数
+     * @param localMediaArrayList 本地数据包含别的参数
      */
-    private void compressFile(ArrayList<LocalFile> localFiles) {
+    private void compressFile(ArrayList<LocalMedia> localMediaArrayList) {
         // 显示loading动画
         setControlTouchEnable(false);
 
         // 复制相册的文件
-        ThreadUtils.executeByIo(getCompressFileTask(localFiles));
+        ThreadUtils.executeByIo(getCompressFileTask(localMediaArrayList));
     }
 
     /**
      * 完成压缩-复制的异步线程
      *
-     * @param localFiles 需要压缩的数据源
+     * @param localMediaArrayList 需要压缩的数据源
      */
-    private ThreadUtils.SimpleTask<ArrayList<LocalFile>> getCompressFileTask(ArrayList<LocalFile> localFiles) {
-        mCompressFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
+    private ThreadUtils.SimpleTask<ArrayList<LocalMedia>> getCompressFileTask(ArrayList<LocalMedia> localMediaArrayList) {
+        mCompressFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
 
             @Override
-            public ArrayList<LocalFile> doInBackground() {
-                return mAlbumCompressFileTask.compressFileTaskDoInBackground(localFiles);
+            public ArrayList<LocalMedia> doInBackground() {
+                return mAlbumCompressFileTask.compressFileTaskDoInBackground(localMediaArrayList);
             }
 
             @Override
-            public void onSuccess(ArrayList<LocalFile> result) {
+            public void onSuccess(ArrayList<LocalMedia> result) {
                 setResultOk(result);
             }
 
@@ -650,7 +630,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
      *
      * @param localFiles 本地数据包含别的参数
      */
-    private void setResultOk(ArrayList<LocalFile> localFiles) {
+    private void setResultOk(ArrayList<LocalMedia> localFiles) {
         Log.d(TAG, "setResultOk");
         if (mGlobalSpec.getOnResultCallbackListener() == null) {
             // 获取选择的图片的url集合

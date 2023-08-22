@@ -18,7 +18,8 @@ import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
-import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
+import com.zhongjh.common.entity.LocalMedia;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class PreviewFragment extends BasePreviewFragment implements
         mCollection.onCreate(mActivity, this);
         if (getArguments() != null) {
             Album2 album = getArguments().getParcelable(EXTRA_ALBUM);
-            ArrayList<MultiMedia> items = null;
+            ArrayList<LocalMedia> items = null;
             if (album != null) {
                 // 如果有专辑，则根据专辑加载数据
                 mCollection.load(album, LOADER_PREVIEW_ID);
@@ -55,16 +56,16 @@ public class PreviewFragment extends BasePreviewFragment implements
                 initItems(items);
             }
 
-            MultiMedia item = getArguments().getParcelable(EXTRA_ITEM);
+            LocalMedia item = getArguments().getParcelable(EXTRA_ITEM);
             if (item != null) {
                 // 如果有当前数据，则跳转到当前数据索引
                 if (mAlbumSpec.getCountable()) {
-                    int selectedIndex = mSelectedCollection.checkedNumOf(item);
+                    int selectedIndex = mMainModel.getSelectedData().checkedNumOf(item);
                     // 索引需要减1
                     mPreviousPos = selectedIndex - 1;
                     mViewHolder.checkView.setCheckedNum(selectedIndex);
                 } else {
-                    mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
+                    mViewHolder.checkView.setChecked(mMainModel.getSelectedData().isSelected(item));
                 }
                 updateUi(item);
             } else {
@@ -94,38 +95,38 @@ public class PreviewFragment extends BasePreviewFragment implements
 
     @Override
     public void onAlbumMediaLoad(Cursor cursor) {
-        List<MultiMedia> items = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            items.add(MultiMedia.valueOf(cursor));
-        }
-
-        if (items.isEmpty()) {
-            return;
-        }
-
-        initItems(items);
+//        List<LocalMedia> items = new ArrayList<>();
+//        while (cursor.moveToNext()) {
+//            items.add(LocalMedia.valueOf(cursor));
+//        }
+//
+//        if (items.isEmpty()) {
+//            return;
+//        }
+//
+//        initItems(items);
     }
 
-    private void initItems(List<MultiMedia> items) {
-        PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
-        if (adapter != null) {
-            adapter.addAll(items);
-            adapter.notifyItemRangeInserted(0, items.size() - 1);
-            if (!mIsAlreadySetPosition) {
-                // onAlbumMediaLoad is called many times..
-                mIsAlreadySetPosition = true;
-                if (getArguments() != null) {
-                    MultiMedia selected = getArguments().getParcelable(EXTRA_ITEM);
-                    if (selected != null) {
-                        // 减1是爲了拿到索引
-                        int selectedIndex = MultiMedia.checkedNumOf(items, selected) - 1;
-                        mViewHolder.pager.setCurrentItem(selectedIndex, false);
-                        mPreviousPos = selectedIndex;
-                    }
-                }
-            }
-
-        }
+    private void initItems(List<LocalMedia> items) {
+//        PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
+//        if (adapter != null) {
+//            adapter.addAll(items);
+//            adapter.notifyItemRangeInserted(0, items.size() - 1);
+//            if (!mIsAlreadySetPosition) {
+//                // onAlbumMediaLoad is called many times..
+//                mIsAlreadySetPosition = true;
+//                if (getArguments() != null) {
+//                    LocalMedia selected = getArguments().getParcelable(EXTRA_ITEM);
+//                    if (selected != null) {
+//                        // 减1是爲了拿到索引
+//                        int selectedIndex = LocalMediaUtils.checkedNumOf(items, selected) - 1;
+//                        mViewHolder.pager.setCurrentItem(selectedIndex, false);
+//                        mPreviousPos = selectedIndex;
+//                    }
+//                }
+//            }
+//
+//        }
     }
 
     @Override

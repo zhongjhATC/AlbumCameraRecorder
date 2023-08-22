@@ -31,10 +31,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.otaliastudios.cameraview.filter.MultiFilter;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
@@ -45,8 +48,7 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.common.entity.IncapableCause;
-import com.zhongjh.common.entity.LocalFile;
-import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
@@ -59,6 +61,7 @@ import com.zhongjh.imageedit.ImageEditActivity;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -109,7 +112,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
     protected PreviewPagerAdapter mAdapter;
     protected GlobalSpec mGlobalSpec;
     protected AlbumSpec mAlbumSpec;
-    protected SelectedItemCollection mSelectedCollection;
     /**
      * 图片存储器
      */
@@ -178,6 +180,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * 是否外部直接调用该预览窗口，如果是外部直接调用，那么可以启用回调接口，内部统一使用onActivityResult方式回调
      */
     protected boolean mIsExternalUsers = false;
+    protected MainModel mMainModel;
 
     @Nullable
     @Override
@@ -190,9 +193,10 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
                 mGlobalSpec.getThemeId());
         final LayoutInflater cloneInContext = inflater.cloneInContext(wrapper);
         View view = cloneInContext.inflate(R.layout.activity_media_preview_zjh, container, false);
-        mSelectedCollection = new SelectedItemCollection(mContext);
         onActivityResult();
         StatusBarUtils.initStatusBar(mActivity);
+        this.mMainModel = new ViewModelProvider(requireParentFragment())
+                .get(MainModel.class);
         boolean isAllowRepeat = false;
         if (getArguments() != null) {
             isAllowRepeat = getArguments().getBoolean(EXTRA_IS_ALLOW_REPEAT, false);
@@ -231,11 +235,9 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         }
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
-            mSelectedCollection.onCreate(getArguments().getBundle(EXTRA_DEFAULT_BUNDLE), isAllowRepeat);
             mOriginalEnable = getArguments().getBoolean(EXTRA_RESULT_ORIGINAL_ENABLE, false);
         } else {
             // 初始化缓存的数据
-            mSelectedCollection.onCreate(savedInstanceState, isAllowRepeat);
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
 
@@ -291,42 +293,42 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * 刷新MultiMedia
      */
     private void refreshMultiMediaItem() {
-        // 获取当前查看的multimedia
-        MultiMedia multiMedia = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-        // 获取编辑前的uri
-        Uri oldUri = multiMedia.getUri();
-        // 获取编辑后的uri
-        Uri newUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
-        // 获取编辑前的path
-        String oldPath = null;
-        if (multiMedia.getPath() == null) {
-            File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
-            if (file != null) {
-                oldPath = UriUtils.uriToFile(mContext, multiMedia.getUri()).getAbsolutePath();
-            }
-        } else {
-            oldPath = multiMedia.getPath();
-        }
-        multiMedia.setOldPath(oldPath);
-        // 获取编辑后的path
-        String newPath = mEditImageFile.getPath();
-        // 赋值新旧的path、uri
-        multiMedia.handleEditValue(newPath, newUri, oldPath, oldUri);
-        // 更新当前fragment编辑后的uri和path
-        mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), multiMedia);
-        mAdapter.notifyItemChanged(mViewHolder.pager.getCurrentItem());
-
-        // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据 是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
-        // 如何重现进入这个条件里面：先相册选择第一个，然后点击相册第二个item进入详情，在详情界面滑动到第一个，对第一个进行编辑改动，则会进入这些条件里面
-        for (MultiMedia item : mSelectedCollection.asList()) {
-            if (item.getId() == multiMedia.getId()) {
-                // 如果两个id都一样，那就是同个图片，再判断是否同个对象
-                if (!item.equals(multiMedia)) {
-                    // 如果不是同个对象，那么另外一个对象要赋值
-                    item.handleEditValue(multiMedia.getPath(), multiMedia.getUri(), multiMedia.getOldPath(), multiMedia.getOldUri());
-                }
-            }
-        }
+//        // 获取当前查看的multimedia
+//        LocalMedia localMedia = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+//        // 获取编辑前的uri
+//        Uri oldUri = localMedia.getUri();
+//        // 获取编辑后的uri
+//        Uri newUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
+//        // 获取编辑前的path
+//        String oldPath = null;
+//        if (multiMedia.getPath() == null) {
+//            File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
+//            if (file != null) {
+//                oldPath = UriUtils.uriToFile(mContext, multiMedia.getUri()).getAbsolutePath();
+//            }
+//        } else {
+//            oldPath = multiMedia.getPath();
+//        }
+//        multiMedia.setOldPath(oldPath);
+//        // 获取编辑后的path
+//        String newPath = mEditImageFile.getPath();
+//        // 赋值新旧的path、uri
+//        multiMedia.handleEditValue(newPath, newUri, oldPath, oldUri);
+//        // 更新当前fragment编辑后的uri和path
+//        mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), multiMedia);
+//        mAdapter.notifyItemChanged(mViewHolder.pager.getCurrentItem());
+//
+//        // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据 是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
+//        // 如何重现进入这个条件里面：先相册选择第一个，然后点击相册第二个item进入详情，在详情界面滑动到第一个，对第一个进行编辑改动，则会进入这些条件里面
+//        for (LocalMedia item : mMainModel.getSelectedData().getLocalMedias()) {
+//            if (item.getId() == multiMedia.getId()) {
+//                // 如果两个id都一样，那就是同个图片，再判断是否同个对象
+//                if (!item.equals(multiMedia)) {
+//                    // 如果不是同个对象，那么另外一个对象要赋值
+//                    item.handleEditValue(multiMedia.getPath());
+//                }
+//            }
+//        }
 
     }
 
@@ -348,10 +350,10 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
             @Override
             public void onListener(@NonNull View v) {
                 // 确认的一刻赋值
-                List<MultiMedia> multiMedias = mSelectedCollection.asList();
+                ArrayList<LocalMedia> localMediaArrayList = mMainModel.getSelectedData().getLocalMedias();
                 // 设置是否原图状态
-                for (MultiMedia multiMedia : multiMedias) {
-                    multiMedia.setOriginal(mOriginalEnable);
+                for (LocalMedia localMedia : localMediaArrayList) {
+                    localMedia.setOriginal(mOriginalEnable);
                 }
                 setResultOkByIsCompress(true);
             }
@@ -396,7 +398,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        mSelectedCollection.onSaveInstanceState(outState);
         outState.putBoolean("checkState", mOriginalEnable);
         super.onSaveInstanceState(outState);
     }
@@ -415,36 +416,36 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         if (v.getId() == R.id.ibtnBack) {
             mActivity.onBackPressed();
         } else if (v.getId() == R.id.checkView) {
-            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-            if (mSelectedCollection.isSelected(item)) {
-                mSelectedCollection.remove(item);
-                if (mAlbumSpec.getCountable()) {
-                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED);
-                } else {
-                    mViewHolder.checkView.setChecked(false);
-                }
-            } else {
-                boolean isTrue = true;
-                if (mIsSelectedCheck) {
-                    isTrue = assertAddSelection(item);
-                }
-                if (isTrue) {
-                    mSelectedCollection.add(item);
-                    if (mAlbumSpec.getCountable()) {
-                        mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
-                    } else {
-                        mViewHolder.checkView.setChecked(true);
-                    }
-                }
-            }
-            updateApplyButton();
-
-            if (mAlbumSpec.getOnSelectedListener() != null && mIsSelectedListener) {
-                // 触发选择的接口事件
-                mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
-            } else {
-                mSelectedCollection.updatePath();
-            }
+//            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+//            if (mSelectedCollection.isSelected(item)) {
+//                mSelectedCollection.remove(item);
+//                if (mAlbumSpec.getCountable()) {
+//                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED);
+//                } else {
+//                    mViewHolder.checkView.setChecked(false);
+//                }
+//            } else {
+//                boolean isTrue = true;
+//                if (mIsSelectedCheck) {
+//                    isTrue = assertAddSelection(item);
+//                }
+//                if (isTrue) {
+//                    mSelectedCollection.add(item);
+//                    if (mAlbumSpec.getCountable()) {
+//                        mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+//                    } else {
+//                        mViewHolder.checkView.setChecked(true);
+//                    }
+//                }
+//            }
+//            updateApplyButton();
+//
+//            if (mAlbumSpec.getOnSelectedListener() != null && mIsSelectedListener) {
+//                // 触发选择的接口事件
+//                mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
+//            } else {
+//                mSelectedCollection.updatePath();
+//            }
         }
     }
 
@@ -459,25 +460,25 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
                 return;
             }
             if (mPreviousPos != -1 && mPreviousPos != position) {
-                MultiMedia item = adapter.getMediaItem(position);
-                if (mAlbumSpec.getCountable()) {
-                    int checkedNum = mSelectedCollection.checkedNumOf(item);
-                    mViewHolder.checkView.setCheckedNum(checkedNum);
-                    if (checkedNum > 0) {
-                        setCheckViewEnable(true);
-                    } else {
-                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
-                    }
-                } else {
-                    boolean checked = mSelectedCollection.isSelected(item);
-                    mViewHolder.checkView.setChecked(checked);
-                    if (checked) {
-                        setCheckViewEnable(true);
-                    } else {
-                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
-                    }
-                }
-                updateUi(item);
+//                MultiMedia item = adapter.getMediaItem(position);
+//                if (mAlbumSpec.getCountable()) {
+//                    int checkedNum = mSelectedCollection.checkedNumOf(item);
+//                    mViewHolder.checkView.setCheckedNum(checkedNum);
+//                    if (checkedNum > 0) {
+//                        setCheckViewEnable(true);
+//                    } else {
+//                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
+//                    }
+//                } else {
+//                    boolean checked = mSelectedCollection.isSelected(item);
+//                    mViewHolder.checkView.setChecked(checked);
+//                    if (checked) {
+//                        setCheckViewEnable(true);
+//                    } else {
+//                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
+//                    }
+//                }
+//                updateUi(item);
             }
             mPreviousPos = position;
         }
@@ -487,29 +488,29 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * 更新确定按钮状态
      */
     private void updateApplyButton() {
-        // 获取已选的图片
-        int selectedCount = mSelectedCollection.count();
-        if (selectedCount == 0) {
-            // 禁用
-            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
-            mViewHolder.buttonApply.setEnabled(false);
-        } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
-            // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
-            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
-            mViewHolder.buttonApply.setEnabled(true);
-        } else {
-            // 启用，显示数字
-            mViewHolder.buttonApply.setEnabled(true);
-            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure, selectedCount));
-        }
-
-        // 判断是否启动操作
-        if (!mApplyEnable) {
-            mViewHolder.buttonApply.setVisibility(View.GONE);
-        } else {
-            mViewHolder.buttonApply.setVisibility(View.VISIBLE);
-        }
-        setCheckViewEnable(mSelectedEnable);
+//        // 获取已选的图片
+//        int selectedCount = mSelectedCollection.count();
+//        if (selectedCount == 0) {
+//            // 禁用
+//            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
+//            mViewHolder.buttonApply.setEnabled(false);
+//        } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
+//            // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
+//            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
+//            mViewHolder.buttonApply.setEnabled(true);
+//        } else {
+//            // 启用，显示数字
+//            mViewHolder.buttonApply.setEnabled(true);
+//            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure, selectedCount));
+//        }
+//
+//        // 判断是否启动操作
+//        if (!mApplyEnable) {
+//            mViewHolder.buttonApply.setVisibility(View.GONE);
+//        } else {
+//            mViewHolder.buttonApply.setVisibility(View.VISIBLE);
+//        }
+//        setCheckViewEnable(mSelectedEnable);
     }
 
     /**
@@ -545,9 +546,9 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      */
     private int countOverMaxSize() {
         int count = 0;
-        int selectedCount = mSelectedCollection.count();
+        int selectedCount = mMainModel.getSelectedData().count();
         for (int i = 0; i < selectedCount; i++) {
-            MultiMedia item = mSelectedCollection.asList().get(i);
+            LocalMedia item = mMainModel.getSelectedData().getLocalMedias().get(i);
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
                 if (size > mAlbumSpec.getOriginalMaxSize()) {
@@ -566,7 +567,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * @param item 当前图片
      */
     @SuppressLint("SetTextI18n")
-    protected void updateUi(MultiMedia item) {
+    protected void updateUi(LocalMedia item) {
         if (item.isGif()) {
             mViewHolder.size.setVisibility(View.VISIBLE);
             mViewHolder.size.setText(PhotoMetadataUtils.getSizeInMb(item.getSize()) + "M");
@@ -595,16 +596,16 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * 打开编辑的Activity
      */
     private void openImageEditActivity() {
-        MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-        File file;
-        file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
-        mEditImageFile = file;
-        Intent intent = new Intent();
-        intent.setClass(mActivity, ImageEditActivity.class);
-        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
-        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
-        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
-        mImageEditActivityResult.launch(intent);
+//        LocalMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+//        File file;
+//        file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
+//        mEditImageFile = file;
+//        Intent intent = new Intent();
+//        intent.setClass(mActivity, ImageEditActivity.class);
+//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
+//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
+//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
+//        mImageEditActivityResult.launch(intent);
     }
 
     /**
@@ -652,24 +653,24 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
 
             @Override
             public Void doInBackground() {
-                // 不压缩，直接迁移到配置文件
-                for (LocalFile item : mSelectedCollection.asList()) {
-                    if (item.getPath() != null) {
-                        File oldFile = new File(item.getPath());
-                        if (oldFile.exists()) {
-                            if (item.isImage() || item.isVideo()) {
-                                File newFile;
-                                if (item.isImage()) {
-                                    newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
-                                } else {
-                                    // 如果是视频
-                                    newFile = mVideoMediaStoreCompat.createFile(1, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
-                                }
-                                handleEditImages(item, newFile, oldFile, false);
-                            }
-                        }
-                    }
-                }
+//                // 不压缩，直接迁移到配置文件
+//                for (LocalFile item : mSelectedCollection.asList()) {
+//                    if (item.getPath() != null) {
+//                        File oldFile = new File(item.getPath());
+//                        if (oldFile.exists()) {
+//                            if (item.isImage() || item.isVideo()) {
+//                                File newFile;
+//                                if (item.isImage()) {
+//                                    newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
+//                                } else {
+//                                    // 如果是视频
+//                                    newFile = mVideoMediaStoreCompat.createFile(1, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
+//                                }
+//                                handleEditImages(item, newFile, oldFile, false);
+//                            }
+//                        }
+//                    }
+//                }
                 return null;
             }
 
@@ -709,23 +710,23 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
 
             @Override
             public Void doInBackground() {
-                // 来自相册的，才根据配置处理压缩和迁移
-                if (mCompressEnable) {
-                    // 将 缓存文件 拷贝到 配置目录
-                    for (LocalFile item : mSelectedCollection.asList()) {
-                        Log.d(TAG, "item " + item.getId());
-                        // 判断是否需要压缩
-                        LocalFile isCompressItem = mAlbumCompressFileTask.isCompress(item);
-                        if (isCompressItem != null) {
-                            continue;
-                        }
-                        // 开始压缩逻辑，获取真实路径
-                        String path = mAlbumCompressFileTask.getPath(item);
-                        if (path != null) {
-                            handleCompress(item, path);
-                        }
-                    }
-                }
+//                // 来自相册的，才根据配置处理压缩和迁移
+//                if (mCompressEnable) {
+//                    // 将 缓存文件 拷贝到 配置目录
+//                    for (LocalFile item : mSelectedCollection.asList()) {
+//                        Log.d(TAG, "item " + item.getId());
+//                        // 判断是否需要压缩
+//                        LocalFile isCompressItem = mAlbumCompressFileTask.isCompress(item);
+//                        if (isCompressItem != null) {
+//                            continue;
+//                        }
+//                        // 开始压缩逻辑，获取真实路径
+//                        String path = mAlbumCompressFileTask.getPath(item);
+//                        if (path != null) {
+//                            handleCompress(item, path);
+//                        }
+//                    }
+//                }
                 return null;
             }
 
@@ -757,74 +758,74 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * @param item LocalFile
      * @param path 当前文件地址
      */
-    private void handleCompress(LocalFile item, String path) {
-        // 只处理图片和视频
-        if (!item.isImage() && !item.isVideo()) {
-            return;
-        }
-        String newFileName = mAlbumCompressFileTask.getNewFileName(item, path);
-        // 取出是否存在着处理后的文件
-        File newFile = mAlbumCompressFileTask.getNewFile(item, path, newFileName);
-        // 存在压缩后的文件并且没有编辑过的 就直接使用
-        if (newFile.exists() && item.getOldPath() == null) {
-            if (item.isImage()) {
-                item.updateFile(mContext, mPictureMediaStoreCompat, item, newFile, true);
-            } else {
-                item.updateFile(mContext, mVideoMediaStoreCompat, item, newFile, true);
-            }
-            Log.d(TAG, "存在直接使用");
-        } else {
-            // 进行压缩
-            if (item.isImage()) {
-                // 处理是否进行压缩图片
-                File compressionFile = mAlbumCompressFileTask.handleImage(path);
-                // 如果是编辑过的就给新的地址
-                if (item.getOldPath() != null) {
-                    newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getOldPath()));
-                }
-                handleEditImages(item, newFile, compressionFile, true);
-                Log.d(TAG, "不存在新建文件");
-            } else if (item.isVideo()) {
-                // 压缩视频
-                if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
-                    // 如果是编辑过的就给新的地址
-                    if (item.getOldPath() != null) {
-                        newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getOldPath()));
-                    }
-                    File finalNewFile = newFile;
-                    mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(BasePreviewFragment.class, new VideoEditListener() {
-                        @Override
-                        public void onFinish() {
-                            item.updateFile(mContext, mPictureMediaStoreCompat, item, finalNewFile, true);
-                            // 如果是编辑过的加入相册
-                            if (item.getOldPath() != null) {
-                                Uri uri = MediaStoreUtils.displayToGallery(mContext, finalNewFile, TYPE_VIDEO,
-                                        item.getDuration(), item.getWidth(), item.getHeight(),
-                                        mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
-                                item.setId(MediaStoreUtils.getId(uri));
-                            }
-                            Log.d(TAG, "不存在新建文件");
-                        }
-
-                        @Override
-                        public void onProgress(int progress, long progressTime) {
-                        }
-
-                        @Override
-                        public void onCancel() {
-
-                        }
-
-                        @Override
-                        public void onError(@NotNull String message) {
-                        }
-                    });
-                    if (mGlobalSpec.getVideoCompressCoordinator() != null) {
-                        mGlobalSpec.getVideoCompressCoordinator().compressAsync(BasePreviewFragment.class, path, finalNewFile.getPath());
-                    }
-                }
-            }
-        }
+    private void handleCompress(LocalMedia item, String path) {
+//        // 只处理图片和视频
+//        if (!item.isImage() && !item.isVideo()) {
+//            return;
+//        }
+//        String newFileName = mAlbumCompressFileTask.getNewFileName(item, path);
+//        // 取出是否存在着处理后的文件
+//        File newFile = mAlbumCompressFileTask.getNewFile(item, path, newFileName);
+//        // 存在压缩后的文件并且没有编辑过的 就直接使用
+//        if (newFile.exists() && item.getOldPath() == null) {
+//            if (item.isImage()) {
+//                item.updateFile(mContext, mPictureMediaStoreCompat, item, newFile, true);
+//            } else {
+//                item.updateFile(mContext, mVideoMediaStoreCompat, item, newFile, true);
+//            }
+//            Log.d(TAG, "存在直接使用");
+//        } else {
+//            // 进行压缩
+//            if (item.isImage()) {
+//                // 处理是否进行压缩图片
+//                File compressionFile = mAlbumCompressFileTask.handleImage(path);
+//                // 如果是编辑过的就给新的地址
+//                if (item.getOldPath() != null) {
+//                    newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getOldPath()));
+//                }
+//                handleEditImages(item, newFile, compressionFile, true);
+//                Log.d(TAG, "不存在新建文件");
+//            } else if (item.isVideo()) {
+//                // 压缩视频
+//                if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
+//                    // 如果是编辑过的就给新的地址
+//                    if (item.getOldPath() != null) {
+//                        newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getOldPath()));
+//                    }
+//                    File finalNewFile = newFile;
+//                    mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(BasePreviewFragment.class, new VideoEditListener() {
+//                        @Override
+//                        public void onFinish() {
+//                            item.updateFile(mContext, mPictureMediaStoreCompat, item, finalNewFile, true);
+//                            // 如果是编辑过的加入相册
+//                            if (item.getOldPath() != null) {
+//                                Uri uri = MediaStoreUtils.displayToGallery(mContext, finalNewFile, TYPE_VIDEO,
+//                                        item.getDuration(), item.getWidth(), item.getHeight(),
+//                                        mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
+//                                item.setId(MediaStoreUtils.getId(uri));
+//                            }
+//                            Log.d(TAG, "不存在新建文件");
+//                        }
+//
+//                        @Override
+//                        public void onProgress(int progress, long progressTime) {
+//                        }
+//
+//                        @Override
+//                        public void onCancel() {
+//
+//                        }
+//
+//                        @Override
+//                        public void onError(@NotNull String message) {
+//                        }
+//                    });
+//                    if (mGlobalSpec.getVideoCompressCoordinator() != null) {
+//                        mGlobalSpec.getVideoCompressCoordinator().compressAsync(BasePreviewFragment.class, path, finalNewFile.getPath());
+//                    }
+//                }
+//            }
+//        }
     }
 
     /**
@@ -836,23 +837,23 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * @param oldFile    目前的文件
      * @param isCompress 是否压缩
      */
-    private void handleEditImages(LocalFile item, File newFile, File oldFile, Boolean isCompress) {
-        // 迁移到新的文件夹(配置目录)
-        if (item.getOldPath() != null) {
-            // 如果编辑过就直接 移动 文件
-            FileUtil.move(oldFile, newFile);
-        } else {
-            // 如果没有编辑过就拷贝，因为有可能是源文件需要保留
-            FileUtil.copy(oldFile, newFile);
-        }
-        item.updateFile(mContext, mPictureMediaStoreCompat, item, newFile, isCompress);
-        // 如果是编辑过的加入相册
-        if (item.getOldPath() != null) {
-            Uri uri = MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_PICTURE,
-                    item.getDuration(), item.getWidth(), item.getHeight(),
-                    mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-            item.setId(MediaStoreUtils.getId(uri));
-        }
+    private void handleEditImages(LocalMedia item, File newFile, File oldFile, Boolean isCompress) {
+//        // 迁移到新的文件夹(配置目录)
+//        if (item.getOldPath() != null) {
+//            // 如果编辑过就直接 移动 文件
+//            FileUtil.move(oldFile, newFile);
+//        } else {
+//            // 如果没有编辑过就拷贝，因为有可能是源文件需要保留
+//            FileUtil.copy(oldFile, newFile);
+//        }
+//        item.updateFile(mContext, mPictureMediaStoreCompat, item, newFile, isCompress);
+//        // 如果是编辑过的加入相册
+//        if (item.getOldPath() != null) {
+//            Uri uri = MediaStoreUtils.displayToGallery(mContext, newFile, TYPE_PICTURE,
+//                    item.getDuration(), item.getWidth(), item.getHeight(),
+//                    mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+//            item.setId(MediaStoreUtils.getId(uri));
+//        }
     }
 
     /**
@@ -861,24 +862,24 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * @param apply 是否同意
      */
     protected synchronized void setResultOk(boolean apply) {
-        Log.d(TAG, "setResultOk");
-        refreshMultiMediaItem(apply);
-        if (mGlobalSpec.getOnResultCallbackListener() == null || !mIsExternalUsers) {
-            // 如果是外部使用并且不同意，则不执行RESULT_OK
-            Intent intent = new Intent();
-            intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-            intent.putExtra(EXTRA_RESULT_APPLY, apply);
-            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
-            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            if (mIsExternalUsers && !apply) {
-                mActivity.setResult(Activity.RESULT_CANCELED, intent);
-            } else {
-                mActivity.setResult(RESULT_OK, intent);
-            }
-        } else {
-            mGlobalSpec.getOnResultCallbackListener().onResultFromPreview(mSelectedCollection.asList(), apply);
-        }
-        mActivity.finish();
+//        Log.d(TAG, "setResultOk");
+//        refreshMultiMediaItem(apply);
+//        if (mGlobalSpec.getOnResultCallbackListener() == null || !mIsExternalUsers) {
+//            // 如果是外部使用并且不同意，则不执行RESULT_OK
+//            Intent intent = new Intent();
+//            intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+//            intent.putExtra(EXTRA_RESULT_APPLY, apply);
+//            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
+//            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//            if (mIsExternalUsers && !apply) {
+//                mActivity.setResult(Activity.RESULT_CANCELED, intent);
+//            } else {
+//                mActivity.setResult(RESULT_OK, intent);
+//            }
+//        } else {
+//            mGlobalSpec.getOnResultCallbackListener().onResultFromPreview(mSelectedCollection.asList(), apply);
+//        }
+//        mActivity.finish();
     }
 
     /**
@@ -887,38 +888,38 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * @param apply 是否同意 TODO
      */
     private void refreshMultiMediaItem(boolean apply) {
-        if (mIsEdit) {
-            // 循环当前所有图片进行处理
-            for (MultiMedia multiMedia : mAdapter.getItems()) {
-                if (apply) {
-                    // 获取真实路径
-                    String path = null;
-                    if (multiMedia.getPath() == null) {
-                        File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
-                        if (file != null) {
-                            path = file.getAbsolutePath();
-                        }
-                    } else {
-                        path = multiMedia.getPath();
-                    }
-
-                    // 判断有old才说明编辑过
-                    if (path != null && !TextUtils.isEmpty(multiMedia.getOldPath())) {
-                        File file = new File(path);
-                        multiMedia.setUri(mPictureMediaStoreCompat.getUri(path));
-                        multiMedia.setPath(file.getAbsolutePath());
-                    }
-                } else {
-                    // 更新回旧的数据
-                    if (multiMedia.getOldUri() != null) {
-                        multiMedia.setUri(multiMedia.getOldUri());
-                    }
-                    if (!TextUtils.isEmpty(multiMedia.getOldPath())) {
-                        multiMedia.setPath(multiMedia.getOldPath());
-                    }
-                }
-            }
-        }
+//        if (mIsEdit) {
+//            // 循环当前所有图片进行处理
+//            for (MultiMedia multiMedia : mAdapter.getItems()) {
+//                if (apply) {
+//                    // 获取真实路径
+//                    String path = null;
+//                    if (multiMedia.getPath() == null) {
+//                        File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
+//                        if (file != null) {
+//                            path = file.getAbsolutePath();
+//                        }
+//                    } else {
+//                        path = multiMedia.getPath();
+//                    }
+//
+//                    // 判断有old才说明编辑过
+//                    if (path != null && !TextUtils.isEmpty(multiMedia.getOldPath())) {
+//                        File file = new File(path);
+//                        multiMedia.setUri(mPictureMediaStoreCompat.getUri(path));
+//                        multiMedia.setPath(file.getAbsolutePath());
+//                    }
+//                } else {
+//                    // 更新回旧的数据
+//                    if (multiMedia.getOldUri() != null) {
+//                        multiMedia.setUri(multiMedia.getOldUri());
+//                    }
+//                    if (!TextUtils.isEmpty(multiMedia.getOldPath())) {
+//                        multiMedia.setPath(multiMedia.getOldPath());
+//                    }
+//                }
+//            }
+//        }
     }
 
     /**
@@ -943,17 +944,17 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    /**
-     * 处理窗口
-     *
-     * @param item 当前图片
-     * @return 为true则代表符合规则
-     */
-    private boolean assertAddSelection(MultiMedia item) {
-        IncapableCause cause = mSelectedCollection.isAcceptable(item);
-        IncapableCause.handleCause(mContext, cause);
-        return cause == null;
-    }
+//    /**
+//     * 处理窗口
+//     *
+//     * @param item 当前图片
+//     * @return 为true则代表符合规则
+//     */
+//    private boolean assertAddSelection(MultiMedia item) {
+//        IncapableCause cause = mSelectedCollection.isAcceptable(item);
+//        IncapableCause.handleCause(mContext, cause);
+//        return cause == null;
+//    }
 
     /**
      * 设置checkView是否启动，配置优先
