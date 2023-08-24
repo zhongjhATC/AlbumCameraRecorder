@@ -472,39 +472,39 @@ public class SoundRecordingFragment extends BaseFragment {
     private final ThreadUtils.SimpleTask<Void> mMoveRecordFileTask = new ThreadUtils.SimpleTask<Void>() {
         @Override
         public Void doInBackground() {
-            if (localFile == null) {
-                initAudio();
-            }
-            if (localFile.getPath() != null) {
-                // 初始化保存好的音频文件
-                initAudio();
-                // 获取文件名称
-                String newFileName = localFile.getPath().substring(localFile.getPath().lastIndexOf(File.separator));
-                File newFile = mAudioMediaStoreCompat.createFile(newFileName, 2, false);
-                Log.d(TAG, "newFile" + newFile.getAbsolutePath());
-                FileUtil.copy(new File(localFile.getPath()), newFile, null, (ioProgress, file) -> {
-                    int progress = (int) (ioProgress * FULL);
-                    ThreadUtils.runOnUiThread(() -> {
-                        mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
-                        localFile.setPath(newFile.getPath());
-                        localFile.setUri(mAudioMediaStoreCompat.getUri(newFile.getPath()));
-                        if (progress >= FULL) {
-                            if (mGlobalSpec.getOnResultCallbackListener() == null) {
-                                Intent result = new Intent();
-                                ArrayList<LocalFile> localFiles = new ArrayList<>();
-                                localFiles.add(localFile);
-                                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
-                                mActivity.setResult(RESULT_OK, result);
-                            } else {
-                                ArrayList<LocalFile> localFiles = new ArrayList<>();
-                                localFiles.add(localFile);
-                                mGlobalSpec.getOnResultCallbackListener().onResult(localFiles);
-                            }
-                            mActivity.finish();
-                        }
-                    });
-                });
-            }
+//            if (localFile == null) {
+//                initAudio();
+//            }
+//            if (localFile.getPath() != null) {
+//                // 初始化保存好的音频文件
+//                initAudio();
+//                // 获取文件名称
+//                String newFileName = localFile.getPath().substring(localFile.getPath().lastIndexOf(File.separator));
+//                File newFile = mAudioMediaStoreCompat.createFile(newFileName, 2, false);
+//                Log.d(TAG, "newFile" + newFile.getAbsolutePath());
+//                FileUtil.copy(new File(localFile.getPath()), newFile, null, (ioProgress, file) -> {
+//                    int progress = (int) (ioProgress * FULL);
+//                    ThreadUtils.runOnUiThread(() -> {
+//                        mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
+//                        localFile.setPath(newFile.getPath());
+//                        localFile.setUri(mAudioMediaStoreCompat.getUri(newFile.getPath()));
+//                        if (progress >= FULL) {
+//                            if (mGlobalSpec.getOnResultCallbackListener() == null) {
+//                                Intent result = new Intent();
+//                                ArrayList<LocalFile> localFiles = new ArrayList<>();
+//                                localFiles.add(localFile);
+//                                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+//                                mActivity.setResult(RESULT_OK, result);
+//                            } else {
+//                                ArrayList<LocalFile> localFiles = new ArrayList<>();
+//                                localFiles.add(localFile);
+//                                mGlobalSpec.getOnResultCallbackListener().onResult(localFiles);
+//                            }
+//                            mActivity.finish();
+//                        }
+//                    });
+//                });
+//            }
             return null;
         }
 

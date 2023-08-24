@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.album.ui.mediaselection;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,11 +29,13 @@ public class MediaViewUtil implements
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
 
     public MediaViewUtil(FragmentActivity activity,
+                         Fragment fragment,
                          MainModel mainModel,
                          RecyclerLoadMoreView recyclerView,
                          AlbumMediaAdapter.CheckStateListener checkStateListener,
                          AlbumMediaAdapter.OnMediaClickListener onMediaClickListener) {
         mActivity = activity;
+        mFragment = fragment;
         mMainModel = mainModel;
         mRecyclerView = recyclerView;
         mCheckStateListener = checkStateListener;
@@ -41,6 +44,7 @@ public class MediaViewUtil implements
     }
 
     private final FragmentActivity mActivity;
+    private final Fragment mFragment;
     private final MainModel mMainModel;
     private final RecyclerLoadMoreView mRecyclerView;
     private AlbumMediaAdapter mAdapter;
@@ -84,7 +88,7 @@ public class MediaViewUtil implements
         mRecyclerView.setOnRecyclerViewLoadMoreListener(() -> mMainModel.addAllPageMediaData(mAlbum.getId(), mAlbumSpec.getPageSize()));
 
         // 监听到新的相册数据
-        mMainModel.getLocalMedias().observe(mActivity, mediaData -> {
+        mMainModel.getLocalMedias().observe(mFragment.getViewLifecycleOwner(), mediaData -> {
             // 如果没有数据，则关闭下拉加载
             mRecyclerView.setEnabledLoadMore(!mediaData.getData().isEmpty());
             if (mMainModel.getPage() == 1) {

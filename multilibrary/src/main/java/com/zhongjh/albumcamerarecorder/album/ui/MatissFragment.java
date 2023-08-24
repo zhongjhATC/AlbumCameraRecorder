@@ -330,7 +330,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
      */
     private void initMediaViewUtil() {
         Log.d("onSaveInstanceState", " initMediaViewUtil");
-        mMediaViewUtil = new MediaViewUtil(getActivity(), mMainModel, mViewHolder.recyclerview, this, this);
+        mMediaViewUtil = new MediaViewUtil(getActivity(), this, mMainModel, mViewHolder.recyclerview, this, this);
     }
 
     /**
@@ -338,7 +338,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
      */
     private void initObserveData() {
         // 专辑加载完毕
-        mMainModel.getAlbums().observe(this.mActivity, data -> {
+        mMainModel.getAlbums().observe(getViewLifecycleOwner(), data -> {
             // 更新专辑列表
             mAlbumSpinner.bindFolder(data);
             // 可能因为别的原因销毁当前界面，回到当前选择的位置
@@ -550,7 +550,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
                 // 优化共享元素转换
                 .setReorderingAllowed(true)
                 .addSharedElement(imageView, imageView.getTransitionName())
-                .replace(R.id.fragmentContainerView, fragment)
+                .add(R.id.fragmentContainerView, fragment)
                 .addToBackStack(null)
                 .commit();
     }

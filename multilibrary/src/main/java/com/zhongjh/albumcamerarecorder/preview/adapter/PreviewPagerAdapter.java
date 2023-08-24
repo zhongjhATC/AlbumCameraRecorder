@@ -34,6 +34,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MultiMedia;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class PreviewPagerAdapter extends RecyclerView.Adapter<PreviewPagerAdapte
 
     private final Context mContext;
     private final Activity mActivity;
-    private final ArrayList<MultiMedia> mItems = new ArrayList<>();
+    private final ArrayList<LocalMedia> mItems = new ArrayList<>();
 
     public PreviewPagerAdapter(Context context, Activity activity) {
         mContext = context;
@@ -61,49 +62,53 @@ public class PreviewPagerAdapter extends RecyclerView.Adapter<PreviewPagerAdapte
 
     @Override
     public void onBindViewHolder(@NonNull PreviewViewHolder holder, int position) {
-        MultiMedia item = mItems.get(position);
+        LocalMedia item = mItems.get(position);
         if (item.isVideo()) {
             holder.videoPlayButton.setVisibility(View.VISIBLE);
             holder.videoPlayButton.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                // 申请权限
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                Uri uri = null;
-                if (item.getUri() != null) {
-                    uri = item.getUri();
-                }
-                // 如果uri为null并且url有值，那就用播放器播放网址
-                if (uri == null && !TextUtils.isEmpty(item.getUrl())) {
-                    uri = Uri.parse(item.getUrl());
-                }
-                intent.setDataAndType(uri, "video/*");
-                try {
-                    mActivity.startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(mContext, R.string.z_multi_library_error_no_video_activity, Toast.LENGTH_SHORT).show();
-                }
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                // 申请权限
+//                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                Uri uri = null;
+//                if (item.getUri() != null) {
+//                    uri = item.getUri();
+//                }
+//                // 如果uri为null并且url有值，那就用播放器播放网址
+//                if (uri == null && !TextUtils.isEmpty(item.getUrl())) {
+//                    uri = Uri.parse(item.getUrl());
+//                }
+//                intent.setDataAndType(uri, "video/*");
+//                try {
+//                    mActivity.startActivity(intent);
+//                } catch (ActivityNotFoundException e) {
+//                    Toast.makeText(mContext, R.string.z_multi_library_error_no_video_activity, Toast.LENGTH_SHORT).show();
+//                }
             });
         } else {
             holder.videoPlayButton.setVisibility(View.GONE);
         }
 
-        if (item.getUri() != null) {
-            Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), mActivity);
-            if (item.isGif()) {
-                GlobalSpec.INSTANCE.getImageEngine().loadGifImage(mContext, size.x, size.y, holder.imageView,
-                        item.getUri());
-            } else {
-                GlobalSpec.INSTANCE.getImageEngine().loadImage(mContext, size.x, size.y, holder.imageView,
-                        item.getUri());
 
-            }
-        } else if (item.getUrl() != null) {
-            GlobalSpec.INSTANCE.getImageEngine().loadUrlImage(mContext, holder.imageView,
-                    item.getUrl());
-        } else if (item.getDrawableId() != -1) {
-            GlobalSpec.INSTANCE.getImageEngine().loadDrawableImage(mContext, holder.imageView,
-                    item.getDrawableId());
-        }
+        GlobalSpec.INSTANCE.getImageEngine().loadUrlImage(mContext, holder.imageView,
+                item.getPath());
+
+//        if (item.getUri() != null) {
+//            Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), mActivity);
+//            if (item.isGif()) {
+//                GlobalSpec.INSTANCE.getImageEngine().loadGifImage(mContext, size.x, size.y, holder.imageView,
+//                        item.getUri());
+//            } else {
+//                GlobalSpec.INSTANCE.getImageEngine().loadImage(mContext, size.x, size.y, holder.imageView,
+//                        item.getUri());
+//
+//            }
+//        } else if (item.getUrl() != null) {
+//            GlobalSpec.INSTANCE.getImageEngine().loadUrlImage(mContext, holder.imageView,
+//                    item.getUrl());
+//        } else if (item.getDrawableId() != -1) {
+//            GlobalSpec.INSTANCE.getImageEngine().loadDrawableImage(mContext, holder.imageView,
+//                    item.getDrawableId());
+//        }
     }
 
     @Override
@@ -115,19 +120,19 @@ public class PreviewPagerAdapter extends RecyclerView.Adapter<PreviewPagerAdapte
         return mItems.size();
     }
 
-    public MultiMedia getMediaItem(int position) {
+    public LocalMedia getLocalMedia(int position) {
         return getSize() > 0 && position < getSize() ? mItems.get(position) : null;
     }
 
-    public void setMediaItem(int position, MultiMedia multiMedia) {
-        mItems.set(position, multiMedia);
+    public void setMediaItem(int position, LocalMedia localMedia) {
+        mItems.set(position, localMedia);
     }
 
-    public void addAll(List<MultiMedia> items) {
+    public void addAll(List<LocalMedia> items) {
         mItems.addAll(items);
     }
 
-    public ArrayList<MultiMedia> getItems() {
+    public ArrayList<LocalMedia> getItems() {
         return mItems;
     }
 

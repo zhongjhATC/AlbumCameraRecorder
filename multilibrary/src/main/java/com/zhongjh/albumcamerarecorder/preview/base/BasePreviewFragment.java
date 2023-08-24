@@ -182,6 +182,24 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
     protected boolean mIsExternalUsers = false;
     protected MainModel mMainModel;
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context.getApplicationContext();
+        if (context instanceof Activity) {
+            mActivity = (FragmentActivity) context;
+        }
+        this.mMainModel = new ViewModelProvider(requireParentFragment())
+                .get(MainModel.class);
+        // 拦截OnBackPressed
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                setResultOkByIsCompress(false);
+            }
+        });
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -195,8 +213,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         View view = cloneInContext.inflate(R.layout.activity_media_preview_zjh, container, false);
         onActivityResult();
         StatusBarUtils.initStatusBar(mActivity);
-        this.mMainModel = new ViewModelProvider(requireParentFragment())
-                .get(MainModel.class);
         boolean isAllowRepeat = false;
         if (getArguments() != null) {
             isAllowRepeat = getArguments().getBoolean(EXTRA_IS_ALLOW_REPEAT, false);
@@ -252,22 +268,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
 
         initListener();
         return view;
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        mContext = context.getApplicationContext();
-        if (context instanceof Activity) {
-            mActivity = (FragmentActivity) context;
-        }
-        // 拦截OnBackPressed
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                setResultOkByIsCompress(false);
-            }
-        });
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.preview;
 
 import static com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection.LOADER_PREVIEW_ID;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,12 +11,16 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
+import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
 import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
+import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
@@ -30,31 +35,19 @@ import java.util.List;
  * @author zhongjh
  * @date 2022/7/26
  */
-public class PreviewFragment extends BasePreviewFragment implements
-        AlbumMediaCollection.AlbumMediaCallbacks {
+public class PreviewFragment extends BasePreviewFragment {
 
     public static final String EXTRA_ALBUM = "extra_album";
     public static final String EXTRA_ITEM = "extra_item";
-    private final AlbumMediaCollection mCollection = new AlbumMediaCollection();
     private boolean mIsAlreadySetPosition = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        mCollection.onCreate(mActivity, this);
         if (getArguments() != null) {
             Album2 album = getArguments().getParcelable(EXTRA_ALBUM);
             ArrayList<LocalMedia> items = null;
-            if (album != null) {
-                // 如果有专辑，则根据专辑加载数据
-                mCollection.load(album, LOADER_PREVIEW_ID);
-            } else {
-                // 如果没有专辑，就取决于来自与上个界面提供的数据
-                Bundle bundle = getArguments().getBundle(EXTRA_DEFAULT_BUNDLE);
-                items = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-                initItems(items);
-            }
 
             LocalMedia item = getArguments().getParcelable(EXTRA_ITEM);
             if (item != null) {
@@ -80,6 +73,9 @@ public class PreviewFragment extends BasePreviewFragment implements
                 }
             }
         }
+
+        mMainModel.getLocalMedias().observe(getViewLifecycleOwner(), this::initLocalMedias);
+
         return view;
     }
 
@@ -90,46 +86,30 @@ public class PreviewFragment extends BasePreviewFragment implements
             ((MainActivity) mActivity).showHideTableLayoutAnimator(true);
         }
         super.onDestroy();
-        mCollection.onDestroy();
     }
 
-    @Override
-    public void onAlbumMediaLoad(Cursor cursor) {
-//        List<LocalMedia> items = new ArrayList<>();
-//        while (cursor.moveToNext()) {
-//            items.add(LocalMedia.valueOf(cursor));
-//        }
-//
-//        if (items.isEmpty()) {
-//            return;
-//        }
-//
-//        initItems(items);
+    private void initLocalMedias(MediaData mediaData) {
+        PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
+        if (adapter != null) {
+            adapter.addAll(mediaData.getData());
+            adapter.notifyItemRangeInserted(0, mediaData.getData().size() - 1);
+            if (!mIsAlreadySetPosition) {
+                // onAlbumMediaLoad is called many times..
+                mIsAlreadySetPosition = true;
+                if (getArguments() != null) {
+                    LocalMedia selected = getArguments().getParcelable(EXTRA_ITEM);
+                    if (selected != null) {
+                        // 减1是爲了拿到索引
+                        int selectedIndex = LocalMediaUtils.checkedNumOf(mediaData.getData(), selected) - 1;
+                        mViewHolder.pager.setCurrentItem(selectedIndex, false);
+                        mPreviousPos = selectedIndex;
+                    }
+                }
+            }
+
+        }
     }
 
-    private void initItems(List<LocalMedia> items) {
-//        PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
-//        if (adapter != null) {
-//            adapter.addAll(items);
-//            adapter.notifyItemRangeInserted(0, items.size() - 1);
-//            if (!mIsAlreadySetPosition) {
-//                // onAlbumMediaLoad is called many times..
-//                mIsAlreadySetPosition = true;
-//                if (getArguments() != null) {
-//                    LocalMedia selected = getArguments().getParcelable(EXTRA_ITEM);
-//                    if (selected != null) {
-//                        // 减1是爲了拿到索引
-//                        int selectedIndex = LocalMediaUtils.checkedNumOf(items, selected) - 1;
-//                        mViewHolder.pager.setCurrentItem(selectedIndex, false);
-//                        mPreviousPos = selectedIndex;
-//                    }
-//                }
-//            }
-//
-//        }
-    }
-
-    @Override
     public void onAlbumMediaReset() {
 
     }
