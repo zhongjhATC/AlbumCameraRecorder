@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -26,8 +27,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.SharedElementCallback;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -60,6 +63,7 @@ import com.zhongjh.common.widget.IncapableDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
@@ -131,6 +135,11 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     private ViewHolder mViewHolder;
 
     /**
+     * 当前点击item的索引
+     */
+    int currentPosition;
+
+    /**
      * @param marginBottom 底部间距
      */
     public static MatissFragment newInstance(int marginBottom) {
@@ -164,6 +173,10 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
+
+        prepareTransitions();
+        postponeEnterTransition();
+
         mViewHolder = new ViewHolder(view);
         initConfig();
         mAlbumCompressFileTask = new AlbumCompressFileTask(mActivity, TAG, MatissFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
@@ -535,6 +548,8 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
 
     @Override
     public void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition) {
+        currentPosition = adapterPosition;
+
         // 隐藏底部控件
         mActivity.showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment();
@@ -550,7 +565,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
                 // 优化共享元素转换
                 .setReorderingAllowed(true)
                 .addSharedElement(imageView, imageView.getTransitionName())
-                .add(R.id.fragmentContainerView, fragment)
+                .replace(R.id.fragmentContainerView, fragment)
                 .addToBackStack(null)
                 .commit();
     }
@@ -665,6 +680,32 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     @Override
     public void onLoadPageMediaDataComplete(List<LocalMedia> data, int currentPage, boolean isHasMore) {
 
+    }
+
+    /**
+     * 准备到分页片段的共享元素转换，以及影响流的其他转换。
+     */
+    private void prepareTransitions() {
+        setExitTransition(TransitionInflater.from(getContext())
+                .inflateTransition(R.transition.grid_exit_transition));
+
+        // 在PagerFragment中使用setEnterSharedElementCallback设置类似的映射。
+        setExitSharedElementCallback(
+                new SharedElementCallback() {
+                    @Override
+                    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                        // 定位被点击位置的ViewHolder
+                        RecyclerView.ViewHolder selectedViewHolder = mViewHolder.recyclerview
+                                .findViewHolderForAdapterPosition(currentPosition);
+                        if (selectedViewHolder == null) {
+                            return;
+                        }
+
+                        // 将第一个共享元素名称映射到子ImageView
+                        sharedElements
+                                .put(names.get(0), selectedViewHolder.itemView.findViewById(R.id.media_thumbnail));
+                    }
+                });
     }
 
     public static class ViewHolder {
