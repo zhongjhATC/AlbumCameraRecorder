@@ -189,7 +189,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         if (context instanceof Activity) {
             mActivity = (FragmentActivity) context;
         }
-        this.mMainModel = new ViewModelProvider(requireParentFragment())
+        this.mMainModel = new ViewModelProvider(requireActivity())
                 .get(MainModel.class);
         // 拦截OnBackPressed
         requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {

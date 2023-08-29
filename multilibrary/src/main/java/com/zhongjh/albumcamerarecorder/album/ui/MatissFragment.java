@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -173,9 +174,6 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
-
-        prepareTransitions();
-        postponeEnterTransition();
 
         mViewHolder = new ViewHolder(view);
         initConfig();
@@ -560,14 +558,12 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
         fragment.setArguments(bundle);
-        getParentFragmentManager()
+
+        requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                // 优化共享元素转换
-                .setReorderingAllowed(true)
-                .addSharedElement(imageView, imageView.getTransitionName())
-                .replace(R.id.fragmentContainerView, fragment)
-                .addToBackStack(null)
-                .commit();
+                .add(android.R.id.content, fragment, PreviewFragment.class.getSimpleName())
+                .addToBackStack(PreviewFragment.class.getSimpleName())
+                .commitAllowingStateLoss();
     }
 
     /**
@@ -680,32 +676,6 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     @Override
     public void onLoadPageMediaDataComplete(List<LocalMedia> data, int currentPage, boolean isHasMore) {
 
-    }
-
-    /**
-     * 准备到分页片段的共享元素转换，以及影响流的其他转换。
-     */
-    private void prepareTransitions() {
-        setExitTransition(TransitionInflater.from(getContext())
-                .inflateTransition(R.transition.grid_exit_transition));
-
-        // 在PagerFragment中使用setEnterSharedElementCallback设置类似的映射。
-        setExitSharedElementCallback(
-                new SharedElementCallback() {
-                    @Override
-                    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-                        // 定位被点击位置的ViewHolder
-                        RecyclerView.ViewHolder selectedViewHolder = mViewHolder.recyclerview
-                                .findViewHolderForAdapterPosition(currentPosition);
-                        if (selectedViewHolder == null) {
-                            return;
-                        }
-
-                        // 将第一个共享元素名称映射到子ImageView
-                        sharedElements
-                                .put(names.get(0), selectedViewHolder.itemView.findViewById(R.id.media_thumbnail));
-                    }
-                });
     }
 
     public static class ViewHolder {
