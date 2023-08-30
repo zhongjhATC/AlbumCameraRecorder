@@ -62,6 +62,7 @@
             android:paddingRight="16dp"
             android:text="@string/z_multi_library_button_edit"
             android:textColor="?attr/preview.bottomToolbar.back.textColor"
+            tools:textColor="@color/white"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -99,6 +100,7 @@
                     android:paddingStart="4dp"
                     android:text="@string/z_multi_library_button_original"
                     android:textColor="?attr/preview.bottomToolbar.back.textColor"
+                    tools:textColor="@color/white"
                     android:textSize="14sp"
                     tools:ignore="RtlSymmetry" />
 
@@ -110,6 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="@color/preview_bottom_size"
+                tools:textColor="@color/white"
                 android:textSize="16sp"
                 android:visibility="gone" />
 
@@ -124,6 +127,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:textColor="?attr/preview.bottomToolbar.apply.textColor"
+            tools:textColor="@color/white"
             android:textSize="16sp" />
 
         <ProgressBar
