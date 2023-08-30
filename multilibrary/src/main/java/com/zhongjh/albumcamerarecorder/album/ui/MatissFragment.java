@@ -161,7 +161,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         super.onAttach(context);
         this.mActivity = (MainActivity) context;
         this.mContext = context.getApplicationContext();
-        this.mMainModel = new ViewModelProvider(requireParentFragment())
+        this.mMainModel = new ViewModelProvider(requireActivity())
                 .get(MainModel.class);
     }
 
@@ -558,6 +558,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
         fragment.setArguments(bundle);
+
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()

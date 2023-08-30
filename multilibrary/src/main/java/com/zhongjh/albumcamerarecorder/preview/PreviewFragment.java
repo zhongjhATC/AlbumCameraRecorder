@@ -79,8 +79,7 @@ public class PreviewFragment extends BasePreviewFragment {
             }
         }
 
-        mMainModel.getLocalMedias().observe(getViewLifecycleOwner(), this::initLocalMedias);
-
+        initLocalMedias(mMainModel.getLocalMedias().getValue());
         return view;
     }
 
