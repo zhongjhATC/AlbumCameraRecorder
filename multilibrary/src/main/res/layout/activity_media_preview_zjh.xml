@@ -131,6 +131,7 @@
             android:textColor="?attr/preview.bottomToolbar.apply.textColor"
             tools:textColor="@color/white"
             tools:visibility="visible"
+            tools:text="确定"
             android:textSize="16sp" />
 
         <ProgressBar

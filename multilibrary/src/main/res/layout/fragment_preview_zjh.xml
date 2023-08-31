@@ -71,13 +71,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="@+id/textView"
-            app:layout_constraintStart_toStartOf="@+id/original"/>
+            app:layout_constraintStart_toStartOf="@+id/original" />
 
         <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
-            android:padding="8dp"
             android:id="@+id/original"
             android:layout_width="32dp"
             android:layout_height="32dp"
+            android:padding="8dp"
             android:tint="#ffffff"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/textView"
@@ -101,7 +101,33 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:textColor="@color/white" />
 
+        <TextView
+            android:id="@+id/buttonApply"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textColor="?attr/preview.bottomToolbar.apply.textColor"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="确定"
+            tools:textColor="@color/white"
+            tools:visibility="visible" />
 
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:indeterminateTint="?attr/bottomToolbar.apply.textColor"
+            android:indeterminateTintMode="src_atop"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
