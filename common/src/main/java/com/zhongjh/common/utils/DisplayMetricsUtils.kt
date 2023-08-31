@@ -2,6 +2,7 @@ package com.zhongjh.common.utils
 
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Point
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowInsets
@@ -77,6 +78,33 @@ object DisplayMetricsUtils {
             windowManager.defaultDisplay.getMetrics(displayMetrics)
             return displayMetrics.heightPixels
         }
+    }
+
+    /**
+     * 获取屏幕真实宽度
+     *
+     * @param context
+     * @return
+     */
+    fun getRealScreenWidth(context: Context): Int {
+        val wm =
+            context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val point = Point()
+        wm.defaultDisplay.getRealSize(point)
+        return point.x
+    }
+
+    /**
+     * 获取屏幕真实高度
+     *
+     * @param context
+     */
+    fun getRealScreenHeight(context: Context): Int {
+        val wm =
+            context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val point = Point()
+        wm.defaultDisplay.getRealSize(point)
+        return point.y
     }
 
     /**

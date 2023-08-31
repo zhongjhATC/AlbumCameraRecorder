@@ -114,6 +114,8 @@
                 android:textColor="@color/preview_bottom_size"
                 tools:textColor="@color/white"
                 android:textSize="16sp"
+                tools:text="123"
+                tools:visibility="visible"
                 android:visibility="gone" />
 
         </LinearLayout>
@@ -128,6 +130,7 @@
             android:paddingRight="16dp"
             android:textColor="?attr/preview.bottomToolbar.apply.textColor"
             tools:textColor="@color/white"
+            tools:visibility="visible"
             android:textSize="16sp" />
 
         <ProgressBar
