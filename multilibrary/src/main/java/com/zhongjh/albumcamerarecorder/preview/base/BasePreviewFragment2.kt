@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.zhongjh.albumcamerarecorder.R
@@ -22,6 +23,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
+import com.zhongjh.albumcamerarecorder.widget.SharedAnimationView
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 
@@ -41,6 +43,8 @@ open class BasePreviewFragment2 : Fragment() {
     protected val TAG: String = this@BasePreviewFragment2.javaClass.simpleName
 
     protected lateinit var mContext: Context
+    protected lateinit var mViewHolder: ViewHolder
+    protected lateinit var mAdapter: PreviewPagerAdapter
     protected lateinit var mGlobalSpec: GlobalSpec
     protected lateinit var mAlbumSpec: AlbumSpec
 
@@ -183,8 +187,8 @@ open class BasePreviewFragment2 : Fragment() {
         }
 
         mViewHolder = ViewHolder(view)
-        mAdapter = PreviewPagerAdapter(mContext, mActivity)
-        mViewHolder.pager.setAdapter(mAdapter)
+        mAdapter = PreviewPagerAdapter(mContext, requireActivity())
+        mViewHolder.pager.adapter = mAdapter
         mViewHolder.checkView.setCountable(mAlbumSpec.countable)
         mAlbumCompressFileTask = AlbumCompressFileTask(
             mContext,
@@ -279,29 +283,17 @@ open class BasePreviewFragment2 : Fragment() {
     }
 
     class ViewHolder internal constructor(var rootView: View) {
-        var pager: ViewPager2
-        var iBtnBack: ImageButton
-        var tvEdit: TextView
-        var original: CheckRadioView
-        var originalLayout: LinearLayout
-        var size: TextView
-        var buttonApply: TextView
-        var bottomToolbar: FrameLayout
-        var checkView: CheckView
-        var pbLoading: ProgressBar
-
-        init {
-            pager = rootView.findViewById(R.id.pager)
-            iBtnBack = rootView.findViewById(R.id.ibtnBack)
-            tvEdit = rootView.findViewById(R.id.tvEdit)
-            original = rootView.findViewById(R.id.original)
-            originalLayout = rootView.findViewById(R.id.originalLayout)
-            size = rootView.findViewById(R.id.size)
-            buttonApply = rootView.findViewById(R.id.buttonApply)
-            bottomToolbar = rootView.findViewById(R.id.bottomToolbar)
-            checkView = rootView.findViewById(R.id.checkView)
-            pbLoading = rootView.findViewById(R.id.pbLoading)
-        }
+        var sharedAnimationView: SharedAnimationView =
+            rootView.findViewById(R.id.sharedAnimationView)
+        var iBtnBack: ImageButton = rootView.findViewById(R.id.ibtnBack)
+        var tvEdit: TextView = rootView.findViewById(R.id.tvEdit)
+        var original: CheckRadioView = rootView.findViewById(R.id.original)
+        var originalLayout: View = rootView.findViewById(R.id.originalLayout)
+        var size: TextView = rootView.findViewById(R.id.size)
+        var buttonApply: TextView = rootView.findViewById(R.id.buttonApply)
+        var bottomToolbar: ConstraintLayout = rootView.findViewById(R.id.bottomToolbar)
+        var checkView: CheckView = rootView.findViewById(R.id.checkView)
+        var pbLoading: ProgressBar = rootView.findViewById(R.id.pbLoading)
     }
 
 }
