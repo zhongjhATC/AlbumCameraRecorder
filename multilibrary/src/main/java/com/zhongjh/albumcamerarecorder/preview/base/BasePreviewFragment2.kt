@@ -44,6 +44,7 @@ open class BasePreviewFragment2 : Fragment() {
 
     protected lateinit var mContext: Context
     protected lateinit var mViewHolder: ViewHolder
+    protected lateinit var mViewPager2: ViewPager2
     protected lateinit var mAdapter: PreviewPagerAdapter
     protected lateinit var mGlobalSpec: GlobalSpec
     protected lateinit var mAlbumSpec: AlbumSpec
@@ -129,20 +130,62 @@ open class BasePreviewFragment2 : Fragment() {
         mGlobalSpec = GlobalSpec
         mAlbumSpec = AlbumSpec
         // 获取样式
-        val wrapper: ContextThemeWrapper = ContextThemeWrapper(
-            requireActivity(),
-            mGlobalSpec.themeId
-        )
-        val cloneInContext = inflater.cloneInContext(wrapper)
-        val view: View =
-            cloneInContext.inflate(R.layout.fragment_preview_zjh, container, false)
-        onActivityResult()
+        val view = initStyle(inflater, container)
+        // 初始化回调
+        initActivityResult()
+        // 初始化状态栏
         initStatusBar(requireActivity())
-        var isAllowRepeat = false
+        // 初始化bundle的Value
+        initBundleValue(savedInstanceState)
+        // 设置图片、视频的路径
+        initStrategy()
+        mViewHolder = ViewHolder(view)
+        initMagicalView()
+        mAdapter = PreviewPagerAdapter(mContext, requireActivity())
+        mViewHolder.pager.adapter = mAdapter
+        mViewHolder.checkView.setCountable(mAlbumSpec.countable)
+        mAlbumCompressFileTask = AlbumCompressFileTask(
+            mContext,
+            TAG,
+            BasePreviewFragment::class.java,
+            mGlobalSpec,
+            mPictureMediaStoreCompat,
+            mVideoMediaStoreCompat
+        )
+        initListener()
+        return view
+    }
+
+    /**
+     * 初始化样式
+     */
+    private fun initStyle(inflater: LayoutInflater, container: ViewGroup?): View {
+        val wrapper = ContextThemeWrapper(requireActivity(), mGlobalSpec.themeId)
+        val cloneInContext = inflater.cloneInContext(wrapper)
+        return cloneInContext.inflate(R.layout.fragment_preview_zjh, container, false)
+    }
+
+    /**
+     * 针对回调
+     */
+    private fun initActivityResult() {
+        mImageEditActivityResult = registerForActivityResult(
+            StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                mIsEdit = true
+                refreshMultiMediaItem()
+            }
+        }
+    }
+
+    /**
+     * 初始化bundle的Value
+     */
+    private fun initBundleValue(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             arguments?.let {
-                isAllowRepeat = it.getBoolean(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, false)
                 mApplyEnable = it.getBoolean(BasePreviewFragment.APPLY_ENABLE, true)
                 mSelectedEnable = it.getBoolean(BasePreviewFragment.SELECTED_ENABLE, true)
                 mIsSelectedListener = it.getBoolean(BasePreviewFragment.IS_SELECTED_LISTENER, true)
@@ -153,11 +196,13 @@ open class BasePreviewFragment2 : Fragment() {
                 mOriginalEnable =
                     it.getBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
             }
-        } else {
-            // 初始化缓存的数据
-            mOriginalEnable = savedInstanceState.getBoolean(BasePreviewFragment.CHECK_STATE)
         }
+    }
 
+    /**
+     * 设置图片、视频的路径
+     */
+    private fun initStrategy() {
         // 设置图片路径
         mGlobalSpec.pictureStrategy?.let {
             // 如果设置了图片的文件夹路径，就使用它的
@@ -185,21 +230,24 @@ open class BasePreviewFragment2 : Fragment() {
                 throw RuntimeException("Please set the GlobalSpec <saveStrategy> or <videoStrategy> configuration.")
             }
         }
+    }
 
-        mViewHolder = ViewHolder(view)
-        mAdapter = PreviewPagerAdapter(mContext, requireActivity())
-        mViewHolder.pager.adapter = mAdapter
-        mViewHolder.checkView.setCountable(mAlbumSpec.countable)
-        mAlbumCompressFileTask = AlbumCompressFileTask(
-            mContext,
-            TAG,
-            BasePreviewFragment::class.java,
-            mGlobalSpec,
-            mPictureMediaStoreCompat,
-            mVideoMediaStoreCompat
-        )
-        initListener()
-        return view
+    /**
+     * 初始化MagicalView
+     */
+    private fun initMagicalView() {
+        mViewPager2 = ViewPager2(requireContext())
+        mViewHolder.sharedAnimationView.setContentView(mViewPager2)
+        if (isHasMagicalEffect()) {
+            val alpha = if (isSavedInstanceState) 1F else 0F
+            mMagicalView?.setBackgroundAlpha(alpha)
+            navBarViews.forEach {
+                it.alpha = alpha
+            }
+        } else {
+            mMagicalView?.setBackgroundAlpha(1.0F)
+        }
+
     }
 
     /**
@@ -222,20 +270,6 @@ open class BasePreviewFragment2 : Fragment() {
             } else {
                 // 直接返回
                 setResultOk(false)
-            }
-        }
-    }
-
-    /**
-     * 针对回调
-     */
-    private fun onActivityResult() {
-        mImageEditActivityResult = registerForActivityResult(
-            StartActivityForResult()
-        ) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                mIsEdit = true
-                refreshMultiMediaItem()
             }
         }
     }
@@ -281,6 +315,8 @@ open class BasePreviewFragment2 : Fragment() {
 //            }
 //        }
     }
+
+
 
     class ViewHolder internal constructor(var rootView: View) {
         var sharedAnimationView: SharedAnimationView =

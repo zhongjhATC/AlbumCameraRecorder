@@ -75,5 +75,12 @@ class SharedAnimationView @JvmOverloads constructor(
         screenHeight = getRealScreenHeight(context)
     }
 
+    /**
+     * 添加View
+     */
+    fun setContentView(view: View) {
+        contentLayout.addView(view)
+    }
+
 
 }
