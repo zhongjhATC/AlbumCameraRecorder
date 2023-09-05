@@ -3,11 +3,16 @@ package com.zhongjh.albumcamerarecorder.preview.base
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageButton
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -16,16 +21,24 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.widget.SharedAnimationView
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
+import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.common.utils.ThreadUtils.SimpleTask
+import com.zhongjh.common.widget.IncapableDialog
+import com.zhongjh.common.widget.IncapableDialog.Companion.newInstance
 
 /**
  * 目标是可以不止该库自用，也可以别的app别的功能直接使用
@@ -38,7 +51,7 @@ import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
  * @author zhongjh
  * @date 2023/8/31
  */
-open class BasePreviewFragment2 : Fragment() {
+abstract class BasePreviewFragment2 : Fragment() {
 
     protected val TAG: String = this@BasePreviewFragment2.javaClass.simpleName
 
@@ -52,17 +65,156 @@ open class BasePreviewFragment2 : Fragment() {
     /**
      * 图片存储器
      */
-    private lateinit var mPictureMediaStoreCompat: MediaStoreCompat
+    private val mPictureMediaStoreCompat by lazy {
+        // 设置图片路径
+        mGlobalSpec.pictureStrategy?.let {
+            // 如果设置了图片的文件夹路径，就使用它的
+            MediaStoreCompat(mContext, it)
+        } ?: let {
+            mGlobalSpec.saveStrategy?.let {
+                // 否则使用全局的
+                MediaStoreCompat(mContext, it)
+            } ?: let {
+                // 全局如果都没有，抛错
+                throw RuntimeException("Please set the GlobalSpec <saveStrategy> or <pictureStrategy> configuration.")
+            }
+        }
+    }
 
     /**
      * 录像文件配置路径
      */
-    private lateinit var mVideoMediaStoreCompat: MediaStoreCompat
+    private val mVideoMediaStoreCompat by lazy {
+        // 设置视频路径
+        mGlobalSpec.videoStrategy?.let {
+            // 如果设置了图片的文件夹路径，就使用它的
+            MediaStoreCompat(mContext, it)
+        } ?: let {
+            mGlobalSpec.saveStrategy?.let {
+                // 否则使用全局的
+                MediaStoreCompat(mContext, it)
+            } ?: let {
+                // 全局如果都没有，抛错
+                throw RuntimeException("Please set the GlobalSpec <saveStrategy> or <videoStrategy> configuration.")
+            }
+        }
+    }
 
     /**
      * 打开ImageEditActivity的回调
      */
     protected lateinit var mImageEditActivityResult: ActivityResultLauncher<Intent>
+
+    /**
+     * 完成压缩-复制的异步线程
+     */
+    protected val mCompressFileTask: SimpleTask<Boolean> by lazy {
+        object : SimpleTask<Boolean>() {
+            override fun doInBackground(): Boolean {
+//                // 来自相册的，才根据配置处理压缩和迁移
+//                if (mCompressEnable) {
+//                    // 将 缓存文件 拷贝到 配置目录
+//                    for (LocalFile item : mSelectedCollection.asList()) {
+//                        Log.d(TAG, "item " + item.getId());
+//                        // 判断是否需要压缩
+//                        LocalFile isCompressItem = mAlbumCompressFileTask.isCompress(item);
+//                        if (isCompressItem != null) {
+//                            continue;
+//                        }
+//                        // 开始压缩逻辑，获取真实路径
+//                        String path = mAlbumCompressFileTask.getPath(item);
+//                        if (path != null) {
+//                            handleCompress(item, path);
+//                        }
+//                    }
+//                }
+                return true
+            }
+
+            override fun onSuccess(result: Boolean) {
+                setResultOk(true)
+            }
+
+            override fun onFail(t: Throwable) {
+                super.onFail(t)
+                Toast.makeText(mContext, t.message, Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "getCompressFileTask onFail " + t.message)
+                setResultOk(true)
+            }
+
+            override fun onCancel() {
+                super.onCancel()
+                setResultOk(true)
+            }
+        }
+    }
+
+    /**
+     * 完成迁移文件的异步线程
+     */
+    protected val mMoveFileTask: SimpleTask<Boolean> by lazy {
+        object : SimpleTask<Boolean>() {
+            override fun doInBackground(): Boolean {
+//                // 不压缩，直接迁移到配置文件
+//                for (LocalFile item : mSelectedCollection.asList()) {
+//                    if (item.getPath() != null) {
+//                        File oldFile = new File(item.getPath());
+//                        if (oldFile.exists()) {
+//                            if (item.isImage() || item.isVideo()) {
+//                                File newFile;
+//                                if (item.isImage()) {
+//                                    newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
+//                                } else {
+//                                    // 如果是视频
+//                                    newFile = mVideoMediaStoreCompat.createFile(1, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
+//                                }
+//                                handleEditImages(item, newFile, oldFile, false);
+//                            }
+//                        }
+//                    }
+//                }
+                return true
+            }
+
+            override fun onSuccess(result: Boolean) {
+                setResultOk(true)
+            }
+
+            override fun onCancel() {
+                super.onCancel()
+                setResultOk(true)
+            }
+
+            override fun onFail(t: Throwable) {
+                super.onFail(t)
+                setResultOk(true)
+            }
+        }
+    }
+
+    /**
+     * 异步线程的逻辑，确定当前选择的文件列表，根据是否压缩配置决定重新返回新的文件列表
+     */
+    protected val mAlbumCompressFileTask by lazy {
+        AlbumCompressFileTask(
+            mContext,
+            TAG,
+            BasePreviewFragment::class.java,
+            mGlobalSpec,
+            mPictureMediaStoreCompat,
+            mVideoMediaStoreCompat
+        )
+    }
+
+    /**
+     * 当前预览的图片的索引,默认第一个
+     */
+    protected var mPreviousPos = -1
+
+    /**
+     * 是否从界面恢复回来的
+     */
+    protected var mIsSavedInstanceState = false
 
     /**
      * 是否启动原图
@@ -137,24 +289,19 @@ open class BasePreviewFragment2 : Fragment() {
         initStatusBar(requireActivity())
         // 初始化bundle的Value
         initBundleValue(savedInstanceState)
-        // 设置图片、视频的路径
-        initStrategy()
         mViewHolder = ViewHolder(view)
-        initMagicalView()
-        mAdapter = PreviewPagerAdapter(mContext, requireActivity())
-        mViewHolder.pager.adapter = mAdapter
+        initSharedAnimationView()
+        initViewPagerData()
         mViewHolder.checkView.setCountable(mAlbumSpec.countable)
-        mAlbumCompressFileTask = AlbumCompressFileTask(
-            mContext,
-            TAG,
-            BasePreviewFragment::class.java,
-            mGlobalSpec,
-            mPictureMediaStoreCompat,
-            mVideoMediaStoreCompat
-        )
         initListener()
+        updateApplyButton()
         return view
     }
+
+    /**
+     * 获取已选择的数据
+     */
+    abstract fun getSelectedData(): ArrayList<LocalMedia>
 
     /**
      * 初始化样式
@@ -196,58 +343,134 @@ open class BasePreviewFragment2 : Fragment() {
                 mOriginalEnable =
                     it.getBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
             }
-        }
-    }
-
-    /**
-     * 设置图片、视频的路径
-     */
-    private fun initStrategy() {
-        // 设置图片路径
-        mGlobalSpec.pictureStrategy?.let {
-            // 如果设置了图片的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = MediaStoreCompat(mContext, it)
-        } ?: let {
-            mGlobalSpec.saveStrategy?.let {
-                // 否则使用全局的
-                mPictureMediaStoreCompat = MediaStoreCompat(mContext, it)
-            } ?: let {
-                // 全局如果都没有，抛错
-                throw RuntimeException("Please set the GlobalSpec <saveStrategy> or <pictureStrategy> configuration.")
-            }
-        }
-
-        // 设置视频路径
-        mGlobalSpec.videoStrategy?.let {
-            // 如果设置了图片的文件夹路径，就使用它的
-            mVideoMediaStoreCompat = MediaStoreCompat(mContext, it)
-        } ?: let {
-            mGlobalSpec.saveStrategy?.let {
-                // 否则使用全局的
-                mVideoMediaStoreCompat = MediaStoreCompat(mContext, it)
-            } ?: let {
-                // 全局如果都没有，抛错
-                throw RuntimeException("Please set the GlobalSpec <saveStrategy> or <videoStrategy> configuration.")
-            }
+        } else {
+            mIsSavedInstanceState = true
         }
     }
 
     /**
      * 初始化MagicalView
      */
-    private fun initMagicalView() {
+    private fun initSharedAnimationView() {
         mViewPager2 = ViewPager2(requireContext())
         mViewHolder.sharedAnimationView.setContentView(mViewPager2)
-        if (isHasMagicalEffect()) {
-            val alpha = if (isSavedInstanceState) 1F else 0F
-            mMagicalView?.setBackgroundAlpha(alpha)
-            navBarViews.forEach {
-                it.alpha = alpha
-            }
+        if (isSharedAnimation()) {
+            val alpha =
+                if (mIsSavedInstanceState)
+                    1F
+                else
+                    0F
+            mViewHolder.sharedAnimationView.setBackgroundAlpha(alpha)
+            mViewHolder.bottomToolbar.alpha = alpha
         } else {
-            mMagicalView?.setBackgroundAlpha(1.0F)
+            mViewHolder.sharedAnimationView.setBackgroundAlpha(1.0F)
         }
+    }
 
+    /**
+     * 初始化ViewPager2
+     */
+    private fun initViewPagerData() {
+        mAdapter = PreviewPagerAdapter(mContext, requireActivity())
+        mViewPager2.adapter = mAdapter
+
+        // 事件
+        mAdapter.
+    }
+
+    /**
+     * 所有事件
+     */
+    private fun initListener() {
+        // 编辑
+        mViewHolder.tvEdit.setOnClickListener(object : OnMoreClickListener() {
+            override fun onListener(v: View) {
+                openImageEditActivity()
+            }
+        })
+        // 返回
+        mViewHolder.iBtnBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
+        // 确认
+        mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
+            override fun onListener(v: View) {
+                // 确认的一刻赋值
+                val localMediaArrayList: java.util.ArrayList<LocalMedia> = getSelectedData()
+                // 设置是否原图状态
+                for (localMedia in localMediaArrayList) {
+                    localMedia.isOriginal = mOriginalEnable
+                }
+                setResultOkByIsCompress(true)
+            }
+        })
+        // 多图时滑动事件
+        mViewPager2.registerOnPageChangeCallback(mOnPageChangeCallback)
+        // 右上角选择事件
+        mViewHolder.checkView.setOnClickListener {
+//            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+//            if (mSelectedCollection.isSelected(item)) {
+//                mSelectedCollection.remove(item);
+//                if (mAlbumSpec.getCountable()) {
+//                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED);
+//                } else {
+//                    mViewHolder.checkView.setChecked(false);
+//                }
+//            } else {
+//                boolean isTrue = true;
+//                if (mIsSelectedCheck) {
+//                    isTrue = assertAddSelection(item);
+//                }
+//                if (isTrue) {
+//                    mSelectedCollection.add(item);
+//                    if (mAlbumSpec.getCountable()) {
+//                        mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+//                    } else {
+//                        mViewHolder.checkView.setChecked(true);
+//                    }
+//                }
+//            }
+//            updateApplyButton();
+//
+//            if (mAlbumSpec.getOnSelectedListener() != null && mIsSelectedListener) {
+//                // 触发选择的接口事件
+//                mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
+//            } else {
+//                mSelectedCollection.updatePath();
+//            }
+        }
+        // 点击原图事件
+        mViewHolder.originalLayout.setOnClickListener {
+            val count: Int = countOverMaxSize()
+            if (count > 0) {
+                val incapableDialog = newInstance(
+                    "",
+                    getString(
+                        R.string.z_multi_library_error_over_original_count,
+                        count,
+                        mAlbumSpec.originalMaxSize
+                    )
+                )
+                incapableDialog.show(
+                    parentFragmentManager,
+                    IncapableDialog::class.java.name
+                )
+                return@setOnClickListener
+            }
+            mOriginalEnable = !mOriginalEnable
+            mViewHolder.original.setChecked(mOriginalEnable)
+            if (!mOriginalEnable) {
+                mViewHolder.original.setColor(Color.WHITE)
+            }
+            if (mAlbumSpec.onCheckedListener != null) {
+                mAlbumSpec.onCheckedListener!!.onCheck(mOriginalEnable)
+            }
+        }
+        // 点击Loading停止
+        mViewHolder.pbLoading.setOnClickListener {
+            // 中断线程
+            mCompressFileTask.cancel()
+            // 恢复界面可用
+            setControlTouchEnable(true)
+        }
     }
 
     /**
@@ -316,7 +539,236 @@ open class BasePreviewFragment2 : Fragment() {
 //        }
     }
 
+    /**
+     * 是否开启共享动画
+     */
+    private fun isSharedAnimation(): Boolean {
+        return true
+    }
 
+    /**
+     * 打开编辑的Activity
+     */
+    private fun openImageEditActivity() {
+//        LocalMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+//        File file;
+//        file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
+//        mEditImageFile = file;
+//        Intent intent = new Intent();
+//        intent.setClass(mActivity, ImageEditActivity.class);
+//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
+//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
+//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
+//        mImageEditActivityResult.launch(intent);
+    }
+
+    /**
+     * 获取当前超过限制原图大小的数量
+     * TODO 使用这个方法的逻辑似乎不太对
+     *
+     * @return 数量
+     */
+    private fun countOverMaxSize(): Int {
+        var count = 0
+        val selectedCount: Int = getSelectedData().count()
+        for (i in 0 until selectedCount) {
+            val item: LocalMedia = getSelectedData()[i]
+            if (item.isImage()) {
+                val size = PhotoMetadataUtils.getSizeInMb(item.size)
+                if (size > mAlbumSpec.originalMaxSize) {
+                    count++
+                }
+            }
+        }
+        return count
+    }
+
+    /**
+     * 设置返回值
+     *
+     * @param apply 是否同意
+     */
+    @Synchronized
+    private fun setResultOk(apply: Boolean) {
+//        Log.d(TAG, "setResultOk");
+//        refreshMultiMediaItem(apply);
+//        if (mGlobalSpec.getOnResultCallbackListener() == null || !mIsExternalUsers) {
+//            // 如果是外部使用并且不同意，则不执行RESULT_OK
+//            Intent intent = new Intent();
+//            intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+//            intent.putExtra(EXTRA_RESULT_APPLY, apply);
+//            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
+//            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//            if (mIsExternalUsers && !apply) {
+//                mActivity.setResult(Activity.RESULT_CANCELED, intent);
+//            } else {
+//                mActivity.setResult(RESULT_OK, intent);
+//            }
+//        } else {
+//            mGlobalSpec.getOnResultCallbackListener().onResultFromPreview(mSelectedCollection.asList(), apply);
+//        }
+//        mActivity.finish();
+    }
+
+    /**
+     * 设置是否启用界面触摸，不可禁止中断、退出
+     */
+    private fun setControlTouchEnable(enable: Boolean) {
+        // 如果不可用就显示 加载中 view,否则隐藏
+        if (!enable) {
+            mViewHolder.pbLoading.visibility = View.VISIBLE
+            mViewHolder.buttonApply.visibility = View.GONE
+            setCheckViewEnable(false)
+            mViewHolder.checkView.setOnClickListener(null)
+            mViewHolder.tvEdit.isEnabled = false
+            mViewHolder.originalLayout.isEnabled = false
+        } else {
+            mViewHolder.pbLoading.visibility = View.GONE
+            mViewHolder.buttonApply.visibility = View.VISIBLE
+            setCheckViewEnable(true)
+            mViewHolder.checkView.setOnClickListener {
+                //            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
+//            if (mSelectedCollection.isSelected(item)) {
+//                mSelectedCollection.remove(item);
+//                if (mAlbumSpec.getCountable()) {
+//                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED);
+//                } else {
+//                    mViewHolder.checkView.setChecked(false);
+//                }
+//            } else {
+//                boolean isTrue = true;
+//                if (mIsSelectedCheck) {
+//                    isTrue = assertAddSelection(item);
+//                }
+//                if (isTrue) {
+//                    mSelectedCollection.add(item);
+//                    if (mAlbumSpec.getCountable()) {
+//                        mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+//                    } else {
+//                        mViewHolder.checkView.setChecked(true);
+//                    }
+//                }
+//            }
+//            updateApplyButton();
+//
+//            if (mAlbumSpec.getOnSelectedListener() != null && mIsSelectedListener) {
+//                // 触发选择的接口事件
+//                mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
+//            } else {
+//                mSelectedCollection.updatePath();
+//            }
+            }
+            mViewHolder.tvEdit.isEnabled = true
+            mViewHolder.originalLayout.isEnabled = true
+        }
+    }
+
+    /**
+     * 更新确定按钮状态
+     */
+    private fun updateApplyButton() {
+//        // 获取已选的图片
+//        int selectedCount = mSelectedCollection.count();
+//        if (selectedCount == 0) {
+//            // 禁用
+//            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
+//            mViewHolder.buttonApply.setEnabled(false);
+//        } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
+//            // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
+//            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
+//            mViewHolder.buttonApply.setEnabled(true);
+//        } else {
+//            // 启用，显示数字
+//            mViewHolder.buttonApply.setEnabled(true);
+//            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure, selectedCount));
+//        }
+//
+//        // 判断是否启动操作
+//        if (!mApplyEnable) {
+//            mViewHolder.buttonApply.setVisibility(View.GONE);
+//        } else {
+//            mViewHolder.buttonApply.setVisibility(View.VISIBLE);
+//        }
+//        setCheckViewEnable(mSelectedEnable);
+    }
+
+    /**
+     * 判断是否压缩，如果要压缩先要迁移复制再压缩
+     */
+    private fun compressFile() {
+        // 显示loading动画
+        setControlTouchEnable(false)
+
+        // 复制相册的文件
+        ThreadUtils.executeByIo(mCompressFileTask)
+    }
+
+    /**
+     * 不压缩，直接移动文件
+     */
+    private fun moveStoreCompatFile() {
+        // 显示loading动画
+        setControlTouchEnable(false)
+
+        // 复制相册的文件
+        ThreadUtils.executeByIo(mMoveFileTask)
+    }
+
+    //    /**
+    //     * 处理窗口
+    //     *
+    //     * @param item 当前图片
+    //     * @return 为true则代表符合规则
+    //     */
+    //    private boolean assertAddSelection(MultiMedia item) {
+    //        IncapableCause cause = mSelectedCollection.isAcceptable(item);
+    //        IncapableCause.handleCause(mContext, cause);
+    //        return cause == null;
+    //    }
+
+    /**
+     * 设置checkView是否启动，配置优先
+     *
+     * @param enable 是否启动
+     */
+    private fun setCheckViewEnable(enable: Boolean) {
+        if (mSelectedEnable) {
+            mViewHolder.checkView.isEnabled = enable
+        } else {
+            mViewHolder.checkView.isEnabled = false
+        }
+    }
+
+    /**
+     * 滑动事件
+     */
+    private val mOnPageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            val adapter = mViewPager2.adapter as PreviewPagerAdapter
+            if (mPreviousPos != -1 && mPreviousPos != position) {
+//                MultiMedia item = adapter.getMediaItem(position);
+//                if (mAlbumSpec.getCountable()) {
+//                    int checkedNum = mSelectedCollection.checkedNumOf(item);
+//                    mViewHolder.checkView.setCheckedNum(checkedNum);
+//                    if (checkedNum > 0) {
+//                        setCheckViewEnable(true);
+//                    } else {
+//                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
+//                    }
+//                } else {
+//                    boolean checked = mSelectedCollection.isSelected(item);
+//                    mViewHolder.checkView.setChecked(checked);
+//                    if (checked) {
+//                        setCheckViewEnable(true);
+//                    } else {
+//                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
+//                    }
+//                }
+//                updateUi(item);
+            }
+            mPreviousPos = position
+        }
+    }
 
     class ViewHolder internal constructor(var rootView: View) {
         var sharedAnimationView: SharedAnimationView =
@@ -325,7 +777,7 @@ open class BasePreviewFragment2 : Fragment() {
         var tvEdit: TextView = rootView.findViewById(R.id.tvEdit)
         var original: CheckRadioView = rootView.findViewById(R.id.original)
         var originalLayout: View = rootView.findViewById(R.id.originalLayout)
-        var size: TextView = rootView.findViewById(R.id.size)
+        var tvSize: TextView = rootView.findViewById(R.id.tvSize)
         var buttonApply: TextView = rootView.findViewById(R.id.buttonApply)
         var bottomToolbar: ConstraintLayout = rootView.findViewById(R.id.bottomToolbar)
         var checkView: CheckView = rootView.findViewById(R.id.checkView)

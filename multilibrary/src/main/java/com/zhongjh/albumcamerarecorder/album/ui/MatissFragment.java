@@ -49,6 +49,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -550,7 +551,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
 
         // 隐藏底部控件
         mActivity.showHideTableLayoutAnimator(false);
-        Fragment fragment = new PreviewFragment();
+        Fragment fragment = new PreviewFragment2();
         Bundle bundle = new Bundle();
         bundle.putParcelable(PreviewFragment.EXTRA_ALBUM, album);
         bundle.putParcelable(PreviewFragment.EXTRA_ITEM, item);
@@ -562,8 +563,8 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .add(android.R.id.content, fragment, PreviewFragment.class.getSimpleName())
-                .addToBackStack(PreviewFragment.class.getSimpleName())
+                .add(android.R.id.content, fragment, PreviewFragment2.class.getSimpleName())
+                .addToBackStack(PreviewFragment2.class.getSimpleName())
                 .commitAllowingStateLoss();
     }
 

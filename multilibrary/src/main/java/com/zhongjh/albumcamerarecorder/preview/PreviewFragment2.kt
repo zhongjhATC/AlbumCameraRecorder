@@ -10,6 +10,8 @@ import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment2
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
+import com.zhongjh.common.entity.LocalMedia
+import java.util.ArrayList
 
 class PreviewFragment2 : BasePreviewFragment2() {
 
@@ -29,5 +31,13 @@ class PreviewFragment2 : BasePreviewFragment2() {
         savedInstanceState: Bundle?
     ): View? {
         return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+
+    /**
+     * 获取已选择的数据
+     */
+    override fun getSelectedData() : ArrayList<LocalMedia> {
+        return mMainModel.selectedData.localMedias
     }
 }

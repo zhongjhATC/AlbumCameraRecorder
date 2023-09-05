@@ -68,18 +68,26 @@ class SharedAnimationView @JvmOverloads constructor(
     }
 
     /**
+     * 添加View
+     */
+    fun setContentView(view: View) {
+        contentLayout.addView(view)
+    }
+
+    /**
+     * 设置背景透明颜色度
+     */
+    fun setBackgroundAlpha(mAlpha: Float) {
+        this.mAlpha = mAlpha
+        backgroundView.alpha = mAlpha
+    }
+
+    /**
      * getScreenSize
      */
     private fun getScreenSize() {
         screenWidth = getRealScreenWidth(context)
         screenHeight = getRealScreenHeight(context)
-    }
-
-    /**
-     * 添加View
-     */
-    fun setContentView(view: View) {
-        contentLayout.addView(view)
     }
 
 

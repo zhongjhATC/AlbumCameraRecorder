@@ -14,6 +14,9 @@ import java.util.*
 
 /**
  * 这是相册界面和预览界面共用的一个异步线程逻辑
+ *
+ * 确定当前选择的文件列表，根据是否压缩配置决定重新返回新的文件列表
+ *
  * @param globalSpec 公共配置
  * @param pictureMediaStoreCompat  图片文件配置路径
  * @param videoMediaStoreCompat 录像文件配置路径
