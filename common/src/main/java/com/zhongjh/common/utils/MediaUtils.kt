@@ -7,8 +7,14 @@ import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
 import androidx.exifinterface.media.ExifInterface
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.MediaExtraInfo
 import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.enums.MimeType.Companion.isContent
+import com.zhongjh.common.enums.MimeType.Companion.isImageOrGif
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.InputStream
 
@@ -174,4 +180,111 @@ object MediaUtils {
             height > width * 3
         }
     }
+
+    /**
+     *
+     */
+    suspend fun getMediaInfo(context: Context, mimeType: String?, path: String): LocalMedia {
+        return withContext(Dispatchers.IO) {
+            suspendCancellableCoroutine {
+                val localMedia = LocalMedia()
+                localMedia.mimeType = mimeType.toString()
+                // 如果是图片
+                if (isImageOrGif(mimeType)) {
+                    // 实例化ExifInterface,作用获取图片的属性
+                    var exif: ExifInterface? = null
+                    var inputStream: InputStream? = null
+                    if (isContent(path)) {
+                        inputStream = context.contentResolver.openInputStream(Uri.parse(path))
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && inputStream != null) {
+                            exif = ExifInterface(inputStream)
+                        }
+                    } else {
+                        exif = ExifInterface(path)
+                    }
+                    // 开始获取图片的相关属性
+                    exif?.apply {
+                        // 获取方向
+                        val orientation = this.getAttributeInt(
+                            ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_NORMAL
+                        )
+                        // 获取宽高
+                        val width =
+                            this.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                        val height =
+                            this.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+
+                        if (orientation == ExifInterface.ORIENTATION_ROTATE_90
+                            || orientation == ExifInterface.ORIENTATION_ROTATE_180
+                            || orientation == ExifInterface.ORIENTATION_ROTATE_270
+                            || orientation == ExifInterface.ORIENTATION_TRANSVERSE
+                        ) {
+                            localMedia.width = height
+                            localMedia.height = width
+                        } else {
+                            localMedia.width = width
+                            localMedia.height = height
+                        }
+                    }
+                    inputStream?.apply {
+                        FileUtils.close(this)
+                    }
+                } else if (hasMimeTypeOfVideo(mimeType)) {
+                    val retriever = MediaMetadataRetriever()
+                    if (isContent(path)) {
+                        retriever.setDataSource(context, Uri.parse(path))
+                    } else {
+                        retriever.setDataSource(path)
+                    }
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        ?.toLong()?.let { duration ->
+                            localMedia.duration = duration
+                        }
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+                        ?.toInt()?.let { orientation ->
+                            localMedia.orientation = orientation
+                        }
+                    if (localMedia.orientation == 90 || localMedia.orientation == 270) {
+                        retriever.extractMetadata(
+                            MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
+                        )?.toInt()?.let { width ->
+                            localMedia.height = width
+                        }
+                        retriever.extractMetadata(
+                            MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
+                        )?.toInt()?.let { height ->
+                            localMedia.width = height
+                        }
+                    } else {
+                        retriever.extractMetadata(
+                            MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
+                        )?.toInt()?.let { width ->
+                            localMedia.width = width
+                        }
+                        retriever.extractMetadata(
+                            MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
+                        )?.toInt()?.let { height ->
+                            localMedia.height = height
+                        }
+                    }
+
+                } else if (hasMimeTypeOfAudio(mimeType)) {
+                    val retriever = MediaMetadataRetriever()
+                    if (isContent(path)) {
+                        retriever.setDataSource(context, Uri.parse(path))
+                    } else {
+                        retriever.setDataSource(path)
+                    }
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        ?.toLong()?.let { duration ->
+                            localMedia.duration = duration
+                        }
+                }
+                it.resume(localMedia)
+            }
+        }
+    }
+
+
 }

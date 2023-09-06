@@ -47,6 +47,8 @@ import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.common.widget.IncapableDialog
 import com.zhongjh.common.widget.IncapableDialog.Companion.newInstance
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * 目标是可以不止该库自用，也可以别的app别的功能直接使用
@@ -834,29 +836,20 @@ abstract class BasePreviewFragment2 : Fragment() {
         if (MediaUtils.isLongImage(realWidth, realHeight)) {
             return intArrayOf(screenWidth, screenHeight)
         }
+        // 如果宽高其中一个<=0 或者 宽度>高度 重新获取宽高
         if ((realWidth <= 0 || realHeight <= 0) || (realWidth > realHeight)) {
             withContext(Dispatchers.IO) {
-
-            }
-
-
-            ThreadUtils.executeByIo(object : SimpleTask<Boolean>() {
-                override fun doInBackground(): Boolean {
-                    media.absolutePath?.let { realPath ->
-                        MediaUtils.getMediaInfo(requireContext(), media.mimeType, realPath).let {
-                            if (it.width > 0) {
-                                realWidth = it.width
-                            }
-                            if (it.height > 0) {
-                                realHeight = it.height
-                            }
+                media.realPath.let { realPath ->
+                    MediaUtils.getMediaInfo(requireContext(), media.mimeType, realPath).let {
+                        if (it.width > 0) {
+                            realWidth = it.width
+                        }
+                        if (it.height > 0) {
+                            realHeight = it.height
                         }
                     }
                 }
-                override fun onSuccess(result: Boolean?) {
-
-                }
-            })
+            }
         }
         if ((media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0) {
             realWidth = media.cropWidth
