@@ -33,7 +33,6 @@ class PreviewFragment2 : BasePreviewFragment2() {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-
     /**
      * 获取已选择的数据
      */

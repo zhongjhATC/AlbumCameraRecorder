@@ -18,7 +18,28 @@ import java.util.ArrayList
  */
 class PreviewPagerAdapter(private val mContext: Context, private val mActivity: Activity) :
     RecyclerView.Adapter<PreviewViewHolder>() {
-    val items = ArrayList<LocalMedia>()
+
+    private val items = ArrayList<LocalMedia>()
+    private var isFirstAttachedToWindow = false
+
+    private var onFirstAttachedToWindowListener: OnFirstAttachedToWindowListener? = null
+
+    fun setOnFirstAttachedToWindowListener(listener: OnFirstAttachedToWindowListener) {
+        this.onFirstAttachedToWindowListener = listener
+    }
+
+    interface OnFirstAttachedToWindowListener {
+        fun onViewFirstAttachedToWindow(holder: PreviewViewHolder)
+    }
+
+    override fun onViewAttachedToWindow(holder: PreviewViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        if (!isFirstAttachedToWindow) {
+            // 只有第一次初始化该Adapter才触发
+            onFirstAttachedToWindowListener?.onViewFirstAttachedToWindow(holder)
+            isFirstAttachedToWindow = true
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewViewHolder {
         return PreviewViewHolder(
@@ -31,7 +52,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
         val item = items[position]
         if (item.isVideo()) {
             holder.videoPlayButton.visibility = View.VISIBLE
-            holder.videoPlayButton.setOnClickListener { v: View? -> }
+            holder.videoPlayButton.setOnClickListener { }
         } else {
             holder.videoPlayButton.visibility = View.GONE
         }
@@ -74,11 +95,11 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
         items[position] = localMedia
     }
 
-    fun addAll(items: List<LocalMedia>?) {
-        items.addAll(items)
+    fun addAll(items: List<LocalMedia>) {
+        this.items.addAll(items)
     }
 
-    internal class PreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class PreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var videoPlayButton: View
         var imageView: PhotoView
 

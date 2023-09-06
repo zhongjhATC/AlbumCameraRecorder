@@ -68,15 +68,15 @@ object DisplayMetricsUtils {
     @JvmStatic
     fun getScreenHeight(context: Context): Int {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics = windowManager.currentWindowMetrics
             val insets = windowMetrics.windowInsets
-                    .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-            return windowMetrics.bounds.height() - insets.bottom - insets.top
+                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+            windowMetrics.bounds.height() - insets.bottom - insets.top
         } else {
             val displayMetrics = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(displayMetrics)
-            return displayMetrics.heightPixels
+            displayMetrics.heightPixels
         }
     }
 

@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.preview.base
 
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -9,10 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -23,17 +21,27 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.albumcamerarecorder.album.entity.Album2
+import com.zhongjh.albumcamerarecorder.album.loader.BaseMediaLoader
+import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
+import com.zhongjh.albumcamerarecorder.album.utils.SortUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.getMimeTypeSet
 import com.zhongjh.albumcamerarecorder.widget.SharedAnimationView
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
+import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
+import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.MediaStoreCompat
+import com.zhongjh.common.utils.MediaUtils
+import com.zhongjh.common.utils.SdkVersionUtils.isQ
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
@@ -209,7 +217,10 @@ abstract class BasePreviewFragment2 : Fragment() {
     /**
      * 当前预览的图片的索引,默认第一个
      */
-    protected var mPreviousPos = -1
+    protected var mPreviewPosition = -1
+
+    var screenWidth = 0
+    var screenHeight = 0
 
     /**
      * 是否从界面恢复回来的
@@ -278,11 +289,18 @@ abstract class BasePreviewFragment2 : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // 获取样式
+        return initStyle(inflater, container)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         // 获取配置
         mGlobalSpec = GlobalSpec
         mAlbumSpec = AlbumSpec
-        // 获取样式
-        val view = initStyle(inflater, container)
+        // 获取宽高
+        screenWidth = getRealScreenWidth(requireContext())
+        screenHeight = getScreenHeight(requireContext())
         // 初始化回调
         initActivityResult()
         // 初始化状态栏
@@ -295,7 +313,6 @@ abstract class BasePreviewFragment2 : Fragment() {
         mViewHolder.checkView.setCountable(mAlbumSpec.countable)
         initListener()
         updateApplyButton()
-        return view
     }
 
     /**
@@ -375,7 +392,14 @@ abstract class BasePreviewFragment2 : Fragment() {
         mViewPager2.adapter = mAdapter
 
         // 事件
-        mAdapter.
+        mAdapter.setOnFirstAttachedToWindowListener(object :
+            PreviewPagerAdapter.OnFirstAttachedToWindowListener {
+
+            override fun onViewFirstAttachedToWindow(holder: PreviewPagerAdapter.PreviewViewHolder) {
+                this@BasePreviewFragment2.onViewFirstAttachedToWindow(holder)
+            }
+
+        })
     }
 
     /**
@@ -740,12 +764,114 @@ abstract class BasePreviewFragment2 : Fragment() {
     }
 
     /**
+     * 第一次加载Adapter时候触发事件
+     *
+     * @param holder 预览的view
+     */
+    open fun onViewFirstAttachedToWindow(holder: PreviewPagerAdapter.PreviewViewHolder) {
+        if (mIsSavedInstanceState) {
+            return
+        }
+        if (isSharedAnimation()) {
+            startZoomEffect(
+                holder,
+                getSelectedData()[mPreviewPosition]
+            )
+        }
+    }
+
+    /**
+     * 开启了共享动画
+     *
+     * @param holder 预览的view
+     *
+     */
+    open fun startZoomEffect(holder: PreviewPagerAdapter.PreviewViewHolder, media: LocalMedia) {
+        mViewPager2.alpha = 0F
+        holder.imageView.scaleType =
+            if (media.width == 0 && media.height == 0) {
+                ImageView.ScaleType.FIT_CENTER
+            } else {
+                ImageView.ScaleType.CENTER_CROP
+            }
+        requireActivity().runOnUiThread {
+            val mediaRealSize = getMediaRealSizeFromMedia(media)
+            val width = mediaRealSize[0]
+            val height = mediaRealSize[1]
+            mMagicalView?.changeRealScreenHeight(width, height, false)
+            val viewParams =
+                RecycleItemViewParams.getItemViewParams(if (getPreviewWrap().isDisplayCamera) viewPager.currentItem + 1 else viewPager.currentItem)
+            if (viewParams == null || width == 0 && height == 0) {
+                mMagicalView?.startNormal(width, height, false)
+                mMagicalView?.setBackgroundAlpha(1F)
+                navBarViews.forEach {
+                    it.alpha = 1F
+                }
+            } else {
+                mMagicalView?.setViewParams(
+                    viewParams.left,
+                    viewParams.top,
+                    viewParams.width,
+                    viewParams.height,
+                    width,
+                    height
+                )
+                mMagicalView?.start(false)
+            }
+            val objectAnimator = ObjectAnimator.ofFloat(viewPager, "alpha", 0F, 1F)
+            objectAnimator.duration = 50
+            objectAnimator.start()
+        }
+    }
+
+    /**
+     * 获取LocalMedia的宽高
+     * @param media 文件
+     */
+    private suspend fun getMediaRealSizeFromMedia(media: LocalMedia): IntArray {
+        var realWidth = media.width
+        var realHeight = media.height
+        if (MediaUtils.isLongImage(realWidth, realHeight)) {
+            return intArrayOf(screenWidth, screenHeight)
+        }
+        if ((realWidth <= 0 || realHeight <= 0) || (realWidth > realHeight)) {
+            withContext(Dispatchers.IO) {
+
+            }
+
+
+            ThreadUtils.executeByIo(object : SimpleTask<Boolean>() {
+                override fun doInBackground(): Boolean {
+                    media.absolutePath?.let { realPath ->
+                        MediaUtils.getMediaInfo(requireContext(), media.mimeType, realPath).let {
+                            if (it.width > 0) {
+                                realWidth = it.width
+                            }
+                            if (it.height > 0) {
+                                realHeight = it.height
+                            }
+                        }
+                    }
+                }
+                override fun onSuccess(result: Boolean?) {
+
+                }
+            })
+        }
+        if ((media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0) {
+            realWidth = media.cropWidth
+            realHeight = media.cropHeight
+        }
+        return intArrayOf(realWidth, realHeight)
+    }
+
+    /**
      * 滑动事件
      */
     private val mOnPageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             val adapter = mViewPager2.adapter as PreviewPagerAdapter
-            if (mPreviousPos != -1 && mPreviousPos != position) {
+            if (mPreviewPosition != -1 && mPreviewPosition != position) {
 //                MultiMedia item = adapter.getMediaItem(position);
 //                if (mAlbumSpec.getCountable()) {
 //                    int checkedNum = mSelectedCollection.checkedNumOf(item);
@@ -766,7 +892,7 @@ abstract class BasePreviewFragment2 : Fragment() {
 //                }
 //                updateUi(item);
             }
-            mPreviousPos = position
+            mPreviewPosition = position
         }
     }
 
