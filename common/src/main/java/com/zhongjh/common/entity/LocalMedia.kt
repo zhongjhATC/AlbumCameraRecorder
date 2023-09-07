@@ -61,6 +61,11 @@ class LocalMedia() : Parcelable {
     var duration: Long = 0
 
     /**
+     * 角度
+     */
+    var orientation: Int = 0
+
+    /**
      * 如果是被选中
      */
     var isChecked: Boolean = false
@@ -172,10 +177,7 @@ class LocalMedia() : Parcelable {
      * 赋值一个新的path，借由这个新的path，修改相关参数
      */
     constructor(
-        context: Context,
-        localMedia: LocalMedia,
-        compressionFile: File,
-        isCompress: Boolean
+        context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean
     ) : this() {
         updateFile(context, localMedia, compressionFile, isCompress)
     }
@@ -287,10 +289,7 @@ class LocalMedia() : Parcelable {
      * 不包含gif
      */
     fun isImage(): Boolean {
-        return mimeType == MimeType.JPEG.toString()
-                || mimeType == MimeType.PNG.toString()
-                || mimeType == MimeType.BMP.toString()
-                || mimeType == MimeType.WEBP.toString()
+        return mimeType == MimeType.JPEG.toString() || mimeType == MimeType.PNG.toString() || mimeType == MimeType.BMP.toString() || mimeType == MimeType.WEBP.toString()
     }
 
     /**
@@ -304,11 +303,7 @@ class LocalMedia() : Parcelable {
      * 包含gif
      */
     fun isImageOrGif(): Boolean {
-        return mimeType == MimeType.JPEG.toString()
-                || mimeType == MimeType.PNG.toString()
-                || mimeType == MimeType.GIF.toString()
-                || mimeType == MimeType.BMP.toString()
-                || mimeType == MimeType.WEBP.toString()
+        return mimeType == MimeType.JPEG.toString() || mimeType == MimeType.PNG.toString() || mimeType == MimeType.GIF.toString() || mimeType == MimeType.BMP.toString() || mimeType == MimeType.WEBP.toString()
     }
 
     /**
@@ -322,15 +317,7 @@ class LocalMedia() : Parcelable {
      * 是否视频
      */
     fun isVideo(): Boolean {
-        return mimeType == MimeType.MPEG.toString()
-                || mimeType == MimeType.MP4.toString()
-                || mimeType == MimeType.QUICKTIME.toString()
-                || mimeType == MimeType.THREEGPP.toString()
-                || mimeType == MimeType.THREEGPP2.toString()
-                || mimeType == MimeType.MKV.toString()
-                || mimeType == MimeType.WEBM.toString()
-                || mimeType == MimeType.TS.toString()
-                || mimeType == MimeType.AVI.toString()
+        return mimeType == MimeType.MPEG.toString() || mimeType == MimeType.MP4.toString() || mimeType == MimeType.QUICKTIME.toString() || mimeType == MimeType.THREEGPP.toString() || mimeType == MimeType.THREEGPP2.toString() || mimeType == MimeType.MKV.toString() || mimeType == MimeType.WEBM.toString() || mimeType == MimeType.TS.toString() || mimeType == MimeType.AVI.toString()
     }
 
     /**
@@ -338,10 +325,7 @@ class LocalMedia() : Parcelable {
      * 修改新的file
      */
     fun updateFile(
-        context: Context,
-        localMedia: LocalMedia,
-        compressionFile: File,
-        isCompress: Boolean
+        context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean
     ) {
         id = localMedia.id
         this.path = compressionFile.absolutePath
@@ -385,6 +369,7 @@ class LocalMedia() : Parcelable {
          * @param fileName         文件名
          * @param parentFolderName 文件所在相册目录名称
          * @param duration         视频/音频时长
+         * @param orientation 角度
          * @param chooseModel      相册选择模式
          * @param mimeType         资源类型
          * @param width            资源宽
@@ -402,6 +387,7 @@ class LocalMedia() : Parcelable {
             fileName: String,
             parentFolderName: String,
             duration: Long,
+            orientation: Int,
             chooseModel: Set<MimeType>,
             mimeType: String,
             width: Int,
@@ -416,6 +402,7 @@ class LocalMedia() : Parcelable {
             localMedia.realPath = realPath
             localMedia.fileName = fileName
             localMedia.parentFolderName = parentFolderName
+            localMedia.orientation = orientation
             localMedia.duration = duration
             localMedia.chooseModel = chooseModel
             localMedia.mimeType = mimeType

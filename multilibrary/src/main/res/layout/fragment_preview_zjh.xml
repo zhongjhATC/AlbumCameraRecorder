@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.zhongjh.albumcamerarecorder.widget.SharedAnimationView
+    <com.zhongjh.albumcamerarecorder.widget.sharedanimationview.SharedAnimationView
         android:id="@+id/sharedAnimationView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

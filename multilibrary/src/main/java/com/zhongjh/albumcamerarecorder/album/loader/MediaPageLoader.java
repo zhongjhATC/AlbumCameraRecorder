@@ -43,6 +43,7 @@ public class MediaPageLoader extends BaseMediaLoader {
             MediaStore.MediaColumns.WIDTH,
             MediaStore.MediaColumns.HEIGHT,
             MediaStore.MediaColumns.DURATION,
+            MediaStore.MediaColumns.ORIENTATION,
             MediaStore.MediaColumns.SIZE,
             MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
             MediaStore.MediaColumns.DISPLAY_NAME,
@@ -274,11 +275,12 @@ public class MediaPageLoader extends BaseMediaLoader {
             int widthColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[3]);
             int heightColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[4]);
             int durationColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[5]);
-            int sizeColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[6]);
-            int folderNameColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[7]);
-            int fileNameColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[8]);
-            int bucketIdColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[9]);
-            int dateAddedColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[10]);
+            int orientationColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[6]);
+            int sizeColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[7]);
+            int folderNameColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[8]);
+            int fileNameColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[9]);
+            int bucketIdColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[10]);
+            int dateAddedColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[11]);
             data.moveToFirst();
             do {
                 long id = data.getLong(idColumn);
@@ -316,6 +318,7 @@ public class MediaPageLoader extends BaseMediaLoader {
                 int width = data.getInt(widthColumn);
                 int height = data.getInt(heightColumn);
                 long duration = data.getLong(durationColumn);
+                int orientation = data.getInt(orientationColumn);
                 long size = data.getLong(sizeColumn);
                 String folderName = data.getString(folderNameColumn);
                 String fileName = data.getString(fileNameColumn);
@@ -339,7 +342,7 @@ public class MediaPageLoader extends BaseMediaLoader {
                         continue;
                     }
                 }
-                LocalMedia image = LocalMedia.parseLocalMedia(id, uri, absolutePath, fileName, folderName, duration,
+                LocalMedia image = LocalMedia.parseLocalMedia(id, uri, absolutePath, fileName, folderName, duration,orientation,
                         globalSpec.getMimeTypeSet(ModuleTypes.ALBUM), mimeType, width, height, size, bucketId, data.getLong(dateAddedColumn));
                 result.add(image);
             } while (data.moveToNext());

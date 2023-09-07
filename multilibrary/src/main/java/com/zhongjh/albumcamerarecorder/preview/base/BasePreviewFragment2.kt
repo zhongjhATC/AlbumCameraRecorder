@@ -18,36 +18,34 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.album.entity.Album2
-import com.zhongjh.albumcamerarecorder.album.loader.BaseMediaLoader
-import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
-import com.zhongjh.albumcamerarecorder.album.utils.SortUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
-import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.getMimeTypeSet
-import com.zhongjh.albumcamerarecorder.widget.SharedAnimationView
+import com.zhongjh.albumcamerarecorder.widget.sharedanimationview.SharedAnimationView
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaUtils
-import com.zhongjh.common.utils.SdkVersionUtils.isQ
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.common.widget.IncapableDialog
 import com.zhongjh.common.widget.IncapableDialog.Companion.newInstance
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -71,6 +69,15 @@ abstract class BasePreviewFragment2 : Fragment() {
     protected lateinit var mAdapter: PreviewPagerAdapter
     protected lateinit var mGlobalSpec: GlobalSpec
     protected lateinit var mAlbumSpec: AlbumSpec
+
+    protected val viewModel by lazy {
+        val activity = requireActivity()
+        val savedStateViewModelFactory = SavedStateViewModelFactory(activity.application, this)
+        return@lazy ViewModelProvider(
+            this,
+            savedStateViewModelFactory
+        )[AndroidViewModel::class.java]
+    }
 
     /**
      * 图片存储器
@@ -775,7 +782,7 @@ abstract class BasePreviewFragment2 : Fragment() {
             return
         }
         if (isSharedAnimation()) {
-            startZoomEffect(
+            startSharedAnimation(
                 holder,
                 getSelectedData()[mPreviewPosition]
             )
@@ -788,7 +795,7 @@ abstract class BasePreviewFragment2 : Fragment() {
      * @param holder 预览的view
      *
      */
-    open fun startZoomEffect(holder: PreviewPagerAdapter.PreviewViewHolder, media: LocalMedia) {
+    open fun startSharedAnimation(holder: PreviewPagerAdapter.PreviewViewHolder, media: LocalMedia) {
         mViewPager2.alpha = 0F
         holder.imageView.scaleType =
             if (media.width == 0 && media.height == 0) {
@@ -796,21 +803,17 @@ abstract class BasePreviewFragment2 : Fragment() {
             } else {
                 ImageView.ScaleType.CENTER_CROP
             }
-        requireActivity().runOnUiThread {
+
+        viewModel.viewModelScope.launch {
             val mediaRealSize = getMediaRealSizeFromMedia(media)
             val width = mediaRealSize[0]
             val height = mediaRealSize[1]
-            mMagicalView?.changeRealScreenHeight(width, height, false)
-            val viewParams =
-                RecycleItemViewParams.getItemViewParams(if (getPreviewWrap().isDisplayCamera) viewPager.currentItem + 1 else viewPager.currentItem)
-            if (viewParams == null || width == 0 && height == 0) {
-                mMagicalView?.startNormal(width, height, false)
-                mMagicalView?.setBackgroundAlpha(1F)
-                navBarViews.forEach {
-                    it.alpha = 1F
-                }
+            if (width == 0 && height == 0) {
+                mViewHolder.sharedAnimationView.startNormal(width, height, false)
+                mViewHolder.sharedAnimationView.setBackgroundAlpha(1F)
+                mViewHolder.bottomToolbar.alpha = 1F
             } else {
-                mMagicalView?.setViewParams(
+                mViewHolder.sharedAnimationView.setViewParams(
                     viewParams.left,
                     viewParams.top,
                     viewParams.width,

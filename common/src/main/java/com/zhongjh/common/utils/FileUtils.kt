@@ -1,7 +1,8 @@
-package com.zhongjh.common.utils;
+package com.zhongjh.common.utils
 
-import java.io.File;
-import java.io.IOException;
+import java.io.Closeable
+import java.io.File
+import java.io.IOException
 
 /**
  * @author Blankj
@@ -9,39 +10,57 @@ import java.io.IOException;
  * time  : 2016/08/16
  * desc  : utils about string
  */
-public final class FileUtils {
-
+object FileUtils {
     /**
      * Return the file by path.
      *
      * @param filePath The path of file.
      * @return the file
      */
-    public static File getFileByPath(final String filePath) {
-        return StringUtils.isSpace(filePath) ? null : new File(filePath);
+    @JvmStatic
+    fun getFileByPath(filePath: String): File? {
+        return if (StringUtils.isSpace(filePath)) {
+            null
+        } else {
+            File(filePath)
+        }
     }
 
     /**
      * Create a file if it doesn't exist, otherwise do nothing.
      *
      * @param file The file.
-     * @return {@code true}: exists or creates successfully<br>{@code false}: otherwise
+     * @return `true`: exists or creates successfully<br></br>`false`: otherwise
      */
-    public static boolean createOrExistsFile(final File file) {
+    @JvmStatic
+    fun createOrExistsFile(file: File?): Boolean {
         if (file == null) {
-            return false;
+            return false
         }
         if (file.exists()) {
-            return file.isFile();
+            return file.isFile
         }
-        if (!createOrExistsDir(file.getParentFile())) {
-            return false;
+        return if (!createOrExistsDir(file.parentFile)) {
+            false
+        } else try {
+            file.createNewFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
         }
-        try {
-            return file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+    }
+
+    /**
+     * 用于关闭inputStream
+     * @param c Closeable是属于inputStream的接口
+     */
+    fun close(c: Closeable?) {
+        if (c is Closeable) {
+            try {
+                c.close()
+            } catch (e: Exception) {
+                // silence
+            }
         }
     }
 
@@ -49,10 +68,9 @@ public final class FileUtils {
      * Create a directory if it doesn't exist, otherwise do nothing.
      *
      * @param file The file.
-     * @return {@code true}: exists or creates successfully<br>{@code false}: otherwise
+     * @return `true`: exists or creates successfully<br></br>`false`: otherwise
      */
-    public static boolean createOrExistsDir(final File file) {
-        return file != null && (file.exists() ? file.isDirectory() : file.mkdirs());
+    private fun createOrExistsDir(file: File?): Boolean {
+        return file != null && if (file.exists()) file.isDirectory else file.mkdirs()
     }
-
 }

@@ -45,6 +45,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // 支持kotlin
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
+    // 生命周期
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
     // 支持协程
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.ext.ktx_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.ext.ktx_coroutines_version"
