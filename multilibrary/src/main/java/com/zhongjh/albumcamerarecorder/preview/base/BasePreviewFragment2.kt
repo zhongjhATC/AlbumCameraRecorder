@@ -805,7 +805,6 @@ abstract class BasePreviewFragment2 : Fragment() {
      * 开启了共享动画
      *
      * @param holder 预览的view
-     *
      */
     open fun startSharedAnimation(
         holder: PreviewPagerAdapter.PreviewViewHolder,
