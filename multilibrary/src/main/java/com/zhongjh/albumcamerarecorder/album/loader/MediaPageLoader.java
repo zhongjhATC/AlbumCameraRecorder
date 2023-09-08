@@ -82,7 +82,7 @@ public class MediaPageLoader extends BaseMediaLoader {
                     // 构造数据
                     if (data != null) {
                         Log.i(TAG, "dataCount: " + data.getCount());
-                        List<LocalMedia> result = getLocalMedias(data);
+                        ArrayList<LocalMedia> result = getLocalMedias(data);
                         return new MediaData(result, data.getCount() > 0);
                     }
                 } catch (Exception exception) {
@@ -266,8 +266,8 @@ public class MediaPageLoader extends BaseMediaLoader {
      * @param data Cursor数据
      * @return List<LocalMedia>
      */
-    private List<LocalMedia> getLocalMedias(Cursor data) {
-        List<LocalMedia> result = new ArrayList<>();
+    private ArrayList<LocalMedia> getLocalMedias(Cursor data) {
+        ArrayList<LocalMedia> result = new ArrayList<>();
         if (data.getCount() > 0) {
             int idColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[0]);
             int dataColumn = data.getColumnIndexOrThrow(PROJECTION_PAGE[1]);

@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import android.widget.ImageView.ScaleType
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -32,7 +33,8 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
-import com.zhongjh.albumcamerarecorder.widget.sharedanimationview.SharedAnimationView
+import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams
+import com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
@@ -45,6 +47,7 @@ import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.common.widget.IncapableDialog
 import com.zhongjh.common.widget.IncapableDialog.Companion.newInstance
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -67,8 +70,12 @@ abstract class BasePreviewFragment2 : Fragment() {
     protected lateinit var mViewHolder: ViewHolder
     protected lateinit var mViewPager2: ViewPager2
     protected lateinit var mAdapter: PreviewPagerAdapter
-    protected lateinit var mGlobalSpec: GlobalSpec
-    protected lateinit var mAlbumSpec: AlbumSpec
+    protected val mGlobalSpec by lazy {
+        GlobalSpec
+    }
+    protected val mAlbumSpec by lazy {
+        AlbumSpec
+    }
 
     protected val viewModel by lazy {
         val activity = requireActivity()
@@ -226,7 +233,7 @@ abstract class BasePreviewFragment2 : Fragment() {
     /**
      * 当前预览的图片的索引,默认第一个
      */
-    protected var mPreviewPosition = -1
+    protected var mPreviewPosition = 0
 
     var screenWidth = 0
     var screenHeight = 0
@@ -304,9 +311,6 @@ abstract class BasePreviewFragment2 : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // 获取配置
-        mGlobalSpec = GlobalSpec
-        mAlbumSpec = AlbumSpec
         // 获取宽高
         screenWidth = getRealScreenWidth(requireContext())
         screenHeight = getScreenHeight(requireContext())
@@ -324,10 +328,16 @@ abstract class BasePreviewFragment2 : Fragment() {
         updateApplyButton()
     }
 
+    override fun onDestroy() {
+//        mAdapter.destroy()
+//        viewPager.unregisterOnPageChangeCallback(pageChangeCallback)
+        super.onDestroy()
+    }
+
     /**
      * 获取已选择的数据
      */
-    abstract fun getSelectedData(): ArrayList<LocalMedia>
+    abstract fun getDatas(): ArrayList<LocalMedia>
 
     /**
      * 初始化样式
@@ -398,9 +408,11 @@ abstract class BasePreviewFragment2 : Fragment() {
      */
     private fun initViewPagerData() {
         mAdapter = PreviewPagerAdapter(mContext, requireActivity())
+        mAdapter.addAll(getDatas())
+        mAdapter.notifyItemRangeChanged(0, getDatas().size)
         mViewPager2.adapter = mAdapter
 
-        // 事件
+        // adapter显示view时的触发事件,主要用于显示共享动画
         mAdapter.setOnFirstAttachedToWindowListener(object :
             PreviewPagerAdapter.OnFirstAttachedToWindowListener {
 
@@ -427,7 +439,7 @@ abstract class BasePreviewFragment2 : Fragment() {
         mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
                 // 确认的一刻赋值
-                val localMediaArrayList: java.util.ArrayList<LocalMedia> = getSelectedData()
+                val localMediaArrayList: java.util.ArrayList<LocalMedia> = getDatas()
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
                     localMedia.isOriginal = mOriginalEnable
@@ -603,9 +615,9 @@ abstract class BasePreviewFragment2 : Fragment() {
      */
     private fun countOverMaxSize(): Int {
         var count = 0
-        val selectedCount: Int = getSelectedData().count()
+        val selectedCount: Int = getDatas().count()
         for (i in 0 until selectedCount) {
-            val item: LocalMedia = getSelectedData()[i]
+            val item: LocalMedia = getDatas()[i]
             if (item.isImage()) {
                 val size = PhotoMetadataUtils.getSizeInMb(item.size)
                 if (size > mAlbumSpec.originalMaxSize) {
@@ -784,7 +796,7 @@ abstract class BasePreviewFragment2 : Fragment() {
         if (isSharedAnimation()) {
             startSharedAnimation(
                 holder,
-                getSelectedData()[mPreviewPosition]
+                getDatas()[mPreviewPosition]
             )
         }
     }
@@ -795,20 +807,22 @@ abstract class BasePreviewFragment2 : Fragment() {
      * @param holder 预览的view
      *
      */
-    open fun startSharedAnimation(holder: PreviewPagerAdapter.PreviewViewHolder, media: LocalMedia) {
+    open fun startSharedAnimation(
+        holder: PreviewPagerAdapter.PreviewViewHolder,
+        media: LocalMedia
+    ) {
         mViewPager2.alpha = 0F
-        holder.imageView.scaleType =
-            if (media.width == 0 && media.height == 0) {
-                ImageView.ScaleType.FIT_CENTER
-            } else {
-                ImageView.ScaleType.CENTER_CROP
-            }
-
+        if (media.width == 0 && media.height == 0) {
+            holder.imageView.scaleType = ScaleType.FIT_CENTER
+        }
         viewModel.viewModelScope.launch {
             val mediaRealSize = getMediaRealSizeFromMedia(media)
             val width = mediaRealSize[0]
             val height = mediaRealSize[1]
-            if (width == 0 && height == 0) {
+            val viewParams =
+                RecycleItemViewParams.getItem(mViewPager2.currentItem)
+
+            if (viewParams == null || width == 0 && height == 0) {
                 mViewHolder.sharedAnimationView.startNormal(width, height, false)
                 mViewHolder.sharedAnimationView.setBackgroundAlpha(1F)
                 mViewHolder.bottomToolbar.alpha = 1F
@@ -821,9 +835,10 @@ abstract class BasePreviewFragment2 : Fragment() {
                     width,
                     height
                 )
-                mMagicalView?.start(false)
+                mViewHolder.sharedAnimationView.start(false)
             }
-            val objectAnimator = ObjectAnimator.ofFloat(viewPager, "alpha", 0F, 1F)
+            // 50毫秒时间渐变显示viewPager2,这样可以不会太生硬
+            val objectAnimator = ObjectAnimator.ofFloat(mViewPager2, "alpha", 0F, 1F)
             objectAnimator.duration = 50
             objectAnimator.start()
         }
@@ -833,6 +848,7 @@ abstract class BasePreviewFragment2 : Fragment() {
      * 获取LocalMedia的宽高
      * @param media 文件
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun getMediaRealSizeFromMedia(media: LocalMedia): IntArray {
         var realWidth = media.width
         var realHeight = media.height
@@ -854,10 +870,11 @@ abstract class BasePreviewFragment2 : Fragment() {
                 }
             }
         }
-        if ((media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0) {
-            realWidth = media.cropWidth
-            realHeight = media.cropHeight
-        }
+        // 如果是裁剪后的图片，宽高是会改变的 TODO
+//        if ((media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0) {
+//            realWidth = media.cropWidth
+//            realHeight = media.cropHeight
+//        }
         return intArrayOf(realWidth, realHeight)
     }
 

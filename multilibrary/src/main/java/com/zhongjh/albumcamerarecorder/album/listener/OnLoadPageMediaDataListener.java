@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.album.listener;
 
 import com.zhongjh.common.entity.LocalMedia;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +20,6 @@ public interface OnLoadPageMediaDataListener {
      * @param currentPage 当前第几页
      * @param isHasMore   是否有下一页
      */
-    void onLoadPageMediaDataComplete(List<LocalMedia> data, int currentPage, boolean isHasMore);
+    void onLoadPageMediaDataComplete(ArrayList<LocalMedia> data, int currentPage, boolean isHasMore);
 
 }

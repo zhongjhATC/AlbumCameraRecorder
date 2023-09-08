@@ -1,8 +1,12 @@
-package com.zhongjh.albumcamerarecorder.widget.sharedanimationview
+package com.zhongjh.albumcamerarecorder.sharedanimation
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
@@ -23,6 +27,7 @@ class SharedAnimationView @JvmOverloads constructor(
      * 用于 [backgroundView]的透明度值
      */
     private var mAlpha = 0.0f
+
     /**
      * 动画的时长
      */
@@ -33,6 +38,7 @@ class SharedAnimationView @JvmOverloads constructor(
     private var mOriginWidth = 0
     private var screenWidth = 0
     private var screenHeight = 0
+
     /**
      * 屏幕高度，包含状态栏
      */
@@ -44,14 +50,17 @@ class SharedAnimationView @JvmOverloads constructor(
     private var realWidth = 0
     private var realHeight = 0
     private var isAnimating = false
+
     /**
      * 内容View
      */
     private val contentLayout: FrameLayout
+
     /**
      * 背景View
      */
     private val backgroundView: View
+
     /**
      * 封装View
      */
@@ -140,6 +149,18 @@ class SharedAnimationView @JvmOverloads constructor(
         this.mOriginHeight = originHeight
     }
 
+    fun start(showImmediately: Boolean) {
+        mAlpha = if (showImmediately) {
+            1f.also { mAlpha = it }
+        } else {
+            0f
+        }
+        backgroundView.alpha = mAlpha
+        visibility = VISIBLE
+        setOriginParams()
+        beginShow(showImmediately)
+    }
+
     /**
      * getScreenSize
      */
@@ -171,10 +192,77 @@ class SharedAnimationView @JvmOverloads constructor(
         sharedAnimationWrapper.marginTop = mOriginTop
     }
 
+    // TODO 进入的动画
+    private fun beginShow(showImmediately: Boolean) {
+        if (showImmediately) {
+            mAlpha = 1f
+            backgroundView.alpha = mAlpha
+            showNormalMin(
+                targetImageTop.toFloat(),
+                targetEndLeft.toFloat(),
+                targetImageWidth.toFloat(),
+                targetImageHeight.toFloat()
+            )
+            setShowEndParams()
+        } else {
+            val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+            valueAnimator.addUpdateListener { animation ->
+                val value = animation.animatedValue as Float
+                showNormalMin(
+                    value,
+                    mOriginTop.toFloat(),
+                    targetImageTop.toFloat(),
+                    mOriginLeft.toFloat(),
+                    targetEndLeft.toFloat(),
+                    mOriginWidth.toFloat(),
+                    targetImageWidth.toFloat(),
+                    mOriginHeight.toFloat(),
+                    targetImageHeight.toFloat()
+                )
+            }
+            valueAnimator.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    setShowEndParams()
+                }
+            })
+            valueAnimator.interpolator = AccelerateDecelerateInterpolator()
+            valueAnimator.setDuration(animationDuration).start()
+            changeBackgroundViewAlpha(false)
+        }
+    }
+
+    /**
+     * @param isAlpha 是否透明
+     */
+    private fun changeBackgroundViewAlpha(isAlpha: Boolean) {
+        val end: Float = if (isAlpha) {
+            0F
+        } else {
+            1F
+        }
+        val valueAnimator = ValueAnimator.ofFloat(mAlpha, end)
+        valueAnimator.addUpdateListener { animation ->
+            isAnimating = true
+            mAlpha = animation.animatedValue as Float
+            backgroundView.alpha = mAlpha
+            onMagicalViewListener?.onBackgroundAlpha(mAlpha)
+        }
+        valueAnimator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                isAnimating = false
+                if (isAlpha) {
+                    onMagicalViewListener?.onMagicalViewFinish()
+                }
+            }
+        })
+        valueAnimator.duration = animationDuration
+        valueAnimator.start()
+    }
+
     private fun setShowEndParams() {
         isAnimating = false
         changeContentViewToFullscreen()
-        onMagicalViewListener?.onBeginMagicalAnimComplete(this@MagicalView, false)
+        onMagicalViewListener?.onBeginMagicalAnimComplete(this@SharedAnimationView, false)
     }
 
     private fun showNormalMin(
@@ -238,9 +326,9 @@ class SharedAnimationView @JvmOverloads constructor(
         sharedAnimationWrapper.marginLeft = 0
     }
 
-    private var onMagicalViewListener: OnMagicalViewListener? = null
+    private var onMagicalViewListener: OnSharedAnimationViewListener? = null
 
-    fun setOnMagicalViewListener(l: OnMagicalViewListener?) {
+    fun setOnMagicalViewListener(l: OnSharedAnimationViewListener?) {
         this.onMagicalViewListener = l
     }
 

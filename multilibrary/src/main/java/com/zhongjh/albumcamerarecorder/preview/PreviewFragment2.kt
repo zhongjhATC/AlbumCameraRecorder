@@ -8,8 +8,6 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment2
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.common.entity.LocalMedia
 import java.util.ArrayList
 
@@ -22,7 +20,7 @@ class PreviewFragment2 : BasePreviewFragment2() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        this.mMainModel = ViewModelProvider(requireActivity()).get(MainModel::class.java)
+        this.mMainModel = ViewModelProvider(requireActivity())[MainModel::class.java]
     }
 
     override fun onCreateView(
@@ -34,9 +32,9 @@ class PreviewFragment2 : BasePreviewFragment2() {
     }
 
     /**
-     * 获取已选择的数据
+     * 获取当前的数据
      */
-    override fun getSelectedData() : ArrayList<LocalMedia> {
-        return mMainModel.selectedData.localMedias
+    override fun getDatas(): ArrayList<LocalMedia> {
+        return mMainModel.getLocalMedias().value?.data ?: ArrayList<LocalMedia>()
     }
 }

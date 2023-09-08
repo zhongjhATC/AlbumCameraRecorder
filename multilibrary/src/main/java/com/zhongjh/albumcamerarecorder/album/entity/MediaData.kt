@@ -12,7 +12,7 @@ class MediaData(
     /**
      * 多媒体文件集合
      */
-    var data: List<LocalMedia>,
+    var data: ArrayList<LocalMedia>,
     /**
      * 是否包含下一页
      */

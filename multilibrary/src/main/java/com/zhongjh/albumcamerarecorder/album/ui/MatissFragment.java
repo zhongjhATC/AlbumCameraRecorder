@@ -53,11 +53,13 @@ import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams;
 import com.zhongjh.albumcamerarecorder.widget.ConstraintLayoutBehavior;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.ColorFilterUtil;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
+import com.zhongjh.common.utils.DoubleUtils;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -547,6 +549,12 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
 
     @Override
     public void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition) {
+        if (DoubleUtils.isFastDoubleClick()) {
+            return;
+        }
+
+        RecycleItemViewParams.add(mViewHolder.recyclerview, 0);
+
         currentPosition = adapterPosition;
 
         // 隐藏底部控件
@@ -559,7 +567,6 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
         fragment.setArguments(bundle);
-
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -676,7 +683,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     }
 
     @Override
-    public void onLoadPageMediaDataComplete(List<LocalMedia> data, int currentPage, boolean isHasMore) {
+    public void onLoadPageMediaDataComplete(ArrayList<LocalMedia> data, int currentPage, boolean isHasMore) {
 
     }
 

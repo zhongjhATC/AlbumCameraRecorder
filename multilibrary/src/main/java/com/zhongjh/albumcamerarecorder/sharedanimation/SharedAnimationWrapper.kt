@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.widget.sharedanimationview
+package com.zhongjh.albumcamerarecorder.sharedanimation
 
 import android.view.Gravity
 import android.view.View
