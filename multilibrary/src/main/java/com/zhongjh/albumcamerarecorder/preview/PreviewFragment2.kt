@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.preview
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment2
 import com.zhongjh.common.entity.LocalMedia
-import java.util.ArrayList
 
 class PreviewFragment2 : BasePreviewFragment2() {
 
@@ -35,6 +35,21 @@ class PreviewFragment2 : BasePreviewFragment2() {
      * 获取当前的数据
      */
     override fun getDatas(): ArrayList<LocalMedia> {
-        return mMainModel.getLocalMedias().value?.data ?: ArrayList<LocalMedia>()
+        Log.d("PreviewFragment2", "id: " + mMainModel.localMedias2.value?.type + " size:" + (mMainModel.localMedias.value?.data?.size ?: "") + " page:" + mMainModel.page)
+        return mMainModel.localMedias.value?.data ?: ArrayList()
+    }
+
+    /**
+     * 获取当前显示的文件索引
+     */
+    override fun getPreviewPosition(): Int {
+        return mMainModel.previewPosition
+    }
+
+    /**
+     * 设置当前显示的文件索引
+     */
+    override fun setPreviewPosition(previewPosition: Int) {
+        mMainModel.previewPosition = previewPosition
     }
 }

@@ -272,7 +272,7 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         // 下拉框选择的时候
         mAlbumSpinner.setOnAlbumItemClickListener((position, album) -> {
             // 设置缓存值
-            mMainModel.setStateCurrentSelection(position);
+            mMainModel.setCurrentSelection(position);
             onAlbumSelected(album);
             mAlbumSpinner.dismiss();
         });
@@ -556,6 +556,8 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
         RecycleItemViewParams.add(mViewHolder.recyclerview, 0);
 
         currentPosition = adapterPosition;
+        // 设置position
+        mMainModel.setPreviewPosition(adapterPosition);
 
         // 隐藏底部控件
         mActivity.showHideTableLayoutAnimator(false);

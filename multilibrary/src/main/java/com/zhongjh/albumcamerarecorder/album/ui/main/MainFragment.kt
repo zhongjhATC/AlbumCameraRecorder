@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import com.zhongjh.albumcamerarecorder.BaseFragment
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment
@@ -17,8 +16,6 @@ import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment
  * @date 2022/7/26
  */
 class MainFragment : BaseFragment() {
-
-    private lateinit var viewModel: MainModel
 
     companion object {
         /**
@@ -39,7 +36,6 @@ class MainFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(this)[MainModel::class.java]
         Log.d("MainFragment", "onCreateView")
         return inflater.inflate(R.layout.fragment_containerview_zjh, container, false)
     }

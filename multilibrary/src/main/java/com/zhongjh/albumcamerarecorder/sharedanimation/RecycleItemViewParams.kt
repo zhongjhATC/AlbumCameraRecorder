@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.sharedanimation
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
@@ -71,6 +72,7 @@ object RecycleItemViewParams {
                 viewParam.top = 0
                 viewParam.width = 0
                 viewParam.height = 0
+                Log.d("RecycleItemViewParams","00")
             } else {
                 val location = IntArray(2)
                 view.getLocationOnScreen(location)
@@ -78,6 +80,7 @@ object RecycleItemViewParams {
                 viewParam.top = location[1] - statusBarHeight
                 viewParam.width = view.width
                 viewParam.height = view.height
+                Log.d("RecycleItemViewParams","left:" + viewParam.left + " viewParam.top:" + viewParam.top)
             }
             viewParams.add(viewParam)
         }

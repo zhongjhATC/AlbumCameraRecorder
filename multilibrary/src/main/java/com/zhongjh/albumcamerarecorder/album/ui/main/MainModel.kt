@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.zhongjh.albumcamerarecorder.album.entity.Album
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
+import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec.pageSize
@@ -49,7 +51,10 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 多媒体文件数据集
      */
-    private var localMedias = MutableLiveData<MediaData>()
+    val localMedias: MutableLiveData<MediaData> by lazy {
+
+    }
+    var localMedias2 = MutableLiveData<SelectedCountMessage>()
 
     /**
      * 分页相册的当前页码
@@ -60,24 +65,20 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 当前所选择的文件夹
      */
     var currentSelection = 0
-        private set
+
+    /**
+     * 当前预览的图片的索引,默认第一个
+     */
+    var previewPosition = 0
 
     fun getAlbums(): LiveData<List<Album2>> {
         return albums
-    }
-
-    fun getLocalMedias(): LiveData<MediaData> {
-        return localMedias
     }
 
     init {
         mediaLoader = MediaLoader(application)
         mediaPageLoader = MediaPageLoader(application)
         selectedData = SelectedData(application)
-    }
-
-    fun setStateCurrentSelection(currentSelection: Int) {
-        this.currentSelection = currentSelection
     }
 
     /**
@@ -110,7 +111,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * 获取所有数据
+     * 根据页码获取数据
      *
      * @param bucketId 专辑id
      * @param page     当前页码
@@ -122,6 +123,13 @@ class MainModel(application: Application) : AndroidViewModel(application) {
             bucketId, page, pageSize, pageSize
         ) { data, currentPage, isHasMore ->
             val mediaData = MediaData(data, isHasMore)
+            // 加入下一页数据
+            localMedias.value?.data?.addAll(data)
+            localMedias.value?.isHasNextMore = isHasMore
+            localMedias2.value = SelectedCountMessage()
+            localMedias2.value?.type = "123"
+            Log.d(tag, "id: " + localMedias2.value?.type + " getLocalMedias().data.size: " + localMedias.value?.data?.size)
+            // 通知UI有新的数据
             localMedias.postValue(mediaData)
         }
     }

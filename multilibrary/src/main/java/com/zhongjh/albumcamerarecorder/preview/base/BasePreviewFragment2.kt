@@ -231,11 +231,6 @@ abstract class BasePreviewFragment2 : Fragment() {
         )
     }
 
-    /**
-     * 当前预览的图片的索引,默认第一个
-     */
-    protected var mPreviewPosition = 0
-
     var screenWidth = 0
     var screenHeight = 0
 
@@ -331,7 +326,7 @@ abstract class BasePreviewFragment2 : Fragment() {
 
     override fun onDestroy() {
 //        mAdapter.destroy()
-//        viewPager.unregisterOnPageChangeCallback(pageChangeCallback)
+        mViewPager2.unregisterOnPageChangeCallback(mOnPageChangeCallback)
         super.onDestroy()
     }
 
@@ -339,6 +334,16 @@ abstract class BasePreviewFragment2 : Fragment() {
      * 获取已选择的数据
      */
     abstract fun getDatas(): ArrayList<LocalMedia>
+
+    /**
+     * 获取当前显示的文件索引
+     */
+    abstract fun getPreviewPosition(): Int
+
+    /**
+     * 设置当前显示的文件索引
+     */
+    abstract fun setPreviewPosition(previewPosition: Int)
 
     /**
      * 初始化样式
@@ -432,16 +437,18 @@ abstract class BasePreviewFragment2 : Fragment() {
         mAdapter.addAll(getDatas())
         mAdapter.notifyItemRangeChanged(0, getDatas().size)
         mViewPager2.adapter = mAdapter
+        mViewPager2.setCurrentItem(getPreviewPosition(), false)
 
         // adapter显示view时的触发事件,主要用于显示共享动画
         mAdapter.setOnFirstAttachedToWindowListener(object :
             PreviewPagerAdapter.OnFirstAttachedToWindowListener {
-
             override fun onViewFirstAttachedToWindow(holder: PreviewPagerAdapter.PreviewViewHolder) {
                 this@BasePreviewFragment2.onViewFirstAttachedToWindow(holder)
             }
-
         })
+
+        // 多图时滑动事件
+        mViewPager2.registerOnPageChangeCallback(mOnPageChangeCallback)
     }
 
     /**
@@ -468,8 +475,6 @@ abstract class BasePreviewFragment2 : Fragment() {
                 setResultOkByIsCompress(true)
             }
         })
-        // 多图时滑动事件
-        mViewPager2.registerOnPageChangeCallback(mOnPageChangeCallback)
         // 右上角选择事件
         mViewHolder.checkView.setOnClickListener {
 //            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
@@ -817,7 +822,7 @@ abstract class BasePreviewFragment2 : Fragment() {
         if (isSharedAnimation()) {
             startSharedAnimation(
                 holder,
-                getDatas()[mPreviewPosition]
+                getDatas()[getPreviewPosition()]
             )
         }
     }
@@ -840,7 +845,7 @@ abstract class BasePreviewFragment2 : Fragment() {
             val width = mediaRealSize[0]
             val height = mediaRealSize[1]
             val viewParams =
-                RecycleItemViewParams.getItem(mViewPager2.currentItem)
+                RecycleItemViewParams.getItem(getPreviewPosition())
 
             if (viewParams == null || width == 0 && height == 0) {
                 mViewHolder.sharedAnimationView.startNormal(width, height, false)
@@ -904,7 +909,7 @@ abstract class BasePreviewFragment2 : Fragment() {
     private val mOnPageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             val adapter = mViewPager2.adapter as PreviewPagerAdapter
-            if (mPreviewPosition != -1 && mPreviewPosition != position) {
+            if (getPreviewPosition() != -1 && getPreviewPosition() != position) {
 //                MultiMedia item = adapter.getMediaItem(position);
 //                if (mAlbumSpec.getCountable()) {
 //                    int checkedNum = mSelectedCollection.checkedNumOf(item);
@@ -925,7 +930,7 @@ abstract class BasePreviewFragment2 : Fragment() {
 //                }
 //                updateUi(item);
             }
-            mPreviewPosition = position
+            setPreviewPosition(position);
         }
     }
 
@@ -942,5 +947,4 @@ abstract class BasePreviewFragment2 : Fragment() {
         var checkView: CheckView = rootView.findViewById(R.id.checkView)
         var pbLoading: ProgressBar = rootView.findViewById(R.id.pbLoading)
     }
-
 }
