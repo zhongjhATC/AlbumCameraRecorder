@@ -51,9 +51,11 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 多媒体文件数据集
      */
-    val localMedias: MutableLiveData<MediaData> by lazy {
+    private val _medias = MutableLiveData<MediaData>()
+    val localMedias: LiveData<MediaData> get() = _medias
 
-    }
+
+
     var localMedias2 = MutableLiveData<SelectedCountMessage>()
 
     /**
@@ -130,7 +132,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
             localMedias2.value?.type = "123"
             Log.d(tag, "id: " + localMedias2.value?.type + " getLocalMedias().data.size: " + localMedias.value?.data?.size)
             // 通知UI有新的数据
-            localMedias.postValue(mediaData)
+            _medias.postValue(mediaData)
         }
     }
 
