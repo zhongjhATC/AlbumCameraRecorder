@@ -245,13 +245,13 @@ class SharedAnimationView @JvmOverloads constructor(
             isAnimating = true
             mAlpha = animation.animatedValue as Float
             backgroundView.alpha = mAlpha
-            onMagicalViewListener?.onBackgroundAlpha(mAlpha)
+            onSharedAnimationViewListener?.onBackgroundAlpha(mAlpha)
         }
         valueAnimator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 isAnimating = false
                 if (isAlpha) {
-                    onMagicalViewListener?.onMagicalViewFinish()
+                    onSharedAnimationViewListener?.onMagicalViewFinish()
                 }
             }
         })
@@ -262,7 +262,7 @@ class SharedAnimationView @JvmOverloads constructor(
     private fun setShowEndParams() {
         isAnimating = false
         changeContentViewToFullscreen()
-        onMagicalViewListener?.onBeginMagicalAnimComplete(this@SharedAnimationView, false)
+        onSharedAnimationViewListener?.onBeginMagicalAnimComplete(this@SharedAnimationView, false)
     }
 
     private fun showNormalMin(
@@ -326,10 +326,10 @@ class SharedAnimationView @JvmOverloads constructor(
         sharedAnimationWrapper.marginLeft = 0
     }
 
-    private var onMagicalViewListener: OnSharedAnimationViewListener? = null
+    private var onSharedAnimationViewListener: OnSharedAnimationViewListener? = null
 
-    fun setOnMagicalViewListener(l: OnSharedAnimationViewListener?) {
-        this.onMagicalViewListener = l
+    fun setOnSharedAnimationViewListener(l: OnSharedAnimationViewListener?) {
+        this.onSharedAnimationViewListener = l
     }
 
 }

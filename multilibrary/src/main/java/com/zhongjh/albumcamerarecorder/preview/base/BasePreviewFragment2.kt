@@ -33,6 +33,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
+import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams
 import com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
 import com.zhongjh.common.entity.LocalMedia
@@ -401,6 +402,26 @@ abstract class BasePreviewFragment2 : Fragment() {
         } else {
             mViewHolder.sharedAnimationView.setBackgroundAlpha(1.0F)
         }
+        mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object :
+            OnSharedAnimationViewListener {
+            override fun onBeginBackMinAnim() {
+            }
+
+            override fun onBeginBackMinMagicalFinish(isResetSize: Boolean) {
+            }
+
+            override fun onBeginMagicalAnimComplete(
+                mojitoView: SharedAnimationView,
+                showImmediately: Boolean
+            ) {
+            }
+
+            override fun onBackgroundAlpha(alpha: Float) {
+            }
+
+            override fun onMagicalViewFinish() {
+            }
+        })
     }
 
     /**
