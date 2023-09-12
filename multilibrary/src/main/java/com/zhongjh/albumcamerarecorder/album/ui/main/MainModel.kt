@@ -5,13 +5,11 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.zhongjh.albumcamerarecorder.album.entity.Album
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
 import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec.pageSize
 
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
@@ -51,12 +49,8 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 多媒体文件数据集
      */
-    private val _medias = MutableLiveData<MediaData>()
-    val localMedias: LiveData<MediaData> get() = _medias
-
-
-
-    var localMedias2 = MutableLiveData<SelectedCountMessage>()
+    private val _localMedias = MutableLiveData<MediaData>()
+    val localMedias: LiveData<MediaData> get() = _localMedias
 
     /**
      * 分页相册的当前页码
@@ -125,14 +119,14 @@ class MainModel(application: Application) : AndroidViewModel(application) {
             bucketId, page, pageSize, pageSize
         ) { data, currentPage, isHasMore ->
             val mediaData = MediaData(data, isHasMore)
-            // 加入下一页数据
             localMedias.value?.data?.addAll(data)
             localMedias.value?.isHasNextMore = isHasMore
-            localMedias2.value = SelectedCountMessage()
-            localMedias2.value?.type = "123"
-            Log.d(tag, "id: " + localMedias2.value?.type + " getLocalMedias().data.size: " + localMedias.value?.data?.size)
+            Log.d(
+                tag,
+                "id: " + localMedias2.value?.type + " getLocalMedias().data.size: " + localMedias.value?.data?.size
+            )
             // 通知UI有新的数据
-            _medias.postValue(mediaData)
+            _localMedias.postValue(mediaData)
         }
     }
 
