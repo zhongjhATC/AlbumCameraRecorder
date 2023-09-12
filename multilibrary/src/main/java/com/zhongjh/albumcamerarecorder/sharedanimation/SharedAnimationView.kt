@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
@@ -13,7 +14,9 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
 
 /**
  * 一个共享动画的View
- * 容器可以添加任何View
+ * 包含以下view:
+ * 1. 容器可以添加任何View，目前添加的是viewPager2
+ * 2. 还有个SharedAnimationWrapper，是用于模仿上个界面RecyclerView的item的位置、宽高作用域过渡
  */
 class SharedAnimationView @JvmOverloads constructor(
     context: Context,
@@ -22,6 +25,8 @@ class SharedAnimationView @JvmOverloads constructor(
 ) : FrameLayout(
     context, attrs, defStyleAttr
 ) {
+
+    private val tag: String = this@SharedAnimationView.javaClass.simpleName
 
     /**
      * 用于 [backgroundView]的透明度值
@@ -49,6 +54,10 @@ class SharedAnimationView @JvmOverloads constructor(
     private var targetEndLeft = 0
     private var realWidth = 0
     private var realHeight = 0
+
+    /**
+     * 是否正在动画中
+     */
     private var isAnimating = false
 
     /**
@@ -149,9 +158,13 @@ class SharedAnimationView @JvmOverloads constructor(
         this.mOriginHeight = originHeight
     }
 
+    /**
+     * 开始共享动画
+     * @param showImmediately 是否立即显示
+     */
     fun start(showImmediately: Boolean) {
         mAlpha = if (showImmediately) {
-            1f.also { mAlpha = it }
+            1f
         } else {
             0f
         }
@@ -170,29 +183,42 @@ class SharedAnimationView @JvmOverloads constructor(
     }
 
     /**
-     * 设置原点参数
+     * 设置初始、目标参数
      */
     private fun setOriginParams() {
-        val locationImage = IntArray(2)
-        contentLayout.getLocationOnScreen(locationImage)
         targetEndLeft = 0
+        Log.d(tag, "screenRate: " + screenWidth / screenHeight.toFloat())
+        Log.d(tag, "realRate: " + realWidth / realHeight.toFloat())
+        // 手机比例(高比宽多)和图片比例比较
         if (screenWidth / screenHeight.toFloat() < realWidth / realHeight.toFloat()) {
+            // 图片偏横向
             targetImageWidth = screenWidth
             targetImageHeight = (targetImageWidth * (realHeight / realWidth.toFloat())).toInt()
             targetImageTop = (screenHeight - targetImageHeight) / 2
+            targetEndLeft = 0
+            Log.d(tag, "图片偏横向 $targetImageWidth $targetImageHeight $targetImageTop $targetEndLeft")
         } else {
+            // 图片偏竖向
             targetImageHeight = screenHeight
             targetImageWidth = (targetImageHeight * (realWidth / realHeight.toFloat())).toInt()
             targetImageTop = 0
             targetEndLeft = (screenWidth - targetImageWidth) / 2
+            Log.d(tag, "图片偏竖向 $targetImageWidth $targetImageHeight $targetImageTop $targetEndLeft")
         }
+        Log.d(tag, "sharedAnimationWrapper $mOriginWidth $mOriginHeight $mOriginLeft $mOriginTop")
+        // 设置原始参数(RecyclerView的item的参数)
         sharedAnimationWrapper.setWidth(mOriginWidth.toFloat())
         sharedAnimationWrapper.setHeight(mOriginHeight.toFloat())
         sharedAnimationWrapper.marginLeft = mOriginLeft
         sharedAnimationWrapper.marginTop = mOriginTop
     }
 
-    // TODO 进入的动画
+    /**
+     * 开始显示动画
+     *
+     * @param showImmediately 是否立即显示
+     *
+     */
     private fun beginShow(showImmediately: Boolean) {
         if (showImmediately) {
             mAlpha = 1f

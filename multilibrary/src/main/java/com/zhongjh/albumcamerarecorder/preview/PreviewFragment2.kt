@@ -35,8 +35,11 @@ class PreviewFragment2 : BasePreviewFragment2() {
      * 获取当前的数据
      */
     override fun getDatas(): ArrayList<LocalMedia> {
-        Log.d("PreviewFragment2", "id: " + mMainModel.localMedias2.value?.type + " size:" + (mMainModel.localMedias.value?.data?.size ?: "") + " page:" + mMainModel.page)
-        return mMainModel.localMedias.value?.data ?: ArrayList()
+        Log.d(
+            "PreviewFragment2",
+            " size:" + mMainModel.localMedias.size + " page:" + mMainModel.page
+        )
+        return mMainModel.localMedias
     }
 
     /**

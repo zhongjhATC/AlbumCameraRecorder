@@ -7,7 +7,7 @@ import android.widget.LinearLayout
 import kotlin.math.roundToInt
 
 /**
- * 封装共享View
+ * 该View是模仿跟RecyclerView的item一样宽高、一样的坐标，用于过渡到大图时的初始view
  */
 class SharedAnimationWrapper(private val viewWrapper: View) {
 

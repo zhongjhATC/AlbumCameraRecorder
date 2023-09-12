@@ -1,9 +1,6 @@
 package com.zhongjh.albumcamerarecorder.preview;
 
-import static com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection.LOADER_PREVIEW_ID;
-
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,24 +9,16 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
-import com.zhongjh.albumcamerarecorder.album.model.AlbumMediaCollection;
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
-import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
 import com.zhongjh.common.entity.LocalMedia;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 预览的Fragment
@@ -79,7 +68,7 @@ public class PreviewFragment extends BasePreviewFragment {
             }
         }
 
-        initLocalMedias(mMainModel.getLocalMedias().getValue());
+        initLocalMedias(mMainModel.getLocalMedias());
         return view;
     }
 
@@ -93,11 +82,11 @@ public class PreviewFragment extends BasePreviewFragment {
         super.onDestroy();
     }
 
-    private void initLocalMedias(MediaData mediaData) {
+    private void initLocalMedias(ArrayList<LocalMedia> localMediaArrayList) {
         PreviewPagerAdapter adapter = (PreviewPagerAdapter) mViewHolder.pager.getAdapter();
         if (adapter != null) {
-            adapter.addAll(mediaData.getData());
-            adapter.notifyItemRangeInserted(0, mediaData.getData().size() - 1);
+            adapter.addAll(localMediaArrayList);
+            adapter.notifyItemRangeInserted(0, localMediaArrayList.size() - 1);
             if (!mIsAlreadySetPosition) {
                 // onAlbumMediaLoad is called many times..
                 mIsAlreadySetPosition = true;
@@ -105,7 +94,7 @@ public class PreviewFragment extends BasePreviewFragment {
                     LocalMedia selected = getArguments().getParcelable(EXTRA_ITEM);
                     if (selected != null) {
                         // 减1是爲了拿到索引
-                        int selectedIndex = LocalMediaUtils.checkedNumOf(mediaData.getData(), selected) - 1;
+                        int selectedIndex = LocalMediaUtils.checkedNumOf(localMediaArrayList, selected) - 1;
                         mViewHolder.pager.setCurrentItem(selectedIndex, false);
                         mPreviousPos = selectedIndex;
                     }

@@ -852,6 +852,7 @@ abstract class BasePreviewFragment2 : Fragment() {
                 mViewHolder.sharedAnimationView.setBackgroundAlpha(1F)
                 mViewHolder.bottomToolbar.alpha = 1F
             } else {
+                // 将记录好的RecyclerView的位置大小，进行动画扩大到width,height
                 mViewHolder.sharedAnimationView.setViewParams(
                     viewParams.left,
                     viewParams.top,

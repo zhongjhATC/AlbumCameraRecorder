@@ -88,7 +88,7 @@ public class MediaViewUtil implements
         mRecyclerView.setOnRecyclerViewLoadMoreListener(() -> mMainModel.addAllPageMediaData(mAlbum.getId(), mAlbumSpec.getPageSize()));
 
         // 监听到新的相册数据
-        mMainModel.getLocalMedias().observe(mFragment.getViewLifecycleOwner(), mediaData -> {
+        mMainModel.getLocalMediaPages().observe(mFragment.getViewLifecycleOwner(), mediaData -> {
             // 如果没有数据，则关闭下拉加载
             mRecyclerView.setEnabledLoadMore(!mediaData.getData().isEmpty());
             if (mMainModel.getPage() == 1) {

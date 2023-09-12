@@ -7,9 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
-import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
+import com.zhongjh.common.entity.LocalMedia
 
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
@@ -47,10 +47,15 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * 多媒体文件数据集
+     * 多媒体文件数据集,只存在于一页的,主要用于通知ui增加新的一页数据
      */
-    private val _localMedias = MutableLiveData<MediaData>()
-    val localMedias: LiveData<MediaData> get() = _localMedias
+    private val _localMediaPages = MutableLiveData<MediaData>()
+    val localMediaPages: LiveData<MediaData> get() = _localMediaPages
+
+    /**
+     * 多媒体文件数据集的缓存，相册和预览都会用到
+     */
+    val localMedias = ArrayList<LocalMedia>()
 
     /**
      * 分页相册的当前页码
@@ -119,14 +124,10 @@ class MainModel(application: Application) : AndroidViewModel(application) {
             bucketId, page, pageSize, pageSize
         ) { data, currentPage, isHasMore ->
             val mediaData = MediaData(data, isHasMore)
-            localMedias.value?.data?.addAll(data)
-            localMedias.value?.isHasNextMore = isHasMore
-            Log.d(
-                tag,
-                "id: " + localMedias2.value?.type + " getLocalMedias().data.size: " + localMedias.value?.data?.size
-            )
+            localMedias.addAll(data)
+            Log.d(tag, " localMedias.size: " + localMedias.size)
             // 通知UI有新的数据
-            _localMedias.postValue(mediaData)
+            _localMediaPages.postValue(mediaData)
         }
     }
 
