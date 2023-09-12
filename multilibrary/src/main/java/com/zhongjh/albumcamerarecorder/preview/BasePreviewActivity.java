@@ -45,6 +45,7 @@ import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.StringUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.common.widget.IncapableDialog;
@@ -751,10 +752,14 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                             item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, finalNewFile, true);
                             // 如果是编辑过的加入相册
                             if (item.getOldPath() != null) {
-                                Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), finalNewFile, TYPE_VIDEO,
-                                        item.getDuration(), item.getWidth(), item.getHeight(),
-                                        mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
-                                item.setId(MediaStoreUtils.getId(uri));
+                                if (mGlobalSpec.isAddAlbumByVideo()) {
+                                    Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), finalNewFile, TYPE_VIDEO,
+                                            item.getDuration(), item.getWidth(), item.getHeight(),
+                                            mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
+                                    item.setId(MediaStoreUtils.getId(uri));
+                                } else {
+                                    item.setId(StringUtils.stringToNum(item.getPath()));
+                                }
                             }
                             Log.d(TAG, "不存在新建文件");
                         }
@@ -801,10 +806,15 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile, isCompress);
         // 如果是编辑过的加入相册
         if (item.getOldPath() != null) {
-            Uri uri = MediaStoreUtils.displayToGallery(this, newFile, TYPE_PICTURE,
-                    item.getDuration(), item.getWidth(), item.getHeight(),
-                    mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-            item.setId(MediaStoreUtils.getId(uri));
+            if (mGlobalSpec.isAddAlbumByEdit()) {
+                Uri uri = MediaStoreUtils.displayToGallery(this, newFile, TYPE_PICTURE,
+                        item.getDuration(), item.getWidth(), item.getHeight(),
+                        mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                item.setId(MediaStoreUtils.getId(uri));
+            } else {
+                item.setId(StringUtils.stringToNum(item.getPath()));
+            }
+
         }
     }
 

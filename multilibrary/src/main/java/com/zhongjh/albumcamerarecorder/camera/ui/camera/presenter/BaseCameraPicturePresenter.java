@@ -33,6 +33,7 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.StringUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
 
@@ -365,11 +366,15 @@ public class BaseCameraPicturePresenter
                 }
                 for (LocalFile item : newFiles) {
                     if (item.getPath() != null) {
-                        // 加入图片到android系统库里面
-                        Uri uri = MediaStoreUtils.displayToGallery(baseCameraFragment.getMyContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
-                                pictureMediaStoreCompat.getSaveStrategy().getDirectory(), pictureMediaStoreCompat);
-                        // 加入相册后的最后是id，直接使用该id
-                        item.setId(MediaStoreUtils.getId(uri));
+                        if (baseCameraFragment.getGlobalSpec().isAddAlbumByCamera()) {
+                            // 加入图片到android系统库里面
+                            Uri uri = MediaStoreUtils.displayToGallery(baseCameraFragment.getMyContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                                    pictureMediaStoreCompat.getSaveStrategy().getDirectory(), pictureMediaStoreCompat);
+                            // 加入相册后的最后是id，直接使用该id
+                            item.setId(MediaStoreUtils.getId(uri));
+                        } else {
+                            item.setId(StringUtils.stringToNum(item.getPath()));
+                        }
                         item.setMimeType(MimeType.JPEG.getMimeTypeName());
                         item.setUri(pictureMediaStoreCompat.getUri(item.getPath()));
                     }

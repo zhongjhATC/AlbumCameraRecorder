@@ -180,6 +180,13 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
         return this
     }
 
+    override fun isAddAlbum(byEdit: Boolean, byCamera: Boolean, byVideo: Boolean): GlobalSetting {
+        mGlobalSpec.isAddAlbumByEdit = byEdit
+        mGlobalSpec.isAddAlbumByCamera = byCamera
+        mGlobalSpec.isAddAlbumByVideo = byVideo
+        return this
+    }
+
     override fun setOnImageCompressionInterface(listener: ImageCompressionInterface): GlobalSetting {
         mGlobalSpec.imageCompressionInterface = WeakReference(listener).get()
         return this

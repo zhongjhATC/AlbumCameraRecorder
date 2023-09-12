@@ -28,6 +28,7 @@ import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.StringUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -300,11 +301,16 @@ public class PreviewVideoActivity extends AppCompatActivity {
         MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplicationContext(), newFile.getPath());
         mLocalFile.setWidth(mediaExtraInfo.getWidth());
         mLocalFile.setHeight(mediaExtraInfo.getHeight());
-        Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
-                mLocalFile.getWidth(), mLocalFile.getHeight(),
-                mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
-        // 加入相册后的最后是id，直接使用该id
-        mLocalFile.setId(MediaStoreUtils.getId(uri));
+        if (mGlobalSpec.isAddAlbumByVideo()) {
+            Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
+                    mLocalFile.getWidth(), mLocalFile.getHeight(),
+                    mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
+            // 加入相册后的最后是id，直接使用该id
+            mLocalFile.setId(MediaStoreUtils.getId(uri));
+        } else {
+            // 用当前时间代替id
+            mLocalFile.setId(StringUtils.stringToNum(newFile.getPath()));
+        }
         mLocalFile.setPath(newFile.getPath());
         mLocalFile.setUri(mVideoMediaStoreCompat.getUri(newFile.getPath()));
         mLocalFile.setSize(newFile.length());
