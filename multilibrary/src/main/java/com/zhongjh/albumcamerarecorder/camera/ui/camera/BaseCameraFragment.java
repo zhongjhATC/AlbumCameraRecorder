@@ -595,6 +595,7 @@ public abstract class BaseCameraFragment
                     ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
                     for (MultiMedia item : selected) {
                         BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri(), item.getWidth(), item.getHeight());
+                        bitmapData.setTemporaryId(item.getId());
                         bitmapDatas.add(bitmapData);
                     }
                     // 全部刷新

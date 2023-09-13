@@ -205,6 +205,8 @@ public class MainActivity extends BaseActivity {
         mGlobalSetting.defaultPosition(1);
         // 启动过场动画，从下往上动画
         mGlobalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());
+        // 设置图片编辑、拍照、录像后是否加入相册功能，默认加入
+        mGlobalSetting.isAddAlbum(mBinding.cbIsAddAlbumByEdit.isChecked(),mBinding.cbIsAddAlbumByCamera.isChecked(),mBinding.cbIsAddAlbumByVideo.isChecked());
         // 是否支持编辑图片，预览相册、拍照处拥有编辑功能
         mGlobalSetting.isImageEdit(mBinding.cbIsEdit.isChecked());
         if (mBinding.cbAlbum.isChecked())

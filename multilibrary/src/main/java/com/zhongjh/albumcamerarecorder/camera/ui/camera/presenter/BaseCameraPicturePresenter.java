@@ -251,6 +251,7 @@ public class BaseCameraPicturePresenter
         File file = pictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
         Uri uri = pictureMediaStoreCompat.getUri(file.getPath());
         BitmapData bitmapData = new BitmapData(file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
+        bitmapData.setTemporaryId(System.currentTimeMillis());
         // 回收bitmap
         if (bitmap.isRecycled()) {
             // 回收并且置为null
@@ -351,6 +352,8 @@ public class BaseCameraPicturePresenter
                     File newFile = pictureMediaStoreCompat.createFile(newFileName, 0, false);
                     // new localFile
                     LocalFile localFile = new LocalFile();
+                    // 先用临时id作为id
+                    localFile.setId(item.getTemporaryId());
                     localFile.setPath(newFile.getAbsolutePath());
                     localFile.setWidth(item.getWidth());
                     localFile.setHeight(item.getHeight());
@@ -372,8 +375,6 @@ public class BaseCameraPicturePresenter
                                     pictureMediaStoreCompat.getSaveStrategy().getDirectory(), pictureMediaStoreCompat);
                             // 加入相册后的最后是id，直接使用该id
                             item.setId(MediaStoreUtils.getId(uri));
-                        } else {
-                            item.setId(StringUtils.stringToNum(item.getPath()));
                         }
                         item.setMimeType(MimeType.JPEG.getMimeTypeName());
                         item.setUri(pictureMediaStoreCompat.getUri(item.getPath()));

@@ -665,6 +665,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
         ThreadUtils.executeByIo(getCompressFileTask());
     }
 
+    /**
+     * 来自相册才支持
+     * 完成压缩-复制的异步线程
+     */
     private ThreadUtils.SimpleTask<Void> getCompressFileTask() {
         mCompressFileTask = new ThreadUtils.SimpleTask<Void>() {
 
@@ -758,7 +762,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                                             mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
                                     item.setId(MediaStoreUtils.getId(uri));
                                 } else {
-                                    item.setId(StringUtils.stringToNum(item.getPath()));
+                                    item.setId(System.currentTimeMillis());
                                 }
                             }
                             Log.d(TAG, "不存在新建文件");
@@ -812,7 +816,7 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
                         mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
                 item.setId(MediaStoreUtils.getId(uri));
             } else {
-                item.setId(StringUtils.stringToNum(item.getPath()));
+                item.setId(System.currentTimeMillis());
             }
 
         }

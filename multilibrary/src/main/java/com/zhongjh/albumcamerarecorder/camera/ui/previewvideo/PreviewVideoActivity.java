@@ -309,7 +309,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
             mLocalFile.setId(MediaStoreUtils.getId(uri));
         } else {
             // 用当前时间代替id
-            mLocalFile.setId(StringUtils.stringToNum(newFile.getPath()));
+            mLocalFile.setId(System.currentTimeMillis());
         }
         mLocalFile.setPath(newFile.getPath());
         mLocalFile.setUri(mVideoMediaStoreCompat.getUri(newFile.getPath()));
