@@ -12,6 +12,10 @@ import java.io.File;
  */
 public class BitmapData {
 
+    /**
+     * 临时id
+     */
+    private Long temporaryId;
     private String path;
     private Uri uri;
     private int width;
@@ -22,6 +26,14 @@ public class BitmapData {
         this.uri = uri;
         this.width = width;
         this.height = height;
+    }
+
+    public Long getTemporaryId() {
+        return temporaryId;
+    }
+
+    public void setTemporaryId(Long temporaryId) {
+        this.temporaryId = temporaryId;
     }
 
     public String getPath() {
@@ -55,4 +67,6 @@ public class BitmapData {
     public void setHeight(int height) {
         this.height = height;
     }
+
+
 }

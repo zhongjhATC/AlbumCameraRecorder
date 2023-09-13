@@ -102,7 +102,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         ArrayList<MultiMedia> items = new ArrayList<>();
         for (BitmapData item : mListData) {
             MultiMedia multiMedia = new MultiMedia();
-            multiMedia.setId(mListData.indexOf(item));
+            multiMedia.setId(item.getTemporaryId());
             multiMedia.setUri(item.getUri());
             multiMedia.setPath(item.getPath());
             multiMedia.setMimeType(MimeType.JPEG.toString());

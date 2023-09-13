@@ -26,4 +26,34 @@ public final class StringUtils {
         return true;
     }
 
+    /**
+     * 将字母转换成数字
+     * @param input 任意字符串
+     * @return 转成数字
+     */
+    public static Long stringToNum(String input) {
+        String reg = "[a-zA-Z]";
+        String regNum = "^[0-9]*$";
+        StringBuilder strBuf = new StringBuilder();
+        // 转换为小写
+        input = input.toLowerCase().trim();
+        if (!"".equals(input)) {
+            for (char c : input.toCharArray()) {
+                if (String.valueOf(c).matches(reg)) {
+                    // 如果是字母则加入
+                    strBuf.append(c - 96);
+                } else if (String.valueOf(c).matches(regNum)) {
+                    // 如果是数字直接加入
+                    strBuf.append(c);
+                } else {
+                    // 如果是别的则直接转成9
+                    strBuf.append("9");
+                }
+            }
+            return Long.parseLong(strBuf.toString());
+        } else {
+            return 0L;
+        }
+    }
+
 }

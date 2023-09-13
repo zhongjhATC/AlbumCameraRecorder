@@ -250,6 +250,7 @@ public class BaseCameraPicturePresenter
         File file = pictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
         Uri uri = pictureMediaStoreCompat.getUri(file.getPath());
         BitmapData bitmapData = new BitmapData(file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
+        bitmapData.setTemporaryId(System.currentTimeMillis());
         // 回收bitmap
         if (bitmap.isRecycled()) {
             // 回收并且置为null
@@ -330,71 +331,69 @@ public class BaseCameraPicturePresenter
      */
     @Override
     public ThreadUtils.SimpleTask<ArrayList<LocalFile>> getMovePictureFileTask() {
-//        movePictureFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
-//            @Override
-//            public ArrayList<LocalFile> doInBackground() throws IOException {
-//                // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
-//                ArrayList<LocalFile> newFiles = new ArrayList<>();
-//                // 将 缓存文件 拷贝到 配置目录
-//                for (BitmapData item : bitmapData) {
-//                    File oldFile = new File(item.getPath());
-//                    // 压缩图片
-//                    File compressionFile;
-//                    if (baseCameraFragment.getGlobalSpec().getImageCompressionInterface() != null) {
-//                        compressionFile = baseCameraFragment.getGlobalSpec().getImageCompressionInterface().compressionFile(baseCameraFragment.getMyContext(), oldFile);
-//                    } else {
-//                        compressionFile = oldFile;
-//                    }
-//                    // 移动文件,获取文件名称
-//                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
-//                    File newFile = pictureMediaStoreCompat.createFile(newFileName, 0, false);
-//                    // new localFile
-//                    LocalFile localFile = new LocalFile();
-//                    localFile.setPath(newFile.getAbsolutePath());
-//                    localFile.setWidth(item.getWidth());
-//                    localFile.setHeight(item.getHeight());
-//                    localFile.setSize(compressionFile.length());
-//                    newFiles.add(localFile);
-//                    FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
-//                        if (ioProgress >= 1) {
-//                            // 每次迁移完一个文件的进度
-//                            int progress = 100 / bitmapData.size();
-//                            ThreadUtils.runOnUiThread(() -> baseCameraFragment.setProgress(progress));
-//                        }
-//                    });
-//                }
-//                for (LocalFile item : newFiles) {
-//                    if (item.getPath() != null) {
-//                        // 加入图片到android系统库里面
-//                        Uri uri = MediaStoreUtils.displayToGallery(baseCameraFragment.getMyContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
-//                                pictureMediaStoreCompat.getSaveStrategy().getDirectory(), pictureMediaStoreCompat);
-//                        // 加入相册后的最后是id，直接使用该id
-//                        item.setId(MediaStoreUtils.getId(uri));
-//                        item.setMimeType(MimeType.JPEG.getMimeTypeName());
-//                        item.setUri(pictureMediaStoreCompat.getUri(item.getPath()));
-//                    }
-//                }
-//                // 执行完成
-//                return newFiles;
-//            }
-//
-//            @Override
-//            public void onSuccess(ArrayList<LocalFile> newFiles) {
-//                baseCameraFragment.commitPictureSuccess(newFiles);
-//            }
-//
-//            @Override
-//            public void onFail(Throwable t) {
-//                super.onFail(t);
-//                baseCameraFragment.commitFail(t);
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                super.onCancel();
-//                baseCameraFragment.cancel();
-//            }
-//        };
+        movePictureFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalFile>>() {
+            @Override
+            public ArrayList<LocalFile> doInBackground() throws IOException {
+                // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
+                ArrayList<LocalFile> newFiles = new ArrayList<>();
+                // 将 缓存文件 拷贝到 配置目录
+                for (BitmapData item : bitmapData) {
+                    File oldFile = new File(item.getPath());
+                    // 压缩图片
+                    File compressionFile;
+                    if (baseCameraFragment.getGlobalSpec().getImageCompressionInterface() != null) {
+                        compressionFile = baseCameraFragment.getGlobalSpec().getImageCompressionInterface().compressionFile(baseCameraFragment.getMyContext(), oldFile);
+                    } else {
+                        compressionFile = oldFile;
+                    }
+                    // 移动文件,获取文件名称
+                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
+                    File newFile = pictureMediaStoreCompat.createFile(newFileName, 0, false);
+                    // new localFile
+                    LocalFile localFile = new LocalFile();
+                    // 先用临时id作为id
+                    localFile.setId(item.getTemporaryId());
+                    localFile.setPath(newFile.getAbsolutePath());
+                    localFile.setWidth(item.getWidth());
+                    localFile.setHeight(item.getHeight());
+                    localFile.setSize(compressionFile.length());
+                    newFiles.add(localFile);
+                    FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
+                        if (ioProgress >= 1) {
+                            // 每次迁移完一个文件的进度
+                            int progress = 100 / bitmapData.size();
+                            ThreadUtils.runOnUiThread(() -> baseCameraFragment.setProgress(progress));
+                        }
+                    });
+                }
+                for (LocalFile item : newFiles) {
+                    if (item.getPath() != null) {
+                        if (baseCameraFragment.getGlobalSpec().isAddAlbumByCamera()) {
+                            // 加入图片到android系统库里面
+                            Uri uri = MediaStoreUtils.displayToGallery(baseCameraFragment.getMyContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
+                                    pictureMediaStoreCompat.getSaveStrategy().getDirectory(), pictureMediaStoreCompat);
+                            // 加入相册后的最后是id，直接使用该id
+                            item.setId(MediaStoreUtils.getId(uri));
+                        }
+                        item.setMimeType(MimeType.JPEG.getMimeTypeName());
+                        item.setUri(pictureMediaStoreCompat.getUri(item.getPath()));
+                    }
+                }
+                // 执行完成
+                return newFiles;
+            }
+
+            @Override
+            public void onSuccess(ArrayList<LocalFile> newFiles) {
+                baseCameraFragment.commitPictureSuccess(newFiles);
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                baseCameraFragment.commitFail(t);
+            }
+        };
         return movePictureFileTask;
     }
 
