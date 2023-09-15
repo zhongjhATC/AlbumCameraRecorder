@@ -903,8 +903,8 @@ abstract class BasePreviewFragment2 : Fragment() {
         if (MediaUtils.isLongImage(realWidth, realHeight)) {
             return intArrayOf(screenWidth, screenHeight)
         }
-        // 如果宽高其中一个<=0 或者 宽度>高度 重新获取宽高
-        if ((realWidth <= 0 || realHeight <= 0) || (realWidth > realHeight)) {
+        // 如果宽高其中一个<=0  重新获取宽高 (如果以后有bug，可以尝试宽度>高度也重新获取?没明白)
+        if ((realWidth <= 0 || realHeight <= 0)) {
             withContext(Dispatchers.IO) {
                 media.realPath.let { realPath ->
                     MediaUtils.getMediaInfo(requireContext(), media.mimeType, realPath).let {
