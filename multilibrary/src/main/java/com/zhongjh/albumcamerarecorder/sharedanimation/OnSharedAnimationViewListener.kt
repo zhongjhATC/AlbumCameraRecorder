@@ -7,7 +7,7 @@ interface OnSharedAnimationViewListener {
 
     fun onBeginBackMinAnim()
     fun onBeginBackMinMagicalFinish(isResetSize: Boolean)
-    fun onBeginMagicalAnimComplete(mojitoView: SharedAnimationView, showImmediately: Boolean)
+    fun onBeginSharedAnimComplete(sharedAnimationView: SharedAnimationView, showImmediately: Boolean)
     fun onBackgroundAlpha(alpha: Float)
     fun onMagicalViewFinish()
 }

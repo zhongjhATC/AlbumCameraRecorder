@@ -47,10 +47,18 @@ interface ImageEngine {
      * 场景仅用于预览界面的网络图片
      *
      * @param context   上下文
+     * @param resizeX   原始图像所需的X尺寸
+     * @param resizeY   原始图像的所需Y尺寸
      * @param imageView ImageView控件
      * @param url       加载图像的url
      */
-    fun loadUrlImage(context: Context, imageView: ImageView, url: String)
+    fun loadUrlImage(
+        context: Context,
+        resizeX: Int,
+        resizeY: Int,
+        imageView: ImageView,
+        url: String
+    )
 
     /**
      * 加载静态图像资源

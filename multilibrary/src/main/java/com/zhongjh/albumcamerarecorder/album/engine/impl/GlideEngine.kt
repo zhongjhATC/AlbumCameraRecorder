@@ -45,9 +45,16 @@ class GlideEngine : ImageEngine {
             .into(imageView)
     }
 
-    override fun loadUrlImage(context: Context, imageView: ImageView, url: String) {
+    override fun loadUrlImage(
+        context: Context,
+        resizeX: Int,
+        resizeY: Int,
+        imageView: ImageView,
+        url: String
+    ) {
         Glide.with(context)
             .load(url)
+            .override(resizeX, resizeY)
             .priority(Priority.HIGH)
             .fitCenter()
             .into(imageView)

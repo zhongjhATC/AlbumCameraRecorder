@@ -80,7 +80,7 @@ object RecycleItemViewParams {
                 viewParam.top = location[1] - statusBarHeight
                 viewParam.width = view.width
                 viewParam.height = view.height
-                Log.d("RecycleItemViewParams","left:" + viewParam.left + " viewParam.top:" + viewParam.top)
+                Log.d("RecycleItemViewParams","left: ${viewParam.left} viewParam.top: ${viewParam.top} viewParam.width: ${viewParam.width} viewParam.height: ${viewParam.height}")
             }
             viewParams.add(viewParam)
         }

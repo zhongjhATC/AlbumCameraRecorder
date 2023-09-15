@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -407,6 +408,12 @@ abstract class BasePreviewFragment2 : Fragment() {
         } else {
             mViewHolder.sharedAnimationView.setBackgroundAlpha(1.0F)
         }
+        mViewHolder.sharedAnimationView.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.black
+            )
+        )
         mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object :
             OnSharedAnimationViewListener {
             override fun onBeginBackMinAnim() {
@@ -415,13 +422,19 @@ abstract class BasePreviewFragment2 : Fragment() {
             override fun onBeginBackMinMagicalFinish(isResetSize: Boolean) {
             }
 
-            override fun onBeginMagicalAnimComplete(
-                mojitoView: SharedAnimationView,
+            override fun onBeginSharedAnimComplete(
+                sharedAnimationView: SharedAnimationView,
                 showImmediately: Boolean
             ) {
+                // 开始共享动画完成后
+                this@BasePreviewFragment2.onBeginSharedAnimComplete(
+                    sharedAnimationView,
+                    showImmediately
+                )
             }
 
             override fun onBackgroundAlpha(alpha: Float) {
+                this@BasePreviewFragment2.onBackgroundAlpha(alpha)
             }
 
             override fun onMagicalViewFinish() {
@@ -437,9 +450,8 @@ abstract class BasePreviewFragment2 : Fragment() {
         mAdapter.addAll(getDatas())
         mAdapter.notifyItemRangeChanged(0, getDatas().size)
         mViewPager2.adapter = mAdapter
-        mViewPager2.setCurrentItem(getPreviewPosition(), false)
 
-        // adapter显示view时的触发事件,主要用于显示共享动画
+        // adapter显示view时的触发事件
         mAdapter.setOnFirstAttachedToWindowListener(object :
             PreviewPagerAdapter.OnFirstAttachedToWindowListener {
             override fun onViewFirstAttachedToWindow(holder: PreviewPagerAdapter.PreviewViewHolder) {
@@ -449,6 +461,7 @@ abstract class BasePreviewFragment2 : Fragment() {
 
         // 多图时滑动事件
         mViewPager2.registerOnPageChangeCallback(mOnPageChangeCallback)
+        mViewPager2.setCurrentItem(getPreviewPosition(), false)
     }
 
     /**
@@ -820,32 +833,41 @@ abstract class BasePreviewFragment2 : Fragment() {
             return
         }
         if (isSharedAnimation()) {
-            startSharedAnimation(
-                holder,
-                getDatas()[getPreviewPosition()]
-            )
+            setImageViewScaleType(holder, getDatas()[getPreviewPosition()])
+        }
+    }
+
+    /**
+     * 设置图片的scaleType
+     * @param holder 预览的view
+     * @param media 实体
+     */
+    open fun setImageViewScaleType(
+        holder: PreviewPagerAdapter.PreviewViewHolder,
+        media: LocalMedia
+    ) {
+        if (media.width == 0 && media.height == 0) {
+            holder.imageView.scaleType = ScaleType.FIT_CENTER
+        } else {
+            // 这个才能保持跟RecyclerView的item一样scaleType，不然突兀
+            holder.imageView.scaleType = ScaleType.CENTER_CROP
         }
     }
 
     /**
      * 开启了共享动画
      *
-     * @param holder 预览的view
+     * @param position 索引
      */
-    open fun startSharedAnimation(
-        holder: PreviewPagerAdapter.PreviewViewHolder,
-        media: LocalMedia
-    ) {
+    open fun startSharedAnimation(position: Int) {
+        // 先隐藏viewPager,等共享动画结束后，再显示viewPager
         mViewPager2.alpha = 0F
-        if (media.width == 0 && media.height == 0) {
-            holder.imageView.scaleType = ScaleType.FIT_CENTER
-        }
         viewModel.viewModelScope.launch {
+            val media = getDatas()[position]
             val mediaRealSize = getMediaRealSizeFromMedia(media)
             val width = mediaRealSize[0]
             val height = mediaRealSize[1]
-            val viewParams =
-                RecycleItemViewParams.getItem(getPreviewPosition())
+            val viewParams = RecycleItemViewParams.getItem(getPreviewPosition())
 
             if (viewParams == null || width == 0 && height == 0) {
                 mViewHolder.sharedAnimationView.startNormal(width, height, false)
@@ -905,6 +927,57 @@ abstract class BasePreviewFragment2 : Fragment() {
     }
 
     /**
+     * 开始共享动画完成后
+     */
+    open fun onBeginSharedAnimComplete(
+        sharedAnimationView: SharedAnimationView?,
+        showImmediately: Boolean
+    ) {
+        val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
+        val media = getDatas()[mViewPager2.currentItem]
+//        val isResetSize = (media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0
+//        val realWidth = if (isResetSize) media.cropWidth else media.width
+//        val realHeight = if (isResetSize) media.cropHeight else media.height
+        val realWidth = media.width
+        val realHeight = media.height
+        if (MediaUtils.isLongImage(realWidth, realHeight)) {
+            currentHolder.imageView.scaleType = ScaleType.CENTER_CROP
+        } else {
+            currentHolder.imageView.scaleType = ScaleType.FIT_CENTER
+        }
+    }
+
+    open fun onBackgroundAlpha(alpha: Float) {
+        mViewHolder.sharedAnimationView.setBackgroundAlpha(alpha)
+        mViewHolder.bottomToolbar.alpha = alpha
+    }
+
+    /**
+     * 滑动事件
+     */
+    open fun onViewPageSelected(position: Int) {
+        setPreviewPosition(position)
+//        setTitleText(position + 1)
+        startSharedAnimation(position)
+//        if (isLoadMoreThreshold(position)) {
+//            loadMediaMore()
+//        }
+//        if (isPlayPageSelected) {
+//            if (config.isAutoPlay) {
+//                autoPlayAudioAndVideo()
+//            } else {
+//                val currentHolder = mAdapter.getCurrentViewHolder(viewPager.currentItem)
+//                if (currentHolder is PreviewVideoHolder) {
+//                    if (currentHolder.ivPlay.visibility == View.GONE) {
+//                        currentHolder.ivPlay.visibility = View.VISIBLE
+//                    }
+//                }
+//            }
+//        }
+//        isPlayPageSelected = true
+    }
+
+    /**
      * 滑动事件
      */
     private val mOnPageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
@@ -931,7 +1004,7 @@ abstract class BasePreviewFragment2 : Fragment() {
 //                }
 //                updateUi(item);
             }
-            setPreviewPosition(position);
+            onViewPageSelected(position)
         }
     }
 

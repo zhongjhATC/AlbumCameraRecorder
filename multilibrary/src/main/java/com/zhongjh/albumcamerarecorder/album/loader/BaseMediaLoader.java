@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.album.loader;
 
 
 import android.content.Context;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 

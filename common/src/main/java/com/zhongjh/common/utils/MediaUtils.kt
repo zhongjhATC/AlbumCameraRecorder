@@ -187,10 +187,11 @@ object MediaUtils {
     }
 
     /**
-     *
+     * 获取文件信息,视频大的话会耗时过大
      */
     @ExperimentalCoroutinesApi
     suspend fun getMediaInfo(context: Context, mimeType: String?, path: String): LocalMedia {
+        Log.d(TAG,"关闭流 FileUtils.close")
         return withContext(Dispatchers.IO) {
             suspendCancellableCoroutine {
                 val localMedia = LocalMedia()
@@ -233,6 +234,9 @@ object MediaUtils {
                             localMedia.width = width
                             localMedia.height = height
                         }
+                    }
+                    inputStream?.apply {
+                        FileUtils.close(this)
                     }
                 } else if (isVideo(mimeType)) {
                     // 实例化MediaMetadataRetriever,作用获取视频的属性
@@ -278,12 +282,8 @@ object MediaUtils {
                     }
 
                 }
+                Log.d(TAG,"关闭流 FileUtils.close")
                 it.resume(localMedia) {
-                    Log.d(TAG,"关闭流 FileUtils.close")
-                    // 关闭流
-                    inputStream?.apply {
-                        FileUtils.close(this)
-                    }
                 }
             }
         }

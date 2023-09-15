@@ -79,7 +79,6 @@ public class Glide4EngineProgress implements ImageEngine {
                 .load(uri)
                 .apply(new RequestOptions()
                         .override(resizeX, resizeY)
-                        .priority(Priority.HIGH)
                         .fitCenter())
                 .into(imageView);
     }
@@ -91,7 +90,6 @@ public class Glide4EngineProgress implements ImageEngine {
                 .load(uri)
                 .apply(new RequestOptions()
                         .override(resizeX, resizeY)
-                        .priority(Priority.HIGH)
                         .fitCenter())
                 .into(imageView);
     }

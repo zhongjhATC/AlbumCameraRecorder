@@ -54,21 +54,14 @@ public class Glide4Engine implements ImageEngine {
                 .load(uri)
                 .apply(new RequestOptions()
                         .override(resizeX, resizeY)
-                        .priority(Priority.HIGH)
                         .error(R.drawable.ic_failed)
                         .fitCenter())
                 .into(imageView);
     }
 
     @Override
-    public void loadUrlImage(@NotNull Context context, @NotNull ImageView imageView, @NotNull String url) {
-        Glide.with(context)
-                .load(url)
-                .apply(new RequestOptions()
-                        .priority(Priority.HIGH)
-                        .error(R.drawable.ic_failed)
-                        .fitCenter())
-                .into(imageView);
+    public void loadUrlImage(@NotNull Context context, int resizeX, int resizeY, @NotNull ImageView imageView, @NotNull String url) {
+        Glide.with(context).load(url).override(resizeX, resizeY).into(imageView);
     }
 
     @Override
@@ -76,7 +69,6 @@ public class Glide4Engine implements ImageEngine {
         Glide.with(context)
                 .load(uri)
                 .apply(new RequestOptions()
-                        .priority(Priority.HIGH)
                         .error(R.drawable.ic_failed)
                         .fitCenter())
                 .into(imageView);
@@ -87,7 +79,6 @@ public class Glide4Engine implements ImageEngine {
         Glide.with(context)
                 .load(resourceId)
                 .apply(new RequestOptions()
-                        .priority(Priority.HIGH)
                         .error(R.drawable.ic_failed)
                         .fitCenter())
                 .into(imageView);
@@ -100,7 +91,6 @@ public class Glide4Engine implements ImageEngine {
                 .load(uri)
                 .apply(new RequestOptions()
                         .override(resizeX, resizeY)
-                        .priority(Priority.HIGH)
                         .fitCenter())
                 .into(imageView);
     }

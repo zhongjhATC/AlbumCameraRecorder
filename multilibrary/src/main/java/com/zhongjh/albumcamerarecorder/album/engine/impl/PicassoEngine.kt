@@ -37,8 +37,14 @@ class PicassoEngine : ImageEngine {
             .centerInside().into(imageView)
     }
 
-    override fun loadUrlImage(context: Context, imageView: ImageView, url: String) {
-        Picasso.with(context).load(url).priority(Picasso.Priority.HIGH)
+    override fun loadUrlImage(
+        context: Context,
+        resizeX: Int,
+        resizeY: Int,
+        imageView: ImageView,
+        url: String
+    ) {
+        Picasso.with(context).load(url).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
             .centerInside().into(imageView)
     }
 

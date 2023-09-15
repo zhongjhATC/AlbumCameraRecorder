@@ -135,6 +135,16 @@ class SharedAnimationView @JvmOverloads constructor(
     }
 
     /**
+     * 设置背景颜色
+     * 设置backgroundView背景颜色，这样才能和共享动画一起出现，如果不自定义这个颜色，在加载数据比较大的视频上，就会先黑色背景，过1秒才显示视频这种问题出现
+     *
+     * @param color
+     */
+    override fun setBackgroundColor(color: Int) {
+        backgroundView.setBackgroundColor(color)
+    }
+
+    /**
      * 设置背景透明颜色度
      */
     fun setBackgroundAlpha(mAlpha: Float) {
@@ -232,8 +242,13 @@ class SharedAnimationView @JvmOverloads constructor(
             setShowEndParams()
         } else {
             val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+            // 执行0-1的这个中间不停触发的动画事件addUpdateListener
             valueAnimator.addUpdateListener { animation ->
                 val value = animation.animatedValue as Float
+                Log.d(
+                    tag,
+                    "beginShow $value $mOriginTop $targetImageTop $mOriginLeft $targetEndLeft $mOriginWidth $targetImageWidth $mOriginHeight $targetImageHeight"
+                )
                 showNormalMin(
                     value,
                     mOriginTop.toFloat(),
@@ -252,7 +267,7 @@ class SharedAnimationView @JvmOverloads constructor(
                 }
             })
             valueAnimator.interpolator = AccelerateDecelerateInterpolator()
-            valueAnimator.setDuration(animationDuration).start()
+            valueAnimator.setDuration(30000).start()
             changeBackgroundViewAlpha(false)
         }
     }
@@ -288,7 +303,7 @@ class SharedAnimationView @JvmOverloads constructor(
     private fun setShowEndParams() {
         isAnimating = false
         changeContentViewToFullscreen()
-        onSharedAnimationViewListener?.onBeginMagicalAnimComplete(this@SharedAnimationView, false)
+        onSharedAnimationViewListener?.onBeginSharedAnimComplete(this@SharedAnimationView, false)
     }
 
     private fun showNormalMin(
