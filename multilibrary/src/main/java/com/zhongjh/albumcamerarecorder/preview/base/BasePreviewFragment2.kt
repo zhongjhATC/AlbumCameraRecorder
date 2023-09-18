@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
@@ -333,6 +334,10 @@ abstract class BasePreviewFragment2 : Fragment() {
     override fun onDestroy() {
 //        mAdapter.destroy()
         mViewPager2.unregisterOnPageChangeCallback(mOnPageChangeCallback)
+        // 如果依附的Activity是MainActivity,就显示底部控件动画
+        if (requireActivity() is MainActivity) {
+            (requireActivity() as MainActivity).showHideTableLayoutAnimator(true)
+        }
         super.onDestroy()
     }
 
