@@ -13,7 +13,7 @@ import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
-import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
+import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGridInset;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -26,14 +26,14 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
  * @date 2022/9/19
  */
 public class MediaViewUtil implements
-        AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
+        AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
 
     public MediaViewUtil(FragmentActivity activity,
                          Fragment fragment,
                          MainModel mainModel,
                          RecyclerLoadMoreView recyclerView,
-                         AlbumMediaAdapter.CheckStateListener checkStateListener,
-                         AlbumMediaAdapter.OnMediaClickListener onMediaClickListener) {
+                         AlbumAdapter.CheckStateListener checkStateListener,
+                         AlbumAdapter.OnMediaClickListener onMediaClickListener) {
         mActivity = activity;
         mFragment = fragment;
         mMainModel = mainModel;
@@ -47,17 +47,17 @@ public class MediaViewUtil implements
     private final Fragment mFragment;
     private final MainModel mMainModel;
     private final RecyclerLoadMoreView mRecyclerView;
-    private AlbumMediaAdapter mAdapter;
+    private AlbumAdapter mAdapter;
     private Album2 mAlbum;
     private AlbumSpec mAlbumSpec;
     /**
      * 单选事件
      */
-    private AlbumMediaAdapter.CheckStateListener mCheckStateListener;
+    private AlbumAdapter.CheckStateListener mCheckStateListener;
     /**
      * 点击事件
      */
-    private AlbumMediaAdapter.OnMediaClickListener mOnMediaClickListener;
+    private AlbumAdapter.OnMediaClickListener mOnMediaClickListener;
 
     private void init() {
         // 先设置recyclerView的布局
@@ -72,7 +72,7 @@ public class MediaViewUtil implements
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity, spanCount));
         // 需要先设置布局获取确定的spanCount，才能设置adapter
-        mAdapter = new AlbumMediaAdapter(mActivity, mMainModel, getImageResize());
+        mAdapter = new AlbumAdapter(mActivity, mMainModel, getImageResize());
         Log.d("onSaveInstanceState", " mAdapter");
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);

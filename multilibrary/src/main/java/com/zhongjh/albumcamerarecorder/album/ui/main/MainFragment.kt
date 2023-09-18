@@ -7,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.zhongjh.albumcamerarecorder.BaseFragment
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.album.ui.MatissFragment
+import com.zhongjh.albumcamerarecorder.album.ui.AlbumFragment
 
 
 /**
- * 一个容器，容纳 MatissFragment和别的例如 PreviewFragment,一切都是为了过渡动画
+ * 一个容器，容纳 AlbumFragment 和别的例如 PreviewFragment,一切都是为了过渡动画
  * @author zhongjh
  * @date 2022/7/26
  */
@@ -25,11 +25,11 @@ class MainFragment : BaseFragment() {
             val mainFragment = MainFragment()
             val args = Bundle()
             mainFragment.arguments = args
-            args.putInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM, marginBottom)
+            args.putInt(AlbumFragment.ARGUMENTS_MARGIN_BOTTOM, marginBottom)
             return mainFragment
         }
 
-        const val MATISS_FRAGMENT_TAG = "matissFragment"
+        const val ALBUM_FRAGMENT_TAG = "albumFragment"
     }
 
     override fun onCreateView(
@@ -44,15 +44,15 @@ class MainFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("MainFragment", "onViewCreated")
         // 先通过标签形式查找
-        val matissFragment = childFragmentManager.findFragmentByTag(MATISS_FRAGMENT_TAG)
+        val albumFragment = childFragmentManager.findFragmentByTag(ALBUM_FRAGMENT_TAG)
         // 如果不存在，则重新创建并添加，如果已经存在就不用处理了，因为FragmentStateAdapter已经帮我们处理了
-        matissFragment ?: let {
-            val newMatissFragment = MatissFragment.newInstance(
-                arguments?.getInt(MatissFragment.ARGUMENTS_MARGIN_BOTTOM)
+        albumFragment ?: let {
+            val newAlbumFragment = AlbumFragment.newInstance(
+                arguments?.getInt(AlbumFragment.ARGUMENTS_MARGIN_BOTTOM)
                     ?: 0
             )
             childFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainerView, newMatissFragment, MATISS_FRAGMENT_TAG)
+                .add(R.id.fragmentContainerView, newAlbumFragment, ALBUM_FRAGMENT_TAG)
                 .commitAllowingStateLoss()
         }
     }

@@ -267,7 +267,7 @@ class SharedAnimationView @JvmOverloads constructor(
                 }
             })
             valueAnimator.interpolator = AccelerateDecelerateInterpolator()
-            valueAnimator.setDuration(30000).start()
+            valueAnimator.setDuration(animationDuration).start()
             changeBackgroundViewAlpha(false)
         }
     }

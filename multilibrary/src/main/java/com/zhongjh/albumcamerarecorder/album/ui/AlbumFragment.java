@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -24,14 +23,11 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.SharedElementCallback;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -41,7 +37,7 @@ import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListene
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
-import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumMediaAdapter;
+import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
@@ -66,8 +62,6 @@ import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
@@ -76,10 +70,10 @@ import java.util.Map;
  * @author zhongjh
  * @date 2018/8/22
  */
-public class MatissFragment extends Fragment implements OnLoadPageMediaDataListener,
-        AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener {
+public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListener,
+        AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
 
-    private final String TAG = MatissFragment.this.getClass().getSimpleName();
+    private final String TAG = AlbumFragment.this.getClass().getSimpleName();
 
     private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     public static final String ARGUMENTS_MARGIN_BOTTOM = "arguments_margin_bottom";
@@ -146,12 +140,12 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     /**
      * @param marginBottom 底部间距
      */
-    public static MatissFragment newInstance(int marginBottom) {
-        MatissFragment matissFragment = new MatissFragment();
+    public static AlbumFragment newInstance(int marginBottom) {
+        AlbumFragment albumFragment = new AlbumFragment();
         Bundle args = new Bundle();
-        matissFragment.setArguments(args);
+        albumFragment.setArguments(args);
         args.putInt(ARGUMENTS_MARGIN_BOTTOM, marginBottom);
-        return matissFragment;
+        return albumFragment;
     }
 
     /**
@@ -176,11 +170,11 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_matiss_zjh, container, false);
+        View view = inflater.inflate(R.layout.fragment_album_zjh, container, false);
 
         mViewHolder = new ViewHolder(view);
         initConfig();
-        mAlbumCompressFileTask = new AlbumCompressFileTask(mActivity, TAG, MatissFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
+        mAlbumCompressFileTask = new AlbumCompressFileTask(mActivity, TAG, AlbumFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
         initView(savedInstanceState);
         initActivityResult();
         initListener();
@@ -419,9 +413,9 @@ public class MatissFragment extends Fragment implements OnLoadPageMediaDataListe
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "MatissFragment onDestroy");
+        Log.d(TAG, "AlbumFragment onDestroy");
         if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
-            mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(MatissFragment.this.getClass());
+            mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(AlbumFragment.this.getClass());
             mGlobalSpec.setVideoCompressCoordinator(null);
         }
         if (mCompressFileTask != null) {

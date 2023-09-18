@@ -81,7 +81,7 @@
                 android:orientation="horizontal"
                 android:padding="16dp"
                 android:visibility="gone"
-                tools:showIn="@layout/fragment_matiss_zjh"
+                tools:showIn="@layout/fragment_album_zjh"
                 tools:visibility="visible">
 
                 <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView

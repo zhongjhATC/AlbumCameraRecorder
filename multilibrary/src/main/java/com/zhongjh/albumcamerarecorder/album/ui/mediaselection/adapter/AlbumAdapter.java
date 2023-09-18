@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -32,11 +31,11 @@ import java.util.List;
  *
  * @author zhongjh
  */
-public class AlbumMediaAdapter extends
+public class AlbumAdapter extends
         RecyclerView.Adapter<RecyclerView.ViewHolder> implements
         MediaGrid.OnMediaGridClickListener {
 
-    private final String TAG = AlbumMediaAdapter.this.getClass().getSimpleName();
+    private final String TAG = AlbumAdapter.this.getClass().getSimpleName();
     private static final int VIEW_TYPE_MEDIA = 0x01;
 
     private final MainModel mMainModel;
@@ -47,7 +46,7 @@ public class AlbumMediaAdapter extends
     private OnMediaClickListener mOnMediaClickListener;
     private final int mImageResize;
 
-    public AlbumMediaAdapter(Context context, MainModel mainModel, int imageResize) {
+    public AlbumAdapter(Context context, MainModel mainModel, int imageResize) {
         super();
         mAlbumSpec = AlbumSpec.INSTANCE;
         mMainModel = mainModel;
@@ -144,7 +143,7 @@ public class AlbumMediaAdapter extends
         // 是否多选时,显示数字
         if (mAlbumSpec.getCountable()) {
             // 显示数字
-            int checkedNum = LocalMediaUtils.checkedNumOf(data, item);
+            int checkedNum = mMainModel.getSelectedData().checkedNumOf(item);
             if (checkedNum > 0) {
                 // 设置启用,设置数量
                 mediaGrid.setCheckEnabled(true);

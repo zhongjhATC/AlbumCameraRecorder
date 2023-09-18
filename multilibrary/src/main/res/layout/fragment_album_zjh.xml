@@ -156,7 +156,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="@+id/tvOriginal"
             app:layout_constraintStart_toStartOf="@+id/original"
-            tools:showIn="@layout/fragment_matiss_zjh" />
+            tools:showIn="@layout/fragment_album_zjh" />
 
         <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
             android:id="@+id/original"

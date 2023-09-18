@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference
 import java.util.*
 
 /**
- * 多媒体的设置 - Matisse
+ * 多媒体的设置 - Album
  *
  * @author zhongjh
  * @date 2018/9/28

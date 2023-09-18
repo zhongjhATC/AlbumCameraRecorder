@@ -315,10 +315,15 @@ public class MediaPageLoader extends BaseMediaLoader {
                         continue;
                     }
                 }
-                int width = data.getInt(widthColumn);
-                int height = data.getInt(heightColumn);
                 long duration = data.getLong(durationColumn);
                 int orientation = data.getInt(orientationColumn);
+                int width = data.getInt(widthColumn);
+                int height = data.getInt(heightColumn);
+                // 如果是横向值,修改属性
+                if (orientation == 90 || orientation == 270) {
+                    width = data.getInt(heightColumn);
+                    height = data.getInt(widthColumn);
+                }
                 long size = data.getLong(sizeColumn);
                 String folderName = data.getString(folderNameColumn);
                 String fileName = data.getString(fileNameColumn);
@@ -342,7 +347,7 @@ public class MediaPageLoader extends BaseMediaLoader {
                         continue;
                     }
                 }
-                LocalMedia image = LocalMedia.parseLocalMedia(id, uri, absolutePath, fileName, folderName, duration,orientation,
+                LocalMedia image = LocalMedia.parseLocalMedia(id, uri, absolutePath, fileName, folderName, duration, orientation,
                         globalSpec.getMimeTypeSet(ModuleTypes.ALBUM), mimeType, width, height, size, bucketId, data.getLong(dateAddedColumn));
                 result.add(image);
             } while (data.moveToNext());
