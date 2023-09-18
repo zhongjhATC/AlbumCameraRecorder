@@ -285,6 +285,11 @@ abstract class BasePreviewFragment2 : Fragment() {
      */
     protected var mIsExternalUsers = false
 
+    /**
+     * 是否首次共享动画，只有第一次打开的时候才触发共享动画
+     */
+    private var mFirstSharedAnimation = true
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context.applicationContext
@@ -893,6 +898,31 @@ abstract class BasePreviewFragment2 : Fragment() {
     }
 
     /**
+     * 设置共享参数，主要是为了退出时的共享动画
+     */
+    open fun setSharedAnimationViewParams(position: Int) {
+        viewModel.viewModelScope.launch {
+            val media = getDatas()[position]
+            val mediaSize = getMediaRealSizeFromMedia(media)
+            val width = mediaSize[0]
+            val height = mediaSize[1]
+            val viewParams = RecycleItemViewParams.getItem(getPreviewPosition())
+            if (viewParams == null || width == 0 || height == 0) {
+                mViewHolder.sharedAnimationView.setViewParams(0, 0, 0, 0, width, height)
+            } else {
+                mViewHolder.sharedAnimationView.setViewParams(
+                    viewParams.left,
+                    viewParams.top,
+                    viewParams.width,
+                    viewParams.height,
+                    width,
+                    height
+                )
+            }
+        }
+    }
+
+    /**
      * 获取LocalMedia的宽高
      * @param media 文件
      */
@@ -958,7 +988,13 @@ abstract class BasePreviewFragment2 : Fragment() {
     open fun onViewPageSelected(position: Int) {
         setPreviewPosition(position)
 //        setTitleText(position + 1)
-        startSharedAnimation(position)
+        if (mFirstSharedAnimation) {
+            startSharedAnimation(position)
+            mFirstSharedAnimation = false
+        } else {
+            setSharedAnimationViewParams(position)
+        }
+
 //        if (isLoadMoreThreshold(position)) {
 //            loadMediaMore()
 //        }
