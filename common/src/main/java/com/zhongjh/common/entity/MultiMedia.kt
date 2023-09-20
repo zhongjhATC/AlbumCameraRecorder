@@ -15,7 +15,7 @@ import android.provider.MediaStore.*
  * @author zhongjh
  * @date 2019/1/22
  */
-open class MultiMedia : LocalFile, Parcelable {
+open class MultiMedia : LocalMedia, Parcelable {
 
     /**
      * 用于区分，因为九宫数据是允许选择重复的
@@ -34,12 +34,19 @@ open class MultiMedia : LocalFile, Parcelable {
 
     constructor() : super()
 
-    constructor(localFile: LocalFile) : super(localFile)
+    constructor(localMedia: LocalMedia) : super(localMedia)
 
     /**
      * 相册初始化调用
      */
-    constructor(id: Long, mimeType: String, size: Long, duration: Long, width: Int, height: Int) : super() {
+    constructor(
+        id: Long,
+        mimeType: String,
+        size: Long,
+        duration: Long,
+        width: Int,
+        height: Int
+    ) : super() {
         this.id = id
         this.mimeType = mimeType
         val contentUri: Uri = when {
@@ -140,12 +147,14 @@ open class MultiMedia : LocalFile, Parcelable {
         @JvmStatic
         @SuppressLint("Range")
         fun valueOf(cursor: Cursor): MultiMedia {
-            return MultiMedia(cursor.getLong(cursor.getColumnIndex(Files.FileColumns._ID)),
-                    cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE)),
-                    cursor.getLong(cursor.getColumnIndex(MediaColumns.SIZE)),
-                    cursor.getLong(cursor.getColumnIndex("duration")),
-                    cursor.getInt(cursor.getColumnIndex(MediaColumns.WIDTH)),
-                    cursor.getInt(cursor.getColumnIndex(MediaColumns.HEIGHT)))
+            return MultiMedia(
+                cursor.getLong(cursor.getColumnIndex(Files.FileColumns._ID)),
+                cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE)),
+                cursor.getLong(cursor.getColumnIndex(MediaColumns.SIZE)),
+                cursor.getLong(cursor.getColumnIndex("duration")),
+                cursor.getInt(cursor.getColumnIndex(MediaColumns.WIDTH)),
+                cursor.getInt(cursor.getColumnIndex(MediaColumns.HEIGHT))
+            )
         }
 
         /**

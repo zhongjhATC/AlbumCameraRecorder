@@ -8,6 +8,7 @@ import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.AbstractMaskProgressLayoutListener;
@@ -124,7 +125,7 @@ public class Combined {
                     }
                 }
             } else {
-                List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
+                List<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
                 this.maskProgressLayout.addLocalFileStartUpload(result);
             }
         }

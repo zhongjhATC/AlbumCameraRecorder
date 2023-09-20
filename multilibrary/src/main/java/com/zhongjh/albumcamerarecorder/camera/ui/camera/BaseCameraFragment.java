@@ -6,7 +6,7 @@ import static com.otaliastudios.cameraview.controls.Mode.VIDEO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
@@ -58,7 +58,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
-import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
@@ -644,7 +643,7 @@ public abstract class BaseCameraFragment
         isCommit = true;
         if (globalSpec.getOnResultCallbackListener() == null) {
             Intent result = new Intent();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, newFiles);
+            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, newFiles);
             mainActivity.setResult(RESULT_OK, result);
         } else {
             globalSpec.getOnResultCallbackListener().onResult(newFiles);
@@ -682,7 +681,7 @@ public abstract class BaseCameraFragment
         if (globalSpec.getOnResultCallbackListener() == null) {
             // 获取视频路径
             Intent intent = new Intent();
-            intent.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localMedias);
+            intent.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMedias);
             mainActivity.setResult(RESULT_OK, intent);
         } else {
             globalSpec.getOnResultCallbackListener().onResult(localMedias);

@@ -3,6 +3,7 @@ package com.zhongjh.progresslibrary.entity
 import android.os.Parcel
 import android.view.View
 import com.zhongjh.common.entity.LocalFile
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.MultiMedia
 import com.zhongjh.progresslibrary.widget.MaskProgressView
 import com.zhongjh.progresslibrary.widget.PlayProgressView
@@ -49,7 +50,7 @@ class MultiMediaView : MultiMedia {
         this.mimeType = mimeType
     }
 
-    constructor(localFile: LocalFile) : super(localFile)
+    constructor(localMedia: LocalMedia) : super(localMedia)
 
     /**
      * 给予进度，根据类型设置相应进度动作

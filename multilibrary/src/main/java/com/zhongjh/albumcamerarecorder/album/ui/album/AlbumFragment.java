@@ -2,7 +2,7 @@ package com.zhongjh.albumcamerarecorder.album.ui.album;
 
 
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
+import com.zhongjh.albumcamerarecorder.MainModel;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
@@ -643,19 +644,19 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     /**
      * 关闭Activity回调相关数值
      *
-     * @param localFiles 本地数据包含别的参数
+     * @param localMediaArrayList 本地数据包含别的参数
      */
-    private void setResultOk(ArrayList<LocalMedia> localFiles) {
+    private void setResultOk(ArrayList<LocalMedia> localMediaArrayList) {
         Log.d(TAG, "setResultOk");
         if (mGlobalSpec.getOnResultCallbackListener() == null) {
             // 获取选择的图片的url集合
             Intent result = new Intent();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE, localFiles);
+            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMediaArrayList);
             // 是否启用原图
             result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             mActivity.setResult(RESULT_OK, result);
         } else {
-            mGlobalSpec.getOnResultCallbackListener().onResult(localFiles);
+            mGlobalSpec.getOnResultCallbackListener().onResult(localMediaArrayList);
         }
         mActivity.finish();
     }

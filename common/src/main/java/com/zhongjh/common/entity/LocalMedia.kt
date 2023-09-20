@@ -1,11 +1,8 @@
 package com.zhongjh.common.entity;
 
 import android.content.Context
-import android.net.Uri
 import android.os.Parcelable
-import android.text.TextUtils
 import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaUtils
 import kotlinx.android.parcel.Parcelize
 import java.io.File
@@ -14,7 +11,7 @@ import java.io.File
  * 多媒体文件
  * 该实体分别有多个不同的path
  * getAvailablePath：是必定可用的地址，如果对地址没有太苛刻的时候可以使用它，具体逻辑可以看该方法(比如支持压缩的话，该方法返回压缩路径)。
- * compressPath: 压缩后的路径，如果开启压缩配置后，最终原图或者将编辑后的图片进行压缩，然后赋值该属性
+ * compressPath: 压缩后的路径，如果开启压缩配置后，将最终原图或者编辑后的图片进行压缩，然后赋值该属性
  * editorPath: 如果该图片裁剪或者编辑过，那么该属性会有值。
  * sandboxPath：沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
  * path：初始的路径，未压缩、未编辑前的，即是原图
@@ -24,7 +21,7 @@ import java.io.File
  * @date 2023/7/26
  */
 @Parcelize
-class LocalMedia() : Parcelable {
+open class LocalMedia : Parcelable {
 
     /**
      * 文件id
@@ -169,6 +166,8 @@ class LocalMedia() : Parcelable {
      */
     var dateAddedTime: Long = 0
 
+    constructor()
+
     /**
      * 赋值一个新的path，借由这个新的path，修改相关参数
      */
@@ -176,6 +175,40 @@ class LocalMedia() : Parcelable {
         context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean
     ) : this() {
         updateFile(context, localMedia, compressionFile, isCompress)
+    }
+
+    /**
+     * 从 LocalMedia 赋值到另外一个新的 LocalMedia
+     * 之所以这样做是因为 Parcelable 如果使用的是看似父类其实是子类就会出问题
+     */
+    constructor(localMedia: LocalMedia) : super() {
+        id = localMedia.id
+        compressPath = localMedia.compressPath
+        editorPath = localMedia.editorPath
+        sandboxPath = localMedia.sandboxPath
+        path = localMedia.path
+        absolutePath = localMedia.absolutePath
+        duration = localMedia.duration
+        orientation = localMedia.orientation
+        isChecked = localMedia.isChecked
+        isCut = localMedia.isCut
+        position = localMedia.position
+        mimeType = localMedia.mimeType
+        chooseModel = localMedia.chooseModel
+        width = localMedia.width
+        height = localMedia.height
+        cropImageWidth = localMedia.cropImageWidth
+        cropImageHeight = localMedia.cropImageHeight
+        cropOffsetX = localMedia.cropOffsetX
+        cropOffsetY = localMedia.cropOffsetY
+        cropResultAspectRatio = localMedia.cropResultAspectRatio
+        size = localMedia.size
+        isOriginal = localMedia.isOriginal
+        fileName = localMedia.fileName
+        parentFolderName = localMedia.parentFolderName
+        bucketId = localMedia.bucketId
+        isEditorImage = localMedia.isEditorImage
+        dateAddedTime = localMedia.dateAddedTime
     }
 
     /**

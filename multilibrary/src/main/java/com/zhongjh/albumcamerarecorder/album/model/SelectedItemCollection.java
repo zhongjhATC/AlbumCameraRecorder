@@ -221,7 +221,7 @@ public class SelectedItemCollection {
     public ArrayList<LocalFile> asListOfLocalFile() {
         ArrayList<LocalFile> localFiles = new ArrayList<>();
         for (MultiMedia item : mItems) {
-            updateMultiMediaPath(item);
+//            updateMultiMediaPath(item);
             LocalFile localFile = new LocalFile(item);
             localFiles.add(localFile);
         }
@@ -233,22 +233,22 @@ public class SelectedItemCollection {
      * 更新path
      */
     public void updatePath() {
-        for (MultiMedia item : mItems) {
-            updateMultiMediaPath(item);
-        }
-        Log.d("onSaveInstanceState",mItems.size() + " updatePath");
+//        for (MultiMedia item : mItems) {
+//            updateMultiMediaPath(item);
+//        }
+//        Log.d("onSaveInstanceState",mItems.size() + " updatePath");
     }
 
-    /**
-     * 更新 MultiMedia 的path
-     * 如果为 null 则更新真实地址
-     *
-     * @param multiMedia multiMedia
-     */
-    private void updateMultiMediaPath(MultiMedia multiMedia) {
-        multiMedia.analysesUriSetPathAndOriginalPath(mContext);
-        Log.d("onSaveInstanceState",mItems.size() + " updateMultiMediaPath");
-    }
+//    /**
+//     * 更新 MultiMedia 的path
+//     * 如果为 null 则更新真实地址
+//     *
+//     * @param multiMedia multiMedia
+//     */
+//    private void updateMultiMediaPath(MultiMedia multiMedia) {
+//        multiMedia.analysesUriSetPathAndOriginalPath(mContext);
+//        Log.d("onSaveInstanceState",mItems.size() + " updateMultiMediaPath");
+//    }
 
     /**
      * 该item是否在选择中

@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.album
+package com.zhongjh.albumcamerarecorder
 
 import android.app.Application
 import android.util.Log
@@ -9,6 +9,7 @@ import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
+import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData
 import com.zhongjh.common.entity.LocalMedia
 
 /**

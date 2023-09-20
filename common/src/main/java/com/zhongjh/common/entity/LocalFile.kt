@@ -140,14 +140,14 @@ open class LocalFile : Parcelable {
     constructor(multiMedia: MultiMedia) {
         id = multiMedia.id
         path = multiMedia.path
-        uri = multiMedia.uri
+//        uri = multiMedia.uri
         mimeType = multiMedia.mimeType
         size = multiMedia.size
         duration = multiMedia.duration
-        originalPath = multiMedia.originalPath
-        originalUri = multiMedia.originalUri
-        oldPath = multiMedia.oldPath
-        oldUri = multiMedia.oldUri
+//        originalPath = multiMedia.originalPath
+//        originalUri = multiMedia.originalUri
+//        oldPath = multiMedia.oldPath
+//        oldUri = multiMedia.oldUri
         isOriginal = multiMedia.isOriginal
         width = multiMedia.width
         height = multiMedia.height

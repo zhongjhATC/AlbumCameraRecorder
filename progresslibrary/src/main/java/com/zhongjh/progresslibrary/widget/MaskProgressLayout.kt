@@ -11,7 +11,7 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.zhongjh.common.entity.LocalFile
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
@@ -251,14 +251,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mMediaStoreCompat.saveStrategy = saveStrategy
     }
 
-    override fun addLocalFileStartUpload(localFiles: List<LocalFile>) {
+    override fun addLocalFileStartUpload(localMediaList: List<LocalMedia>) {
         isAuthority()
         // 图片的
         val multiMediaViewImages = ArrayList<MultiMediaView>()
         // 视频的
         val multiMediaViewVideos = ArrayList<MultiMediaView>()
-        for (localFile in localFiles) {
-            val multiMediaView = MultiMediaView(localFile)
+        for (localMedia in localMediaList) {
+            val multiMediaView = MultiMediaView(localMedia)
             multiMediaView.isUploading = true
             // 直接处理音频
             if (multiMediaView.isAudio()) {

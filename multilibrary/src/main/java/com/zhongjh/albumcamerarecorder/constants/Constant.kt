@@ -7,5 +7,5 @@ object Constant {
     /**
      * LocalFile的数据
      */
-    const val EXTRA_RESULT_SELECTION_LOCAL_FILE = "extra_result_selection_local_file"
+    const val EXTRA_RESULT_SELECTION_LOCAL_MEDIA = "extra_result_selection_local_media"
 }

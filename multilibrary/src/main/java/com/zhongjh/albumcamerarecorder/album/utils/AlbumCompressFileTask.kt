@@ -8,7 +8,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.VideoEditListener
 import com.zhongjh.common.utils.MediaStoreCompat
-import com.zhongjh.common.utils.UriUtils
 import java.io.File
 import java.util.*
 
@@ -25,7 +24,9 @@ import java.util.*
  * @date 2022/2/9
  */
 class AlbumCompressFileTask(
-    private val context: Context, private val tag: String, private val clsKey: Class<*>,
+    private val context: Context,
+    private val tag: String,
+    private val clsKey: Class<*>,
     private val globalSpec: GlobalSpec,
     private val pictureMediaStoreCompat: MediaStoreCompat,
     private val videoMediaStoreCompat: MediaStoreCompat
@@ -42,61 +43,49 @@ class AlbumCompressFileTask(
             }
 
             // 开始压缩逻辑，获取真实路径
-            val path = getPath(item)
-            if (path != null) {
-                val newFileName = getNewFileName(item, path)
-                val newFile = getNewFile(item, path, newFileName)
-                if (newFile.exists()) {
-                    val localFile: LocalMedia =
-                        if (item.isImage()) {
-                            LocalMedia(context, item, newFile, true)
-                        } else {
-                            LocalMedia(context, item, newFile, true)
-                        }
-                    newLocalFiles.add(localFile)
-                    Log.d(tag, "存在直接使用")
+            val actionablePath = getActionablePath(item)
+            val newFileName = getNewFileName(item, actionablePath)
+            val newFile = getNewFile(item, actionablePath, newFileName)
+            if (newFile.exists()) {
+                val localFile: LocalMedia = if (item.isImage()) {
+                    LocalMedia(context, item, newFile, true)
                 } else {
-                    if (item.isImage()) {
-                        // 处理是否压缩图片
-                        val compressionFile = handleImage(path)
-                        // 移动到新的文件夹
-                        FileUtil.copy(compressionFile, newFile)
-                        newLocalFiles.add(
-                            LocalMedia(
-                                context,
-                                item,
-                                newFile,
-                                true
-                            )
+                    LocalMedia(context, item, newFile, true)
+                }
+                newLocalFiles.add(localFile)
+                Log.d(tag, "存在直接使用")
+            } else {
+                if (item.isImage()) {
+                    // 处理是否压缩图片
+                    val compressionFile = handleImage(actionablePath)
+                    // 移动到新的文件夹
+                    FileUtil.copy(compressionFile, newFile)
+                    newLocalFiles.add(
+                        LocalMedia(
+                            context, item, newFile, true
                         )
-                        Log.d(tag, "不存在新建文件")
-                    } else if (item.isVideo()) {
-                        if (globalSpec.isCompressEnable) {
-                            // 压缩视频
-                            globalSpec.videoCompressCoordinator?.setVideoCompressListener(
-                                clsKey,
-                                object : VideoEditListener {
-                                    override fun onFinish() {
-                                        val localFile = LocalMedia(
-                                            context,
-                                            item,
-                                            newFile,
-                                            true
-                                        )
-                                        newLocalFiles.add(localFile)
-                                        Log.d(tag, "不存在新建文件")
-                                    }
+                    )
+                    Log.d(tag, "不存在新建文件")
+                } else if (item.isVideo()) {
+                    if (globalSpec.isCompressEnable) {
+                        // 压缩视频
+                        globalSpec.videoCompressCoordinator?.setVideoCompressListener(clsKey,
+                            object : VideoEditListener {
+                                override fun onFinish() {
+                                    val localFile = LocalMedia(
+                                        context, item, newFile, true
+                                    )
+                                    newLocalFiles.add(localFile)
+                                    Log.d(tag, "不存在新建文件")
+                                }
 
-                                    override fun onProgress(progress: Int, progressTime: Long) {}
-                                    override fun onCancel() {}
-                                    override fun onError(message: String) {}
-                                })
-                            globalSpec.videoCompressCoordinator?.compressAsync(
-                                clsKey,
-                                path,
-                                newFile.path
-                            )
-                        }
+                                override fun onProgress(progress: Int, progressTime: Long) {}
+                                override fun onCancel() {}
+                                override fun onError(message: String) {}
+                            })
+                        globalSpec.videoCompressCoordinator?.compressAsync(
+                            clsKey, actionablePath, newFile.path
+                        )
                     }
                 }
             }
@@ -113,13 +102,12 @@ class AlbumCompressFileTask(
     fun handleImage(path: String): File {
         val oldFile = File(path)
         // 根据类型压缩
-        val compressionFile: File =
-            if (globalSpec.imageCompressionInterface != null) {
-                // 压缩图片
-                globalSpec.imageCompressionInterface!!.compressionFile(context, oldFile)
-            } else {
-                oldFile
-            }
+        val compressionFile: File = if (globalSpec.imageCompressionInterface != null) {
+            // 压缩图片
+            globalSpec.imageCompressionInterface!!.compressionFile(context, oldFile)
+        } else {
+            oldFile
+        }
         return compressionFile
     }
 
@@ -142,39 +130,30 @@ class AlbumCompressFileTask(
     }
 
     /**
-     * 返回当前处理的LocalFile的真实路径
+     * 通过localMedia获取当前可以操作的路径
      *
      * @param item 当前处理的LocalFile
-     * @return 真实路径,有可能因为转不成uri转不成file返回null
+     * @return 返回当前可以操作的路径
      */
-    fun getPath(item: LocalMedia): String? {
-        var path: String? = null
-//        if (item.path == null) {
-//            val file = UriUtils.uriToFile(context, item.uri)
-//            if (file != null) {
-//                path = file.absolutePath
-//            }
-//        } else {
-            path = item.path
-//        }
-//        if (path != null) {
-//            // 判断是否Android 29
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//                // 29以上的版本都必须是私有的或者公共目录
-//                var cacheFile: File? = null
-//                if (item.isImage()) {
-//                    cacheFile = pictureMediaStoreCompat.createFile(0, true, getNameSuffix(path))
-//                } else if (item.isVideo()) {
-//                    cacheFile = videoMediaStoreCompat.createFile(1, true, getNameSuffix(path))
-//                }
-//                // >=29 的需要通过uri获取公共目录的文件，并且拷贝到私有目录
-//                if (cacheFile != null) {
-//                    FileUtil.copy(context, item.uri, cacheFile)
-//                    path = cacheFile.absolutePath
-//                }
-//            }
-//        }
-        return path
+    private fun getActionablePath(item: LocalMedia): String {
+        // 判断是否Android 29
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // 29以上的版本都必须是私有的或者公共目录
+            var cacheFile: File? = null
+            if (item.isImage()) {
+                cacheFile =
+                    pictureMediaStoreCompat.createFile(0, true, getNameSuffix(item.absolutePath))
+            } else if (item.isVideo()) {
+                cacheFile =
+                    videoMediaStoreCompat.createFile(1, true, getNameSuffix(item.absolutePath))
+            }
+            // >=29 的需要通过uri获取公共目录的文件，并且拷贝到私有目录
+            if (cacheFile != null) {
+                FileUtil.copy(File(item.absolutePath), cacheFile)
+                return cacheFile.absolutePath
+            }
+        }
+        return item.absolutePath
     }
 
     /**

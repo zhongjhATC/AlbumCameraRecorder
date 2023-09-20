@@ -2,11 +2,13 @@ package com.zhongjh.albumcamerarecorder.settings
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.fragment.app.Fragment
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
-import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_FILE
+import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
 import com.zhongjh.common.entity.LocalFile
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.MultiMedia
 import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
@@ -22,7 +24,7 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
 
     private val mContext: WeakReference<Activity> = WeakReference(activity)
     private val mFragment: WeakReference<Fragment?>?
-    
+
     val activity: Activity? = mContext.get()
     val fragment: Fragment?
         get() = mFragment?.get()
@@ -78,8 +80,15 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
          * @return 用户选择/拍照的媒体数据. [LocalFile]
          */
         @JvmStatic
-        fun obtainLocalFileResult(data: Intent): ArrayList<LocalFile>? {
-            return data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_FILE)
+        fun obtainLocalMediaResult(data: Intent): ArrayList<LocalMedia>? {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                data.getParcelableArrayListExtra(
+                    EXTRA_RESULT_SELECTION_LOCAL_MEDIA,
+                    LocalMedia::class.java
+                )
+            } else {
+                data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA)
+            }
         }
 
         /**
