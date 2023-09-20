@@ -34,7 +34,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.zhongjh.albumcamerarecorder.album.ui.main.MainFragment;
+import com.zhongjh.albumcamerarecorder.album.ui.album.AlbumFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -553,9 +553,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment createFragment(int position) {
             if (mTitles.get(position).equals(getString(R.string.z_multi_library_album))) {
                 if (numItems <= 1) {
-                    return MainFragment.Companion.newInstance(0);
+                    return AlbumFragment.newInstance(0);
                 }
-                return MainFragment.Companion.newInstance(50);
+                return AlbumFragment.newInstance(50);
             } else if (mTitles.get(position).equals(getString(R.string.z_multi_library_sound_recording))) {
                 return SoundRecordingFragment.newInstance();
             } else {
