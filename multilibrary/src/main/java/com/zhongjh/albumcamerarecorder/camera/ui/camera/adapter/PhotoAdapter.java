@@ -68,7 +68,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         BitmapData bitmapData = mListData.get(position);
-        mGlobalSpec.getImageEngine().loadUriImage(mActivity, holder.imgPhoto, bitmapData.getUri());
+        mGlobalSpec.getImageEngine().loadUriImage(mActivity, holder.imgPhoto, bitmapData.getAbsolutePath());
         // 点击图片
         holder.itemView.setOnClickListener(new OnMoreClickListener() {
             @Override
@@ -103,7 +103,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         for (BitmapData item : mListData) {
             MultiMedia multiMedia = new MultiMedia();
             multiMedia.setId(item.getTemporaryId());
-            multiMedia.setUri(item.getUri());
+            multiMedia.setUri(item.getAbsolutePath());
             multiMedia.setPath(item.getPath());
             multiMedia.setMimeType(MimeType.JPEG.toString());
             multiMedia.setWidth(item.getWidth());
@@ -117,7 +117,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         Intent intent = new Intent(mActivity, PreviewActivity.class);
         // 获取目前点击的这个item
         MultiMedia item = new MultiMedia();
-        item.setUri(bitmapData.getUri());
+        item.setUri(bitmapData.getAbsolutePath());
         item.setPath(bitmapData.getPath());
         item.setMimeType(MimeType.JPEG.toString());
         item.setWidth(bitmapData.getWidth());

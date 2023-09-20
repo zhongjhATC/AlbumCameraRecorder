@@ -1,9 +1,11 @@
 package com.zhongjh.common.entity;
 
 import android.content.Context
+import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaUtils
+import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
 import java.io.File
 
@@ -21,7 +23,7 @@ import java.io.File
  * @date 2023/7/26
  */
 @Parcelize
-open class LocalMedia : Parcelable {
+class LocalMedia : Parcelable {
 
     /**
      * 文件id
@@ -87,11 +89,6 @@ open class LocalMedia : Parcelable {
      * 媒体资源类型
      */
     var mimeType: String = ""
-
-    /**
-     * 类型
-     */
-    var chooseModel: Set<MimeType> = MimeType.ofAll()
 
     /**
      * 图像或视频宽度
@@ -168,6 +165,118 @@ open class LocalMedia : Parcelable {
 
     constructor()
 
+    companion object : Parceler<LocalMedia> {
+
+        override fun LocalMedia.write(parcel: Parcel, flags: Int) {
+            parcel.writeLong(id)
+            parcel.writeString(compressPath)
+            parcel.writeString(editorPath)
+            parcel.writeString(sandboxPath)
+            parcel.writeString(path)
+            parcel.writeString(absolutePath)
+            parcel.writeLong(duration)
+            parcel.writeInt(orientation)
+            parcel.writeByte(if (isChecked) 1 else 0)
+            parcel.writeByte(if (isCut) 1 else 0)
+            parcel.writeInt(position)
+            parcel.writeString(mimeType)
+            parcel.writeInt(width)
+            parcel.writeInt(height)
+            parcel.writeInt(cropImageWidth)
+            parcel.writeInt(cropImageHeight)
+            parcel.writeInt(cropOffsetX)
+            parcel.writeFloat(cropResultAspectRatio)
+            parcel.writeLong(size)
+            parcel.writeByte(if (isOriginal) 1 else 0)
+            parcel.writeString(fileName)
+            parcel.writeString(parentFolderName)
+            parcel.writeLong(bucketId)
+            parcel.writeByte(if (isEditorImage) 1 else 0)
+            parcel.writeLong(dateAddedTime)
+        }
+
+        override fun create(parcel: Parcel): LocalMedia {
+            val localMedia = LocalMedia()
+            localMedia.id = parcel.readLong()
+            localMedia.compressPath = parcel.readString().toString()
+            localMedia.editorPath = parcel.readString().toString()
+            localMedia.sandboxPath = parcel.readString().toString()
+            localMedia.path = parcel.readString().toString()
+            localMedia.absolutePath = parcel.readString().toString()
+            localMedia.duration = parcel.readLong()
+            localMedia.orientation = parcel.readInt()
+            localMedia.isChecked = parcel.readByte() != 0.toByte()
+            localMedia.isCut = parcel.readByte() != 0.toByte()
+            localMedia.position = parcel.readInt()
+            localMedia.mimeType = parcel.readString().toString()
+            localMedia.width = parcel.readInt()
+            localMedia.height = parcel.readInt()
+            localMedia.cropImageWidth = parcel.readInt()
+            localMedia.cropImageHeight = parcel.readInt()
+            localMedia.cropOffsetX = parcel.readInt()
+            localMedia.cropResultAspectRatio = parcel.readFloat()
+            localMedia.size = parcel.readLong()
+            localMedia.isOriginal = parcel.readByte() != 0.toByte()
+            localMedia.fileName = parcel.readString().toString()
+            localMedia.parentFolderName = parcel.readString().toString()
+            localMedia.bucketId = parcel.readLong()
+            localMedia.isEditorImage = parcel.readByte() != 0.toByte()
+            localMedia.dateAddedTime = parcel.readLong()
+            return localMedia
+        }
+
+        /**
+         * 构造LocalMedia
+         *
+         * @param id               资源id
+         * @param path             资源路径
+         * @param absolutePath     资源真实路径
+         * @param fileName         文件名
+         * @param parentFolderName 文件所在相册目录名称
+         * @param duration         视频/音频时长
+         * @param orientation 角度
+         * @param mimeType         资源类型
+         * @param width            资源宽
+         * @param height           资源高
+         * @param size             资源大小
+         * @param bucketId         文件目录id
+         * @param dateAdded  资源添加时间
+         * @return
+         */
+        @JvmStatic
+        fun parseLocalMedia(
+            id: Long,
+            path: String,
+            absolutePath: String,
+            fileName: String,
+            parentFolderName: String,
+            duration: Long,
+            orientation: Int,
+            mimeType: String,
+            width: Int,
+            height: Int,
+            size: Long,
+            bucketId: Long,
+            dateAdded: Long
+        ): LocalMedia {
+            val localMedia = LocalMedia()
+            localMedia.id = id
+            localMedia.path = path
+            localMedia.absolutePath = absolutePath
+            localMedia.fileName = fileName
+            localMedia.parentFolderName = parentFolderName
+            localMedia.orientation = orientation
+            localMedia.duration = duration
+            localMedia.mimeType = mimeType
+            localMedia.width = width
+            localMedia.height = height
+            localMedia.size = size
+            localMedia.bucketId = bucketId
+            localMedia.dateAddedTime = dateAdded
+            return localMedia
+        }
+    }
+
     /**
      * 赋值一个新的path，借由这个新的path，修改相关参数
      */
@@ -194,7 +303,6 @@ open class LocalMedia : Parcelable {
         isCut = localMedia.isCut
         position = localMedia.position
         mimeType = localMedia.mimeType
-        chooseModel = localMedia.chooseModel
         width = localMedia.width
         height = localMedia.height
         cropImageWidth = localMedia.cropImageWidth
@@ -246,9 +354,6 @@ open class LocalMedia : Parcelable {
             return false
         }
         if (mimeType != localMedia.mimeType) {
-            return false
-        }
-        if (chooseModel != localMedia.chooseModel) {
             return false
         }
         if (width != localMedia.width) {
@@ -386,64 +491,6 @@ open class LocalMedia : Parcelable {
                 height = localMedia.height
             }
         }
-    }
-
-    companion object {
-
-        /**
-         * 构造LocalMedia
-         *
-         * @param id               资源id
-         * @param path             资源路径
-         * @param absolutePath     资源真实路径
-         * @param fileName         文件名
-         * @param parentFolderName 文件所在相册目录名称
-         * @param duration         视频/音频时长
-         * @param orientation 角度
-         * @param chooseModel      相册选择模式
-         * @param mimeType         资源类型
-         * @param width            资源宽
-         * @param height           资源高
-         * @param size             资源大小
-         * @param bucketId         文件目录id
-         * @param dateAdded  资源添加时间
-         * @return
-         */
-        @JvmStatic
-        fun parseLocalMedia(
-            id: Long,
-            path: String,
-            absolutePath: String,
-            fileName: String,
-            parentFolderName: String,
-            duration: Long,
-            orientation: Int,
-            chooseModel: Set<MimeType>,
-            mimeType: String,
-            width: Int,
-            height: Int,
-            size: Long,
-            bucketId: Long,
-            dateAdded: Long
-        ): LocalMedia {
-            val localMedia = LocalMedia()
-            localMedia.id = id
-            localMedia.path = path
-            localMedia.absolutePath = absolutePath
-            localMedia.fileName = fileName
-            localMedia.parentFolderName = parentFolderName
-            localMedia.orientation = orientation
-            localMedia.duration = duration
-            localMedia.chooseModel = chooseModel
-            localMedia.mimeType = mimeType
-            localMedia.width = width
-            localMedia.height = height
-            localMedia.size = size
-            localMedia.bucketId = bucketId
-            localMedia.dateAddedTime = dateAdded
-            return localMedia
-        }
-
     }
 
 }

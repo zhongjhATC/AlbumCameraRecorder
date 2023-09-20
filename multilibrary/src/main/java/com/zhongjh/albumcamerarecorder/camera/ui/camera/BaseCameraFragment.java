@@ -40,7 +40,6 @@ import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
@@ -59,7 +58,6 @@ import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -587,14 +585,19 @@ public abstract class BaseCameraFragment
                     // 请求的预览界面
                     Bundle resultBundle = result.getData().getBundleExtra(BasePreviewFragment.EXTRA_RESULT_BUNDLE);
                     // 获取选择的数据
-                    ArrayList<MultiMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                    ArrayList<LocalMedia> selected;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                        selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION, LocalMedia.class);
+                    } else {
+                        selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                    }
                     if (selected == null) {
                         return;
                     }
                     // 重新赋值
                     ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
-                    for (MultiMedia item : selected) {
-                        BitmapData bitmapData = new BitmapData(item.getPath(), item.getUri(), item.getWidth(), item.getHeight());
+                    for (LocalMedia item : selected) {
+                        BitmapData bitmapData = new BitmapData(item.getPath(), item.getAbsolutePath(), item.getWidth(), item.getHeight());
                         bitmapData.setTemporaryId(item.getId());
                         bitmapDatas.add(bitmapData);
                     }
@@ -635,6 +638,7 @@ public abstract class BaseCameraFragment
 
     /**
      * 提交图片成功后，返回数据给上一个页面
+     *
      * @param newFiles
      */
     @Override
@@ -822,7 +826,7 @@ public abstract class BaseCameraFragment
         // 这样可以重置
         getSinglePhotoView().setZoomable(true);
         getSinglePhotoView().setVisibility(View.VISIBLE);
-        globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getUri());
+        globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getPath());
         getCameraView().close();
         getPhotoVideoLayout().startTipAlphaAnimation();
         getPhotoVideoLayout().startShowLeftRightButtonsAnimator();

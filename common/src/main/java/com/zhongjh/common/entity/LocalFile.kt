@@ -137,21 +137,21 @@ open class LocalFile : Parcelable {
         height = input.readInt()
     }
 
-    constructor(multiMedia: MultiMedia) {
-        id = multiMedia.id
-        path = multiMedia.path
-//        uri = multiMedia.uri
-        mimeType = multiMedia.mimeType
-        size = multiMedia.size
-        duration = multiMedia.duration
-//        originalPath = multiMedia.originalPath
-//        originalUri = multiMedia.originalUri
-//        oldPath = multiMedia.oldPath
-//        oldUri = multiMedia.oldUri
-        isOriginal = multiMedia.isOriginal
-        width = multiMedia.width
-        height = multiMedia.height
-    }
+//    constructor(multiMedia: MultiMedia) {
+//        id = multiMedia.id
+//        path = multiMedia.path
+////        uri = multiMedia.uri
+//        mimeType = multiMedia.mimeType
+//        size = multiMedia.size
+//        duration = multiMedia.duration
+////        originalPath = multiMedia.originalPath
+////        originalUri = multiMedia.originalUri
+////        oldPath = multiMedia.oldPath
+////        oldUri = multiMedia.oldUri
+//        isOriginal = multiMedia.isOriginal
+//        width = multiMedia.width
+//        height = multiMedia.height
+//    }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeLong(id)

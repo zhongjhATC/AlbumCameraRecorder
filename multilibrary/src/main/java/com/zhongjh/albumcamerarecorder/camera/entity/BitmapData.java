@@ -2,8 +2,6 @@ package com.zhongjh.albumcamerarecorder.camera.entity;
 
 import android.net.Uri;
 
-import java.io.File;
-
 
 /**
  * 拍照制造出来的数据源
@@ -16,14 +14,20 @@ public class BitmapData {
      * 临时id
      */
     private Long temporaryId;
+    /**
+     * 路径
+     */
     private String path;
-    private Uri uri;
+    /**
+     * 真实路径
+     */
+    private String absolutePath;
     private int width;
     private int height;
 
-    public BitmapData(String path, Uri uri, int width, int height) {
+    public BitmapData(String path, String absolutePath, int width, int height) {
         this.path = path;
-        this.uri = uri;
+        this.absolutePath = absolutePath;
         this.width = width;
         this.height = height;
     }
@@ -44,12 +48,12 @@ public class BitmapData {
         this.path = path;
     }
 
-    public Uri getUri() {
-        return uri;
+    public String getAbsolutePath() {
+        return absolutePath;
     }
 
-    public void setUri(Uri uri) {
-        this.uri = uri;
+    public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = absolutePath;
     }
 
     public int getWidth() {
@@ -67,6 +71,5 @@ public class BitmapData {
     public void setHeight(int height) {
         this.height = height;
     }
-
 
 }

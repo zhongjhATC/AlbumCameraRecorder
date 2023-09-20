@@ -66,9 +66,9 @@ interface ImageEngine {
      *
      * @param context   上下文
      * @param imageView ImageView控件
-     * @param uri       加载图像的uri
+     * @param path       加载图像的path
      */
-    fun loadUriImage(context: Context, imageView: ImageView, uri: Uri)
+    fun loadUriImage(context: Context, imageView: ImageView, path: String)
 
     /**
      * 加载静态图像资源
