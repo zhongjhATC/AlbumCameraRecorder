@@ -15,11 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
+import com.zhongjh.albumcamerarecorder.album.ui.album.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGrid;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
-import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalMedia;
 

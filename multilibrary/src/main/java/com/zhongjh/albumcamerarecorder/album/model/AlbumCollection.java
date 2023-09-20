@@ -5,12 +5,11 @@ import android.database.Cursor;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import com.zhongjh.albumcamerarecorder.album.loader.AlbumLoader;
-import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
+import com.zhongjh.albumcamerarecorder.album.ui.album.MainModel;
 
 import java.lang.ref.WeakReference;
 

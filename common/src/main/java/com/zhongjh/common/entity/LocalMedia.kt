@@ -12,6 +12,13 @@ import java.io.File
 
 /**
  * 多媒体文件
+ * 该实体分别有多个不同的path
+ * getAvailablePath：是必定可用的地址，如果对地址没有太苛刻的时候可以使用它，具体逻辑可以看该方法(比如支持压缩的话，该方法返回压缩路径)。
+ * compressPath: 压缩后的路径，如果开启压缩配置后，最终原图或者将编辑后的图片进行压缩，然后赋值该属性
+ * editorPath: 如果该图片裁剪或者编辑过，那么该属性会有值。
+ * sandboxPath：沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
+ * path：初始的路径，未压缩、未编辑前的，即是原图
+ * absolutePath： 初始的真实路径，未压缩、未编辑前的，即是原图
  *
  * @author zhongjh
  * @date 2023/7/26
@@ -25,35 +32,29 @@ class LocalMedia() : Parcelable {
     var id: Long = 0
 
     /**
-     * 路径
+     * 压缩后的路径，如果开启压缩配置后，最终原图或者将编辑后的图片进行压缩，然后赋值该属性
+     */
+    var compressPath: String? = null
+
+    /**
+     * 如果该图片裁剪或者编辑过，那么该属性会有值。
+     */
+    var editorPath: String? = null
+
+    /**
+     * 沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
+     */
+    var sandboxPath: String? = null
+
+    /**
+     * 初始的路径，未压缩、未编辑前的，即是原图
      */
     var path: String = ""
 
     /**
-     * 真正的路径，但是不兼容AndroidQ
+     * 初始的真实路径，未压缩、未编辑前的，即是原图
      */
-    var realPath: String = ""
-
-    /**
-     * 原始路径
-     */
-    var originalPath: String = ""
-
-    /**
-     * 压缩路径
-     */
-    var compressPath: String = ""
-
-    /**
-     * 裁剪后的路径
-     */
-    var cutPath: String = ""
-
-    /**
-     * 此字段仅在Android Q版本中返回
-     * Android Q版本图像或视频路径
-     */
-    var androidQToPath: String = ""
+    var absolutePath: String = ""
 
     /**
      * 视频的持续时间
@@ -94,11 +95,6 @@ class LocalMedia() : Parcelable {
      * 类型
      */
     var chooseModel: Set<MimeType> = MimeType.ofAll()
-
-    /**
-     * 是否被压缩
-     */
-    var isCompressed: Boolean = false
 
     /**
      * 图像或视频宽度
@@ -189,22 +185,16 @@ class LocalMedia() : Parcelable {
         if (id != localMedia.id) {
             return false
         }
-        if (path != localMedia.path) {
-            return false
-        }
-        if (realPath != localMedia.realPath) {
-            return false
-        }
-        if (originalPath != localMedia.originalPath) {
-            return false
-        }
         if (compressPath != localMedia.compressPath) {
             return false
         }
-        if (cutPath != localMedia.cutPath) {
+        if (editorPath != localMedia.editorPath) {
             return false
         }
-        if (androidQToPath != localMedia.androidQToPath) {
+        if (sandboxPath != localMedia.sandboxPath) {
+            return false
+        }
+        if (path != localMedia.path) {
             return false
         }
         if (duration != localMedia.duration) {
@@ -226,9 +216,6 @@ class LocalMedia() : Parcelable {
             return false
         }
         if (chooseModel != localMedia.chooseModel) {
-            return false
-        }
-        if (isCompressed != localMedia.isCompressed) {
             return false
         }
         if (width != localMedia.width) {
@@ -277,15 +264,6 @@ class LocalMedia() : Parcelable {
     }
 
     /**
-     * 场景：图片进行编辑后的赋值
-     * 处理编辑后的赋值
-     */
-    fun handleEditValue(newPath: String) {
-        this.path = newPath
-        this.originalPath = newPath
-    }
-
-    /**
      * 不包含gif
      */
     fun isImage(): Boolean {
@@ -321,21 +299,40 @@ class LocalMedia() : Parcelable {
     }
 
     /**
+     * getAvailablePath：是必定可用的地址，如果对地址没有太苛刻的时候可以使用它，具体逻辑可以看该方法(比如支持压缩的话，该方法返回压缩路径)。
+     * compressPath: 压缩后的路径，如果开启压缩配置后，最终原图或者将编辑后的图片进行压缩，然后赋值该属性
+     * editorPath: 如果该图片裁剪或者编辑过，那么该属性会有值。
+     * sandboxPath：沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
+     * path：初始的真实路径，未压缩、未编辑前的，即是原图
+     *
+     * @return 是必定可用的地址
+     */
+    fun getAvailablePath(): String? {
+        if (compressPath != null) {
+            return compressPath
+        } else if (editorPath != null) {
+            return editorPath
+        } else if (sandboxPath != null) {
+            return sandboxPath
+        }
+        return path
+    }
+
+    /**
      * 场景：在相册预览等界面迁移图片到配置文件夹处，重新生成新的地址
      * 修改新的file
+     *
+     * @param context 上下文
+     * @param localMedia 实体
+     * @param compressionFile 压缩文件
+     * @param isCompress 是否压缩
      */
     fun updateFile(
         context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean
     ) {
         id = localMedia.id
-        this.path = compressionFile.absolutePath
-        // 如果支持压缩，则原图是压缩前的，否则原图跟path是一样的
-        if (isCompress) {
-            this.originalPath = localMedia.originalPath ?: ""
-        } else {
-            this.originalPath = this.path
-        }
-        mimeType = localMedia.mimeType ?: ""
+        this.compressPath = compressionFile.absolutePath
+        mimeType = localMedia.mimeType
         size = compressionFile.length()
         duration = localMedia.duration
         isOriginal = localMedia.isOriginal
@@ -365,7 +362,7 @@ class LocalMedia() : Parcelable {
          *
          * @param id               资源id
          * @param path             资源路径
-         * @param realPath     资源绝对路径
+         * @param absolutePath     资源真实路径
          * @param fileName         文件名
          * @param parentFolderName 文件所在相册目录名称
          * @param duration         视频/音频时长
@@ -383,7 +380,7 @@ class LocalMedia() : Parcelable {
         fun parseLocalMedia(
             id: Long,
             path: String,
-            realPath: String,
+            absolutePath: String,
             fileName: String,
             parentFolderName: String,
             duration: Long,
@@ -399,7 +396,7 @@ class LocalMedia() : Parcelable {
             val localMedia = LocalMedia()
             localMedia.id = id
             localMedia.path = path
-            localMedia.realPath = realPath
+            localMedia.absolutePath = absolutePath
             localMedia.fileName = fileName
             localMedia.parentFolderName = parentFolderName
             localMedia.orientation = orientation

@@ -93,7 +93,7 @@ object LocalMediaUtils {
         // 循环当前类型配置
         for (type in getMimeTypeSet(ModuleTypes.ALBUM)) {
             // 如果当前类型配置 相等 当前数据
-            if (type.checkType(item.realPath)) {
+            if (type.checkType(item.absolutePath)) {
                 return true
             }
         }

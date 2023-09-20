@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.main
+package com.zhongjh.albumcamerarecorder.album.ui.album
 
 import android.app.Application
 import android.util.Log
@@ -79,7 +79,10 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     init {
         mediaLoader = MediaLoader(application)
         mediaPageLoader = MediaPageLoader(application)
-        selectedData = SelectedData(application)
+        selectedData =
+            SelectedData(
+                application
+            )
     }
 
     /**

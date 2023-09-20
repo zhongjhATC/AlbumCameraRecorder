@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.main;
+package com.zhongjh.albumcamerarecorder.album.ui.album;
 
 import static com.zhongjh.common.enums.Constant.IMAGE;
 import static com.zhongjh.common.enums.Constant.IMAGE_VIDEO;

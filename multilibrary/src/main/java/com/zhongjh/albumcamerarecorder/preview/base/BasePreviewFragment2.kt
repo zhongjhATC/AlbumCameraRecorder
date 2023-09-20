@@ -941,8 +941,8 @@ abstract class BasePreviewFragment2 : Fragment() {
         // 如果宽高其中一个<=0  重新获取宽高。如果宽度大于高度也要重新获取，因为有可能是横拍，要根据角度判断重新反转宽高
         if ((realWidth <= 0 || realHeight <= 0) || (realWidth > realHeight)) {
             withContext(Dispatchers.IO) {
-                media.realPath.let { realPath ->
-                    MediaUtils.getMediaInfo(requireContext(), media.mimeType, realPath).let {
+                media.absolutePath.let { absolutePath ->
+                    MediaUtils.getMediaInfo(requireContext(), media.mimeType, absolutePath).let {
                         if (it.width > 0) {
                             realWidth = it.width
                         }

@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel
+import com.zhongjh.albumcamerarecorder.album.ui.album.MainModel
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment2
 import com.zhongjh.common.entity.LocalMedia
 

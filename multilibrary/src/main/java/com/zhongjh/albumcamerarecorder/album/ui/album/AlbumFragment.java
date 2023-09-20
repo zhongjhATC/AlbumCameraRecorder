@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui;
+package com.zhongjh.albumcamerarecorder.album.ui.album;
 
 
 import static android.app.Activity.RESULT_OK;
@@ -35,7 +35,6 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
-import com.zhongjh.albumcamerarecorder.album.ui.main.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;

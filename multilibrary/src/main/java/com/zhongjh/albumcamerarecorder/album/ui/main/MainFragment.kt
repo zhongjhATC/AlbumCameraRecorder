@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.zhongjh.albumcamerarecorder.BaseFragment
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.album.ui.AlbumFragment
+import com.zhongjh.albumcamerarecorder.album.ui.album.AlbumFragment
 
 
 /**
