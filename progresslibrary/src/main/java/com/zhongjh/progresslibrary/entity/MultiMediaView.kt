@@ -2,11 +2,10 @@ package com.zhongjh.progresslibrary.entity
 
 import android.os.Parcel
 import android.view.View
-import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.entity.MultiMedia
 import com.zhongjh.progresslibrary.widget.MaskProgressView
 import com.zhongjh.progresslibrary.widget.PlayProgressView
+import kotlinx.android.parcel.Parcelize
 
 /**
  * 多媒体实体类,包含着view
@@ -14,12 +13,11 @@ import com.zhongjh.progresslibrary.widget.PlayProgressView
  * @author zhongjh
  * @date 2021/12/13
  */
-class MultiMediaView : MultiMedia {
+@Parcelize
+class MultiMediaView() : LocalMedia() {
 
     companion object {
-
         private const val FULL_PERCENT = 100
-
     }
 
     /**
@@ -38,19 +36,30 @@ class MultiMediaView : MultiMedia {
     lateinit var maskProgressView: MaskProgressView
 
     /**
+     * 用于区分，因为九宫数据是允许选择重复的
+     */
+    var multiMediaId: Long = 0
+
+    /**
+     * 在线网址
+     */
+    var url: String? = null
+
+    /**
      * 是否进行上传动作
      */
     var isUploading = false
 
-    constructor() : super()
+    constructor(parcel: Parcel) : super(parcel) {
+        url = parcel.readString().toString()
+        isUploading = parcel.readByte() != 0.toByte()
+    }
 
-    constructor(input: Parcel) : super(input)
+    constructor(localMedia: LocalMedia) : super(localMedia)
 
     constructor(mimeType: String) {
         this.mimeType = mimeType
     }
-
-    constructor(localMedia: LocalMedia) : super(localMedia)
 
     /**
      * 给予进度，根据类型设置相应进度动作

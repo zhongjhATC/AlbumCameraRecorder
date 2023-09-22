@@ -1,8 +1,6 @@
 package com.zhongjh.albumcamerarecorder.listener
 
-import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.entity.MultiMedia
 
 /**
  * onResult 的事件

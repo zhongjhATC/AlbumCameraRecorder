@@ -4,12 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import androidx.fragment.app.Fragment
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
+import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_SELECTION
 import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
 import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.entity.MultiMedia
 import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
 import java.util.*
@@ -95,14 +94,14 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
          * 获取用户确认后的MultiMedia多媒体数据
          *
          * @param data 通过onActivityResult方法获取
-         * @return 用户通过直接调用预览界面然后返回的媒体数据. [MultiMedia]
+         * @return 用户通过直接调用预览界面然后返回的媒体数据. [LocalMedia]
          */
         @JvmStatic
-        fun obtainMultiMediaResult(data: Intent): ArrayList<MultiMedia>? {
+        fun obtainMultiMediaResult(data: Intent): ArrayList<LocalMedia>? {
             // 请求的预览界面
             val resultBundle = data.getBundleExtra(BasePreviewFragment.EXTRA_RESULT_BUNDLE)
             // 获取选择的数据
-            return resultBundle!!.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION)
+            return resultBundle!!.getParcelableArrayList(STATE_SELECTION)
         }
     }
 

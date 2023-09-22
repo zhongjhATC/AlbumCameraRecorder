@@ -100,7 +100,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 Log.i(TAG, "onResult id:" + multiMediaView.getId());
                 Log.i(TAG, "onResult url:" + multiMediaView.getUrl());
                 Log.d(TAG, "onResult 绝对路径:" + multiMediaView.getPath());
-                Log.d(TAG, "onResult Uri:" + multiMediaView.getUri());
+                Log.d(TAG, "onResult Uri:" + multiMediaView.getPath());
                 Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
                 Log.d(TAG, "onResult 视频音频长度: " + multiMediaView.getDuration());
                 if (multiMediaView.isImageOrGif()) {

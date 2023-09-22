@@ -17,7 +17,6 @@ import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalMedia;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,6 +27,11 @@ import java.util.Objects;
  */
 public class SelectedData {
 
+    /**
+     * 数据源的标记
+     */
+    public static final String STATE_SELECTION = "state_selection";
+    public static final String STATE_COLLECTION_TYPE = "state_collection_type";
     /**
      * 空的数据类型
      */

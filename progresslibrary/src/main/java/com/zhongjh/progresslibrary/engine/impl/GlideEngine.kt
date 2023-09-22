@@ -28,9 +28,9 @@ import com.zhongjh.progresslibrary.engine.ImageEngine
  * @author zhongjh
  */
 class GlideEngine : ImageEngine {
-    override fun loadThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, uri: Uri) {
+    override fun loadThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, path: String) {
         Glide.with(context)
-                .load(uri)
+                .load(path)
                 .asBitmap() // some .jpeg files are actually gif
                 .placeholder(placeholder)
                 .override(resize, resize)
@@ -42,17 +42,6 @@ class GlideEngine : ImageEngine {
         Glide.with(context)
                 .load(url)
                 .asBitmap() // some .jpeg files are actually gif
-                .placeholder(placeholder)
-                .override(resize, resize)
-                .centerCrop()
-                .into(imageView)
-    }
-
-    override fun loadGifThumbnail(context: Context, resize: Int, placeholder: Drawable?, imageView: ImageView,
-                                  uri: Uri) {
-        Glide.with(context)
-                .load(uri)
-                .asBitmap()
                 .placeholder(placeholder)
                 .override(resize, resize)
                 .centerCrop()

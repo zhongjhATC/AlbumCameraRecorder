@@ -34,9 +34,11 @@ interface ImageEngine {
      * @param resize      原产地图像的期望尺寸
      * @param placeholder Placeholder drawable when image is not loaded yet
      * @param imageView   ImageView widget
-     * @param uri         Uri of the loaded image
+     * @param path        path of the loaded image
      */
-    fun loadThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, uri: Uri)
+    fun loadThumbnail(
+        context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, path: String
+    )
 
     /**
      * Load thumbnail of a static image resource.
@@ -47,19 +49,9 @@ interface ImageEngine {
      * @param imageView   ImageView widget
      * @param url         url of the loaded image
      */
-    fun loadUrlThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, url: String)
-
-    /**
-     * Load thumbnail of a gif image resource. You don't have to load an animated gif when it's only
-     * a thumbnail tile.
-     *
-     * @param context     Context
-     * @param resize      Desired size of the origin image
-     * @param placeholder Placeholder drawable when image is not loaded yet
-     * @param imageView   ImageView widget
-     * @param uri         Uri of the loaded image
-     */
-    fun loadGifThumbnail(context: Context, resize: Int, placeholder: Drawable?, imageView: ImageView, uri: Uri)
+    fun loadUrlThumbnail(
+        context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, url: String
+    )
 
     /**
      * Load a static image resource.

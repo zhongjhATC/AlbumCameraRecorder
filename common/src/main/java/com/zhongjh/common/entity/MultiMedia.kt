@@ -15,7 +15,7 @@
 // * @author zhongjh
 // * @date 2019/1/22
 // */
-//open class MultiMedia : LocalMedia, Parcelable {
+//open class MultiMedia : LocalFile, Parcelable {
 //
 //    /**
 //     * 用于区分，因为九宫数据是允许选择重复的

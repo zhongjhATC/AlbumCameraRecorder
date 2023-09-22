@@ -23,7 +23,7 @@ import java.io.File
  * @date 2023/7/26
  */
 @Parcelize
-class LocalMedia : Parcelable {
+open class LocalMedia() : Parcelable {
 
     /**
      * 文件id
@@ -163,8 +163,6 @@ class LocalMedia : Parcelable {
      */
     var dateAddedTime: Long = 0
 
-    constructor()
-
     companion object : Parceler<LocalMedia> {
 
         override fun LocalMedia.write(parcel: Parcel, flags: Int) {
@@ -196,33 +194,7 @@ class LocalMedia : Parcelable {
         }
 
         override fun create(parcel: Parcel): LocalMedia {
-            val localMedia = LocalMedia()
-            localMedia.id = parcel.readLong()
-            localMedia.compressPath = parcel.readString().toString()
-            localMedia.editorPath = parcel.readString().toString()
-            localMedia.sandboxPath = parcel.readString().toString()
-            localMedia.path = parcel.readString().toString()
-            localMedia.absolutePath = parcel.readString().toString()
-            localMedia.duration = parcel.readLong()
-            localMedia.orientation = parcel.readInt()
-            localMedia.isChecked = parcel.readByte() != 0.toByte()
-            localMedia.isCut = parcel.readByte() != 0.toByte()
-            localMedia.position = parcel.readInt()
-            localMedia.mimeType = parcel.readString().toString()
-            localMedia.width = parcel.readInt()
-            localMedia.height = parcel.readInt()
-            localMedia.cropImageWidth = parcel.readInt()
-            localMedia.cropImageHeight = parcel.readInt()
-            localMedia.cropOffsetX = parcel.readInt()
-            localMedia.cropResultAspectRatio = parcel.readFloat()
-            localMedia.size = parcel.readLong()
-            localMedia.isOriginal = parcel.readByte() != 0.toByte()
-            localMedia.fileName = parcel.readString().toString()
-            localMedia.parentFolderName = parcel.readString().toString()
-            localMedia.bucketId = parcel.readLong()
-            localMedia.isEditorImage = parcel.readByte() != 0.toByte()
-            localMedia.dateAddedTime = parcel.readLong()
-            return localMedia
+            return LocalMedia(parcel)
         }
 
         /**
@@ -278,6 +250,37 @@ class LocalMedia : Parcelable {
     }
 
     /**
+     * 主要用于 parcel
+     */
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readLong()
+        compressPath = parcel.readString().toString()
+        editorPath = parcel.readString().toString()
+        sandboxPath = parcel.readString().toString()
+        path = parcel.readString().toString()
+        absolutePath = parcel.readString().toString()
+        duration = parcel.readLong()
+        orientation = parcel.readInt()
+        isChecked = parcel.readByte() != 0.toByte()
+        isCut = parcel.readByte() != 0.toByte()
+        position = parcel.readInt()
+        mimeType = parcel.readString().toString()
+        width = parcel.readInt()
+        height = parcel.readInt()
+        cropImageWidth = parcel.readInt()
+        cropImageHeight = parcel.readInt()
+        cropOffsetX = parcel.readInt()
+        cropResultAspectRatio = parcel.readFloat()
+        size = parcel.readLong()
+        isOriginal = parcel.readByte() != 0.toByte()
+        fileName = parcel.readString().toString()
+        parentFolderName = parcel.readString().toString()
+        bucketId = parcel.readLong()
+        isEditorImage = parcel.readByte() != 0.toByte()
+        dateAddedTime = parcel.readLong()
+    }
+
+    /**
      * 赋值一个新的path，借由这个新的path，修改相关参数
      */
     constructor(
@@ -290,7 +293,7 @@ class LocalMedia : Parcelable {
      * 从 LocalMedia 赋值到另外一个新的 LocalMedia
      * 之所以这样做是因为 Parcelable 如果使用的是看似父类其实是子类就会出问题
      */
-    constructor(localMedia: LocalMedia) : super() {
+    constructor(localMedia: LocalMedia) : this() {
         id = localMedia.id
         compressPath = localMedia.compressPath
         editorPath = localMedia.editorPath

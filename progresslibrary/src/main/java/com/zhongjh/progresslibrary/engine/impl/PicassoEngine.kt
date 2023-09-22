@@ -27,8 +27,8 @@ import com.zhongjh.progresslibrary.engine.ImageEngine
  * @author zhongjh
  */
 class PicassoEngine : ImageEngine {
-    override fun loadThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, uri: Uri) {
-        Picasso.with(context).load(uri).placeholder(placeholder)
+    override fun loadThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, path: String) {
+        Picasso.with(context).load(path).placeholder(placeholder)
                 .resize(resize, resize)
                 .centerCrop()
                 .into(imageView)
@@ -39,11 +39,6 @@ class PicassoEngine : ImageEngine {
                 .resize(resize, resize)
                 .centerCrop()
                 .into(imageView)
-    }
-
-    override fun loadGifThumbnail(context: Context, resize: Int, placeholder: Drawable?, imageView: ImageView,
-                                  uri: Uri) {
-        loadThumbnail(context, resize, placeholder!!, imageView, uri)
     }
 
     override fun loadImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri) {

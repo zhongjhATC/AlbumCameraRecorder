@@ -28,20 +28,6 @@ interface MaskProgressApi {
     fun addLocalFileStartUpload(localMediaList: List<LocalMedia>)
 
     /**
-     * 添加图片Uri并且启动上传(一般用于刚确认了哪些数据后)
-     *
-     * @param uris 图片Uri数据源
-     */
-    fun addImagesUriStartUpload(uris: List<Uri>)
-
-    /**
-     * 添加图片并且启动上传(一般用于刚确认了哪些数据后)
-     *
-     * @param imagePaths 图片路径数据源
-     */
-    fun addImagesPathStartUpload(imagePaths: List<String>)
-
-    /**
      * 设置图片网址数据
      *
      * @param imagesUrls 图片网址
@@ -69,14 +55,6 @@ interface MaskProgressApi {
      * @param videoUrls 视频网址列表
      */
     fun setVideoUrls(videoUrls: List<String>)
-
-    /**
-     * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)
-     *
-     * @param filePath 音频文件地址
-     * @param length   音频文件长度
-     */
-    fun addAudioStartUpload(filePath: String, length: Long)
 
     /**
      * 添加音频网址数据

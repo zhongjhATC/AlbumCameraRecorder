@@ -11,7 +11,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting.ScreenOrientation
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
-import com.zhongjh.common.entity.MultiMedia
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.SaveStrategy
 import java.util.*
 
@@ -235,17 +235,8 @@ interface GlobalSettingApi {
      */
     fun openPreviewData(
         activity: Activity, requestCode: Int,
-        list: ArrayList<out MultiMedia>, position: Int
+        list: ArrayList<out LocalMedia>, position: Int
     )
-
-    /**
-     * 调用打开图片预览 - 纯浏览不可操作
-     *
-     * @param activity 窗体
-     * @param list     资源id数据源
-     * @param position 当前数据的索引
-     */
-    fun openPreviewResourceId(activity: Activity, list: ArrayList<Int>, position: Int)
 
     /**
      * 调用打开图片预览 - 纯浏览不可操作

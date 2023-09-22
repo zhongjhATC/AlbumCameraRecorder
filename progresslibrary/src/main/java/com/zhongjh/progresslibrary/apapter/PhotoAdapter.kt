@@ -197,7 +197,7 @@ class PhotoAdapter(
                             listener!!.onItemClick(v, multiMediaView)
                         } else {
                             // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
-                            if (TextUtils.isEmpty(multiMediaView.path) && multiMediaView.uri == null) {
+                            if (TextUtils.isEmpty(multiMediaView.path)) {
                                 // 执行下载事件
                                 val isContinue =
                                     listener!!.onItemVideoStartDownload(v, multiMediaView)
@@ -252,7 +252,7 @@ class PhotoAdapter(
      * 清空数据
      */
     fun clearAll() {
-        notifyItemRangeRemoved(0,list.size)
+        notifyItemRangeRemoved(0, list.size)
         list.clear()
     }
 
@@ -474,15 +474,10 @@ class PhotoAdapter(
             placeholder: Drawable, multiMediaView: MultiMediaView, height: Int
         ) {
             // 加载图片
-            if (multiMediaView.uri != null) {
+            if (!TextUtils.isEmpty(multiMediaView.getAvailablePath())) {
                 imageEngine.loadThumbnail(
                     context, height, placeholder,
-                    mpvImage, multiMediaView.uri!!
-                )
-            } else if (!TextUtils.isEmpty(multiMediaView.path)) {
-                imageEngine.loadThumbnail(
-                    context, height, placeholder,
-                    mpvImage, Uri.fromFile(File(multiMediaView.path!!))
+                    mpvImage, multiMediaView.path
                 )
             } else if (!TextUtils.isEmpty(multiMediaView.url)) {
                 imageEngine.loadUrlThumbnail(

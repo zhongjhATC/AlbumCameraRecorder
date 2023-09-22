@@ -9,7 +9,7 @@ import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection
+import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.*
 import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
@@ -18,7 +18,7 @@ import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
-import com.zhongjh.common.entity.MultiMedia
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
@@ -35,9 +35,10 @@ import java.util.*
  * @param multiMediaSetting 在 requester context wrapper.
  * @param mimeTypes         设置为选择的 [MimeType] 类型
  */
-class GlobalSetting
-internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes: Set<MimeType>) :
-    GlobalSettingApi {
+class GlobalSetting internal constructor(
+    private val multiMediaSetting: MultiMediaSetting,
+    mimeTypes: Set<MimeType>
+) : GlobalSettingApi {
 
     private val mGlobalSpec: GlobalSpec = cleanInstance
 
@@ -221,14 +222,11 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
      */
     override fun openPreviewData(
         activity: Activity, requestCode: Int,
-        list: ArrayList<out MultiMedia>, position: Int
+        list: ArrayList<out LocalMedia>, position: Int
     ) {
         val bundle = Bundle()
-        bundle.putParcelableArrayList(SelectedItemCollection.STATE_SELECTION, list)
-        bundle.putInt(
-            SelectedItemCollection.STATE_COLLECTION_TYPE,
-            SelectedItemCollection.COLLECTION_IMAGE
-        )
+        bundle.putParcelableArrayList(STATE_SELECTION, list)
+        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
         val intent = Intent(activity, PreviewActivity::class.java)
         intent.putExtra(PreviewFragment.EXTRA_ITEM, list[position])
         intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle)
@@ -247,34 +245,11 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
      * 调用打开图片预览 - 纯浏览不可操作
      *
      * @param activity 窗体
-     * @param list     资源id数据源
-     * @param position 当前数据的索引
-     */
-    override fun openPreviewResourceId(activity: Activity, list: ArrayList<Int>, position: Int) {
-        val multiMedias = ArrayList<MultiMedia>()
-        for (item in list) {
-            val multiMedia = MultiMedia()
-            multiMedia.drawableId = item
-            multiMedias.add(multiMedia)
-        }
-        openPreview(activity, multiMedias, position)
-    }
-
-    /**
-     * 调用打开图片预览 - 纯浏览不可操作
-     *
-     * @param activity 窗体
      * @param list     文件地址的数据源
      * @param position 当前数据的索引
      */
     override fun openPreviewPath(activity: Activity, list: ArrayList<String>, position: Int) {
-        val multiMedias = ArrayList<MultiMedia>()
-        for (item in list) {
-            val multiMedia = MultiMedia()
-            multiMedia.url = item
-            multiMedias.add(multiMedia)
-        }
-        openPreview(activity, multiMedias, position)
+//        openPreview(activity, list, position)
     }
 
     private fun openMain(requestCode: Int?) {
@@ -318,22 +293,19 @@ internal constructor(private val multiMediaSetting: MultiMediaSetting, mimeTypes
          * 提供给 [.openPreviewResourceId] 和 [.openPreviewPath] 共用的方法
          *
          * @param activity    窗体
-         * @param multiMedias 数据源
+         * @param localMedias 数据源
          * @param position    当前数据的索引
          */
         private fun openPreview(
             activity: Activity,
-            multiMedias: ArrayList<MultiMedia>,
+            localMedias: ArrayList<LocalMedia>,
             position: Int
         ) {
             val bundle = Bundle()
-            bundle.putParcelableArrayList(SelectedItemCollection.STATE_SELECTION, multiMedias)
-            bundle.putInt(
-                SelectedItemCollection.STATE_COLLECTION_TYPE,
-                SelectedItemCollection.COLLECTION_IMAGE
-            )
+            bundle.putParcelableArrayList(STATE_SELECTION, localMedias)
+            bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
             val intent = Intent(activity, PreviewActivity::class.java)
-            intent.putExtra(PreviewFragment.EXTRA_ITEM, multiMedias[position])
+            intent.putExtra(PreviewFragment.EXTRA_ITEM, localMedias[position])
             intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle)
             intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
             intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)

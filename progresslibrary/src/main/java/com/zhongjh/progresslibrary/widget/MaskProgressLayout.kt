@@ -148,7 +148,10 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mMediaStoreCompat = MediaStoreCompat(context, saveStrategy)
         // 获取最多显示多少个方框
         photoAdapterEntity.maxMediaCount =
-            maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayout_maxCount, MAX_MEDIA_COUNT)
+            maskProgressLayoutStyle.getInteger(
+                R.styleable.MaskProgressLayout_maxCount,
+                MAX_MEDIA_COUNT
+            )
         photoAdapterEntity.deleteColor = maskProgressLayoutStyle.getColor(
             R.styleable.MaskProgressLayout_imageDeleteColor,
             colorPrimary
@@ -279,31 +282,6 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mPhotoAdapter.addVideoData(multiMediaViewVideos)
     }
 
-    override fun addImagesUriStartUpload(uris: List<Uri>) {
-        isAuthority()
-        val multiMediaViews = ArrayList<MultiMediaView>()
-        for (uri in uris) {
-            val multiMediaView = MultiMediaView(MimeType.JPEG.mimeTypeName)
-            multiMediaView.uri = uri
-            multiMediaView.isUploading = true
-            multiMediaViews.add(multiMediaView)
-        }
-        mPhotoAdapter.addImageData(multiMediaViews)
-    }
-
-    override fun addImagesPathStartUpload(imagePaths: List<String>) {
-        isAuthority()
-        val multiMediaViews = ArrayList<MultiMediaView>()
-        for (string in imagePaths) {
-            val multiMediaView = MultiMediaView(MimeType.JPEG.mimeTypeName)
-            multiMediaView.path = string
-            multiMediaView.uri = mMediaStoreCompat.getUri(string)
-            multiMediaView.isUploading = true
-            multiMediaViews.add(multiMediaView)
-        }
-        mPhotoAdapter.addImageData(multiMediaViews)
-    }
-
     override fun setImageUrls(imagesUrls: List<String>) {
         val multiMediaViews = ArrayList<MultiMediaView>()
         for (string in imagesUrls) {
@@ -335,16 +313,6 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
     }
 
-    override fun addAudioStartUpload(filePath: String, length: Long) {
-        isAuthority()
-        val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
-        multiMediaView.path = filePath
-        multiMediaView.uri = mMediaStoreCompat.getUri(filePath)
-        multiMediaView.duration = length
-        addAudioData(multiMediaView)
-        mPhotoAdapter.notifyItemInserted(mPhotoAdapter.getData().size - 1)
-    }
-
     override fun setAudioUrls(audioUrls: List<String>) {
         val multiMediaViews: ArrayList<MultiMediaView> = ArrayList()
         for (item in audioUrls) {
@@ -364,10 +332,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
             ?: -1
         val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
-        multiMediaView.path = file
-        multiMediaView.uri = mMediaStoreCompat.getUri(file)
+        multiMediaView.absolutePath = file
+        multiMediaView.sandboxPath = mMediaStoreCompat.getUri(file).toString()
         multiMediaView.duration = duration
-        multiMediaView.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
+        multiMediaView.mimeType =
+            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()
 
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         view.visibility = View.VISIBLE
@@ -537,7 +506,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         val multiMediaViews = ArrayList<MultiMediaView>()
         for (i in videoUris.indices) {
             val multiMediaView = MultiMediaView(MimeType.MP4.mimeTypeName)
-            multiMediaView.uri = videoUris[i]
+            multiMediaView.path = videoUris[i].toString()
             multiMediaView.isUploading = isUploading
             multiMediaViews.add(multiMediaView)
         }
