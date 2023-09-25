@@ -79,8 +79,8 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
          * @return 用户选择/拍照的媒体数据. [LocalFile]
          */
         @JvmStatic
-        fun obtainLocalMediaResult(data: Intent): ArrayList<LocalMedia>? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        fun obtainLocalMediaResult(data: Intent): ArrayList<LocalMedia> {
+            val arrayList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 data.getParcelableArrayListExtra(
                     EXTRA_RESULT_SELECTION_LOCAL_MEDIA,
                     LocalMedia::class.java
@@ -88,6 +88,10 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
             } else {
                 data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA)
             }
+            if (arrayList == null) {
+                return ArrayList<LocalMedia>()
+            }
+            return arrayList
         }
 
         /**

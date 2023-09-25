@@ -31,12 +31,11 @@ import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.configuration.ImageCompressionLuBan;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
-import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.MediaUtils;
-import com.zhongjh.common.utils.UriUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -271,93 +270,34 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initForResult() {
-//        mGlobalSetting.forResult(new OnResultCallbackListener() {
-//
-//            @Override
-//            public void onResult(@NotNull List<? extends LocalFile> result) {
-//                for (LocalFile localFile : result) {
-//                    Log.i(TAG, "onResult id:" + localFile.getId());
-//                    Log.d(TAG, "onResult 绝对路径:" + localFile.getPath());
-//                    Log.d(TAG, "onResult 旧图路径:" + localFile.getOldPath());
-//                    Log.d(TAG, "onResult 原图路径:" + localFile.getOriginalPath());
-//                    Log.d(TAG, "onResult Uri:" + localFile.getUri());
-//                    Log.d(TAG, "onResult 旧图Uri:" + localFile.getOldUri());
-//                    Log.d(TAG, "onResult 原图Uri:" + localFile.getOriginalUri());
-//                    Log.d(TAG, "onResult 文件大小: " + localFile.getSize());
-//                    Log.d(TAG, "onResult 视频音频长度: " + localFile.getDuration());
-//                    Log.i(TAG, "onResult 是否选择了原图: " + localFile.isOriginal());
-//                    if (localFile.isImageOrGif()) {
-//                        if (localFile.isImage()) {
-//                            Log.d(TAG, "onResult 图片类型");
-//                        } else if (localFile.isImage()) {
-//                            Log.d(TAG, "onResult 图片类型");
-//                        }
-//                    } else if (localFile.isVideo()) {
-//                        Log.d(TAG, "onResult 视频类型");
-//                    } else if (localFile.isAudio()) {
-//                        Log.d(TAG, "onResult 音频类型");
-//                    }
-//                    Log.d(TAG, "onResult 具体类型:" + localFile.getMimeType());
-//                    // 某些手机拍摄没有自带宽高，那么我们可以自己获取
-//                    if (localFile.getWidth() == 0 && localFile.isVideo()) {
-//                        if (localFile.getPath() != null) {
-//                            MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localFile.getPath());
-//                            localFile.setWidth(mediaExtraInfo.getWidth());
-//                            localFile.setHeight(mediaExtraInfo.getHeight());
-//                            localFile.setDuration(mediaExtraInfo.getDuration());
-//                        }
-//                    }
-//                    Log.d(TAG, "onResult 宽高: " + localFile.getWidth() + "x" + localFile.getHeight());
-//                    Log.d(TAG, UriUtils.uriToFile(getApplicationContext(), localFile.getUri()).getPath());
-//                }
-//                getMaskProgressLayout().addLocalFileStartUpload(result);
-//            }
-//
-//            @Override
-//            public void onResultFromPreview(@NotNull List<? extends MultiMedia> result, boolean apply) {
-//                if (apply) {
-//                    for (MultiMedia multiMedia : result) {
-//                        // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
-//                        Log.i(TAG, "onResult id:" + multiMedia.getId());
-//                        Log.i(TAG, "onResult 绝对路径:" + multiMedia.getPath());
-//                        Log.d(TAG, "onResult 旧图路径:" + multiMedia.getOldPath());
-//                        Log.d(TAG, "onResult 原图路径:" + multiMedia.getOriginalPath());
-//                        Log.i(TAG, "onResult Uri:" + multiMedia.getUri());
-//                        Log.d(TAG, "onResult 旧图Uri:" + multiMedia.getOldUri());
-//                        Log.d(TAG, "onResult 原图Uri:" + multiMedia.getOriginalUri());
-//                        Log.i(TAG, "onResult 文件大小: " + multiMedia.getSize());
-//                        Log.i(TAG, "onResult 视频音频长度: " + multiMedia.getDuration());
-//                        Log.i(TAG, "onResult 是否选择了原图: " + multiMedia.isOriginal());
-//                        if (multiMedia.isImageOrGif()) {
-//                            if (multiMedia.isImage()) {
-//                                Log.d(TAG, "onResult 图片类型");
-//                            } else if (multiMedia.isImage()) {
-//                                Log.d(TAG, "onResult 图片类型");
-//                            }
-//                        } else if (multiMedia.isVideo()) {
-//                            Log.d(TAG, "onResult 视频类型");
-//                        } else if (multiMedia.isAudio()) {
-//                            Log.d(TAG, "onResult 音频类型");
-//                        }
-//                        Log.i(TAG, "onResult 具体类型:" + multiMedia.getMimeType());
-//                        Log.i(TAG, "onResult 宽高: " + multiMedia.getWidth() + "x" + multiMedia.getHeight());
-//                    }
-//                    // 倒数循环判断，如果不存在，则删除
-//                    for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
-//                        int k = 0;
-//                        for (LocalFile localFile : result) {
-//                            if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localFile)) {
-//                                k++;
-//                            }
-//                        }
-//                        if (k == result.size()) {
-//                            // 所有都不符合，则删除
-//                            getMaskProgressLayout().removePosition(i);
-//                        }
-//                    }
-//                }
-//            }
-//        });
+        mGlobalSetting.forResult(new OnResultCallbackListener() {
+
+            @Override
+            public void onResult(@NotNull List<? extends LocalMedia> result) {
+                printProperty(result);
+                getMaskProgressLayout().addLocalFileStartUpload(result);
+            }
+
+            @Override
+            public void onResultFromPreview(@NotNull List<? extends LocalMedia> result, boolean apply) {
+                if (apply) {
+                    printProperty(result);
+                    // 倒数循环判断，如果不存在，则删除
+                    for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
+                        int k = 0;
+                        for (LocalMedia localMedia : result) {
+                            if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localMedia)) {
+                                k++;
+                            }
+                        }
+                        if (k == result.size()) {
+                            // 所有都不符合，则删除
+                            getMaskProgressLayout().removePosition(i);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**

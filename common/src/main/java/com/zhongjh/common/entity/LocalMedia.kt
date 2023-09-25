@@ -16,11 +16,13 @@ import java.io.File
  * compressPath: 压缩后的路径，如果开启压缩配置后，将最终原图或者编辑后的图片进行压缩，然后赋值该属性
  * editorPath: 如果该图片裁剪或者编辑过，那么该属性会有值。
  * sandboxPath：沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
- * path：初始的路径，未压缩、未编辑前的，即是原图
+ * path：初始的uri路径，未压缩、未编辑前的，即是原图
  * absolutePath： 初始的真实路径，未压缩、未编辑前的，即是原图
  *
  * @author zhongjh
  * @date 2023/7/26
+ *
+ *
  */
 @Parcelize
 open class LocalMedia() : Parcelable {
@@ -46,7 +48,7 @@ open class LocalMedia() : Parcelable {
     var sandboxPath: String? = null
 
     /**
-     * 初始的路径，未压缩、未编辑前的，即是原图
+     * 初始的uri路径，未压缩、未编辑前的，即是原图
      */
     var path: String = ""
 
@@ -79,11 +81,6 @@ open class LocalMedia() : Parcelable {
      * 列表中的索引
      */
     var position: Int = 0
-
-    /**
-     * 媒体号qq选择风格
-     */
-    var num: Int = 0
 
     /**
      * 媒体资源类型
@@ -153,12 +150,6 @@ open class LocalMedia() : Parcelable {
     var bucketId: Long = -1
 
     /**
-     * 图像是否被编辑过
-     * 内部使用
-     */
-    var isEditorImage: Boolean = false
-
-    /**
      * 文件创建时间
      */
     var dateAddedTime: Long = 0
@@ -189,7 +180,6 @@ open class LocalMedia() : Parcelable {
             parcel.writeString(fileName)
             parcel.writeString(parentFolderName)
             parcel.writeLong(bucketId)
-            parcel.writeByte(if (isEditorImage) 1 else 0)
             parcel.writeLong(dateAddedTime)
         }
 
@@ -276,7 +266,6 @@ open class LocalMedia() : Parcelable {
         fileName = parcel.readString().toString()
         parentFolderName = parcel.readString().toString()
         bucketId = parcel.readLong()
-        isEditorImage = parcel.readByte() != 0.toByte()
         dateAddedTime = parcel.readLong()
     }
 
@@ -294,32 +283,7 @@ open class LocalMedia() : Parcelable {
      * 之所以这样做是因为 Parcelable 如果使用的是看似父类其实是子类就会出问题
      */
     constructor(localMedia: LocalMedia) : this() {
-        id = localMedia.id
-        compressPath = localMedia.compressPath
-        editorPath = localMedia.editorPath
-        sandboxPath = localMedia.sandboxPath
-        path = localMedia.path
-        absolutePath = localMedia.absolutePath
-        duration = localMedia.duration
-        orientation = localMedia.orientation
-        isChecked = localMedia.isChecked
-        isCut = localMedia.isCut
-        position = localMedia.position
-        mimeType = localMedia.mimeType
-        width = localMedia.width
-        height = localMedia.height
-        cropImageWidth = localMedia.cropImageWidth
-        cropImageHeight = localMedia.cropImageHeight
-        cropOffsetX = localMedia.cropOffsetX
-        cropOffsetY = localMedia.cropOffsetY
-        cropResultAspectRatio = localMedia.cropResultAspectRatio
-        size = localMedia.size
-        isOriginal = localMedia.isOriginal
-        fileName = localMedia.fileName
-        parentFolderName = localMedia.parentFolderName
-        bucketId = localMedia.bucketId
-        isEditorImage = localMedia.isEditorImage
-        dateAddedTime = localMedia.dateAddedTime
+        copyLocalMedia(localMedia)
     }
 
     /**
@@ -351,9 +315,6 @@ open class LocalMedia() : Parcelable {
             return false
         }
         if (position != localMedia.position) {
-            return false
-        }
-        if (num != localMedia.num) {
             return false
         }
         if (mimeType != localMedia.mimeType) {
@@ -393,9 +354,6 @@ open class LocalMedia() : Parcelable {
             return false
         }
         if (bucketId != localMedia.bucketId) {
-            return false
-        }
-        if (isEditorImage != localMedia.isEditorImage) {
             return false
         }
         if (dateAddedTime != localMedia.dateAddedTime) {
@@ -468,15 +426,12 @@ open class LocalMedia() : Parcelable {
      * @param compressionFile 压缩文件
      * @param isCompress 是否压缩
      */
-    fun updateFile(
+    private fun updateFile(
         context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean
     ) {
-        id = localMedia.id
-        this.compressPath = compressionFile.absolutePath
-        mimeType = localMedia.mimeType
+        copyLocalMedia(localMedia)
+        compressPath = compressionFile.absolutePath
         size = compressionFile.length()
-        duration = localMedia.duration
-        isOriginal = localMedia.isOriginal
         if (isImageOrGif()) {
             val imageWidthAndHeight: IntArray =
                 MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
@@ -494,6 +449,37 @@ open class LocalMedia() : Parcelable {
                 height = localMedia.height
             }
         }
+    }
+
+    /**
+     * 深度拷贝
+     */
+    private fun copyLocalMedia(localMedia: LocalMedia) {
+        id = localMedia.id
+        compressPath = localMedia.compressPath
+        editorPath = localMedia.editorPath
+        sandboxPath = localMedia.sandboxPath
+        path = localMedia.path
+        absolutePath = localMedia.absolutePath
+        duration = localMedia.duration
+        orientation = localMedia.orientation
+        isChecked = localMedia.isChecked
+        isCut = localMedia.isCut
+        position = localMedia.position
+        mimeType = localMedia.mimeType
+        width = localMedia.width
+        height = localMedia.height
+        cropImageWidth = localMedia.cropImageWidth
+        cropImageHeight = localMedia.cropImageHeight
+        cropOffsetX = localMedia.cropOffsetX
+        cropOffsetY = localMedia.cropOffsetY
+        cropResultAspectRatio = localMedia.cropResultAspectRatio
+        size = localMedia.size
+        isOriginal = localMedia.isOriginal
+        fileName = localMedia.fileName
+        parentFolderName = localMedia.parentFolderName
+        bucketId = localMedia.bucketId
+        dateAddedTime = localMedia.dateAddedTime
     }
 
 }

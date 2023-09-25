@@ -333,7 +333,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             ?: -1
         val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
         multiMediaView.absolutePath = file
-        multiMediaView.sandboxPath = mMediaStoreCompat.getUri(file).toString()
+        multiMediaView.path = mMediaStoreCompat.getUri(file).toString()
         multiMediaView.duration = duration
         multiMediaView.mimeType =
             mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()

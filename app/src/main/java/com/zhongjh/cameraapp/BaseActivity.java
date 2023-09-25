@@ -164,8 +164,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 // 循环判断，如果不存在，则删除
                 for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
                     int k = 0;
-                    for (LocalMedia localMedia : selected) {
-                        if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localMedia)) {
+                    for (LocalMedia multiMedia : selected) {
+                        if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(multiMedia)) {
                             k++;
                         }
                     }
@@ -176,45 +176,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 }
             } else {
                 List<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
-                for (LocalMedia localMedia : result) {
-                    // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
-                    Log.i(TAG, "onResult id:" + localMedia.getId());
-                    // 是必定可用的地址，如果对地址没有太苛刻的时候可以使用它，具体逻辑可以看该方法(比如支持压缩的话，该方法返回压缩路径)。
-                    Log.i(TAG, "onResult 必定可用路径:" + localMedia.getAvailablePath());
-                    // 压缩后的路径，如果开启压缩配置后，将最终原图或者编辑后的图片进行压缩，然后赋值该属性
-                    Log.d(TAG, "onResult 压缩路径:" + localMedia.getCompressPath());
-                    // 如果该图片裁剪或者编辑过，那么该属性会有值。
-                    Log.d(TAG, "onResult 编辑路径:" + localMedia.getEditorPath());
-                    // 沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
-                    Log.i(TAG, "onResult 沙盒路径:" + localMedia.getSandboxPath());
-                    // 初始的路径，未压缩、未编辑前的，即是原图
-                    Log.d(TAG, "onResult 旧图Uri:" + localMedia.getPath());
-                    // 初始的真实路径，未压缩、未编辑前的，即是原图
-                    Log.d(TAG, "onResult 原图Uri:" + localMedia.getAbsolutePath());
-                    Log.i(TAG, "onResult 文件大小: " + localMedia.getSize());
-                    Log.i(TAG, "onResult 视频音频长度: " + localMedia.getDuration());
-                    Log.i(TAG, "onResult 是否选择了原图: " + localMedia.isOriginal());
-                    if (localMedia.isImageOrGif()) {
-                        if (localMedia.isImage()) {
-                            Log.d(TAG, "onResult 图片类型");
-                        } else if (localMedia.isImage()) {
-                            Log.d(TAG, "onResult 图片类型");
-                        }
-                    } else if (localMedia.isVideo()) {
-                        Log.d(TAG, "onResult 视频类型");
-                    } else if (localMedia.isAudio()) {
-                        Log.d(TAG, "onResult 音频类型");
-                    }
-                    Log.i(TAG, "onResult 具体类型:" + localMedia.getMimeType());
-                    // 某些手机拍摄没有自带宽高，那么我们可以自己获取
-                    if (localMedia.getWidth() == 0 && localMedia.isVideo()) {
-                        MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localMedia.getPath());
-                        localMedia.setWidth(mediaExtraInfo.getWidth());
-                        localMedia.setHeight(mediaExtraInfo.getHeight());
-                        localMedia.setDuration(mediaExtraInfo.getDuration());
-                    }
-                    Log.i(TAG, "onResult 宽高: " + localMedia.getWidth() + "x" + localMedia.getHeight());
-                }
+                printProperty(result);
                 getMaskProgressLayout().addLocalFileStartUpload(result);
             }
         }
@@ -236,6 +198,69 @@ public abstract class BaseActivity extends AppCompatActivity {
     public int dip2px(int dp) {
         float density = this.getResources().getDisplayMetrics().density;
         return (int) (dp * density + 0.5);
+    }
+
+    /**
+     * 公共的打印属性
+     *
+     * @param result 数据源
+     */
+    protected void printProperty(List<? extends LocalMedia> result) {
+        for (LocalMedia localMedia : result) {
+            // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
+            Log.i(TAG, "onResult id:" + localMedia.getId());
+            // 是必定可用的地址，如果对地址没有太苛刻的时候可以使用它，具体逻辑可以看该方法(比如支持压缩的话，该方法返回压缩路径)。
+            Log.d(TAG, "onResult getAvailablePath:" + localMedia.getAvailablePath());
+            // 压缩后的路径，如果开启压缩配置后，将最终原图或者编辑后的图片进行压缩，然后赋值该属性。
+            Log.d(TAG, "onResult getCompressPath:" + localMedia.getCompressPath());
+            // 如果该图片裁剪或者编辑过，那么该属性会有值。
+            Log.d(TAG, "onResult getEditorPath:" + localMedia.getEditorPath());
+            // 沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
+            Log.d(TAG, "onResult getSandboxPath:" + localMedia.getSandboxPath());
+            // 初始的uri路径，未压缩、未编辑前的，即是原图
+            Log.d(TAG, "onResult getPath:" + localMedia.getPath());
+            // 初始的真实路径，未压缩、未编辑前的，即是原图
+            Log.d(TAG, "onResult getAbsolutePath:" + localMedia.getAbsolutePath());
+            Log.i(TAG, "onResult 视频音频长度: " + localMedia.getDuration());
+            Log.i(TAG, "onResult 角度: " + localMedia.getOrientation());
+            Log.i(TAG, "onResult 是否选中: " + localMedia.isChecked());
+            Log.i(TAG, "onResult 是否裁剪: " + localMedia.isCut());
+            Log.i(TAG, "onResult 索引: " + localMedia.getPosition());
+            Log.i(TAG, "onResult 媒体资源类型: " + localMedia.getMimeType());
+            Log.i(TAG, "onResult 宽度: " + localMedia.getWidth());
+            Log.i(TAG, "onResult 高度: " + localMedia.getHeight());
+            Log.i(TAG, "onResult 裁剪图片的宽度: " + localMedia.getCropImageWidth());
+            Log.i(TAG, "onResult 裁剪图片的高度: " + localMedia.getCropImageHeight());
+            Log.i(TAG, "onResult 裁剪比例X: " + localMedia.getCropOffsetX());
+            Log.i(TAG, "onResult 裁剪比例Y: " + localMedia.getCropOffsetY());
+            Log.i(TAG, "onResult 裁剪纵横比: " + localMedia.getCropResultAspectRatio());
+            Log.i(TAG, "onResult 文件大小: " + localMedia.getSize());
+            Log.i(TAG, "onResult 文件名称: " + localMedia.getFileName());
+            Log.i(TAG, "onResult 父文件夹名称: " + localMedia.getParentFolderName());
+            Log.i(TAG, "onResult 专辑ID: " + localMedia.getBucketId());
+            Log.i(TAG, "onResult 文件创建时间: " + localMedia.getDateAddedTime());
+            Log.i(TAG, "onResult 是否选择了原图: " + localMedia.isOriginal());
+            if (localMedia.isImageOrGif()) {
+                if (localMedia.isImage()) {
+                    Log.d(TAG, "onResult 图片类型");
+                } else if (localMedia.isImage()) {
+                    Log.d(TAG, "onResult 图片类型");
+                }
+            } else if (localMedia.isVideo()) {
+                Log.d(TAG, "onResult 视频类型");
+            } else if (localMedia.isAudio()) {
+                Log.d(TAG, "onResult 音频类型");
+            }
+            Log.i(TAG, "onResult 具体类型:" + localMedia.getMimeType());
+            // 某些手机拍摄没有自带宽高，那么我们可以自己获取
+            if (localMedia.getWidth() == 0 && localMedia.isVideo()) {
+                MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localMedia.getPath());
+                localMedia.setWidth(mediaExtraInfo.getWidth());
+                localMedia.setHeight(mediaExtraInfo.getHeight());
+                localMedia.setDuration(mediaExtraInfo.getDuration());
+            }
+            Log.i(TAG, "onResult 宽高: " + localMedia.getWidth() + "x" + localMedia.getHeight());
+        }
     }
 
     protected class MyTask extends Timer {

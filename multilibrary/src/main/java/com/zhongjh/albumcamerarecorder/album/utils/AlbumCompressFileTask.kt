@@ -35,6 +35,13 @@ class AlbumCompressFileTask(
         // 将 缓存文件 拷贝到 配置目录
         val newLocalFiles = ArrayList<LocalMedia>()
         for (item in localFiles) {
+            // 设置沙盒路径
+            if (item.isImage()) {
+                item.sandboxPath = pictureMediaStoreCompat.getUri(item.path).toString()
+            } else if (item.isVideo()) {
+                item.sandboxPath = videoMediaStoreCompat.getUri(item.path).toString()
+            }
+
             // 判断是否需要压缩
             val isCompressItem = isCompress(item)
             if (isCompressItem != null) {
