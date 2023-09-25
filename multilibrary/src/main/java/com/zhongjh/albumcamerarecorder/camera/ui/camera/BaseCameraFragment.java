@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera;
 import static android.app.Activity.RESULT_OK;
 import static com.otaliastudios.cameraview.controls.Mode.PICTURE;
 import static com.otaliastudios.cameraview.controls.Mode.VIDEO;
+import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
@@ -587,9 +588,9 @@ public abstract class BaseCameraFragment
                     // 获取选择的数据
                     ArrayList<LocalMedia> selected;
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                        selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION, LocalMedia.class);
+                        selected = resultBundle.getParcelableArrayList(STATE_SELECTION, LocalMedia.class);
                     } else {
-                        selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                        selected = resultBundle.getParcelableArrayList(STATE_SELECTION);
                     }
                     if (selected == null) {
                         return;
@@ -817,10 +818,10 @@ public abstract class BaseCameraFragment
      *
      * @param bitmapData 显示单图数据源
      * @param file       显示单图的文件
-     * @param uri        显示单图的uri
+     * @param path       显示单图的path
      */
     @Override
-    public void showSinglePicture(BitmapData bitmapData, File file, Uri uri) {
+    public void showSinglePicture(BitmapData bitmapData, File file, String path) {
         // 拍照  隐藏 闪光灯、右上角的切换摄像头
         setMenuVisibility(View.INVISIBLE);
         // 这样可以重置
@@ -837,7 +838,7 @@ public abstract class BaseCameraFragment
         // 判断是否要编辑
         if (globalSpec.getImageEditEnabled()) {
             getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.VISIBLE);
-            getPhotoVideoLayout().getViewHolder().rlEdit.setTag(uri);
+            getPhotoVideoLayout().getViewHolder().rlEdit.setTag(path);
         } else {
             getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.INVISIBLE);
         }

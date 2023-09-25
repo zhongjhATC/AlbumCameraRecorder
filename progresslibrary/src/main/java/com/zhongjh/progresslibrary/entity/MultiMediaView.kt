@@ -1,6 +1,7 @@
 package com.zhongjh.progresslibrary.entity
 
 import android.os.Parcel
+import android.os.Parcelable
 import android.view.View
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.progresslibrary.widget.MaskProgressView
@@ -13,12 +14,9 @@ import kotlinx.android.parcel.Parcelize
  * @author zhongjh
  * @date 2021/12/13
  */
-@Parcelize
-class MultiMediaView() : LocalMedia() {
+class MultiMediaView : LocalMedia, Parcelable {
 
-    companion object {
-        private const val FULL_PERCENT = 100
-    }
+
 
     /**
      * 绑定子view,包含其他所有控件（显示view,删除view）
@@ -50,6 +48,8 @@ class MultiMediaView() : LocalMedia() {
      */
     var isUploading = false
 
+    constructor() : super()
+
     constructor(parcel: Parcel) : super(parcel) {
         url = parcel.readString().toString()
         isUploading = parcel.readByte() != 0.toByte()
@@ -76,5 +76,28 @@ class MultiMediaView() : LocalMedia() {
         }
     }
 
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        super.writeToParcel(parcel, flags)
+        parcel.writeLong(multiMediaId)
+        parcel.writeString(url)
+        parcel.writeByte(if (isUploading) 1 else 0)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<MultiMediaView> {
+
+        private const val FULL_PERCENT = 100
+
+        override fun createFromParcel(parcel: Parcel): MultiMediaView {
+            return MultiMediaView(parcel)
+        }
+
+        override fun newArray(size: Int): Array<MultiMediaView?> {
+            return arrayOfNulls(size)
+        }
+    }
 
 }

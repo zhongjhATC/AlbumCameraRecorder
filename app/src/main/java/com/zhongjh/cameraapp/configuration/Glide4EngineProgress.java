@@ -23,7 +23,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.zhongjh.progresslibrary.engine.ImageEngine;
 
@@ -31,16 +30,17 @@ import com.zhongjh.progresslibrary.engine.ImageEngine;
 /**
  * 这是配合展示数据九宫格view使用的 com.zhongjh.progresslibrary.widget.MaskProgressLayout
  * {@link ImageEngine} implementation using Glide.
+ *
  * @author zhongjh
  */
 
 public class Glide4EngineProgress implements ImageEngine {
 
     @Override
-    public void loadThumbnail(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, @NonNull Uri uri) {
+    public void loadThumbnail(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, @NonNull String path) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
-                .load(uri)
+                .load(path)
                 .apply(new RequestOptions()
                         .override(resize, resize)
                         .placeholder(placeholder)
@@ -53,19 +53,6 @@ public class Glide4EngineProgress implements ImageEngine {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(url)
-                .apply(new RequestOptions()
-                        .override(resize, resize)
-                        .placeholder(placeholder)
-                        .centerCrop())
-                .into(imageView);
-    }
-
-    @Override
-    public void loadGifThumbnail(@NonNull Context context, int resize, Drawable placeholder, @NonNull ImageView imageView,
-                                 @NonNull Uri uri) {
-        Glide.with(context)
-                .asBitmap() // some .jpeg files are actually gif
-                .load(uri)
                 .apply(new RequestOptions()
                         .override(resize, resize)
                         .placeholder(placeholder)
@@ -98,5 +85,6 @@ public class Glide4EngineProgress implements ImageEngine {
     public boolean supportAnimatedGif() {
         return true;
     }
+
 
 }

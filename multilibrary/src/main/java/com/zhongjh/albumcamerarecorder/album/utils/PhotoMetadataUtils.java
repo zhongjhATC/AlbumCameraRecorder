@@ -12,12 +12,10 @@ import android.util.Log;
 import androidx.exifinterface.media.ExifInterface;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.IncapableCause;
-import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.BasePhotoMetadataUtils;
 import com.zhongjh.common.utils.UriUtils;
@@ -113,9 +111,9 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
      * @param item    数据源
      * @return 提示框
      */
-    public static IncapableCause isAcceptable(Context context, MultiMedia item) {
+    public static IncapableCause isAcceptable(Context context, LocalMedia item) {
         // 判断资源类型是否已设置可选
-        if (!isSelectableType(context, item)) {
+        if (!isSelectableType(item)) {
             return new IncapableCause(context.getString(R.string.z_multi_library_error_file_type));
         }
 
@@ -135,20 +133,14 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
     /**
      * 判断资源类型是否已设置可选
      *
-     * @param context 上下文
-     * @param item    数据源
+     * @param item 数据源
      * @return 是否
      */
-    private static boolean isSelectableType(Context context, MultiMedia item) {
-        if (context == null) {
-            return false;
-        }
-
-        ContentResolver resolver = context.getContentResolver();
+    private static boolean isSelectableType(LocalMedia item) {
         // 循环当前类型配置
         for (MimeType type : GlobalSpec.INSTANCE.getMimeTypeSet(ModuleTypes.ALBUM)) {
             // 如果当前类型配置 相等 当前数据
-            if (type.checkType(resolver, item.getUri())) {
+            if (type.checkType(item.getPath())) {
                 return true;
             }
         }

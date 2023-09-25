@@ -2,6 +2,9 @@ package com.zhongjh.albumcamerarecorder.album.ui.album;
 
 
 import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.COLLECTION_UNDEFINED;
+import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 
 import android.content.Context;
@@ -35,7 +38,6 @@ import com.zhongjh.albumcamerarecorder.MainModel;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
-import com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
@@ -381,11 +383,10 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                     if (result.getData() != null) {
                         Bundle resultBundle = result.getData().getBundleExtra(BasePreviewFragment.EXTRA_RESULT_BUNDLE);
                         // 获取选择的数据
-                        ArrayList<LocalMedia> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
+                        ArrayList<LocalMedia> selected = resultBundle.getParcelableArrayList(STATE_SELECTION);
                         // 是否启用原图
                         mOriginalEnable = result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-                        int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
-                                SelectedItemCollection.COLLECTION_UNDEFINED);
+                        int collectionType = resultBundle.getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
                         // 如果在预览界面点击了确定
                         if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
                             if (selected != null) {

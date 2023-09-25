@@ -33,7 +33,6 @@ import com.zhongjh.cameraapp.configuration.ImageCompressionLuBan;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MediaExtraInfo;
-import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.MediaUtils;
@@ -200,7 +199,7 @@ public class MainActivity extends BaseActivity {
         // 启动过场动画，从下往上动画
         mGlobalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());
         // 设置图片编辑、拍照、录像后是否加入相册功能，默认加入
-        mGlobalSetting.isAddAlbum(mBinding.cbIsAddAlbumByEdit.isChecked(),mBinding.cbIsAddAlbumByCamera.isChecked(),mBinding.cbIsAddAlbumByVideo.isChecked());
+        mGlobalSetting.isAddAlbum(mBinding.cbIsAddAlbumByEdit.isChecked(), mBinding.cbIsAddAlbumByCamera.isChecked(), mBinding.cbIsAddAlbumByVideo.isChecked());
         // 是否支持编辑图片，预览相册、拍照处拥有编辑功能
         mGlobalSetting.isImageEdit(mBinding.cbIsEdit.isChecked());
         if (mBinding.cbAlbum.isChecked())

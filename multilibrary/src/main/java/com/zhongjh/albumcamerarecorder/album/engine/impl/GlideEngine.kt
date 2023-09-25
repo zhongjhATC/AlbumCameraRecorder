@@ -60,9 +60,9 @@ class GlideEngine : ImageEngine {
             .into(imageView)
     }
 
-    override fun loadUriImage(context: Context, imageView: ImageView, uri: Uri) {
+    override fun loadUriImage(context: Context, imageView: ImageView, path: String) {
         Glide.with(context)
-            .load(uri)
+            .load(path)
             .priority(Priority.HIGH)
             .fitCenter()
             .into(imageView)

@@ -2,7 +2,6 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
@@ -28,16 +27,13 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraPicture;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
-import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalFile;
-import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,9 +81,9 @@ public class BaseCameraPicturePresenter
      */
     private File photoEditFile;
     /**
-     * 照片Uri,作用于单图
+     * 照片path,作用于单图
      */
-    private Uri singlePhotoUri;
+    private String singlePhotoPath;
     /**
      * 图片的文件操作
      */
@@ -248,8 +244,7 @@ public class BaseCameraPicturePresenter
     public void addCaptureData(Bitmap bitmap) {
         // 初始化数据并且存储进file
         File file = pictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
-        Uri uri = pictureMediaStoreCompat.getUri(file.getPath());
-        BitmapData bitmapData = new BitmapData(file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
+        BitmapData bitmapData = new BitmapData(file.getPath(), file.getPath(), bitmap.getWidth(), bitmap.getHeight());
         bitmapData.setTemporaryId(System.currentTimeMillis());
         // 回收bitmap
         if (bitmap.isRecycled()) {
@@ -269,7 +264,7 @@ public class BaseCameraPicturePresenter
         } else {
             this.bitmapData.add(bitmapData);
             photoFile = file;
-            baseCameraFragment.showSinglePicture(bitmapData, file, uri);
+            baseCameraFragment.showSinglePicture(bitmapData, file, file.getPath());
         }
 
         if (this.bitmapData.size() > 0) {
@@ -309,18 +304,17 @@ public class BaseCameraPicturePresenter
         }
         // 用编辑后的图作为新的图片
         photoFile = photoEditFile;
-        Uri uri = pictureMediaStoreCompat.getUri(photoFile.getPath());
-        singlePhotoUri = uri;
+        singlePhotoPath = photoFile.getPath();
 
         // 重置mCaptureBitmaps
         bitmapData.clear();
-        BitmapData bitmapData = new BitmapData(photoFile.getPath(), uri, width, height);
+        BitmapData bitmapData = new BitmapData(photoFile.getPath(), photoFile.getPath(), width, height);
         this.bitmapData.add(bitmapData);
 
         // 这样可以重置大小
         if (baseCameraFragment.getSinglePhotoView() != null) {
             baseCameraFragment.getSinglePhotoView().setZoomable(true);
-            baseCameraFragment.getGlobalSpec().getImageEngine().loadUriImage(baseCameraFragment.getMyContext(), baseCameraFragment.getSinglePhotoView(), uri);
+            baseCameraFragment.getGlobalSpec().getImageEngine().loadUriImage(baseCameraFragment.getMyContext(), baseCameraFragment.getSinglePhotoView(), photoFile.getPath());
         }
     }
 

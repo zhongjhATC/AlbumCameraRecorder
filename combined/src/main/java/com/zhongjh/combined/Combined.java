@@ -7,9 +7,7 @@ import android.view.View;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
-import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.AbstractMaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
@@ -107,15 +105,15 @@ public class Combined {
             // 如果是在预览界面点击了确定
             if (data.getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
-                ArrayList<MultiMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
+                ArrayList<LocalMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
                 if (selected == null) {
                     return;
                 }
                 // 循环判断，如果不存在，则删除
                 for (int i = this.maskProgressLayout.getImagesAndVideos().size() - 1; i >= 0; i--) {
                     int k = 0;
-                    for (MultiMedia multiMedia : selected) {
-                        if (!this.maskProgressLayout.getImagesAndVideos().get(i).equals(multiMedia)) {
+                    for (LocalMedia localMedia : selected) {
+                        if (!this.maskProgressLayout.getImagesAndVideos().get(i).equals(localMedia)) {
                             k++;
                         }
                     }
@@ -126,7 +124,9 @@ public class Combined {
                 }
             } else {
                 List<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
-                this.maskProgressLayout.addLocalFileStartUpload(result);
+                if (result != null) {
+                    this.maskProgressLayout.addLocalFileStartUpload(result);
+                }
             }
         }
     }

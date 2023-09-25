@@ -20,6 +20,7 @@ public interface ICameraFragment {
 
     /**
      * 提交图片成功后，返回数据给上一个页面
+     *
      * @param newFiles 多媒体数据
      */
     void commitPictureSuccess(ArrayList<LocalMedia> newFiles);
@@ -38,6 +39,7 @@ public interface ICameraFragment {
 
     /**
      * 提交视频成功后，返回数据给上一个页面
+     *
      * @param intentPreviewVideo 从预览视频界面返回来的数据intent
      */
     void commitVideoSuccess(Intent intentPreviewVideo);
@@ -52,9 +54,9 @@ public interface ICameraFragment {
      *
      * @param bitmapData 显示单图数据源
      * @param file       显示单图的文件
-     * @param uri        显示单图的uri
+     * @param path       显示单图的path
      */
-    void showSinglePicture(BitmapData bitmapData, File file, Uri uri);
+    void showSinglePicture(BitmapData bitmapData, File file, String path);
 
     /**
      * 显示多图

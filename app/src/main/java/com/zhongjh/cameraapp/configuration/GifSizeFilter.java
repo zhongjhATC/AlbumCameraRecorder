@@ -16,17 +16,11 @@
 package com.zhongjh.cameraapp.configuration;
 
 import android.content.Context;
-import android.graphics.Point;
-
-
-import com.zhongjh.common.entity.IncapableCause;
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MimeType;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
-import com.zhongjh.cameraapp.R;
+import com.zhongjh.common.entity.IncapableCause;
+import com.zhongjh.common.entity.LocalMedia;
+import com.zhongjh.common.enums.MimeType;
 
 import org.jetbrains.annotations.NotNull;
 

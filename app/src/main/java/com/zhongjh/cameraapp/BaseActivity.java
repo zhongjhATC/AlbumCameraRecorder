@@ -15,10 +15,8 @@ import androidx.core.content.ContextCompat;
 
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
-import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
-import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -159,15 +157,15 @@ public abstract class BaseActivity extends AppCompatActivity {
             // 如果是在预览界面点击了确定
             if (data.getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
-                ArrayList<MultiMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
+                ArrayList<LocalMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
                 if (selected == null) {
                     return;
                 }
                 // 循环判断，如果不存在，则删除
                 for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
                     int k = 0;
-                    for (MultiMedia multiMedia : selected) {
-                        if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(multiMedia)) {
+                    for (LocalMedia localMedia : selected) {
+                        if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localMedia)) {
                             k++;
                         }
                     }

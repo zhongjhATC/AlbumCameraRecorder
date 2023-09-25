@@ -46,17 +46,6 @@ public class MainListActivity extends AppCompatActivity {
         // 默认有数据的
         mBinding.btnOpenSee.setOnClickListener(v -> MainSeeActivity.newInstance(MainListActivity.this));
 
-        // 独立预览相片功能
-        mBinding.btnPreview.setOnClickListener(v -> {
-            GlobalSetting globalSetting = MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll());
-            globalSetting.allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "preview"));
-            globalSetting.imageEngine(new Glide4Engine());
-            ArrayList<Integer> list = new ArrayList<>();
-            list.add(R.drawable.ic_camera_enhance_black_24dp);
-            list.add(R.drawable.ic_play_arrow_white_24dp);
-            globalSetting.openPreviewResourceId(MainListActivity.this, list, 0);
-        });
-
         // 这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例
         mBinding.btnUpperLimit.setOnClickListener(v -> MainUpperLimitActivity.newInstance(MainListActivity.this));
 

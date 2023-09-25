@@ -348,7 +348,7 @@ public class MediaPageLoader extends BaseMediaLoader {
                     }
                 }
                 LocalMedia image = LocalMedia.parseLocalMedia(id, uri, absolutePath, fileName, folderName, duration, orientation,
-                        globalSpec.getMimeTypeSet(ModuleTypes.ALBUM), mimeType, width, height, size, bucketId, data.getLong(dateAddedColumn));
+                        mimeType, width, height, size, bucketId, data.getLong(dateAddedColumn));
                 result.add(image);
             } while (data.moveToNext());
         }

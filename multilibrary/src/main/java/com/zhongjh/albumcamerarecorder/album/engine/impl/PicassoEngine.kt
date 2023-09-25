@@ -48,8 +48,8 @@ class PicassoEngine : ImageEngine {
             .centerInside().into(imageView)
     }
 
-    override fun loadUriImage(context: Context, imageView: ImageView, uri: Uri) {
-        Picasso.with(context).load(uri).priority(Picasso.Priority.HIGH)
+    override fun loadUriImage(context: Context, imageView: ImageView, path: String) {
+        Picasso.with(context).load(path).priority(Picasso.Priority.HIGH)
             .centerInside().into(imageView)
     }
 

@@ -20,6 +20,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
@@ -65,9 +67,9 @@ public class Glide4Engine implements ImageEngine {
     }
 
     @Override
-    public void loadUriImage(@NotNull Context context, @NotNull ImageView imageView, @NotNull Uri uri) {
+    public void loadUriImage(@NotNull Context context, @NotNull ImageView imageView, @NonNull String path) {
         Glide.with(context)
-                .load(uri)
+                .load(path)
                 .apply(new RequestOptions()
                         .error(R.drawable.ic_failed)
                         .fitCenter())
@@ -99,4 +101,6 @@ public class Glide4Engine implements ImageEngine {
     public boolean supportAnimatedGif() {
         return true;
     }
+
+
 }

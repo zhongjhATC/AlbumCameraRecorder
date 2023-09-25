@@ -1,8 +1,8 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter;
 
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.COLLECTION_IMAGE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.album.model.SelectedItemCollection.STATE_SELECTION;
+import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.COLLECTION_IMAGE;
+import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_SELECTION;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,7 +22,7 @@ import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.OnMoreClickListener;
 
@@ -99,16 +99,16 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * @param bitmapData 数据
      */
     private void onClickListener(BitmapData bitmapData) {
-        ArrayList<MultiMedia> items = new ArrayList<>();
+        ArrayList<LocalMedia> items = new ArrayList<>();
         for (BitmapData item : mListData) {
-            MultiMedia multiMedia = new MultiMedia();
-            multiMedia.setId(item.getTemporaryId());
-            multiMedia.setUri(item.getAbsolutePath());
-            multiMedia.setPath(item.getPath());
-            multiMedia.setMimeType(MimeType.JPEG.toString());
-            multiMedia.setWidth(item.getWidth());
-            multiMedia.setHeight(item.getHeight());
-            items.add(multiMedia);
+            LocalMedia localMedia = new LocalMedia();
+            localMedia.setId(item.getTemporaryId());
+            localMedia.setAbsolutePath(item.getAbsolutePath());
+            localMedia.setPath(item.getPath());
+            localMedia.setMimeType(MimeType.JPEG.toString());
+            localMedia.setWidth(item.getWidth());
+            localMedia.setHeight(item.getHeight());
+            items.add(localMedia);
         }
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, items);
@@ -116,8 +116,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
         Intent intent = new Intent(mActivity, PreviewActivity.class);
         // 获取目前点击的这个item
-        MultiMedia item = new MultiMedia();
-        item.setUri(bitmapData.getAbsolutePath());
+        LocalMedia item = new LocalMedia();
+        item.setAbsolutePath(bitmapData.getAbsolutePath());
         item.setPath(bitmapData.getPath());
         item.setMimeType(MimeType.JPEG.toString());
         item.setWidth(bitmapData.getWidth());
