@@ -51,7 +51,7 @@ class MultiMediaView : LocalMedia, Parcelable {
     constructor() : super()
 
     constructor(parcel: Parcel) : super(parcel) {
-        url = parcel.readString().toString()
+        url = parcel.readString()
         isUploading = parcel.readByte() != 0.toByte()
     }
 

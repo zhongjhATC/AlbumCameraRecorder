@@ -244,17 +244,20 @@ open class LocalMedia() : Parcelable {
      */
     constructor(parcel: Parcel) : this() {
         id = parcel.readLong()
-        compressPath = parcel.readString().toString()
-        editorPath = parcel.readString().toString()
-        sandboxPath = parcel.readString().toString()
-        path = parcel.readString().toString()
-        absolutePath = parcel.readString().toString()
+        compressPath = parcel.readString()
+        editorPath = parcel.readString()
+        sandboxPath = parcel.readString()
+        val parcelPath = parcel.readString()
+        path = parcelPath.let { parcelPath } ?: let { "" }
+        val parcelAbsolutePath = parcel.readString()
+        absolutePath = parcelAbsolutePath.let { parcelAbsolutePath } ?: let { "" }
         duration = parcel.readLong()
         orientation = parcel.readInt()
         isChecked = parcel.readByte() != 0.toByte()
         isCut = parcel.readByte() != 0.toByte()
         position = parcel.readInt()
-        mimeType = parcel.readString().toString()
+        val parcelMimeType = parcel.readString()
+        mimeType = parcelMimeType.let { parcelMimeType } ?: let { "" }
         width = parcel.readInt()
         height = parcel.readInt()
         cropImageWidth = parcel.readInt()
@@ -263,8 +266,10 @@ open class LocalMedia() : Parcelable {
         cropResultAspectRatio = parcel.readFloat()
         size = parcel.readLong()
         isOriginal = parcel.readByte() != 0.toByte()
-        fileName = parcel.readString().toString()
-        parentFolderName = parcel.readString().toString()
+        val parcelFileName = parcel.readString()
+        fileName = parcelFileName.let { parcelFileName } ?: let { "" }
+        val parcelParentFolderName = parcel.readString()
+        parentFolderName = parcelParentFolderName.let { parcelParentFolderName } ?: let { "" }
         bucketId = parcel.readLong()
         dateAddedTime = parcel.readLong()
     }

@@ -32,7 +32,7 @@ abstract class BaseFilter {
      */
     protected fun needFiltering(item: LocalMedia): Boolean {
         for (type in constraintTypes()) {
-            if (type.checkType(item.path)) {
+            if (type.checkType(item.absolutePath)) {
                 return true
             }
         }

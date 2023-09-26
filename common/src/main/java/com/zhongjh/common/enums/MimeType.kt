@@ -170,10 +170,10 @@ enum class MimeType(val mimeTypeName: String, private val extensions: Set<String
         return false
     }
 
-    fun checkType(path: String): Boolean {
+    fun checkType(absolutePath: String): Boolean {
         for (extension in extensions) {
             // 判断字符串是否以指定类型后缀结尾
-            if (path.endsWith(extension)) {
+            if (absolutePath.endsWith(extension)) {
                 return true
             }
         }
