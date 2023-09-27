@@ -1110,7 +1110,7 @@ abstract class BasePreviewFragment2 : Fragment() {
                 }
             } else {
                 val checked = getSelectedData().isSelected(item)
-                mViewHolder.checkView.setChecked(checked);
+                mViewHolder.checkView.setChecked(checked)
                 if (checked) {
                     setCheckViewEnable(true)
                 } else {
