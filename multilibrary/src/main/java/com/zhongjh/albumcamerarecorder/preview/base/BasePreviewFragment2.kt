@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.preview.base
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -28,6 +29,7 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
@@ -70,13 +72,13 @@ abstract class BasePreviewFragment2 : Fragment() {
     protected val TAG: String = this@BasePreviewFragment2.javaClass.simpleName
 
     protected lateinit var mContext: Context
-    protected lateinit var mViewHolder: ViewHolder
+    private lateinit var mViewHolder: ViewHolder
     protected lateinit var mViewPager2: ViewPager2
-    protected lateinit var mAdapter: PreviewPagerAdapter
-    protected val mGlobalSpec by lazy {
+    private lateinit var mAdapter: PreviewPagerAdapter
+    private val mGlobalSpec by lazy {
         GlobalSpec
     }
-    protected val mAlbumSpec by lazy {
+    private val mAlbumSpec by lazy {
         AlbumSpec
     }
 
@@ -355,6 +357,12 @@ abstract class BasePreviewFragment2 : Fragment() {
      * 设置当前显示的文件索引
      */
     abstract fun setPreviewPosition(previewPosition: Int)
+
+    /**
+     * 返回当前所选择的数据
+     * @return 返回当前所选择的数据
+     */
+    abstract fun getSelectedData(): SelectedData
 
     /**
      * 初始化样式
@@ -1019,32 +1027,97 @@ abstract class BasePreviewFragment2 : Fragment() {
     }
 
     /**
+     * 更新ui
+     * 如果当前item是gif就显示多少M的文本
+     * 如果当前item是video就显示播放按钮
+     *
+     * @param item 当前图片
+     */
+    @SuppressLint("SetTextI18n")
+    private fun updateUi(item: LocalMedia?) {
+        item?.let {
+            if (item.isGif()) {
+                mViewHolder.tvSize.visibility = View.VISIBLE
+                mViewHolder.tvSize.text = PhotoMetadataUtils.getSizeInMb(item.size).toString() + "M"
+            } else {
+                mViewHolder.tvSize.visibility = View.GONE
+            }
+
+            // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
+            if (mAlbumSpec.originalEnable && mOriginalEnable && !item.isVideo()) {
+                // 显示
+                mViewHolder.originalLayout.visibility = View.VISIBLE
+                updateOriginalState()
+            } else {
+                // 隐藏
+                mViewHolder.originalLayout.visibility = View.GONE
+            }
+            if (item.isImage() && mGlobalSpec.imageEditEnabled && mEditEnable) {
+                mViewHolder.tvEdit.visibility = View.VISIBLE
+            } else {
+                mViewHolder.tvEdit.visibility = View.GONE
+            }
+        }
+
+    }
+
+    /**
+     * 更新原图按钮状态
+     */
+    private fun updateOriginalState() {
+        // 设置原图按钮根据配置来
+        mViewHolder.original.setChecked(mOriginalEnable)
+        if (!mOriginalEnable) {
+            mViewHolder.original.setColor(Color.WHITE)
+        }
+        if (countOverMaxSize() > 0) {
+            // 如果开启了原图功能
+            if (mOriginalEnable) {
+                // 弹框提示取消原图
+                val incapableDialog = newInstance(
+                    "",
+                    getString(
+                        R.string.z_multi_library_error_over_original_size,
+                        mAlbumSpec.originalMaxSize
+                    )
+                )
+                incapableDialog.show(
+                    parentFragmentManager,
+                    IncapableDialog::class.java.name
+                )
+                // 去掉原图按钮的选择状态
+                mViewHolder.original.setChecked(false)
+                mViewHolder.original.setColor(Color.WHITE)
+                mOriginalEnable = false
+            }
+        }
+    }
+
+    /**
      * 滑动事件
      */
     private val mOnPageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             val adapter = mViewPager2.adapter as PreviewPagerAdapter
-            if (getPreviewPosition() != -1 && getPreviewPosition() != position) {
-//                MultiMedia item = adapter.getMediaItem(position);
-//                if (mAlbumSpec.getCountable()) {
-//                    int checkedNum = mSelectedCollection.checkedNumOf(item);
-//                    mViewHolder.checkView.setCheckedNum(checkedNum);
-//                    if (checkedNum > 0) {
-//                        setCheckViewEnable(true);
-//                    } else {
-//                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
-//                    }
-//                } else {
-//                    boolean checked = mSelectedCollection.isSelected(item);
-//                    mViewHolder.checkView.setChecked(checked);
-//                    if (checked) {
-//                        setCheckViewEnable(true);
-//                    } else {
-//                        setCheckViewEnable(!mSelectedCollection.maxSelectableReached());
-//                    }
-//                }
-//                updateUi(item);
+            val item = adapter.getLocalMedia(position)
+            if (mAlbumSpec.countable) {
+                val checkedNum = getSelectedData().checkedNumOf(item)
+                mViewHolder.checkView.setCheckedNum(checkedNum)
+                if (checkedNum > 0) {
+                    setCheckViewEnable(true)
+                } else {
+                    setCheckViewEnable(!getSelectedData().maxSelectableReached())
+                }
+            } else {
+                val checked = getSelectedData().isSelected(item)
+                mViewHolder.checkView.setChecked(checked);
+                if (checked) {
+                    setCheckViewEnable(true)
+                } else {
+                    setCheckViewEnable(!getSelectedData().maxSelectableReached())
+                }
             }
+            updateUi(item)
             onViewPageSelected(position)
         }
     }
@@ -1062,4 +1135,5 @@ abstract class BasePreviewFragment2 : Fragment() {
         var checkView: CheckView = rootView.findViewById(R.id.checkView)
         var pbLoading: ProgressBar = rootView.findViewById(R.id.pbLoading)
     }
+
 }

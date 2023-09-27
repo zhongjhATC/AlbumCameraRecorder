@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.zhongjh.albumcamerarecorder.MainModel
+import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment2
 import com.zhongjh.common.entity.LocalMedia
 
@@ -54,5 +55,13 @@ class PreviewFragment2 : BasePreviewFragment2() {
      */
     override fun setPreviewPosition(previewPosition: Int) {
         mMainModel.previewPosition = previewPosition
+    }
+
+    /**
+     * 返回当前所选择的数据操作类
+     * @return 返回当前所选择的数据操作类
+     */
+    override fun getSelectedData() : SelectedData {
+        return mMainModel.selectedData
     }
 }
