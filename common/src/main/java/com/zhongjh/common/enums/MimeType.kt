@@ -15,7 +15,7 @@ import java.util.*
  * @param mimeTypeName 类型名称
  * @param extensions 保存所有类型
  */
-enum class MimeType(val mimeTypeName: String, private val extensions: Set<String>) {
+enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
 
     // ============== 图片 ==============
     JPEG("image/jpeg", ArraySet(listOf(

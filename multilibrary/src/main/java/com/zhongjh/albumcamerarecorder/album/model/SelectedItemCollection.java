@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.SelectedCountMessage;
@@ -17,6 +18,7 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MimeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +88,7 @@ public class SelectedItemCollection {
             // 获取缓存的数据
             List<MultiMedia> saved = bundle.getParcelableArrayList(STATE_SELECTION);
             if (saved != null) {
-                Log.d("onSaveInstanceState",saved.size() + " onCreate");
+                Log.d("onSaveInstanceState", saved.size() + " onCreate");
                 if (isAllowRepeat) {
                     mItems = new ArrayList<>();
                     mItems.addAll(saved);
@@ -97,7 +99,7 @@ public class SelectedItemCollection {
 
             mCollectionType = bundle.getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
         }
-        Log.d("onSaveInstanceState",mItems.size() + " onCreate2");
+        Log.d("onSaveInstanceState", mItems.size() + " onCreate2");
     }
 
     /**
@@ -107,7 +109,7 @@ public class SelectedItemCollection {
      */
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(STATE_SELECTION, mItems);
-        Log.d("onSaveInstanceState",mItems.size() + " onSaveInstanceState");
+        Log.d("onSaveInstanceState", mItems.size() + " onSaveInstanceState");
         outState.putInt(STATE_COLLECTION_TYPE, mCollectionType);
     }
 
@@ -120,7 +122,7 @@ public class SelectedItemCollection {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(STATE_SELECTION, mItems);
         bundle.putInt(STATE_COLLECTION_TYPE, mCollectionType);
-        Log.d("onSaveInstanceState",mItems.size() + " getDataWithBundle");
+        Log.d("onSaveInstanceState", mItems.size() + " getDataWithBundle");
         return bundle;
     }
 
@@ -130,7 +132,7 @@ public class SelectedItemCollection {
      * @param item 数据
      */
     public boolean add(MultiMedia item) {
-        Log.d("onSaveInstanceState",mItems.size() + " add");
+        Log.d("onSaveInstanceState", mItems.size() + " add");
         boolean added = mItems.add(item);
         // 如果只选中了图片Item， mCollectionType设置为COLLECTION_IMAGE
         // 如果只选中了图片影音资源，mCollectionType设置为COLLECTION_IMAGE
@@ -183,7 +185,7 @@ public class SelectedItemCollection {
                 }
             }
         }
-        Log.d("onSaveInstanceState",mItems.size() + " remove");
+        Log.d("onSaveInstanceState", mItems.size() + " remove");
         return removed;
     }
 
@@ -201,7 +203,7 @@ public class SelectedItemCollection {
         }
         mItems.clear();
         mItems.addAll(items);
-        Log.d("onSaveInstanceState",mItems.size() + " overwrite");
+        Log.d("onSaveInstanceState", mItems.size() + " overwrite");
     }
 
     /**
@@ -225,7 +227,7 @@ public class SelectedItemCollection {
             LocalFile localFile = new LocalFile(item);
             localFiles.add(localFile);
         }
-        Log.d("onSaveInstanceState",mItems.size() + " asListOfLocalFile");
+        Log.d("onSaveInstanceState", mItems.size() + " asListOfLocalFile");
         return localFiles;
     }
 
@@ -236,7 +238,7 @@ public class SelectedItemCollection {
         for (MultiMedia item : mItems) {
             updateMultiMediaPath(item);
         }
-        Log.d("onSaveInstanceState",mItems.size() + " updatePath");
+        Log.d("onSaveInstanceState", mItems.size() + " updatePath");
     }
 
     /**
@@ -247,7 +249,7 @@ public class SelectedItemCollection {
      */
     private void updateMultiMediaPath(MultiMedia multiMedia) {
         multiMedia.analysesUriSetPathAndOriginalPath(mContext);
-        Log.d("onSaveInstanceState",mItems.size() + " updateMultiMediaPath");
+        Log.d("onSaveInstanceState", mItems.size() + " updateMultiMediaPath");
     }
 
     /**
@@ -267,7 +269,7 @@ public class SelectedItemCollection {
      * @return 弹窗
      */
     public IncapableCause isAcceptable(MultiMedia item) {
-        Log.d("onSaveInstanceState",mItems.size() + " isAcceptable");
+        Log.d("onSaveInstanceState", mItems.size() + " isAcceptable");
         boolean maxSelectableReached = false;
         int maxSelectable = 0;
         String type = "";
@@ -275,7 +277,19 @@ public class SelectedItemCollection {
         // 判断文件类型是否符合规范，
         if (!Objects.requireNonNull(item.getMimeType()).startsWith(IMAGE) && !item.getMimeType().startsWith(VIDEO)) {
             // 因为某些app保存文件时导致数据库的mimeType不符合规范，所以通过uri来获取mimeType
-            item.setMimeType(mContext.getContentResolver().getType(item.getUri()));
+            String extension = item.getMimeType().substring(item.getMimeType().lastIndexOf(".") + 1);
+            // 循环图片类型，判断后缀是否是.jpg之类的
+            for (MimeType mimeType : MimeType.ofImage()) {
+                if (mimeType.getExtensions().contains(extension)) {
+                    item.setMimeType(mimeType.getMimeTypeName());
+                }
+            }
+            // 循环视频类型，判断后缀是否是.mp4之类的
+            for (MimeType mimeType : MimeType.ofVideo()) {
+                if (mimeType.getExtensions().contains(extension)) {
+                    item.setMimeType(mimeType.getMimeTypeName());
+                }
+            }
         }
         // 判断是否混合视频图片模式
         if (!AlbumSpec.INSTANCE.getMediaTypeExclusive()) {
@@ -383,7 +397,7 @@ public class SelectedItemCollection {
      * @return boolean
      */
     public boolean maxSelectableReached() {
-        Log.d("onSaveInstanceState",mItems.size() + " maxSelectableReached");
+        Log.d("onSaveInstanceState", mItems.size() + " maxSelectableReached");
         return mItems.size() == currentMaxSelectable();
     }
 
@@ -400,7 +414,7 @@ public class SelectedItemCollection {
                 mSelectedVideoCount++;
             }
         }
-        Log.d("onSaveInstanceState",mItems.size() + " getSelectCount");
+        Log.d("onSaveInstanceState", mItems.size() + " getSelectCount");
     }
 
     /**
@@ -426,7 +440,7 @@ public class SelectedItemCollection {
 
         }
 
-        Log.d("onSaveInstanceState",mItems.size() + " currentMaxSelectable");
+        Log.d("onSaveInstanceState", mItems.size() + " currentMaxSelectable");
         return leastCount;
     }
 
