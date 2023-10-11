@@ -272,6 +272,11 @@ public class SelectedItemCollection {
         int maxSelectable = 0;
         String type = "";
         SelectedCountMessage selectedCountMessage;
+        // 判断文件类型是否符合规范，
+        if (!Objects.requireNonNull(item.getMimeType()).startsWith(IMAGE) && !item.getMimeType().startsWith(VIDEO)) {
+            // 因为某些app保存文件时导致数据库的mimeType不符合规范，所以通过uri来获取mimeType
+            item.setMimeType(mContext.getContentResolver().getType(item.getUri()));
+        }
         // 判断是否混合视频图片模式
         if (!AlbumSpec.INSTANCE.getMediaTypeExclusive()) {
             // 混合检查
