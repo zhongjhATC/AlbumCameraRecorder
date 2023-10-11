@@ -8,6 +8,11 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
 import android.provider.MediaStore.*
+import com.zhongjh.common.enums.Constant.IMAGE
+import com.zhongjh.common.enums.Constant.VIDEO
+import com.zhongjh.common.enums.MimeType.Companion.ofImage
+import com.zhongjh.common.enums.MimeType.Companion.ofVideo
+import java.util.*
 
 /**
  * 多媒体实体类
@@ -140,8 +145,26 @@ open class MultiMedia : LocalFile, Parcelable {
         @JvmStatic
         @SuppressLint("Range")
         fun valueOf(cursor: Cursor): MultiMedia {
+            var mimeType = cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE));
+            // 判断文件类型是否符合规范，
+            if (!mimeType.startsWith(IMAGE) && !mimeType.startsWith(VIDEO)) {
+                // 因为某些app保存文件时导致数据库的mimeType不符合规范，所以通过后缀名设置类型
+                val extension: String = mimeType.substring(mimeType.lastIndexOf(".") + 1)
+                // 循环图片类型，判断后缀是否是.jpg之类的
+                for (mimeTypeImage in ofImage()) {
+                    if (mimeTypeImage.extensions.contains(extension)) {
+                        mimeType = mimeTypeImage.mimeTypeName
+                    }
+                }
+                // 循环视频类型，判断后缀是否是.mp4之类的
+                for (mimeTypeVideo in ofVideo()) {
+                    if (mimeTypeVideo.extensions.contains(extension)) {
+                        mimeType = mimeTypeVideo.mimeTypeName
+                    }
+                }
+            }
             return MultiMedia(cursor.getLong(cursor.getColumnIndex(Files.FileColumns._ID)),
-                    cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE)),
+                    mimeType,
                     cursor.getLong(cursor.getColumnIndex(MediaColumns.SIZE)),
                     cursor.getLong(cursor.getColumnIndex("duration")),
                     cursor.getInt(cursor.getColumnIndex(MediaColumns.WIDTH)),
