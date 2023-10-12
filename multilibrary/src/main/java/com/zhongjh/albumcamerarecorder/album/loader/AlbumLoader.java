@@ -267,7 +267,7 @@ public class AlbumLoader extends CursorLoader {
         } else if (MimeType.isVideo(mimeType)) {
             contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         } else {
-            // ?
+            // 因为某些app保存文件时导致数据库的mimeType不符合规范
             contentUri = MediaStore.Files.getContentUri("external");
         }
 
