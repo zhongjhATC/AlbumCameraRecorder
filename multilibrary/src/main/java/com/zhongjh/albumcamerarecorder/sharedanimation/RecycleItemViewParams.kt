@@ -14,6 +14,16 @@ object RecycleItemViewParams {
 
     private val viewParams: MutableList<ViewParams> = ArrayList()
 
+    fun clear() {
+        if (viewParams.size > 0) {
+            viewParams.clear()
+        }
+    }
+
+    fun getItemViewParams(position: Int): ViewParams? {
+        return if (viewParams.size > position) viewParams[position] else null
+    }
+
     /**
      * 添加 列表的每一个参数 到 viewParams
      */

@@ -327,6 +327,7 @@ abstract class BasePreviewFragment2 : Fragment() {
         initBundleValue(savedInstanceState)
         mViewHolder = ViewHolder(view)
         mViewHolder.checkView.setCountable(mAlbumSpec.countable)
+        // 初始化共享动画view
         initSharedAnimationView()
         initViewPagerData()
         initListener()
@@ -435,9 +436,12 @@ abstract class BasePreviewFragment2 : Fragment() {
         mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object :
             OnSharedAnimationViewListener {
             override fun onBeginBackMinAnim() {
+                // 开始 退出共享动画
+                this@BasePreviewFragment2.onSharedBeginBackMinAnim()
             }
 
             override fun onBeginBackMinMagicalFinish(isResetSize: Boolean) {
+                this@BasePreviewFragment2.onSharedBeginBackMinFinish(isResetSize)
             }
 
             override fun onBeginSharedAnimComplete(
@@ -445,7 +449,7 @@ abstract class BasePreviewFragment2 : Fragment() {
                 showImmediately: Boolean
             ) {
                 // 开始共享动画完成后
-                this@BasePreviewFragment2.onBeginSharedAnimComplete(
+                this@BasePreviewFragment2.onSharedBeginAnimComplete(
                     sharedAnimationView,
                     showImmediately
                 )
@@ -456,6 +460,7 @@ abstract class BasePreviewFragment2 : Fragment() {
             }
 
             override fun onMagicalViewFinish() {
+                this@BasePreviewFragment2.onSharedViewFinish()
             }
         })
     }
@@ -493,7 +498,13 @@ abstract class BasePreviewFragment2 : Fragment() {
             }
         })
         // 返回
-        mViewHolder.iBtnBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
+        mViewHolder.iBtnBack.setOnClickListener {
+            if (isSharedAnimation()) {
+                mViewHolder.sharedAnimationView.backToMin()
+            } else {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+        }
         // 确认
         mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
@@ -972,7 +983,7 @@ abstract class BasePreviewFragment2 : Fragment() {
     /**
      * 开始共享动画完成后
      */
-    open fun onBeginSharedAnimComplete(
+    open fun onSharedBeginAnimComplete(
         sharedAnimationView: SharedAnimationView?,
         showImmediately: Boolean
     ) {
@@ -990,10 +1001,45 @@ abstract class BasePreviewFragment2 : Fragment() {
         }
     }
 
+    /**
+     * 开始 退出共享动画
+     */
+    open fun onSharedBeginBackMinAnim() {
+        val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
+        if (currentHolder.imageView.visibility == View.GONE) {
+            currentHolder.imageView.visibility = View.VISIBLE
+        }
+        if (currentHolder.videoPlayButton.visibility == View.VISIBLE) {
+            currentHolder.videoPlayButton.visibility = View.GONE
+        }
+    }
+
+    /**
+     * 结束 退出共享动画
+     * 设置预览 view 跟相册的 view 一样的高度宽度
+     */
+    open fun onSharedBeginBackMinFinish(isResetSize: Boolean) {
+        val itemViewParams =
+            RecycleItemViewParams.getItemViewParams(mViewPager2.currentItem) ?: return
+        val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
+        val layoutParams = currentHolder.imageView.layoutParams
+        layoutParams?.width = itemViewParams.width
+        layoutParams?.height = itemViewParams.height
+        currentHolder.imageView.scaleType = ScaleType.CENTER_CROP
+    }
+
     open fun onBackgroundAlpha(alpha: Float) {
         mViewHolder.sharedAnimationView.setBackgroundAlpha(alpha)
         mViewHolder.bottomToolbar.alpha = alpha
     }
+
+    /**
+     * 共享动画结束，退出fragment
+     */
+    open fun onSharedViewFinish() {
+        requireActivity().supportFragmentManager.popBackStack()
+    }
+
 
     /**
      * 滑动事件

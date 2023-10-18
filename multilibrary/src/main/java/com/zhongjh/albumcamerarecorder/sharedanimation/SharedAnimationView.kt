@@ -4,11 +4,15 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
+import android.os.Build
+import android.transition.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
 
@@ -355,6 +359,60 @@ class SharedAnimationView @JvmOverloads constructor(
             sharedAnimationWrapper.marginLeft = (startLeft + xOffset).toInt()
             sharedAnimationWrapper.marginTop = (startY + topOffset).toInt()
         }
+    }
+
+    /**
+     * 开始退出的共享动画
+     */
+    fun backToMin() {
+        if (isAnimating) {
+            return
+        }
+        if (mOriginWidth == 0 || mOriginHeight == 0) {
+            // 拿不到宽高，则透明形式动画
+            backToMinWithoutView()
+            return
+        }
+        onSharedAnimationViewListener?.onBeginBackMinAnim()
+        backToMinWithTransition()
+    }
+
+    /**
+     * 具体的退出共享动画
+     */
+    private fun backToMinWithTransition() {
+        contentLayout.post {
+            TransitionManager.beginDelayedTransition(
+                contentLayout.parent as ViewGroup,
+                TransitionSet()
+                    .setDuration(animationDuration)
+                    .addTransition(ChangeBounds())
+                    .addTransition(ChangeTransform())
+                    .addTransition(ChangeImageTransform())
+            )
+            beginBackToMin()
+            contentLayout.translationX = 0f
+            contentLayout.translationY = 0f
+            sharedAnimationWrapper.setWidth(mOriginWidth.toFloat())
+            sharedAnimationWrapper.setHeight(mOriginHeight.toFloat())
+            sharedAnimationWrapper.marginTop = mOriginTop
+            sharedAnimationWrapper.marginLeft = mOriginLeft
+            changeBackgroundViewAlpha(true)
+        }
+    }
+
+    private fun beginBackToMin() {
+        onSharedAnimationViewListener?.onBeginBackMinMagicalFinish(true)
+    }
+
+    private fun backToMinWithoutView() {
+        contentLayout.animate().alpha(0f).setDuration(animationDuration)
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    onSharedAnimationViewListener?.onMagicalViewFinish()
+                }
+            }).start()
+        backgroundView.animate().alpha(0f).setDuration(animationDuration).start()
     }
 
     private fun changeContentViewToFullscreen() {
