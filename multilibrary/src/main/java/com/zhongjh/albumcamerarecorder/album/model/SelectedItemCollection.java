@@ -17,6 +17,7 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MultiMedia;
 import com.zhongjh.common.enums.MimeType;
 
@@ -268,7 +269,7 @@ public class SelectedItemCollection {
      * @param item 数据item
      * @return 弹窗
      */
-    public IncapableCause isAcceptable(MultiMedia item) {
+    public IncapableCause isAcceptable(LocalMedia item) {
         Log.d("onSaveInstanceState", mItems.size() + " isAcceptable");
         boolean maxSelectableReached = false;
         int maxSelectable = 0;
@@ -313,7 +314,7 @@ public class SelectedItemCollection {
      * @param type                 类型
      * @return 弹窗
      */
-    public IncapableCause newIncapableCause(MultiMedia item, boolean maxSelectableReached, int maxSelectable, boolean isMashup, String type) {
+    public IncapableCause newIncapableCause(LocalMedia item, boolean maxSelectableReached, int maxSelectable, boolean isMashup, String type) {
         // 检查是否超过最大设置数量
         if (maxSelectableReached) {
             String cause;
@@ -432,7 +433,7 @@ public class SelectedItemCollection {
      * Determine whether there will be conflict media types. A user can only select images and videos at the same time
      * while {@link AlbumSpec#getMediaTypeExclusive} is set to false.
      */
-    private boolean typeConflict(MultiMedia item) {
+    private boolean typeConflict(LocalMedia item) {
         // 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
         return AlbumSpec.INSTANCE.getMediaTypeExclusive()
                 && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_MIXED))

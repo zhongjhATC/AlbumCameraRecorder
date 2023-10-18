@@ -326,9 +326,9 @@ abstract class BasePreviewFragment2 : Fragment() {
         // 初始化bundle的Value
         initBundleValue(savedInstanceState)
         mViewHolder = ViewHolder(view)
+        mViewHolder.checkView.setCountable(mAlbumSpec.countable)
         initSharedAnimationView()
         initViewPagerData()
-        mViewHolder.checkView.setCountable(mAlbumSpec.countable)
         initListener()
         updateApplyButton()
     }

@@ -6,6 +6,7 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
@@ -98,6 +99,7 @@ class CheckView : View {
      */
     fun setCountable(countable: Boolean) {
         mCountable = countable
+        Log.d("CheckView", "mCountable :$mCountable")
     }
 
     fun setCheckedNum(checkedNum: Int) {
