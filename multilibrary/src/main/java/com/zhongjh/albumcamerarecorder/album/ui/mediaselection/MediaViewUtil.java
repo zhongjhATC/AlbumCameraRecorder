@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.SelectedModel;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.common.entity.LocalMedia;
@@ -31,12 +32,14 @@ public class MediaViewUtil implements
     public MediaViewUtil(FragmentActivity activity,
                          Fragment fragment,
                          MainModel mainModel,
+                         SelectedModel selectedModel,
                          RecyclerLoadMoreView recyclerView,
                          AlbumAdapter.CheckStateListener checkStateListener,
                          AlbumAdapter.OnMediaClickListener onMediaClickListener) {
         mActivity = activity;
         mFragment = fragment;
         mMainModel = mainModel;
+        mSelectedModel = selectedModel;
         mRecyclerView = recyclerView;
         mCheckStateListener = checkStateListener;
         mOnMediaClickListener = onMediaClickListener;
@@ -46,6 +49,7 @@ public class MediaViewUtil implements
     private final FragmentActivity mActivity;
     private final Fragment mFragment;
     private final MainModel mMainModel;
+    private final SelectedModel mSelectedModel;
     private final RecyclerLoadMoreView mRecyclerView;
     private AlbumAdapter mAdapter;
     private Album2 mAlbum;
@@ -72,7 +76,7 @@ public class MediaViewUtil implements
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity, spanCount));
         // 需要先设置布局获取确定的spanCount，才能设置adapter
-        mAdapter = new AlbumAdapter(mActivity, mMainModel, getImageResize());
+        mAdapter = new AlbumAdapter(mActivity, mSelectedModel, getImageResize());
         Log.d("onSaveInstanceState", " mAdapter");
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);

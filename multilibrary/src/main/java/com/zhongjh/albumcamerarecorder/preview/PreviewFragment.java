@@ -45,15 +45,15 @@ public class PreviewFragment extends BasePreviewFragment {
 
             LocalMedia item = getArguments().getParcelable(EXTRA_ITEM);
             if (item != null) {
-                // 如果有当前数据，则跳转到当前数据索引
-                if (mAlbumSpec.getCountable()) {
-                    int selectedIndex = mMainModel.getSelectedData().checkedNumOf(item);
-                    // 索引需要减1
-                    mPreviousPos = selectedIndex - 1;
-                    mViewHolder.checkView.setCheckedNum(selectedIndex);
-                } else {
-                    mViewHolder.checkView.setChecked(mMainModel.getSelectedData().isSelected(item));
-                }
+//                // 如果有当前数据，则跳转到当前数据索引
+//                if (mAlbumSpec.getCountable()) {
+//                    int selectedIndex = mMainModel.getSelectedData().checkedNumOf(item);
+//                    // 索引需要减1
+//                    mPreviousPos = selectedIndex - 1;
+//                    mViewHolder.checkView.setCheckedNum(selectedIndex);
+//                } else {
+//                    mViewHolder.checkView.setChecked(mMainModel.getSelectedData().isSelected(item));
+//                }
                 updateUi(item);
             } else {
                 if (items != null) {

@@ -335,13 +335,13 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
         mViewHolder.buttonApply.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NonNull View v) {
-                // 确认的一刻赋值
-                ArrayList<LocalMedia> localMediaArrayList = mMainModel.getSelectedData().getLocalMedias();
-                // 设置是否原图状态
-                for (LocalMedia localMedia : localMediaArrayList) {
-                    localMedia.setOriginal(mOriginalEnable);
-                }
-                setResultOkByIsCompress(true);
+//                // 确认的一刻赋值
+//                ArrayList<LocalMedia> localMediaArrayList = mMainModel.getSelectedData().getLocalMedias();
+//                // 设置是否原图状态
+//                for (LocalMedia localMedia : localMediaArrayList) {
+//                    localMedia.setOriginal(mOriginalEnable);
+//                }
+//                setResultOkByIsCompress(true);
             }
         });
         // 多图时滑动事件
@@ -532,16 +532,16 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      */
     private int countOverMaxSize() {
         int count = 0;
-        int selectedCount = mMainModel.getSelectedData().count();
-        for (int i = 0; i < selectedCount; i++) {
-            LocalMedia item = mMainModel.getSelectedData().getLocalMedias().get(i);
-            if (item.isImage()) {
-                float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
-                if (size > mAlbumSpec.getOriginalMaxSize()) {
-                    count++;
-                }
-            }
-        }
+//        int selectedCount = mMainModel.getSelectedData().count();
+//        for (int i = 0; i < selectedCount; i++) {
+//            LocalMedia item = mMainModel.getSelectedData().getLocalMedias().get(i);
+//            if (item.isImage()) {
+//                float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
+//                if (size > mAlbumSpec.getOriginalMaxSize()) {
+//                    count++;
+//                }
+//            }
+//        }
         return count;
     }
 

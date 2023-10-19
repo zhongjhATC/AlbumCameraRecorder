@@ -36,6 +36,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.MainModel;
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.SelectedModel;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
@@ -85,6 +86,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     private Context mContext;
     private MainActivity mActivity;
     private MainModel mMainModel;
+    private SelectedModel mSelectedModel;
     /**
      * 从预览界面回来
      */
@@ -162,6 +164,8 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         this.mContext = context.getApplicationContext();
         this.mMainModel = new ViewModelProvider(requireActivity())
                 .get(MainModel.class);
+        this.mSelectedModel = new ViewModelProvider(requireActivity())
+                .get(SelectedModel.class);
     }
 
     @Override
@@ -278,7 +282,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             @Override
             public void onListener(@NonNull View v) {
                 Intent intent = new Intent(mActivity, PreviewActivity.class);
-                intent.putParcelableArrayListExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mMainModel.getSelectedData().getLocalMedias());
+                intent.putParcelableArrayListExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedModel.getSelectedData().getLocalMedias());
                 intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                 intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
                 mPreviewActivityResult.launch(intent);
@@ -292,7 +296,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mViewHolder.buttonApply.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NonNull View v) {
-                ArrayList<LocalMedia> localMediaArrayList = mMainModel.getSelectedData().getLocalMedias();
+                ArrayList<LocalMedia> localMediaArrayList = mSelectedModel.getSelectedData().getLocalMedias();
                 // 设置是否原图状态
                 for (LocalMedia localMedia : localMediaArrayList) {
                     localMedia.setOriginal(mOriginalEnable);
@@ -340,7 +344,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private void initMediaViewUtil() {
         Log.d("onSaveInstanceState", " initMediaViewUtil");
-        mMediaViewUtil = new MediaViewUtil(getActivity(), this, mMainModel, mViewHolder.recyclerview, this, this);
+        mMediaViewUtil = new MediaViewUtil(getActivity(), this, mMainModel, mSelectedModel, mViewHolder.recyclerview, this, this);
     }
 
     /**
@@ -369,8 +373,8 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             onAlbumSelected(album);
         });
         // 选择数据改变
-        mMainModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> {
-            
+        mSelectedModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> {
+            // 更新数据
         });
     }
 
@@ -400,7 +404,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                             }
                         } else {
                             // 点击了返回
-                            mMainModel.getSelectedData().overwrite(selected, collectionType);
+                            mSelectedModel.getSelectedData().overwrite(selected, collectionType);
                             if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_IS_EDIT, false)) {
                                 mIsRefresh = true;
                                 // 重新读取数据源
@@ -439,7 +443,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * 更新底部数据
      */
     private void updateBottomToolbar() {
-        int selectedCount = mMainModel.getSelectedData().count();
+        int selectedCount = mSelectedModel.getSelectedData().count();
 
         if (selectedCount == 0) {
             // 如果没有数据，则设置不可点击
@@ -498,9 +502,9 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private int countOverMaxSize() {
         int count = 0;
-        int selectedCount = mMainModel.getSelectedData().count();
+        int selectedCount = mSelectedModel.getSelectedData().count();
         for (int i = 0; i < selectedCount; i++) {
-            LocalMedia item = mMainModel.getSelectedData().getLocalMedias().get(i);
+            LocalMedia item = mSelectedModel.getSelectedData().getLocalMedias().get(i);
 
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
@@ -542,7 +546,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         updateBottomToolbar();
         // 触发选择的接口事件
         if (mAlbumSpec.getOnSelectedListener() != null) {
-            mAlbumSpec.getOnSelectedListener().onSelected(mMainModel.getSelectedData().getLocalMedias());
+            mAlbumSpec.getOnSelectedListener().onSelected(mSelectedModel.getSelectedData().getLocalMedias());
         }
     }
 
@@ -564,7 +568,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         Bundle bundle = new Bundle();
         bundle.putParcelable(PreviewFragment.EXTRA_ALBUM, album);
         bundle.putParcelable(PreviewFragment.EXTRA_ITEM, item);
-        bundle.putParcelableArrayList(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mMainModel.getSelectedData().getLocalMedias());
+        bundle.putParcelableArrayList(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedModel.getSelectedData().getLocalMedias());
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
         fragment.setArguments(bundle);
