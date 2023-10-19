@@ -368,6 +368,10 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             }
             onAlbumSelected(album);
         });
+        // 选择数据改变
+        mMainModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> {
+            
+        });
     }
 
     /**

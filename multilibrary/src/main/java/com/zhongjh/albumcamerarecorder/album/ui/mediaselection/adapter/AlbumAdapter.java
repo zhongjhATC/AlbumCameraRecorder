@@ -190,7 +190,7 @@ public class AlbumAdapter extends
                 // 如果当前数据是未选状态
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
                     // 添加选择了当前数据
-                    mMainModel.getSelectedData().add(item);
+                    mMainModel.addSelectedData(item);
                     // 刷新数据源
                     notifyCheckStateChanged();
                 }
@@ -209,7 +209,7 @@ public class AlbumAdapter extends
                 notifyCheckStateChanged();
             } else {
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
-                    mMainModel.getSelectedData().add(item);
+                    mMainModel.addSelectedData(item);
                     notifyCheckStateChanged();
                 }
             }

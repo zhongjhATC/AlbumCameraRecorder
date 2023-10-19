@@ -9,7 +9,6 @@ import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
-import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData
 import com.zhongjh.common.entity.LocalMedia
 
 /**
@@ -32,11 +31,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 数据库操作文件类
      */
     private var mediaPageLoader: MediaPageLoader
-
-    /**
-     * 当前选择的数据操作文件类
-     */
-    var selectedData: SelectedData
 
     /**
      * 文件夹数据集
@@ -80,17 +74,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     init {
         mediaLoader = MediaLoader(application)
         mediaPageLoader = MediaPageLoader(application)
-        selectedData =
-            SelectedData(
-                application
-            )
-    }
-
-    /**
-     * 获取所有专辑
-     */
-    private fun loadAllAlbum() {
-        mediaLoader.loadAllMedia { data: List<Album2> -> this.albums.postValue(data) }
     }
 
     /**
@@ -116,13 +99,20 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * 获取所有专辑
+     */
+    private fun loadAllAlbum() {
+        mediaLoader.loadAllMedia { data: List<Album2> -> this.albums.postValue(data) }
+    }
+
+    /**
      * 根据页码获取数据
      *
      * @param bucketId 专辑id
      * @param page     当前页码
      * @param pageSize 每页多少个
      */
-    fun loadPageMediaData(bucketId: Long, page: Int, pageSize: Int) {
+    private fun loadPageMediaData(bucketId: Long, page: Int, pageSize: Int) {
         Log.d(tag, "bucketId : $bucketId")
         mediaPageLoader.loadPageMediaData(
             bucketId, page, pageSize, pageSize

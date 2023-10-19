@@ -14,11 +14,6 @@ import com.zhongjh.common.entity.LocalMedia
 
 class PreviewFragment2 : BasePreviewFragment2() {
 
-    /**
-     * 来源于Activity的MainModel
-     */
-    private lateinit var mMainModel: MainModel
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.mMainModel = ViewModelProvider(requireActivity())[MainModel::class.java]

@@ -28,6 +28,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.albumcamerarecorder.MainActivity
+import com.zhongjh.albumcamerarecorder.MainModel
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
@@ -89,7 +90,16 @@ abstract class BasePreviewFragment2 : Fragment() {
         return@lazy ViewModelProvider(
             this,
             savedStateViewModelFactory
-        )[AndroidViewModel::class.java]
+        )[MainModel::class.java]
+    }
+
+    private val mSelectedModel by lazy {
+        val activity = requireActivity()
+        val savedStateViewModelFactory = SavedStateViewModelFactory(activity.application, this)
+        return@lazy ViewModelProvider(
+            this,
+            savedStateViewModelFactory
+        )[MainModel::class.java]
     }
 
     /**
@@ -543,25 +553,12 @@ abstract class BasePreviewFragment2 : Fragment() {
                 }
             }
             updateApplyButton()
-            checkNotNull(mAlbumSpec.onSelectedListener).let {
-
+            mAlbumSpec.onSelectedListener?.let {
+                if (mIsSelectedListener) {
+                    // 触发选择的接口事件
+                    it.onSelected(getSelectedData().localMedias)
+                }
             }
-
-            if (mAlbumSpec.onSelectedListener != null && mIsSelectedListener) {
-                // 触发选择的接口事件
-                mAlbumSpec.onSelectedListener?.onSelected(mSelectedCollection.asListOfLocalFile())
-            } else {
-                mSelectedCollection.updatePath();
-            }
-
-            if (mAlbumSpec.onSelectedListener != null && mIsSelectedListener) {
-                // 触发选择的接口事件
-                if (mAlbumSpec.onSelectedListener)
-                    onSelected(mSelectedCollection.asListOfLocalFile())
-            } else {
-                mSelectedCollection.updatePath()
-            }
-
         }
         // 点击原图事件
         mViewHolder.originalLayout.setOnClickListener {
@@ -793,29 +790,29 @@ abstract class BasePreviewFragment2 : Fragment() {
      * 更新确定按钮状态
      */
     private fun updateApplyButton() {
-//        // 获取已选的图片
-//        int selectedCount = mSelectedCollection.count();
-//        if (selectedCount == 0) {
-//            // 禁用
-//            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
-//            mViewHolder.buttonApply.setEnabled(false);
-//        } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
-//            // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
-//            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
-//            mViewHolder.buttonApply.setEnabled(true);
-//        } else {
-//            // 启用，显示数字
-//            mViewHolder.buttonApply.setEnabled(true);
-//            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure, selectedCount));
-//        }
-//
-//        // 判断是否启动操作
-//        if (!mApplyEnable) {
-//            mViewHolder.buttonApply.setVisibility(View.GONE);
-//        } else {
-//            mViewHolder.buttonApply.setVisibility(View.VISIBLE);
-//        }
-//        setCheckViewEnable(mSelectedEnable);
+        // 获取已选的图片
+        if (getSelectedData().count() == 0) {
+            // 禁用
+            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default)
+            mViewHolder.buttonApply.isEnabled = false
+        } else if (getSelectedData().count() == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
+            // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
+            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default)
+            mViewHolder.buttonApply.isEnabled = true
+        } else {
+            // 启用，显示数字
+            mViewHolder.buttonApply.isEnabled = true
+            mViewHolder.buttonApply.text =
+                getString(R.string.z_multi_library_button_sure, getSelectedData().count())
+        }
+
+        // 判断是否启动操作
+        if (!mApplyEnable) {
+            mViewHolder.buttonApply.visibility = View.GONE
+        } else {
+            mViewHolder.buttonApply.visibility = View.VISIBLE
+        }
+        setCheckViewEnable(mSelectedEnable)
     }
 
     /**
