@@ -40,6 +40,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams
 import com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
+import com.zhongjh.common.entity.IncapableCause
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
@@ -519,36 +520,48 @@ abstract class BasePreviewFragment2 : Fragment() {
         })
         // 右上角选择事件
         mViewHolder.checkView.setOnClickListener {
-//            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-//            if (mSelectedCollection.isSelected(item)) {
-//                mSelectedCollection.remove(item);
-//                if (mAlbumSpec.getCountable()) {
-//                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED);
-//                } else {
-//                    mViewHolder.checkView.setChecked(false);
-//                }
-//            } else {
-//                boolean isTrue = true;
-//                if (mIsSelectedCheck) {
-//                    isTrue = assertAddSelection(item);
-//                }
-//                if (isTrue) {
-//                    mSelectedCollection.add(item);
-//                    if (mAlbumSpec.getCountable()) {
-//                        mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
-//                    } else {
-//                        mViewHolder.checkView.setChecked(true);
-//                    }
-//                }
-//            }
-//            updateApplyButton();
-//
-//            if (mAlbumSpec.getOnSelectedListener() != null && mIsSelectedListener) {
-//                // 触发选择的接口事件
-//                mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
-//            } else {
-//                mSelectedCollection.updatePath();
-//            }
+            val media = getDatas()[mViewPager2.currentItem]
+            if (getSelectedData().isSelected(media)) {
+                getSelectedData().remove(media)
+                if (mAlbumSpec.countable) {
+                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED)
+                } else {
+                    mViewHolder.checkView.setChecked(false);
+                }
+            } else {
+                var isTrue = true
+                if (mIsSelectedCheck) {
+                    isTrue = assertAddSelection(media)
+                }
+                if (isTrue) {
+                    getSelectedData().add(media)
+                    if (mAlbumSpec.countable) {
+                        mViewHolder.checkView.setCheckedNum(getSelectedData().checkedNumOf(media))
+                    } else {
+                        mViewHolder.checkView.setChecked(true)
+                    }
+                }
+            }
+            updateApplyButton()
+            checkNotNull(mAlbumSpec.onSelectedListener).let {
+
+            }
+
+            if (mAlbumSpec.onSelectedListener != null && mIsSelectedListener) {
+                // 触发选择的接口事件
+                mAlbumSpec.onSelectedListener?.onSelected(mSelectedCollection.asListOfLocalFile())
+            } else {
+                mSelectedCollection.updatePath();
+            }
+
+            if (mAlbumSpec.onSelectedListener != null && mIsSelectedListener) {
+                // 触发选择的接口事件
+                if (mAlbumSpec.onSelectedListener)
+                    onSelected(mSelectedCollection.asListOfLocalFile())
+            } else {
+                mSelectedCollection.updatePath()
+            }
+
         }
         // 点击原图事件
         mViewHolder.originalLayout.setOnClickListener {
@@ -827,17 +840,17 @@ abstract class BasePreviewFragment2 : Fragment() {
         ThreadUtils.executeByIo(mMoveFileTask)
     }
 
-    //    /**
-    //     * 处理窗口
-    //     *
-    //     * @param item 当前图片
-    //     * @return 为true则代表符合规则
-    //     */
-    //    private boolean assertAddSelection(MultiMedia item) {
-    //        IncapableCause cause = mSelectedCollection.isAcceptable(item);
-    //        IncapableCause.handleCause(mContext, cause);
-    //        return cause == null;
-    //    }
+    /**
+     * 处理窗口
+     *
+     * @param item 当前图片
+     * @return 为true则代表符合规则
+     */
+    private fun assertAddSelection(item: LocalMedia): Boolean {
+        val cause = getSelectedData().isAcceptable(item)
+        IncapableCause.handleCause(mContext, cause)
+        return cause == null
+    }
 
     /**
      * 设置checkView是否启动，配置优先
