@@ -1,8 +1,8 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter;
 
-import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.COLLECTION_IMAGE;
-import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_SELECTION;
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.COLLECTION_IMAGE;
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 
 import android.app.Activity;
 import android.content.Intent;

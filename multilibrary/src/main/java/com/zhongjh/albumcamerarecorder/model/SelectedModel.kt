@@ -1,12 +1,9 @@
-package com.zhongjh.albumcamerarecorder
+package com.zhongjh.albumcamerarecorder.model
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
-import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
-import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData
 import com.zhongjh.common.entity.LocalMedia
 
 /**
@@ -42,6 +39,15 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
      */
     fun addSelectedData(item: LocalMedia) {
         selectedData.add(item)
+        // 通知更新
+        _selectedDataChange.postValue(item)
+    }
+
+    /**
+     * 选择的数据删除
+     */
+    fun removeSelectedData(item: LocalMedia) {
+        selectedData.remove(item)
         // 通知更新
         _selectedDataChange.postValue(item)
     }

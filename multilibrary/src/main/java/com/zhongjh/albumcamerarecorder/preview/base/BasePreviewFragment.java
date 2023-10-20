@@ -27,12 +27,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.MainModel;
+import com.zhongjh.albumcamerarecorder.model.MainModel;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
@@ -48,7 +47,6 @@ import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.common.widget.IncapableDialog;
 
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * 预览窗口的基类

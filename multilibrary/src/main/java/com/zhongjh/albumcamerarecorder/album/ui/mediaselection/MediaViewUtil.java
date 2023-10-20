@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.SelectedModel;
+import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.albumcamerarecorder.MainModel;
+import com.zhongjh.albumcamerarecorder.model.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.UiUtils;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGridInset;
@@ -137,6 +137,40 @@ public class MediaViewUtil implements
     }
 
     /**
+     * 根据localMedia刷新列表数据
+     *
+     * @param localMedia 单个实体
+     */
+    public void notifyItemByLocalMedia(LocalMedia localMedia) {
+        // 更新列表数据
+        int position = mAdapter.getData().indexOf(localMedia);
+        boolean isExistBySelected = mSelectedModel.getSelectedData().getLocalMedias().contains(localMedia);
+        if (!isNotifyAll(isExistBySelected)) {
+            mAdapter.notifyItemChanged(position);
+        }
+        // 更新除了列表其他地方
+        if (mCheckStateListener != null) {
+            mCheckStateListener.onUpdate();
+        }
+    }
+
+    @Override
+    public void onUpdate() {
+        // 通知外部活动检查状态改变
+        if (mCheckStateListener != null) {
+            mCheckStateListener.onUpdate();
+        }
+    }
+
+    @Override
+    public void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition) {
+        if (mOnMediaClickListener != null) {
+            mOnMediaClickListener.onMediaClick(mAlbum, imageView,
+                    item, adapterPosition);
+        }
+    }
+
+    /**
      * 返回图片调整大小
      *
      * @return 列表的每个格子的宽度 * 缩放比例
@@ -158,19 +192,14 @@ public class MediaViewUtil implements
         return imageResize;
     }
 
-    @Override
-    public void onUpdate() {
-        // 通知外部活动检查状态改变
-        if (mCheckStateListener != null) {
-            mCheckStateListener.onUpdate();
-        }
-    }
-
-    @Override
-    public void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition) {
-        if (mOnMediaClickListener != null) {
-            mOnMediaClickListener.onMediaClick(mAlbum, imageView,
-                    item, adapterPosition);
-        }
+    /**
+     * 检查通知策略
+     *
+     * @param isExistBySelected 选择的数据中是否存在
+     * @return 是否通知所有
+     */
+    private boolean isNotifyAll(boolean isExistBySelected) {
+        // 用于后续添加配置：如果选择满了判断配置是否使用蒙层
+        return false;
     }
 }

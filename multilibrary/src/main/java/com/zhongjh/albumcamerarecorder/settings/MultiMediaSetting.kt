@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import androidx.fragment.app.Fragment
-import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_SELECTION
+import com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION
 import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
 import com.zhongjh.common.entity.LocalFile

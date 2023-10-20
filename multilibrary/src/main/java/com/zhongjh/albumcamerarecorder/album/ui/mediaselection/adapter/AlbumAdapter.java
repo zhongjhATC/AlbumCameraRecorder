@@ -14,9 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.SelectedModel;
+import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget.MediaGrid;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -57,6 +56,10 @@ public class AlbumAdapter extends
         ta.recycle();
 
         mImageResize = imageResize;
+    }
+
+    public List<LocalMedia> getData() {
+        return data;
     }
 
     /**
@@ -197,7 +200,7 @@ public class AlbumAdapter extends
                 }
             } else {
                 // 删除当前选择
-                mSelectedModel.getSelectedData().remove(item);
+                mSelectedModel.removeSelectedData(item);
                 // 刷新数据
                 notifyCheckStateChanged();
             }
@@ -205,7 +208,7 @@ public class AlbumAdapter extends
             // 不是多选模式
             if (mSelectedModel.getSelectedData().isSelected(item)) {
                 // 如果当前已经被选中，再次选择就是取消了
-                mSelectedModel.getSelectedData().remove(item);
+                mSelectedModel.removeSelectedData(item);
                 // 刷新数据源
                 notifyCheckStateChanged();
             } else {

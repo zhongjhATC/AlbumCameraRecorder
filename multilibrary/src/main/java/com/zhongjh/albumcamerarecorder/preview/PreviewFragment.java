@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.entity.MediaData;
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.utils.LocalMediaUtils;

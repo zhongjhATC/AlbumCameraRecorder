@@ -27,9 +27,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.albumcamerarecorder.MainActivity
-import com.zhongjh.albumcamerarecorder.MainModel
+import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.SelectedModel
+import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
@@ -88,7 +88,7 @@ class PreviewFragment2 : Fragment() {
         val activity = requireActivity()
         val savedStateViewModelFactory = SavedStateViewModelFactory(activity.application, this)
         return@lazy ViewModelProvider(
-            this,
+            activity,
             savedStateViewModelFactory
         )[MainModel::class.java]
     }
@@ -97,7 +97,7 @@ class PreviewFragment2 : Fragment() {
         val activity = requireActivity()
         val savedStateViewModelFactory = SavedStateViewModelFactory(activity.application, this)
         return@lazy ViewModelProvider(
-            this,
+            activity,
             savedStateViewModelFactory
         )[SelectedModel::class.java]
     }
@@ -511,7 +511,7 @@ class PreviewFragment2 : Fragment() {
         mViewHolder.checkView.setOnClickListener {
             val media = mMainModel.localMedias[mViewPager2.currentItem]
             if (mSelectedModel.selectedData.isSelected(media)) {
-                mSelectedModel.selectedData.remove(media)
+                mSelectedModel.removeSelectedData(media)
                 if (mAlbumSpec.countable) {
                     mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED)
                 } else {
@@ -523,9 +523,13 @@ class PreviewFragment2 : Fragment() {
                     isTrue = assertAddSelection(media)
                 }
                 if (isTrue) {
-                    mSelectedModel.selectedData.add(media)
+                    mSelectedModel.addSelectedData(media)
                     if (mAlbumSpec.countable) {
-                        mViewHolder.checkView.setCheckedNum(mSelectedModel.selectedData.checkedNumOf(media))
+                        mViewHolder.checkView.setCheckedNum(
+                            mSelectedModel.selectedData.checkedNumOf(
+                                media
+                            )
+                        )
                     } else {
                         mViewHolder.checkView.setChecked(true)
                     }

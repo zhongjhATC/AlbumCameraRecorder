@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.album;
+package com.zhongjh.albumcamerarecorder.model;
 
 import static com.zhongjh.common.enums.Constant.IMAGE;
 import static com.zhongjh.common.enums.Constant.IMAGE_VIDEO;
@@ -80,7 +80,7 @@ public class SelectedData {
      *
      * @param item 数据
      */
-    public boolean add(LocalMedia item) {
+    protected boolean add(LocalMedia item) {
         Log.d("onSaveInstanceState", mLocalMedias.size() + " add");
         boolean added = mLocalMedias.add(item);
         // 如果只选中了图片Item， mCollectionType 设置为 COLLECTION_IMAGE
@@ -119,7 +119,7 @@ public class SelectedData {
      * @param item 数据
      * @return 是否删除成功
      */
-    public boolean remove(LocalMedia item) {
+    protected boolean remove(LocalMedia item) {
         boolean removed;
         LocalMedia localMedia = LocalMediaUtils.checkedLocalMediaOf(mLocalMedias, item);
         removed = mLocalMedias.remove(localMedia);

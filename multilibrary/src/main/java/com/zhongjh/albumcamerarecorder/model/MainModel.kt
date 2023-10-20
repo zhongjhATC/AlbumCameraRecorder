@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder
+package com.zhongjh.albumcamerarecorder.model
 
 import android.app.Application
 import android.util.Log

@@ -2,9 +2,9 @@ package com.zhongjh.albumcamerarecorder.album.ui.album;
 
 
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.COLLECTION_UNDEFINED;
-import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.STATE_SELECTION;
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.COLLECTION_UNDEFINED;
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_COLLECTION_TYPE;
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 
 import android.content.Context;
@@ -34,9 +34,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
-import com.zhongjh.albumcamerarecorder.MainModel;
+import com.zhongjh.albumcamerarecorder.model.MainModel;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.SelectedModel;
+import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
@@ -373,9 +373,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             onAlbumSelected(album);
         });
         // 选择数据改变
-        mSelectedModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> {
-            // 更新数据
-        });
+        mSelectedModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> mMediaViewUtil.notifyItemByLocalMedia(data));
     }
 
     /**

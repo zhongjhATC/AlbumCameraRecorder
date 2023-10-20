@@ -9,7 +9,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import com.zhongjh.albumcamerarecorder.album.loader.AlbumLoader;
-import com.zhongjh.albumcamerarecorder.MainModel;
+import com.zhongjh.albumcamerarecorder.model.MainModel;
 
 import java.lang.ref.WeakReference;
 

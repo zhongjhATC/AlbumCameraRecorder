@@ -9,7 +9,7 @@ import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
-import com.zhongjh.albumcamerarecorder.album.ui.album.SelectedData.*
+import com.zhongjh.albumcamerarecorder.model.SelectedData.*
 import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
