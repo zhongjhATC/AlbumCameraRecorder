@@ -39,7 +39,7 @@ public class PreviewActivity extends AppCompatActivity {
      * 实例化Fragment,根据不同的类型实例化不同的Fragment
      */
     private void initFragment() {
-        Fragment fragment = new PreviewFragment();
+        Fragment fragment = new PreviewFragment2();
         handleExtra(fragment);
         getSupportFragmentManager()
                 .beginTransaction()
