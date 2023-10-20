@@ -424,6 +424,7 @@ class PreviewFragment2 : BaseFragment() {
                     0F
             mViewHolder.sharedAnimationView.setBackgroundAlpha(alpha)
             mViewHolder.bottomToolbar.alpha = alpha
+            mViewHolder.constraintLayout.alpha = alpha
         } else {
             mViewHolder.sharedAnimationView.setBackgroundAlpha(1.0F)
         }
@@ -905,6 +906,7 @@ class PreviewFragment2 : BaseFragment() {
                 mViewHolder.sharedAnimationView.startNormal(width, height, false)
                 mViewHolder.sharedAnimationView.setBackgroundAlpha(1F)
                 mViewHolder.bottomToolbar.alpha = 1F
+                mViewHolder.constraintLayout.alpha = 1F
             } else {
                 // 将记录好的RecyclerView的位置大小，进行动画扩大到width,height
                 mViewHolder.sharedAnimationView.setViewParams(
@@ -1034,6 +1036,7 @@ class PreviewFragment2 : BaseFragment() {
     private fun onBackgroundAlpha(alpha: Float) {
         mViewHolder.sharedAnimationView.setBackgroundAlpha(alpha)
         mViewHolder.bottomToolbar.alpha = alpha
+        mViewHolder.constraintLayout.alpha = alpha
     }
 
     /**
@@ -1180,6 +1183,7 @@ class PreviewFragment2 : BaseFragment() {
         var tvSize: TextView = rootView.findViewById(R.id.tvSize)
         var buttonApply: TextView = rootView.findViewById(R.id.buttonApply)
         var bottomToolbar: ConstraintLayout = rootView.findViewById(R.id.bottomToolbar)
+        var constraintLayout: ConstraintLayout = rootView.findViewById(R.id.constraintLayout)
         var checkView: CheckView = rootView.findViewById(R.id.checkView)
         var pbLoading: ProgressBar = rootView.findViewById(R.id.pbLoading)
     }
