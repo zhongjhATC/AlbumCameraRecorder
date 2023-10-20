@@ -564,9 +564,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mActivity.showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment2();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(PreviewFragment.EXTRA_ALBUM, album);
-        bundle.putParcelable(PreviewFragment.EXTRA_ITEM, item);
-        bundle.putParcelableArrayList(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedModel.getSelectedData().getLocalMedias());
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
         bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
         fragment.setArguments(bundle);
