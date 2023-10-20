@@ -137,21 +137,10 @@ public class MediaViewUtil implements
     }
 
     /**
-     * 根据localMedia刷新列表数据
-     *
-     * @param localMedia 单个实体
+     * 刷新列表数据
      */
-    public void notifyItemByLocalMedia(LocalMedia localMedia) {
-        // 更新列表数据
-        int position = mAdapter.getData().indexOf(localMedia);
-        boolean isExistBySelected = mSelectedModel.getSelectedData().getLocalMedias().contains(localMedia);
-        if (!isNotifyAll(isExistBySelected)) {
-            mAdapter.notifyItemChanged(position);
-        }
-        // 更新除了列表其他地方
-        if (mCheckStateListener != null) {
-            mCheckStateListener.onUpdate();
-        }
+    public void notifyItemByLocalMedia() {
+        mAdapter.notifyCheckStateChanged();
     }
 
     @Override
@@ -190,16 +179,5 @@ public class MediaViewUtil implements
         // 图片调整后的大小 * 缩放比例
         imageResize = (int) (imageResize * AlbumSpec.INSTANCE.getThumbnailScale());
         return imageResize;
-    }
-
-    /**
-     * 检查通知策略
-     *
-     * @param isExistBySelected 选择的数据中是否存在
-     * @return 是否通知所有
-     */
-    private boolean isNotifyAll(boolean isExistBySelected) {
-        // 用于后续添加配置：如果选择满了判断配置是否使用蒙层
-        return false;
     }
 }

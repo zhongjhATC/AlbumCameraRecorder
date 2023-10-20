@@ -26,14 +26,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.zhongjh.albumcamerarecorder.BaseFragment
 import com.zhongjh.albumcamerarecorder.MainActivity
-import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
+import com.zhongjh.albumcamerarecorder.model.MainModel
+import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
@@ -69,13 +70,13 @@ import kotlinx.coroutines.withContext
  * @author zhongjh
  * @date 2023/8/31
  */
-class PreviewFragment2 : Fragment() {
+class PreviewFragment2 : BaseFragment() {
 
-    protected val TAG: String = this@PreviewFragment2.javaClass.simpleName
+    private val TAG: String = this@PreviewFragment2.javaClass.simpleName
 
-    protected lateinit var mContext: Context
+    private lateinit var mContext: Context
     private lateinit var mViewHolder: ViewHolder
-    protected lateinit var mViewPager2: ViewPager2
+    private lateinit var mViewPager2: ViewPager2
     private lateinit var mAdapter: PreviewPagerAdapter
     private val mGlobalSpec by lazy {
         GlobalSpec
@@ -84,7 +85,7 @@ class PreviewFragment2 : Fragment() {
         AlbumSpec
     }
 
-    protected val mMainModel by lazy {
+    private val mMainModel by lazy {
         val activity = requireActivity()
         val savedStateViewModelFactory = SavedStateViewModelFactory(activity.application, this)
         return@lazy ViewModelProvider(
@@ -143,12 +144,12 @@ class PreviewFragment2 : Fragment() {
     /**
      * 打开ImageEditActivity的回调
      */
-    protected lateinit var mImageEditActivityResult: ActivityResultLauncher<Intent>
+    private lateinit var mImageEditActivityResult: ActivityResultLauncher<Intent>
 
     /**
      * 完成压缩-复制的异步线程
      */
-    protected val mCompressFileTask: SimpleTask<Boolean> by lazy {
+    private val mCompressFileTask: SimpleTask<Boolean> by lazy {
         object : SimpleTask<Boolean>() {
             override fun doInBackground(): Boolean {
 //                // 来自相册的，才根据配置处理压缩和迁移
@@ -192,7 +193,7 @@ class PreviewFragment2 : Fragment() {
     /**
      * 完成迁移文件的异步线程
      */
-    protected val mMoveFileTask: SimpleTask<Boolean> by lazy {
+    private val mMoveFileTask: SimpleTask<Boolean> by lazy {
         object : SimpleTask<Boolean>() {
             override fun doInBackground(): Boolean {
 //                // 不压缩，直接迁移到配置文件
@@ -235,7 +236,7 @@ class PreviewFragment2 : Fragment() {
     /**
      * 异步线程的逻辑，确定当前选择的文件列表，根据是否压缩配置决定重新返回新的文件列表
      */
-    protected val mAlbumCompressFileTask by lazy {
+    private val mAlbumCompressFileTask by lazy {
         AlbumCompressFileTask(
             mContext,
             TAG,
@@ -252,52 +253,52 @@ class PreviewFragment2 : Fragment() {
     /**
      * 是否从界面恢复回来的
      */
-    protected var mIsSavedInstanceState = false
+    private var mIsSavedInstanceState = false
 
     /**
      * 是否启动原图
      */
-    protected var mOriginalEnable = false
+    private var mOriginalEnable = false
 
     /**
      * 设置是否启动确定功能
      */
-    protected var mApplyEnable = true
+    private var mApplyEnable = true
 
     /**
      * 设置是否启动选择功能
      */
-    protected var mSelectedEnable = true
+    private var mSelectedEnable = true
 
     /**
      * 设置是否开启编辑功能
      */
-    protected var mEditEnable = true
+    private var mEditEnable = true
 
     /**
      * 设置是否开启压缩
      */
-    protected var mCompressEnable = false
+    private var mCompressEnable = false
 
     /**
      * 是否编辑了图片
      */
-    protected var mIsEdit = false
+    private var mIsEdit = false
 
     /**
      * 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
      */
-    protected var mIsSelectedListener = true
+    private var mIsSelectedListener = true
 
     /**
      * 设置右上角是否检测类型
      */
-    protected var mIsSelectedCheck = true
+    private var mIsSelectedCheck = true
 
     /**
      * 是否外部直接调用该预览窗口，如果是外部直接调用，那么可以启用回调接口，内部统一使用onActivityResult方式回调
      */
-    protected var mIsExternalUsers = false
+    private var mIsExternalUsers = false
 
     /**
      * 是否首次共享动画，只有第一次打开的时候才触发共享动画
@@ -320,7 +321,7 @@ class PreviewFragment2 : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // 获取样式
         return initStyle(inflater, container)
     }
@@ -343,6 +344,15 @@ class PreviewFragment2 : Fragment() {
         initViewPagerData()
         initListener()
         updateApplyButton()
+    }
+
+    override fun onBackPressed(): Boolean {
+        return if (isSharedAnimation()) {
+            mViewHolder.sharedAnimationView.backToMin()
+            true
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onDestroy() {
@@ -850,7 +860,7 @@ class PreviewFragment2 : Fragment() {
      *
      * @param holder 预览的view
      */
-    open fun onViewFirstAttachedToWindow(holder: PreviewPagerAdapter.PreviewViewHolder) {
+    private fun onViewFirstAttachedToWindow(holder: PreviewPagerAdapter.PreviewViewHolder) {
         if (mIsSavedInstanceState) {
             return
         }
@@ -864,7 +874,7 @@ class PreviewFragment2 : Fragment() {
      * @param holder 预览的view
      * @param media 实体
      */
-    open fun setImageViewScaleType(
+    private fun setImageViewScaleType(
         holder: PreviewPagerAdapter.PreviewViewHolder,
         media: LocalMedia
     ) {
@@ -881,7 +891,7 @@ class PreviewFragment2 : Fragment() {
      *
      * @param position 索引
      */
-    open fun startSharedAnimation(position: Int) {
+    private fun startSharedAnimation(position: Int) {
         // 先隐藏viewPager,等共享动画结束后，再显示viewPager
         mViewPager2.alpha = 0F
         mMainModel.viewModelScope.launch {
@@ -917,7 +927,7 @@ class PreviewFragment2 : Fragment() {
     /**
      * 设置共享参数，主要是为了退出时的共享动画
      */
-    open fun setSharedAnimationViewParams(position: Int) {
+    private fun setSharedAnimationViewParams(position: Int) {
         mMainModel.viewModelScope.launch {
             val media = mMainModel.localMedias[position]
             val mediaSize = getMediaRealSizeFromMedia(media)
@@ -976,7 +986,7 @@ class PreviewFragment2 : Fragment() {
     /**
      * 开始共享动画完成后
      */
-    open fun onSharedBeginAnimComplete(
+    private fun onSharedBeginAnimComplete(
         sharedAnimationView: SharedAnimationView?,
         showImmediately: Boolean
     ) {
@@ -997,7 +1007,7 @@ class PreviewFragment2 : Fragment() {
     /**
      * 开始 退出共享动画
      */
-    open fun onSharedBeginBackMinAnim() {
+    private fun onSharedBeginBackMinAnim() {
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
         if (currentHolder.imageView.visibility == View.GONE) {
             currentHolder.imageView.visibility = View.VISIBLE
@@ -1011,7 +1021,7 @@ class PreviewFragment2 : Fragment() {
      * 结束 退出共享动画
      * 设置预览 view 跟相册的 view 一样的高度宽度
      */
-    open fun onSharedBeginBackMinFinish(isResetSize: Boolean) {
+    private fun onSharedBeginBackMinFinish(isResetSize: Boolean) {
         val itemViewParams =
             RecycleItemViewParams.getItemViewParams(mViewPager2.currentItem) ?: return
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
@@ -1021,7 +1031,7 @@ class PreviewFragment2 : Fragment() {
         currentHolder.imageView.scaleType = ScaleType.CENTER_CROP
     }
 
-    open fun onBackgroundAlpha(alpha: Float) {
+    private fun onBackgroundAlpha(alpha: Float) {
         mViewHolder.sharedAnimationView.setBackgroundAlpha(alpha)
         mViewHolder.bottomToolbar.alpha = alpha
     }
@@ -1029,15 +1039,14 @@ class PreviewFragment2 : Fragment() {
     /**
      * 共享动画结束，退出fragment
      */
-    open fun onSharedViewFinish() {
+    private fun onSharedViewFinish() {
         requireActivity().supportFragmentManager.popBackStack()
     }
-
 
     /**
      * 滑动事件
      */
-    open fun onViewPageSelected(position: Int) {
+    private fun onViewPageSelected(position: Int) {
         mMainModel.previewPosition = position
 //        setTitleText(position + 1)
         if (mFirstSharedAnimation) {

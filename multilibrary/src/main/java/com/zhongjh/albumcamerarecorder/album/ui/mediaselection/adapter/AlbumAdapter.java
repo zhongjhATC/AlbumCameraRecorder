@@ -224,7 +224,7 @@ public class AlbumAdapter extends
      * 刷新数据
      */
     @SuppressLint("NotifyDataSetChanged")
-    private void notifyCheckStateChanged() {
+    public void notifyCheckStateChanged() {
         notifyDataSetChanged();
         if (mCheckStateListener != null) {
             mCheckStateListener.onUpdate();

@@ -373,7 +373,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             onAlbumSelected(album);
         });
         // 选择数据改变
-        mSelectedModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> mMediaViewUtil.notifyItemByLocalMedia(data));
+        mSelectedModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> mMediaViewUtil.notifyItemByLocalMedia());
     }
 
     /**
