@@ -2,10 +2,11 @@ package com.zhongjh.albumcamerarecorder.album.ui.album;
 
 
 import static android.app.Activity.RESULT_OK;
+import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 import static com.zhongjh.albumcamerarecorder.model.SelectedData.COLLECTION_UNDEFINED;
 import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
+import static com.zhongjh.albumcamerarecorder.preview.PreviewFragment2.IS_SHARED_ANIMATION;
+import static com.zhongjh.albumcamerarecorder.preview.PreviewFragment2.STATE_SELECTION;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,9 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
-import com.zhongjh.albumcamerarecorder.model.MainModel;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
@@ -46,8 +45,9 @@ import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
+import com.zhongjh.albumcamerarecorder.model.MainModel;
+import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
@@ -282,9 +282,10 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             @Override
             public void onListener(@NonNull View v) {
                 Intent intent = new Intent(mActivity, PreviewActivity.class);
-                intent.putParcelableArrayListExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, mSelectedModel.getSelectedData().getLocalMedias());
+                intent.putParcelableArrayListExtra(PreviewFragment2.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
                 intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                 intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
+                intent.putExtra(IS_SHARED_ANIMATION, false);
                 mPreviewActivityResult.launch(intent);
                 if (mGlobalSpec.getCutscenesEnabled()) {
                     mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);

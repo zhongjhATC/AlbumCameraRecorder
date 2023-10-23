@@ -114,6 +114,14 @@ public class SelectedData {
     }
 
     /**
+     * 添加所有选择的数据源
+     * @param localMediaArrayList 选择的数据源
+     */
+    public void addAll(ArrayList<LocalMedia> localMediaArrayList) {
+        mLocalMedias.addAll(localMediaArrayList);
+    }
+
+    /**
      * 删除数据源某项
      *
      * @param item 数据

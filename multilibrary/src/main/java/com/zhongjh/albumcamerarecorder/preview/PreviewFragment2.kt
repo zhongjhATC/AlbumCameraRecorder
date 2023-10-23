@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,7 +21,6 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -71,6 +71,18 @@ import kotlinx.coroutines.withContext
  * @date 2023/8/31
  */
 class PreviewFragment2 : BaseFragment() {
+
+    companion object {
+        /**
+         * 数据源的标记
+         */
+        const val STATE_SELECTION = "state_selection"
+
+        /**
+         * 是否开启共享动画
+         */
+        const val IS_SHARED_ANIMATION = "is_shared_animation"
+    }
 
     private val TAG: String = this@PreviewFragment2.javaClass.simpleName
 
@@ -305,6 +317,12 @@ class PreviewFragment2 : BaseFragment() {
      */
     private var mFirstSharedAnimation = true
 
+    /**
+     * 是否启动共享动画
+     */
+    private var mIsSharedAnimation = false
+
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context.applicationContext
@@ -402,8 +420,19 @@ class PreviewFragment2 : BaseFragment() {
                 mIsExternalUsers = it.getBoolean(BasePreviewFragment.IS_EXTERNAL_USERS, false)
                 mCompressEnable = it.getBoolean(BasePreviewFragment.COMPRESS_ENABLE, false)
                 mEditEnable = it.getBoolean(BasePreviewFragment.EDIT_ENABLE, true)
+                mIsSharedAnimation = it.getBoolean(IS_SHARED_ANIMATION, true)
                 mOriginalEnable =
                     it.getBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    mSelectedModel.selectedData.addAll(
+                        it.getParcelableArrayList(
+                            STATE_SELECTION,
+                            LocalMedia::class.java
+                        )
+                    )
+                } else {
+                    mSelectedModel.selectedData.addAll(it.getParcelableArrayList(STATE_SELECTION))
+                }
             }
         } else {
             mIsSavedInstanceState = true
@@ -471,7 +500,8 @@ class PreviewFragment2 : BaseFragment() {
      */
     private fun initViewPagerData() {
         mAdapter = PreviewPagerAdapter(mContext, requireActivity())
-        mAdapter.addAll(mMainModel.localMedias)
+        // 如果相册数据没有，那就是只有选择数据
+        mAdapter.addAll(if (mMainModel.localMedias.size > 0) mMainModel.localMedias else mSelectedModel.selectedData.localMedias)
         mAdapter.notifyItemRangeChanged(0, mMainModel.localMedias.size)
         mViewPager2.adapter = mAdapter
 
@@ -654,13 +684,6 @@ class PreviewFragment2 : BaseFragment() {
 //                }
 //            }
 //        }
-    }
-
-    /**
-     * 是否开启共享动画
-     */
-    private fun isSharedAnimation(): Boolean {
-        return true
     }
 
     /**
@@ -854,6 +877,13 @@ class PreviewFragment2 : BaseFragment() {
         } else {
             mViewHolder.checkView.isEnabled = false
         }
+    }
+
+    /**
+     * 是否开启共享动画
+     */
+    private fun isSharedAnimation(): Boolean {
+        return mIsSharedAnimation
     }
 
     /**
@@ -1052,12 +1082,15 @@ class PreviewFragment2 : BaseFragment() {
     private fun onViewPageSelected(position: Int) {
         mMainModel.previewPosition = position
 //        setTitleText(position + 1)
-        if (mFirstSharedAnimation) {
-            startSharedAnimation(position)
-            mFirstSharedAnimation = false
-        } else {
-            setSharedAnimationViewParams(position)
+        if (mIsSharedAnimation) {
+            if (mFirstSharedAnimation) {
+                startSharedAnimation(position)
+                mFirstSharedAnimation = false
+            } else {
+                setSharedAnimationViewParams(position)
+            }
         }
+
 
 //        if (isLoadMoreThreshold(position)) {
 //            loadMediaMore()
