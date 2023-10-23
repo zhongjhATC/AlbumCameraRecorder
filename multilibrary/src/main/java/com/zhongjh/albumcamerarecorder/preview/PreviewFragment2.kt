@@ -322,7 +322,6 @@ class PreviewFragment2 : BaseFragment() {
      */
     private var mIsSharedAnimation = false
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context.applicationContext
@@ -412,7 +411,7 @@ class PreviewFragment2 : BaseFragment() {
     private fun initBundleValue(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
-            arguments?.let {
+            arguments?.let { it ->
                 mApplyEnable = it.getBoolean(BasePreviewFragment.APPLY_ENABLE, true)
                 mSelectedEnable = it.getBoolean(BasePreviewFragment.SELECTED_ENABLE, true)
                 mIsSelectedListener = it.getBoolean(BasePreviewFragment.IS_SELECTED_LISTENER, true)
@@ -423,15 +422,9 @@ class PreviewFragment2 : BaseFragment() {
                 mIsSharedAnimation = it.getBoolean(IS_SHARED_ANIMATION, true)
                 mOriginalEnable =
                     it.getBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    mSelectedModel.selectedData.addAll(
-                        it.getParcelableArrayList(
-                            STATE_SELECTION,
-                            LocalMedia::class.java
-                        )
-                    )
-                } else {
-                    mSelectedModel.selectedData.addAll(it.getParcelableArrayList(STATE_SELECTION))
+                it.getParcelableArrayList<LocalMedia>(STATE_SELECTION)?.let { selection ->
+                    val localMedias = selection as ArrayList<LocalMedia>
+                    mSelectedModel.selectedData.addAll(localMedias)
                 }
             }
         } else {
