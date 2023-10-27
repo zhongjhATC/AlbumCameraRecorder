@@ -1199,6 +1199,19 @@ class PreviewFragment2 : BaseFragment() {
         }
     }
 
+    /**
+     * 获取当前数据源，有以下两种情况
+     * 1. 一种是相册所有数据作为数据源
+     * 2. 一种是传递过来的数据作为数据源
+     */
+    private fun getSelectedData(): ArrayList<LocalMedia> {
+        return if (mMainModel.localMedias.size > 0) {
+            mMainModel.localMedias
+        } else {
+            mSelectedModel.selectedData.localMedias
+        }
+    }
+
     class ViewHolder internal constructor(var rootView: View) {
         var sharedAnimationView: SharedAnimationView =
             rootView.findViewById(R.id.sharedAnimationView)

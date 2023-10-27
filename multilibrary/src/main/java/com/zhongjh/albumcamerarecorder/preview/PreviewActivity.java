@@ -55,4 +55,10 @@ public class PreviewActivity extends AppCompatActivity {
         fragment.setArguments(bundle);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+    }
+
 }
