@@ -723,8 +723,8 @@ class PreviewFragment2 : BaseFragment() {
      */
     @Synchronized
     private fun setResultOk(apply: Boolean) {
-//        Log.d(TAG, "setResultOk");
-//        refreshMultiMediaItem(apply);
+        Log.d(TAG, "setResultOk")
+        refreshMultiMediaItem()
 //        if (mGlobalSpec.getOnResultCallbackListener() == null || !mIsExternalUsers) {
 //            // 如果是外部使用并且不同意，则不执行RESULT_OK
 //            Intent intent = new Intent();
@@ -740,7 +740,7 @@ class PreviewFragment2 : BaseFragment() {
 //        } else {
 //            mGlobalSpec.getOnResultCallbackListener().onResultFromPreview(mSelectedCollection.asList(), apply);
 //        }
-//        mActivity.finish();
+        requireActivity().finish()
     }
 
     /**
