@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,6 +32,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
@@ -84,7 +84,7 @@ class PreviewFragment2 : BaseFragment() {
         const val IS_SHARED_ANIMATION = "is_shared_animation"
     }
 
-    private val TAG: String = this@PreviewFragment2.javaClass.simpleName
+    private val logTag: String = PreviewFragment2::class.java.simpleName
 
     private lateinit var mContext: Context
     private lateinit var mViewHolder: ViewHolder
@@ -191,7 +191,7 @@ class PreviewFragment2 : BaseFragment() {
             override fun onFail(t: Throwable) {
                 super.onFail(t)
                 Toast.makeText(mContext, t.message, Toast.LENGTH_SHORT).show()
-                Log.d(TAG, "getCompressFileTask onFail " + t.message)
+                Log.d(tag, "getCompressFileTask onFail " + t.message)
                 setResultOk(true)
             }
 
@@ -251,7 +251,7 @@ class PreviewFragment2 : BaseFragment() {
     private val mAlbumCompressFileTask by lazy {
         AlbumCompressFileTask(
             mContext,
-            TAG,
+            logTag,
             BasePreviewFragment::class.java,
             mGlobalSpec,
             mPictureMediaStoreCompat,
@@ -424,6 +424,7 @@ class PreviewFragment2 : BaseFragment() {
                     it.getBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
                 it.getParcelableArrayList<LocalMedia>(STATE_SELECTION)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
+                    mMainModel.localMedias.addAll(localMedias)
                     mSelectedModel.selectedData.addAll(localMedias)
                 }
             }
@@ -493,8 +494,7 @@ class PreviewFragment2 : BaseFragment() {
      */
     private fun initViewPagerData() {
         mAdapter = PreviewPagerAdapter(mContext, requireActivity())
-        // 如果相册数据没有，那就是只有选择数据
-        mAdapter.addAll(if (mMainModel.localMedias.size > 0) mMainModel.localMedias else mSelectedModel.selectedData.localMedias)
+        mAdapter.addAll(mMainModel.localMedias)
         mAdapter.notifyItemRangeChanged(0, mMainModel.localMedias.size)
         mViewPager2.adapter = mAdapter
 
@@ -549,7 +549,7 @@ class PreviewFragment2 : BaseFragment() {
                 if (mAlbumSpec.countable) {
                     mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED)
                 } else {
-                    mViewHolder.checkView.setChecked(false);
+                    mViewHolder.checkView.setChecked(false)
                 }
             } else {
                 var isTrue = true
@@ -723,7 +723,7 @@ class PreviewFragment2 : BaseFragment() {
      */
     @Synchronized
     private fun setResultOk(apply: Boolean) {
-        Log.d(TAG, "setResultOk")
+        Log.d(logTag, "setResultOk")
         refreshMultiMediaItem()
 //        if (mGlobalSpec.getOnResultCallbackListener() == null || !mIsExternalUsers) {
 //            // 如果是外部使用并且不同意，则不执行RESULT_OK
@@ -1074,7 +1074,6 @@ class PreviewFragment2 : BaseFragment() {
      */
     private fun onViewPageSelected(position: Int) {
         mMainModel.previewPosition = position
-//        setTitleText(position + 1)
         if (mIsSharedAnimation) {
             if (mFirstSharedAnimation) {
                 startSharedAnimation(position)
@@ -1196,19 +1195,6 @@ class PreviewFragment2 : BaseFragment() {
             }
             updateUi(item)
             onViewPageSelected(position)
-        }
-    }
-
-    /**
-     * 获取当前数据源，有以下两种情况
-     * 1. 一种是相册所有数据作为数据源
-     * 2. 一种是传递过来的数据作为数据源
-     */
-    private fun getSelectedData(): ArrayList<LocalMedia> {
-        return if (mMainModel.localMedias.size > 0) {
-            mMainModel.localMedias
-        } else {
-            mSelectedModel.selectedData.localMedias
         }
     }
 

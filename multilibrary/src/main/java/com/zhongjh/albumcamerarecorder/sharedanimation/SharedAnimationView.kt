@@ -369,7 +369,7 @@ class SharedAnimationView @JvmOverloads constructor(
             return
         }
         if (mOriginWidth == 0 || mOriginHeight == 0) {
-            // 拿不到宽高，则透明形式动画
+            // 拿不到宽高，可能是viewPager滑动数据到RecyclerView分页后的地方。则透明形式动画
             backToMinWithoutView()
             return
         }
