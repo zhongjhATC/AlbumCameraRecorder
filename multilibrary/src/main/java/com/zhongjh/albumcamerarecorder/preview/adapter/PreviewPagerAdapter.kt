@@ -73,15 +73,19 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
         val mediaComputeSize = BitmapUtils.getComputeImageSize(size[0], size[1])
         val width = mediaComputeSize[0]
         val height = mediaComputeSize[1]
-        imageEngine.loadUrlImage(mContext, width, height, holder.imageView, item.path)
+        imageEngine.loadUrlImage(
+            mContext,
+            width,
+            height,
+            holder.imageView,
+            item.editorPath ?: item.path
+        )
 
         if (MediaUtils.isLongImage(item.width, item.height)) {
             holder.imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         } else {
             holder.imageView.scaleType = ImageView.ScaleType.FIT_CENTER
         }
-
-
 //        if (item.getUri() != null) {
 //            Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), mActivity);
 //            if (item.isGif()) {
@@ -116,7 +120,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
         return mViewHolderCache[position]
     }
 
-    fun setMediaItem(position: Int, localMedia: LocalMedia) {
+    fun setLocalMedia(position: Int, localMedia: LocalMedia) {
         items[position] = localMedia
     }
 
@@ -125,11 +129,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     }
 
     private fun getRealSizeFromMedia(media: LocalMedia): IntArray {
-//        return if ((media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0) {
-//            intArrayOf(media.cropWidth, media.cropHeight)
-//        } else {
         return intArrayOf(media.width, media.height)
-//        }
     }
 
     class PreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

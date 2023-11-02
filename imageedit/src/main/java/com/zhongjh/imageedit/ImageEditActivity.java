@@ -14,6 +14,7 @@ import com.zhongjh.imageedit.core.file.ImageContentDecoder;
 import com.zhongjh.imageedit.core.file.ImageFileDecoder;
 import com.zhongjh.imageedit.core.util.BitmapLoadUtils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,7 +50,9 @@ public class ImageEditActivity extends BaseImageEditActivity {
             return null;
         }
 
-        Uri uri = intent.getParcelableExtra(EXTRA_IMAGE_URI);
+        String path = intent.getStringExtra(EXTRA_IMAGE_URI);
+        Uri uri = Uri.parse(path);
+
         if (uri == null) {
             return null;
         }

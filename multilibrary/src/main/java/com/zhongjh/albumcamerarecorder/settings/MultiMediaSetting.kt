@@ -4,14 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import androidx.fragment.app.Fragment
-import com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION
 import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
+import com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION
 import com.zhongjh.common.entity.LocalFile
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
-import java.util.*
 
 /**
  * 多媒体的设置 - Album
@@ -102,10 +100,8 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
          */
         @JvmStatic
         fun obtainMultiMediaResult(data: Intent): ArrayList<LocalMedia>? {
-            // 请求的预览界面
-            val resultBundle = data.getBundleExtra(BasePreviewFragment.EXTRA_RESULT_BUNDLE)
             // 获取选择的数据
-            return resultBundle!!.getParcelableArrayList(STATE_SELECTION)
+            return data.getParcelableArrayListExtra(STATE_SELECTION, LocalMedia::class.java)
         }
     }
 

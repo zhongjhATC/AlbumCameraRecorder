@@ -62,7 +62,6 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      * 选择的数据源集合和类型
      */
     public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
-    public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
     public static final String EXTRA_RESULT_APPLY = "extra_result_apply";
     public static final String EXTRA_RESULT_IS_EDIT = "extra_result_is_edit";
     /**

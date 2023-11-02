@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.preview
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -32,11 +33,11 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
+import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment.*
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
@@ -54,6 +55,7 @@ import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.common.widget.IncapableDialog
 import com.zhongjh.common.widget.IncapableDialog.Companion.newInstance
+import com.zhongjh.imageedit.ImageEditActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -258,6 +260,11 @@ class PreviewFragment2 : BaseFragment() {
             mVideoMediaStoreCompat
         )
     }
+
+    /**
+     * 当前编辑完的图片文件
+     */
+    private var mEditImagePath: String? = null
 
     var screenWidth = 0
     var screenHeight = 0
@@ -641,58 +648,38 @@ class PreviewFragment2 : BaseFragment() {
      * 刷新MultiMedia
      */
     private fun refreshMultiMediaItem() {
-//        // 获取当前查看的multimedia
-//        LocalMedia localMedia = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-//        // 获取编辑前的uri
-//        Uri oldUri = localMedia.getUri();
-//        // 获取编辑后的uri
-//        Uri newUri = mPictureMediaStoreCompat.getUri(mEditImageFile.getPath());
-//        // 获取编辑前的path
-//        String oldPath = null;
-//        if (multiMedia.getPath() == null) {
-//            File file = UriUtils.uriToFile(mContext, multiMedia.getUri());
-//            if (file != null) {
-//                oldPath = UriUtils.uriToFile(mContext, multiMedia.getUri()).getAbsolutePath();
-//            }
-//        } else {
-//            oldPath = multiMedia.getPath();
-//        }
-//        multiMedia.setOldPath(oldPath);
-//        // 获取编辑后的path
-//        String newPath = mEditImageFile.getPath();
-//        // 赋值新旧的path、uri
-//        multiMedia.handleEditValue(newPath, newUri, oldPath, oldUri);
-//        // 更新当前fragment编辑后的uri和path
-//        mAdapter.setMediaItem(mViewHolder.pager.getCurrentItem(), multiMedia);
-//        mAdapter.notifyItemChanged(mViewHolder.pager.getCurrentItem());
-//
-//        // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据 是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
-//        // 如何重现进入这个条件里面：先相册选择第一个，然后点击相册第二个item进入详情，在详情界面滑动到第一个，对第一个进行编辑改动，则会进入这些条件里面
-//        for (LocalMedia item : mMainModel.mSelectedModel.selectedData.getLocalMedias()) {
-//            if (item.getId() == multiMedia.getId()) {
-//                // 如果两个id都一样，那就是同个图片，再判断是否同个对象
-//                if (!item.equals(multiMedia)) {
-//                    // 如果不是同个对象，那么另外一个对象要赋值
-//                    item.handleEditValue(multiMedia.getPath());
-//                }
-//            }
-//        }
+        // 获取当前查看的multimedia
+        val localMedia = mAdapter.getLocalMedia(mViewPager2.currentItem)
+        // 赋值新旧的path、uri
+        // 更新当前fragment编辑后的uri和path
+        localMedia?.let {
+            localMedia.editorPath = mEditImagePath
+            mAdapter.setLocalMedia(mViewPager2.currentItem, it)
+            mAdapter.notifyItemChanged(mViewPager2.currentItem)
+        }
+
+        // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据 是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
+        // 如何重现进入这个条件里面：先相册选择第一个，然后点击相册第二个item进入详情，在详情界面滑动到第一个，对第一个进行编辑改动，则会进入这些条件里面
     }
 
     /**
      * 打开编辑的Activity
      */
     private fun openImageEditActivity() {
-//        LocalMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-//        File file;
-//        file = mPictureMediaStoreCompat.createFile(0, true, "jpg");
-//        mEditImageFile = file;
-//        Intent intent = new Intent();
-//        intent.setClass(mActivity, ImageEditActivity.class);
-//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, mActivity.getRequestedOrientation());
-//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.getUri());
-//        intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, mEditImageFile.getAbsolutePath());
-//        mImageEditActivityResult.launch(intent);
+        val item = mAdapter.getLocalMedia(mMainModel.previewPosition)
+        item?.let {
+            val file = mPictureMediaStoreCompat.createFile(0, true, "jpg")
+            mEditImagePath = file.absoluteFile.toString()
+            val intent = Intent()
+            intent.setClass(requireActivity(), ImageEditActivity::class.java)
+            intent.putExtra(
+                ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION,
+                requireActivity().requestedOrientation
+            )
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.path)
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file.absolutePath)
+            mImageEditActivityResult.launch(intent)
+        }
     }
 
     /**
@@ -725,22 +712,32 @@ class PreviewFragment2 : BaseFragment() {
     private fun setResultOk(apply: Boolean) {
         Log.d(logTag, "setResultOk")
         refreshMultiMediaItem()
-//        if (mGlobalSpec.getOnResultCallbackListener() == null || !mIsExternalUsers) {
-//            // 如果是外部使用并且不同意，则不执行RESULT_OK
-//            Intent intent = new Intent();
-//            intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-//            intent.putExtra(EXTRA_RESULT_APPLY, apply);
-//            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit);
-//            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-//            if (mIsExternalUsers && !apply) {
-//                mActivity.setResult(Activity.RESULT_CANCELED, intent);
-//            } else {
-//                mActivity.setResult(RESULT_OK, intent);
-//            }
-//        } else {
-//            mGlobalSpec.getOnResultCallbackListener().onResultFromPreview(mSelectedCollection.asList(), apply);
-//        }
-        requireActivity().finish()
+        mGlobalSpec.onResultCallbackListener?.let {
+            if (mIsExternalUsers) {
+                it.onResultFromPreview(mSelectedModel.selectedData.localMedias, apply)
+            }
+        } ?: let {
+            if (!mIsExternalUsers) {
+                // 如果是外部使用并且不同意，则不执行RESULT_OK
+                val intent = Intent()
+                intent.putExtra(STATE_SELECTION, mSelectedModel.selectedData.localMedias)
+                intent.putExtra(EXTRA_RESULT_APPLY, apply)
+                intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
+                intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+                if (mIsExternalUsers && !apply) {
+                    requireActivity().setResult(Activity.RESULT_CANCELED, intent)
+                } else {
+                    requireActivity().setResult(RESULT_OK, intent)
+                }
+            }
+        }
+
+
+        if (mGlobalSpec.onResultCallbackListener == null || !mIsExternalUsers) {
+
+        } else {
+        }
+        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     /**

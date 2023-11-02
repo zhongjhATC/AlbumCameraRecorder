@@ -388,12 +388,11 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                     }
                     // 请求的预览界面
                     if (result.getData() != null) {
-                        Bundle resultBundle = result.getData().getBundleExtra(BasePreviewFragment.EXTRA_RESULT_BUNDLE);
                         // 获取选择的数据
-                        ArrayList<LocalMedia> selected = resultBundle.getParcelableArrayList(STATE_SELECTION);
+                        ArrayList<LocalMedia> selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION, LocalMedia.class);
                         // 是否启用原图
                         mOriginalEnable = result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-                        int collectionType = resultBundle.getInt(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
+                        int collectionType = result.getData().getIntExtra(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
                         // 如果在预览界面点击了确定
                         if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
                             if (selected != null) {

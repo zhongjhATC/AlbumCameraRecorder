@@ -582,14 +582,12 @@ public abstract class BaseCameraFragment
                     return;
                 }
                 if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
-                    // 请求的预览界面
-                    Bundle resultBundle = result.getData().getBundleExtra(BasePreviewFragment.EXTRA_RESULT_BUNDLE);
                     // 获取选择的数据
                     ArrayList<LocalMedia> selected;
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                        selected = resultBundle.getParcelableArrayList(STATE_SELECTION, LocalMedia.class);
+                        selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION, LocalMedia.class);
                     } else {
-                        selected = resultBundle.getParcelableArrayList(STATE_SELECTION);
+                        selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION);
                     }
                     if (selected == null) {
                         return;
