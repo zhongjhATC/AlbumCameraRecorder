@@ -78,10 +78,11 @@ public class MainActivity extends AppCompatActivity {
      * 底部控件
      */
     private TabLayout mTabLayout;
-    /**
-     * 底部控件用于关联viewPager2的
-     */
-    private TabLayoutMediator mLayoutMediator;
+    private ViewPager2 mVpPager;
+//    /**
+//     * 底部控件用于关联viewPager2的
+//     */
+//    private TabLayoutMediator mLayoutMediator;
     /**
      * 显示隐藏TabLayout的动画
      */
@@ -156,9 +157,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (mLayoutMediator != null) {
-            mLayoutMediator.detach();
-        }
+//        if (mLayoutMediator != null) {
+//            mLayoutMediator.detach();
+//            mLayoutMediator = null;
+//            mTabLayout = null;
+//            mVpPager.setAdapter(null);
+//        }
         if (mSpec.getCameraSetting() != null) {
             mSpec.getCameraSetting().clearCameraFragment();
         }
@@ -256,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void init(Bundle savedInstanceState) {
         if (!mIsInit) {
-            ViewPager2 mVpPager = findViewById(R.id.viewPager);
+            mVpPager = findViewById(R.id.viewPager);
             mTabLayout = findViewById(R.id.tableLayout);
             initTabLayoutStyle();
             mTabLayout.setTag(R.id.z_tab_layout_translation_y, 0);
@@ -283,11 +287,11 @@ public class MainActivity extends AppCompatActivity {
                 mTabLayout.setVisibility(View.GONE);
             } else {
                 mTabLayout.setVisibility(View.VISIBLE);
-                mLayoutMediator = new TabLayoutMediator(mTabLayout, mVpPager, false, true,
-                        (tab, position) -> tab.setText(adapterViewPager.mTitles.get(position)));
-                mLayoutMediator.attach();
+//                mLayoutMediator = new TabLayoutMediator(mTabLayout, mVpPager, false, true,
+//                        (tab, position) -> tab.setText(adapterViewPager.mTitles.get(position)));
+//                mLayoutMediator.attach();
                 // 禁滑viewPager
-                mVpPager.setUserInputEnabled(false);
+//                mVpPager.setUserInputEnabled(false);
             }
             mIsInit = true;
         }
@@ -551,18 +555,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment createFragment(int position) {
             if (mTitles.get(position).equals(getString(R.string.z_multi_library_album))) {
-                if (numItems <= 1) {
-                    return AlbumFragment.newInstance(0);
-                }
-                return AlbumFragment.newInstance(50);
+                return SoundRecordingFragment.newInstance();
             } else if (mTitles.get(position).equals(getString(R.string.z_multi_library_sound_recording))) {
                 return SoundRecordingFragment.newInstance();
             } else {
-                if (mSpec.getCameraSetting() != null && mSpec.getCameraSetting().getBaseCameraFragment() != null) {
-                    return mSpec.getCameraSetting().getBaseCameraFragment();
-                } else {
-                    return CameraFragment.newInstance();
-                }
+                return SoundRecordingFragment.newInstance();
             }
         }
 

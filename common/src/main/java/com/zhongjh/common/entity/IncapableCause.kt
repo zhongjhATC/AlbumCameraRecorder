@@ -70,8 +70,8 @@ class IncapableCause {
                     incapableDialog.show((context as FragmentActivity).supportFragmentManager,
                             IncapableDialog::class.java.name)
                 }
-                TOAST -> Toast.makeText(context, cause.message, Toast.LENGTH_SHORT).show()
-                else -> Toast.makeText(context, cause.message, Toast.LENGTH_SHORT).show()
+                TOAST -> Toast.makeText(context.applicationContext, cause.message, Toast.LENGTH_SHORT).show()
+                else -> Toast.makeText(context.applicationContext, cause.message, Toast.LENGTH_SHORT).show()
             }
         }
     }

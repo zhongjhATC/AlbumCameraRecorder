@@ -99,6 +99,8 @@ public abstract class BaseOperationLayout extends FrameLayout {
      */
     ObjectAnimator mAnimatorConfirm;
     ObjectAnimator mAnimatorCancel;
+    ObjectAnimator animatorStartTxtTip;
+    ObjectAnimator animatorSetTxtTip;
 
     /**
      * 创建
@@ -388,6 +390,24 @@ public abstract class BaseOperationLayout extends FrameLayout {
         }
     }
 
+    /**
+     * 销毁，防止内存泄漏
+     */
+    public void onDestroy() {
+        if (mAnimatorConfirm != null) {
+            mAnimatorConfirm.cancel();
+        }
+        if (mAnimatorCancel != null) {
+            mAnimatorCancel.cancel();
+        }
+        if (animatorStartTxtTip != null) {
+            animatorStartTxtTip.cancel();
+        }
+        if (animatorSetTxtTip != null) {
+            animatorSetTxtTip.cancel();
+        }
+    }
+
     // region 对外提供的api
 
     /**
@@ -404,9 +424,9 @@ public abstract class BaseOperationLayout extends FrameLayout {
      */
     public void startTipAlphaAnimation() {
         if (mIsFirst) {
-            ObjectAnimator animatorTxtTip = ObjectAnimator.ofFloat(viewHolder.tvTip, "alpha", 1f, 0f);
-            animatorTxtTip.setDuration(500);
-            animatorTxtTip.start();
+            animatorStartTxtTip = ObjectAnimator.ofFloat(viewHolder.tvTip, "alpha", 1f, 0f);
+            animatorStartTxtTip.setDuration(500);
+            animatorStartTxtTip.start();
             mIsFirst = false;
         }
     }
@@ -418,9 +438,9 @@ public abstract class BaseOperationLayout extends FrameLayout {
      */
     public void setTipAlphaAnimation(String tip) {
         viewHolder.tvTip.setText(tip);
-        ObjectAnimator animatorTxtTip = ObjectAnimator.ofFloat(viewHolder.tvTip, "alpha", 0f, 1f, 1f, 0f);
-        animatorTxtTip.setDuration(2500);
-        animatorTxtTip.start();
+        animatorSetTxtTip = ObjectAnimator.ofFloat(viewHolder.tvTip, "alpha", 0f, 1f, 1f, 0f);
+        animatorSetTxtTip.setDuration(2500);
+        animatorSetTxtTip.start();
     }
 
     /**
@@ -491,6 +511,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
     /**
      * 设置中间按钮是否可点击
+     *
      * @param enabled 是否可点击
      */
     public void setClickOrLongEnable(boolean enabled) {

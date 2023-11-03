@@ -315,6 +315,7 @@ public class SoundRecordingFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
+        mViewHolder.pvLayout.onDestroy();
         if (mMediaPlayer != null) {
             stopPlaying();
         }

@@ -240,6 +240,7 @@ public abstract class BaseCameraFragment
     @Override
     public void onDestroy() {
         onDestroy(isCommit);
+        getPhotoVideoLayout().onDestroy();
         super.onDestroy();
     }
 
