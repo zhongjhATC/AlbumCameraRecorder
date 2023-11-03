@@ -84,7 +84,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     private static final String CHECK_STATE = "checkState";
 
     private Context mContext;
-    private MainActivity mActivity;
     private MainModel mMainModel;
     private SelectedModel mSelectedModel;
     /**
@@ -160,8 +159,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.mActivity = (MainActivity) context;
-        this.mContext = context.getApplicationContext();
+        this.mContext = requireActivity().getApplicationContext();
         this.mMainModel = new ViewModelProvider(requireActivity())
                 .get(MainModel.class);
         this.mSelectedModel = new ViewModelProvider(requireActivity())
@@ -180,7 +178,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
 
         mViewHolder = new ViewHolder(view);
         initConfig();
-        mAlbumCompressFileTask = new AlbumCompressFileTask(mActivity, TAG, AlbumFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
+        mAlbumCompressFileTask = new AlbumCompressFileTask(requireActivity(), TAG, AlbumFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
         initView(savedInstanceState);
         initActivityResult();
         initListener();
@@ -200,26 +198,26 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         // 设置图片路径
         if (mGlobalSpec.getPictureStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(mActivity, mGlobalSpec.getPictureStrategy());
+            mPictureMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getPictureStrategy());
         } else {
             // 否则使用全局的
             if (mGlobalSpec.getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(mActivity, mGlobalSpec.getSaveStrategy());
+                mPictureMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getSaveStrategy());
             }
         }
 
         // 设置视频路径
         if (mGlobalSpec.getVideoStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
-            mVideoMediaStoreCompat = new MediaStoreCompat(mActivity, mGlobalSpec.getVideoStrategy());
+            mVideoMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getVideoStrategy());
         } else {
             // 否则使用全局的
             if (mGlobalSpec.getSaveStrategy() == null) {
                 throw new RuntimeException("Don't forget to set SaveStrategy.");
             } else {
-                mVideoMediaStoreCompat = new MediaStoreCompat(mActivity, mGlobalSpec.getSaveStrategy());
+                mVideoMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getSaveStrategy());
             }
         }
     }
@@ -229,12 +227,12 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private void initView(Bundle savedInstanceState) {
         // 兼容沉倾状态栏
-        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mActivity);
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(this.mContext);
         mViewHolder.root.setPadding(mViewHolder.root.getPaddingLeft(), statusBarHeight,
                 mViewHolder.root.getPaddingRight(), mViewHolder.root.getPaddingBottom());
         // 修改颜色
         Drawable navigationIcon = mViewHolder.toolbar.getNavigationIcon();
-        TypedArray ta = mActivity.getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
+        TypedArray ta = requireActivity().getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
         int color = ta.getColor(0, 0);
         ta.recycle();
         if (navigationIcon != null) {
@@ -245,7 +243,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         }
         updateBottomToolbar();
 
-        mAlbumSpinner = new AlbumSpinner(mActivity);
+        mAlbumSpinner = new AlbumSpinner(this.mContext);
         mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
         mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
 
@@ -267,7 +265,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private void initListener() {
         // 关闭事件
-        mViewHolder.imgClose.setOnClickListener(v -> mActivity.finish());
+        mViewHolder.imgClose.setOnClickListener(v -> requireActivity().finish());
 
         // 下拉框选择的时候
         mAlbumSpinner.setOnAlbumItemClickListener((position, album) -> {
@@ -281,14 +279,14 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NonNull View v) {
-                Intent intent = new Intent(mActivity, PreviewActivity.class);
+                Intent intent = new Intent(requireActivity(), PreviewActivity.class);
                 intent.putParcelableArrayListExtra(PreviewFragment2.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
                 intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                 intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
                 intent.putExtra(IS_SHARED_ANIMATION, false);
                 mPreviewActivityResult.launch(intent);
                 if (mGlobalSpec.getCutscenesEnabled()) {
-                    mActivity.overridePendingTransition(R.anim.activity_open_zjh, 0);
+                    requireActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
                 }
             }
         });
@@ -337,7 +335,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         });
 
         // 触发滑动事件
-        mViewHolder.bottomToolbar.setOnListener(translationY -> mActivity.onDependentViewChanged(translationY));
+        mViewHolder.bottomToolbar.setOnListener(translationY -> ((MainActivity)requireActivity()).onDependentViewChanged(translationY));
     }
 
     /**
@@ -566,7 +564,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mMainModel.setPreviewPosition(adapterPosition);
 
         // 隐藏底部控件
-        mActivity.showHideTableLayoutAnimator(false);
+        ((MainActivity)requireActivity()).showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment2();
         Bundle bundle = new Bundle();
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
@@ -592,12 +590,12 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
             // 隐藏母窗体的table
-            mActivity.showHideTableLayout(false);
+            ((MainActivity)requireActivity()).showHideTableLayout(false);
         } else {
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.GONE);
             // 隐藏母窗体的table
-            mActivity.showHideTableLayout(true);
+            ((MainActivity)requireActivity()).showHideTableLayout(true);
         }
     }
 
@@ -637,7 +635,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                 super.onFail(t);
                 // 结束loading
                 setControlTouchEnable(true);
-                Toast.makeText(mActivity.getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity().getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -663,11 +661,11 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMediaArrayList);
             // 是否启用原图
             result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            mActivity.setResult(RESULT_OK, result);
+            requireActivity().setResult(RESULT_OK, result);
         } else {
             mGlobalSpec.getOnResultCallbackListener().onResult(localMediaArrayList);
         }
-        mActivity.finish();
+        requireActivity().finish();
     }
 
     /**

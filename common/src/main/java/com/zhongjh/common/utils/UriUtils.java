@@ -192,7 +192,7 @@ public class UriUtils {
             return new File(Environment.getExternalStorageDirectory() + "/" + split[1]);
         } else {
             // 通过反射获取外置sd卡目录 http://stackoverflow.com/questions/28605278/android-5-sd-card-label
-            StorageManager storageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+            StorageManager storageManager = (StorageManager) context.getApplicationContext().getSystemService(Context.STORAGE_SERVICE);
             try {
                 Class<?> storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
                 Method getVolumeList = storageManager.getClass().getMethod("getVolumeList");

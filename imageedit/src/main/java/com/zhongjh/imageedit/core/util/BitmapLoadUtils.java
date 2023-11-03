@@ -25,7 +25,7 @@ public class BitmapLoadUtils {
      * @return - max bitmap size in pixels.
      */
     public static int calculateMaxBitmapSize(@NonNull Context context) {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display;
         int width, height;
         Point size = new Point();
