@@ -79,10 +79,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private TabLayout mTabLayout;
     private ViewPager2 mVpPager;
-//    /**
-//     * 底部控件用于关联viewPager2的
-//     */
-//    private TabLayoutMediator mLayoutMediator;
+    /**
+     * 底部控件用于关联viewPager2的
+     */
+    private TabLayoutMediator mLayoutMediator;
     /**
      * 显示隐藏TabLayout的动画
      */
@@ -157,12 +157,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-//        if (mLayoutMediator != null) {
-//            mLayoutMediator.detach();
-//            mLayoutMediator = null;
-//            mTabLayout = null;
-//            mVpPager.setAdapter(null);
-//        }
+        if (mLayoutMediator != null) {
+            mLayoutMediator.detach();
+            mLayoutMediator = null;
+            mTabLayout = null;
+            mVpPager.setAdapter(null);
+        }
         if (mSpec.getCameraSetting() != null) {
             mSpec.getCameraSetting().clearCameraFragment();
         }
@@ -287,9 +287,9 @@ public class MainActivity extends AppCompatActivity {
                 mTabLayout.setVisibility(View.GONE);
             } else {
                 mTabLayout.setVisibility(View.VISIBLE);
-//                mLayoutMediator = new TabLayoutMediator(mTabLayout, mVpPager, false, true,
-//                        (tab, position) -> tab.setText(adapterViewPager.mTitles.get(position)));
-//                mLayoutMediator.attach();
+                mLayoutMediator = new TabLayoutMediator(mTabLayout, mVpPager, false, true,
+                        (tab, position) -> tab.setText(adapterViewPager.mTitles.get(position)));
+                mLayoutMediator.attach();
                 // 禁滑viewPager
 //                mVpPager.setUserInputEnabled(false);
             }
