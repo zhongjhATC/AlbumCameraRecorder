@@ -731,13 +731,7 @@ class PreviewFragment2 : BaseFragment() {
                 }
             }
         }
-
-
-        if (mGlobalSpec.onResultCallbackListener == null || !mIsExternalUsers) {
-
-        } else {
-        }
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+        requireActivity().finish()
     }
 
     /**
