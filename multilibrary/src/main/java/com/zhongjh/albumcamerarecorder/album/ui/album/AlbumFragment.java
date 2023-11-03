@@ -389,7 +389,12 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                     // 请求的预览界面
                     if (result.getData() != null) {
                         // 获取选择的数据
-                        ArrayList<LocalMedia> selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION, LocalMedia.class);
+                        ArrayList<LocalMedia> selected;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                            selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION, LocalMedia.class);
+                        } else {
+                            selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION);
+                        }
                         // 是否启用原图
                         mOriginalEnable = result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
                         int collectionType = result.getData().getIntExtra(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);

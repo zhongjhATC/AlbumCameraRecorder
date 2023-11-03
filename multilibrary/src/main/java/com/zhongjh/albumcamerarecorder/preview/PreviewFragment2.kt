@@ -332,13 +332,6 @@ class PreviewFragment2 : BaseFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context.applicationContext
-        // 拦截OnBackPressed
-        requireActivity().onBackPressedDispatcher
-            .addCallback(this, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    setResultOkByIsCompress(false)
-                }
-            })
     }
 
     override fun onCreateView(
@@ -380,7 +373,6 @@ class PreviewFragment2 : BaseFragment() {
     }
 
     override fun onDestroy() {
-//        mAdapter.destroy()
         mViewPager2.unregisterOnPageChangeCallback(mOnPageChangeCallback)
         // 如果依附的Activity是MainActivity,就显示底部控件动画
         if (requireActivity() is MainActivity) {
@@ -405,7 +397,7 @@ class PreviewFragment2 : BaseFragment() {
         mImageEditActivityResult = registerForActivityResult(
             StartActivityForResult()
         ) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
+            if (result.resultCode == RESULT_OK) {
                 mIsEdit = true
                 refreshMultiMediaItem()
             }
@@ -419,16 +411,16 @@ class PreviewFragment2 : BaseFragment() {
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             arguments?.let { it ->
-                mApplyEnable = it.getBoolean(BasePreviewFragment.APPLY_ENABLE, true)
-                mSelectedEnable = it.getBoolean(BasePreviewFragment.SELECTED_ENABLE, true)
-                mIsSelectedListener = it.getBoolean(BasePreviewFragment.IS_SELECTED_LISTENER, true)
-                mIsSelectedCheck = it.getBoolean(BasePreviewFragment.IS_SELECTED_CHECK, true)
-                mIsExternalUsers = it.getBoolean(BasePreviewFragment.IS_EXTERNAL_USERS, false)
-                mCompressEnable = it.getBoolean(BasePreviewFragment.COMPRESS_ENABLE, false)
-                mEditEnable = it.getBoolean(BasePreviewFragment.EDIT_ENABLE, true)
+                mApplyEnable = it.getBoolean(APPLY_ENABLE, true)
+                mSelectedEnable = it.getBoolean(SELECTED_ENABLE, true)
+                mIsSelectedListener = it.getBoolean(IS_SELECTED_LISTENER, true)
+                mIsSelectedCheck = it.getBoolean(IS_SELECTED_CHECK, true)
+                mIsExternalUsers = it.getBoolean(IS_EXTERNAL_USERS, false)
+                mCompressEnable = it.getBoolean(COMPRESS_ENABLE, false)
+                mEditEnable = it.getBoolean(EDIT_ENABLE, true)
                 mIsSharedAnimation = it.getBoolean(IS_SHARED_ANIMATION, true)
                 mOriginalEnable =
-                    it.getBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+                    it.getBoolean(EXTRA_RESULT_ORIGINAL_ENABLE, false)
                 it.getParcelableArrayList<LocalMedia>(STATE_SELECTION)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
                     mMainModel.localMedias.addAll(localMedias)
