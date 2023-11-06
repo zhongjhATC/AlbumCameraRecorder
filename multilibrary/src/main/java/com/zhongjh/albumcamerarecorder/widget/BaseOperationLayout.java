@@ -406,6 +406,9 @@ public abstract class BaseOperationLayout extends FrameLayout {
         if (animatorSetTxtTip != null) {
             animatorSetTxtTip.cancel();
         }
+        if (viewHolder.btnClickOrLong != null) {
+            viewHolder.btnClickOrLong.onDestroy();
+        }
     }
 
     // region 对外提供的api

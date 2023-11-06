@@ -443,6 +443,13 @@ public class ClickOrLongButton extends View {
         touchTimeHandler = new TouchTimeHandler(Looper.getMainLooper(), updateUITask);
     }
 
+    /**
+     * 销毁事件
+     */
+    public void onDestroy() {
+        touchTimeHandler.clearMsg();
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(mBoundingBoxSize, mBoundingBoxSize);
