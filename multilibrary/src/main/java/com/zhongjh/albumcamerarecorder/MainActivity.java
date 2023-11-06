@@ -31,9 +31,11 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+import com.flyco.tablayout.CommonTabLayout;
+import com.flyco.tablayout.listener.CustomTabEntity;
+import com.flyco.tablayout.listener.OnTabSelectListener;
 import com.zhongjh.albumcamerarecorder.album.ui.album.AlbumFragment;
+import com.zhongjh.albumcamerarecorder.camera.entity.TabEntity;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment;
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -77,12 +79,9 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 底部控件
      */
-    private TabLayout mTabLayout;
-    private ViewPager2 mVpPager;
-    /**
-     * 底部控件用于关联viewPager2的
-     */
-    private TabLayoutMediator mLayoutMediator;
+    private CommonTabLayout mTabLayout;
+    private ViewPager2 mViewPager2;
+
     /**
      * 显示隐藏TabLayout的动画
      */
@@ -157,12 +156,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (mLayoutMediator != null) {
-            mLayoutMediator.detach();
-            mLayoutMediator = null;
-            mTabLayout = null;
-            mVpPager.setAdapter(null);
-        }
+        mTabLayout = null;
+        mViewPager2.setAdapter(null);
+        mViewPager2 = null;
         if (mSpec.getCameraSetting() != null) {
             mSpec.getCameraSetting().clearCameraFragment();
         }
@@ -260,26 +256,19 @@ public class MainActivity extends AppCompatActivity {
      */
     private void init(Bundle savedInstanceState) {
         if (!mIsInit) {
-            mVpPager = findViewById(R.id.viewPager);
+            mViewPager2 = findViewById(R.id.viewPager);
             mTabLayout = findViewById(R.id.tableLayout);
             initTabLayoutStyle();
             mTabLayout.setTag(R.id.z_tab_layout_translation_y, 0);
 
-            // 获取高度，用于tabLayout的一些显示隐藏动画参数
-            mTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    mTabLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    mTabLayoutHeight = mTabLayout.getMeasuredHeight();
-                }
-            });
+            initListener();
 
             adapterViewPager = new MyPagerAdapter(this, mSpec);
-            mVpPager.setAdapter(adapterViewPager);
-            mVpPager.setOffscreenPageLimit(3);
+            mViewPager2.setAdapter(adapterViewPager);
+            mViewPager2.setOffscreenPageLimit(3);
             if (savedInstanceState == null || !savedInstanceState.getBoolean(IS_SAVE_INSTANCE_STATE)) {
                 // 根据配置默认选第几个，如果是恢复界面的话，就不赋配置值
-                mVpPager.setCurrentItem(mDefaultPosition, false);
+                mViewPager2.setCurrentItem(mDefaultPosition, false);
             }
             // 判断只有一个的时候
             if (adapterViewPager.getItemCount() <= 1) {
@@ -287,14 +276,44 @@ public class MainActivity extends AppCompatActivity {
                 mTabLayout.setVisibility(View.GONE);
             } else {
                 mTabLayout.setVisibility(View.VISIBLE);
-                mLayoutMediator = new TabLayoutMediator(mTabLayout, mVpPager, false, true,
-                        (tab, position) -> tab.setText(adapterViewPager.mTitles.get(position)));
-                mLayoutMediator.attach();
                 // 禁滑viewPager
-//                mVpPager.setUserInputEnabled(false);
+                mViewPager2.setUserInputEnabled(false);
             }
+
             mIsInit = true;
         }
+    }
+
+    /**
+     * 初始化事件
+     */
+    private void initListener() {
+        // 获取高度，用于tabLayout的一些显示隐藏动画参数
+        mTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mTabLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mTabLayoutHeight = mTabLayout.getMeasuredHeight();
+            }
+        });
+        mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelect(int position) {
+                mViewPager2.setCurrentItem(position);
+            }
+
+            @Override
+            public void onTabReselect(int position) {
+            }
+        });
+
+        mViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                mTabLayout.setCurrentTab(position);
+                super.onPageSelected(position);
+            }
+        });
     }
 
     /**
@@ -313,8 +332,11 @@ public class MainActivity extends AppCompatActivity {
         if (tabLayoutBg != 0) {
             mTabLayout.setBackgroundColor(tabLayoutBg);
         }
-        if (tabLayoutUnselectedTextColor != 0 && tabLayoutSelectedTextColor != 0) {
-            mTabLayout.setTabTextColors(tabLayoutUnselectedTextColor, tabLayoutSelectedTextColor);
+        if (tabLayoutSelectedTextColor != 0) {
+            mTabLayout.setTextSelectColor(tabLayoutSelectedTextColor);
+        }
+        if (tabLayoutUnselectedTextColor != 0) {
+            mTabLayout.setTextUnselectColor(tabLayoutUnselectedTextColor);
         }
     }
 
@@ -500,7 +522,6 @@ public class MainActivity extends AppCompatActivity {
         mAnimationTabLayout.start();
     }
 
-
     public class MyPagerAdapter extends FragmentStateAdapter {
 
         /**
@@ -527,10 +548,14 @@ public class MainActivity extends AppCompatActivity {
                 defaultPositionType = CAMERA;
             }
 
+            ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>();
+
             // 根据相关配置做相应的初始化，相册生效
             if (SelectableUtils.albumValid()) {
                 numItems++;
-                mTitles.add(getString(R.string.z_multi_library_album));
+                String title = getString(R.string.z_multi_library_album);
+                mTitles.add(title);
+                mTabEntities.add(new TabEntity(title, R.drawable.ic_flash_on, R.drawable.ic_flash_on));
             }
             // 相机生效
             if (SelectableUtils.cameraValid()) {
@@ -538,7 +563,9 @@ public class MainActivity extends AppCompatActivity {
                     mDefaultPosition = numItems;
                 }
                 numItems++;
-                mTitles.add(getString(R.string.z_multi_library_take_photos));
+                String title = getString(R.string.z_multi_library_take_photos);
+                mTitles.add(title);
+                mTabEntities.add(new TabEntity(title, R.drawable.ic_flash_on, R.drawable.ic_flash_on));
             }
             // 录音生效
             if (SelectableUtils.recorderValid()) {
@@ -546,20 +573,29 @@ public class MainActivity extends AppCompatActivity {
                     mDefaultPosition = numItems;
                 }
                 numItems++;
-                mTitles.add(getString(R.string.z_multi_library_sound_recording));
+                String title = getString(R.string.z_multi_library_sound_recording);
+                mTitles.add(title);
+                mTabEntities.add(new TabEntity(title, R.drawable.ic_flash_on, R.drawable.ic_flash_on));
             }
-
+            mTabLayout.setTabData(mTabEntities);
         }
 
         @NonNull
         @Override
         public Fragment createFragment(int position) {
             if (mTitles.get(position).equals(getString(R.string.z_multi_library_album))) {
-                return SoundRecordingFragment.newInstance();
+                if (numItems <= 1) {
+                    return AlbumFragment.newInstance(0);
+                }
+                return AlbumFragment.newInstance(50);
             } else if (mTitles.get(position).equals(getString(R.string.z_multi_library_sound_recording))) {
                 return SoundRecordingFragment.newInstance();
             } else {
-                return SoundRecordingFragment.newInstance();
+                if (mSpec.getCameraSetting() != null && mSpec.getCameraSetting().getBaseCameraFragment() != null) {
+                    return mSpec.getCameraSetting().getBaseCameraFragment();
+                } else {
+                    return CameraFragment.newInstance();
+                }
             }
         }
 

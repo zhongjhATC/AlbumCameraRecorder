@@ -323,6 +323,8 @@ public class SoundRecordingFragment extends BaseFragment {
         if (mStopRecordingTask != null) {
             mStopRecordingTask.cancel();
         }
+        mViewHolder.pvLayout = null;
+        mViewHolder = null;
         super.onDestroy();
     }
 

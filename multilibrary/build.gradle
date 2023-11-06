@@ -70,6 +70,9 @@ dependencies {
     // 自制按钮进度 https://github.com/zhongjhATC/CircularProgressView
     api 'com.github.zhongjhATC:CircularProgressView:1.8'
 
+    // 放弃官方库TabLayout,使用该库,官方库在某些手机会造成内存泄漏 https://github.com/H07000223/FlycoTabLayout
+    implementation 'io.github.h07000223:flycoTabLayout:3.0.0'
+
     compileOnly project(':common')
     compileOnly project(':imageedit')
 }

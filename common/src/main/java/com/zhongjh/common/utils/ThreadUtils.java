@@ -1169,12 +1169,12 @@ public final class ThreadUtils {
 
         @Override
         public void onCancel() {
-            Log.e("ThreadUtils", "onCancel: " + Thread.currentThread());
+            Log.d("ThreadUtils", "onCancel: " + Thread.currentThread());
         }
 
         @Override
         public void onFail(Throwable t) {
-            Log.e("ThreadUtils", "onFail: ", t);
+            Log.d("ThreadUtils", "onFail: ", t);
         }
 
     }

@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.google.android.material.tabs.TabLayout
+    <com.flyco.tablayout.CommonTabLayout
         android:id="@+id/tableLayout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:background="?attr/bottomToolbar.bg"
-        android:elevation="1dp"
-        app:tabGravity="fill"
-        app:tabIndicatorHeight="1dp"
-        app:tabMaxWidth="0dp"
-        app:tabMode="fixed"
-        app:tabSelectedTextColor="?attr/colorPrimary"
-        app:tabTextColor="#666666"
-        tools:theme="@style/AppTheme.Blue"
-        tools:background="@color/blue_primary"
-        tools:ignore="SpeakableTextPresentCheck"
-        tools:tabSelectedTextColor="@color/white" />
+        app:tl_iconVisible="false"
+        app:tl_textSelectColor="?attr/colorPrimary"
+        app:tl_textUnselectColor="#666666"
+        app:tl_indicator_margin_left="5dp"
+        app:tl_indicator_margin_right="5dp"
+        app:tl_indicator_color="?attr/colorPrimary"
+        app:tl_underline_color="@color/white"
+        app:tl_underline_height="1dp"
+        app:tl_textsize="14sp" />
 
 </RelativeLayout>
 
