@@ -74,7 +74,7 @@ public class MediaLoader extends BaseMediaLoader {
                         // 需要查询的列
                         SdkVersionUtils.isQ() ? PROJECTION_29 : PROJECTION,
                         // 查询条件，包括group by
-                        getSelection(),
+                        "(media_type=? OR (media_type=? AND duration> 0 and duration <= 9223372036854775807)) AND _size> 0 and _size <= 9223372036854775807",
                         // 配合上面的参数使用，上面的参数使用占位符"?"，那么这个参的数据会替换掉占位符"?"
                         getSelectionArgs(),
                         // 排序
@@ -158,7 +158,7 @@ public class MediaLoader extends BaseMediaLoader {
             return getSelectionByImageCondition(fileSizeCondition);
         } else if (AlbumSpec.INSTANCE.onlyShowVideos()) {
             // 只查询视频
-            return getSelectionByVideoCondition(fileSizeCondition);
+            return getSelectionByVideoCondition(getDurationCondition(), fileSizeCondition);
         } else {
             // 查询所有
             String sql = getSelectionByAllCondition(getDurationCondition(), fileSizeCondition);
@@ -197,22 +197,24 @@ public class MediaLoader extends BaseMediaLoader {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return stringBuilder.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(fileSizeCondition).toString();
         } else {
-            return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(") AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_ID).toString();
+            return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?) AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_ID).toString();
         }
     }
 
     /**
      * 构造查询条件字符串 - 视频
      *
+     * @param durationCondition 视频的时长条件字符串
      * @param fileSizeCondition 多媒体最大值查询条件字符串
      * @return 条件字符串
      */
-    private static String getSelectionByVideoCondition(String fileSizeCondition) {
+    private static String getSelectionByVideoCondition(String durationCondition, String fileSizeCondition) {
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" AND ").append(durationCondition).append(") AND ");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return stringBuilder.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" AND ").append(fileSizeCondition).toString();
+            return stringBuilder.append(fileSizeCondition).toString();
         } else {
-            return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(") AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_ID).toString();
+            return stringBuilder.append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_ID).toString();
         }
     }
 
