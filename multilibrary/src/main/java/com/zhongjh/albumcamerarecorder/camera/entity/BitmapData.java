@@ -21,7 +21,8 @@ public class BitmapData {
     private int width;
     private int height;
 
-    public BitmapData(String path, Uri uri, int width, int height) {
+    public BitmapData(Long temporaryId, String path, Uri uri, int width, int height) {
+        this.temporaryId = temporaryId;
         this.path = path;
         this.uri = uri;
         this.width = width;

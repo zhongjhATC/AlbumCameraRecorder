@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraPicture;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
@@ -33,7 +33,6 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.MediaStoreCompat;
-import com.zhongjh.common.utils.StringUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
 
@@ -250,8 +249,7 @@ public class BaseCameraPicturePresenter
         // 初始化数据并且存储进file
         File file = pictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
         Uri uri = pictureMediaStoreCompat.getUri(file.getPath());
-        BitmapData bitmapData = new BitmapData(file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
-        bitmapData.setTemporaryId(System.currentTimeMillis());
+        BitmapData bitmapData = new BitmapData(System.currentTimeMillis(), file.getPath(), uri, bitmap.getWidth(), bitmap.getHeight());
         // 回收bitmap
         if (bitmap.isRecycled()) {
             // 回收并且置为null
@@ -314,9 +312,9 @@ public class BaseCameraPicturePresenter
         singlePhotoUri = uri;
 
         // 重置mCaptureBitmaps
+        BitmapData bitmapDataItem = new BitmapData(bitmapData.get(0).getTemporaryId(), photoFile.getPath(), uri, width, height);
         bitmapData.clear();
-        BitmapData bitmapData = new BitmapData(photoFile.getPath(), uri, width, height);
-        this.bitmapData.add(bitmapData);
+        this.bitmapData.add(bitmapDataItem);
 
         // 这样可以重置大小
         if (baseCameraFragment.getSinglePhotoView() != null) {
