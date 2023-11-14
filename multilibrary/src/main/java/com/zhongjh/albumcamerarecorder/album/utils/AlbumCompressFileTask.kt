@@ -109,9 +109,9 @@ class AlbumCompressFileTask(
     fun handleImage(path: String): File {
         val oldFile = File(path)
         // 根据类型压缩
-        val compressionFile: File = if (globalSpec.imageCompressionInterface != null) {
+        val compressionFile: File = if (globalSpec.onImageCompressionListener != null) {
             // 压缩图片
-            globalSpec.imageCompressionInterface!!.compressionFile(context, oldFile)
+            globalSpec.onImageCompressionListener!!.compressionFile(context, oldFile)
         } else {
             oldFile
         }
@@ -129,7 +129,7 @@ class AlbumCompressFileTask(
             item
         } else if (item.isGif()) {
             item
-        } else if (item.isImage() && globalSpec.imageCompressionInterface == null) {
+        } else if (item.isImage() && globalSpec.onImageCompressionListener == null) {
             item
         } else {
             null

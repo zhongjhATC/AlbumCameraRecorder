@@ -6,7 +6,8 @@ import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
-import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
+import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
+import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.entity.SaveStrategy
@@ -134,7 +135,13 @@ object GlobalSpec {
     /**
      * 压缩图片接口
      */
-    var imageCompressionInterface: ImageCompressionInterface? = null
+    var onImageCompressionListener: OnImageCompressionListener? = null
+
+    /**
+     * 日志接口
+     * 虽然功能都捕获了相关异常，但是一般开发都是需要记录为何报错，可以让下次修复
+     */
+    var onLogListener : OnLogListener? = null
 
     /**
      * 视频压缩功能
@@ -214,7 +221,8 @@ object GlobalSpec {
         cutscenesEnabled = true
         orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         imageEditEnabled = true
-        imageCompressionInterface = null
+        onImageCompressionListener = null
+        onLogListener = null
         requestCode = 0
     }
 }

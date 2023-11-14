@@ -3,7 +3,8 @@ package com.zhongjh.albumcamerarecorder.settings.api
 import android.app.Activity
 import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
-import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
+import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
+import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting
@@ -198,10 +199,19 @@ interface GlobalSettingApi {
     /**
      * 有关压缩操作的接口
      *
-     * @param listener 接口 [ImageCompressionInterface]
+     * @param listener 接口 [OnImageCompressionListener]
      * @return [GlobalSetting] for fluent API.
      */
-    fun setOnImageCompressionInterface(listener: ImageCompressionInterface): GlobalSetting
+    fun setOnImageCompressionListener(listener: OnImageCompressionListener): GlobalSetting
+
+    /**
+     * 日志接口
+     * 虽然功能都捕获了相关异常，但是一般开发都是需要记录为何报错，可以让下次修复
+     *
+     * @param listener 接口 [OnLogListener]
+     * @return [GlobalSetting] for fluent API.
+     */
+    fun setOnLogListener(listener: OnLogListener): GlobalSetting
 
     /**
      * 传递有效参数即可开启视频压缩

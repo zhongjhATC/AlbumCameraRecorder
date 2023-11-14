@@ -10,7 +10,8 @@ import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.model.SelectedData.*
-import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface
+import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
+import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
@@ -189,8 +190,13 @@ class GlobalSetting internal constructor(
         return this
     }
 
-    override fun setOnImageCompressionInterface(listener: ImageCompressionInterface): GlobalSetting {
-        mGlobalSpec.imageCompressionInterface = WeakReference(listener).get()
+    override fun setOnImageCompressionListener(listener: OnImageCompressionListener): GlobalSetting {
+        mGlobalSpec.onImageCompressionListener = WeakReference(listener).get()
+        return this
+    }
+
+    override fun setOnLogListener(listener: OnLogListener): GlobalSetting {
+        mGlobalSpec.onLogListener = WeakReference(listener).get()
         return this
     }
 

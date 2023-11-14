@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.ImageView.ScaleType
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -619,7 +618,7 @@ class PreviewFragment2 : BaseFragment() {
      */
     private fun setResultOkByIsCompress(apply: Boolean) {
         // 判断是否需要压缩
-        if (mGlobalSpec.imageCompressionInterface != null) {
+        if (mGlobalSpec.onImageCompressionListener != null) {
             if (apply) {
                 compressFile()
             } else {

@@ -3,7 +3,7 @@ package com.zhongjh.albumcamerarecorder.listener
 import android.view.KeyEvent
 
 /**
- * 处理回退的接口
+ * 处理Fragment的接口
  *
  * @author zhongjh
  */

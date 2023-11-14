@@ -29,13 +29,11 @@ import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
-import com.zhongjh.cameraapp.configuration.ImageCompressionLuBan;
+import com.zhongjh.cameraapp.configuration.OnImageCompressionLuBan;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
@@ -222,7 +220,7 @@ public class MainActivity extends BaseActivity {
 
         // 是否压缩图片
         if (mBinding.cbIsCompressImage.isChecked()) {
-            mGlobalSetting.setOnImageCompressionInterface(new ImageCompressionLuBan());
+            mGlobalSetting.setOnImageCompressionListener(new OnImageCompressionLuBan());
         }
 
         // 是否压缩视频

@@ -2,7 +2,7 @@ package com.zhongjh.cameraapp.configuration;
 
 import android.content.Context;
 
-import com.zhongjh.albumcamerarecorder.listener.ImageCompressionInterface;
+import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +17,7 @@ import id.zelory.compressor.Compressor;
  * @author zhongjh
  * @date 2021/9/26
  */
-public class ImageCompressionLuBan implements ImageCompressionInterface {
+public class OnImageCompressionLuBan implements OnImageCompressionListener {
 
     @Override
     public File compressionFile(@NotNull Context context, @NotNull File file) throws IOException {

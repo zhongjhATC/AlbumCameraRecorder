@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -122,6 +123,7 @@ public class MediaLoader extends BaseMediaLoader {
             @Override
             public void onFail(Throwable t) {
                 super.onFail(t);
+
             }
         });
     }
@@ -189,7 +191,7 @@ public class MediaLoader extends BaseMediaLoader {
     }
 
     /**
-     * 构造查询条件字符串 - 图片
+     * 构造查询条件字符串 - 图片 media_type=? AND _size> 0 and _size <= 9223372036854775807
      *
      * @param fileSizeCondition 多媒体最大值查询条件字符串
      * @return 条件字符串
@@ -197,7 +199,7 @@ public class MediaLoader extends BaseMediaLoader {
     private static String getSelectionByImageCondition(String fileSizeCondition) {
         StringBuilder stringBuilder = new StringBuilder();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return stringBuilder.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(fileSizeCondition).toString();
+            return stringBuilder.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=? AND ").append(fileSizeCondition).toString();
         } else {
             return stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?) AND ").append(fileSizeCondition).append(")").append(GROUP_BY_BUCKET_ID).toString();
         }
@@ -318,7 +320,8 @@ public class MediaLoader extends BaseMediaLoader {
                 Album2 album = new Album2();
                 album.setId(bucketId);
                 album.setFirstImagePath(firstImagePath);
-                album.setName(bucketDisplayName);
+                Log.d(TAG, "name " + bucketDisplayName + "索引：" + data.getColumnIndexOrThrow(COLUMN_BUCKET_DISPLAY_NAME));
+                album.setName(TextUtils.isEmpty(bucketDisplayName) ? "空的文件名" : bucketDisplayName);
                 album.setCount(Integer.parseInt(String.valueOf(size)));
                 albums.add(album);
                 hashSet.add(bucketId);

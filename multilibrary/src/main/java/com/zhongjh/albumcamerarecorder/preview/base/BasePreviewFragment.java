@@ -598,7 +598,7 @@ public class BasePreviewFragment extends Fragment implements View.OnClickListene
      */
     private void setResultOkByIsCompress(boolean apply) {
         // 判断是否需要压缩
-        if (mGlobalSpec.getImageCompressionInterface() != null) {
+        if (mGlobalSpec.getOnImageCompressionListener() != null) {
             if (apply) {
                 compressFile();
             } else {

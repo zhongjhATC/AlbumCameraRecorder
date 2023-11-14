@@ -10,7 +10,7 @@ import java.io.IOException
  * @author zhongjh
  * @date 2021/9/26
  */
-interface ImageCompressionInterface {
+interface OnImageCompressionListener {
     /**
      * 压缩图片
      *
