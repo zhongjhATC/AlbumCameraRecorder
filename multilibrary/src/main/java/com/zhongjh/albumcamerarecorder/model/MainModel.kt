@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
+import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
 import com.zhongjh.common.entity.LocalMedia
@@ -31,6 +32,9 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 数据库操作文件类
      */
     private var mediaPageLoader: MediaPageLoader
+
+
+    private val _onFail = MutableLiveData<MediaData>()
 
     /**
      * 文件夹数据集
@@ -102,7 +106,16 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 获取所有专辑
      */
     private fun loadAllAlbum() {
-        mediaLoader.loadAllMedia { data: List<Album2> -> this.albums.postValue(data) }
+        mediaLoader.loadAllMedia(object : OnLoadAllAlbumListener {
+            override fun onLoadAllAlbumComplete(data: MutableList<Album2>?) {
+                this@MainModel.albums.postValue(data)
+            }
+
+            override fun onFail(t: Throwable?) {
+
+            }
+
+        })
     }
 
     /**

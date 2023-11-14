@@ -123,7 +123,6 @@ public class MediaLoader extends BaseMediaLoader {
             @Override
             public void onFail(Throwable t) {
                 super.onFail(t);
-
             }
         });
     }

@@ -19,4 +19,10 @@ public interface OnLoadAllAlbumListener {
      */
     void onLoadAllAlbumComplete(List<Album2> data);
 
+    /**
+     * 异常信息
+     * @param t 异常
+     */
+    void onFail(Throwable t);
+
 }
