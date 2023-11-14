@@ -47,7 +47,7 @@ public class MediaLoader extends BaseMediaLoader {
 
     private final String TAG = "MediaLoader";
 
-    private static final String ORDER_BY = MediaStore.Files.FileColumns._ID + " DESC";
+    private static final String ORDER_BY = MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC";
     private static final String GROUP_BY_BUCKET_ID = " GROUP BY (bucket_id";
     private static final String COLUMN_COUNT = "count";
     private static final String COLUMN_BUCKET_DISPLAY_NAME = "bucket_display_name";
@@ -74,7 +74,7 @@ public class MediaLoader extends BaseMediaLoader {
                         // 需要查询的列
                         SdkVersionUtils.isQ() ? PROJECTION_29 : PROJECTION,
                         // 查询条件，包括group by
-                        "(media_type=? OR (media_type=? AND duration> 0 and duration <= 9223372036854775807)) AND _size> 0 and _size <= 9223372036854775807",
+                        getSelection(),
                         // 配合上面的参数使用，上面的参数使用占位符"?"，那么这个参的数据会替换掉占位符"?"
                         getSelectionArgs(),
                         // 排序
@@ -170,6 +170,8 @@ public class MediaLoader extends BaseMediaLoader {
 
     /**
      * 构造查询条件字符串 - 所有
+     * 查询条件： 图片类型 或 视频类型+帧 和 文件大小
+     * "((media_type=? OR (media_type=? AND duration> 0 and duration <= 9223372036854775807))) AND _size> 0 and _size <= 9223372036854775807"
      *
      * @param durationCondition 视频的时长条件字符串
      * @param fileSizeCondition 多媒体最大值查询条件字符串
@@ -177,8 +179,8 @@ public class MediaLoader extends BaseMediaLoader {
      */
     private static String getSelectionByAllCondition(String durationCondition, String fileSizeCondition) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("((").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" OR ")
-                .append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?) AND ").append(durationCondition).append(") AND ").append(fileSizeCondition);
+        stringBuilder.append("((").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=?").append(" OR (")
+                .append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=? AND ").append(durationCondition).append("))) AND ").append(fileSizeCondition);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return stringBuilder.toString();
         } else {

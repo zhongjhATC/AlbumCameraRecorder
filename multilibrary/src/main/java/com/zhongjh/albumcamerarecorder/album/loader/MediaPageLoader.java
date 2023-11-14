@@ -202,6 +202,8 @@ public class MediaPageLoader extends BaseMediaLoader {
 
     /**
      * 查询所有
+     * 查询条件： 图片类型 或 视频类型+帧 和 文件夹id 和 文件大小
+     * ((media_type=? OR media_type=? AND duration> 0 and duration <= 9223372036854775807))) AND bucket_id=? AND _size> 0 and _size <= 9223372036854775807
      *
      * @param bucketId          专辑ID
      * @param durationCondition 视频文件的持续时间
@@ -210,8 +212,8 @@ public class MediaPageLoader extends BaseMediaLoader {
      */
     private static String getPageSelectionArgsForAllMediaCondition(long bucketId, String durationCondition, String sizeCondition) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("(").append(MediaStore.Files.FileColumns.MEDIA_TYPE)
-                .append("=?").append(" OR ").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=? AND ").append(durationCondition).append(") AND ");
+        stringBuilder.append("((").append(MediaStore.Files.FileColumns.MEDIA_TYPE)
+                .append("=?").append(" OR (").append(MediaStore.Files.FileColumns.MEDIA_TYPE).append("=? AND ").append(durationCondition).append("))) AND ");
         if (bucketId == -1) {
             return stringBuilder.append(sizeCondition).toString();
         } else {
