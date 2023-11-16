@@ -3,15 +3,19 @@ package com.zhongjh.albumcamerarecorder.album.ui.mediaselection;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.listener.OnLogListener;
 import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.albumcamerarecorder.model.MainModel;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumAdapter;
@@ -100,6 +104,13 @@ public class MediaViewUtil implements
                 mRecyclerView.scrollToPosition(0);
             } else {
                 mAdapter.addData(mediaData.getData());
+            }
+        });
+
+        // 输出失败信息
+        mMainModel.getOnFail().observe(mFragment.getViewLifecycleOwner(), throwable -> {
+            if (GlobalSpec.INSTANCE.getOnLogListener() != null) {
+                GlobalSpec.INSTANCE.getOnLogListener().logError(throwable);
             }
         });
     }

@@ -33,8 +33,11 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      */
     private var mediaPageLoader: MediaPageLoader
 
-
-    private val _onFail = MutableLiveData<MediaData>()
+    /**
+     * 输送失败信息
+     */
+    private val _onFail = MutableLiveData<Throwable>()
+    val onFail: LiveData<Throwable> get() = _onFail
 
     /**
      * 文件夹数据集
@@ -111,8 +114,8 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                 this@MainModel.albums.postValue(data)
             }
 
-            override fun onFail(t: Throwable?) {
-
+            override fun onFail(t: Throwable) {
+                this@MainModel._onFail.postValue(t)
             }
 
         })
