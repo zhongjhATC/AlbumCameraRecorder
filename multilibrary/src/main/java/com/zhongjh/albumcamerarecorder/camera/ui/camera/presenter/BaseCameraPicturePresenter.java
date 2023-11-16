@@ -244,8 +244,7 @@ public class BaseCameraPicturePresenter
     public void addCaptureData(Bitmap bitmap) {
         // 初始化数据并且存储进file
         File file = pictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
-        BitmapData bitmapData = new BitmapData(file.getPath(), file.getPath(), bitmap.getWidth(), bitmap.getHeight());
-        bitmapData.setTemporaryId(System.currentTimeMillis());
+        BitmapData bitmapData = new BitmapData(System.currentTimeMillis(), file.getPath(), file.getPath(), bitmap.getWidth(), bitmap.getHeight());
         // 回收bitmap
         if (bitmap.isRecycled()) {
             // 回收并且置为null
@@ -307,8 +306,8 @@ public class BaseCameraPicturePresenter
         singlePhotoPath = photoFile.getPath();
 
         // 重置mCaptureBitmaps
+        BitmapData bitmapData = new BitmapData(bitmapData.get(0).getTemporaryId(), photoFile.getPath(), photoFile.getPath(), width, height);
         bitmapData.clear();
-        BitmapData bitmapData = new BitmapData(photoFile.getPath(), photoFile.getPath(), width, height);
         this.bitmapData.add(bitmapData);
 
         // 这样可以重置大小

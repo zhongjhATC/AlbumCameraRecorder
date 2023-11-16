@@ -164,7 +164,7 @@ object GlobalSpec {
 
     /**
      * 传递子模块的类型，如果子模块有类型限制，则优先子模块的限制，如果没有，才轮到公共模块的限制
-     * @return 返回 mime 的类型，MimeType.allOf()
+     * @return 根据指定功能模块返回 mime 的类型，MimeType.allOf()
      */
     fun getMimeTypeSet(@ModuleTypes moduleTypes: Int): Set<MimeType> {
         // 优先取各自的类型，如果没设置则取公共的
@@ -179,6 +179,31 @@ object GlobalSpec {
             }
         }
         return mimeTypeSet
+    }
+
+    /**
+     * 用于权限使用
+     * 例如只要相册功能支持视频，而拍照功能支持图片，那么就返回MimeType.allOf()
+     *
+     * @return 根据所有功能模块返回 mime 的类型 MimeType.allOf()
+     */
+    fun getMimeTypeSet(): Set<MimeType> {
+        // 优先取各自的类型，如果没设置则取公共的
+        val albumMimeType = AlbumSpec.mimeTypeSet ?: this.mimeTypeSet
+        val cameraMimeType = CameraSpec.mimeTypeSet ?: this.mimeTypeSet
+        return if (albumMimeType.containsAll(MimeType.ofImage()) && cameraMimeType.containsAll(
+                MimeType.ofImage()
+            )
+        ) {
+            MimeType.ofImage()
+        } else if (albumMimeType.containsAll(MimeType.ofVideo()) && cameraMimeType.containsAll(
+                MimeType.ofVideo()
+            )
+        ) {
+            MimeType.ofVideo()
+        } else {
+            MimeType.ofAll()
+        }
     }
 
     fun setMimeTypeSet(mimeTypeSet: Set<MimeType>) {

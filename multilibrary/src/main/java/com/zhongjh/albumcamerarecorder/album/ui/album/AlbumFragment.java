@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.album;
+package com.zhongjh.albumcamerarecorder.album.ui;
 
 
 import static android.app.Activity.RESULT_OK;
@@ -93,7 +93,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     /**
      * 公共配置
      */
-    private GlobalSpec mGlobalSpec;
+    private final GlobalSpec mGlobalSpec = GlobalSpec.INSTANCE;
     /**
      * 图片配置
      */
@@ -103,7 +103,10 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private MediaStoreCompat mVideoMediaStoreCompat;
 
-    private AlbumSpec mAlbumSpec;
+    /**
+     * 相册配置
+     */
+    private final AlbumSpec mAlbumSpec = AlbumSpec.INSTANCE;
 
     /**
      * 专辑下拉框控件
@@ -191,10 +194,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * 初始化配置
      */
     private void initConfig() {
-        // 初始化设置
-        mAlbumSpec = AlbumSpec.INSTANCE;
-        mGlobalSpec = GlobalSpec.INSTANCE;
-
         // 设置图片路径
         if (mGlobalSpec.getPictureStrategy() != null) {
             // 如果设置了视频的文件夹路径，就使用它的
@@ -431,7 +430,9 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
-        mMediaViewUtil.onDestroyView();
+        if (mMediaViewUtil != null) {
+            mMediaViewUtil.onDestroyView();
+        }
         super.onDestroy();
     }
 

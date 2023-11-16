@@ -596,8 +596,7 @@ public abstract class BaseCameraFragment
                     // 重新赋值
                     ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
                     for (LocalMedia item : selected) {
-                        BitmapData bitmapData = new BitmapData(item.getPath(), item.getAbsolutePath(), item.getWidth(), item.getHeight());
-                        bitmapData.setTemporaryId(item.getId());
+                        BitmapData bitmapData = new BitmapData(item.getId(), item.getPath(), item.getAbsolutePath(), item.getWidth(), item.getHeight());
                         bitmapDatas.add(bitmapData);
                     }
                     // 全部刷新
@@ -625,14 +624,18 @@ public abstract class BaseCameraFragment
      * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
      */
     protected void onDestroy(boolean isCommit) {
-        LogUtil.i("CameraLayout destroy");
-        getCameraPicturePresenter().onDestroy(isCommit);
-        getCameraVideoPresenter().onDestroy(isCommit);
-        getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-        getCameraView().destroy();
-        // 记忆模式
-        flashSaveCache();
-        cameraSpec.setOnCaptureListener(null);
+        try {
+            LogUtil.i("CameraLayout destroy");
+            getCameraPicturePresenter().onDestroy(isCommit);
+            getCameraVideoPresenter().onDestroy(isCommit);
+            getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+            getCameraView().destroy();
+            // 记忆模式
+            flashSaveCache();
+            cameraSpec.setOnCaptureListener(null);
+        } catch (NullPointerException ignored) {
+
+        }
     }
 
     /**
