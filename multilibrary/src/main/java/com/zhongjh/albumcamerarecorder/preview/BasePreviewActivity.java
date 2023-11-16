@@ -702,8 +702,10 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onFail(Throwable t) {
                 super.onFail(t);
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "getCompressFileTask onFail " + t.getMessage());
+                if (t != null && !TextUtils.isEmpty(t.getMessage())) {
+                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "getCompressFileTask onFail " + t.getMessage());
+                }
             }
         };
         return mCompressFileTask;

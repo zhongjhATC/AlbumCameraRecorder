@@ -202,7 +202,7 @@ public class BaseCameraPicturePresenter
                 FileUtil.deleteFile(photoFile);
             }
             // 删除多个图片
-            if (photoAdapter.getListData() != null) {
+            if (photoAdapter != null && photoAdapter.getListData() != null) {
                 for (BitmapData bitmapData : photoAdapter.getListData()) {
                     FileUtil.deleteFile(bitmapData.getPath());
                 }

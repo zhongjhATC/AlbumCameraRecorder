@@ -34,8 +34,8 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
 
     public BaseCameraVideoPresenter(
             BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> baseCameraFragment) {
+                    ? extends BaseCameraPicturePresenter,
+                    ? extends BaseCameraVideoPresenter> baseCameraFragment) {
         this.baseCameraFragment = baseCameraFragment;
     }
 
@@ -184,7 +184,7 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
                 FileUtil.deleteFile(item);
             }
         }
-        if (baseCameraFragment.getCameraSpec().isMergeEnable()) {
+        if (baseCameraFragment.getCameraSpec() != null && baseCameraFragment.getCameraSpec().isMergeEnable()) {
             if (baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
                 baseCameraFragment.getCameraSpec().getVideoMergeCoordinator().onMergeDestroy(this.getClass());
                 baseCameraFragment.getCameraSpec().setVideoMergeCoordinator(null);

@@ -622,14 +622,18 @@ public abstract class BaseCameraFragment
      * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
      */
     protected void onDestroy(boolean isCommit) {
-        LogUtil.i("CameraLayout destroy");
-        getCameraPicturePresenter().onDestroy(isCommit);
-        getCameraVideoPresenter().onDestroy(isCommit);
-        getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-        getCameraView().destroy();
-        // 记忆模式
-        flashSaveCache();
-        cameraSpec.setOnCaptureListener(null);
+        try {
+            LogUtil.i("CameraLayout destroy");
+            getCameraPicturePresenter().onDestroy(isCommit);
+            getCameraVideoPresenter().onDestroy(isCommit);
+            getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+            getCameraView().destroy();
+            // 记忆模式
+            flashSaveCache();
+            cameraSpec.setOnCaptureListener(null);
+        } catch (NullPointerException ignored) {
+
+        }
     }
 
     /**

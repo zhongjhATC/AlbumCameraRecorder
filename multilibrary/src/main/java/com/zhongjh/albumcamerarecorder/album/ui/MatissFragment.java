@@ -404,7 +404,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
         if (mCompressFileTask != null) {
             ThreadUtils.cancel(mCompressFileTask);
         }
-        mMediaViewUtil.onDestroyView();
+        if (mMediaViewUtil != null) {
+            mMediaViewUtil.onDestroyView();
+        }
         super.onDestroy();
     }
 
