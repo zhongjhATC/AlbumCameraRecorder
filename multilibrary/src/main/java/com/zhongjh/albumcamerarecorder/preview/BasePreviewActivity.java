@@ -649,6 +649,15 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             public void onSuccess(Void result) {
                 setResultOk(true);
             }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                if (t != null && !TextUtils.isEmpty(t.getMessage())) {
+                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "getMoveFileTask onFail " + t.getMessage());
+                }
+            }
         };
         return mMoveFileTask;
     }
