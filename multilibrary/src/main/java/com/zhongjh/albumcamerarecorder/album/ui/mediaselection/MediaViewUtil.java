@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.listener.OnRecyclerViewScrollStateListener;
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener;
 import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
@@ -94,6 +95,19 @@ public class MediaViewUtil implements
 
         // 加载更多事件
         mRecyclerView.setOnRecyclerViewLoadMoreListener(() -> mMainModel.addAllPageMediaData(mAlbum.getId(), mAlbumSpec.getPageSize()));
+
+        // 滑动事件
+        mRecyclerView.setOnRecyclerViewScrollStateListener(new OnRecyclerViewScrollStateListener() {
+            @Override
+            public void onScrollFast() {
+                GlobalSpec.INSTANCE.getImageEngine().pauseRequests(mActivity.getApplicationContext());
+            }
+
+            @Override
+            public void onScrollSlow() {
+                GlobalSpec.INSTANCE.getImageEngine().resumeRequests(mActivity.getApplicationContext());
+            }
+        });
 
         // 监听到新的相册数据
         mMainModel.getLocalMediaPages().observe(mFragment.getViewLifecycleOwner(), mediaData -> {

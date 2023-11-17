@@ -71,4 +71,10 @@ class PicassoEngine : ImageEngine {
     override fun supportAnimatedGif(): Boolean {
         return false
     }
+
+    override fun pauseRequests(context: Context) {
+    }
+
+    override fun resumeRequests(context: Context) {
+    }
 }

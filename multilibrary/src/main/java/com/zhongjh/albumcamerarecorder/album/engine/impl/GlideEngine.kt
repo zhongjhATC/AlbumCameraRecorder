@@ -94,4 +94,10 @@ class GlideEngine : ImageEngine {
     override fun supportAnimatedGif(): Boolean {
         return true
     }
+
+    override fun pauseRequests(context: Context) {
+    }
+
+    override fun resumeRequests(context: Context) {
+    }
 }

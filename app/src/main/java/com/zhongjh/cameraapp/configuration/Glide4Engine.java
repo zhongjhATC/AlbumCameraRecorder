@@ -27,6 +27,7 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine;
 import com.zhongjh.cameraapp.R;
+import com.zhongjh.common.utils.ActivityUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -103,4 +104,19 @@ public class Glide4Engine implements ImageEngine {
     }
 
 
+    @Override
+    public void pauseRequests(@NonNull Context context) {
+        if (!ActivityUtils.INSTANCE.assertValidRequest(context)) {
+            return;
+        }
+        Glide.with(context).pauseRequests();
+    }
+
+    @Override
+    public void resumeRequests(@NonNull Context context) {
+        if (!ActivityUtils.INSTANCE.assertValidRequest(context)) {
+            return;
+        }
+        Glide.with(context).resumeRequests();
+    }
 }
