@@ -71,7 +71,7 @@ public class BaseCameraPicturePresenter
     /**
      * 图片,单图或者多图都会加入该列表
      */
-    List<BitmapData> bitmapData = new ArrayList<>();
+    List<BitmapData> bitmapDatas = new ArrayList<>();
     /**
      * 照片File,用于后面能随时删除
      */
@@ -132,7 +132,7 @@ public class BaseCameraPicturePresenter
     @Override
     public void initMultiplePhotoAdapter() {
         // 初始化多图适配器，先判断是不是多图配置
-        photoAdapter = new PhotoAdapter(baseCameraFragment.getMainActivity(), baseCameraFragment.getGlobalSpec(), bitmapData, this);
+        photoAdapter = new PhotoAdapter(baseCameraFragment.getMainActivity(), baseCameraFragment.getGlobalSpec(), bitmapDatas, this);
         if (baseCameraFragment.getRecyclerViewPhoto() != null) {
             if (SelectableUtils.getImageMaxCount() > 1) {
                 baseCameraFragment.getRecyclerViewPhoto().setLayoutManager(new LinearLayoutManager(baseCameraFragment.getMyContext(), RecyclerView.HORIZONTAL, false));
@@ -255,25 +255,25 @@ public class BaseCameraPicturePresenter
         // 判断是否多个图片
         if (SelectableUtils.getImageMaxCount() > 1) {
             // 添加入数据源
-            this.bitmapData.add(bitmapData);
+            this.bitmapDatas.add(bitmapData);
             // 更新最后一个添加
             photoAdapter.notifyItemInserted(photoAdapter.getItemCount() - 1);
             photoAdapter.notifyItemRangeChanged(photoAdapter.getItemCount() - 1, photoAdapter.getItemCount());
             baseCameraFragment.showMultiplePicture();
         } else {
-            this.bitmapData.add(bitmapData);
+            this.bitmapDatas.add(bitmapData);
             photoFile = file;
             baseCameraFragment.showSinglePicture(bitmapData, file, file.getPath());
         }
 
-        if (this.bitmapData.size() > 0) {
+        if (this.bitmapDatas.size() > 0) {
             // 母窗体禁止滑动
             baseCameraFragment.getMainActivity().showHideTableLayout(false);
         }
 
         // 回调接口：添加图片后剩下的相关数据
         if (baseCameraFragment.getCameraSpec().getOnCaptureListener() != null) {
-            baseCameraFragment.getCameraSpec().getOnCaptureListener().add(this.bitmapData, this.bitmapData.size() - 1);
+            baseCameraFragment.getCameraSpec().getOnCaptureListener().add(this.bitmapDatas, this.bitmapDatas.size() - 1);
         }
     }
 
@@ -282,8 +282,8 @@ public class BaseCameraPicturePresenter
      */
     @Override
     public void refreshMultiPhoto(ArrayList<BitmapData> bitmapData) {
-        this.bitmapData = bitmapData;
-        photoAdapter.setListData(this.bitmapData);
+        this.bitmapDatas = bitmapData;
+        photoAdapter.setListData(this.bitmapDatas);
     }
 
     /**
@@ -306,9 +306,9 @@ public class BaseCameraPicturePresenter
         singlePhotoPath = photoFile.getPath();
 
         // 重置mCaptureBitmaps
-        BitmapData bitmapData = new BitmapData(bitmapData.get(0).getTemporaryId(), photoFile.getPath(), photoFile.getPath(), width, height);
-        bitmapData.clear();
-        this.bitmapData.add(bitmapData);
+        BitmapData bitmapData = new BitmapData(bitmapDatas.get(0).getTemporaryId(), photoFile.getPath(), photoFile.getPath(), width, height);
+        bitmapDatas.clear();
+        this.bitmapDatas.add(bitmapData);
 
         // 这样可以重置大小
         if (baseCameraFragment.getSinglePhotoView() != null) {
@@ -405,7 +405,7 @@ public class BaseCameraPicturePresenter
      */
     @Override
     public void clearBitmapDatas() {
-        bitmapData.clear();
+        bitmapDatas.clear();
     }
 
     /**
@@ -440,15 +440,15 @@ public class BaseCameraPicturePresenter
         FileUtil.deleteFile(bitmapData.getPath());
 
         // 判断如果删除光图片的时候，母窗体启动滑动
-        if (this.bitmapData.size() <= 0) {
+        if (this.bitmapDatas.size() <= 0) {
             baseCameraFragment.getMainActivity().showHideTableLayout(true);
         }
         if (baseCameraFragment.getCameraSpec().getOnCaptureListener() != null) {
-            baseCameraFragment.getCameraSpec().getOnCaptureListener().remove(this.bitmapData, position);
+            baseCameraFragment.getCameraSpec().getOnCaptureListener().remove(this.bitmapDatas, position);
         }
 
         // 当列表全部删掉隐藏列表框的UI
-        if (this.bitmapData.size() <= 0) {
+        if (this.bitmapDatas.size() <= 0) {
             baseCameraFragment.hideViewByMultipleZero();
         }
     }

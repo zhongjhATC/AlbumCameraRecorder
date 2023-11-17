@@ -19,6 +19,7 @@ import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
+import com.zhongjh.albumcamerarecorder.listener.OnLogListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -222,6 +223,15 @@ public class MainActivity extends BaseActivity {
         if (mBinding.cbIsCompressImage.isChecked()) {
             mGlobalSetting.setOnImageCompressionListener(new OnImageCompressionLuBan());
         }
+
+        // 用于记录日志，一些压缩文件等功能会导致日志错误
+        mGlobalSetting.setOnLogListener(throwable -> {
+            // 打印堆栈日志
+            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            for (StackTraceElement stackTraceElement : stackTraceElements) {
+                Log.e(TAG, stackTraceElement.toString());
+            }
+        });
 
         // 是否压缩视频
         if (mBinding.cbIsCompressVideo.isChecked()) {

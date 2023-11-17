@@ -100,4 +100,18 @@ interface ImageEngine {
      * @return true支持动画gif，false不支持动画gif。
      */
     fun supportAnimatedGif(): Boolean
+
+    /**
+     * When the recyclerview slides quickly, the callback can be used to pause the loading of resources
+     *
+     * @param context
+     */
+    fun pauseRequests(context: Context)
+
+    /**
+     * When the recyclerview is slow or stops sliding, the callback can do some operations to restore resource loading
+     *
+     * @param context
+     */
+    fun resumeRequests(context: Context)
 }
