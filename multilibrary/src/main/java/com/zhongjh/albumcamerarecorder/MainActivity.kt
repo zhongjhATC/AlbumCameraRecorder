@@ -29,7 +29,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.flyco.tablayout.listener.CustomTabEntity
 import com.flyco.tablayout.listener.OnTabSelectListener
-import com.zhongjh.albumcamerarecorder.album.ui.AlbumFragment
+import com.zhongjh.albumcamerarecorder.album.ui.album.AlbumFragment
 import com.zhongjh.albumcamerarecorder.camera.entity.TabEntity
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment
@@ -235,7 +235,7 @@ open class MainActivity : AppCompatActivity() {
     private fun init(savedInstanceState: Bundle?) {
         if (!mIsInit) {
             initTabLayoutStyle()
-            mActivityMainZjhBinding.tableLayout.setTag(R.id.z_tab_layout_translation_y, 0)
+            mActivityMainZjhBinding.tableLayout.setTag(R.id.z_tab_layout_translation_y, 0F)
             initListener()
             adapterViewPager = MyPagerAdapter(this, mSpec)
             mActivityMainZjhBinding.viewPager.adapter = adapterViewPager

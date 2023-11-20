@@ -460,6 +460,7 @@ class PreviewFragment2 : BaseFragment() {
             override fun onBeginBackMinAnim() {
                 // 开始 退出共享动画
                 this@PreviewFragment2.onSharedBeginBackMinAnim()
+
             }
 
             override fun onBeginBackMinMagicalFinish(isResetSize: Boolean) {

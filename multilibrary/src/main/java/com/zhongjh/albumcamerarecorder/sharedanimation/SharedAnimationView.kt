@@ -4,15 +4,14 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
-import android.os.Build
 import android.transition.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
-import androidx.annotation.RequiresApi
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
 
@@ -40,7 +39,7 @@ class SharedAnimationView @JvmOverloads constructor(
     /**
      * 动画的时长
      */
-    private val animationDuration: Long = 350
+    private val animationDuration: Long = 250
     private var mOriginLeft = 0
     private var mOriginTop = 0
     private var mOriginHeight = 0
@@ -382,9 +381,11 @@ class SharedAnimationView @JvmOverloads constructor(
      */
     private fun backToMinWithTransition() {
         contentLayout.post {
+            // 添加过渡动画，让系统Api实现动画
             TransitionManager.beginDelayedTransition(
                 contentLayout.parent as ViewGroup,
                 TransitionSet()
+                    .setInterpolator(DecelerateInterpolator())
                     .setDuration(animationDuration)
                     .addTransition(ChangeBounds())
                     .addTransition(ChangeTransform())
@@ -405,6 +406,9 @@ class SharedAnimationView @JvmOverloads constructor(
         onSharedAnimationViewListener?.onBeginBackMinMagicalFinish(true)
     }
 
+    /**
+     * 透明形式动画
+     */
     private fun backToMinWithoutView() {
         contentLayout.animate().alpha(0f).setDuration(animationDuration)
             .setListener(object : AnimatorListenerAdapter() {

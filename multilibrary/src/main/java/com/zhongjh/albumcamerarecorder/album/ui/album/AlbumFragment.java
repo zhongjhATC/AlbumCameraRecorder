@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui;
+package com.zhongjh.albumcamerarecorder.album.ui.album;
 
 
 import static android.app.Activity.RESULT_OK;
