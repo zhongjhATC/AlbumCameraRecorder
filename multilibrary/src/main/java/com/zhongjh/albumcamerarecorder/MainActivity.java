@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        mTabLayout = null;
         if (mViewPager2 != null) {
             mViewPager2.setAdapter(null);
             mViewPager2 = null;
