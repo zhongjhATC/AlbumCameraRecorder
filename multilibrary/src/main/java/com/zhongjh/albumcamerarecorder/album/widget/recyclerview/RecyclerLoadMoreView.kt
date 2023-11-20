@@ -155,4 +155,19 @@ class RecyclerLoadMoreView : RecyclerView {
         }
     }
 
+    override fun onScrollStateChanged(state: Int) {
+        super.onScrollStateChanged(state)
+        if (state == SCROLL_STATE_IDLE || state == SCROLL_STATE_DRAGGING) {
+            setLayoutManagerPosition(layoutManager)
+        }
+        if (onRecyclerViewScrollListener != null) {
+            onRecyclerViewScrollListener?.onScrollStateChanged(state)
+        }
+        if (state == SCROLL_STATE_IDLE) {
+            if (onRecyclerViewScrollStateListener != null) {
+                onRecyclerViewScrollStateListener?.onScrollSlow()
+            }
+        }
+    }
+
 }

@@ -18,6 +18,7 @@ package com.zhongjh.cameraapp.configuration;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -110,6 +111,7 @@ public class Glide4Engine implements ImageEngine {
             return;
         }
         Glide.with(context).pauseRequests();
+        Log.d("Glide4Engine", "pauseRequests");
     }
 
     @Override
@@ -118,5 +120,6 @@ public class Glide4Engine implements ImageEngine {
             return;
         }
         Glide.with(context).resumeRequests();
+        Log.d("Glide4Engine", "resumeRequests");
     }
 }

@@ -7,6 +7,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
+import com.zhongjh.common.utils.ActivityUtils.assertValidRequest
 
 /**
  * [ImageEngine] implementation using Glide.
@@ -96,8 +97,16 @@ class GlideEngine : ImageEngine {
     }
 
     override fun pauseRequests(context: Context) {
+        if (!assertValidRequest(context)) {
+            return
+        }
+        Glide.with(context).pauseRequests()
     }
 
     override fun resumeRequests(context: Context) {
+        if (!assertValidRequest(context)) {
+            return
+        }
+        Glide.with(context).resumeRequests()
     }
 }
