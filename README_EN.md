@@ -70,6 +70,11 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.89X'
 	}
 
+#### Step 3. gradle file to add configuration
+
+    android.enableJetifier=true
+    android.useAndroidX=true
+
 ## snapshoot
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration.gif)
 ![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration1.gif)
