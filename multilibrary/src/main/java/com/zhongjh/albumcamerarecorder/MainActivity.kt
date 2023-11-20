@@ -104,7 +104,7 @@ open class MainActivity : AppCompatActivity() {
             finish()
             return
         }
-        setContentView(R.layout.activity_main_zjh)
+        setContentView(mActivityMainZjhBinding.root)
         requestPermissions(savedInstanceState)
     }
 
