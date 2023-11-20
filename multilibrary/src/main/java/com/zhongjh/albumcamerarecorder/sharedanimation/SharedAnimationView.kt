@@ -40,7 +40,7 @@ class SharedAnimationView @JvmOverloads constructor(
     /**
      * 动画的时长
      */
-    private val animationDuration: Long = 250
+    private val animationDuration: Long = 350
     private var mOriginLeft = 0
     private var mOriginTop = 0
     private var mOriginHeight = 0
