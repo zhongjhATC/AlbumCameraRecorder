@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder
 
+
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.TargetApi
@@ -18,6 +19,8 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -32,6 +35,7 @@ import com.flyco.tablayout.listener.OnTabSelectListener
 import com.zhongjh.albumcamerarecorder.album.ui.album.AlbumFragment
 import com.zhongjh.albumcamerarecorder.camera.entity.TabEntity
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment
+import com.zhongjh.albumcamerarecorder.databinding.ActivityMainZjhBinding
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.getMimeTypeSet
@@ -47,9 +51,6 @@ import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.common.utils.AppUtils.getAppName
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import kotlin.math.abs
-
-
-import com.zhongjh.albumcamerarecorder.databinding.ActivityMainZjhBinding
 
 
 /**
@@ -113,9 +114,9 @@ open class MainActivity : AppCompatActivity() {
         outState.putBoolean(IS_SAVE_INSTANCE_STATE, true)
     }
 
-    override fun onBackPressed() {
+    private fun backPressed() {
         if (!handleBackPress(this)) {
-            super.onBackPressed()
+            finish()
         }
     }
 
@@ -265,7 +266,9 @@ open class MainActivity : AppCompatActivity() {
         mActivityMainZjhBinding.tableLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                mActivityMainZjhBinding.tableLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                mActivityMainZjhBinding.tableLayout.viewTreeObserver.removeOnGlobalLayoutListener(
+                    this
+                )
                 mTabLayoutHeight = mActivityMainZjhBinding.tableLayout.measuredHeight.toFloat()
             }
         })
@@ -276,12 +279,26 @@ open class MainActivity : AppCompatActivity() {
 
             override fun onTabReselect(position: Int) {}
         })
-        mActivityMainZjhBinding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        mActivityMainZjhBinding.viewPager.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 mActivityMainZjhBinding.tableLayout.currentTab = position
                 super.onPageSelected(position)
             }
         })
+        // 退出事件
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT) {
+                backPressed()
+            }
+        } else {
+            onBackPressedDispatcher.addCallback(this, // lifecycle owner
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        backPressed()
+                    }
+                })
+        }
     }
 
     /**
@@ -490,7 +507,9 @@ open class MainActivity : AppCompatActivity() {
      */
     fun onDependentViewChanged(translationY: Float) {
         mActivityMainZjhBinding.tableLayout.translationY = abs(translationY)
-        mActivityMainZjhBinding.tableLayout.setTag(R.id.z_tab_layout_translation_y, abs(translationY))
+        mActivityMainZjhBinding.tableLayout.setTag(
+            R.id.z_tab_layout_translation_y, abs(translationY)
+        )
         Log.d("MainActivity", abs(translationY).toString() + "")
     }
 
@@ -502,12 +521,16 @@ open class MainActivity : AppCompatActivity() {
     fun showHideTableLayoutAnimator(isShow: Boolean) {
         if (isShow) {
             // 获取动画隐藏之前的坐标，恢复回该坐标
-            val translationY = mActivityMainZjhBinding.tableLayout.getTag(R.id.z_tab_layout_translation_y) as Float
-            mAnimationTabLayout = ObjectAnimator.ofFloat(mActivityMainZjhBinding.tableLayout, "translationY", translationY)
+            val translationY =
+                mActivityMainZjhBinding.tableLayout.getTag(R.id.z_tab_layout_translation_y) as Float
+            mAnimationTabLayout = ObjectAnimator.ofFloat(
+                mActivityMainZjhBinding.tableLayout, "translationY", translationY
+            )
             Log.d("MainActivity", translationY.toString() + "")
         } else {
-            mAnimationTabLayout =
-                ObjectAnimator.ofFloat(mActivityMainZjhBinding.tableLayout, "translationY", mTabLayoutHeight)
+            mAnimationTabLayout = ObjectAnimator.ofFloat(
+                mActivityMainZjhBinding.tableLayout, "translationY", mTabLayoutHeight
+            )
         }
         mAnimationTabLayout?.let {
             it.interpolator = AnimationUtils.loadInterpolator(
