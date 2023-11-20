@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import androidx.databinding.DataBindingUtil;
-
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.controls.Preview;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
@@ -20,6 +18,7 @@ import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameraviewBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
@@ -56,8 +55,8 @@ public class MainCustomCameraViewActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_custom_cameraview);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_custom_cameraview);
+        mBinding = ActivityMainCustomCameraviewBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
 
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {

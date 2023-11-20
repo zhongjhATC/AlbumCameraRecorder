@@ -6,11 +6,11 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.cameraapp.R;
+import com.zhongjh.cameraapp.databinding.ActivityMainUpperLimitBinding;
 import com.zhongjh.cameraapp.databinding.ActivityRecyclerviewBinding;
 import com.zhongjh.cameraapp.phone.adapter.RecyclerAdapter;
 
@@ -37,8 +37,8 @@ public class RecyclerViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recyclerview);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_recyclerview);
+        mBinding = ActivityRecyclerviewBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         initRecyclerView();
     }
 

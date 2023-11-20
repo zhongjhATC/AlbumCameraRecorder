@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -16,6 +15,7 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;
 import com.zhongjh.common.entity.SaveStrategy;
@@ -62,8 +62,8 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_super_simple);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_super_simple);
+        mBinding = ActivityMainSuperSimpleBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 

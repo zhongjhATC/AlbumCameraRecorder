@@ -6,7 +6,7 @@ import android.view.View
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.progresslibrary.widget.MaskProgressView
 import com.zhongjh.progresslibrary.widget.PlayProgressView
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * 多媒体实体类,包含着view

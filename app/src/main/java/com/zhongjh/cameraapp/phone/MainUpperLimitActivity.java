@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -18,6 +17,7 @@ import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.databinding.ActivityMainThemeBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainUpperLimitBinding;
 import com.zhongjh.cameraapp.model.LimitModel;
 import com.zhongjh.common.entity.SaveStrategy;
@@ -53,8 +53,8 @@ public class MainUpperLimitActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_upper_limit);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_upper_limit);
+        mBinding = ActivityMainUpperLimitBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         mBinding.tvMessage.append("1. 这个配置十分灵活，总有一种适合你使用，可以配置 总共选择上限、图片选择上限、视频选择上限、音频选择上限。");
         mBinding.tvMessage.append("\n");
         mBinding.tvMessage.append("2. 如果图片、视频、音频不需要选择填0即可。");

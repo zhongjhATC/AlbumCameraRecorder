@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout
+<com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/rlMain"
         android:layout_width="match_parent"
@@ -145,5 +144,3 @@
             tools:layout_height="100dp" />
 
     </com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout>
-
-</layout>

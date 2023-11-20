@@ -1,8 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    // 插件提供的其他特性,@Parcelize、View binding and caching
-    id 'kotlin-android-extensions'
+    // 插件提供的其他特性,@Parcelize
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -35,9 +35,9 @@ android {
         jvmTarget = '1.8'
     }
 
-    // 这个配置是为了禁用除了parcelize外的其他功能
-    androidExtensions {
-        features = ["parcelize"]
+    // viewBinding
+    buildFeatures {
+        viewBinding true
     }
 }
 

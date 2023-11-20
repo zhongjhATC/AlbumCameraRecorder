@@ -6,9 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 
-import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.ActivityErrorBinding;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
@@ -25,8 +23,8 @@ public class ErrorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_error);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_error);
+        mBinding = ActivityErrorBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 

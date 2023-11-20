@@ -1,7 +1,8 @@
 plugins {
     id 'com.android.library'
-    id 'kotlin-android-extensions'
     id 'kotlin-android'
+    // 插件提供的其他特性,@Parcelize
+    id 'kotlin-parcelize'
 }
 
 android {

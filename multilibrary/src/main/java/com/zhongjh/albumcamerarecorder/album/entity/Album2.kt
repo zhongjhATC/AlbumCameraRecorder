@@ -3,7 +3,7 @@ package com.zhongjh.albumcamerarecorder.album.entity
 import android.os.Parcelable
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * 专辑

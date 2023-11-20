@@ -5,8 +5,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaUtils
-import kotlinx.android.parcel.Parceler
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.Parcelize
 import java.io.File
 
 /**

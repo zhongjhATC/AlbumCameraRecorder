@@ -7,7 +7,7 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.loader.AlbumLoader
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * 专辑

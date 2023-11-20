@@ -3,18 +3,11 @@ package com.zhongjh.cameraapp.phone;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.cameraapp.R;
-import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameraviewBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
 import com.zhongjh.cameraapp.phone.customlayout.MainCustomCameraLayoutActivity;
-import com.zhongjh.common.entity.SaveStrategy;
-import com.zhongjh.common.enums.MimeType;
-
-import java.util.ArrayList;
 
 /**
  * list配置
@@ -29,8 +22,8 @@ public class MainListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_list);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_list);
+        mBinding = ActivityMainListBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
 
         // 简单版
         mBinding.btnSimple.setOnClickListener(v -> MainSimpleActivity.newInstance(MainListActivity.this));

@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.databinding.DataBindingUtil;
-
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -17,6 +15,7 @@ import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
+import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainThemeBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
@@ -49,8 +48,8 @@ public class MainThemeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_theme);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_theme);
+        mBinding = ActivityMainThemeBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
 
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {

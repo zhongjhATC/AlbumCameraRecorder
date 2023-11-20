@@ -8,8 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.databinding.DataBindingUtil;
-
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -76,9 +74,9 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_see);
+        mBinding = ActivityMainSeeBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         progressDialog = new ProgressDialog(MainSeeActivity.this);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_see);
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override

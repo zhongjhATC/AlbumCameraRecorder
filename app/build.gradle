@@ -52,13 +52,15 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    dataBinding {
-        enabled = true
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // viewBinding
+    buildFeatures {
+        viewBinding true
     }
 }
 
