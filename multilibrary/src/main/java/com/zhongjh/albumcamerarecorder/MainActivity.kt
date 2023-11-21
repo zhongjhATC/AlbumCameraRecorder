@@ -19,9 +19,6 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -55,6 +52,8 @@ import kotlin.math.abs
 
 /**
  * 包含三大fragment
+ * 1. 根据配置决定请求哪些权限
+ * 2. 根据配置决定初始化三个fragment其中哪些
  *
  * @author zhongjh
  * @date 2018/8/22
@@ -65,7 +64,7 @@ open class MainActivity : AppCompatActivity() {
         ActivityMainZjhBinding.inflate(layoutInflater)
     }
 
-    private val startActivityLauncher =
+    private val mStartActivityLauncher =
         registerForActivityResult(StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
@@ -73,12 +72,14 @@ open class MainActivity : AppCompatActivity() {
             }
         }
 
-    private var adapterViewPager: MyPagerAdapter? = null
+    private val mAdapterViewPager by lazy {
+        MyPagerAdapter(this, mSpec)
+    }
 
     /**
      * 显示隐藏TabLayout的动画
      */
-    var mAnimationTabLayout: ObjectAnimator? = null
+    private var mAnimationTabLayout: ObjectAnimator? = null
 
     /**
      * 默认索引
@@ -94,7 +95,7 @@ open class MainActivity : AppCompatActivity() {
     /**
      * 是否初始化完毕
      */
-    var mIsInit = false
+    private var mIsInit = false
 
     /**
      * 是否弹出提示多次拒绝权限的dialog
@@ -137,12 +138,8 @@ open class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        if (mSpec.cameraSetting != null) {
-            mSpec.cameraSetting!!.clearCameraFragment()
-        }
-        if (mAnimationTabLayout != null) {
-            mAnimationTabLayout!!.end()
-        }
+        mSpec.cameraSetting?.clearCameraFragment()
+        mAnimationTabLayout?.end()
         super.onDestroy()
     }
 
@@ -169,7 +166,7 @@ open class MainActivity : AppCompatActivity() {
                     val intent = Intent()
                     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     intent.data = Uri.fromParts("package", packageName, null)
-                    startActivityLauncher.launch(intent)
+                    mStartActivityLauncher.launch(intent)
                     mIsShowDialog = false
                 }
                 builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
@@ -230,15 +227,14 @@ open class MainActivity : AppCompatActivity() {
             initTabLayoutStyle()
             mActivityMainZjhBinding.tableLayout.setTag(R.id.z_tab_layout_translation_y, 0F)
             initListener()
-            adapterViewPager = MyPagerAdapter(this, mSpec)
-            mActivityMainZjhBinding.viewPager.adapter = adapterViewPager
+            mActivityMainZjhBinding.viewPager.adapter = mAdapterViewPager
             mActivityMainZjhBinding.viewPager.offscreenPageLimit = 3
             if (savedInstanceState == null || !savedInstanceState.getBoolean(IS_SAVE_INSTANCE_STATE)) {
                 // 根据配置默认选第几个，如果是恢复界面的话，就不赋配置值
                 mActivityMainZjhBinding.viewPager.setCurrentItem(mDefaultPosition, false)
             }
             // 判断只有一个的时候
-            if (adapterViewPager!!.itemCount <= 1) {
+            if (mAdapterViewPager.itemCount <= 1) {
                 // 则隐藏底部
                 mActivityMainZjhBinding.tableLayout.visibility = View.GONE
             } else {
@@ -339,12 +335,13 @@ open class MainActivity : AppCompatActivity() {
             // 动态消息
             val message = StringBuilder()
             message.append(getString(R.string.z_multi_library_to_use_this_feature))
+            // 弹窗提示为什么要请求这个权限
             for (item in needPermissions) {
                 when (item) {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE -> message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files))
-                    Manifest.permission.RECORD_AUDIO ->                         // 弹窗提示为什么要请求这个权限
+                    Manifest.permission.RECORD_AUDIO ->
                         message.append(getString(R.string.z_multi_library_record_permission_to_record_sound))
-                    Manifest.permission.CAMERA ->                         // 弹窗提示为什么要请求这个权限
+                    Manifest.permission.CAMERA ->
                         message.append(getString(R.string.z_multi_library_record_permission_to_shoot))
                     else -> {}
                 }
@@ -473,7 +470,7 @@ open class MainActivity : AppCompatActivity() {
      */
     fun showHideTableLayout(isShow: Boolean) {
         // 判断只有一个的时候
-        if (adapterViewPager!!.itemCount <= 1) {
+        if (mAdapterViewPager.itemCount <= 1) {
             // 则隐藏底部
             mActivityMainZjhBinding.tableLayout.visibility = View.GONE
         } else {
@@ -532,12 +529,12 @@ open class MainActivity : AppCompatActivity() {
         /**
          * 数量
          */
-        var numItems = 0
+        private var numItems = 0
 
         /**
          * 标题
          */
-        var mTitles = ArrayList<String>()
+        private var mTitles = ArrayList<String>()
 
         init {
 
@@ -612,11 +609,6 @@ open class MainActivity : AppCompatActivity() {
          * 权限申请自定义码
          */
         private const val GET_PERMISSION_REQUEST = 100
-
-        /**
-         * 跳转到设置界面
-         */
-        private const val REQUEST_CODE_SETTING = 101
 
         /**
          * 界面屏幕方向切换\切换别的界面时 会触发onSaveInstanceState
