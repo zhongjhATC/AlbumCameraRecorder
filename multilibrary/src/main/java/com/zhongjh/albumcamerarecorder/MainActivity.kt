@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder
 
-
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.TargetApi
@@ -19,8 +18,11 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
-import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -41,7 +43,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.getMimeTypeSet
 import com.zhongjh.albumcamerarecorder.utils.AttrsUtils
 import com.zhongjh.albumcamerarecorder.utils.HandleBackUtil.handleBackPress
-import com.zhongjh.albumcamerarecorder.utils.HandleOnKeyUtil.handleOnKey
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.albumValid
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.cameraValid
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.recorderValid
@@ -51,7 +52,6 @@ import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.common.utils.AppUtils.getAppName
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import kotlin.math.abs
-
 
 /**
  * 包含三大fragment
@@ -64,6 +64,14 @@ open class MainActivity : AppCompatActivity() {
     private val mActivityMainZjhBinding by lazy {
         ActivityMainZjhBinding.inflate(layoutInflater)
     }
+
+    private val startActivityLauncher =
+        registerForActivityResult(StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
+                requestPermissions(null)
+            }
+        }
 
     private var adapterViewPager: MyPagerAdapter? = null
 
@@ -120,14 +128,6 @@ open class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        return if (handleOnKey(this, keyCode, event)) {
-            true
-        } else {
-            super.onKeyDown(keyCode, event)
-        }
-    }
-
     override fun finish() {
         super.finish()
         if (mSpec.cutscenesEnabled) {
@@ -144,14 +144,6 @@ open class MainActivity : AppCompatActivity() {
             mAnimationTabLayout!!.end()
         }
         super.onDestroy()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_SETTING) {
-            // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
-            requestPermissions(null)
-        }
     }
 
     @TargetApi(23)
@@ -173,11 +165,11 @@ open class MainActivity : AppCompatActivity() {
             // 至少一个不再提醒
             if (permissionsLength > 0) {
                 val builder = AlertDialog.Builder(this@MainActivity, R.style.MyAlertDialogStyle)
-                builder.setPositiveButton(getString(R.string.z_multi_library_setting)) { dialog: DialogInterface?, which: Int ->
+                builder.setPositiveButton(getString(R.string.z_multi_library_setting)) { _: DialogInterface?, _: Int ->
                     val intent = Intent()
                     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     intent.data = Uri.fromParts("package", packageName, null)
-                    this@MainActivity.startActivityForResult(intent, REQUEST_CODE_SETTING)
+                    startActivityLauncher.launch(intent)
                     mIsShowDialog = false
                 }
                 builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
@@ -287,18 +279,11 @@ open class MainActivity : AppCompatActivity() {
             }
         })
         // 退出事件
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT) {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
                 backPressed()
             }
-        } else {
-            onBackPressedDispatcher.addCallback(this, // lifecycle owner
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        backPressed()
-                    }
-                })
-        }
+        })
     }
 
     /**

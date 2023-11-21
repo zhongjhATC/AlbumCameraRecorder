@@ -385,7 +385,6 @@ class SharedAnimationView @JvmOverloads constructor(
             TransitionManager.beginDelayedTransition(
                 contentLayout.parent as ViewGroup,
                 TransitionSet()
-                    .setInterpolator(DecelerateInterpolator())
                     .setDuration(animationDuration)
                     .addTransition(ChangeBounds())
                     .addTransition(ChangeTransform())
