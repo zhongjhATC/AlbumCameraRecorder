@@ -101,22 +101,22 @@ object AlbumSpec {
     /**
      * 用于筛选视频最长时长
      */
-    var videoMaxSecond = 0
+    var videoMaxSecond = 0L
 
     /**
      * 用于筛选视频最短时长
      */
-    var videoMinSecond = 0
+    var videoMinSecond = 0L
 
     /**
      * 用于过滤文件大小的最大值
      */
-    var filterMaxFileSize: Long = 0
+    var filterMaxFileSize = 0L
 
     /**
      * 用于过滤文件大小的最小值
      */
-    var filterMinFileSize: Long = 1024
+    var filterMinFileSize = 1024L
 
     // endregion end 属性
 
@@ -145,11 +145,11 @@ object AlbumSpec {
         originalEnable = false
         originalMaxSize = Int.MAX_VALUE
         // 筛选最长的播放时间
-        videoMaxSecond = 0
+        videoMaxSecond = 0L
         // 筛选最短的播放时间
-        videoMinSecond = 0
-        filterMaxFileSize = 0
-        filterMinFileSize = 0
+        videoMinSecond = 0L
+        filterMaxFileSize = 0L
+        filterMinFileSize = 0L
     }
 
     /**
