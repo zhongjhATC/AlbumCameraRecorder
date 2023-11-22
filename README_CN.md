@@ -185,7 +185,7 @@
 
 ## apk直接体验下载
  - 1.1.29X版本，跟当前最新代码版本可能会有稍许不同
-[gitee下载地址](https://gitee.com/zhongjh/AlbumCameraRecorder/raw/androidx/apk/app-release.apk)
+[Gitcode下载地址](https://gitcode.net/aaatttcccc/AlbumCameraRecorder2/-/blob/bcb7a49460aded3396a00c3e84d328428b868634/apk/app-release.apk)
 
 # 写在最后
 

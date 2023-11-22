@@ -184,7 +184,7 @@ If you use the shown library, the following APIs are also useful for you
 
 ## Apk direct experience download
  - The 1.1.29x version may be slightly different from the current latest code version
-[Gitee download address](https://gitee.com/zhongjh/AlbumCameraRecorder/raw/androidx/apk/app-release.apk)
+[Gitcode download address](https://gitcode.net/aaatttcccc/AlbumCameraRecorder2/-/blob/bcb7a49460aded3396a00c3e84d328428b868634/apk/app-release.apk)
 
 # Write in the last
 
