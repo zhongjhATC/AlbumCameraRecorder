@@ -48,10 +48,31 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             )
         )
     ),
+    XMSBMP(
+        "image/x-ms-bmp", ArraySet(
+            listOf(
+                "x-ms-bmp"
+            )
+        )
+    ),
+    VNDBMP(
+        "image/vnd.wap.wbmp", ArraySet(
+            listOf(
+                "vnd.wap.wbmp"
+            )
+        )
+    ),
     WEBP(
         "image/webp", ArraySet(
             listOf(
                 "webp"
+            )
+        )
+    ),
+    HEIC(
+        "image/heic", ArraySet(
+            listOf(
+                "heic"
             )
         )
     ),
@@ -198,7 +219,7 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
 
         @JvmStatic
         fun ofImage(): Set<MimeType> {
-            return EnumSet.of(JPEG, PNG, GIF, BMP, WEBP)
+            return EnumSet.of(JPEG, PNG, GIF, BMP, XMSBMP, VNDBMP, WEBP, HEIC)
         }
 
         @JvmStatic

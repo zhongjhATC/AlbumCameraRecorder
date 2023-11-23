@@ -45,6 +45,14 @@ interface AlbumSettingApi {
     fun isSupportBmp(isSupport: Boolean): AlbumSetting
 
     /**
+     * 是否支持heic,默认为true
+     * 当设置为false的时候，会在相册数据源剔除掉heic文件
+     * @param isSupport 是否支持
+     * @return [AlbumSetting] this
+     */
+    fun isSupportHeic(isSupportHeic: Boolean): AlbumSetting
+
+    /**
      * 相册以分页形式展开
      * @param pageSize 每页多少个文件
      */

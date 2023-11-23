@@ -51,6 +51,11 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
+    override fun isSupportHeic(isSupportHeic: Boolean): AlbumSetting {
+        mAlbumSpec.isSupportHeic = isSupportHeic
+        return this
+    }
+
     override fun pageSize(pageSize: Int): AlbumSetting {
         mAlbumSpec.pageSize = pageSize
         return this

@@ -31,15 +31,21 @@ object AlbumSpec {
 
     /**
      * 是否支持webp,默认为true
-     * 当设置为false的时候，会在相册数据源剔除掉gif文件
+     * 当设置为false的时候，会在相册数据源剔除掉webp文件
      */
     var isSupportWebp = true
 
     /**
      * 是否支持bmp,默认为true
-     * 当设置为false的时候，会在相册数据源剔除掉gif文件
+     * 当设置为false的时候，会在相册数据源剔除掉bmp文件
      */
     var isSupportBmp = true
+
+    /**
+     * 是否支持heic,默认为true
+     * 当设置为false的时候，会在相册数据源剔除掉heic文件
+     */
+    var isSupportHeic = true
 
     /**
      * 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
@@ -99,14 +105,14 @@ object AlbumSpec {
     var baseFilters: ArrayList<BaseFilter>? = null
 
     /**
-     * 用于筛选视频最长时长
+     * 用于筛选视频最长时长,秒作为单位
      */
-    var videoMaxSecond = 0L
+    var videoMaxSecond = 0
 
     /**
-     * 用于筛选视频最短时长
+     * 用于筛选视频最短时长,秒作为单位
      */
-    var videoMinSecond = 0L
+    var videoMinSecond = 0
 
     /**
      * 用于过滤文件大小的最大值
@@ -145,9 +151,9 @@ object AlbumSpec {
         originalEnable = false
         originalMaxSize = Int.MAX_VALUE
         // 筛选最长的播放时间
-        videoMaxSecond = 0L
+        videoMaxSecond = 0
         // 筛选最短的播放时间
-        videoMinSecond = 0L
+        videoMinSecond = 0
         filterMaxFileSize = 0L
         filterMinFileSize = 0L
     }

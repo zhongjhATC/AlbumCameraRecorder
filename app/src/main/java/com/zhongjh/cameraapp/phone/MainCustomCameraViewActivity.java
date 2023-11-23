@@ -1,5 +1,7 @@
 package com.zhongjh.cameraapp.phone;
 
+import static android.graphics.Bitmap.CompressFormat.JPEG;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
 import java.util.List;
 
 /**
