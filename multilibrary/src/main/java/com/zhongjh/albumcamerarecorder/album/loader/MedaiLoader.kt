@@ -208,10 +208,17 @@ class MedaiLoader(val application: Application) {
             data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
         media.mimeType =
             data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
-        if (MediaUtils.hasMimeTypeOfUnknown(media.mimeType)) {
-            val mimeType = getMimeType(media.absolutePath)
-            media.mimeType = if (TextUtils.isEmpty(mimeType)) media.mimeType else mimeType
+        // 图片没有具体到某个类型
+        if (MimeType.hasMimeTypeOfUnknown(media.mimeType)) {
+            val mimeType = MimeType.getMimeType(media.absolutePath)
+            media.mimeType =
+                if (TextUtils.isEmpty(mimeType)) {
+                    media.mimeType
+                } else {
+                    mimeType.toString()
+                }
         }
+        //
         media.path =
             if (isQ()) MediaUtils.getRealPathUri(media.id, media.mimeType) else media.absolutePath
         media.orientation = data.getInt(data.getColumnIndexOrThrow(ORIENTATION))

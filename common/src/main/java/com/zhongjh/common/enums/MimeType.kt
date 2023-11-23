@@ -7,6 +7,7 @@ import android.webkit.MimeTypeMap
 import androidx.collection.ArraySet
 import com.zhongjh.common.utils.BasePhotoMetadataUtils
 import java.io.File
+import java.net.URLConnection
 import java.util.*
 
 /**
@@ -242,6 +243,11 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             return mimeType?.startsWith("audio") ?: false
         }
 
+        @JvmStatic
+        fun hasMimeTypeOfUnknown(mimeType: String?): Boolean {
+            return mimeType != null && mimeType.startsWith("image/*")
+        }
+
         /**
          * is content://
          *
@@ -255,6 +261,24 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             } else {
                 uri.startsWith("content://")
             }
+        }
+
+        /**
+         * 获取图片的mimeType
+         *
+         * @param path 根据路径获取
+         * @return MimeType
+         */
+        fun getMimeType(path: String?): String? {
+            val fileExtension = MimeTypeMap.getFileExtensionFromUrl(path)
+            var mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                fileExtension.lowercase(Locale.getDefault())
+            )
+            if (TextUtils.isEmpty(mimeType)) {
+                val fileNameMap = URLConnection.getFileNameMap()
+                mimeType = fileNameMap.getContentTypeFor(path?.let { File(it).name })
+            }
+            return mimeType
         }
 
         /**
