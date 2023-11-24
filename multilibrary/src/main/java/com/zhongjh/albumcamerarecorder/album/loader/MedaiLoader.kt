@@ -9,6 +9,7 @@ import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.utils.SdkVersionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -208,6 +209,23 @@ class MedaiLoader(val application: Application) {
             data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
         media.mimeType =
             data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
+        // 判断文件类型是否符合规范，不规范就只能取后缀名
+        if (!MimeType.isImageOrGif(media.mimeType) && !MimeType.isVideo(media.mimeType)) {
+            // 因为某些app保存文件时导致数据库的mimeType不符合规范，所以通过后缀名设置类型
+            val extension: String = media.mimeType.substring(media.mimeType.lastIndexOf(".") + 1)
+            // 循环图片类型，判断后缀是否是.jpg之类的
+            for (mimeTypeImage in MimeType.ofImage()) {
+                if (mimeTypeImage.extensions.contains(extension)) {
+                    media.mimeType = mimeTypeImage.mimeTypeName
+                }
+            }
+            // 循环视频类型，判断后缀是否是.mp4之类的
+            for (mimeTypeVideo in MimeType.ofVideo()) {
+                if (mimeTypeVideo.extensions.contains(extension)) {
+                    media.mimeType = mimeTypeVideo.mimeTypeName
+                }
+            }
+        }
         // 图片没有具体到某个类型
         if (MimeType.hasMimeTypeOfUnknown(media.mimeType)) {
             val mimeType = MimeType.getMimeType(media.absolutePath)
@@ -218,9 +236,7 @@ class MedaiLoader(val application: Application) {
                     mimeType.toString()
                 }
         }
-        //
-        media.path =
-            if (isQ()) MediaUtils.getRealPathUri(media.id, media.mimeType) else media.absolutePath
+        media.path = if (SdkVersionUtils.isQ()) MimeType.getRealPathUri(media.id, media.mimeType) else media.absolutePath
         media.orientation = data.getInt(data.getColumnIndexOrThrow(ORIENTATION))
         media.duration = data.getLong(data.getColumnIndexOrThrow(DURATION))
         media.size = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE))
