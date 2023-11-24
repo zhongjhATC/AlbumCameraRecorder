@@ -124,6 +124,11 @@ object AlbumSpec {
      */
     var filterMinFileSize = 1024L
 
+    /**
+     * 只查询指定目录
+     */
+    var sandboxDir: String? = null
+
     // endregion end 属性
 
     val cleanInstance = AlbumSpec

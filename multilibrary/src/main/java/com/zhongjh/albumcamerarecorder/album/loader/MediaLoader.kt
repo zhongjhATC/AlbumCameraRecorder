@@ -1,22 +1,26 @@
 package com.zhongjh.albumcamerarecorder.album.loader
 
 import android.app.Application
+import android.content.ContentUris
 import android.database.Cursor
+import android.net.Uri
 import android.provider.MediaStore
 import android.text.TextUtils
-import android.util.Log
+import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.enums.MimeType.Companion.isAudio
+import com.zhongjh.common.enums.MimeType.Companion.isImageOrGif
+import com.zhongjh.common.enums.MimeType.Companion.isVideo
 import com.zhongjh.common.utils.SdkVersionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.max
 
-class MedaiLoader(val application: Application) {
+class MediaLoader(val application: Application) {
 
     companion object {
 
@@ -78,77 +82,54 @@ class MedaiLoader(val application: Application) {
                         data.moveToFirst()
                         do {
                             val media = parse(data)
-                            if (config.mListenerInfo.onQueryFilterListener?.onFilter(media) == true) {
-                                continue
-                            }
                             var newCount = countMap[media.bucketId]
                             if (newCount == null) {
                                 newCount = 1L
                             } else {
                                 newCount++
                             }
+                            // 根据不同的bucketId划分不同的专辑
                             countMap[media.bucketId] = newCount
                             if (bucketSet.contains(media.bucketId)) {
                                 continue
                             }
-                            val mediaAlbum = LocalMediaAlbum()
-                            mediaAlbum.bucketId = media.bucketId
-                            mediaAlbum.bucketDisplayName = media.bucketDisplayName
-                            mediaAlbum.bucketDisplayCover = media.path
-                            mediaAlbum.bucketDisplayMimeType = media.mimeType
-                            albumList += mediaAlbum
+                            val album = Album2()
+                            album.id = media.bucketId
+                            album.name = media.fileName
+                            album.firstImagePath = media.path
+                            album.firstMimeType = media.mimeType
+                            albumList += album
                             bucketSet.add(media.bucketId)
                         } while (data.moveToNext())
 
-                        // create custom sandbox dir media album
-                        config.sandboxDir?.let { sandboxDir ->
-                            val mediaList = loadAppInternalDir(sandboxDir)
-                            if (mediaList.isNotEmpty()) {
-                                mediaList.first().let { firstMedia ->
-                                    val sandboxMediaAlbum = LocalMediaAlbum()
-                                    sandboxMediaAlbum.bucketId = firstMedia.bucketId
-                                    sandboxMediaAlbum.bucketDisplayName =
-                                        firstMedia.bucketDisplayName
-                                    sandboxMediaAlbum.bucketDisplayCover = firstMedia.path
-                                    sandboxMediaAlbum.bucketDisplayMimeType = firstMedia.mimeType
-                                    sandboxMediaAlbum.totalCount = mediaList.size
-                                    sandboxMediaAlbum.source.addAll(mediaList.toMutableList())
-                                    albumList.add(sandboxMediaAlbum)
-                                    countMap[firstMedia.bucketId] = mediaList.size.toLong()
-                                }
+                        // 计算每个相册的数量
+                        albumList.forEach { album ->
+                            countMap[album.id]?.let { count ->
+                                album.count = count.toInt()
+                                totalCount += album.count
                             }
                         }
 
-                        // calculate album count
-                        albumList.forEach { mediaAlbum ->
-                            countMap[mediaAlbum.bucketId]?.let { count ->
-                                mediaAlbum.totalCount = count.toInt()
-                                totalCount += mediaAlbum.totalCount
-                            }
-                        }
-
-                        // create all media album
-                        val allMediaAlbum = LocalMediaAlbum()
+                        // 创建《所有》该专辑
+                        val album = Album2()
                         val bucketDisplayName =
-                            config.defaultAlbumName ?: if (config.mediaType == MediaType.AUDIO)
-                                application.getString(R.string.ps_all_audio) else application.getString(
-                                R.string.ps_camera_roll
-                            )
-                        allMediaAlbum.bucketDisplayName = bucketDisplayName
-                        allMediaAlbum.bucketId = SelectorConstant.DEFAULT_ALL_BUCKET_ID
-                        allMediaAlbum.totalCount = totalCount.toInt()
+                            application.getString(R.string.z_multi_library_album_name_all);
+                        album.name = bucketDisplayName
+                        album.id = -1
+                        album.count = totalCount.toInt()
                         albumList.first().let { firstAlbum ->
-                            allMediaAlbum.bucketDisplayCover = firstAlbum.bucketDisplayCover
-                            allMediaAlbum.bucketDisplayMimeType = firstAlbum.bucketDisplayMimeType
+                            album.firstImagePath = firstAlbum.firstImagePath
+                            album.firstMimeType = firstAlbum.firstMimeType
                         }
-                        albumList.add(0, allMediaAlbum)
+                        albumList.add(0, album)
                     }
-                    // close cursor
+                    // 关闭 cursor
                     data.close()
                 }
         }
+        // 根据count排序
         return albumList.apply {
-            this.sortByDescending { it.totalCount }
+            this.sortByDescending { it.count }
         }
     }
 
@@ -199,7 +180,8 @@ class MedaiLoader(val application: Application) {
     /**
      * @return Cursor转换成实体类
      */
-    private fun parse(media: LocalMedia, data: Cursor): LocalMedia {
+    private fun parse(data: Cursor): LocalMedia {
+        val media = LocalMedia()
         media.id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
         media.bucketId = data.getLong(data.getColumnIndexOrThrow(BUCKET_ID))
         media.fileName =
@@ -236,11 +218,16 @@ class MedaiLoader(val application: Application) {
                     mimeType.toString()
                 }
         }
-        media.path = if (SdkVersionUtils.isQ()) MimeType.getRealPathUri(media.id, media.mimeType) else media.absolutePath
+        media.path =
+            if (SdkVersionUtils.isQ) {
+                getRealPathUri(media.id, media.mimeType)
+            } else {
+                media.absolutePath
+            }
         media.orientation = data.getInt(data.getColumnIndexOrThrow(ORIENTATION))
         media.duration = data.getLong(data.getColumnIndexOrThrow(DURATION))
         media.size = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE))
-        media.dateAdded =
+        media.dateAddedTime =
             data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED))
         if (media.orientation == 90 || media.orientation == 270) {
             media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
@@ -293,23 +280,23 @@ class MedaiLoader(val application: Application) {
      */
     private fun getImageMimeTypeCondition(): String {
         val stringBuilder = StringBuilder()
-        // 配置具体到什么类型
-        AlbumSpec.mimeTypeSet?.let { mimeTypes ->
-            val mimeTypeList = ArrayList<MimeType>()
-            mimeTypes.forEach { mimeType ->
-                if (MimeType.ofImage().contains(mimeType)) {
-                    mimeTypeList.add(mimeType)
-                }
-            }
-            mimeTypeList.forEachIndexed { i, mimeType ->
-                if (MimeType.ofImage().contains(mimeType)) {
-                    stringBuilder.append(if (i == 0) " AND (" else " OR ")
-                        .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-                        .append("'")
-                        .append(if (i == mimeTypes.size.minus(1)) ")" else "")
-                }
-            }
-        }
+//        // 配置具体到什么类型
+//        AlbumSpec.mimeTypeSet?.let { mimeTypes ->
+//            val mimeTypeList = ArrayList<MimeType>()
+//            mimeTypes.forEach { mimeType ->
+//                if (MimeType.ofImage().contains(mimeType)) {
+//                    mimeTypeList.add(mimeType)
+//                }
+//            }
+//            mimeTypeList.forEachIndexed { i, mimeType ->
+//                if (MimeType.ofImage().contains(mimeType)) {
+//                    stringBuilder.append(if (i == 0) " AND (" else " OR ")
+//                        .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
+//                        .append("'")
+//                        .append(if (i == mimeTypes.size.minus(1)) ")" else "")
+//                }
+//            }
+//        }
         // 根据配置排除类型
         if (!AlbumSpec.isSupportGif && AlbumSpec.mimeTypeSet?.contains(MimeType.GIF) != true) {
             stringBuilder.append(NOT_GIF)
@@ -334,22 +321,75 @@ class MedaiLoader(val application: Application) {
      */
     private fun getVideoMimeTypeCondition(): String {
         val stringBuilder = StringBuilder()
-        // 配置具体到什么类型
-        AlbumSpec.mimeTypeSet?.let { mimeTypes ->
-            val mimeTypeList = ArrayList<MimeType>()
-            mimeTypes.forEach { mimeType ->
-                if (MimeType.ofVideo().contains(mimeType)) {
-                    mimeTypeList.add(mimeType)
-                }
-            }
-            mimeTypeList.forEachIndexed { i, mimeType ->
-                stringBuilder.append(if (i == 0) " AND (" else " OR ")
-                    .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-                    .append("'")
-                    .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
-            }
-        }
+//        // 配置具体到什么类型
+//        AlbumSpec.mimeTypeSet?.let { mimeTypes ->
+//            val mimeTypeList = ArrayList<MimeType>()
+//            mimeTypes.forEach { mimeType ->
+//                if (MimeType.ofVideo().contains(mimeType)) {
+//                    mimeTypeList.add(mimeType)
+//                }
+//            }
+//            mimeTypeList.forEachIndexed { i, mimeType ->
+//                stringBuilder.append(if (i == 0) " AND (" else " OR ")
+//                    .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
+//                    .append("'")
+//                    .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
+//            }
+//        }
         return stringBuilder.toString()
+    }
+
+    /**
+     * 根据 bucketId 和 mimeType 获取uri
+     *
+     * @param bucketId bucketId
+     * @param mimeType mimeType
+     * @return uri
+     */
+    private fun getRealPathUri(bucketId: Long, mimeType: String): String {
+        val contentUri: Uri = if (isImageOrGif(mimeType)) {
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        } else if (isVideo(mimeType)) {
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        } else if (isAudio(mimeType)) {
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        } else {
+            MediaStore.Files.getContentUri("external")
+        }
+        return ContentUris.withAppendedId(contentUri, bucketId).toString()
+    }
+
+    /**
+     * 根据游标获取uri
+     *
+     * @param cursor 游标
+     * @return uri
+     */
+    private fun getFirstUri(cursor: Cursor): String {
+        val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+        val mimeType =
+            cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE))
+        return getRealPathUri(id, mimeType)
+    }
+
+    /**
+     * 根据游标获取mimeType
+     *
+     * @param cursor 游标
+     * @return mimeType
+     */
+    private fun getFirstCoverMimeType(cursor: Cursor): String? {
+        return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE))
+    }
+
+    /**
+     * 根据游标获取path
+     *
+     * @param cursor 游标
+     * @return url path
+     */
+    private fun getFirstUrl(cursor: Cursor): String? {
+        return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA))
     }
 
 }

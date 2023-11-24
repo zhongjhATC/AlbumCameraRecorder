@@ -178,7 +178,7 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
                 path = BasePhotoMetadataUtils.getPath(resolver, uri)
                 if (!TextUtils.isEmpty(path)) {
                     if (path != null) {
-                        path = path.toLowerCase(Locale.US)
+                        path = path.lowercase(Locale.US)
                     }
                 }
                 pathParsed = true

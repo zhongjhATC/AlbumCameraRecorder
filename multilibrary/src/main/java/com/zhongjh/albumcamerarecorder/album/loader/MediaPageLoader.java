@@ -2,8 +2,10 @@ package com.zhongjh.albumcamerarecorder.album.loader;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -289,7 +291,7 @@ public class MediaPageLoader extends BaseMediaLoader {
                 String mimeType = data.getString(mimeTypeColumn);
                 mimeType = TextUtils.isEmpty(mimeType) ? MimeType.JPEG.getMimeTypeName() : mimeType;
                 String absolutePath = data.getString(dataColumn);
-                String uri = SdkVersionUtils.isQ() ? MediaLoader.getRealPathUri(id, mimeType) : absolutePath;
+                String uri = SdkVersionUtils.isQ() ? getRealPathUri(id, mimeType) : absolutePath;
                 if (TextUtils.isEmpty(absolutePath)) {
                     continue;
                 }
@@ -356,6 +358,27 @@ public class MediaPageLoader extends BaseMediaLoader {
         }
         Log.d(TAG, "result.size(): " + result.size());
         return result;
+    }
+
+    /**
+     * 根据 bucketId 和 mimeType 获取uri
+     *
+     * @param bucketId bucketId
+     * @param mimeType mimeType
+     * @return uri
+     */
+    public static String getRealPathUri(long bucketId, String mimeType) {
+        Uri contentUri;
+        if (MimeType.isImageOrGif(mimeType)) {
+            contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        } else if (MimeType.isVideo(mimeType)) {
+            contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        } else if (MimeType.isAudio(mimeType)) {
+            contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        } else {
+            contentUri = MediaStore.Files.getContentUri("external");
+        }
+        return ContentUris.withAppendedId(contentUri, bucketId).toString();
     }
 
 }

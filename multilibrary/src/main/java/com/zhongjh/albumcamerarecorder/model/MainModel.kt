@@ -5,12 +5,14 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
 import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
 import com.zhongjh.common.entity.LocalMedia
+import kotlinx.coroutines.launch
 
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
@@ -109,16 +111,13 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 获取所有专辑
      */
     private fun loadAllAlbum() {
-        mediaLoader.loadAllMedia(object : OnLoadAllAlbumListener {
-            override fun onLoadAllAlbumComplete(data: MutableList<Album2>?) {
-                this@MainModel.albums.postValue(data)
+        viewModelScope.launch {
+            try {
+                this@MainModel.albums.postValue(mediaLoader.loadMediaAlbum())
+            } catch (ex: Exception) {
+                this@MainModel._onFail.postValue(ex)
             }
-
-            override fun onFail(t: Throwable) {
-                this@MainModel._onFail.postValue(t)
-            }
-
-        })
+        }
     }
 
     /**

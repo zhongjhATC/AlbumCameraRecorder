@@ -11,8 +11,7 @@ import kotlinx.parcelize.Parcelize
  * @author zhongjh
  * @date 2022/9/16
  */
-@Parcelize
-class Album2 : Parcelable {
+class Album2 {
     /**
      * id 专辑id
      */
