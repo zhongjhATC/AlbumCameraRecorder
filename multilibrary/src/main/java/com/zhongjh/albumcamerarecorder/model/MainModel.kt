@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
-import com.zhongjh.albumcamerarecorder.album.listener.OnLoadAllAlbumListener
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
 import com.zhongjh.common.entity.LocalMedia
@@ -42,13 +41,10 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     val onFail: LiveData<Throwable> get() = _onFail
 
     /**
-     * 文件夹数据集
+     *  文件夹数据集
      */
-    private val albums: MutableLiveData<List<Album2>> by lazy {
-        MutableLiveData<List<Album2>>().also {
-            loadAllAlbum()
-        }
-    }
+    private val _albums = MutableLiveData<MutableList<Album2>>()
+    val albums: LiveData<MutableList<Album2>> get() = _albums
 
     /**
      * 多媒体文件数据集,只存在于一页的,主要用于通知ui增加新的一页数据
@@ -75,10 +71,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 当前预览的图片的索引,默认第一个
      */
     var previewPosition = 0
-
-    fun getAlbums(): LiveData<List<Album2>> {
-        return albums
-    }
 
     init {
         mediaLoader = MediaLoader(application)
@@ -110,10 +102,10 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 获取所有专辑
      */
-    private fun loadAllAlbum() {
+    fun loadAllAlbum() {
         viewModelScope.launch {
             try {
-                this@MainModel.albums.postValue(mediaLoader.loadMediaAlbum())
+                this@MainModel._albums.postValue(mediaLoader.loadMediaAlbum())
             } catch (ex: Exception) {
                 this@MainModel._onFail.postValue(ex)
             }

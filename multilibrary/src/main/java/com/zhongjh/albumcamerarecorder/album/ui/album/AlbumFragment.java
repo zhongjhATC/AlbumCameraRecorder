@@ -247,7 +247,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
 
         // 获取专辑数据
-        mMainModel.getAlbums();
+        mMainModel.loadAllAlbum();
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
