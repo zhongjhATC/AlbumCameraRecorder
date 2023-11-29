@@ -42,6 +42,7 @@ import com.zhongjh.videoedit.VideoMergeManager;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -376,9 +377,11 @@ public class MainActivity extends BaseActivity {
      */
     private AlbumSetting initAlbumSetting() {
         AlbumSetting albumSetting = new AlbumSetting(!mBinding.cbMediaTypeExclusive.isChecked());
+//        albumSetting.isSupportGif(false);
         Set<MimeType> mimeTypeAlbum;
         if (mBinding.cbAlbumImage.isChecked() && mBinding.cbAlbumVideo.isChecked()) {
             mimeTypeAlbum = MimeType.ofAll();
+//            mimeTypeAlbum = EnumSet.of(MimeType.PNG);
             // 支持的类型：图片，视频
             albumSetting.mimeTypeSet(mimeTypeAlbum);
         } else if (mBinding.cbAlbumImage.isChecked()) {

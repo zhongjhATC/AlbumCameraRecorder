@@ -6,8 +6,10 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Log
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
@@ -24,6 +26,7 @@ class MediaLoader(val application: Application) {
 
     companion object {
 
+        private val TAG = MediaLoader::class.java.simpleName
         private const val DURATION: String = "duration"
         private const val BUCKET_DISPLAY_NAME = "bucket_display_name"
         private const val BUCKET_ID = "bucket_id"
@@ -67,13 +70,16 @@ class MediaLoader(val application: Application) {
     suspend fun loadMediaAlbum(): MutableList<Album2> {
         val albumList = mutableListOf<Album2>()
         withContext(Dispatchers.IO) {
+            val albumSelectionStr = getAlbumSelection()
+            val sortOrderStr = getSortOrder()
+            Log.d(TAG, "查询语句: $albumSelectionStr 排序语句: $sortOrderStr")
             application.contentResolver
                 .query(
                     QUERY_URI,
                     PROJECTION,
-                    getAlbumSelection(),
+                    albumSelectionStr,
                     getSelectionArgs(),
-                    getSortOrder()
+                    sortOrderStr
                 )?.use { data ->
                     if (data.count > 0) {
                         var totalCount = 0L
@@ -95,7 +101,7 @@ class MediaLoader(val application: Application) {
                             }
                             val album = Album2()
                             album.id = media.bucketId
-                            album.name = media.fileName
+                            album.name = media.parentFolderName
                             album.firstImagePath = media.path
                             album.firstMimeType = media.mimeType
                             albumList += album
@@ -141,13 +147,13 @@ class MediaLoader(val application: Application) {
         val fileSize = getFileSizeCondition()
         return if (AlbumSpec.onlyShowImages()) {
             // 只查询图片
-            "$MEDIA_TYPE = ? ${getImageMimeTypeCondition()} AND $fileSize"
+            "$MEDIA_TYPE=? ${getImageMimeTypeCondition()} AND $fileSize"
         } else if (AlbumSpec.onlyShowVideos()) {
             // 只查询视频
-            "$MEDIA_TYPE = ? ${getVideoMimeTypeCondition()} AND $duration"
+            "$MEDIA_TYPE=? ${getVideoMimeTypeCondition()} AND $duration"
         } else {
             // 查询所有
-            "(($MEDIA_TYPE = ? ${getImageMimeTypeCondition()}) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration)) AND $fileSize"
+            "(($MEDIA_TYPE=? ${getImageMimeTypeCondition()}) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration)) AND $fileSize"
         }
     }
 
@@ -280,23 +286,23 @@ class MediaLoader(val application: Application) {
      */
     private fun getImageMimeTypeCondition(): String {
         val stringBuilder = StringBuilder()
-//        // 配置具体到什么类型
-//        AlbumSpec.mimeTypeSet?.let { mimeTypes ->
-//            val mimeTypeList = ArrayList<MimeType>()
-//            mimeTypes.forEach { mimeType ->
-//                if (MimeType.ofImage().contains(mimeType)) {
-//                    mimeTypeList.add(mimeType)
-//                }
-//            }
-//            mimeTypeList.forEachIndexed { i, mimeType ->
-//                if (MimeType.ofImage().contains(mimeType)) {
-//                    stringBuilder.append(if (i == 0) " AND (" else " OR ")
-//                        .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-//                        .append("'")
-//                        .append(if (i == mimeTypes.size.minus(1)) ")" else "")
-//                }
-//            }
-//        }
+        // 配置具体到什么类型
+        AlbumSpec.mimeTypeSet?.let { mimeTypes ->
+            val mimeTypeList = ArrayList<MimeType>()
+            mimeTypes.forEach { mimeType ->
+                if (MimeType.ofImage().contains(mimeType)) {
+                    mimeTypeList.add(mimeType)
+                }
+            }
+            mimeTypeList.forEachIndexed { i, mimeType ->
+                if (MimeType.ofImage().contains(mimeType)) {
+                    stringBuilder.append(if (i == 0) " AND (" else " OR ")
+                        .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
+                        .append("'")
+                        .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
+                }
+            }
+        }
         // 根据配置排除类型
         if (!AlbumSpec.isSupportGif && AlbumSpec.mimeTypeSet?.contains(MimeType.GIF) != true) {
             stringBuilder.append(NOT_GIF)
@@ -321,21 +327,21 @@ class MediaLoader(val application: Application) {
      */
     private fun getVideoMimeTypeCondition(): String {
         val stringBuilder = StringBuilder()
-//        // 配置具体到什么类型
-//        AlbumSpec.mimeTypeSet?.let { mimeTypes ->
-//            val mimeTypeList = ArrayList<MimeType>()
-//            mimeTypes.forEach { mimeType ->
-//                if (MimeType.ofVideo().contains(mimeType)) {
-//                    mimeTypeList.add(mimeType)
-//                }
-//            }
-//            mimeTypeList.forEachIndexed { i, mimeType ->
-//                stringBuilder.append(if (i == 0) " AND (" else " OR ")
-//                    .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-//                    .append("'")
-//                    .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
-//            }
-//        }
+        // 配置具体到什么类型
+        AlbumSpec.mimeTypeSet?.let { mimeTypes ->
+            val mimeTypeList = ArrayList<MimeType>()
+            mimeTypes.forEach { mimeType ->
+                if (MimeType.ofVideo().contains(mimeType)) {
+                    mimeTypeList.add(mimeType)
+                }
+            }
+            mimeTypeList.forEachIndexed { i, mimeType ->
+                stringBuilder.append(if (i == 0) " AND (" else " OR ")
+                    .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
+                    .append("'")
+                    .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
+            }
+        }
         return stringBuilder.toString()
     }
 
