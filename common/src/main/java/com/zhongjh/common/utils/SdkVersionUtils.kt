@@ -10,6 +10,7 @@ import androidx.annotation.ChecksSdkIntAtLeast
  * @date 2023/4/7
  */
 object SdkVersionUtils {
+
     /**
      * 判断是否是Android Q版本
      *
@@ -27,4 +28,12 @@ object SdkVersionUtils {
     @JvmStatic
     val isR: Boolean
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
+    /**
+     * 判断是否是Android O版本
+     */
+    @JvmStatic
+    val isO: Boolean
+        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+
 }

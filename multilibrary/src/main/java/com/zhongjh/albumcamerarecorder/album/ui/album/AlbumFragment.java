@@ -249,6 +249,8 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         // 获取专辑数据
         mMainModel.loadAllAlbum();
 
+        mMainModel.reloadPageMediaData(1L, mAlbumSpec.getPageSize());
+
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
             mViewHolder.recyclerview.setNestedScrollingEnabled(false);

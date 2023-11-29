@@ -1,21 +1,23 @@
 package com.zhongjh.albumcamerarecorder.album.loader
 
 import android.app.Application
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
+import android.os.Bundle
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.isAudio
 import com.zhongjh.common.enums.MimeType.Companion.isImageOrGif
 import com.zhongjh.common.enums.MimeType.Companion.isVideo
+import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.SdkVersionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,6 +29,7 @@ class MediaLoader(val application: Application) {
     companion object {
 
         private val TAG = MediaLoader::class.java.simpleName
+        private const val ALL_BUCKET_ID = -1L
         private const val DURATION: String = "duration"
         private const val BUCKET_DISPLAY_NAME = "bucket_display_name"
         private const val BUCKET_ID = "bucket_id"
@@ -73,70 +76,168 @@ class MediaLoader(val application: Application) {
             val albumSelectionStr = getAlbumSelection()
             val sortOrderStr = getSortOrder()
             Log.d(TAG, "查询语句: $albumSelectionStr 排序语句: $sortOrderStr")
-            application.contentResolver
-                .query(
-                    QUERY_URI,
-                    PROJECTION,
-                    albumSelectionStr,
-                    getSelectionArgs(),
-                    sortOrderStr
-                )?.use { data ->
-                    if (data.count > 0) {
-                        var totalCount = 0L
-                        val bucketSet = hashSetOf<Long>()
-                        val countMap = hashMapOf<Long, Long>()
-                        data.moveToFirst()
-                        do {
-                            val media = parse(data)
-                            var newCount = countMap[media.bucketId]
-                            if (newCount == null) {
-                                newCount = 1L
-                            } else {
-                                newCount++
-                            }
-                            // 根据不同的bucketId划分不同的专辑
-                            countMap[media.bucketId] = newCount
-                            if (bucketSet.contains(media.bucketId)) {
-                                continue
-                            }
-                            val album = Album2()
-                            album.id = media.bucketId
-                            album.name = media.parentFolderName
-                            album.firstImagePath = media.path
-                            album.firstMimeType = media.mimeType
-                            albumList += album
-                            bucketSet.add(media.bucketId)
-                        } while (data.moveToNext())
-
-                        // 计算每个相册的数量
-                        albumList.forEach { album ->
-                            countMap[album.id]?.let { count ->
-                                album.count = count.toInt()
-                                totalCount += album.count
-                            }
+            application.contentResolver.query(
+                QUERY_URI, PROJECTION, albumSelectionStr, getSelectionArgs(), sortOrderStr
+            )?.use { data ->
+                if (data.count > 0) {
+                    var totalCount = 0L
+                    val bucketSet = hashSetOf<Long>()
+                    val countMap = hashMapOf<Long, Long>()
+                    data.moveToFirst()
+                    do {
+                        val media = parse(data)
+                        var newCount = countMap[media.bucketId]
+                        if (newCount == null) {
+                            newCount = 1L
+                        } else {
+                            newCount++
                         }
-
-                        // 创建《所有》该专辑
+                        // 根据不同的bucketId划分不同的专辑
+                        countMap[media.bucketId] = newCount
+                        if (bucketSet.contains(media.bucketId)) {
+                            continue
+                        }
                         val album = Album2()
-                        val bucketDisplayName =
-                            application.getString(R.string.z_multi_library_album_name_all);
-                        album.name = bucketDisplayName
-                        album.id = -1
-                        album.count = totalCount.toInt()
-                        albumList.first().let { firstAlbum ->
-                            album.firstImagePath = firstAlbum.firstImagePath
-                            album.firstMimeType = firstAlbum.firstMimeType
+                        album.id = media.bucketId
+                        album.name = media.parentFolderName
+                        album.firstImagePath = media.path
+                        album.firstMimeType = media.mimeType
+                        albumList += album
+                        bucketSet.add(media.bucketId)
+                    } while (data.moveToNext())
+
+                    // 计算每个相册的数量
+                    albumList.forEach { album ->
+                        countMap[album.id]?.let { count ->
+                            album.count = count.toInt()
+                            totalCount += album.count
                         }
-                        albumList.add(0, album)
                     }
-                    // 关闭 cursor
-                    data.close()
+
+                    // 创建《所有》该专辑
+                    val album = Album2()
+                    val bucketDisplayName =
+                        application.getString(R.string.z_multi_library_album_name_all);
+                    album.name = bucketDisplayName
+                    album.id = -1
+                    album.count = totalCount.toInt()
+                    albumList.first().let { firstAlbum ->
+                        album.firstImagePath = firstAlbum.firstImagePath
+                        album.firstMimeType = firstAlbum.firstMimeType
+                    }
+                    albumList.add(0, album)
                 }
+                // 关闭 cursor
+                data.close()
+            }
         }
         // 根据count排序
         return albumList.apply {
             this.sortByDescending { it.count }
         }
+    }
+
+    /**
+     * 获取 所有图片 的 第一页图片数据
+     * @param pageSize 图片数量
+     */
+    suspend fun loadMedia(pageSize: Int): MutableList<LocalMedia> {
+        return loadMediaMore(ALL_BUCKET_ID, 1, pageSize)
+    }
+
+    /**
+     * 获取 某个专辑 的 第一页图片数据
+     * @param bucketId 专辑id
+     * @param pageSize 页数
+     */
+    suspend fun loadMedia(bucketId: Long, pageSize: Int): MutableList<LocalMedia> {
+        return loadMediaMore(bucketId, 1, pageSize)
+    }
+
+    /**
+     * 获取 某个专辑 的 某一 页图片数据
+     * @param bucketId 专辑id
+     * @param page 页码
+     * @param pageSize 页数
+     */
+    suspend fun loadMediaMore(
+        bucketId: Long, page: Int, pageSize: Int
+    ): MutableList<LocalMedia> {
+        val mediaList = mutableListOf<LocalMedia>()
+        withContext(Dispatchers.IO) {
+            val selectionArgs = if (bucketId == ALL_BUCKET_ID) {
+                getSelectionArgs()
+            } else {
+                getSelectionArgs().plusElement(bucketId.toString())
+            }
+            if (SdkVersionUtils.isR) {
+                application.contentResolver.query(
+                    QUERY_URI, PROJECTION, createQueryArgsBundle(
+                        getSelection(bucketId),
+                        selectionArgs,
+                        pageSize,
+                        (page - 1) * pageSize,
+                        getSortOrder()
+                    ), null
+                )?.use { cursor ->
+                    if (cursor.count > 0) {
+                        while (cursor.moveToNext()) {
+                            val media = parse(cursor)
+                            mediaList += media
+                        }
+                    }
+                    // close cursor
+                    cursor.close()
+                }
+            } else {
+                application.contentResolver.query(
+                    QUERY_URI,
+                    PROJECTION,
+                    getSelection(bucketId),
+                    selectionArgs,
+                    getSortOrder() + " limit " + pageSize + " offset " + (page - 1) * pageSize
+                )?.use { cursor ->
+                    if (cursor.count > 0) {
+                        while (cursor.moveToNext()) {
+                            val media = parse(cursor)
+                            mediaList += media
+                        }
+                    }
+                    // close cursor
+                    cursor.close()
+                }
+            }
+        }
+        return mediaList
+    }
+
+    /**
+     * 赋值参数
+     * @param selection 查询语句
+     * @param selectionArgs 查询条件
+     * @param limitCount 分页
+     * @param offset 分页
+     * @param orderBy 排序
+     */
+    private fun createQueryArgsBundle(
+        selection: String,
+        selectionArgs: Array<String>,
+        limitCount: Int,
+        offset: Int,
+        orderBy: String?
+    ): Bundle {
+        val queryArgs = Bundle()
+        if (SdkVersionUtils.isO) {
+            queryArgs.putString(ContentResolver.QUERY_ARG_SQL_SELECTION, selection)
+            queryArgs.putStringArray(ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS, selectionArgs)
+            queryArgs.putString(ContentResolver.QUERY_ARG_SQL_SORT_ORDER, orderBy)
+        }
+        if (SdkVersionUtils.isR) {
+            queryArgs.putString(
+                ContentResolver.QUERY_ARG_SQL_LIMIT, "$limitCount offset $offset"
+            )
+        }
+        return queryArgs
     }
 
     /**
@@ -155,6 +256,26 @@ class MediaLoader(val application: Application) {
             // 查询所有
             "(($MEDIA_TYPE=? ${getImageMimeTypeCondition()}) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration)) AND $fileSize"
         }
+    }
+
+    /**
+     * @return 根据专辑查询图片的 sql 条件
+     */
+    private fun getSelection(bucketId: Long): String {
+        val duration = getDurationCondition()
+        val fileSize = getFileSizeCondition()
+        val stringBuilder = StringBuilder()
+        if (AlbumSpec.onlyShowImages()) {
+            stringBuilder.append("($MEDIA_TYPE=?${getImageMimeTypeCondition()}) AND $fileSize")
+        } else if (AlbumSpec.onlyShowVideos()) {
+            stringBuilder.append("($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize")
+        } else {
+            stringBuilder.append("($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize")
+        }
+        if (bucketId == ALL_BUCKET_ID) {
+            stringBuilder.append("AND $BUCKET_ID=?")
+        }
+        return stringBuilder.toString()
     }
 
     /**
@@ -217,19 +338,17 @@ class MediaLoader(val application: Application) {
         // 图片没有具体到某个类型
         if (MimeType.hasMimeTypeOfUnknown(media.mimeType)) {
             val mimeType = MimeType.getMimeType(media.absolutePath)
-            media.mimeType =
-                if (TextUtils.isEmpty(mimeType)) {
-                    media.mimeType
-                } else {
-                    mimeType.toString()
-                }
-        }
-        media.path =
-            if (SdkVersionUtils.isQ) {
-                getRealPathUri(media.id, media.mimeType)
+            media.mimeType = if (TextUtils.isEmpty(mimeType)) {
+                media.mimeType
             } else {
-                media.absolutePath
+                mimeType.toString()
             }
+        }
+        media.path = if (SdkVersionUtils.isQ) {
+            getRealPathUri(media.id, media.mimeType)
+        } else {
+            media.absolutePath
+        }
         media.orientation = data.getInt(data.getColumnIndexOrThrow(ORIENTATION))
         media.duration = data.getLong(data.getColumnIndexOrThrow(DURATION))
         media.size = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE))
@@ -249,12 +368,11 @@ class MediaLoader(val application: Application) {
      * @return 获取 duration 的 sql条件语句，只针对视频
      */
     private fun getDurationCondition(): String {
-        val maxValue =
-            if (AlbumSpec.videoMaxSecond == 0) {
-                Long.MAX_VALUE
-            } else {
-                AlbumSpec.videoMaxSecond
-            }
+        val maxValue = if (AlbumSpec.videoMaxSecond == 0) {
+            Long.MAX_VALUE
+        } else {
+            AlbumSpec.videoMaxSecond
+        }
         return String.format(
             Locale.CHINA,
             "%d <%s $DURATION and $DURATION <= %d",
@@ -268,16 +386,17 @@ class MediaLoader(val application: Application) {
      * @return 获取 文件大小 的 sql条件语句
      */
     private fun getFileSizeCondition(): String {
-        val maxS =
-            if (AlbumSpec.filterMaxFileSize == 0L) {
-                Long.MAX_VALUE
-            } else {
-                AlbumSpec.filterMaxFileSize
-            }
+        val maxS = if (AlbumSpec.filterMaxFileSize == 0L) {
+            Long.MAX_VALUE
+        } else {
+            AlbumSpec.filterMaxFileSize
+        }
         return String.format(
             Locale.CHINA,
             "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
-            max(0, AlbumSpec.filterMinFileSize), "=", maxS
+            max(0, AlbumSpec.filterMinFileSize),
+            "=",
+            maxS
         )
     }
 
@@ -298,8 +417,7 @@ class MediaLoader(val application: Application) {
                 if (MimeType.ofImage().contains(mimeType)) {
                     stringBuilder.append(if (i == 0) " AND (" else " OR ")
                         .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-                        .append("'")
-                        .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
+                        .append("'").append(if (i == mimeTypeList.size.minus(1)) ")" else "")
                 }
             }
         }
@@ -310,9 +428,9 @@ class MediaLoader(val application: Application) {
         if (!AlbumSpec.isSupportWebp && AlbumSpec.mimeTypeSet?.contains(MimeType.WEBP) != true) {
             stringBuilder.append(NOT_WEBP)
         }
-        if (!AlbumSpec.isSupportBmp && AlbumSpec.mimeTypeSet?.contains(MimeType.BMP) != true
-            && AlbumSpec.mimeTypeSet?.contains(MimeType.XMSBMP) != true
-            && AlbumSpec.mimeTypeSet?.contains(MimeType.VNDBMP) != true
+        if (!AlbumSpec.isSupportBmp && AlbumSpec.mimeTypeSet?.contains(MimeType.BMP) != true && AlbumSpec.mimeTypeSet?.contains(
+                MimeType.XMSBMP
+            ) != true && AlbumSpec.mimeTypeSet?.contains(MimeType.VNDBMP) != true
         ) {
             stringBuilder.append(NOT_BMP).append(NOT_XMS_BMP).append(NOT_VND_WAP_BMP)
         }
@@ -338,8 +456,7 @@ class MediaLoader(val application: Application) {
             mimeTypeList.forEachIndexed { i, mimeType ->
                 stringBuilder.append(if (i == 0) " AND (" else " OR ")
                     .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-                    .append("'")
-                    .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
+                    .append("'").append(if (i == mimeTypeList.size.minus(1)) ")" else "")
             }
         }
         return stringBuilder.toString()

@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.entity.MediaData
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
-import com.zhongjh.albumcamerarecorder.album.loader.MediaPageLoader
 import com.zhongjh.common.entity.LocalMedia
 import kotlinx.coroutines.launch
 
@@ -25,14 +24,9 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     private val tag: String = this@MainModel.javaClass.simpleName
 
     /**
-     * 数据库操作文件夹类
-     */
-    private var mediaLoader: MediaLoader
-
-    /**
      * 数据库操作文件类
      */
-    private var mediaPageLoader: MediaPageLoader
+    private var mediaLoader: MediaLoader
 
     /**
      * 输送失败信息
@@ -49,8 +43,8 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 多媒体文件数据集,只存在于一页的,主要用于通知ui增加新的一页数据
      */
-    private val _localMediaPages = MutableLiveData<MediaData>()
-    val localMediaPages: LiveData<MediaData> get() = _localMediaPages
+    private val _localMediaPages = MutableLiveData<MutableList<LocalMedia>>()
+    val localMediaPages: LiveData<MutableList<LocalMedia>> get() = _localMediaPages
 
     /**
      * 多媒体文件数据集的缓存，相册和预览都会用到
@@ -74,7 +68,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
 
     init {
         mediaLoader = MediaLoader(application)
-        mediaPageLoader = MediaPageLoader(application)
     }
 
     /**
@@ -83,7 +76,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * @param bucketId 专辑id
      * @param pageSize 每页多少个
      */
-    fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
+    suspend fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
         page = 1
         loadPageMediaData(bucketId, page, pageSize)
     }
@@ -94,7 +87,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * @param bucketId 专辑id
      * @param pageSize 每页多少个
      */
-    fun addAllPageMediaData(bucketId: Long, pageSize: Int) {
+    suspend fun addAllPageMediaData(bucketId: Long, pageSize: Int) {
         page += 1
         loadPageMediaData(bucketId, page, pageSize)
     }
@@ -119,16 +112,21 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * @param page     当前页码
      * @param pageSize 每页多少个
      */
-    private fun loadPageMediaData(bucketId: Long, page: Int, pageSize: Int) {
+    private suspend fun loadPageMediaData(bucketId: Long, page: Int, pageSize: Int) {
         Log.d(tag, "bucketId : $bucketId")
-        mediaPageLoader.loadPageMediaData(
-            bucketId, page, pageSize, pageSize
-        ) { data, currentPage, isHasMore ->
-            val mediaData = MediaData(data, isHasMore)
-            localMedias.addAll(data)
-            Log.d(tag, " localMedias.size: " + localMedias.size)
-            // 通知UI有新的数据
-            _localMediaPages.postValue(mediaData)
+        viewModelScope.launch {
+            try {
+                // 通知UI有新的数据
+                this@MainModel._localMediaPages.postValue(
+                    mediaLoader.loadMediaMore(
+                        bucketId,
+                        page,
+                        pageSize
+                    )
+                )
+            } catch (ex: Exception) {
+                this@MainModel._onFail.postValue(ex)
+            }
         }
     }
 

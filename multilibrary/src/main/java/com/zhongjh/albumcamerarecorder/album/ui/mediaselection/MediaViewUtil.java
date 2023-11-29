@@ -112,12 +112,12 @@ public class MediaViewUtil implements
         // 监听到新的相册数据
         mMainModel.getLocalMediaPages().observe(mFragment.getViewLifecycleOwner(), mediaData -> {
             // 如果没有数据，则关闭下拉加载
-            mRecyclerView.setEnabledLoadMore(!mediaData.getData().isEmpty());
+            mRecyclerView.setEnabledLoadMore(!mediaData.isEmpty());
             if (mMainModel.getPage() == 1) {
-                mAdapter.setData(mediaData.getData());
+                mAdapter.setData(mediaData);
                 mRecyclerView.scrollToPosition(0);
             } else {
-                mAdapter.addData(mediaData.getData());
+                mAdapter.addData(mediaData);
             }
         });
 
