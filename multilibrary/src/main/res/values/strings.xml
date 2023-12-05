@@ -8,7 +8,7 @@
     <string name="z_multi_library_ok">OK</string>
     <string name="z_multi_library_cancel">Cancel</string>
     <string name="z_multi_library_to_use_this_feature">To use this feature</string>
-    <string name="z_multi_library_file_read_and_write_permission_to_read_and_store_related_files">\nFile read and write permission to read and store related files</string>
+    <string name="z_multi_library_file_read_and_write_permission_to_read_and_store_related_files">\nFile read and read permission to read and store related files</string>
     <string name="z_multi_library_record_permission_to_record_sound">\nRecord permission to record sound</string>
     <string name="z_multi_library_record_permission_to_shoot">\nRecord permission to shoot</string>
     <string name="z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you">\nOtherwise, it cannot run normally and will apply for relevant permissions from you</string>

@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
             message.append(getString(R.string.z_multi_library_to_use_this_feature));
             for (String item : needPermissions) {
                 switch (item) {
-                    case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                    case Manifest.permission.READ_EXTERNAL_STORAGE:
                         message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files));
                         break;
                     case Manifest.permission.RECORD_AUDIO:
@@ -410,8 +410,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
                 }
             }
 

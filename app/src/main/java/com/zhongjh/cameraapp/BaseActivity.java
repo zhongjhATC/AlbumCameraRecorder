@@ -129,8 +129,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
                 }
             } else {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
                 }
             }
             if (permissions.size() > 0) {
