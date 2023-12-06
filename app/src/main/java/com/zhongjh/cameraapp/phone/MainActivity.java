@@ -224,13 +224,14 @@ public class MainActivity extends BaseActivity {
             mGlobalSetting.setOnImageCompressionListener(new OnImageCompressionLuBan());
         }
 
-        // 用于记录日志，一些压缩文件等功能会导致日志错误
+        // 用于记录日志
         mGlobalSetting.setOnLogListener(throwable -> {
             // 打印堆栈日志
             StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
             for (StackTraceElement stackTraceElement : stackTraceElements) {
                 Log.e(TAG, stackTraceElement.toString());
             }
+            Toast.makeText(MainActivity.this.getApplicationContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
         });
 
         // 是否压缩视频
@@ -377,11 +378,9 @@ public class MainActivity extends BaseActivity {
      */
     private AlbumSetting initAlbumSetting() {
         AlbumSetting albumSetting = new AlbumSetting(!mBinding.cbMediaTypeExclusive.isChecked());
-//        albumSetting.isSupportGif(false);
         Set<MimeType> mimeTypeAlbum;
         if (mBinding.cbAlbumImage.isChecked() && mBinding.cbAlbumVideo.isChecked()) {
             mimeTypeAlbum = MimeType.ofAll();
-//            mimeTypeAlbum = EnumSet.of(MimeType.PNG);
             // 支持的类型：图片，视频
             albumSetting.mimeTypeSet(mimeTypeAlbum);
         } else if (mBinding.cbAlbumImage.isChecked()) {

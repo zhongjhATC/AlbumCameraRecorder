@@ -272,8 +272,8 @@ class MediaLoader(val application: Application) {
         } else {
             stringBuilder.append("($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize")
         }
-        if (bucketId == ALL_BUCKET_ID) {
-            stringBuilder.append("AND $BUCKET_ID=?")
+        if (bucketId != ALL_BUCKET_ID) {
+            stringBuilder.append(" AND $BUCKET_ID=?")
         }
         return stringBuilder.toString()
     }
@@ -319,7 +319,7 @@ class MediaLoader(val application: Application) {
         media.mimeType =
             data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
         // 判断文件类型是否符合规范，不规范就只能取后缀名
-        if (!MimeType.isImageOrGif(media.mimeType) && !MimeType.isVideo(media.mimeType)) {
+        if (!isImageOrGif(media.mimeType) && !isVideo(media.mimeType)) {
             // 因为某些app保存文件时导致数据库的mimeType不符合规范，所以通过后缀名设置类型
             val extension: String = media.mimeType.substring(media.mimeType.lastIndexOf(".") + 1)
             // 循环图片类型，判断后缀是否是.jpg之类的

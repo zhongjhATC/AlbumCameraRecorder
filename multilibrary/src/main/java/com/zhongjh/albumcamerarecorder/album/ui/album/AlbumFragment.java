@@ -249,8 +249,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         // 获取专辑数据
         mMainModel.loadAllAlbum();
 
-        mMainModel.reloadPageMediaData(1L, mAlbumSpec.getPageSize());
-
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.getSlidingHiddenEnable()) {
             mViewHolder.recyclerview.setNestedScrollingEnabled(false);
@@ -336,7 +334,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         });
 
         // 触发滑动事件
-        mViewHolder.bottomToolbar.setOnListener(translationY -> ((MainActivity)requireActivity()).onDependentViewChanged(translationY));
+        mViewHolder.bottomToolbar.setOnListener(translationY -> ((MainActivity) requireActivity()).onDependentViewChanged(translationY));
     }
 
     /**
@@ -567,7 +565,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mMainModel.setPreviewPosition(adapterPosition);
 
         // 隐藏底部控件
-        ((MainActivity)requireActivity()).showHideTableLayoutAnimator(false);
+        ((MainActivity) requireActivity()).showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment2();
         Bundle bundle = new Bundle();
         bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
@@ -593,12 +591,12 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
             // 隐藏母窗体的table
-            ((MainActivity)requireActivity()).showHideTableLayout(false);
+            ((MainActivity) requireActivity()).showHideTableLayout(false);
         } else {
             // 显示底部
             mViewHolder.bottomToolbar.setVisibility(View.GONE);
             // 隐藏母窗体的table
-            ((MainActivity)requireActivity()).showHideTableLayout(true);
+            ((MainActivity) requireActivity()).showHideTableLayout(true);
         }
     }
 

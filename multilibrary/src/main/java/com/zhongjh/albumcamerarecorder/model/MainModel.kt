@@ -76,9 +76,11 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * @param bucketId 专辑id
      * @param pageSize 每页多少个
      */
-    suspend fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
-        page = 1
-        loadPageMediaData(bucketId, page, pageSize)
+    fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
+        viewModelScope.launch {
+            page = 1
+            loadPageMediaData(bucketId, page, pageSize)
+        }
     }
 
     /**
@@ -87,9 +89,11 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * @param bucketId 专辑id
      * @param pageSize 每页多少个
      */
-    suspend fun addAllPageMediaData(bucketId: Long, pageSize: Int) {
-        page += 1
-        loadPageMediaData(bucketId, page, pageSize)
+    fun addAllPageMediaData(bucketId: Long, pageSize: Int) {
+        viewModelScope.launch {
+            page += 1
+            loadPageMediaData(bucketId, page, pageSize)
+        }
     }
 
     /**
