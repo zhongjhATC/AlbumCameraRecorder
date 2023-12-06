@@ -502,7 +502,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
 
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
-
                 if (size > mAlbumSpec.getOriginalMaxSize()) {
                     count++;
                 }

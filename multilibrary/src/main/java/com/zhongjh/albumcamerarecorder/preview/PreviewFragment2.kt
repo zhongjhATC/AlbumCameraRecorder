@@ -707,15 +707,14 @@ class PreviewFragment2 : BaseFragment() {
 
     /**
      * 获取当前超过限制原图大小的数量
-     * TODO 使用这个方法的逻辑似乎不太对
      *
      * @return 数量
      */
     private fun countOverMaxSize(): Int {
         var count = 0
-        val selectedCount: Int = mMainModel.localMedias.count()
+        val selectedCount: Int = mSelectedModel.selectedData.count()
         for (i in 0 until selectedCount) {
-            val item: LocalMedia = mMainModel.localMedias[i]
+            val item: LocalMedia = mSelectedModel.selectedData.localMedias[i]
             if (item.isImage()) {
                 val size = PhotoMetadataUtils.getSizeInMb(item.size)
                 if (size > mAlbumSpec.originalMaxSize) {
