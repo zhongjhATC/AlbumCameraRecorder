@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
@@ -152,7 +152,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (requestCode == REQUEST_CODE_CHOOSE) {
             // 如果是在预览界面点击了确定
-            if (data.getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
+            if (data.getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
                 ArrayList<LocalMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
                 if (selected == null) {

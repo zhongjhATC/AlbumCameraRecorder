@@ -49,7 +49,6 @@ import com.zhongjh.albumcamerarecorder.model.MainModel;
 import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams;
@@ -84,7 +83,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     private static final String CHECK_STATE = "checkState";
 
     private Context mContext;
-    private MainModel mMainModel;
+    MainModel mMainModel;
     private SelectedModel mSelectedModel;
     /**
      * 从预览界面回来
@@ -118,10 +117,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private MediaViewUtil mMediaViewUtil;
 
-    /**
-     * 是否原图
-     */
-    private boolean mOriginalEnable;
     /**
      * 是否刷新
      */
@@ -238,7 +233,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             ColorFilterUtil.setColorFilterSrcIn(navigationIcon, color);
         }
         if (savedInstanceState != null) {
-            mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
+            mMainModel.setOriginalEnable(savedInstanceState.getBoolean(CHECK_STATE));
         }
         updateBottomToolbar();
 
@@ -280,8 +275,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             public void onListener(@NonNull View v) {
                 Intent intent = new Intent(requireActivity(), PreviewActivity.class);
                 intent.putParcelableArrayListExtra(PreviewFragment2.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
-                intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-                intent.putExtra(BasePreviewFragment.COMPRESS_ENABLE, true);
+                intent.putExtra(PreviewFragment2.COMPRESS_ENABLE, true);
                 intent.putExtra(IS_SHARED_ANIMATION, false);
                 mPreviewActivityResult.launch(intent);
                 if (mGlobalSpec.getCutscenesEnabled()) {
@@ -297,7 +291,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                 ArrayList<LocalMedia> localMediaArrayList = mSelectedModel.getSelectedData().getLocalMedias();
                 // 设置是否原图状态
                 for (LocalMedia localMedia : localMediaArrayList) {
-                    localMedia.setOriginal(mOriginalEnable);
+                    localMedia.setOriginal(mMainModel.getOriginalEnable());
                 }
                 compressFile(localMediaArrayList);
             }
@@ -316,12 +310,12 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             }
 
             // 设置状态
-            mOriginalEnable = !mOriginalEnable;
-            mViewHolder.original.setChecked(mOriginalEnable);
+            mMainModel.setOriginalEnable(!mMainModel.getOriginalEnable());
+            mViewHolder.original.setChecked(mMainModel.getOriginalEnable());
 
             // 设置状态是否原图
             if (mAlbumSpec.getOnCheckedListener() != null) {
-                mAlbumSpec.getOnCheckedListener().onCheck(mOriginalEnable);
+                mAlbumSpec.getOnCheckedListener().onCheck(mMainModel.getOriginalEnable());
             }
         });
 
@@ -392,11 +386,9 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                         } else {
                             selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION);
                         }
-                        // 是否启用原图
-                        mOriginalEnable = result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
                         int collectionType = result.getData().getIntExtra(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
                         // 如果在预览界面点击了确定
-                        if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
+                        if (result.getData().getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
                             if (selected != null) {
                                 ArrayList<LocalMedia> localFiles = new ArrayList<>(selected);
                                 // 不用处理压缩，压缩处理已经在预览界面处理了
@@ -405,7 +397,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                         } else {
                             // 点击了返回
                             mSelectedModel.getSelectedData().overwrite(selected, collectionType);
-                            if (result.getData().getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_IS_EDIT, false)) {
+                            if (result.getData().getBooleanExtra(PreviewFragment2.EXTRA_RESULT_IS_EDIT, false)) {
                                 mIsRefresh = true;
                                 // 重新读取数据源
                                 mMediaViewUtil.reloadPageMediaData();
@@ -480,10 +472,10 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private void updateOriginalState() {
         // 设置选择状态
-        mViewHolder.original.setChecked(mOriginalEnable);
+        mViewHolder.original.setChecked(mMainModel.getOriginalEnable());
         if (countOverMaxSize() > 0) {
             // 是否启用原图
-            if (mOriginalEnable) {
+            if (mMainModel.getOriginalEnable()) {
                 // 弹出窗口提示大于 xx mb
                 IncapableDialog incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.getOriginalMaxSize()));
@@ -492,7 +484,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
 
                 // 底部的原图钩去掉
                 mViewHolder.original.setChecked(false);
-                mOriginalEnable = false;
+                mMainModel.setOriginalEnable(false);
             }
         }
     }
@@ -568,8 +560,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         ((MainActivity) requireActivity()).showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment2();
         Bundle bundle = new Bundle();
-        bundle.putBoolean(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        bundle.putBoolean(BasePreviewFragment.COMPRESS_ENABLE, true);
+        bundle.putBoolean(PreviewFragment2.COMPRESS_ENABLE, true);
         fragment.setArguments(bundle);
 
         requireActivity().getSupportFragmentManager()
@@ -660,8 +651,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             // 获取选择的图片的url集合
             Intent result = new Intent();
             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMediaArrayList);
-            // 是否启用原图
-            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             requireActivity().setResult(RESULT_OK, result);
         } else {
             mGlobalSpec.getOnResultCallbackListener().onResult(localMediaArrayList);

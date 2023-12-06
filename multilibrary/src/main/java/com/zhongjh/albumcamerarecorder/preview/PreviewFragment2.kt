@@ -35,8 +35,6 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment.*
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
@@ -83,6 +81,46 @@ class PreviewFragment2 : BaseFragment() {
          * 是否开启共享动画
          */
         const val IS_SHARED_ANIMATION = "is_shared_animation"
+
+        const val EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat"
+
+        /**
+         * 选择的数据源集合和类型
+         */
+        const val EXTRA_DEFAULT_BUNDLE = "extra_default_bundle"
+        const val EXTRA_RESULT_APPLY = "extra_result_apply"
+        const val EXTRA_RESULT_IS_EDIT = "extra_result_is_edit"
+
+        /**
+         * 设置是否开启原图
+         */
+        const val EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable"
+
+        /**
+         * 设置是否启动确定功能
+         */
+        const val APPLY_ENABLE = "apply_enable"
+
+        /**
+         * 设置是否启动选择功能
+         */
+        const val SELECTED_ENABLE = "selected_enable"
+
+        /**
+         * 设置是否开启编辑功能
+         */
+        const val EDIT_ENABLE = "edit_enable"
+
+        /**
+         * 设置是否开启压缩
+         */
+        const val COMPRESS_ENABLE = "compress_enable"
+        const val IS_SELECTED_LISTENER = "is_selected_listener"
+        const val IS_SELECTED_CHECK = "is_selected_check"
+        const val IS_EXTERNAL_USERS = "is_external_users"
+
+        const val EXTRA_ALBUM = "extra_album"
+        const val EXTRA_ITEM = "extra_item"
     }
 
     private val logTag: String = PreviewFragment2::class.java.simpleName
@@ -253,7 +291,7 @@ class PreviewFragment2 : BaseFragment() {
         AlbumCompressFileTask(
             mContext,
             logTag,
-            BasePreviewFragment::class.java,
+            PreviewFragment2::class.java,
             mGlobalSpec,
             mPictureMediaStoreCompat,
             mVideoMediaStoreCompat
@@ -272,11 +310,6 @@ class PreviewFragment2 : BaseFragment() {
      * 是否从界面恢复回来的
      */
     private var mIsSavedInstanceState = false
-
-    /**
-     * 是否启动原图
-     */
-    private var mOriginalEnable = false
 
     /**
      * 设置是否启动确定功能
@@ -418,8 +451,6 @@ class PreviewFragment2 : BaseFragment() {
                 mCompressEnable = it.getBoolean(COMPRESS_ENABLE, false)
                 mEditEnable = it.getBoolean(EDIT_ENABLE, true)
                 mIsSharedAnimation = it.getBoolean(IS_SHARED_ANIMATION, true)
-                mOriginalEnable =
-                    it.getBoolean(EXTRA_RESULT_ORIGINAL_ENABLE, false)
                 it.getParcelableArrayList<LocalMedia>(STATE_SELECTION)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
                     mMainModel.localMedias.addAll(localMedias)
@@ -535,7 +566,7 @@ class PreviewFragment2 : BaseFragment() {
                 val localMediaArrayList: java.util.ArrayList<LocalMedia> = mMainModel.localMedias
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
-                    localMedia.isOriginal = mOriginalEnable
+                    localMedia.isOriginal = mMainModel.originalEnable
                 }
                 setResultOkByIsCompress(true)
             }
@@ -594,13 +625,13 @@ class PreviewFragment2 : BaseFragment() {
                 )
                 return@setOnClickListener
             }
-            mOriginalEnable = !mOriginalEnable
-            mViewHolder.original.setChecked(mOriginalEnable)
-            if (!mOriginalEnable) {
+            mMainModel.originalEnable = !mMainModel.originalEnable
+            mViewHolder.original.setChecked(mMainModel.originalEnable)
+            if (!mMainModel.originalEnable) {
                 mViewHolder.original.setColor(Color.WHITE)
             }
             if (mAlbumSpec.onCheckedListener != null) {
-                mAlbumSpec.onCheckedListener!!.onCheck(mOriginalEnable)
+                mAlbumSpec.onCheckedListener!!.onCheck(mMainModel.originalEnable)
             }
         }
         // 点击Loading停止
@@ -715,7 +746,7 @@ class PreviewFragment2 : BaseFragment() {
                 intent.putExtra(STATE_SELECTION, mSelectedModel.selectedData.localMedias)
                 intent.putExtra(EXTRA_RESULT_APPLY, apply)
                 intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
-                intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+                intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.originalEnable)
                 if (mIsExternalUsers && !apply) {
                     requireActivity().setResult(Activity.RESULT_CANCELED, intent)
                 } else {
@@ -1103,13 +1134,19 @@ class PreviewFragment2 : BaseFragment() {
             }
 
             // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
-            if (mAlbumSpec.originalEnable && mOriginalEnable && !item.isVideo()) {
+            if (mAlbumSpec.originalEnable && !item.isVideo()) {
                 // 显示
                 mViewHolder.originalLayout.visibility = View.VISIBLE
+                mViewHolder.original.visibility = View.VISIBLE
+                mViewHolder.tvOriginal.visibility = View.VISIBLE
+                mViewHolder.tvSize.visibility = View.VISIBLE
                 updateOriginalState()
             } else {
                 // 隐藏
                 mViewHolder.originalLayout.visibility = View.GONE
+                mViewHolder.original.visibility = View.GONE
+                mViewHolder.tvOriginal.visibility = View.GONE
+                mViewHolder.tvSize.visibility = View.GONE
             }
             if (item.isImage() && mGlobalSpec.imageEditEnabled && mEditEnable) {
                 mViewHolder.tvEdit.visibility = View.VISIBLE
@@ -1125,13 +1162,13 @@ class PreviewFragment2 : BaseFragment() {
      */
     private fun updateOriginalState() {
         // 设置原图按钮根据配置来
-        mViewHolder.original.setChecked(mOriginalEnable)
-        if (!mOriginalEnable) {
+        mViewHolder.original.setChecked(mMainModel.originalEnable)
+        if (!mMainModel.originalEnable) {
             mViewHolder.original.setColor(Color.WHITE)
         }
         if (countOverMaxSize() > 0) {
             // 如果开启了原图功能
-            if (mOriginalEnable) {
+            if (mMainModel.originalEnable) {
                 // 弹框提示取消原图
                 val incapableDialog = newInstance(
                     "",
@@ -1147,7 +1184,7 @@ class PreviewFragment2 : BaseFragment() {
                 // 去掉原图按钮的选择状态
                 mViewHolder.original.setChecked(false)
                 mViewHolder.original.setColor(Color.WHITE)
-                mOriginalEnable = false
+                mMainModel.originalEnable = false
             }
         }
     }
@@ -1187,6 +1224,7 @@ class PreviewFragment2 : BaseFragment() {
         var iBtnBack: ImageButton = rootView.findViewById(R.id.ibtnBack)
         var tvEdit: TextView = rootView.findViewById(R.id.tvEdit)
         var original: CheckRadioView = rootView.findViewById(R.id.original)
+        var tvOriginal: TextView = rootView.findViewById(R.id.tvOriginal)
         var originalLayout: View = rootView.findViewById(R.id.originalLayout)
         var tvSize: TextView = rootView.findViewById(R.id.tvSize)
         var buttonApply: TextView = rootView.findViewById(R.id.buttonApply)

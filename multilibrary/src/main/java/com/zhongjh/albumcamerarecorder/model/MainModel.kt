@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
-import com.zhongjh.albumcamerarecorder.album.entity.MediaData
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.common.entity.LocalMedia
 import kotlinx.coroutines.launch
@@ -65,6 +64,11 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 当前预览的图片的索引,默认第一个
      */
     var previewPosition = 0
+
+    /**
+     * 是否原图
+     */
+    var originalEnable = false
 
     init {
         mediaLoader = MediaLoader(application)

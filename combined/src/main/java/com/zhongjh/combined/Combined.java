@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
@@ -103,7 +103,7 @@ public class Combined {
     public void onActivityResult(int requestCode, Intent data) {
         if (this.requestCode == requestCode) {
             // 如果是在预览界面点击了确定
-            if (data.getBooleanExtra(BasePreviewFragment.EXTRA_RESULT_APPLY, false)) {
+            if (data.getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
                 ArrayList<LocalMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
                 if (selected == null) {
@@ -124,9 +124,7 @@ public class Combined {
                 }
             } else {
                 List<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
-                if (result != null) {
-                    this.maskProgressLayout.addLocalFileStartUpload(result);
-                }
+                this.maskProgressLayout.addLocalFileStartUpload(result);
             }
         }
     }

@@ -18,9 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
@@ -122,13 +121,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         item.setMimeType(MimeType.JPEG.toString());
         item.setWidth(bitmapData.getWidth());
         item.setHeight(bitmapData.getHeight());
-        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
+        intent.putExtra(PreviewFragment2.EXTRA_ITEM, item);
 
-        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle);
-        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-        intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true);
-        intent.putExtra(BasePreviewFragment.IS_SELECTED_LISTENER, false);
-        intent.putExtra(BasePreviewFragment.IS_SELECTED_CHECK, false);
+        intent.putExtra(PreviewFragment2.EXTRA_DEFAULT_BUNDLE, bundle);
+        intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true);
+        intent.putExtra(PreviewFragment2.IS_SELECTED_LISTENER, false);
+        intent.putExtra(PreviewFragment2.IS_SELECTED_CHECK, false);
         mPhotoAdapterListener.onPhotoAdapterClick(intent);
     }
 

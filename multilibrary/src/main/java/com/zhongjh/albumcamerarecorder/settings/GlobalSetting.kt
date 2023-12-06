@@ -9,13 +9,12 @@ import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
-import com.zhongjh.albumcamerarecorder.model.SelectedData.*
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
+import com.zhongjh.albumcamerarecorder.model.SelectedData.*
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
-import com.zhongjh.albumcamerarecorder.preview.base.BasePreviewFragment
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
@@ -44,7 +43,7 @@ class GlobalSetting internal constructor(
     private val mGlobalSpec: GlobalSpec = cleanInstance
 
     @IntDef(value = [ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_USER, ActivityInfo.SCREEN_ORIENTATION_BEHIND, ActivityInfo.SCREEN_ORIENTATION_SENSOR, ActivityInfo.SCREEN_ORIENTATION_NOSENSOR, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR, ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_FULL_USER, ActivityInfo.SCREEN_ORIENTATION_LOCKED])
-    @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+    @Retention(AnnotationRetention.SOURCE)
     annotation class ScreenOrientation
 
     override fun onDestroy() {
@@ -234,13 +233,13 @@ class GlobalSetting internal constructor(
         bundle.putParcelableArrayList(STATE_SELECTION, list)
         bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
         val intent = Intent(activity, PreviewActivity::class.java)
-        intent.putExtra(PreviewFragment.EXTRA_ITEM, list[position])
-        intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle)
-        intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
-        intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)
-        intent.putExtra(BasePreviewFragment.IS_SELECTED_CHECK, false)
-        intent.putExtra(BasePreviewFragment.IS_EXTERNAL_USERS, true)
-        intent.putExtra(BasePreviewFragment.EDIT_ENABLE, false)
+        intent.putExtra(PreviewFragment2.EXTRA_ITEM, list[position])
+        intent.putExtra(PreviewFragment2.EXTRA_DEFAULT_BUNDLE, bundle)
+        intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+        intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true)
+        intent.putExtra(PreviewFragment2.IS_SELECTED_CHECK, false)
+        intent.putExtra(PreviewFragment2.IS_EXTERNAL_USERS, true)
+        intent.putExtra(PreviewFragment2.EDIT_ENABLE, false)
         activity.startActivityForResult(intent, requestCode)
         if (GlobalSpec.cutscenesEnabled) {
             activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
@@ -311,14 +310,14 @@ class GlobalSetting internal constructor(
             bundle.putParcelableArrayList(STATE_SELECTION, localMedias)
             bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
             val intent = Intent(activity, PreviewActivity::class.java)
-            intent.putExtra(PreviewFragment.EXTRA_ITEM, localMedias[position])
-            intent.putExtra(BasePreviewFragment.EXTRA_DEFAULT_BUNDLE, bundle)
-            intent.putExtra(BasePreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
-            intent.putExtra(BasePreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)
-            intent.putExtra(BasePreviewFragment.IS_SELECTED_CHECK, false)
-            intent.putExtra(BasePreviewFragment.APPLY_ENABLE, false)
-            intent.putExtra(BasePreviewFragment.SELECTED_ENABLE, false)
-            intent.putExtra(BasePreviewFragment.IS_EXTERNAL_USERS, true)
+            intent.putExtra(PreviewFragment2.EXTRA_ITEM, localMedias[position])
+            intent.putExtra(PreviewFragment2.EXTRA_DEFAULT_BUNDLE, bundle)
+            intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+            intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true)
+            intent.putExtra(PreviewFragment2.IS_SELECTED_CHECK, false)
+            intent.putExtra(PreviewFragment2.APPLY_ENABLE, false)
+            intent.putExtra(PreviewFragment2.SELECTED_ENABLE, false)
+            intent.putExtra(PreviewFragment2.IS_EXTERNAL_USERS, true)
             activity.startActivityForResult(intent, GlobalSpec.requestCode)
             if (GlobalSpec.cutscenesEnabled) {
                 activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
