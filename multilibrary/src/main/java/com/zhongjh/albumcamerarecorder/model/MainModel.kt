@@ -120,14 +120,11 @@ class MainModel(application: Application) : AndroidViewModel(application) {
         Log.d(tag, "bucketId : $bucketId")
         viewModelScope.launch {
             try {
+                val localMediaMutableList = mediaLoader.loadMediaMore(bucketId, page, pageSize)
                 // 通知UI有新的数据
-                this@MainModel._localMediaPages.postValue(
-                    mediaLoader.loadMediaMore(
-                        bucketId,
-                        page,
-                        pageSize
-                    )
-                )
+                this@MainModel._localMediaPages.postValue(localMediaMutableList)
+                // 添加进缓存数据
+                localMedias.addAll(localMediaMutableList)
             } catch (ex: Exception) {
                 this@MainModel._onFail.postValue(ex)
             }
