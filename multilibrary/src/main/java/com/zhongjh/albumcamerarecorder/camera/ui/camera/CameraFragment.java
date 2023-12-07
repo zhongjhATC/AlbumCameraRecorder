@@ -42,8 +42,6 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
         return inflater.inflate(R.layout.fragment_camera_zjh, container, false);
     }
 
-
-
     @Override
     public void initView(View view, Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(view);

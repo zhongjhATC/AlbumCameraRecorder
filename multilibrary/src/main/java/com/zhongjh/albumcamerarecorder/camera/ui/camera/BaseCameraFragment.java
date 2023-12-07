@@ -171,6 +171,15 @@ public abstract class BaseCameraFragment
                              Bundle savedInstanceState) {
         View view = setContentView(inflater, container);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
+        // 创建权限申请回调
+        ActivityResultLauncher<String> launcher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                result -> {
+                    if (result) {
+                        // 权限获取到之后的动作
+                    } else {
+                        // 权限没有获取到的动作
+                    }
+                });
         initView(view, savedInstanceState);
         initData();
         setView();

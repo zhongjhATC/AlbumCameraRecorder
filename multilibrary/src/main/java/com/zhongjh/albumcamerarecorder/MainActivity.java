@@ -417,7 +417,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-
             // 判断如果有录音功能则验证录音
             if (SelectableUtils.recorderValid() || SelectableUtils.videoValid()) {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager
