@@ -12,11 +12,15 @@ import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLo
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
 
+import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,6 +34,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
@@ -60,6 +67,7 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
+import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -114,6 +122,10 @@ public abstract class BaseCameraFragment
      * 闪关灯状态 默认关闭
      */
     private int flashModel = TYPE_FLASH_OFF;
+    /**
+     * 请求权限的回调
+     */
+    ActivityResultLauncher<String> launcher;
     /**
      * 默认图片
      */
@@ -172,12 +184,11 @@ public abstract class BaseCameraFragment
         View view = setContentView(inflater, container);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
         // 创建权限申请回调
-        ActivityResultLauncher<String> launcher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+        launcher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
                 result -> {
                     if (result) {
-                        // 权限获取到之后的动作
-                    } else {
-                        // 权限没有获取到的动作
+                        // 没有所需要请求的权限，就进行后面的逻辑
+                        getCameraStateManagement().pvLayoutCommit();
                     }
                 });
         initView(view, savedInstanceState);
@@ -491,7 +502,7 @@ public abstract class BaseCameraFragment
             @Override
             public void confirm() {
                 Log.d(TAG, "confirm " + getState().toString());
-                getCameraStateManagement().pvLayoutCommit();
+                requestPermissions();
             }
 
             @Override
@@ -1037,6 +1048,64 @@ public abstract class BaseCameraFragment
         if (cameraSpec.getEnableFlashMemoryModel()) {
             FlashCacheUtils.saveFlashModel(getContext(), flashModel);
         }
+    }
+
+    /**
+     * 请求权限
+     */
+    private void requestPermissions() {
+        // 判断权限，权限通过才可以初始化相关
+        ArrayList<String> needPermissions = getNeedPermissions();
+        if (needPermissions.size() > 0) {
+            // 请求权限
+            requestPermissionsDialog();
+        } else {
+            // 没有所需要请求的权限，就进行后面的逻辑
+            getCameraStateManagement().pvLayoutCommit();
+        }
+    }
+
+    /**
+     * 获取目前需要请求的权限
+     */
+    protected ArrayList<String> getNeedPermissions() {
+        // 需要请求的权限列表
+        ArrayList<String> permissions = new ArrayList<>();
+        // Android 10 以下需要请求存储权限才能存进相册
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager
+                    .PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+        }
+        return permissions;
+    }
+
+    /**
+     * 请求权限 - 如果曾经拒绝过，则弹出dialog
+     */
+    private void requestPermissionsDialog() {
+        // 动态消息
+        StringBuilder message = new StringBuilder();
+        message.append(getString(R.string.z_multi_library_to_use_this_feature));
+        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(), R.style.MyAlertDialogStyle);
+        // 弹窗提示为什么要请求这个权限
+        builder.setTitle(getString(R.string.z_multi_library_hint));
+        message.append(getString(R.string.z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you));
+        builder.setMessage(message.toString());
+        builder.setPositiveButton(getString(R.string.z_multi_library_ok), (dialog, which) -> {
+            dialog.dismiss();
+            // 请求权限
+            launcher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        });
+        builder.setNegativeButton(getString(R.string.z_multi_library_cancel), (dialog, which) -> {
+            dialog.dismiss();
+        });
+        Dialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     /**
