@@ -72,78 +72,13 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected abstract void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount);
 
-    @TargetApi(23)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == GET_PERMISSION_REQUEST) {
-            int size = 0;
-            if (grantResults.length >= 1) {
-                int writeResult = grantResults[0];
-                // 读写内存权限
-                boolean writeGranted = writeResult == PackageManager.PERMISSION_GRANTED;
-                if (!writeGranted) {
-                    size++;
-                }
-                // 录音权限
-                int recordPermissionResult = grantResults[1];
-                boolean recordPermissionGranted = recordPermissionResult == PackageManager.PERMISSION_GRANTED;
-                if (!recordPermissionGranted) {
-                    size++;
-                }
-                // 相机权限
-                int cameraPermissionResult = grantResults[2];
-                boolean cameraPermissionGranted = cameraPermissionResult == PackageManager.PERMISSION_GRANTED;
-                if (!cameraPermissionGranted) {
-                    size++;
-                }
-
-                if (size == 0) {
-                    if (isBrowse) {
-                        Toast.makeText(getApplicationContext(), getString(R.string.you_can_turn_it_back_on), Toast.LENGTH_SHORT).show();
-                    } else {
-                        openMain(0, 0, 0);
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.please_open_it_in_settings_permission_management), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
     /**
      * 获取权限
      *
      * @param isBrowse 是否浏览
      */
     protected boolean getPermissions(boolean isBrowse) {
-        this.isBrowse = isBrowse;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // 存储功能必须验证,兼容Android SDK 33
-            ArrayList<String> permissions = new ArrayList<>();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-                    permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
-                }
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
-                    permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
-                }
-            } else {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-                }
-            }
-            if (permissions.size() > 0) {
-                // 请求权限
-                ActivityCompat.requestPermissions(BaseActivity.this, permissions.toArray(new String[0]), GET_PERMISSION_REQUEST);
-                return false;
-            } else {
-                // 没有所需要请求的权限，就进行初始化
-                return true;
-            }
-        } else {
-            return true;
-        }
+        return true;
     }
 
     @Override
