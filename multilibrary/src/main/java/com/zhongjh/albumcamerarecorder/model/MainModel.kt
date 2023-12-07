@@ -126,6 +126,13 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * 点击原图
+     */
+    fun originalClick() {
+
+    }
+
+    /**
      * 根据页码获取数据
      *
      * @param bucketId 专辑id
