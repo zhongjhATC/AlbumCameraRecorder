@@ -66,6 +66,12 @@
             android:textSize="16sp"
             tools:textColor="@color/white" />
 
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/groupOriginal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="originalLayout,original,tvOriginal,tvSize" />
+
         <View
             android:id="@+id/originalLayout"
             android:layout_width="0dp"
@@ -115,7 +121,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvOriginal"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="123"
+            tools:text="(123)"
             tools:textColor="@color/white"
             tools:visibility="visible" />
 

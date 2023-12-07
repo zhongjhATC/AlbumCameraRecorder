@@ -46,6 +46,23 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     val localMediaPages: LiveData<MutableList<LocalMedia>> get() = _localMediaPages
 
     /**
+     * 是否原图
+     */
+    private val _originalEnable = MutableLiveData<Boolean>()
+
+    fun setOriginalEnable(boolean: Boolean) {
+        _originalEnable.postValue(boolean)
+    }
+
+    fun getOriginalEnable(): Boolean {
+        return _originalEnable.value == true
+    }
+
+    fun getOriginalEnableObserve(): LiveData<Boolean> {
+        return _originalEnable
+    }
+
+    /**
      * 多媒体文件数据集的缓存，相册和预览都会用到
      */
     val localMedias = ArrayList<LocalMedia>()
@@ -64,11 +81,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 当前预览的图片的索引,默认第一个
      */
     var previewPosition = 0
-
-    /**
-     * 是否原图
-     */
-    var originalEnable = false
 
     init {
         mediaLoader = MediaLoader(application)

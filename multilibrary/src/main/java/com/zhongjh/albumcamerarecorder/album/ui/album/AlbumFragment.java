@@ -31,6 +31,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -79,8 +80,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
 
     private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     public static final String ARGUMENTS_MARGIN_BOTTOM = "arguments_margin_bottom";
-
-    private static final String CHECK_STATE = "checkState";
 
     private Context mContext;
     MainModel mMainModel;
@@ -232,9 +231,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         if (navigationIcon != null) {
             ColorFilterUtil.setColorFilterSrcIn(navigationIcon, color);
         }
-        if (savedInstanceState != null) {
-            mMainModel.setOriginalEnable(savedInstanceState.getBoolean(CHECK_STATE));
-        }
         updateBottomToolbar();
 
         mAlbumSpinner = new AlbumSpinner(this.mContext);
@@ -311,7 +307,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
 
             // 设置状态
             mMainModel.setOriginalEnable(!mMainModel.getOriginalEnable());
-            mViewHolder.original.setChecked(mMainModel.getOriginalEnable());
 
             // 设置状态是否原图
             if (mAlbumSpec.getOnCheckedListener() != null) {
@@ -366,6 +361,8 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         });
         // 选择数据改变
         mSelectedModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> mMediaViewUtil.notifyItemByLocalMedia());
+        // 原图选项改变
+        mMainModel.getOriginalEnableObserve().observe(getViewLifecycleOwner(), value -> mViewHolder.original.setChecked(value));
     }
 
     /**
@@ -483,8 +480,12 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                         IncapableDialog.class.getName());
 
                 // 底部的原图钩去掉
-                mViewHolder.original.setChecked(false);
                 mMainModel.setOriginalEnable(false);
+
+                // 设置状态是否原图
+                if (mAlbumSpec.getOnCheckedListener() != null) {
+                    mAlbumSpec.getOnCheckedListener().onCheck(mMainModel.getOriginalEnable());
+                }
             }
         }
     }
@@ -502,6 +503,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
 
             if (item.isImage()) {
                 float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
+
                 if (size > mAlbumSpec.getOriginalMaxSize()) {
                     count++;
                 }

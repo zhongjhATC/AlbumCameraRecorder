@@ -45,7 +45,6 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    app:layout_constraintVertical_chainStyle="packed"
                     android:id="@+id/tvAlbumTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -61,14 +60,15 @@
                     app:layout_constraintEnd_toStartOf="@+id/imgArrow"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed"
                     tools:ignore="RtlSymmetry" />
 
                 <ImageView
-                    android:layout_marginStart="8dp"
                     android:id="@+id/imgArrow"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
                     android:scaleType="centerInside"
                     app:layout_constraintEnd_toStartOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -144,7 +144,7 @@
             android:id="@+id/groupOriginal"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="originalLayout,original,tvOriginal" />
+            app:constraint_referenced_ids="originalLayout,original,tvOriginal,tvSize" />
 
         <View
             android:id="@+id/originalLayout"
@@ -154,7 +154,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:orientation="horizontal"
             android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="@+id/tvOriginal"
+            app:layout_constraintEnd_toEndOf="@+id/tvSize"
             app:layout_constraintStart_toStartOf="@+id/original"
             tools:showIn="@layout/fragment_album_zjh" />
 
@@ -181,7 +181,6 @@
             android:layout_marginStart="4dp"
             android:enabled="true"
             android:paddingStart="0dp"
-            android:paddingEnd="16dp"
             android:text="@string/z_multi_library_button_original"
             android:textColor="?attr/bottomToolbar.preview.textColor"
             android:textSize="14sp"
@@ -190,6 +189,22 @@
             app:layout_constraintStart_toEndOf="@+id/original"
             app:layout_constraintTop_toTopOf="@+id/buttonApply"
             tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/tvSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:enabled="true"
+            android:textColor="?attr/bottomToolbar.preview.textColor"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvOriginal"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="(123)"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/buttonApply"

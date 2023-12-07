@@ -6,7 +6,6 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.Group
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +28,7 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.albumcamerarecorder.BaseFragment
 import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
@@ -140,8 +141,7 @@ class PreviewFragment2 : BaseFragment() {
         val activity = requireActivity()
         val savedStateViewModelFactory = SavedStateViewModelFactory(activity.application, this)
         return@lazy ViewModelProvider(
-            activity,
-            savedStateViewModelFactory
+            activity, savedStateViewModelFactory
         )[MainModel::class.java]
     }
 
@@ -149,8 +149,7 @@ class PreviewFragment2 : BaseFragment() {
         val activity = requireActivity()
         val savedStateViewModelFactory = SavedStateViewModelFactory(activity.application, this)
         return@lazy ViewModelProvider(
-            activity,
-            savedStateViewModelFactory
+            activity, savedStateViewModelFactory
         )[SelectedModel::class.java]
     }
 
@@ -367,9 +366,7 @@ class PreviewFragment2 : BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         // 获取样式
         return initStyle(inflater, container)
@@ -392,6 +389,7 @@ class PreviewFragment2 : BaseFragment() {
         initSharedAnimationView()
         initViewPagerData()
         initListener()
+        initObserveData()
         updateApplyButton()
     }
 
@@ -469,11 +467,8 @@ class PreviewFragment2 : BaseFragment() {
         mViewPager2 = ViewPager2(requireContext())
         mViewHolder.sharedAnimationView.setContentView(mViewPager2)
         if (isSharedAnimation()) {
-            val alpha =
-                if (mIsSavedInstanceState)
-                    1F
-                else
-                    0F
+            val alpha = if (mIsSavedInstanceState) 1F
+            else 0F
             mViewHolder.sharedAnimationView.setBackgroundAlpha(alpha)
             mViewHolder.bottomToolbar.alpha = alpha
             mViewHolder.constraintLayout.alpha = alpha
@@ -482,8 +477,7 @@ class PreviewFragment2 : BaseFragment() {
         }
         mViewHolder.sharedAnimationView.setBackgroundColor(
             ContextCompat.getColor(
-                requireContext(),
-                R.color.black
+                requireContext(), R.color.black
             )
         )
         mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object :
@@ -499,13 +493,11 @@ class PreviewFragment2 : BaseFragment() {
             }
 
             override fun onBeginSharedAnimComplete(
-                sharedAnimationView: SharedAnimationView,
-                showImmediately: Boolean
+                sharedAnimationView: SharedAnimationView, showImmediately: Boolean
             ) {
                 // 开始共享动画完成后
                 this@PreviewFragment2.onSharedBeginAnimComplete(
-                    sharedAnimationView,
-                    showImmediately
+                    sharedAnimationView, showImmediately
                 )
             }
 
@@ -566,7 +558,7 @@ class PreviewFragment2 : BaseFragment() {
                 val localMediaArrayList: java.util.ArrayList<LocalMedia> = mMainModel.localMedias
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
-                    localMedia.isOriginal = mMainModel.originalEnable
+                    localMedia.isOriginal = mMainModel.getOriginalEnable()
                 }
                 setResultOkByIsCompress(true)
             }
@@ -612,27 +604,20 @@ class PreviewFragment2 : BaseFragment() {
             val count: Int = countOverMaxSize()
             if (count > 0) {
                 val incapableDialog = newInstance(
-                    "",
-                    getString(
+                    "", getString(
                         R.string.z_multi_library_error_over_original_count,
                         count,
                         mAlbumSpec.originalMaxSize
                     )
                 )
                 incapableDialog.show(
-                    parentFragmentManager,
-                    IncapableDialog::class.java.name
+                    parentFragmentManager, IncapableDialog::class.java.name
                 )
                 return@setOnClickListener
             }
-            mMainModel.originalEnable = !mMainModel.originalEnable
-            mViewHolder.original.setChecked(mMainModel.originalEnable)
-            if (!mMainModel.originalEnable) {
-                mViewHolder.original.setColor(Color.WHITE)
-            }
-            if (mAlbumSpec.onCheckedListener != null) {
-                mAlbumSpec.onCheckedListener!!.onCheck(mMainModel.originalEnable)
-            }
+            mMainModel.setOriginalEnable(!mMainModel.getOriginalEnable())
+
+            mAlbumSpec.onCheckedListener?.onCheck(mMainModel.getOriginalEnable())
         }
         // 点击Loading停止
         mViewHolder.pbLoading.setOnClickListener {
@@ -640,6 +625,16 @@ class PreviewFragment2 : BaseFragment() {
             mCompressFileTask.cancel()
             // 恢复界面可用
             setControlTouchEnable(true)
+        }
+    }
+
+    /**
+     * 初始化数据的监控
+     */
+    private fun initObserveData() {
+        // 原图选项改变
+        mMainModel.getOriginalEnableObserve().observe(viewLifecycleOwner) { value: Boolean ->
+            mViewHolder.original.setChecked(value)
         }
     }
 
@@ -745,7 +740,7 @@ class PreviewFragment2 : BaseFragment() {
                 intent.putExtra(STATE_SELECTION, mSelectedModel.selectedData.localMedias)
                 intent.putExtra(EXTRA_RESULT_APPLY, apply)
                 intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
-                intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.originalEnable)
+                intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.getOriginalEnable())
                 if (mIsExternalUsers && !apply) {
                     requireActivity().setResult(Activity.RESULT_CANCELED, intent)
                 } else {
@@ -912,8 +907,7 @@ class PreviewFragment2 : BaseFragment() {
      * @param media 实体
      */
     private fun setImageViewScaleType(
-        holder: PreviewPagerAdapter.PreviewViewHolder,
-        media: LocalMedia
+        holder: PreviewPagerAdapter.PreviewViewHolder, media: LocalMedia
     ) {
         if (media.width == 0 && media.height == 0) {
             holder.imageView.scaleType = ScaleType.FIT_CENTER
@@ -1025,8 +1019,7 @@ class PreviewFragment2 : BaseFragment() {
      * 开始共享动画完成后
      */
     private fun onSharedBeginAnimComplete(
-        sharedAnimationView: SharedAnimationView?,
-        showImmediately: Boolean
+        sharedAnimationView: SharedAnimationView?, showImmediately: Boolean
     ) {
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
         val media = mMainModel.localMedias[mViewPager2.currentItem]
@@ -1127,7 +1120,7 @@ class PreviewFragment2 : BaseFragment() {
         item?.let {
             if (item.isGif()) {
                 mViewHolder.tvSize.visibility = View.VISIBLE
-                mViewHolder.tvSize.text = PhotoMetadataUtils.getSizeInMb(item.size).toString() + "M"
+                mViewHolder.tvSize.text = "(${PhotoMetadataUtils.getSizeInMb(item.size)}M)"
             } else {
                 mViewHolder.tvSize.visibility = View.GONE
             }
@@ -1135,17 +1128,11 @@ class PreviewFragment2 : BaseFragment() {
             // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
             if (mAlbumSpec.originalEnable && !item.isVideo()) {
                 // 显示
-                mViewHolder.originalLayout.visibility = View.VISIBLE
-                mViewHolder.original.visibility = View.VISIBLE
-                mViewHolder.tvOriginal.visibility = View.VISIBLE
-                mViewHolder.tvSize.visibility = View.VISIBLE
+                mViewHolder.groupOriginal.visibility = View.VISIBLE
                 updateOriginalState()
             } else {
                 // 隐藏
-                mViewHolder.originalLayout.visibility = View.GONE
-                mViewHolder.original.visibility = View.GONE
-                mViewHolder.tvOriginal.visibility = View.GONE
-                mViewHolder.tvSize.visibility = View.GONE
+                mViewHolder.groupOriginal.visibility = View.GONE
             }
             if (item.isImage() && mGlobalSpec.imageEditEnabled && mEditEnable) {
                 mViewHolder.tvEdit.visibility = View.VISIBLE
@@ -1161,29 +1148,24 @@ class PreviewFragment2 : BaseFragment() {
      */
     private fun updateOriginalState() {
         // 设置原图按钮根据配置来
-        mViewHolder.original.setChecked(mMainModel.originalEnable)
-        if (!mMainModel.originalEnable) {
-            mViewHolder.original.setColor(Color.WHITE)
-        }
+        mViewHolder.original.setChecked(mMainModel.getOriginalEnable())
         if (countOverMaxSize() > 0) {
             // 如果开启了原图功能
-            if (mMainModel.originalEnable) {
+            if (mMainModel.getOriginalEnable()) {
                 // 弹框提示取消原图
                 val incapableDialog = newInstance(
-                    "",
-                    getString(
+                    "", getString(
                         R.string.z_multi_library_error_over_original_size,
                         mAlbumSpec.originalMaxSize
                     )
                 )
                 incapableDialog.show(
-                    parentFragmentManager,
-                    IncapableDialog::class.java.name
+                    parentFragmentManager, IncapableDialog::class.java.name
                 )
                 // 去掉原图按钮的选择状态
-                mViewHolder.original.setChecked(false)
-                mViewHolder.original.setColor(Color.WHITE)
-                mMainModel.originalEnable = false
+                mMainModel.setOriginalEnable(false)
+
+                mAlbumSpec.onCheckedListener?.onCheck(mMainModel.getOriginalEnable())
             }
         }
     }
@@ -1222,6 +1204,7 @@ class PreviewFragment2 : BaseFragment() {
             rootView.findViewById(R.id.sharedAnimationView)
         var iBtnBack: ImageButton = rootView.findViewById(R.id.ibtnBack)
         var tvEdit: TextView = rootView.findViewById(R.id.tvEdit)
+        var groupOriginal: Group = rootView.findViewById(R.id.groupOriginal)
         var original: CheckRadioView = rootView.findViewById(R.id.original)
         var tvOriginal: TextView = rootView.findViewById(R.id.tvOriginal)
         var originalLayout: View = rootView.findViewById(R.id.originalLayout)
