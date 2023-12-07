@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> needPermissions = getNeedPermissions();
         if (needPermissions.size() > 0) {
             // 请求权限
-            requestPermissions2(needPermissions);
+            requestPermissionsDialog();
         } else {
             // 没有所需要请求的权限，就进行初始化
             init(savedInstanceState);
