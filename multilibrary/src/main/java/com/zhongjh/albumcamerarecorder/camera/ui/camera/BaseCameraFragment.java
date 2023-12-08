@@ -30,12 +30,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.otaliastudios.cameraview.CameraException;
@@ -67,7 +67,6 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MultiMedia;
-import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -76,6 +75,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * 一个父类的拍摄Fragment，用于开放出来给开发自定义，但是同时也需要遵守一些规范
@@ -125,7 +126,7 @@ public abstract class BaseCameraFragment
     /**
      * 请求权限的回调
      */
-    ActivityResultLauncher<String> launcher;
+    ActivityResultLauncher<String[]> mRequestPermissionActivityResult;
     /**
      * 默认图片
      */
@@ -183,14 +184,6 @@ public abstract class BaseCameraFragment
                              Bundle savedInstanceState) {
         View view = setContentView(inflater, container);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
-        // 创建权限申请回调
-        launcher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
-                result -> {
-                    if (result) {
-                        // 没有所需要请求的权限，就进行后面的逻辑
-                        getCameraStateManagement().pvLayoutCommit();
-                    }
-                });
         initView(view, savedInstanceState);
         initData();
         setView();
@@ -619,6 +612,20 @@ public abstract class BaseCameraFragment
                     }
                     // 全部刷新
                     getCameraPicturePresenter().refreshMultiPhoto(bitmapDatas);
+                }
+            }
+        });
+        // 创建权限申请回调
+        mRequestPermissionActivityResult = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
+            @Override
+            public void onActivityResult(Map<String, Boolean> result) {
+                if (result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null
+                        && result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null) {
+                    if (Objects.requireNonNull(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE)).equals(true)
+                            && Objects.requireNonNull(result.get(Manifest.permission.READ_EXTERNAL_STORAGE)).equals(true)) {
+                        //权限全部获取到之后的动作
+                        getCameraStateManagement().pvLayoutCommit();
+                    }
                 }
             }
         });
@@ -1072,9 +1079,12 @@ public abstract class BaseCameraFragment
         // 需要请求的权限列表
         ArrayList<String> permissions = new ArrayList<>();
         // Android 10 以下需要请求存储权限才能存进相册
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager
-                    .PERMISSION_GRANTED) {
+                    .PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager
+                            .PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
                 permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
         }
@@ -1098,7 +1108,7 @@ public abstract class BaseCameraFragment
         builder.setPositiveButton(getString(R.string.z_multi_library_ok), (dialog, which) -> {
             dialog.dismiss();
             // 请求权限
-            launcher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            mRequestPermissionActivityResult.launch(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE});
         });
         builder.setNegativeButton(getString(R.string.z_multi_library_cancel), (dialog, which) -> {
             dialog.dismiss();
