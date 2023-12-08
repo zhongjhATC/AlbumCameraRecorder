@@ -1079,7 +1079,7 @@ public abstract class BaseCameraFragment
         // 需要请求的权限列表
         ArrayList<String> permissions = new ArrayList<>();
         // Android 10 以下需要请求存储权限才能存进相册
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager
                     .PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager
