@@ -487,6 +487,11 @@ public abstract class BaseCameraFragment
     private void initPvLayoutOperateListener() {
         getPhotoVideoLayout().setOperateListener(new BaseOperationLayout.OperateListener() {
             @Override
+            public boolean beforeConfirm() {
+                return requestPermissions();
+            }
+
+            @Override
             public void cancel() {
                 Log.d(TAG, "cancel " + getState().toString());
                 getCameraStateManagement().pvLayoutCancel();
@@ -495,12 +500,14 @@ public abstract class BaseCameraFragment
             @Override
             public void confirm() {
                 Log.d(TAG, "confirm " + getState().toString());
-                requestPermissions();
+                // 没有所需要请求的权限，就进行后面的逻辑
+                getCameraStateManagement().pvLayoutCommit();
             }
 
             @Override
             public void startProgress() {
-
+                // 没有所需要请求的权限，就进行后面的逻辑
+                getCameraStateManagement().pvLayoutCommit();
             }
 
             @Override
@@ -1059,16 +1066,18 @@ public abstract class BaseCameraFragment
 
     /**
      * 请求权限
+     * return false则是请求权限
+     * return true则是无权限请求继续下一步
      */
-    private void requestPermissions() {
+    private boolean requestPermissions() {
         // 判断权限，权限通过才可以初始化相关
         ArrayList<String> needPermissions = getNeedPermissions();
         if (needPermissions.size() > 0) {
             // 请求权限
             requestPermissionsDialog();
+            return false;
         } else {
-            // 没有所需要请求的权限，就进行后面的逻辑
-            getCameraStateManagement().pvLayoutCommit();
+            return true;
         }
     }
 

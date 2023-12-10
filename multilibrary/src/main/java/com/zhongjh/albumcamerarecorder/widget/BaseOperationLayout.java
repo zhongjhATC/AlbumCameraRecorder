@@ -48,6 +48,14 @@ public abstract class BaseOperationLayout extends FrameLayout {
     public interface OperateListener {
 
         /**
+         * 确认前的事件，一般用于请求权限
+         * <p>
+         * return false则是做其他操作
+         * return true则是无其他操作继续下一步
+         */
+        boolean beforeConfirm();
+
+        /**
          * 取消
          */
         void cancel();
@@ -319,9 +327,13 @@ public abstract class BaseOperationLayout extends FrameLayout {
             @Override
             public void onClickByProgressMode() {
                 if (mOperateListener != null) {
-                    mOperateListener.confirm();
+                    if (mOperateListener.beforeConfirm()) {
+                        if (mOperateListener != null) {
+                            mOperateListener.confirm();
+                        }
+                        startTipAlphaAnimation();
+                    }
                 }
-                startTipAlphaAnimation();
             }
         });
     }
@@ -491,6 +503,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
     /**
      * 设置中间按钮是否可点击
+     *
      * @param enabled 是否可点击
      */
     public void setClickOrLongEnable(boolean enabled) {
@@ -530,6 +543,13 @@ public abstract class BaseOperationLayout extends FrameLayout {
      */
     public void resetConfirm() {
         viewHolder.btnConfirm.reset();
+    }
+
+    /**
+     * 提交按钮
+     */
+    public void btnConfirmPerformClick() {
+        viewHolder.btnConfirm.performClick();
     }
 
     public static class ViewHolder {
