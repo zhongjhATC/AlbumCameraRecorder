@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -296,7 +298,15 @@ public abstract class BaseOperationLayout extends FrameLayout {
     /**
      * 提交事件
      */
+    @SuppressLint("ClickableViewAccessibility")
     private void btnConfirmListener() {
+        // 用于点击前请求权限
+        viewHolder.btnConfirm.setOnTouchListener((view, motionEvent) -> {
+            if (mOperateListener != null) {
+                return !mOperateListener.beforeConfirm();
+            }
+            return false;
+        });
         viewHolder.btnConfirm.setCircularProgressListener(new CircularProgressListener() {
             @Override
             public void onStart() {
@@ -327,12 +337,8 @@ public abstract class BaseOperationLayout extends FrameLayout {
             @Override
             public void onClickByProgressMode() {
                 if (mOperateListener != null) {
-                    if (mOperateListener.beforeConfirm()) {
-                        if (mOperateListener != null) {
-                            mOperateListener.confirm();
-                        }
-                        startTipAlphaAnimation();
-                    }
+                    mOperateListener.confirm();
+                    startTipAlphaAnimation();
                 }
             }
         });
