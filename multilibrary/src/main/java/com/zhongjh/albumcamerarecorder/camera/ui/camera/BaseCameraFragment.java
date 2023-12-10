@@ -1119,9 +1119,7 @@ public abstract class BaseCameraFragment
             // 请求权限
             mRequestPermissionActivityResult.launch(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE});
         });
-        builder.setNegativeButton(getString(R.string.z_multi_library_cancel), (dialog, which) -> {
-            dialog.dismiss();
-        });
+        builder.setNegativeButton(getString(R.string.z_multi_library_cancel), (dialog, which) -> dialog.dismiss());
         Dialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
