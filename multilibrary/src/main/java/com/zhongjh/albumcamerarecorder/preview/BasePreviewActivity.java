@@ -819,6 +819,17 @@ public class BasePreviewActivity extends AppCompatActivity implements View.OnCli
             FileUtil.copy(oldFile, newFile);
         }
         item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile, isCompress);
+        // 如果是从相册界面直接打开的预览 并且 是编辑过的加入相册
+        if (mIsByAlbum && item.getOldPath() != null) {
+            if (mGlobalSpec.isAddAlbumByEdit()) {
+                Uri uri = MediaStoreUtils.displayToGallery(this, newFile, TYPE_PICTURE,
+                        item.getDuration(), item.getWidth(), item.getHeight(),
+                        mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+                item.setId(MediaStoreUtils.getId(uri));
+            } else {
+                item.setId(System.currentTimeMillis());
+            }
+        }
     }
 
     /**
