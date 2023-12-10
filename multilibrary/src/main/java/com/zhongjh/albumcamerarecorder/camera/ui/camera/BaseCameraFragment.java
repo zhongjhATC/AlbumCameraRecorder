@@ -506,8 +506,6 @@ public abstract class BaseCameraFragment
 
             @Override
             public void startProgress() {
-                // 没有所需要请求的权限，就进行后面的逻辑
-                getCameraStateManagement().pvLayoutCommit();
             }
 
             @Override
