@@ -24,6 +24,7 @@ public class PreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_containerview_zjh);
         initFragment();
+
     }
 
     @Override

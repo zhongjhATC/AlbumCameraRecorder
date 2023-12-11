@@ -51,8 +51,6 @@ import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
-import com.zhongjh.common.widget.IncapableDialog
-import com.zhongjh.common.widget.IncapableDialog.Companion.newInstance
 import com.zhongjh.imageedit.ImageEditActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -73,6 +71,7 @@ import kotlinx.coroutines.withContext
 class PreviewFragment2 : BaseFragment() {
 
     companion object {
+        private val TAG: String = this@PreviewFragment2.javaClass.getSimpleName()
         /**
          * 数据源的标记
          */
@@ -209,23 +208,20 @@ class PreviewFragment2 : BaseFragment() {
     private val mCompressFileTask: SimpleTask<Boolean> by lazy {
         object : SimpleTask<Boolean>() {
             override fun doInBackground(): Boolean {
-//                // 来自相册的，才根据配置处理压缩和迁移
-//                if (mCompressEnable) {
-//                    // 将 缓存文件 拷贝到 配置目录
-//                    for (LocalFile item : mSelectedCollection.asList()) {
-//                        Log.d(TAG, "item " + item.getId());
-//                        // 判断是否需要压缩
-//                        LocalFile isCompressItem = mAlbumCompressFileTask.isCompress(item);
-//                        if (isCompressItem != null) {
-//                            continue;
-//                        }
-//                        // 开始压缩逻辑，获取真实路径
-//                        String path = mAlbumCompressFileTask.getPath(item);
-//                        if (path != null) {
-//                            handleCompress(item, path);
-//                        }
-//                    }
-//                }
+                // 来自相册的，才根据配置处理压缩和迁移
+                if (mCompressEnable) {
+                    // 将 缓存文件 拷贝到 配置目录
+                    for (item in mSelectedModel.selectedData.localMedias) {
+                        Log.d(TAG, "item " + item.id)
+                        // 判断是否需要压缩
+                        mAlbumCompressFileTask.isCompress(item)
+                        // 开始压缩逻辑，获取真实路径
+                        val path: String = mAlbumCompressFileTask.getPath(item)
+                        if (path != null) {
+                            handleCompress(item, path)
+                        }
+                    }
+                }
                 return true
             }
 
