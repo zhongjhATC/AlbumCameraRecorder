@@ -659,16 +659,12 @@ class PreviewFragment2 : BaseFragment() {
     private fun refreshMultiMediaItem() {
         // 获取当前查看的multimedia
         val localMedia = mAdapter.getLocalMedia(mViewPager2.currentItem)
-        // 赋值新旧的path、uri
         // 更新当前fragment编辑后的uri和path
         localMedia?.let {
             localMedia.editorPath = mEditImagePath
             mAdapter.setLocalMedia(mViewPager2.currentItem, it)
             mAdapter.notifyItemChanged(mViewPager2.currentItem)
         }
-
-        // 判断是否跟mSelectedCollection的数据一样，因为通过点击相册预览进来的数据 是共用的，但是如果通过相册某个item点击进来是重新new的数据，如果是重新new的数据要赋值多一个
-        // 如何重现进入这个条件里面：先相册选择第一个，然后点击相册第二个item进入详情，在详情界面滑动到第一个，对第一个进行编辑改动，则会进入这些条件里面
     }
 
     /**
@@ -1091,24 +1087,6 @@ class PreviewFragment2 : BaseFragment() {
                 setSharedAnimationViewParams(position)
             }
         }
-
-
-//        if (isLoadMoreThreshold(position)) {
-//            loadMediaMore()
-//        }
-//        if (isPlayPageSelected) {
-//            if (config.isAutoPlay) {
-//                autoPlayAudioAndVideo()
-//            } else {
-//                val currentHolder = mAdapter.getCurrentViewHolder(viewPager.currentItem)
-//                if (currentHolder is PreviewVideoHolder) {
-//                    if (currentHolder.ivPlay.visibility == View.GONE) {
-//                        currentHolder.ivPlay.visibility = View.VISIBLE
-//                    }
-//                }
-//            }
-//        }
-//        isPlayPageSelected = true
     }
 
     /**
