@@ -47,6 +47,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.albumcamerarecorder.model.MainModel;
+import com.zhongjh.albumcamerarecorder.model.OriginalManage;
 import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
@@ -105,6 +106,11 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * 相册配置
      */
     private final AlbumSpec mAlbumSpec = AlbumSpec.INSTANCE;
+
+    /**
+     * 统一管理原图有关功能模块
+     */
+    private OriginalManage mOriginalManage;
 
     /**
      * 专辑下拉框控件
@@ -213,6 +219,8 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                 mVideoMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getSaveStrategy());
             }
         }
+
+        mOriginalManage = new OriginalManage(this, mMainModel, mSelectedModel, mAlbumSpec);
     }
 
     /**
@@ -294,25 +302,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         });
 
         // 点击原图
-        mViewHolder.originalLayout.setOnClickListener(view -> {
-            // 如果有大于限制大小的，就提示
-            int count = countOverMaxSize();
-            if (count > 0) {
-                IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.z_multi_library_error_over_original_count, count, mAlbumSpec.getOriginalMaxSize()));
-                incapableDialog.show(getChildFragmentManager(),
-                        IncapableDialog.class.getName());
-                return;
-            }
-
-            // 设置状态
-            mMainModel.setOriginalEnable(!mMainModel.getOriginalEnable());
-
-            // 设置状态是否原图
-            if (mAlbumSpec.getOnCheckedListener() != null) {
-                mAlbumSpec.getOnCheckedListener().onCheck(mMainModel.getOriginalEnable());
-            }
-        });
+        mViewHolder.originalLayout.setOnClickListener(view -> mOriginalManage.originalClick());
 
         // 点击Loading停止
         mViewHolder.pbLoading.setOnClickListener(v -> {
@@ -470,47 +460,9 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     private void updateOriginalState() {
         // 设置选择状态
         mViewHolder.original.setChecked(mMainModel.getOriginalEnable());
-        if (countOverMaxSize() > 0) {
-            // 是否启用原图
-            if (mMainModel.getOriginalEnable()) {
-                // 弹出窗口提示大于 xx mb
-                IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.z_multi_library_error_over_original_size, mAlbumSpec.getOriginalMaxSize()));
-                incapableDialog.show(this.getChildFragmentManager(),
-                        IncapableDialog.class.getName());
-
-                // 底部的原图钩去掉
-                mMainModel.setOriginalEnable(false);
-
-                // 设置状态是否原图
-                if (mAlbumSpec.getOnCheckedListener() != null) {
-                    mAlbumSpec.getOnCheckedListener().onCheck(mMainModel.getOriginalEnable());
-                }
-            }
-        }
+        mOriginalManage.updateOriginalState();
     }
 
-    /**
-     * 返回大于限定mb的图片数量
-     *
-     * @return 数量
-     */
-    private int countOverMaxSize() {
-        int count = 0;
-        int selectedCount = mSelectedModel.getSelectedData().count();
-        for (int i = 0; i < selectedCount; i++) {
-            LocalMedia item = mSelectedModel.getSelectedData().getLocalMedias().get(i);
-
-            if (item.isImage()) {
-                float size = PhotoMetadataUtils.getSizeInMb(item.getSize());
-
-                if (size > mAlbumSpec.getOriginalMaxSize()) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
 
     /**
      * 选择某个专辑的时候

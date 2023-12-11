@@ -64,13 +64,12 @@ open class MainActivity : AppCompatActivity() {
         ActivityMainZjhBinding.inflate(layoutInflater)
     }
 
-    private val mStartActivityLauncher =
-        registerForActivityResult(StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
-                requestPermissions(null)
-            }
+    private val mStartActivityLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
+            requestPermissions(null)
         }
+    }
 
     private val mAdapterViewPager by lazy {
         MyPagerAdapter(this, mSpec)
@@ -179,10 +178,9 @@ open class MainActivity : AppCompatActivity() {
                 if (TextUtils.isEmpty(appName)) {
                     builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked))
                 } else {
-                    val toSettingTipStr =
-                        getString(R.string.z_multi_library_in_settings_apply) + appName + getString(
-                            R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions
-                        )
+                    val toSettingTipStr = getString(R.string.z_multi_library_in_settings_apply) + appName + getString(
+                        R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions
+                    )
                     builder.setMessage(toSettingTipStr)
                 }
                 builder.setTitle(getString(R.string.z_multi_library_hint))
@@ -267,8 +265,7 @@ open class MainActivity : AppCompatActivity() {
 
             override fun onTabReselect(position: Int) {}
         })
-        mActivityMainZjhBinding.viewPager.registerOnPageChangeCallback(object :
-            ViewPager2.OnPageChangeCallback() {
+        mActivityMainZjhBinding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 mActivityMainZjhBinding.tableLayout.currentTab = position
                 super.onPageSelected(position)
@@ -339,10 +336,8 @@ open class MainActivity : AppCompatActivity() {
             for (item in needPermissions) {
                 when (item) {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE -> message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files))
-                    Manifest.permission.RECORD_AUDIO ->
-                        message.append(getString(R.string.z_multi_library_record_permission_to_record_sound))
-                    Manifest.permission.CAMERA ->
-                        message.append(getString(R.string.z_multi_library_record_permission_to_shoot))
+                    Manifest.permission.RECORD_AUDIO -> message.append(getString(R.string.z_multi_library_record_permission_to_record_sound))
+                    Manifest.permission.CAMERA -> message.append(getString(R.string.z_multi_library_record_permission_to_shoot))
                     else -> {}
                 }
             }
@@ -388,40 +383,34 @@ open class MainActivity : AppCompatActivity() {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         if (getMimeTypeSet().containsAll(ofImage())) {
                             // 如果所有功能只支持图片，就只请求图片权限
-                            if (ContextCompat.checkSelfPermission(
-                                    this,
-                                    Manifest.permission.READ_MEDIA_IMAGES
-                                ) != PackageManager.PERMISSION_GRANTED
+                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                                != PackageManager.PERMISSION_GRANTED
                             ) {
                                 permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
                             }
                         } else if (getMimeTypeSet().containsAll(ofVideo())) {
                             // 如果所有功能只支持视频，就只请求视频权限
-                            if (ContextCompat.checkSelfPermission(
-                                    this, Manifest.permission.READ_MEDIA_VIDEO
-                                ) != PackageManager.PERMISSION_GRANTED
+                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO)
+                                != PackageManager.PERMISSION_GRANTED
                             ) {
                                 permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
                             }
                         } else {
                             // 如果所有功能都支持视频图片，就请求视频图片权限
-                            if (ContextCompat.checkSelfPermission(
-                                    this, Manifest.permission.READ_MEDIA_IMAGES
-                                ) != PackageManager.PERMISSION_GRANTED
+                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                                != PackageManager.PERMISSION_GRANTED
                             ) {
                                 permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
                             }
-                            if (ContextCompat.checkSelfPermission(
-                                    this, Manifest.permission.READ_MEDIA_VIDEO
-                                ) != PackageManager.PERMISSION_GRANTED
+                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO)
+                                != PackageManager.PERMISSION_GRANTED
                             ) {
                                 permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
                             }
                         }
                     } else {
-                        if (ContextCompat.checkSelfPermission(
-                                this, Manifest.permission.READ_EXTERNAL_STORAGE
-                            ) != PackageManager.PERMISSION_GRANTED
+                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED
                         ) {
                             permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
                         }
@@ -430,9 +419,8 @@ open class MainActivity : AppCompatActivity() {
 
                 // 判断如果有录音功能则验证录音
                 if (recorderValid() || videoValid()) {
-                    if (ContextCompat.checkSelfPermission(
-                            this, Manifest.permission.RECORD_AUDIO
-                        ) != PackageManager.PERMISSION_GRANTED
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                        != PackageManager.PERMISSION_GRANTED
                     ) {
                         if (!permissions.contains(Manifest.permission.RECORD_AUDIO)) {
                             permissions.add(Manifest.permission.RECORD_AUDIO)
@@ -441,9 +429,8 @@ open class MainActivity : AppCompatActivity() {
                 }
                 // 判断如果有录制功能则验证录音、录制
                 if (cameraValid()) {
-                    if (ContextCompat.checkSelfPermission(
-                            this, Manifest.permission.CAMERA
-                        ) != PackageManager.PERMISSION_GRANTED
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED
                     ) {
                         if (!permissions.contains(Manifest.permission.CAMERA)) {
                             permissions.add(Manifest.permission.CAMERA)
@@ -506,8 +493,7 @@ open class MainActivity : AppCompatActivity() {
     fun showHideTableLayoutAnimator(isShow: Boolean) {
         if (isShow) {
             // 获取动画隐藏之前的坐标，恢复回该坐标
-            val translationY =
-                mActivityMainZjhBinding.tableLayout.getTag(R.id.z_tab_layout_translation_y) as Float
+            val translationY = mActivityMainZjhBinding.tableLayout.getTag(R.id.z_tab_layout_translation_y) as Float
             mAnimationTabLayout = ObjectAnimator.ofFloat(
                 mActivityMainZjhBinding.tableLayout, "translationY", translationY
             )

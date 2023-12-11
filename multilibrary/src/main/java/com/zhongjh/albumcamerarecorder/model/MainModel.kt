@@ -8,7 +8,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
+import com.zhongjh.albumcamerarecorder.settings.AlbumSpec.onCheckedListener
+import com.zhongjh.albumcamerarecorder.settings.AlbumSpec.originalMaxSize
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.widget.IncapableDialog
+import com.zhongjh.common.widget.IncapableDialog.Companion.newInstance
 import kotlinx.coroutines.launch
 
 /**
@@ -123,13 +128,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                 this@MainModel._onFail.postValue(ex)
             }
         }
-    }
-
-    /**
-     * 点击原图
-     */
-    fun originalClick() {
-
     }
 
     /**

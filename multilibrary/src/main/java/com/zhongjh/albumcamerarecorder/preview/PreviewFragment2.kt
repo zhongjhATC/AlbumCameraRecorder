@@ -28,12 +28,12 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.albumcamerarecorder.BaseFragment
 import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.model.MainModel
+import com.zhongjh.albumcamerarecorder.model.OriginalManage
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
@@ -195,6 +195,13 @@ class PreviewFragment2 : BaseFragment() {
      * 打开ImageEditActivity的回调
      */
     private lateinit var mImageEditActivityResult: ActivityResultLauncher<Intent>
+
+    /**
+     * 统一管理原图有关功能模块
+     */
+    private val mOriginalManage by lazy {
+        OriginalManage(this, mMainModel, mSelectedModel, mAlbumSpec)
+    }
 
     /**
      * 完成压缩-复制的异步线程
@@ -601,23 +608,7 @@ class PreviewFragment2 : BaseFragment() {
         }
         // 点击原图事件
         mViewHolder.originalLayout.setOnClickListener {
-            val count: Int = countOverMaxSize()
-            if (count > 0) {
-                val incapableDialog = newInstance(
-                    "", getString(
-                        R.string.z_multi_library_error_over_original_count,
-                        count,
-                        mAlbumSpec.originalMaxSize
-                    )
-                )
-                incapableDialog.show(
-                    parentFragmentManager, IncapableDialog::class.java.name
-                )
-                return@setOnClickListener
-            }
-            mMainModel.setOriginalEnable(!mMainModel.getOriginalEnable())
-
-            mAlbumSpec.onCheckedListener?.onCheck(mMainModel.getOriginalEnable())
+            mOriginalManage.originalClick()
         }
         // 点击Loading停止
         mViewHolder.pbLoading.setOnClickListener {
@@ -698,26 +689,6 @@ class PreviewFragment2 : BaseFragment() {
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file.absolutePath)
             mImageEditActivityResult.launch(intent)
         }
-    }
-
-    /**
-     * 获取当前超过限制原图大小的数量
-     *
-     * @return 数量
-     */
-    private fun countOverMaxSize(): Int {
-        var count = 0
-        val selectedCount: Int = mSelectedModel.selectedData.count()
-        for (i in 0 until selectedCount) {
-            val item: LocalMedia = mSelectedModel.selectedData.localMedias[i]
-            if (item.isImage()) {
-                val size = PhotoMetadataUtils.getSizeInMb(item.size)
-                if (size > mAlbumSpec.originalMaxSize) {
-                    count++
-                }
-            }
-        }
-        return count
     }
 
     //    /**
@@ -1181,25 +1152,7 @@ class PreviewFragment2 : BaseFragment() {
     private fun updateOriginalState() {
         // 设置原图按钮根据配置来
         mViewHolder.original.setChecked(mMainModel.getOriginalEnable())
-        if (countOverMaxSize() > 0) {
-            // 如果开启了原图功能
-            if (mMainModel.getOriginalEnable()) {
-                // 弹框提示取消原图
-                val incapableDialog = newInstance(
-                    "", getString(
-                        R.string.z_multi_library_error_over_original_size,
-                        mAlbumSpec.originalMaxSize
-                    )
-                )
-                incapableDialog.show(
-                    parentFragmentManager, IncapableDialog::class.java.name
-                )
-                // 去掉原图按钮的选择状态
-                mMainModel.setOriginalEnable(false)
-
-                mAlbumSpec.onCheckedListener?.onCheck(mMainModel.getOriginalEnable())
-            }
-        }
+        mOriginalManage.updateOriginalState()
     }
 
     /**
