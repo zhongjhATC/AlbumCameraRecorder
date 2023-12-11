@@ -383,45 +383,48 @@ open class MainActivity : AppCompatActivity() {
             // 需要请求的权限列表
             val permissions = ArrayList<String>()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // 存储功能必须验证,兼容Android SDK 33
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    if (getMimeTypeSet().containsAll(ofImage())) {
-                        // 如果所有功能只支持图片，就只请求图片权限
-                        if (ContextCompat.checkSelfPermission(
-                                this, Manifest.permission.READ_MEDIA_IMAGES
-                            ) != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-                        }
-                    } else if (getMimeTypeSet().containsAll(ofVideo())) {
-                        // 如果所有功能只支持视频，就只请求视频权限
-                        if (ContextCompat.checkSelfPermission(
-                                this, Manifest.permission.READ_MEDIA_VIDEO
-                            ) != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+                if (albumValid()) {
+                    // 如果开启相册功能,则验证存储功能,兼容Android SDK 33
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (getMimeTypeSet().containsAll(ofImage())) {
+                            // 如果所有功能只支持图片，就只请求图片权限
+                            if (ContextCompat.checkSelfPermission(
+                                    this,
+                                    Manifest.permission.READ_MEDIA_IMAGES
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+                            }
+                        } else if (getMimeTypeSet().containsAll(ofVideo())) {
+                            // 如果所有功能只支持视频，就只请求视频权限
+                            if (ContextCompat.checkSelfPermission(
+                                    this, Manifest.permission.READ_MEDIA_VIDEO
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+                            }
+                        } else {
+                            // 如果所有功能都支持视频图片，就请求视频图片权限
+                            if (ContextCompat.checkSelfPermission(
+                                    this, Manifest.permission.READ_MEDIA_IMAGES
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+                            }
+                            if (ContextCompat.checkSelfPermission(
+                                    this, Manifest.permission.READ_MEDIA_VIDEO
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+                            }
                         }
                     } else {
-                        // 如果所有功能都支持视频图片，就请求视频图片权限
                         if (ContextCompat.checkSelfPermission(
-                                this, Manifest.permission.READ_MEDIA_IMAGES
+                                this, Manifest.permission.READ_EXTERNAL_STORAGE
                             ) != PackageManager.PERMISSION_GRANTED
                         ) {
-                            permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+                            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
                         }
-                        if (ContextCompat.checkSelfPermission(
-                                this, Manifest.permission.READ_MEDIA_VIDEO
-                            ) != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
-                        }
-                    }
-                } else {
-                    if (ContextCompat.checkSelfPermission(
-                            this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     }
                 }
 

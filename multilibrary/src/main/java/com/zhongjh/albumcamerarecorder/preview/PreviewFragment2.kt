@@ -720,6 +720,38 @@ class PreviewFragment2 : BaseFragment() {
         return count
     }
 
+    //    /**
+//     * 判断是否编辑过的图片
+//     * 如果编辑过，则拷贝到配置目录下并加入相册
+//     *
+//     * @param item       文件数据
+//     * @param newFile    新移动的文件
+//     * @param oldFile    目前的文件
+//     * @param isCompress 是否压缩
+//     */
+//    private void HandleEditImages(LocalFile item, File newFile, File oldFile, Boolean isCompress) {
+//        // 迁移到新的文件夹(配置目录)
+//        if (item.getOldPath() != null) {
+//            // 如果编辑过就直接 移动 文件
+//            FileUtil.move(oldFile, newFile);
+//        } else {
+//            // 如果没有编辑过就拷贝，因为有可能是源文件需要保留
+//            FileUtil.copy(oldFile, newFile);
+//        }
+//        item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile, isCompress);
+//        // 如果是从相册界面直接打开的预览 并且 是编辑过的加入相册
+//        if (mIsByAlbum && item.getOldPath() != null) {
+//            if (mGlobalSpec.isAddAlbumByEdit()) {
+//                Uri uri = MediaStoreUtils.displayToGallery(this, newFile, TYPE_PICTURE,
+//                        item.getDuration(), item.getWidth(), item.getHeight(),
+//                        mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
+//                item.setId(MediaStoreUtils.getId(uri));
+//            } else {
+//                item.setId(System.currentTimeMillis());
+//            }
+//        }
+//    }
+
     /**
      * 设置返回值
      *

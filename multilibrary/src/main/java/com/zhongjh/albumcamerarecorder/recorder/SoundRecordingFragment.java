@@ -260,6 +260,11 @@ public class SoundRecordingFragment extends BaseFragment {
     private void initPvLayoutOperateListener() {
         mViewHolder.pvLayout.setOperateListener(new BaseOperationLayout.OperateListener() {
             @Override
+            public boolean beforeConfirm() {
+                return true;
+            }
+
+            @Override
             public void cancel() {
                 // 母窗体启动滑动
                 ((MainActivity) mActivity).showHideTableLayout(true);

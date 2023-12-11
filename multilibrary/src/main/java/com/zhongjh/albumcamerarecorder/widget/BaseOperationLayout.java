@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -46,6 +48,14 @@ public abstract class BaseOperationLayout extends FrameLayout {
      * 操作按钮的Listener
      */
     public interface OperateListener {
+
+        /**
+         * 确认前的事件，一般用于请求权限
+         * <p>
+         * return false则是做其他操作
+         * return true则是无其他操作继续下一步
+         */
+        boolean beforeConfirm();
 
         /**
          * 取消
@@ -290,7 +300,15 @@ public abstract class BaseOperationLayout extends FrameLayout {
     /**
      * 提交事件
      */
+    @SuppressLint("ClickableViewAccessibility")
     private void btnConfirmListener() {
+        // 用于点击前请求权限
+        viewHolder.btnConfirm.setOnTouchListener((view, motionEvent) -> {
+            if (mOperateListener != null) {
+                return !mOperateListener.beforeConfirm();
+            }
+            return false;
+        });
         viewHolder.btnConfirm.setCircularProgressListener(new CircularProgressListener() {
             @Override
             public void onStart() {
@@ -322,8 +340,8 @@ public abstract class BaseOperationLayout extends FrameLayout {
             public void onClickByProgressMode() {
                 if (mOperateListener != null) {
                     mOperateListener.confirm();
+                    startTipAlphaAnimation();
                 }
-                startTipAlphaAnimation();
             }
         });
     }
@@ -554,6 +572,13 @@ public abstract class BaseOperationLayout extends FrameLayout {
      */
     public void resetConfirm() {
         viewHolder.btnConfirm.reset();
+    }
+
+    /**
+     * 提交按钮
+     */
+    public void btnConfirmPerformClick() {
+        viewHolder.btnConfirm.performClick();
     }
 
     public static class ViewHolder {

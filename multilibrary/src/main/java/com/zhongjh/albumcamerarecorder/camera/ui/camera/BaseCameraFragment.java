@@ -13,10 +13,15 @@ import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLo
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
 
+import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,10 +31,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
@@ -66,6 +74,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * 一个父类的拍摄Fragment，用于开放出来给开发自定义，但是同时也需要遵守一些规范
@@ -112,6 +122,10 @@ public abstract class BaseCameraFragment
      * 闪关灯状态 默认关闭
      */
     private int flashModel = TYPE_FLASH_OFF;
+    /**
+     * 请求权限的回调
+     */
+    ActivityResultLauncher<String[]> mRequestPermissionActivityResult;
     /**
      * 默认图片
      */
@@ -473,6 +487,11 @@ public abstract class BaseCameraFragment
     private void initPvLayoutOperateListener() {
         getPhotoVideoLayout().setOperateListener(new BaseOperationLayout.OperateListener() {
             @Override
+            public boolean beforeConfirm() {
+                return requestPermissions();
+            }
+
+            @Override
             public void cancel() {
                 Log.d(TAG, "cancel " + getState().toString());
                 getCameraStateManagement().pvLayoutCancel();
@@ -481,12 +500,12 @@ public abstract class BaseCameraFragment
             @Override
             public void confirm() {
                 Log.d(TAG, "confirm " + getState().toString());
+                // 没有所需要请求的权限，就进行后面的逻辑
                 getCameraStateManagement().pvLayoutCommit();
             }
 
             @Override
             public void startProgress() {
-
             }
 
             @Override
@@ -601,6 +620,20 @@ public abstract class BaseCameraFragment
                     }
                     // 全部刷新
                     getCameraPicturePresenter().refreshMultiPhoto(bitmapDatas);
+                }
+            }
+        });
+        // 创建权限申请回调
+        mRequestPermissionActivityResult = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
+            @Override
+            public void onActivityResult(Map<String, Boolean> result) {
+                if (result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null
+                        && result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null) {
+                    if (Objects.requireNonNull(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE)).equals(true)
+                            && Objects.requireNonNull(result.get(Manifest.permission.READ_EXTERNAL_STORAGE)).equals(true)) {
+                        //权限全部获取到之后的动作
+                        getCameraStateManagement().pvLayoutCommit();
+                    }
                 }
             }
         });
@@ -1037,6 +1070,67 @@ public abstract class BaseCameraFragment
         if (cameraSpec.getEnableFlashMemoryModel()) {
             FlashCacheUtils.saveFlashModel(getContext(), flashModel);
         }
+    }
+
+    /**
+     * 请求权限
+     * return false则是请求权限
+     * return true则是无权限请求继续下一步
+     */
+    private boolean requestPermissions() {
+        // 判断权限，权限通过才可以初始化相关
+        ArrayList<String> needPermissions = getNeedPermissions();
+        if (needPermissions.size() > 0) {
+            // 请求权限
+            requestPermissionsDialog();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 获取目前需要请求的权限
+     */
+    protected ArrayList<String> getNeedPermissions() {
+        // 需要请求的权限列表
+        ArrayList<String> permissions = new ArrayList<>();
+        // Android 10 以下需要请求存储权限才能存进相册
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager
+                    .PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager
+                            .PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+        }
+        return permissions;
+    }
+
+    /**
+     * 请求权限 - 如果曾经拒绝过，则弹出dialog
+     */
+    private void requestPermissionsDialog() {
+        // 动态消息
+        StringBuilder message = new StringBuilder();
+        message.append(getString(R.string.z_multi_library_to_use_this_feature));
+        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(), R.style.MyAlertDialogStyle);
+        // 弹窗提示为什么要请求这个权限
+        builder.setTitle(getString(R.string.z_multi_library_hint));
+        message.append(getString(R.string.z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you));
+        builder.setMessage(message.toString());
+        builder.setPositiveButton(getString(R.string.z_multi_library_ok), (dialog, which) -> {
+            dialog.dismiss();
+            // 请求权限
+            mRequestPermissionActivityResult.launch(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE});
+        });
+        builder.setNegativeButton(getString(R.string.z_multi_library_cancel), (dialog, which) -> dialog.dismiss());
+        Dialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     /**
