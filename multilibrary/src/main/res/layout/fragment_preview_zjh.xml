@@ -75,9 +75,15 @@
         <View
             android:id="@+id/originalLayout"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintEnd_toEndOf="@+id/tvSize"
-            app:layout_constraintStart_toStartOf="@+id/original" />
+            app:layout_constraintStart_toStartOf="@+id/original"
+            tools:showIn="@layout/fragment_album_zjh" />
 
         <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
             android:id="@+id/original"
