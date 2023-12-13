@@ -70,8 +70,9 @@ import kotlinx.coroutines.withContext
  */
 class PreviewFragment2 : BaseFragment() {
 
+    private val tag: String = this@PreviewFragment2.javaClass.simpleName
+
     companion object {
-        private val TAG: String = this@PreviewFragment2.javaClass.getSimpleName()
         /**
          * 数据源的标记
          */
@@ -216,10 +217,8 @@ class PreviewFragment2 : BaseFragment() {
                         // 判断是否需要压缩
                         mAlbumCompressFileTask.isCompress(item)
                         // 开始压缩逻辑，获取真实路径
-                        val path: String = mAlbumCompressFileTask.getPath(item)
-                        if (path != null) {
-                            handleCompress(item, path)
-                        }
+                        val path: String = mAlbumCompressFileTask.getActionablePath(item)
+//                        handleCompress(item, path)
                     }
                 }
                 return true

@@ -142,7 +142,7 @@ class AlbumCompressFileTask(
      * @param item 当前处理的LocalFile
      * @return 返回当前可以操作的路径
      */
-    private fun getActionablePath(item: LocalMedia): String {
+    fun getActionablePath(item: LocalMedia): String {
         // 判断是否Android 29
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // 29以上的版本都必须是私有的或者公共目录
