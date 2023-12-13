@@ -37,6 +37,10 @@ public class MainSimpleActivity extends BaseActivity {
 
     ActivityMainSimpleBinding mBinding;
     private final String TAG = MainSimpleActivity.this.getClass().getSimpleName();
+    private final Integer MAX_SELECTABLE = null;
+    private final Integer MAX_IMAGE_SELECTABLE = 5;
+    private final Integer MAX_VIDEO_SELECTABLE = 3;
+    private final Integer MAX_AUDIO_SELECTABLE = 5;
 
     GlobalSetting mGlobalSetting;
 
@@ -52,6 +56,8 @@ public class MainSimpleActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_simple);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_simple);
+
+        mBinding.mplImageList.setMaxMediaCount(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE);
 
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
@@ -171,11 +177,8 @@ public class MainSimpleActivity extends BaseActivity {
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大5张图片、最大3个视频、最大1个音频
-                .maxSelectablePerMediaType(null,
-                        5,
-                        3,
-                        3,
+                // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格MaskProgressLayout的maxCount也改动 mBinding.mplImageList.setMaxMediaCount();
+                .maxSelectablePerMediaType(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE,
                         alreadyImageCount,
                         alreadyVideoCount,
                         alreadyAudioCount)
