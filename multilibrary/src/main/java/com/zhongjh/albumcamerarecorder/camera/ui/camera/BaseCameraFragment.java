@@ -1079,11 +1079,15 @@ public abstract class BaseCameraFragment
      */
     private boolean requestPermissions() {
         // 判断权限，权限通过才可以初始化相关
-        ArrayList<String> needPermissions = getNeedPermissions();
-        if (needPermissions.size() > 0) {
-            // 请求权限
-            requestPermissionsDialog();
-            return false;
+        if (globalSpec.isAddAlbumByCamera()) {
+            ArrayList<String> needPermissions = getNeedPermissions();
+            if (needPermissions.size() > 0) {
+                // 请求权限
+                requestPermissionsDialog();
+                return false;
+            } else {
+                return true;
+            }
         } else {
             return true;
         }
