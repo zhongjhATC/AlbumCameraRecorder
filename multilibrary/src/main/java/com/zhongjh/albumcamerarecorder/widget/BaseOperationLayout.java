@@ -302,7 +302,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
     private void btnConfirmListener() {
         // 用于点击前请求权限
         viewHolder.btnConfirm.setOnTouchListener((view, motionEvent) -> {
-            if (mOperateListener != null) {
+            if (mOperateListener != null && motionEvent.getAction() == MotionEvent.ACTION_UP) {
                 return !mOperateListener.beforeConfirm();
             }
             return false;
