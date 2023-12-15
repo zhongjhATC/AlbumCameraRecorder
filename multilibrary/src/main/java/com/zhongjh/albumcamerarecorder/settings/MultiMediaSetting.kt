@@ -87,7 +87,7 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
                 data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA)
             }
             if (arrayList == null) {
-                return ArrayList<LocalMedia>()
+                return ArrayList()
             }
             return arrayList
         }
@@ -101,7 +101,11 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
         @JvmStatic
         fun obtainMultiMediaResult(data: Intent): ArrayList<LocalMedia>? {
             // 获取选择的数据
-            return data.getParcelableArrayListExtra(STATE_SELECTION, LocalMedia::class.java)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                data.getParcelableArrayListExtra(STATE_SELECTION, LocalMedia::class.java)
+            } else {
+                data.getParcelableArrayListExtra(STATE_SELECTION)
+            }
         }
     }
 

@@ -2,7 +2,7 @@ package com.zhongjh.albumcamerarecorder.preview
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
@@ -57,6 +57,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
 /**
  * 目标是可以不止该库自用，也可以别的app别的功能直接使用
  * 预览窗口的基类支持以下功能：
@@ -70,9 +71,10 @@ import kotlinx.coroutines.withContext
  */
 class PreviewFragment2 : BaseFragment() {
 
-    private val tag: String = this@PreviewFragment2.javaClass.simpleName
 
     companion object {
+        const val TAG: String = "PreviewFragment"
+
         /**
          * 数据源的标记
          */
@@ -123,8 +125,6 @@ class PreviewFragment2 : BaseFragment() {
         const val EXTRA_ALBUM = "extra_album"
         const val EXTRA_ITEM = "extra_item"
     }
-
-    private val logTag: String = PreviewFragment2::class.java.simpleName
 
     private lateinit var mContext: Context
     private lateinit var mViewHolder: ViewHolder
@@ -206,81 +206,27 @@ class PreviewFragment2 : BaseFragment() {
     /**
      * 完成压缩-复制的异步线程
      */
-    private val mCompressFileTask: SimpleTask<Boolean> by lazy {
-        object : SimpleTask<Boolean>() {
-            override fun doInBackground(): Boolean {
-                // 来自相册的，才根据配置处理压缩和迁移
-                if (mCompressEnable) {
-                    // 将 缓存文件 拷贝到 配置目录
-                    for (item in mSelectedModel.selectedData.localMedias) {
-                        Log.d(TAG, "item " + item.id)
-                        // 判断是否需要压缩
-                        mAlbumCompressFileTask.isCompress(item)
-                        // 开始压缩逻辑，获取真实路径
-                        val path: String = mAlbumCompressFileTask.getActionablePath(item)
-//                        handleCompress(item, path)
-                    }
-                }
-                return true
+    private val mCompressFileTask: SimpleTask<ArrayList<LocalMedia>> by lazy {
+        object : SimpleTask<ArrayList<LocalMedia>>() {
+            override fun doInBackground(): ArrayList<LocalMedia> {
+                return mAlbumCompressFileTask.compressFileTaskDoInBackground(mSelectedModel.selectedData.localMedias)
             }
 
-            override fun onSuccess(result: Boolean) {
-                setResultOk(true)
+            override fun onSuccess(result: ArrayList<LocalMedia>) {
+                setResultOk(true, result)
             }
 
             override fun onFail(t: Throwable) {
                 super.onFail(t)
-                Toast.makeText(mContext, t.message, Toast.LENGTH_SHORT).show()
-                Log.d(tag, "getCompressFileTask onFail " + t.message)
-                setResultOk(true)
+                // 结束loading
+                setControlTouchEnable(true)
+                Toast.makeText(requireActivity().applicationContext, t.message, Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancel() {
                 super.onCancel()
-                setResultOk(true)
-            }
-        }
-    }
-
-    /**
-     * 完成迁移文件的异步线程
-     */
-    private val mMoveFileTask: SimpleTask<Boolean> by lazy {
-        object : SimpleTask<Boolean>() {
-            override fun doInBackground(): Boolean {
-//                // 不压缩，直接迁移到配置文件
-//                for (LocalFile item : mSelectedCollection.asList()) {
-//                    if (item.getPath() != null) {
-//                        File oldFile = new File(item.getPath());
-//                        if (oldFile.exists()) {
-//                            if (item.isImage() || item.isVideo()) {
-//                                File newFile;
-//                                if (item.isImage()) {
-//                                    newFile = mPictureMediaStoreCompat.createFile(0, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
-//                                } else {
-//                                    // 如果是视频
-//                                    newFile = mVideoMediaStoreCompat.createFile(1, false, mAlbumCompressFileTask.getNameSuffix(item.getPath()));
-//                                }
-//                                handleEditImages(item, newFile, oldFile, false);
-//                            }
-//                        }
-//                    }
-//                }
-                return true
-            }
-
-            override fun onSuccess(result: Boolean) {
-                setResultOk(true)
-            }
-
-            override fun onCancel() {
-                super.onCancel()
-                setResultOk(true)
-            }
-
-            override fun onFail(t: Throwable) {
-                super.onFail(t)
-                setResultOk(true)
+                // 结束loading
+                setControlTouchEnable(true)
             }
         }
     }
@@ -291,7 +237,7 @@ class PreviewFragment2 : BaseFragment() {
     private val mAlbumCompressFileTask by lazy {
         AlbumCompressFileTask(
             mContext,
-            logTag,
+            TAG,
             PreviewFragment2::class.java,
             mGlobalSpec,
             mPictureMediaStoreCompat,
@@ -557,7 +503,7 @@ class PreviewFragment2 : BaseFragment() {
         mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
                 // 确认的一刻赋值
-                val localMediaArrayList: java.util.ArrayList<LocalMedia> = mMainModel.localMedias
+                val localMediaArrayList: ArrayList<LocalMedia> = mSelectedModel.selectedData.localMedias
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
                     localMedia.isOriginal = mMainModel.getOriginalEnable()
@@ -625,26 +571,16 @@ class PreviewFragment2 : BaseFragment() {
     }
 
     /**
-     * 关闭Activity回调相关数值,如果需要压缩，另外弄一套压缩逻辑
+     * 关闭Activity回调相关数值
      *
      * @param apply 是否同意
      */
     private fun setResultOkByIsCompress(apply: Boolean) {
-        // 判断是否需要压缩
-        if (mGlobalSpec.onImageCompressionListener != null) {
-            if (apply) {
-                compressFile()
-            } else {
-                // 直接返回
-                setResultOk(false)
-            }
+        if (apply) {
+            compressFile()
         } else {
-            if (apply) {
-                moveStoreCompatFile()
-            } else {
-                // 直接返回
-                setResultOk(false)
-            }
+            // 直接返回
+            setResultOk(false, mSelectedModel.selectedData.localMedias)
         }
     }
 
@@ -720,23 +656,23 @@ class PreviewFragment2 : BaseFragment() {
      * @param apply 是否同意
      */
     @Synchronized
-    private fun setResultOk(apply: Boolean) {
-        Log.d(logTag, "setResultOk")
+    private fun setResultOk(apply: Boolean, localMedias: ArrayList<LocalMedia>) {
+        Log.d(TAG, "setResultOk")
         refreshMultiMediaItem()
         mGlobalSpec.onResultCallbackListener?.let {
             if (mIsExternalUsers) {
-                it.onResultFromPreview(mSelectedModel.selectedData.localMedias, apply)
+                it.onResultFromPreview(localMedias, apply)
             }
         } ?: let {
             if (!mIsExternalUsers) {
-                // 如果是外部使用并且不同意，则不执行RESULT_OK
                 val intent = Intent()
-                intent.putExtra(STATE_SELECTION, mSelectedModel.selectedData.localMedias)
+                intent.putExtra(STATE_SELECTION, localMedias)
                 intent.putExtra(EXTRA_RESULT_APPLY, apply)
                 intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
                 intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.getOriginalEnable())
+                // 如果是外部使用并且不同意，则不执行RESULT_OK
                 if (mIsExternalUsers && !apply) {
-                    requireActivity().setResult(Activity.RESULT_CANCELED, intent)
+                    requireActivity().setResult(RESULT_CANCELED, intent)
                 } else {
                     requireActivity().setResult(RESULT_OK, intent)
                 }
@@ -836,17 +772,6 @@ class PreviewFragment2 : BaseFragment() {
 
         // 复制相册的文件
         ThreadUtils.executeByIo(mCompressFileTask)
-    }
-
-    /**
-     * 不压缩，直接移动文件
-     */
-    private fun moveStoreCompatFile() {
-        // 显示loading动画
-        setControlTouchEnable(false)
-
-        // 复制相册的文件
-        ThreadUtils.executeByIo(mMoveFileTask)
     }
 
     /**
