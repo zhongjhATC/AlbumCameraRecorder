@@ -25,4 +25,7 @@
     <color name="text_color_4d">#4d4d4d</color>
     <color name="spinner_bottom_line_color">#80000000</color>
 
+    <color name="ps_color_80">#80000000</color>
+    <color name="ps_color_20">#20000000</color>
+
 </resources>

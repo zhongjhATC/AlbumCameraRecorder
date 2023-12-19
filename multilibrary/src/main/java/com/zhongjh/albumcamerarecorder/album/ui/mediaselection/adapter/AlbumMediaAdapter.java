@@ -179,7 +179,6 @@ public class AlbumMediaAdapter extends
                 // 刷新数据源
                 notifyCheckStateChanged();
             } else {
-
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
                     mSelectedCollection.add(item);
                     notifyCheckStateChanged();

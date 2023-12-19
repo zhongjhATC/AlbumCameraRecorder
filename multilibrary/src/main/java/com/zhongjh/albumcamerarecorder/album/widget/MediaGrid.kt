@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.widget
 
 import android.content.Context
+import android.graphics.ColorFilter
 import android.graphics.drawable.Drawable
 import android.text.format.DateUtils
 import android.util.AttributeSet
@@ -8,6 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.imageEngine
@@ -18,7 +22,7 @@ import com.zhongjh.common.entity.MultiMedia
  */
 class MediaGrid : SquareFrameLayout, View.OnClickListener {
 
-    private lateinit var mThumbnail: ImageView
+    private lateinit var mImageView: ImageView
 
     /**
      * 选择控件
@@ -50,6 +54,16 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      */
     private lateinit var mListener: OnMediaGridClickListener
 
+    /**
+     * 默认的背景颜色
+     */
+    private lateinit var defaultColorFilter: ColorFilter
+
+    /**
+     * 选择时的背景颜色 - 遮罩层
+     */
+    private lateinit var selectColorFilter: ColorFilter
+
     constructor(context: Context) : super(context) {
         init(context)
     }
@@ -60,18 +74,30 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
 
     private fun init(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.media_grid_content_zjh, this, true)
-        mThumbnail = findViewById(R.id.media_thumbnail)
+        mImageView = findViewById(R.id.media_thumbnail)
         mCheckView = findViewById(R.id.checkView)
         mGifTag = findViewById(R.id.gif)
         mVideoDuration = findViewById(R.id.video_duration)
-        mThumbnail.setOnClickListener(this)
+        mImageView.setOnClickListener(this)
         mCheckView.setOnClickListener(this)
+        defaultColorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            ContextCompat.getColor(
+                context,
+                R.color.ps_color_20
+            ), BlendModeCompat.SRC_ATOP
+        )!!
+        selectColorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            ContextCompat.getColor(
+                context,
+                R.color.ps_color_80
+            ), BlendModeCompat.SRC_ATOP
+        )!!
     }
 
     override fun onClick(view: View) {
-        if (view === mThumbnail) {
+        if (view === mImageView) {
             // 图片的点击事件
-            mListener.onThumbnailClicked(mThumbnail, mMedia, mPreBindInfo.mViewHolder)
+            mListener.onThumbnailClicked(mImageView, mMedia, mPreBindInfo.mViewHolder)
         } else if (view === mCheckView) {
             // 勾选的点击事件
             mListener.onCheckViewClicked(mCheckView, mMedia, mPreBindInfo.mViewHolder)
@@ -126,6 +152,13 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      */
     fun setCheckedNum(checkedNum: Int) {
         mCheckView.setCheckedNum(checkedNum)
+        if (checkedNum > 0) {
+            // 设置遮罩层
+            mImageView.colorFilter = selectColorFilter
+        } else {
+            // 恢复
+            mImageView.colorFilter = defaultColorFilter
+        }
     }
 
     /**
@@ -135,6 +168,13 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      */
     fun setChecked(checked: Boolean) {
         mCheckView.setChecked(checked)
+        if (checked) {
+            // 设置遮罩层
+            mImageView.colorFilter = selectColorFilter
+        } else {
+            // 恢复
+            mImageView.colorFilter = defaultColorFilter
+        }
     }
 
     /**
@@ -147,12 +187,12 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
         if (mMedia.isGif()) {
             imageEngine.loadGifThumbnail(
                 context, mPreBindInfo.mResize,
-                mPreBindInfo.mPlaceholder, mThumbnail, mMedia.uri!!
+                mPreBindInfo.mPlaceholder, mImageView, mMedia.uri!!
             )
         } else {
             imageEngine.loadThumbnail(
                 context, mPreBindInfo.mResize,
-                mPreBindInfo.mPlaceholder, mThumbnail, mMedia.uri!!
+                mPreBindInfo.mPlaceholder, mImageView, mMedia.uri!!
             )
         }
     }
