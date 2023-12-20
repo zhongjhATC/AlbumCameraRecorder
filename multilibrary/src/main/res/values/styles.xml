@@ -61,14 +61,12 @@
     </style>
 
     <style name="Popup.Blue" parent="">
-        <item name="album.backgroundStyle">@drawable/spinner_item_select_bg_white
-        </item> <!-- 专辑选项的背景样式 -->
+        <item name="album.backgroundStyle">@drawable/spinner_item_select_bg_white</item> <!-- 专辑选项的背景样式 -->
         <item name="album.checkDotStyle">@drawable/ic_orange_oval</item> <!-- 专辑选中时候的样式 -->
         <item name="album.textColor">@color/text_color_4d</item> <!-- 专辑字体颜色 -->
         <item name="album.textSize">16sp</item> <!-- 专辑字体大小 -->
         <item name="album.arrow.up.icon">@drawable/ic_round_keyboard_arrow_up_24</item> <!-- 上箭头 -->
-        <item name="album.arrow.down.icon">@drawable/ic_round_keyboard_arrow_down_24
-        </item> <!-- 下箭头 -->
+        <item name="album.arrow.down.icon">@drawable/ic_round_keyboard_arrow_down_24</item> <!-- 下箭头 -->
     </style>
 
     <style name="TabLayout.Blue" parent="">

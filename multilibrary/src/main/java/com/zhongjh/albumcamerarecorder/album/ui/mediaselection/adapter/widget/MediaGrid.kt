@@ -1,6 +1,7 @@
-package com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget
+package com.zhongjh.albumcamerarecorder.album.widget
 
 import android.content.Context
+import android.graphics.ColorFilter
 import android.graphics.drawable.Drawable
 import android.text.format.DateUtils
 import android.util.AttributeSet
@@ -8,12 +9,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.album.widget.SquareFrameLayout
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.imageEngine
+import com.zhongjh.common.entity.MultiMedia
 
 /**
  * @author zhongjh
@@ -55,6 +60,16 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      */
     private lateinit var mListener: OnMediaGridClickListener
 
+    /**
+     * 默认的背景颜色
+     */
+    private lateinit var defaultColorFilter: ColorFilter
+
+    /**
+     * 选择时的背景颜色 - 遮罩层
+     */
+    private lateinit var selectColorFilter: ColorFilter
+
     constructor(context: Context) : super(context) {
         init(context)
     }
@@ -71,6 +86,18 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
         mVideoDuration = findViewById(R.id.video_duration)
         mImageView.setOnClickListener(this)
         mCheckView.setOnClickListener(this)
+        defaultColorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            ContextCompat.getColor(
+                context,
+                R.color.ps_color_20
+            ), BlendModeCompat.SRC_ATOP
+        )!!
+        selectColorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            ContextCompat.getColor(
+                context,
+                R.color.ps_color_80
+            ), BlendModeCompat.SRC_ATOP
+        )!!
     }
 
     override fun onClick(view: View) {
@@ -131,6 +158,13 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      */
     fun setCheckedNum(checkedNum: Int) {
         mCheckView.setCheckedNum(checkedNum)
+        if (checkedNum > 0) {
+            // 设置遮罩层
+            mImageView.colorFilter = selectColorFilter
+        } else {
+            // 恢复
+            mImageView.colorFilter = defaultColorFilter
+        }
     }
 
     /**
@@ -140,6 +174,13 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      */
     fun setChecked(checked: Boolean) {
         mCheckView.setChecked(checked)
+        if (checked) {
+            // 设置遮罩层
+            mImageView.colorFilter = selectColorFilter
+        } else {
+            // 恢复
+            mImageView.colorFilter = defaultColorFilter
+        }
     }
 
     /**
