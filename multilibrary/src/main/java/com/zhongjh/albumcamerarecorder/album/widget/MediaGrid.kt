@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.album.widget
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.drawable.Drawable
 import android.text.format.DateUtils
@@ -80,12 +81,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
         mVideoDuration = findViewById(R.id.video_duration)
         mImageView.setOnClickListener(this)
         mCheckView.setOnClickListener(this)
-        defaultColorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-            ContextCompat.getColor(
-                context,
-                R.color.ps_color_20
-            ), BlendModeCompat.SRC_ATOP
-        )!!
+        defaultColorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(Color.TRANSPARENT, BlendModeCompat.SRC_ATOP)!!
         selectColorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
             ContextCompat.getColor(
                 context,
