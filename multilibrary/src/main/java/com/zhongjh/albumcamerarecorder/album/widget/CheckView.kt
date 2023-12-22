@@ -223,7 +223,7 @@ class CheckView : View {
         /**
          * dp
          */
-        private const val STROKE_WIDTH = 3.0f
+        private const val STROKE_WIDTH = 1.5f
 
         /**
          * dp

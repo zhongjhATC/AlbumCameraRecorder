@@ -160,12 +160,16 @@ public class AlbumMediaAdapter extends
             if (checkedNum == CheckView.UNCHECKED) {
                 // 如果当前数据是未选状态
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
+                    MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
+                    mediaViewHolder.mMediaGrid.setSelectMaskVisibility(View.VISIBLE);
                     // 添加选择了当前数据
                     mSelectedCollection.add(item);
                     // 刷新数据源
                     notifyCheckStateChanged();
                 }
             } else {
+                MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
+                mediaViewHolder.mMediaGrid.setSelectMaskVisibility(View.GONE);
                 // 删除当前选择
                 mSelectedCollection.remove(item);
                 // 刷新数据
