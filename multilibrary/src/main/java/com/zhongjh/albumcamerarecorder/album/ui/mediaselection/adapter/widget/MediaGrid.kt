@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.widget
+package com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.widget
 
 import android.content.Context
 import android.graphics.Color
