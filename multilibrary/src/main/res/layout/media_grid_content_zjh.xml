@@ -14,6 +14,7 @@
   limitations under the License.
   -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
@@ -33,7 +34,7 @@
         android:id="@+id/gif"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
+        android:layout_gravity="bottom"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:contentDescription="@string/z_multi_library_gif_label"
@@ -43,11 +44,14 @@
 
     <TextView
         android:id="@+id/video_duration"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_video_duration_shadow"
+        android:drawableLeft="@drawable/ic_video"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="5dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"
         android:visibility="gone"
