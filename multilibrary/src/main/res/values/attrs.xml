@@ -28,6 +28,7 @@
     <!-- endregion -->
 
     <!-- region 展示视频界面的样式 -->
+    <attr name="preview.video.button.confirm.text.value" format="string" localization="suggested" /> <!-- 提交按钮的文字文本 -->
     <attr name="preview.video.button.confirm.text.color" format="reference|color" /> <!-- 提交按钮的文字的颜色 -->
     <attr name="preview.video.button.confirm.background.color" format="reference|color" /> <!-- 提交按钮的背景颜色 - 深色 -->
     <attr name="preview.video.button.confirm.background.progress.color" format="reference|color" /> <!-- 提交按钮的背景颜色 - 浅色 -->
@@ -41,7 +42,7 @@
 
     <!-- region 专辑下拉选项框的样式 -->
     <declare-styleable name="album.listPopupWindowStyle">
-        <attr name="album.backgroundStyle" format="reference"/> <!-- 专辑选项的背景样式 -->
+        <attr name="album.backgroundStyle" format="reference" /> <!-- 专辑选项的背景样式 -->
         <attr name="album.checkDotStyle" format="reference" /> <!-- 专辑选中时候的样式 -->
         <attr name="album.textColor" format="reference" /> <!-- 专辑字体颜色 -->
         <attr name="album.textSize" format="dimension" /> <!-- 专辑字体大小 -->

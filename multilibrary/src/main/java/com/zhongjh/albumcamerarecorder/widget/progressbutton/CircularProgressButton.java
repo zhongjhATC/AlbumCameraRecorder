@@ -10,6 +10,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.StateSet;
 
@@ -224,6 +225,14 @@ public class CircularProgressButton extends AppCompatButton {
         }
 
         try {
+            // 由Activity主题提供的样式：提交按钮的文字的文本
+            TypedArray confirmTextValue = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_text_value});
+            if (confirmTextValue == null || confirmTextValue.length() <= 0) {
+                mIdleText = attr.getString(R.styleable.CircularProgressButton_cpb_textIdle);
+            } else {
+                mIdleText = confirmTextValue.getText(0).toString();
+            }
+
             // 由Activity主题提供的样式：提交按钮的文字的颜色
             TypedArray confirmTextColor = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_text_color});
             int confirmTextColorDefault = ResourcesCompat.getColor(getResources(), R.color.white, mContext.getTheme());
@@ -249,7 +258,6 @@ public class CircularProgressButton extends AppCompatButton {
             TypedArray confirmError = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_icon_error});
             mIconError = confirmError.getResourceId(0, R.drawable.ic_baseline_close_24);
 
-            mIdleText = attr.getString(R.styleable.CircularProgressButton_cpb_textIdle);
             mCompleteText = attr.getString(R.styleable.CircularProgressButton_cpb_textComplete);
             mErrorText = attr.getString(R.styleable.CircularProgressButton_cpb_textError);
             mProgressText = attr.getString(R.styleable.CircularProgressButton_cpb_textProgress);
