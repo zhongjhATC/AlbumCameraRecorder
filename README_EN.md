@@ -162,6 +162,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 
 #### If you need to modify the shooting and recording interface and logic
 Please refer to Demo for simple extensions. If you need to go deeper to learn more about extensions [simple architecture of CameraFragment](https://juejin.cn/post/7136108758010167304/)
+Note, however, that if configuration is supported, the configuration takes precedence. Custom extensions are only done here if there is no configuration
 
 #### If you need to modify the camera shooting, recording parameters
 Because the inside of the camera from the [CameraView] (https://github.com/natario1/CameraView), so change resolution, closed when the tape recording and other functions can access to view more interfaces,So how do we get the CameraView from our library that we can use in our Demo instance
