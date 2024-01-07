@@ -58,6 +58,10 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManagement, B
                 com.zhongjh.albumcamerarecorder.R.drawable.avd_done_to_stop, com.zhongjh.albumcamerarecorder.R.drawable.avd_stop_to_done);
         mBinding.pvLayout.getViewHolder().btnCancel.setFunctionImage(com.zhongjh.albumcamerarecorder.R.drawable.ic_baseline_done,
                 com.zhongjh.albumcamerarecorder.R.drawable.avd_done_to_stop, com.zhongjh.albumcamerarecorder.R.drawable.avd_stop_to_done);
+
+        // 定制样式 .确认按钮,修改主色调
+        mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryColor(R.color.cpb_red);
+        mBinding.pvLayout.getViewHolder().btnCancel.setPrimaryColor(R.color.cpb_red);
     }
 
     /**
