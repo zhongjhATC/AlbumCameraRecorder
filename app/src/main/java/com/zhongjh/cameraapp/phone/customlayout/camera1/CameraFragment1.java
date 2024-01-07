@@ -54,10 +54,13 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManagement, B
     @Override
     public void initView(View view, Bundle savedInstanceState) {
         // 修改图片,两个调换过来，样式改变，功能不变
-        mBinding.pvLayout.getViewHolder().btnConfirm.setFunctionImage(com.zhongjh.albumcamerarecorder.R.drawable.ic_baseline_keyboard_arrow_left_24,
-                com.zhongjh.albumcamerarecorder.R.drawable.avd_done_to_stop, com.zhongjh.albumcamerarecorder.R.drawable.avd_stop_to_done);
-        mBinding.pvLayout.getViewHolder().btnCancel.setFunctionImage(com.zhongjh.albumcamerarecorder.R.drawable.ic_baseline_done,
-                com.zhongjh.albumcamerarecorder.R.drawable.avd_done_to_stop, com.zhongjh.albumcamerarecorder.R.drawable.avd_stop_to_done);
+        mBinding.pvLayout.getViewHolder().btnConfirm.setFunctionImage(R.drawable.ic_baseline_keyboard_arrow_left_24,
+                R.drawable.avd_done_to_stop, R.drawable.avd_stop_to_done);
+        mBinding.pvLayout.getViewHolder().btnCancel.setFunctionImage(R.drawable.ic_baseline_done,
+                R.drawable.avd_done_to_stop, R.drawable.avd_stop_to_done);
+
+        // 修改副色调颜色
+        mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryVariantColor(R.color.cpb_blue);
 
         // 定制样式 .确认按钮,修改主色调
         mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryColor(R.color.cpb_red);
