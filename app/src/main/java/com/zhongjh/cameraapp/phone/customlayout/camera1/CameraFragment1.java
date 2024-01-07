@@ -47,12 +47,17 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManagement, B
 
     @Override
     public View setContentView(LayoutInflater inflater, ViewGroup container) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera1,container,false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera1, container, false);
         return mBinding.getRoot();
     }
 
     @Override
     public void initView(View view, Bundle savedInstanceState) {
+        // 修改图片,两个调换过来，样式改变，功能不变
+        mBinding.pvLayout.getViewHolder().btnConfirm.setFunctionImage(com.zhongjh.albumcamerarecorder.R.drawable.ic_baseline_keyboard_arrow_left_24,
+                com.zhongjh.albumcamerarecorder.R.drawable.avd_done_to_stop, com.zhongjh.albumcamerarecorder.R.drawable.avd_stop_to_done);
+        mBinding.pvLayout.getViewHolder().btnCancel.setFunctionImage(com.zhongjh.albumcamerarecorder.R.drawable.ic_baseline_done,
+                com.zhongjh.albumcamerarecorder.R.drawable.avd_done_to_stop, com.zhongjh.albumcamerarecorder.R.drawable.avd_stop_to_done);
     }
 
     /**
