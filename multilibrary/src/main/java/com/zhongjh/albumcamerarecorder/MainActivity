@@ -1,5 +1,7 @@
 //package com.zhongjh.albumcamerarecorder;
 //
+//import static android.Manifest.permission.READ_MEDIA_IMAGES;
+//import static android.Manifest.permission.READ_MEDIA_VIDEO;
 //import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 //
 //import android.Manifest;
@@ -32,6 +34,7 @@
 //import com.google.android.material.tabs.TabLayoutMediator;
 //import com.zhongjh.albumcamerarecorder.album.MainFragment;
 //import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment;
+//import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
 //import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment;
 //import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 //import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
@@ -339,6 +342,12 @@
 //                    case Manifest.permission.READ_EXTERNAL_STORAGE:
 //                        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files));
 //                        break;
+//                    case READ_MEDIA_IMAGES:
+//                        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files_by_image));
+//                        break;
+//                    case READ_MEDIA_VIDEO:
+//                        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files_by_video));
+//                        break;
 //                    case Manifest.permission.RECORD_AUDIO:
 //                        // 弹窗提示为什么要请求这个权限
 //                        message.append(getString(R.string.z_multi_library_record_permission_to_record_sound));
@@ -391,23 +400,23 @@
 //            if (SelectableUtils.albumValid()) {
 //                // 如果开启相册功能,则验证存储功能,兼容Android SDK 33
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                    if (GlobalSpec.INSTANCE.getMimeTypeSet().containsAll(MimeType.ofImage())) {
-//                        // 如果所有功能只支持图片，就只请求图片权限
-//                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-//                            permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
-//                        }
-//                    } else if (GlobalSpec.INSTANCE.getMimeTypeSet().containsAll(MimeType.ofVideo())) {
-//                        // 如果所有功能只支持视频，就只请求视频权限
-//                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
-//                            permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
-//                        }
-//                    } else {
+//                    if (GlobalSpec.INSTANCE.getMimeTypeSet(ModuleTypes.ALBUM).containsAll(MimeType.ofImage()) && GlobalSpec.INSTANCE.getMimeTypeSet(ModuleTypes.ALBUM).containsAll(MimeType.ofVideo())) {
 //                        // 如果所有功能都支持视频图片，就请求视频图片权限
-//                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-//                            permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+//                        if (ContextCompat.checkSelfPermission(this, READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+//                            permissions.add(READ_MEDIA_IMAGES);
 //                        }
-//                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
-//                            permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+//                        if (ContextCompat.checkSelfPermission(this, READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+//                            permissions.add(READ_MEDIA_VIDEO);
+//                        }
+//                    } else if (GlobalSpec.INSTANCE.getMimeTypeSet(ModuleTypes.ALBUM).containsAll(MimeType.ofVideo())) {
+//                        // 如果所有功能只支持视频，就只请求视频权限
+//                        if (ContextCompat.checkSelfPermission(this, READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+//                            permissions.add(READ_MEDIA_VIDEO);
+//                        }
+//                    } else if (GlobalSpec.INSTANCE.getMimeTypeSet(ModuleTypes.ALBUM).containsAll(MimeType.ofImage())) {
+//                        // 如果所有功能只支持图片，就只请求图片权限
+//                        if (ContextCompat.checkSelfPermission(this, READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+//                            permissions.add(READ_MEDIA_IMAGES);
 //                        }
 //                    }
 //                } else {
@@ -549,3 +558,4 @@
 //    }
 //
 //}
+//>>>>>>> androidx

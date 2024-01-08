@@ -34,6 +34,7 @@ import com.flyco.tablayout.listener.OnTabSelectListener
 import com.zhongjh.albumcamerarecorder.album.ui.album.AlbumFragment
 import com.zhongjh.albumcamerarecorder.camera.entity.TabEntity
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment
+import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.albumcamerarecorder.databinding.ActivityMainZjhBinding
 import com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
@@ -336,6 +337,8 @@ open class MainActivity : AppCompatActivity() {
             for (item in needPermissions) {
                 when (item) {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE -> message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files))
+                    Manifest.permission.READ_MEDIA_IMAGES -> message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files_by_image))
+                    Manifest.permission.READ_MEDIA_VIDEO -> message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files_by_video))
                     Manifest.permission.RECORD_AUDIO -> message.append(getString(R.string.z_multi_library_record_permission_to_record_sound))
                     Manifest.permission.CAMERA -> message.append(getString(R.string.z_multi_library_record_permission_to_shoot))
                     else -> {}
@@ -381,27 +384,27 @@ open class MainActivity : AppCompatActivity() {
                 if (albumValid()) {
                     // 如果开启相册功能,则验证存储功能,兼容Android SDK 33
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        if (getMimeTypeSet().containsAll(ofImage())) {
-                            // 如果所有功能只支持图片，就只请求图片权限
-                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
-                                != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-                            }
-                        } else if (getMimeTypeSet().containsAll(ofVideo())) {
-                            // 如果所有功能只支持视频，就只请求视频权限
-                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO)
-                                != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
-                            }
-                        } else {
+                        if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage()) && getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
                             // 如果所有功能都支持视频图片，就请求视频图片权限
                             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
                                 != PackageManager.PERMISSION_GRANTED
                             ) {
                                 permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
                             }
+                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO)
+                                != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+                            }
+                        } else if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage())) {
+                            // 如果所有功能只支持图片，就只请求图片权限
+                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                                != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+                            }
+                        } else if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
+                            // 如果所有功能只支持视频，就只请求视频权限
                             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO)
                                 != PackageManager.PERMISSION_GRANTED
                             ) {

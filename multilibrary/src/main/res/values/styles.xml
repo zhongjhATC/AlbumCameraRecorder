@@ -43,7 +43,7 @@
         <!-- 提交按钮的文字的颜色 -->
         <item name="preview.video.button.confirm.text.color">@color/white</item>
         <!-- 提交按钮的文字值 -->
-        <item name="preview.video.button.confirm.text.value">@string/z_multi_library_delete_button</item>
+        <item name="preview.video.button.confirm.text.value">@string/z_multi_library_confirm</item>
         <!-- 提交按钮的背景颜色 - 深色 -->
         <item name="preview.video.button.confirm.background.color">
             @color/operation_background

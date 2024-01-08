@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.cameraview.CameraView;
@@ -47,8 +46,7 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManagement, B
 
     @Override
     public View setContentView(LayoutInflater inflater, ViewGroup container) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera1, container, false);
-        return mBinding.getRoot();
+        return inflater.inflate(R.layout.fragment_camera1, container, false);
     }
 
     @Override

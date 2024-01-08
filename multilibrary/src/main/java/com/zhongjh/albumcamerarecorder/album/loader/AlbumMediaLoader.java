@@ -113,7 +113,7 @@ public class AlbumMediaLoader extends CursorLoader {
             " end" + " DESC , " + MediaStore.Images.ImageColumns._ID + " DESC";
 
     private AlbumMediaLoader(Context context, String selection, String[] selectionArgs) {
-        super(context, QUERY_URI, PROJECTION, selection, selectionArgs, ORDER_BY);
+        super(context, MediaStore.Files.getContentUri("external"), PROJECTION, selection, selectionArgs, ORDER_BY);
     }
 
     /**
