@@ -4,6 +4,7 @@ import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter
 import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener
 import com.zhongjh.albumcamerarecorder.settings.api.AlbumSettingApi
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
 import java.util.*
@@ -33,6 +34,11 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
 
     override fun mimeTypeSet(mimeTypes: Set<MimeType>): AlbumSetting {
         mAlbumSpec.mimeTypeSet = mimeTypes
+        return this
+    }
+
+    override fun setSelectedData(data: MutableList<LocalMedia>): AlbumSetting {
+        mAlbumSpec.SelectedData.addAll(data)
         return this
     }
 

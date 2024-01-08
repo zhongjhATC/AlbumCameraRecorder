@@ -5,6 +5,7 @@ import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.singleImageVideo
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
@@ -22,6 +23,11 @@ object AlbumSpec {
      * 选择 mime 的类型，MimeType.allOf()
      */
     var mimeTypeSet: Set<MimeType>? = null
+
+    /**
+     * 相册已经选好的数据
+     */
+    var SelectedData = ArrayList<LocalMedia>()
 
     /**
      * 是否支持gif,默认为true
@@ -143,6 +149,7 @@ object AlbumSpec {
      */
     private fun reset() {
         mimeTypeSet = null
+        SelectedData.clear()
         isSupportGif = true
         isSupportWebp = true
         isSupportBmp = true

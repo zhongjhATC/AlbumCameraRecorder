@@ -77,7 +77,13 @@ interface MaskProgressApi {
     fun reset()
 
     /**
-     * 获取图片、视频数据
+     * 获取图片、视频数据 - LocalMedia实体
+     * @return 返回当前包含url的图片、视频数据
+     */
+    fun getData(): ArrayList<LocalMedia>
+
+    /**
+     * 获取图片、视频数据 - MultiMediaView实体
      *
      * @return 返回当前包含url的图片、视频数据
      */

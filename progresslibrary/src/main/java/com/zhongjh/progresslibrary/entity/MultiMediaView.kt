@@ -16,8 +16,6 @@ import kotlinx.parcelize.Parcelize
  */
 class MultiMediaView : LocalMedia, Parcelable {
 
-
-
     /**
      * 绑定子view,包含其他所有控件（显示view,删除view）
      */

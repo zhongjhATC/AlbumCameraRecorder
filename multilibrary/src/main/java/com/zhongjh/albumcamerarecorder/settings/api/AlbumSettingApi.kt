@@ -4,6 +4,7 @@ import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter
 import com.zhongjh.albumcamerarecorder.album.listener.OnCheckedListener
 import com.zhongjh.albumcamerarecorder.album.listener.OnSelectedListener
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 
 /**
@@ -19,6 +20,13 @@ interface AlbumSettingApi {
      * @return [AlbumSetting] this
      */
     fun mimeTypeSet(mimeTypes: Set<MimeType>): AlbumSetting
+
+    /**
+     * 设置当前相册选择的数据
+     * @param data 当前选择的数据
+     * @return [AlbumSetting] this
+     */
+    fun setSelectedData(data: MutableList<LocalMedia>): AlbumSetting
 
     /**
      * 是否支持gif,默认为true

@@ -356,6 +356,10 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mPhotoAdapter.clearAll()
     }
 
+    override fun getData(): ArrayList<LocalMedia> {
+        return mPhotoAdapter.getDataByLocalMedia()
+    }
+
     override fun getImagesAndVideos(): ArrayList<MultiMediaView> {
         return mPhotoAdapter.getData()
     }

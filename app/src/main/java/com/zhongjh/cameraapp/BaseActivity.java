@@ -86,7 +86,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             return;
         }
         if (requestCode == REQUEST_CODE_CHOOSE) {
-            // 如果是在预览界面点击了确定
+            // 如果是在九宫格点击的预览界面 点击了确定
             if (data.getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
                 ArrayList<LocalMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);

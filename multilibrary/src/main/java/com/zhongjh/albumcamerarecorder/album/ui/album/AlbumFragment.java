@@ -167,6 +167,9 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                 .get(MainModel.class);
         this.mSelectedModel = new ViewModelProvider(requireActivity())
                 .get(SelectedModel.class);
+        if (!mAlbumSpec.getSelectedData().isEmpty()) {
+            this.mSelectedModel.getSelectedData().addAll(mAlbumSpec.getSelectedData());
+        }
     }
 
     @Override

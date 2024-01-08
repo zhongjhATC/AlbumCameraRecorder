@@ -2,7 +2,6 @@ package com.zhongjh.progresslibrary.apapter
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.text.TextUtils
 import android.text.format.DateUtils
 import android.util.Log
@@ -14,6 +13,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sdsmdg.harjot.vectormaster.VectorMasterView
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.progresslibrary.R
@@ -23,7 +23,6 @@ import com.zhongjh.progresslibrary.entity.PhotoAdapterEntity
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout
 import com.zhongjh.progresslibrary.widget.MaskProgressView
-import java.io.File
 import java.util.*
 
 /**
@@ -254,6 +253,17 @@ class PhotoAdapter(
     fun clearAll() {
         notifyItemRangeRemoved(0, list.size)
         list.clear()
+    }
+
+    /**
+     * @return 获取所有数据源
+     */
+    fun getDataByLocalMedia(): ArrayList<LocalMedia> {
+        val data = ArrayList<LocalMedia>()
+        for (multiMediaView in list) {
+            data.add(multiMediaView)
+        }
+        return data
     }
 
     /**
