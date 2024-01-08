@@ -8,7 +8,9 @@
     <string name="z_multi_library_ok">好的</string>
     <string name="z_multi_library_cancel">取消</string>
     <string name="z_multi_library_to_use_this_feature">使用该功能需要用到</string>
-    <string name="z_multi_library_file_read_and_write_permission_to_read_and_store_related_files">\n文件读写权限来读取存储相关文件</string>
+    <string name="z_multi_library_file_read_and_write_permission_to_read_and_store_related_files">\n文件读取权限来读取相关文件</string>
+    <string name="z_multi_library_file_read_and_write_permission_to_read_and_store_related_files_by_image">\n图片文件读取权限来读取图片文件</string>
+    <string name="z_multi_library_file_read_and_write_permission_to_read_and_store_related_files_by_video">\n视频文件读取权限来读取视频文件</string>
     <string name="z_multi_library_record_permission_to_record_sound">\n录音权限来录制声音</string>
     <string name="z_multi_library_record_permission_to_shoot">\n录制权限来拍摄</string>
     <string name="z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you">\n否则无法正常运行，接下来会向您申请相关权限</string>
