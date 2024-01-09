@@ -3,7 +3,6 @@ package com.zhongjh.albumcamerarecorder.settings
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.os.Bundle
 import androidx.annotation.IntDef
 import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.MainActivity
@@ -227,14 +226,12 @@ class GlobalSetting internal constructor(
      */
     override fun openPreviewData(
         activity: Activity, requestCode: Int,
-        list: ArrayList<out LocalMedia>, position: Int
+        list: ArrayList<LocalMedia>, position: Int
     ) {
-        val bundle = Bundle()
-        bundle.putParcelableArrayList(STATE_SELECTION, list)
-        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
         val intent = Intent(activity, PreviewActivity::class.java)
+        intent.putExtra(PreviewFragment2.STATE_SELECTION, list)
         intent.putExtra(PreviewFragment2.EXTRA_ITEM, list[position])
-        intent.putExtra(PreviewFragment2.EXTRA_DEFAULT_BUNDLE, bundle)
+        intent.putExtra(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
         intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false)
         intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true)
         intent.putExtra(PreviewFragment2.IS_SELECTED_CHECK, false)
@@ -293,37 +290,37 @@ class GlobalSetting internal constructor(
         }
     }
 
-    companion object {
-        /**
-         * 提供给 [.openPreviewResourceId] 和 [.openPreviewPath] 共用的方法
-         *
-         * @param activity    窗体
-         * @param localMedias 数据源
-         * @param position    当前数据的索引
-         */
-        private fun openPreview(
-            activity: Activity,
-            localMedias: ArrayList<LocalMedia>,
-            position: Int
-        ) {
-            val bundle = Bundle()
-            bundle.putParcelableArrayList(STATE_SELECTION, localMedias)
-            bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
-            val intent = Intent(activity, PreviewActivity::class.java)
-            intent.putExtra(PreviewFragment2.EXTRA_ITEM, localMedias[position])
-            intent.putExtra(PreviewFragment2.EXTRA_DEFAULT_BUNDLE, bundle)
-            intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false)
-            intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true)
-            intent.putExtra(PreviewFragment2.IS_SELECTED_CHECK, false)
-            intent.putExtra(PreviewFragment2.APPLY_ENABLE, false)
-            intent.putExtra(PreviewFragment2.SELECTED_ENABLE, false)
-            intent.putExtra(PreviewFragment2.IS_EXTERNAL_USERS, true)
-            activity.startActivityForResult(intent, GlobalSpec.requestCode)
-            if (GlobalSpec.cutscenesEnabled) {
-                activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
-            }
-        }
-    }
+//    companion object {
+//        /**
+//         * 提供给 [.openPreviewResourceId] 和 [.openPreviewPath] 共用的方法
+//         *
+//         * @param activity    窗体
+//         * @param localMedias 数据源
+//         * @param position    当前数据的索引
+//         */
+//        private fun openPreview(
+//            activity: Activity,
+//            localMedias: ArrayList<LocalMedia>,
+//            position: Int
+//        ) {
+//            val bundle = Bundle()
+//            bundle.putParcelableArrayList(STATE_SELECTION, localMedias)
+//            bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
+//            val intent = Intent(activity, PreviewActivity::class.java)
+//            intent.putExtra(PreviewFragment2.EXTRA_ITEM, localMedias[position])
+//            intent.putExtra(PreviewFragment2.EXTRA_DEFAULT_BUNDLE, bundle)
+//            intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+//            intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true)
+//            intent.putExtra(PreviewFragment2.IS_SELECTED_CHECK, false)
+//            intent.putExtra(PreviewFragment2.APPLY_ENABLE, false)
+//            intent.putExtra(PreviewFragment2.SELECTED_ENABLE, false)
+//            intent.putExtra(PreviewFragment2.IS_EXTERNAL_USERS, true)
+//            activity.startActivityForResult(intent, GlobalSpec.requestCode)
+//            if (GlobalSpec.cutscenesEnabled) {
+//                activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
+//            }
+//        }
+//    }
 
     init {
         mGlobalSpec.setMimeTypeSet(mimeTypes)

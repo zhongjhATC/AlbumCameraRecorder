@@ -253,9 +253,7 @@ open class MainActivity : AppCompatActivity() {
         mActivityMainZjhBinding.tableLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                mActivityMainZjhBinding.tableLayout.viewTreeObserver.removeOnGlobalLayoutListener(
-                    this
-                )
+                mActivityMainZjhBinding.tableLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 mTabLayoutHeight = mActivityMainZjhBinding.tableLayout.measuredHeight.toFloat()
             }
         })
@@ -384,7 +382,10 @@ open class MainActivity : AppCompatActivity() {
                 if (albumValid()) {
                     // 如果开启相册功能,则验证存储功能,兼容Android SDK 33
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage()) && getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
+                        if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage()) && getMimeTypeSet(ModuleTypes.ALBUM).containsAll(
+                                ofVideo()
+                            )
+                        ) {
                             // 如果所有功能都支持视频图片，就请求视频图片权限
                             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
                                 != PackageManager.PERMISSION_GRANTED

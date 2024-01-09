@@ -71,41 +71,23 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
         }
 
         /**
-         * 获取用户确认后的LocalFile多媒体数据
-         *
-         * @param data 通过onActivityResult方法获取
-         * @return 用户选择/拍照的媒体数据. [LocalFile]
-         */
-        @JvmStatic
-        fun obtainLocalMediaResult(data: Intent): ArrayList<LocalMedia> {
-            val arrayList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                data.getParcelableArrayListExtra(
-                    EXTRA_RESULT_SELECTION_LOCAL_MEDIA,
-                    LocalMedia::class.java
-                )
-            } else {
-                data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA)
-            }
-            if (arrayList == null) {
-                return ArrayList()
-            }
-            return arrayList
-        }
-
-        /**
          * 获取用户确认后的MultiMedia多媒体数据
          *
          * @param data 通过onActivityResult方法获取
          * @return 用户通过直接调用预览界面然后返回的媒体数据. [LocalMedia]
          */
         @JvmStatic
-        fun obtainMultiMediaResult(data: Intent): ArrayList<LocalMedia>? {
+        fun obtainMultiMediaResult(data: Intent): ArrayList<LocalMedia> {
             // 获取选择的数据
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val arrayList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 data.getParcelableArrayListExtra(STATE_SELECTION, LocalMedia::class.java)
             } else {
                 data.getParcelableArrayListExtra(STATE_SELECTION)
             }
+            if (arrayList == null) {
+                return ArrayList()
+            }
+            return arrayList
         }
     }
 

@@ -90,9 +90,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             if (data.getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
                 ArrayList<LocalMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
-                if (selected == null) {
-                    return;
-                }
                 // 循环判断，如果不存在，则删除
                 for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
                     int k = 0;
@@ -107,7 +104,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                List<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
+                List<LocalMedia> result = MultiMediaSetting.obtainMultiMediaResult(data);
                 printProperty(result);
                 getMaskProgressLayout().addLocalFileStartUpload(result);
             }

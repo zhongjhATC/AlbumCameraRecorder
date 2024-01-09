@@ -88,11 +88,6 @@ class PreviewFragment2 : BaseFragment() {
         const val EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat"
 
         /**
-         * 选择的数据源集合和类型
-         */
-        const val EXTRA_DEFAULT_BUNDLE = "extra_default_bundle"
-
-        /**
          * 告诉接收数据的界面是直接 add 数据源
          */
         const val EXTRA_RESULT_APPLY = "extra_result_apply"

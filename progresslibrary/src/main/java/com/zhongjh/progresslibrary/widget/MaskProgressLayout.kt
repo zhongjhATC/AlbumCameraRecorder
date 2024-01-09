@@ -256,9 +256,9 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun addLocalFileStartUpload(localMediaList: List<LocalMedia>) {
         isAuthority()
-        // 图片的
+        // 新添加图片的
         val multiMediaViewImages = ArrayList<MultiMediaView>()
-        // 视频的
+        // 新添加视频的
         val multiMediaViewVideos = ArrayList<MultiMediaView>()
         for (localMedia in localMediaList) {
             val multiMediaView = MultiMediaView(localMedia)
@@ -281,6 +281,38 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mPhotoAdapter.addImageData(multiMediaViewImages)
         mPhotoAdapter.addVideoData(multiMediaViewVideos)
     }
+
+    override fun addLocalMediaListStartUploadSingle(localMediaList: List<LocalMedia>) {
+//        isAuthority()
+//        // 新添加图片的
+//        val multiMediaViewImages = ArrayList<MultiMediaView>()
+//        // 新添加视频的
+//        val multiMediaViewVideos = ArrayList<MultiMediaView>()
+//        val maps: Map<Long, LocalMedia> = Maps.uniqueIndex(userList, object : Function<User?, Long?>() {
+//            fun apply(user: User): Long? {
+//                return user.getId()
+//            }
+//        })
+//        // 循环判断，如果不存在，则删除
+//        for (i in getImagesAndVideos().indices.reversed()) {
+//            var k = 0
+//            for (multiMedia in selected) {
+//                if (getMaskProgressLayout().getImagesAndVideos().get(i) != multiMedia) {
+//                    k++
+//                }
+//            }
+//            if (k == selected.size) {
+//                // 所有都不符合，则删除
+//                getMaskProgressLayout().removePosition(i)
+//            }
+//        }
+//
+//
+//        for (localMedia in localMediaList) {
+//
+//        }
+    }
+
 
     override fun setImageUrls(imagesUrls: List<String>) {
         val multiMediaViews = ArrayList<MultiMediaView>()

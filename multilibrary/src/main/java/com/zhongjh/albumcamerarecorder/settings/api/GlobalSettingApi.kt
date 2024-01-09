@@ -245,7 +245,7 @@ interface GlobalSettingApi {
      */
     fun openPreviewData(
         activity: Activity, requestCode: Int,
-        list: ArrayList<out LocalMedia>, position: Int
+        list: ArrayList<LocalMedia>, position: Int
     )
 
     /**

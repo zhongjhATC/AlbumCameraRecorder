@@ -28,6 +28,13 @@ interface MaskProgressApi {
     fun addLocalFileStartUpload(localMediaList: List<LocalMedia>)
 
     /**
+     *
+     * 添加[LocalMedia],根据自身类型进行相应的显示,同时,只能存在一个
+     * @param localMediaList 文件实体数据集
+     */
+    fun addLocalMediaListStartUploadSingle(localMediaList: List<LocalMedia>)
+
+    /**
      * 设置图片网址数据
      *
      * @param imagesUrls 图片网址
