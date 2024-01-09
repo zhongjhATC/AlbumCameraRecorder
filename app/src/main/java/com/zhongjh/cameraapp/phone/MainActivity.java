@@ -101,9 +101,9 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 // 点击详情
                 if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
-                    mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
-                            mBinding.mplImageList.getImagesAndVideos(),
-                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
+//                    mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
+//                            mBinding.mplImageList.getImagesAndVideos(),
+//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 

@@ -65,9 +65,9 @@ public class Combined {
                 // 点击详情
                 if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
                     // 预览
-                    globalSetting.openPreviewData(activity, requestCode,
-                            maskProgressLayout.getImagesAndVideos(),
-                            maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
+//                    globalSetting.openPreviewData(activity, requestCode,
+//                            maskProgressLayout.getImagesAndVideos(),
+//                            maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
                 }
                 listener.onItemClick(view, multiMediaView);
             }
@@ -105,7 +105,7 @@ public class Combined {
             // 如果是在预览界面点击了确定
             if (data.getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
-                ArrayList<LocalMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
+                ArrayList<LocalMedia> selected = MultiMediaSetting.obtainLocalMediaResult(data);
                 if (selected == null) {
                     return;
                 }
@@ -123,7 +123,7 @@ public class Combined {
                     }
                 }
             } else {
-                List<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
+                ArrayList<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
                 this.maskProgressLayout.addLocalFileStartUpload(result);
             }
         }

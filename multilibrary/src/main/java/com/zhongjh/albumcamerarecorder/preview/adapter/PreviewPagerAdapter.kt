@@ -1,20 +1,17 @@
 package com.zhongjh.albumcamerarecorder.preview.adapter
 
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.imageEngine
 import android.app.Activity
 import android.content.Context
-import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter.PreviewViewHolder
-import com.zhongjh.common.entity.LocalMedia
-import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
+import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.zhongjh.albumcamerarecorder.R
 import com.github.chrisbanes.photoview.PhotoView
+import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter.PreviewViewHolder
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.imageEngine
+import com.zhongjh.common.entity.BaseMedia
 import com.zhongjh.common.utils.BitmapUtils
-import com.zhongjh.common.utils.MediaUtils
-import java.util.ArrayList
 
 /**
  * @author zhongjh
@@ -25,7 +22,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     /**
      * 数据源
      */
-    private val items = ArrayList<LocalMedia>()
+    private val items = ArrayList<BaseMedia>()
 
     /**
      * view的缓存
@@ -81,11 +78,6 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
             item.editorPath ?: item.path
         )
 
-        if (MediaUtils.isLongImage(item.width, item.height)) {
-            holder.imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-        } else {
-            holder.imageView.scaleType = ImageView.ScaleType.FIT_CENTER
-        }
 //        if (item.getUri() != null) {
 //            Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), mActivity);
 //            if (item.isGif()) {
@@ -112,7 +104,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     val size: Int
         get() = items.size
 
-    fun getLocalMedia(position: Int): LocalMedia? {
+    fun getLocalMedia(position: Int): BaseMedia? {
         return if (size > 0 && position < size) items[position] else null
     }
 
@@ -120,15 +112,15 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
         return mViewHolderCache[position]
     }
 
-    fun setLocalMedia(position: Int, localMedia: LocalMedia) {
+    fun setLocalMedia(position: Int, localMedia: BaseMedia) {
         items[position] = localMedia
     }
 
-    fun addAll(items: List<LocalMedia>) {
+    fun addAll(items: List<BaseMedia>) {
         this.items.addAll(items)
     }
 
-    private fun getRealSizeFromMedia(media: LocalMedia): IntArray {
+    private fun getRealSizeFromMedia(media: BaseMedia): IntArray {
         return intArrayOf(media.width, media.height)
     }
 

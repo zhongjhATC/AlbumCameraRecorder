@@ -1,17 +1,9 @@
 package com.zhongjh.cameraapp;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
@@ -89,7 +81,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             // 如果是在九宫格点击的预览界面 点击了确定
             if (data.getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
-                ArrayList<LocalMedia> selected = MultiMediaSetting.obtainMultiMediaResult(data);
+                ArrayList<LocalMedia> selected = MultiMediaSetting.obtainLocalMediaResult(data);
                 // 循环判断，如果不存在，则删除
                 for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
                     int k = 0;
@@ -104,7 +96,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                List<LocalMedia> result = MultiMediaSetting.obtainMultiMediaResult(data);
+                List<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
                 printProperty(result);
                 getMaskProgressLayout().addLocalFileStartUpload(result);
             }

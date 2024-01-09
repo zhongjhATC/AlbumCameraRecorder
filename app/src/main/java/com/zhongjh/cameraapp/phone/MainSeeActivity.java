@@ -115,9 +115,9 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 Log.d(TAG, "onResult 具体类型:" + multiMediaView.getMimeType());
                 Log.d(TAG, "onResult 宽高: " + multiMediaView.getWidth() + "x" + multiMediaView.getHeight());
                 if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
-                    mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
-                            mBinding.mplImageList.getImagesAndVideos(),
-                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
+//                    mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
+//                            mBinding.mplImageList.getImagesAndVideos(),
+//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 

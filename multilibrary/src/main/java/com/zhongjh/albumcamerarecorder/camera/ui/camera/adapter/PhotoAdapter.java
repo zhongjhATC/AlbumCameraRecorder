@@ -109,9 +109,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             localMedia.setHeight(item.getHeight());
             items.add(localMedia);
         }
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STATE_SELECTION, items);
-        bundle.putInt(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
 
         Intent intent = new Intent(mActivity, PreviewActivity.class);
         // 获取目前点击的这个item
@@ -121,9 +118,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         item.setMimeType(MimeType.JPEG.toString());
         item.setWidth(bitmapData.getWidth());
         item.setHeight(bitmapData.getHeight());
+        intent.putExtra(STATE_SELECTION, items);
+        intent.putExtra(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
         intent.putExtra(PreviewFragment2.EXTRA_ITEM, item);
-
-        intent.putExtra(PreviewFragment2.EXTRA_DEFAULT_BUNDLE, bundle);
         intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false);
         intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true);
         intent.putExtra(PreviewFragment2.IS_SELECTED_LISTENER, false);
