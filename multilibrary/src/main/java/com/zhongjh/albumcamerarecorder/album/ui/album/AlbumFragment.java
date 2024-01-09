@@ -193,6 +193,17 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateBottomToolbar();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
     /**
      * 初始化配置
      */
@@ -534,16 +545,19 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * @param count 当前选择的数量
      */
     private void showBottomView(int count) {
-        if (count > 0) {
-            // 显示底部
-            mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
-            // 隐藏母窗体的table
-            ((MainActivity) requireActivity()).showHideTableLayout(false);
-        } else {
-            // 显示底部
-            mViewHolder.bottomToolbar.setVisibility(View.GONE);
-            // 隐藏母窗体的table
-            ((MainActivity) requireActivity()).showHideTableLayout(true);
+        // 当前选择图片数量 > 0 并且 处于相册界面
+        if (((MainActivity) requireActivity()).getMActivityMainZjhBinding().tableLayout.getCurrentTab() == 0) {
+            if (count > 0 ) {
+                // 显示底部
+                mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
+                // 隐藏母窗体的table
+                ((MainActivity) requireActivity()).showHideTableLayout(false);
+            } else {
+                // 隐藏底部
+                mViewHolder.bottomToolbar.setVisibility(View.GONE);
+                // 显示母窗体的table
+                ((MainActivity) requireActivity()).showHideTableLayout(true);
+            }
         }
     }
 

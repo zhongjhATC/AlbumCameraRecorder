@@ -61,7 +61,7 @@ import kotlin.math.abs
  */
 open class MainActivity : AppCompatActivity() {
 
-    private val mActivityMainZjhBinding by lazy {
+    val mActivityMainZjhBinding by lazy {
         ActivityMainZjhBinding.inflate(layoutInflater)
     }
 
