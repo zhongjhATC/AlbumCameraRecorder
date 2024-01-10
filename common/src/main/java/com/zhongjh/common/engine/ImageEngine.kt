@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.engine
+package com.zhongjh.common.engine
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -52,13 +52,7 @@ interface ImageEngine {
      * @param imageView ImageView控件
      * @param url       加载图像的url
      */
-    fun loadUrlImage(
-        context: Context,
-        resizeX: Int,
-        resizeY: Int,
-        imageView: ImageView,
-        url: String
-    )
+    fun loadUrlImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, url: String)
 
     /**
      * 加载静态图像资源

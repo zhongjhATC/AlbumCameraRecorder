@@ -1,11 +1,11 @@
-package com.zhongjh.albumcamerarecorder.album.engine.impl
+package com.zhongjh.common.engine.impl
 
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
-import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
+import com.zhongjh.common.engine.ImageEngine
 
 /**
  * [ImageEngine] implementation using Picasso.

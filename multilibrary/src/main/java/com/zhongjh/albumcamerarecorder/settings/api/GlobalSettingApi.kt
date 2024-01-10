@@ -2,7 +2,7 @@ package com.zhongjh.albumcamerarecorder.settings.api
 
 import android.app.Activity
 import androidx.annotation.StyleRes
-import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
+import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener

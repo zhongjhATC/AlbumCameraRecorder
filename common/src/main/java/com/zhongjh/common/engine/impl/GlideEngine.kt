@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.engine.impl
+package com.zhongjh.common.engine.impl
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -6,7 +6,7 @@ import android.net.Uri
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
-import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
+import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.common.utils.ActivityUtils.assertValidRequest
 
 /**

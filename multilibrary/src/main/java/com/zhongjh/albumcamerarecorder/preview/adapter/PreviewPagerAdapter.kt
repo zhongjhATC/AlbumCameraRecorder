@@ -11,6 +11,7 @@ import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter.PreviewViewHolder
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.imageEngine
 import com.zhongjh.common.entity.BaseMedia
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.utils.BitmapUtils
 
 /**
@@ -66,35 +67,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
             holder.videoPlayButton.visibility = View.GONE
         }
 
-        val size = getRealSizeFromMedia(item)
-        val mediaComputeSize = BitmapUtils.getComputeImageSize(size[0], size[1])
-        val width = mediaComputeSize[0]
-        val height = mediaComputeSize[1]
-        imageEngine.loadUrlImage(
-            mContext,
-            width,
-            height,
-            holder.imageView,
-            item.editorPath ?: item.path
-        )
-
-//        if (item.getUri() != null) {
-//            Point size = PhotoMetadataUtils.getBitmapSize(item.getUri(), mActivity);
-//            if (item.isGif()) {
-//                GlobalSpec.INSTANCE.getImageEngine().loadGifImage(mContext, size.x, size.y, holder.imageView,
-//                        item.getUri());
-//            } else {
-//                GlobalSpec.INSTANCE.getImageEngine().loadImage(mContext, size.x, size.y, holder.imageView,
-//                        item.getUri());
-//
-//            }
-//        } else if (item.getUrl() != null) {
-//            GlobalSpec.INSTANCE.getImageEngine().loadUrlImage(mContext, holder.imageView,
-//                    item.getUrl());
-//        } else if (item.getDrawableId() != -1) {
-//            GlobalSpec.INSTANCE.getImageEngine().loadDrawableImage(mContext, holder.imageView,
-//                    item.getDrawableId());
-//        }
+        item.loadImage(mContext, imageEngine, holder.imageView)
     }
 
     override fun getItemCount(): Int {
@@ -104,8 +77,8 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     val size: Int
         get() = items.size
 
-    fun getLocalMedia(position: Int): BaseMedia? {
-        return if (size > 0 && position < size) items[position] else null
+    fun getLocalMedia(position: Int): LocalMedia? {
+        return if (size > 0 && position < size) items[position] as LocalMedia else null
     }
 
     fun getCurrentViewHolder(position: Int): PreviewViewHolder? {
@@ -118,10 +91,6 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
 
     fun addAll(items: List<BaseMedia>) {
         this.items.addAll(items)
-    }
-
-    private fun getRealSizeFromMedia(media: BaseMedia): IntArray {
-        return intArrayOf(media.width, media.height)
     }
 
     class PreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

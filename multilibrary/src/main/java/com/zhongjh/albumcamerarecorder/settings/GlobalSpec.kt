@@ -3,8 +3,8 @@ package com.zhongjh.albumcamerarecorder.settings
 import android.content.pm.ActivityInfo
 import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.album.engine.ImageEngine
-import com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine
+import com.zhongjh.common.engine.ImageEngine
+import com.zhongjh.common.engine.impl.GlideEngine
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
