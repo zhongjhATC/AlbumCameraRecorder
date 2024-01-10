@@ -174,7 +174,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         percentage++;
                         multiMedia.setPercentage(percentage);
-                        Log.d("MyTask", multiMedia.getPath().toString() + "进度： " + percentage);
+                        Log.d("MyTask", multiMedia.getPath() + "进度： " + percentage);
                         if (percentage == PROGRESS_MAX) {
                             this.cancel();
                         }

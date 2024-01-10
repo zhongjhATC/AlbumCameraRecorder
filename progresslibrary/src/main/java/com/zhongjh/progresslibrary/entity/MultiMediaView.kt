@@ -16,20 +16,20 @@ import kotlinx.parcelize.Parcelize
  */
 class MultiMediaView : LocalMedia, Parcelable {
 
-    /**
-     * 绑定子view,包含其他所有控件（显示view,删除view）
-     */
-    lateinit var itemView: View
-
-    /**
-     * 绑定音频View
-     */
-    lateinit var playProgressView: PlayProgressView
-
-    /**
-     * 绑定子view: 用于显示图片、视频的view
-     */
-    lateinit var maskProgressView: MaskProgressView
+//    /**
+//     * 绑定子view,包含其他所有控件（显示view,删除view）
+//     */
+//    lateinit var itemView: View
+//
+//    /**
+//     * 绑定音频View
+//     */
+//    lateinit var playProgressView: PlayProgressView
+//
+//    /**
+//     * 绑定子view: 用于显示图片、视频的view
+//     */
+//    lateinit var maskProgressView: MaskProgressView
 
     /**
      * 用于区分，因为九宫数据是允许选择重复的
@@ -59,20 +59,20 @@ class MultiMediaView : LocalMedia, Parcelable {
         this.mimeType = mimeType
     }
 
-    /**
-     * 给予进度，根据类型设置相应进度动作
-     */
-    fun setPercentage(percent: Int) {
-        if (isImageOrGif() || isVideo()) {
-            this.maskProgressView.setPercentage(percent)
-        } else if (isAudio()) {
-            // 隐藏显示音频的设置一系列动作
-            playProgressView.mViewHolder.numberProgressBar.progress = percent
-            if (percent == FULL_PERCENT) {
-                playProgressView.audioUploadCompleted()
-            }
-        }
-    }
+//    /**
+//     * 给予进度，根据类型设置相应进度动作
+//     */
+//    fun setPercentage(percent: Int) {
+//        if (isImageOrGif() || isVideo()) {
+//            this.maskProgressView.setPercentage(percent)
+//        } else if (isAudio()) {
+//            // 隐藏显示音频的设置一系列动作
+//            playProgressView.mViewHolder.numberProgressBar.progress = percent
+//            if (percent == FULL_PERCENT) {
+//                playProgressView.audioUploadCompleted()
+//            }
+//        }
+//    }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         super.writeToParcel(parcel, flags)
