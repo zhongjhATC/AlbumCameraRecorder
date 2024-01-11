@@ -1,6 +1,6 @@
 include ':combined'
 include ':videoedit'
 include ':imageedit'
-include ':app', ':multilibrary', ':progresslibrary'
+include ':app', ':multilibrary', ':grid'
 include ':common'
 include ':app2'

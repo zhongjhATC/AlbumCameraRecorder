@@ -10,8 +10,8 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.utils.MediaUtils;
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
+import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.widget.MaskProgressLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 权限申请自定义码
      */
     protected final int GET_PERMISSION_REQUEST = 100;
-    protected HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
+    protected HashMap<ProgressMedia, MyTask> timers = new HashMap<>();
 
     /**
      * 返回九宫格
@@ -106,7 +106,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<MultiMediaView, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<ProgressMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         getMaskProgressLayout().onDestroy();
@@ -187,9 +187,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected class MyTask extends Timer {
 
         int percentage = 0;// 百分比
-        MultiMediaView multiMedia;
+        ProgressMedia multiMedia;
 
-        public MyTask(MultiMediaView multiMedia) {
+        public MyTask(ProgressMedia multiMedia) {
             this.multiMedia = multiMedia;
         }
 

@@ -10,9 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.cameraapp.R;
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
-import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
+import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.listener.MaskProgressLayoutListener;
+import com.zhongjh.grid.widget.MaskProgressLayout;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -90,27 +90,27 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
         holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
             @Override
-            public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
+            public void onAddDataSuccess(@NotNull List<ProgressMedia> progressMedia) {
 
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull ProgressMedia progressMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 Toast.makeText(mActivity.getApplicationContext(), "这边写跳转相册代码获取到的数据填充该RecyclerView即可", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public void onItemClick(@NotNull View view, @NotNull ProgressMedia progressMedia) {
 
             }
 
             @Override
-            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
+            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
 
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
 
             }
 
@@ -120,7 +120,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull ProgressMedia progressMedia) {
                 return false;
             }
         });

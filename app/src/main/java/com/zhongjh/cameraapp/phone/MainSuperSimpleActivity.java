@@ -13,15 +13,13 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
-import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
-import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.progresslibrary.listener.AbstractMaskProgressLayoutListener;
+import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.listener.AbstractMaskProgressLayoutListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +48,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     /**
      * 模拟上传进度
      */
-    protected HashMap<MultiMediaView, MyTask> timers = new HashMap<>();
+    protected HashMap<ProgressMedia, MyTask> timers = new HashMap<>();
 
     /**
      * @param activity 要跳转的activity
@@ -70,7 +68,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<MultiMediaView, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<ProgressMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         mBinding.mplImageList.onDestroy();
@@ -134,24 +132,24 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
                 mGlobalSetting, mBinding.mplImageList, new AbstractMaskProgressLayoutListener() {
             @Override
-            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
-                super.onItemStartUploading(multiMediaView);
+            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
+                super.onItemStartUploading(progressMedia);
                 Log.d("onItemStartUploading", "onItemStartUploading");
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(multiMediaView);
-                timers.put(multiMediaView, timer);
+                MyTask timer = new MyTask(progressMedia);
+                timers.put(progressMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                super.onItemClose(view, multiMediaView);
+            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+                super.onItemClose(view, progressMedia);
                 // 停止上传
-                MyTask myTask = timers.get(multiMediaView);
+                MyTask myTask = timers.get(progressMedia);
                 if (myTask != null) {
                     Log.d("onItemClose", "取消");
                     myTask.cancel();
-                    timers.remove(multiMediaView);
+                    timers.remove(progressMedia);
                 }
             }
         });
@@ -161,9 +159,9 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        MultiMediaView multiMedia;
+        ProgressMedia multiMedia;
 
-        public MyTask(MultiMediaView multiMedia) {
+        public MyTask(ProgressMedia multiMedia) {
             this.multiMedia = multiMedia;
         }
 

@@ -41,7 +41,7 @@
 
             </RadioGroup>
 
-            <com.zhongjh.progresslibrary.widget.MaskProgressLayout
+            <com.zhongjh.grid.widget.MaskProgressLayout
                 android:id="@+id/mplImageList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

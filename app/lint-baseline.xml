@@ -37,7 +37,7 @@
         id="CustomViewStyleable"
         message="By convention, the custom view (`MaskProgressLayout`) and the declare-styleable (`MaskProgressLayoutStyle`) should have the same name (various editor features rely on this convention)">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\MaskProgressLayout.java"
+            file="src\main\java\com\zhongjh\grid\widget\MaskProgressLayout.java"
             line="89"/>
     </issue>
 
@@ -181,7 +181,7 @@
         id="InflateParams"
         message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\AutoLineFeedLayout.java"
+            file="src\main\java\com\zhongjh\grid\widget\AutoLineFeedLayout.java"
             line="128"/>
     </issue>
 
@@ -189,7 +189,7 @@
         id="InflateParams"
         message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\AutoLineFeedLayout.java"
+            file="src\main\java\com\zhongjh\grid\widget\AutoLineFeedLayout.java"
             line="147"/>
     </issue>
 
@@ -197,7 +197,7 @@
         id="InflateParams"
         message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\AutoLineFeedLayout.java"
+            file="src\main\java\com\zhongjh\grid\widget\AutoLineFeedLayout.java"
             line="189"/>
     </issue>
 
@@ -332,7 +332,7 @@
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\MaskProgressLayout.java"
+            file="src\main\java\com\zhongjh\grid\widget\MaskProgressLayout.java"
             line="142"/>
     </issue>
 
@@ -340,7 +340,7 @@
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            file="src\main\java\com\zhongjh\grid\widget\PictureProgressBar.java"
             line="218"/>
     </issue>
 
@@ -348,7 +348,7 @@
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            file="src\main\java\com\zhongjh\grid\widget\PictureProgressBar.java"
             line="408"/>
     </issue>
 
@@ -356,7 +356,7 @@
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            file="src\main\java\com\zhongjh\grid\widget\PictureProgressBar.java"
             line="414"/>
     </issue>
 
@@ -364,7 +364,7 @@
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            file="src\main\java\com\zhongjh\grid\widget\PictureProgressBar.java"
             line="424"/>
     </issue>
 
@@ -372,7 +372,7 @@
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\PictureProgressBar.java"
+            file="src\main\java\com\zhongjh\grid\widget\PictureProgressBar.java"
             line="449"/>
     </issue>
 
@@ -740,7 +740,7 @@
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead.">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\PlayView.java"
+            file="src\main\java\com\zhongjh\grid\widget\PlayView.java"
             line="152"/>
     </issue>
 
@@ -748,7 +748,7 @@
         id="SetTextI18n"
         message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
         <location
-            file="src\main\java\com\zhongjh\progresslibrary\widget\PlayView.java"
+            file="src\main\java\com\zhongjh\grid\widget\PlayView.java"
             line="337"/>
     </issue>
 

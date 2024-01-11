@@ -39,7 +39,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
+    // 如果想简化代码并且同时用到multilibrary和grid、albumCameraRecorderCommon,可以直接使用combined库
     implementation project(':combined')
     implementation project(path: ':imageedit')
     implementation project(path: ':videoedit')

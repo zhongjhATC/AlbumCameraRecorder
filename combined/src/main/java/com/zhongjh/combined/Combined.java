@@ -8,10 +8,10 @@ import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.progresslibrary.listener.AbstractMaskProgressLayoutListener;
-import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
-import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
+import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.listener.AbstractMaskProgressLayoutListener;
+import com.zhongjh.grid.listener.MaskProgressLayoutListener;
+import com.zhongjh.grid.widget.MaskProgressLayout;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -49,37 +49,37 @@ public class Combined {
         maskProgressLayout.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
+            public void onAddDataSuccess(@NotNull List<ProgressMedia> progressMedia) {
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull ProgressMedia progressMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击Add
                 globalSetting.alreadyCount(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
                 globalSetting.forResult(requestCode);
-                listener.onItemAdd(view, multiMediaView, alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                listener.onItemAdd(view, progressMedia, alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public void onItemClick(@NotNull View view, @NotNull ProgressMedia progressMedia) {
                 // 点击详情
-                if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
+                if (progressMedia.isImageOrGif() || progressMedia.isVideo()) {
                     // 预览
 //                    globalSetting.openPreviewData(activity, requestCode,
 //                            maskProgressLayout.getImagesAndVideos(),
 //                            maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
                 }
-                listener.onItemClick(view, multiMediaView);
+                listener.onItemClick(view, progressMedia);
             }
 
             @Override
-            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
-                listener.onItemStartUploading(multiMediaView);
+            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
+                listener.onItemStartUploading(progressMedia);
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                listener.onItemClose(view, multiMediaView);
+            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+                listener.onItemClose(view, progressMedia);
             }
 
             @Override
@@ -88,8 +88,8 @@ public class Combined {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                return listener.onItemVideoStartDownload(view, multiMediaView);
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+                return listener.onItemVideoStartDownload(view, progressMedia);
             }
         });
     }

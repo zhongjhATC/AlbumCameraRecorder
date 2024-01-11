@@ -77,11 +77,11 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintlayoutSdkVersion"
     implementation "androidx.documentfile:documentfile:$rootProject.ext.documentfileSdkVersion"
 
-    // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
+    // 如果想简化代码并且同时用到multilibrary和grid、albumCameraRecorderCommon,可以直接使用combined库
     implementation project(':combined')
     // 如果只想使用multilibrary，就单独引用multilibrary和albumCameraRecorderCommon
     //implementation project(path: ':multilibrary')
-    //implementation project(path: ':progresslibrary')
+    //implementation project(path: ':grid')
     //implementation project(':albumCameraRecorderCommon')
     implementation project(path: ':imageedit')
     implementation project(path: ':videoedit')

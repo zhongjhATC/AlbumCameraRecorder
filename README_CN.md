@@ -57,7 +57,7 @@
 #### Step 2. Add the dependency
 
 	dependencies {
-	     // 如果想简化代码并且同时用到multilibrary和progresslibrary、albumCameraRecorderCommon,可以直接使用combined库
+	     // 如果想简化代码并且同时用到multilibrary和grid、albumCameraRecorderCommon,可以直接使用combined库
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.89X'
 
 	     // 公共库，如果不使用上面的combined库
@@ -65,7 +65,7 @@
 	     // 核心lib，调用显示相册、录屏、录音等
          implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.89X'
          // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.89X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:1.1.89X'
 
          // 配套编辑图片使用
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.89X'
@@ -175,9 +175,9 @@
  - [多媒体相关静态方法](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/AlbumCameraRecorderApi.java)
 
 如果你使用展示的九宫库，那么下面这些api对你也有用
- - [九宫格相关API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/java/com/zhongjh/progresslibrary/api/MaskProgressApi.java).
- - [九宫格相关事件](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/java/com/zhongjh/progresslibrary/listener/MaskProgressLayoutListener.java).
- - [九宫格相关属性，配置UI等等](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/res/values/attrs.xml)
+ - [九宫格相关API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/java/com/zhongjh/grid/api/MaskProgressApi.java).
+ - [九宫格相关事件](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/java/com/zhongjh/grid/listener/MaskProgressLayoutListener.java).
+ - [九宫格相关属性，配置UI等等](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/res/values/attrs.xml)
 
 
 

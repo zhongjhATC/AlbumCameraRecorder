@@ -18,7 +18,6 @@ import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
-import com.zhongjh.albumcamerarecorder.listener.OnLogListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -34,15 +33,14 @@ import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
-import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
+import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.listener.MaskProgressLayoutListener;
+import com.zhongjh.grid.widget.MaskProgressLayout;
 import com.zhongjh.videoedit.VideoCompressManager;
 import com.zhongjh.videoedit.VideoMergeManager;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -89,18 +87,18 @@ public class MainActivity extends BaseActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
+            public void onAddDataSuccess(@NotNull List<ProgressMedia> progressMedia) {
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull ProgressMedia progressMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public void onItemClick(@NotNull View view, @NotNull ProgressMedia progressMedia) {
                 // 点击详情
-                if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
+                if (progressMedia.isImageOrGif() || progressMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
 //                            mBinding.mplImageList.getImagesAndVideos(),
 //                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
@@ -108,20 +106,20 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
+            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(multiMediaView);
-                timers.put(multiMediaView, timer);
+                MyTask timer = new MyTask(progressMedia);
+                timers.put(progressMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
                 // 停止上传
-                MyTask myTask = timers.get(multiMediaView);
+                MyTask myTask = timers.get(progressMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(multiMediaView);
+                    timers.remove(progressMedia);
                 }
             }
 
@@ -131,7 +129,7 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull ProgressMedia progressMedia) {
                 return false;
             }
 

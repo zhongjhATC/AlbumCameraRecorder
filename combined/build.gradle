@@ -34,6 +34,6 @@ dependencies {
     implementation "androidx.documentfile:documentfile:$rootProject.ext.documentfileSdkVersion"
 
     api project(path: ':multilibrary')
-    api project(path: ':progresslibrary')
+    api project(path: ':grid')
     api project(path: ':common')
 }

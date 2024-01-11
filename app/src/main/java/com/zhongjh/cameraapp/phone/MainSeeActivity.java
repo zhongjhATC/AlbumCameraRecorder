@@ -21,9 +21,9 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.progresslibrary.entity.MultiMediaView;
-import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
-import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
+import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.listener.MaskProgressLayoutListener;
+import com.zhongjh.grid.widget.MaskProgressLayout;
 import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
 import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
 
@@ -53,7 +53,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     /**
      * 用于下载后记录的视频view
      */
-    MultiMediaView mVideoMultiMediaView;
+    ProgressMedia mVideoProgressMedia;
 
     /**
      * 初始化下载
@@ -80,11 +80,11 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
+            public void onAddDataSuccess(@NotNull List<ProgressMedia> progressMedia) {
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull MultiMediaView multiMediaView, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull ProgressMedia progressMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
                 if (isOk) {
@@ -93,28 +93,28 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public void onItemClick(@NotNull View view, @NotNull ProgressMedia progressMedia) {
                 // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
-                Log.i(TAG, "onResult id:" + multiMediaView.getId());
-                Log.i(TAG, "onResult url:" + multiMediaView.getUrl());
-                Log.d(TAG, "onResult 绝对路径:" + multiMediaView.getPath());
-                Log.d(TAG, "onResult Uri:" + multiMediaView.getPath());
-                Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
-                Log.d(TAG, "onResult 视频音频长度: " + multiMediaView.getDuration());
-                if (multiMediaView.isImageOrGif()) {
-                    if (multiMediaView.isImage()) {
+                Log.i(TAG, "onResult id:" + progressMedia.getId());
+                Log.i(TAG, "onResult url:" + progressMedia.getUrl());
+                Log.d(TAG, "onResult 绝对路径:" + progressMedia.getPath());
+                Log.d(TAG, "onResult Uri:" + progressMedia.getPath());
+                Log.d(TAG, "onResult 文件大小: " + progressMedia.getSize());
+                Log.d(TAG, "onResult 视频音频长度: " + progressMedia.getDuration());
+                if (progressMedia.isImageOrGif()) {
+                    if (progressMedia.isImage()) {
                         Log.d(TAG, "onResult 图片类型");
-                    } else if (multiMediaView.isImage()) {
+                    } else if (progressMedia.isImage()) {
                         Log.d(TAG, "onResult 图片类型");
                     }
-                } else if (multiMediaView.isVideo()) {
+                } else if (progressMedia.isVideo()) {
                     Log.d(TAG, "onResult 视频类型");
-                } else if (multiMediaView.isAudio()) {
+                } else if (progressMedia.isAudio()) {
                     Log.d(TAG, "onResult 音频类型");
                 }
-                Log.d(TAG, "onResult 具体类型:" + multiMediaView.getMimeType());
-                Log.d(TAG, "onResult 宽高: " + multiMediaView.getWidth() + "x" + multiMediaView.getHeight());
-                if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
+                Log.d(TAG, "onResult 具体类型:" + progressMedia.getMimeType());
+                Log.d(TAG, "onResult 宽高: " + progressMedia.getWidth() + "x" + progressMedia.getHeight());
+                if (progressMedia.isImageOrGif() || progressMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
 //                            mBinding.mplImageList.getImagesAndVideos(),
 //                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
@@ -122,19 +122,19 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public void onItemStartUploading(@NotNull MultiMediaView multiMediaView) {
+            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(multiMediaView);
-                timers.put(multiMediaView, timer);
+                MyTask timer = new MyTask(progressMedia);
+                timers.put(progressMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
                 // 停止上传
-                if (timers.get(multiMediaView) != null) {
-                    timers.get(multiMediaView).cancel();
-                    timers.remove(multiMediaView);
+                if (timers.get(progressMedia) != null) {
+                    timers.get(progressMedia).cancel();
+                    timers.remove(progressMedia);
                 }
             }
 
@@ -158,20 +158,20 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull ProgressMedia progressMedia) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
-                    String[] fileFullPath = getFileFullPath(multiMediaView.getUrl(), 1);
+                    String[] fileFullPath = getFileFullPath(progressMedia.getUrl(), 1);
                     boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
                     if (!isExists) {
                         // 调用方法
-                        mVideoMultiMediaView = multiMediaView;
-                        mDownloadHelper.downloadFile(multiMediaView.getUrl(), fileFullPath[0], fileFullPath[1]);
+                        mVideoProgressMedia = progressMedia;
+                        mDownloadHelper.downloadFile(progressMedia.getUrl(), fileFullPath[0], fileFullPath[1]);
                         // 返回false是中断后面的操作，先让目前视频文件下载完
                         return false;
                     } else {
                         // 直接赋值
-                        mBinding.mplImageList.setVideoCover(multiMediaView, fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.mplImageList.setVideoCover(progressMedia, fileFullPath[0] + File.separator + fileFullPath[1]);
                         // 赋值本地播放地址后,返回true是可以继续播放的播放事件
                         return true;
                     }
@@ -334,7 +334,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 mBinding.mplImageList.setAudioCover(mAudioView, file.getPath());
                 break;
             case "mp4":
-                mBinding.mplImageList.setVideoCover(mVideoMultiMediaView, file.getPath());
+                mBinding.mplImageList.setVideoCover(mVideoProgressMedia, file.getPath());
                 break;
             default:
                 break;

@@ -54,7 +54,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 #### Step 2. Add the dependency
 
 	dependencies {
-	     // if you want to simplify the code and at the same time use multilibrary and progresslibrary, albumCameraRecorderCommon, can directly use the combined library
+	     // if you want to simplify the code and at the same time use multilibrary and grid, albumCameraRecorderCommon, can directly use the combined library
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.91X'
 
 	     // Public library, if not using the combined library above
@@ -62,7 +62,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 	     // core lib, call display album, screen recording, recording, etc
          implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.91X'
          // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.91X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:1.1.91X'
 
          // use it with editing pictures
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.91X'
@@ -179,9 +179,9 @@ Because the inside of the camera from the [CameraView] (https://github.com/natar
 
 
 If you use the shown library, the following APIs are also useful for you
- - [Nine-grid related API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/java/com/zhongjh/progresslibrary/api/MaskProgressApi.java).
- - [Nine-grid dependent Events](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/java/com/zhongjh/progresslibrary/listener/MaskProgressLayoutListener.java).
- - [Nine-grid related properties, configuring the UI, etc](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/progresslibrary/src/main/res/values/attrs.xml)
+ - [Nine-grid related API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/java/com/zhongjh/grid/api/MaskProgressApi.java).
+ - [Nine-grid dependent Events](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/java/com/zhongjh/grid/listener/MaskProgressLayoutListener.java).
+ - [Nine-grid related properties, configuring the UI, etc](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/res/values/attrs.xml)
 
 
 
