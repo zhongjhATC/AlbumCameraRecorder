@@ -249,6 +249,10 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         }
     }
 
+    override fun setPercentage(multiMedia: ProgressMedia, percentage: Int) {
+        mPhotoAdapter.setPercentage(multiMedia, percentage)
+    }
+
     override fun setAuthority(authority: String) {
         val saveStrategy = SaveStrategy(true, authority, "")
         mMediaStoreCompat.saveStrategy = saveStrategy
@@ -313,14 +317,17 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 //        }
     }
 
-
     override fun setImageUrls(imagesUrls: List<String>) {
+        // 转换数据源
         val progressMedias = ArrayList<ProgressMedia>()
         for (string in imagesUrls) {
             val progressMedia = ProgressMedia(MimeType.JPEG.mimeTypeName)
             progressMedia.url = string
             progressMedias.add(progressMedia)
         }
+        // 赋值创建UI
+        // 删除当前所有图片
+        // 增加新的图片数据
         mPhotoAdapter.setImageData(progressMedias)
         maskProgressLayoutListener?.onAddDataSuccess(progressMedias)
     }

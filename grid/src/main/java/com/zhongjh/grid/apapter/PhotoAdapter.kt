@@ -272,6 +272,16 @@ class PhotoAdapter(
     }
 
     /**
+     * 设置进度
+     *
+     * @param multiMedia 需要设置进度的实体
+     * @param percentage 进度值
+     */
+    fun setPercentage(multiMedia: ProgressMedia, percentage: Int) {
+        mPhotoAdapter.setPercentage(multiMedia, percentage)
+    }
+
+    /**
      * 获取图片的数据
      */
     fun getImageData(): ArrayList<ProgressMedia> {
@@ -465,7 +475,6 @@ class PhotoAdapter(
         return position == size
     }
 
-
     class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         lateinit var vClose: View
@@ -497,6 +506,5 @@ class PhotoAdapter(
         }
 
     }
-
 
 }

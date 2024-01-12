@@ -206,6 +206,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 public void run() {
                     runOnUiThread(() -> {
                         percentage++;
+                        getMaskProgressLayout().setPercentage(multiMedia, percentage);
+
+
                         if (viewHolder != null) {
                             multiMedia.setPercentage(viewHolder, percentage);
                         } else {

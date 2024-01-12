@@ -13,6 +13,15 @@ import java.util.*
  * @date 2019/3/21
  */
 interface MaskProgressApi {
+
+    /**
+     * 设置进度
+     *
+     * @param multiMedia 需要设置进度的实体
+     * @param percentage 进度值
+     */
+    fun setPercentage(multiMedia: ProgressMedia, percentage: Int)
+
     /**
      * 设置authority
      *
