@@ -10,8 +10,10 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.utils.MediaUtils;
+import com.zhongjh.grid.apapter.PhotoAdapter;
 import com.zhongjh.grid.entity.ProgressMedia;
 import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.widget.PlayProgressView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -186,11 +188,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected class MyTask extends Timer {
 
-        int percentage = 0;// 百分比
+        // 百分比
+        int percentage = 0;
         ProgressMedia multiMedia;
+        PhotoAdapter.PhotoViewHolder viewHolder;
+        PlayProgressView playProgressView;
 
-        public MyTask(ProgressMedia multiMedia) {
+        public MyTask(ProgressMedia multiMedia, PhotoAdapter.PhotoViewHolder viewHolder, PlayProgressView playProgressView) {
             this.multiMedia = multiMedia;
+            this.viewHolder = viewHolder;
+            this.playProgressView = playProgressView;
         }
 
         public void schedule() {
@@ -199,7 +206,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                 public void run() {
                     runOnUiThread(() -> {
                         percentage++;
-                        multiMedia.setPercentage(percentage);
+                        if (viewHolder != null) {
+                            multiMedia.setPercentage(viewHolder, percentage);
+                        } else {
+                            multiMedia.setPercentage(playProgressView, percentage);
+                        }
                         if (percentage == PROGRESS_MAX) {
                             this.cancel();
                         }
@@ -211,7 +222,5 @@ public abstract class BaseActivity extends AppCompatActivity {
                 }
             }, 1000, 100);
         }
-
     }
-
 }

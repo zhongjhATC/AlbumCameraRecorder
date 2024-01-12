@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -21,9 +23,11 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.grid.apapter.PhotoAdapter;
 import com.zhongjh.grid.entity.ProgressMedia;
 import com.zhongjh.grid.listener.MaskProgressLayoutListener;
 import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.widget.PlayProgressView;
 import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
 import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
 
@@ -122,18 +126,27 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
+            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(progressMedia);
+                MyTask timer = new MyTask(progressMedia, null, playProgressView);
                 timers.put(progressMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+            public void onItemStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(progressMedia, viewHolder, null);
+                timers.put(progressMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
+            public void onItemClose(@NotNull ProgressMedia progressMedia) {
                 // 停止上传
-                if (timers.get(progressMedia) != null) {
-                    timers.get(progressMedia).cancel();
+                MyTask myTask = timers.get(progressMedia);
+                if (myTask != null) {
+                    myTask.cancel();
                     timers.remove(progressMedia);
                 }
             }
@@ -305,12 +318,12 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 最大10张图片或者最大1个视频
         mGlobalSetting.maxSelectablePerMediaType(12,
-                null,
-                null,
-                null,
-                alreadyImageCount,
-                alreadyVideoCount,
-                alreadyAudioCount)
+                        null,
+                        null,
+                        null,
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 

@@ -33,9 +33,11 @@ import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.grid.apapter.PhotoAdapter;
 import com.zhongjh.grid.entity.ProgressMedia;
 import com.zhongjh.grid.listener.MaskProgressLayoutListener;
 import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.widget.PlayProgressView;
 import com.zhongjh.videoedit.VideoCompressManager;
 import com.zhongjh.videoedit.VideoMergeManager;
 
@@ -106,15 +108,23 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
+            public void onItemStartUploading(@NotNull ProgressMedia progressMedia, @NotNull PhotoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(progressMedia);
+                MyTask timer = new MyTask(progressMedia, viewHolder, null);
                 timers.put(progressMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(progressMedia, null, playProgressView);
+                timers.put(progressMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
+            public void onItemClose(@NotNull ProgressMedia progressMedia) {
                 // 停止上传
                 MyTask myTask = timers.get(progressMedia);
                 if (myTask != null) {
@@ -394,7 +404,6 @@ public class MainActivity extends BaseActivity {
         albumSetting
                 // 如果选择的媒体只有图像或视频，是否只显示一种媒体类型
                 .showSingleMediaType(mBinding.cbShowSingleMediaTypeTrue.isChecked())
-                .setSelectedData(mBinding.mplImageList.getData())
                 // 是否显示多选图片的数字
                 .countable(mBinding.cbCountableTrue.isChecked())
                 // 自定义过滤器

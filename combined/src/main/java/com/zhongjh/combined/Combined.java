@@ -4,14 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
+import com.zhongjh.grid.apapter.PhotoAdapter;
 import com.zhongjh.grid.entity.ProgressMedia;
 import com.zhongjh.grid.listener.AbstractMaskProgressLayoutListener;
 import com.zhongjh.grid.listener.MaskProgressLayoutListener;
 import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.widget.PlayProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -73,13 +77,18 @@ public class Combined {
             }
 
             @Override
-            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
-                listener.onItemStartUploading(progressMedia);
+            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
+                listener.onItemAudioStartUploading(progressMedia, playProgressView);
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
-                listener.onItemClose(view, progressMedia);
+            public void onItemStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+                listener.onItemStartUploading(progressMedia, viewHolder);
+            }
+
+            @Override
+            public void onItemClose(@NotNull ProgressMedia progressMedia) {
+                listener.onItemClose(progressMedia);
             }
 
             @Override

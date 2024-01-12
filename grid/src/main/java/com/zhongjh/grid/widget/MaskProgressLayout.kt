@@ -23,8 +23,8 @@ import com.zhongjh.grid.apapter.PhotoAdapter
 import com.zhongjh.grid.api.MaskProgressApi
 import com.zhongjh.grid.engine.ImageEngine
 import com.zhongjh.grid.entity.Masking
-import com.zhongjh.grid.entity.ProgressMedia
 import com.zhongjh.grid.entity.PhotoAdapterEntity
+import com.zhongjh.grid.entity.ProgressMedia
 import com.zhongjh.grid.listener.MaskProgressLayoutListener
 import java.util.*
 
@@ -315,14 +315,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
 
     override fun setImageUrls(imagesUrls: List<String>) {
-        val progressMedia = ArrayList<ProgressMedia>()
+        val progressMedias = ArrayList<ProgressMedia>()
         for (string in imagesUrls) {
             val progressMedia = ProgressMedia(MimeType.JPEG.mimeTypeName)
             progressMedia.url = string
-            progressMedia.add(progressMedia)
+            progressMedias.add(progressMedia)
         }
-        mPhotoAdapter.setImageData(progressMedia)
-        maskProgressLayoutListener?.onAddDataSuccess(progressMedia)
+        mPhotoAdapter.setImageData(progressMedias)
+        maskProgressLayoutListener?.onAddDataSuccess(progressMedias)
     }
 
     override fun addVideoStartUpload(videoUris: List<Uri>) {
@@ -334,26 +334,26 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     }
 
     override fun setVideoUrls(videoUrls: List<String>) {
-        val progressMedia = ArrayList<ProgressMedia>()
+        val progressMedias = ArrayList<ProgressMedia>()
         for (i in videoUrls.indices) {
             val progressMedia = ProgressMedia(MimeType.MP4.mimeTypeName)
             progressMedia.isUploading = false
             progressMedia.url = videoUrls[i]
-            progressMedia.add(progressMedia)
+            progressMedias.add(progressMedia)
         }
-        mPhotoAdapter.setVideoData(progressMedia)
-        maskProgressLayoutListener?.onAddDataSuccess(progressMedia)
+        mPhotoAdapter.setVideoData(progressMedias)
+        maskProgressLayoutListener?.onAddDataSuccess(progressMedias)
     }
 
     override fun setAudioUrls(audioUrls: List<String>) {
-        val progressMedia: ArrayList<ProgressMedia> = ArrayList()
+        val progressMedias: ArrayList<ProgressMedia> = ArrayList()
         for (item in audioUrls) {
             val progressMedia = ProgressMedia(MimeType.AAC.mimeTypeName)
             progressMedia.url = item
             audioList.add(progressMedia)
-            progressMedia.add(progressMedia)
+            progressMedias.add(progressMedia)
         }
-        createPlayProgressView(progressMedia, 0)
+        createPlayProgressView(progressMedias, 0)
     }
 
     override fun setAudioCover(view: View, file: String) {
@@ -410,6 +410,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun onAudioClick(view: View) {
         (view as PlayView).mViewHolder.imgPlay.performClick()
+    }
+
+    fun getPhotoViewHolder(position: Int): PhotoAdapter.PhotoViewHolder? {
+        val holder: RecyclerView.ViewHolder? = mViewHolder.rlGrid.findViewHolderForAdapterPosition(position)
+        holder?.let {
+            return holder as PhotoAdapter.PhotoViewHolder
+        }
+        return null
     }
 
     override fun removePosition(position: Int) {
@@ -539,17 +547,17 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
      */
     private fun addVideo(videoUris: List<Uri>, icClean: Boolean, isUploading: Boolean) {
         isAuthority()
-        val progressMedia = ArrayList<ProgressMedia>()
+        val progressMedias = ArrayList<ProgressMedia>()
         for (i in videoUris.indices) {
             val progressMedia = ProgressMedia(MimeType.MP4.mimeTypeName)
             progressMedia.path = videoUris[i].toString()
             progressMedia.isUploading = isUploading
-            progressMedia.add(progressMedia)
+            progressMedias.add(progressMedia)
         }
         if (icClean) {
-            mPhotoAdapter.setVideoData(progressMedia)
+            mPhotoAdapter.setVideoData(progressMedias)
         } else {
-            mPhotoAdapter.addVideoData(progressMedia)
+            mPhotoAdapter.addVideoData(progressMedias)
         }
     }
 
@@ -560,11 +568,9 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
      */
     private fun addAudioData(progressMedia: ProgressMedia) {
         this.audioList.add(progressMedia)
-        if (audioList.size > 0) {
-            // 显示音频的进度条
-            this.maskProgressLayoutListener?.onItemStartUploading(progressMedia)
-        }
         val playProgressView = newPlayProgressView(progressMedia)
+        // 显示音频的进度条
+        this.maskProgressLayoutListener?.onItemAudioStartUploading(progressMedia, playProgressView)
         mViewHolder.llContent.addView(playProgressView)
         // 初始化播放控件
         val recordingItem = RecordingItem()
@@ -590,13 +596,12 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             override fun onRemoveRecorder() {
                 if (audioList.size > 0) {
                     // 需要判断，防止是网址状态未提供实体数据的
-                    maskProgressLayoutListener?.onItemClose(this@MaskProgressLayout, progressMedia)
+                    maskProgressLayoutListener?.onItemClose(progressMedia)
                 }
                 audioList.remove(progressMedia)
             }
         }
         playProgressView.initStyle(audioDeleteColor, audioProgressColor, audioPlayColor)
-        progressMedia.playProgressView = playProgressView
         playProgressView.setListener(maskProgressLayoutListener)
         return playProgressView
     }

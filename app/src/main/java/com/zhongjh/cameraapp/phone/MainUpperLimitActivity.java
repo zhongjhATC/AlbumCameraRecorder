@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
@@ -20,9 +21,11 @@ import com.zhongjh.cameraapp.databinding.ActivityMainUpperLimitBinding;
 import com.zhongjh.cameraapp.model.LimitModel;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.grid.apapter.PhotoAdapter;
 import com.zhongjh.grid.entity.ProgressMedia;
 import com.zhongjh.grid.listener.MaskProgressLayoutListener;
 import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.widget.PlayProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -94,18 +97,29 @@ public class MainUpperLimitActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
+            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(progressMedia);
+                MyTask timer = new MyTask(progressMedia, null, playProgressView);
                 timers.put(progressMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+            public void onItemStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(progressMedia, viewHolder, null);
+                timers.put(progressMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
+            public void onItemClose(@NotNull ProgressMedia progressMedia) {
                 // 停止上传
-                timers.get(progressMedia).cancel();
-                timers.remove(progressMedia);
+                MyTask myTask = timers.get(progressMedia);
+                if (myTask != null) {
+                    myTask.cancel();
+                    timers.remove(progressMedia);
+                }
             }
 
             @Override

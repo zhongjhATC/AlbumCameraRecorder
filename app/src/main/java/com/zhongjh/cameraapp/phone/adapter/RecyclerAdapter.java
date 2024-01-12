@@ -10,9 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.cameraapp.R;
+import com.zhongjh.grid.apapter.PhotoAdapter;
 import com.zhongjh.grid.entity.ProgressMedia;
 import com.zhongjh.grid.listener.MaskProgressLayoutListener;
 import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.widget.PlayProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -89,6 +91,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             holder.mplImageList.setVideoUrls(data.get(position).getVideoUrls());
         }
         holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+
             @Override
             public void onAddDataSuccess(@NotNull List<ProgressMedia> progressMedia) {
 
@@ -105,12 +108,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             @Override
-            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
+            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
 
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+            public void onItemStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+
+            }
+
+            @Override
+            public void onItemClose(@NotNull ProgressMedia progressMedia) {
 
             }
 

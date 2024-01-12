@@ -18,8 +18,8 @@ import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.grid.R
 import com.zhongjh.grid.engine.ImageEngine
-import com.zhongjh.grid.entity.ProgressMedia
 import com.zhongjh.grid.entity.PhotoAdapterEntity
+import com.zhongjh.grid.entity.ProgressMedia
 import com.zhongjh.grid.listener.MaskProgressLayoutListener
 import com.zhongjh.grid.widget.MaskProgressLayout
 import com.zhongjh.grid.widget.MaskProgressView
@@ -131,8 +131,8 @@ class PhotoAdapter(
             // 设置条目的点击事件
             holder.itemView.setOnClickListener(object : OnMoreClickListener() {
                 override fun onListener(v: View) {
-                    mProgressMediaAdd.maskProgressView = holder.mpvImage
-                    mProgressMediaAdd.itemView = holder.itemView
+//                    mProgressMediaAdd.maskProgressView = holder.mpvImage
+//                    mProgressMediaAdd.itemView = holder.itemView
                     // 点击加载➕图
                     listener?.onItemAdd(
                         v,
@@ -147,8 +147,8 @@ class PhotoAdapter(
         } else {
             val multiMediaView = list[position]
             if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
-                multiMediaView.maskProgressView = holder.mpvImage
-                multiMediaView.itemView = holder.itemView
+//                multiMediaView.maskProgressView = holder.mpvImage
+//                multiMediaView.itemView = holder.itemView
             }
 
             // 根据类型做相关设置
@@ -217,7 +217,7 @@ class PhotoAdapter(
             if (multiMediaView.isUploading) {
                 // 设置该对象已经上传请求过了
                 multiMediaView.isUploading = false
-                listener?.onItemStartUploading(multiMediaView)
+                listener?.onItemStartUploading(multiMediaView, holder)
             } else {
                 // 取消上传动画
                 holder.mpvImage.reset()
@@ -238,9 +238,7 @@ class PhotoAdapter(
             }
         }
         // 数量如果小于最大值并且允许操作，才+1，这个+1是最后加个可操作的Add方框
-        return if (list.size + maskProgressLayout.audioList.size < photoAdapterEntity.maxMediaCount
-            && photoAdapterEntity.isOperation
-        ) {
+        return if (list.size + maskProgressLayout.audioList.size < photoAdapterEntity.maxMediaCount && photoAdapterEntity.isOperation) {
             list.size + 1
         } else {
             list.size
@@ -388,15 +386,15 @@ class PhotoAdapter(
      */
     fun removePosition(position: Int) {
         val multiMediaView = list[position]
-        listener?.onItemClose(multiMediaView.itemView, multiMediaView)
+        // 根据索引获取相关view
+        listener?.onItemClose(multiMediaView)
         list.remove(multiMediaView)
-        multiMediaView.maskProgressView.reset()
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, list.size)
     }
 
     /**
-     * 删除某个数据
+     * 根据对象删除某个数据
      *
      * @param progressMedia 集合里面的某个对象
      */
@@ -466,6 +464,7 @@ class PhotoAdapter(
         val size = list.size
         return position == size
     }
+
 
     class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

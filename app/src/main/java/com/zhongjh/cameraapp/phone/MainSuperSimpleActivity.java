@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -18,8 +19,10 @@ import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.grid.apapter.PhotoAdapter;
 import com.zhongjh.grid.entity.ProgressMedia;
 import com.zhongjh.grid.listener.AbstractMaskProgressLayoutListener;
+import com.zhongjh.grid.widget.PlayProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -131,23 +134,31 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         // 这里是将AlbumCameraRecorder和Mask控件合并，需要放在初始化最后，alreadyImageCount才能以最新生效
         mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
                 mGlobalSetting, mBinding.mplImageList, new AbstractMaskProgressLayoutListener() {
+
             @Override
-            public void onItemStartUploading(@NotNull ProgressMedia progressMedia) {
-                super.onItemStartUploading(progressMedia);
-                Log.d("onItemStartUploading", "onItemStartUploading");
+            public void onItemStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+                super.onItemStartUploading(progressMedia, viewHolder);
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(progressMedia);
+                MyTask timer = new MyTask(progressMedia, viewHolder, null);
                 timers.put(progressMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull View view, @NotNull ProgressMedia progressMedia) {
-                super.onItemClose(view, progressMedia);
+            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
+                super.onItemAudioStartUploading(progressMedia, playProgressView);
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(progressMedia, null, playProgressView);
+                timers.put(progressMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
+            public void onItemClose(@NotNull ProgressMedia progressMedia) {
+                super.onItemClose(progressMedia);
                 // 停止上传
                 MyTask myTask = timers.get(progressMedia);
                 if (myTask != null) {
-                    Log.d("onItemClose", "取消");
                     myTask.cancel();
                     timers.remove(progressMedia);
                 }
@@ -160,9 +171,13 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         // 百分比
         int percentage = 0;
         ProgressMedia multiMedia;
+        PhotoAdapter.PhotoViewHolder viewHolder;
+        PlayProgressView playProgressView;
 
-        public MyTask(ProgressMedia multiMedia) {
+        public MyTask(ProgressMedia multiMedia, PhotoAdapter.PhotoViewHolder viewHolder, PlayProgressView playProgressView) {
             this.multiMedia = multiMedia;
+            this.viewHolder = viewHolder;
+            this.playProgressView = playProgressView;
         }
 
         public void schedule() {
@@ -171,12 +186,15 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 public void run() {
                     runOnUiThread(() -> {
                         percentage++;
-                        multiMedia.setPercentage(percentage);
-                        Log.d("MyTask", multiMedia.getPath() + "进度： " + percentage);
+                        if (viewHolder != null) {
+                            multiMedia.setPercentage(viewHolder, percentage);
+                        } else {
+                            multiMedia.setPercentage(playProgressView, percentage);
+                        }
                         if (percentage == PROGRESS_MAX) {
                             this.cancel();
                         }
-                        // 现实应用设置完成赋值url的时候可以这样写如下代码：
+                        // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：
 //                        // 赋值完成
 //                        multiMedia.setUrl(url);
 //                        multiMedia.setPercentage(100);
@@ -184,7 +202,6 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 }
             }, 1000, 100);
         }
-
     }
 
 }
