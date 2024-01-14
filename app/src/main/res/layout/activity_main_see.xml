@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <!-- 注意这里的app:maxCount是包含图片、视频、音频的总数量 -->
-    <com.zhongjh.grid.widget.MaskProgressLayout
+    <com.zhongjh.grid.widget.GridLayout
         android:id="@+id/mplImageList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

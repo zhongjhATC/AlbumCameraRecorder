@@ -3,8 +3,6 @@ package com.zhongjh.cameraapp.phone;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +18,7 @@ import com.zhongjh.combined.Combined;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.entity.GridMedia;
 import com.zhongjh.grid.listener.AbstractMaskProgressLayoutListener;
 import com.zhongjh.grid.widget.PlayProgressView;
 
@@ -51,7 +49,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     /**
      * 模拟上传进度
      */
-    protected HashMap<ProgressMedia, MyTask> timers = new HashMap<>();
+    protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
 
     /**
      * @param activity 要跳转的activity
@@ -71,7 +69,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<ProgressMedia, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         mBinding.mplImageList.onDestroy();
@@ -136,31 +134,31 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 mGlobalSetting, mBinding.mplImageList, new AbstractMaskProgressLayoutListener() {
 
             @Override
-            public void onItemStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
-                super.onItemStartUploading(progressMedia, viewHolder);
+            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+                super.onItemStartUploading(gridMedia, viewHolder);
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(progressMedia, viewHolder, null);
-                timers.put(progressMedia, timer);
+                MyTask timer = new MyTask(gridMedia, viewHolder, null);
+                timers.put(gridMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
-                super.onItemAudioStartUploading(progressMedia, playProgressView);
+            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
+                super.onItemAudioStartUploading(gridMedia, playProgressView);
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(progressMedia, null, playProgressView);
-                timers.put(progressMedia, timer);
+                MyTask timer = new MyTask(gridMedia, null, playProgressView);
+                timers.put(gridMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull ProgressMedia progressMedia) {
-                super.onItemClose(progressMedia);
+            public void onItemClose(@NotNull GridMedia gridMedia) {
+                super.onItemClose(gridMedia);
                 // 停止上传
-                MyTask myTask = timers.get(progressMedia);
+                MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(progressMedia);
+                    timers.remove(gridMedia);
                 }
             }
         });
@@ -170,11 +168,11 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        ProgressMedia multiMedia;
+        GridMedia multiMedia;
         PhotoAdapter.PhotoViewHolder viewHolder;
         PlayProgressView playProgressView;
 
-        public MyTask(ProgressMedia multiMedia, PhotoAdapter.PhotoViewHolder viewHolder, PlayProgressView playProgressView) {
+        public MyTask(GridMedia multiMedia, PhotoAdapter.PhotoViewHolder viewHolder, PlayProgressView playProgressView) {
             this.multiMedia = multiMedia;
             this.viewHolder = viewHolder;
             this.playProgressView = playProgressView;

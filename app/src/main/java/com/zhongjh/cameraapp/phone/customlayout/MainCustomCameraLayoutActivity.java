@@ -24,9 +24,9 @@ import com.zhongjh.cameraapp.phone.customlayout.camera3.CameraFragment3;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.entity.GridMedia;
 import com.zhongjh.grid.listener.MaskProgressLayoutListener;
-import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.widget.GridLayout;
 import com.zhongjh.grid.widget.PlayProgressView;
 
 import org.jetbrains.annotations.NotNull;
@@ -66,11 +66,11 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<ProgressMedia> progressMedia) {
+            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull ProgressMedia progressMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
                 if (isOk) {
@@ -79,9 +79,9 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                if (progressMedia.isImageOrGif() || progressMedia.isVideo()) {
+                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainCustomCameraLayoutActivity.this, REQUEST_CODE_CHOOSE,
 //                            mBinding.mplImageList.getImagesAndVideos(),
 //                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
@@ -89,28 +89,28 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
+            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(progressMedia, null, playProgressView);
-                timers.put(progressMedia, timer);
+                MyTask timer = new MyTask(gridMedia, null, playProgressView);
+                timers.put(gridMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(progressMedia, viewHolder, null);
-                timers.put(progressMedia, timer);
+                MyTask timer = new MyTask(gridMedia, viewHolder, null);
+                timers.put(gridMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull ProgressMedia progressMedia) {
+            public void onItemClose(@NotNull GridMedia gridMedia) {
                 // 停止上传
-                MyTask myTask = timers.get(progressMedia);
+                MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(progressMedia);
+                    timers.remove(gridMedia);
                 }
             }
 
@@ -120,7 +120,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull GridMedia gridMedia) {
                 return false;
             }
 
@@ -138,7 +138,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
     }
 
     @Override
-    protected MaskProgressLayout getMaskProgressLayout() {
+    protected GridLayout getMaskProgressLayout() {
         return mBinding.mplImageList;
     }
 

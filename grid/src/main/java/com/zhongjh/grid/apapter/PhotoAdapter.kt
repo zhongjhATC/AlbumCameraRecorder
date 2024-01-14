@@ -19,9 +19,9 @@ import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.grid.R
 import com.zhongjh.grid.engine.ImageEngine
 import com.zhongjh.grid.entity.PhotoAdapterEntity
-import com.zhongjh.grid.entity.ProgressMedia
+import com.zhongjh.grid.entity.GridMedia
 import com.zhongjh.grid.listener.MaskProgressLayoutListener
-import com.zhongjh.grid.widget.MaskProgressLayout
+import com.zhongjh.grid.widget.GridLayout
 import com.zhongjh.grid.widget.MaskProgressView
 import java.util.*
 
@@ -39,7 +39,7 @@ import java.util.*
 class PhotoAdapter(
     private val mContext: Context,
     private val mGridLayoutManage: GridLayoutManager,
-    private val maskProgressLayout: MaskProgressLayout,
+    private val maskProgressLayout: GridLayout,
     var photoAdapterEntity: PhotoAdapterEntity
 ) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
@@ -54,7 +54,7 @@ class PhotoAdapter(
     /**
      * 这是个用于添加的九宫格
      */
-    private val mProgressMediaAdd = ProgressMedia()
+    private val mProgressMediaAdd = GridMedia()
 
     /**
      * 相关事件
@@ -64,7 +64,7 @@ class PhotoAdapter(
     /**
      * 数据源（包括视频和图片）
      */
-    private val list = ArrayList<ProgressMedia>()
+    private val list = ArrayList<GridMedia>()
 
     /**
      * 每次添加数据增长的id，用于在相同地址的情况下区分两张图等
@@ -279,15 +279,15 @@ class PhotoAdapter(
     /**
      * @return 获取所有数据源
      */
-    fun getData(): ArrayList<ProgressMedia> {
+    fun getData(): ArrayList<GridMedia> {
         return list
     }
 
     /**
      * 获取图片的数据
      */
-    fun getImageData(): ArrayList<ProgressMedia> {
-        val imageDates = ArrayList<ProgressMedia>()
+    fun getImageData(): ArrayList<GridMedia> {
+        val imageDates = ArrayList<GridMedia>()
         for (multiMediaView in list) {
             if (multiMediaView.isImageOrGif()) {
                 imageDates.add(multiMediaView)
@@ -299,8 +299,8 @@ class PhotoAdapter(
     /**
      * 获取视频的数据
      */
-    fun getVideoData(): ArrayList<ProgressMedia> {
-        val videoDates = ArrayList<ProgressMedia>()
+    fun getVideoData(): ArrayList<GridMedia> {
+        val videoDates = ArrayList<GridMedia>()
         for (multiMediaView in list) {
             if (multiMediaView.isVideo()) {
                 videoDates.add(multiMediaView)
@@ -312,25 +312,25 @@ class PhotoAdapter(
     /**
      * 添加图片数据
      *
-     * @param progressMedia 数据集合
+     * @param gridMedia 数据集合
      */
-    fun addImageData(progressMedia: List<ProgressMedia>) {
+    fun addImageData(gridMedia: List<GridMedia>) {
         Log.d("$TAG Test", "addImageData")
         val position: Int = getNeedAddPosition(MimeType.JPEG.mimeTypeName)
-        for (item in progressMedia) {
-            item.multiMediaId = mId++
+        for (item in gridMedia) {
+            item.gridMediaId = mId++
         }
-        list.addAll(position, progressMedia)
+        list.addAll(position, gridMedia)
         // 刷新ui
-        notifyItemRangeInserted(position, progressMedia.size)
-        notifyItemRangeChanged(position, progressMedia.size)
+        notifyItemRangeInserted(position, gridMedia.size)
+        notifyItemRangeChanged(position, gridMedia.size)
         isRemoveAdd()
     }
 
     /**
      * 赋值图片数据
      */
-    fun setImageData(progressMedia: List<ProgressMedia>) {
+    fun setImageData(gridMedia: List<GridMedia>) {
         Log.d("$TAG Test", "setImageData")
         // 删除当前所有图片
         for (i in list.indices.reversed()) {
@@ -341,37 +341,37 @@ class PhotoAdapter(
         }
         // 增加新的图片数据
         val position = list.size - 1
-        for (item in progressMedia) {
-            item.multiMediaId = mId++
+        for (item in gridMedia) {
+            item.gridMediaId = mId++
         }
-        list.addAll(progressMedia)
-        notifyItemRangeInserted(position, progressMedia.size)
-        notifyItemRangeChanged(position, progressMedia.size)
+        list.addAll(gridMedia)
+        notifyItemRangeInserted(position, gridMedia.size)
+        notifyItemRangeChanged(position, gridMedia.size)
         isRemoveAdd()
     }
 
     /**
      * 添加视频数据
      *
-     * @param progressMedia 数据集合
+     * @param gridMedia 数据集合
      */
-    fun addVideoData(progressMedia: List<ProgressMedia>) {
+    fun addVideoData(gridMedia: List<GridMedia>) {
         Log.d("$TAG Test", "addVideoData")
         val position = getNeedAddPosition(MimeType.MP4.mimeTypeName)
-        for (item in progressMedia) {
-            item.multiMediaId = mId++
+        for (item in gridMedia) {
+            item.gridMediaId = mId++
         }
-        list.addAll(position, progressMedia)
+        list.addAll(position, gridMedia)
         // 刷新ui
-        notifyItemRangeInserted(position, progressMedia.size)
-        notifyItemRangeChanged(position, progressMedia.size)
+        notifyItemRangeInserted(position, gridMedia.size)
+        notifyItemRangeChanged(position, gridMedia.size)
         isRemoveAdd()
     }
 
     /**
      * 赋值视频数据
      */
-    fun setVideoData(progressMedia: List<ProgressMedia>) {
+    fun setVideoData(gridMedia: List<GridMedia>) {
         Log.d("$TAG Test", "setVideoData")
         // 删除当前所有视频
         for (i in list.indices.reversed()) {
@@ -382,12 +382,12 @@ class PhotoAdapter(
         }
 
         // 增加新的视频数据
-        for (item in progressMedia) {
-            item.multiMediaId = mId++
+        for (item in gridMedia) {
+            item.gridMediaId = mId++
         }
-        list.addAll(0, progressMedia)
-        notifyItemRangeInserted(0, progressMedia.size)
-        notifyItemRangeChanged(0, progressMedia.size)
+        list.addAll(0, gridMedia)
+        notifyItemRangeInserted(0, gridMedia.size)
+        notifyItemRangeChanged(0, gridMedia.size)
         isRemoveAdd()
     }
 
@@ -408,11 +408,11 @@ class PhotoAdapter(
     /**
      * 根据对象删除某个数据
      *
-     * @param progressMedia 集合里面的某个对象
+     * @param gridMedia 集合里面的某个对象
      */
-    private fun removePosition(progressMedia: ProgressMedia) {
-        Log.d(TAG, "multiMediaView.path：" + progressMedia.path)
-        val position = list.indexOf(progressMedia)
+    private fun removePosition(gridMedia: GridMedia) {
+        Log.d(TAG, "multiMediaView.path：" + gridMedia.path)
+        val position = list.indexOf(gridMedia)
         removePosition(position)
     }
 
@@ -491,18 +491,18 @@ class PhotoAdapter(
          */
         internal fun loadImage(
             context: Context, imageEngine: ImageEngine,
-            placeholder: Drawable, progressMedia: ProgressMedia, height: Int
+            placeholder: Drawable, gridMedia: GridMedia, height: Int
         ) {
             // 加载图片
-            if (!TextUtils.isEmpty(progressMedia.getAvailablePath())) {
+            if (!TextUtils.isEmpty(gridMedia.getAvailablePath())) {
                 imageEngine.loadThumbnail(
                     context, height, placeholder,
-                    mpvImage, progressMedia.path
+                    mpvImage, gridMedia.path
                 )
-            } else if (!TextUtils.isEmpty(progressMedia.url)) {
+            } else if (!TextUtils.isEmpty(gridMedia.url)) {
                 imageEngine.loadUrlThumbnail(
                     context, height, placeholder,
-                    mpvImage, progressMedia.url!!
+                    mpvImage, gridMedia.url!!
                 )
             }
         }

@@ -3,7 +3,6 @@ package com.zhongjh.grid.entity
 import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.grid.apapter.PhotoAdapter
 import com.zhongjh.grid.widget.PlayProgressView
 
 /**
@@ -12,12 +11,12 @@ import com.zhongjh.grid.widget.PlayProgressView
  * @author zhongjh
  * @date 2021/12/13
  */
-class ProgressMedia : LocalMedia, Parcelable {
+class GridMedia : LocalMedia, Parcelable {
 
     /**
      * 用于区分，因为九宫数据是允许选择重复的
      */
-    var multiMediaId: Long = 0
+    var gridMediaId: Long = 0
 
     /**
      * 在线网址
@@ -64,7 +63,7 @@ class ProgressMedia : LocalMedia, Parcelable {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         super.writeToParcel(parcel, flags)
-        parcel.writeLong(multiMediaId)
+        parcel.writeLong(gridMediaId)
         parcel.writeString(url)
         parcel.writeByte(if (isUploading) 1 else 0)
         parcel.writeInt(progress)
@@ -74,15 +73,15 @@ class ProgressMedia : LocalMedia, Parcelable {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<ProgressMedia> {
+    companion object CREATOR : Parcelable.Creator<GridMedia> {
 
         private const val FULL_PERCENT = 100
 
-        override fun createFromParcel(parcel: Parcel): ProgressMedia {
-            return ProgressMedia(parcel)
+        override fun createFromParcel(parcel: Parcel): GridMedia {
+            return GridMedia(parcel)
         }
 
-        override fun newArray(size: Int): Array<ProgressMedia?> {
+        override fun newArray(size: Int): Array<GridMedia?> {
             return arrayOfNulls(size)
         }
     }

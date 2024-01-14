@@ -11,8 +11,8 @@ import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.ProgressMedia;
-import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.entity.GridMedia;
+import com.zhongjh.grid.widget.GridLayout;
 import com.zhongjh.grid.widget.PlayProgressView;
 
 import java.util.ArrayList;
@@ -41,14 +41,14 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 权限申请自定义码
      */
     protected final int GET_PERMISSION_REQUEST = 100;
-    protected HashMap<ProgressMedia, MyTask> timers = new HashMap<>();
+    protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
 
     /**
      * 返回九宫格
      *
      * @return MaskProgressLayout
      */
-    protected abstract MaskProgressLayout getMaskProgressLayout();
+    protected abstract GridLayout getMaskProgressLayout();
 
     /**
      * 是否浏览
@@ -108,7 +108,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<ProgressMedia, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         getMaskProgressLayout().onDestroy();
@@ -190,11 +190,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        ProgressMedia multiMedia;
+        GridMedia multiMedia;
         PhotoAdapter.PhotoViewHolder viewHolder;
         PlayProgressView playProgressView;
 
-        public MyTask(ProgressMedia multiMedia, PhotoAdapter.PhotoViewHolder viewHolder, PlayProgressView playProgressView) {
+        public MyTask(GridMedia multiMedia, PhotoAdapter.PhotoViewHolder viewHolder, PlayProgressView playProgressView) {
             this.multiMedia = multiMedia;
             this.viewHolder = viewHolder;
             this.playProgressView = playProgressView;

@@ -11,10 +11,10 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.ProgressMedia;
+import com.zhongjh.grid.entity.GridMedia;
 import com.zhongjh.grid.listener.AbstractMaskProgressLayoutListener;
 import com.zhongjh.grid.listener.MaskProgressLayoutListener;
-import com.zhongjh.grid.widget.MaskProgressLayout;
+import com.zhongjh.grid.widget.GridLayout;
 import com.zhongjh.grid.widget.PlayProgressView;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +32,7 @@ public class Combined {
 
     Activity activity;
     int requestCode;
-    MaskProgressLayout maskProgressLayout;
+    GridLayout maskProgressLayout;
 
     /**
      * AlbumCameraRecorder和Mask控件合并
@@ -45,7 +45,7 @@ public class Combined {
      */
     public Combined(Activity activity, int requestCode,
                     GlobalSetting globalSetting,
-                    MaskProgressLayout maskProgressLayout,
+                    GridLayout maskProgressLayout,
                     AbstractMaskProgressLayoutListener listener) {
         this.activity = activity;
         this.requestCode = requestCode;
@@ -53,42 +53,42 @@ public class Combined {
         maskProgressLayout.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<ProgressMedia> progressMedia) {
+            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull ProgressMedia progressMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击Add
                 globalSetting.alreadyCount(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
                 globalSetting.forResult(requestCode);
-                listener.onItemAdd(view, progressMedia, alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                listener.onItemAdd(view, gridMedia, alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull ProgressMedia progressMedia) {
+            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                if (progressMedia.isImageOrGif() || progressMedia.isVideo()) {
+                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
                     // 预览
 //                    globalSetting.openPreviewData(activity, requestCode,
 //                            maskProgressLayout.getImagesAndVideos(),
 //                            maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
                 }
-                listener.onItemClick(view, progressMedia);
+                listener.onItemClick(view, gridMedia);
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PlayProgressView playProgressView) {
-                listener.onItemAudioStartUploading(progressMedia, playProgressView);
+            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
+                listener.onItemAudioStartUploading(gridMedia, playProgressView);
             }
 
             @Override
-            public void onItemStartUploading(@NonNull ProgressMedia progressMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
-                listener.onItemStartUploading(progressMedia, viewHolder);
+            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+                listener.onItemStartUploading(gridMedia, viewHolder);
             }
 
             @Override
-            public void onItemClose(@NotNull ProgressMedia progressMedia) {
-                listener.onItemClose(progressMedia);
+            public void onItemClose(@NotNull GridMedia gridMedia) {
+                listener.onItemClose(gridMedia);
             }
 
             @Override
@@ -97,8 +97,8 @@ public class Combined {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull ProgressMedia progressMedia) {
-                return listener.onItemVideoStartDownload(view, progressMedia);
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull GridMedia gridMedia) {
+                return listener.onItemVideoStartDownload(view, gridMedia);
             }
         });
     }

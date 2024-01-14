@@ -3,7 +3,7 @@ package com.zhongjh.grid.api
 import android.net.Uri
 import android.view.View
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.grid.entity.ProgressMedia
+import com.zhongjh.grid.entity.GridMedia
 import java.util.*
 
 /**
@@ -12,7 +12,7 @@ import java.util.*
  * @author zhongjh
  * @date 2019/3/21
  */
-interface MaskProgressApi {
+interface GridApi {
 
     /**
      * 设置进度
@@ -20,7 +20,7 @@ interface MaskProgressApi {
      * @param multiMedia 需要设置进度的实体
      * @param percentage 进度值
      */
-    fun setPercentage(multiMedia: ProgressMedia, percentage: Int)
+    fun setPercentage(multiMedia: GridMedia, percentage: Int)
 
     /**
      * 设置authority
@@ -59,10 +59,10 @@ interface MaskProgressApi {
     /**
      * 设置视频地址直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
      *
-     * @param progressMedia 控件
+     * @param gridMedia 控件
      * @param videoPath 视频地址列表
      */
-    fun setVideoCover(progressMedia: ProgressMedia, videoPath: String)
+    fun setVideoCover(gridMedia: GridMedia, videoPath: String)
 
     /**
      * 设置视频网址数据
@@ -102,28 +102,28 @@ interface MaskProgressApi {
      *
      * @return 返回当前包含url的图片、视频数据
      */
-    fun getImagesAndVideos(): ArrayList<ProgressMedia>
+    fun getImagesAndVideos(): ArrayList<GridMedia>
 
     /**
      * 获取图片数据
      *
      * @return 返回当前包含url的图片数据
      */
-    fun getImages(): ArrayList<ProgressMedia>
+    fun getImages(): ArrayList<GridMedia>
 
     /**
      * 获取视频数据
      *
      * @return 返回当前包含url的视频数据
      */
-    fun getVideos(): ArrayList<ProgressMedia>
+    fun getVideos(): ArrayList<GridMedia>
 
     /**
      * 获取音频数据
      *
      * @return 返回当前包含url的音频数据
      */
-    fun getAudios(): ArrayList<ProgressMedia>
+    fun getAudios(): ArrayList<GridMedia>
 
     /**
      * 语音点击

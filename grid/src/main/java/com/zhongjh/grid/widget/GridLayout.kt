@@ -22,11 +22,11 @@ import com.zhongjh.common.utils.ThreadUtils.runOnUiThread
 import com.zhongjh.grid.R
 import com.zhongjh.grid.apapter.PhotoAdapter
 import com.zhongjh.grid.apapter.PhotoAdapter.Companion.PHOTO_ADAPTER_PROGRESS
-import com.zhongjh.grid.api.MaskProgressApi
+import com.zhongjh.grid.api.GridApi
 import com.zhongjh.grid.engine.ImageEngine
 import com.zhongjh.grid.entity.Masking
 import com.zhongjh.grid.entity.PhotoAdapterEntity
-import com.zhongjh.grid.entity.ProgressMedia
+import com.zhongjh.grid.entity.GridMedia
 import com.zhongjh.grid.listener.MaskProgressLayoutListener
 import java.util.*
 
@@ -37,7 +37,7 @@ import java.util.*
  * @date 2018/10/17
  * https://www.jianshu.com/p/191c41f63dc7
  */
-class MaskProgressLayout : FrameLayout, MaskProgressApi {
+class GridLayout : FrameLayout, GridApi {
 
     companion object {
         const val COLUMN_NUMBER = 4
@@ -70,7 +70,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 音频数据
      */
-    val audioList = ArrayList<ProgressMedia>()
+    val audioList = ArrayList<GridMedia>()
 
     /**
      * 音频 文件的进度条颜色
@@ -251,7 +251,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         }
     }
 
-    override fun setPercentage(multiMedia: ProgressMedia, percentage: Int) {
+    override fun setPercentage(multiMedia: GridMedia, percentage: Int) {
         multiMedia.progress = percentage
         val position = getData().indexOf(multiMedia)
         runOnUiThread {
@@ -267,11 +267,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     override fun addLocalFileStartUpload(localMediaList: List<LocalMedia>) {
         isAuthority()
         // 新添加图片的
-        val progressMediaImages = ArrayList<ProgressMedia>()
+        val progressMediaImages = ArrayList<GridMedia>()
         // 新添加视频的
-        val progressMediaVideos = ArrayList<ProgressMedia>()
+        val progressMediaVideos = ArrayList<GridMedia>()
         for (localMedia in localMediaList) {
-            val progressMedia = ProgressMedia(localMedia)
+            val progressMedia = GridMedia(localMedia)
             progressMedia.isUploading = true
             // 直接处理音频
             if (progressMedia.isAudio()) {
@@ -325,9 +325,9 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun setImageUrls(imagesUrls: List<String>) {
         // 转换数据源
-        val progressMedias = ArrayList<ProgressMedia>()
+        val progressMedias = ArrayList<GridMedia>()
         for (string in imagesUrls) {
-            val progressMedia = ProgressMedia(MimeType.JPEG.mimeTypeName)
+            val progressMedia = GridMedia(MimeType.JPEG.mimeTypeName)
             progressMedia.url = string
             progressMedias.add(progressMedia)
         }
@@ -342,14 +342,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         addVideo(videoUris, icClean = false, isUploading = true)
     }
 
-    override fun setVideoCover(progressMedia: ProgressMedia, videoPath: String) {
-        progressMedia.path = videoPath
+    override fun setVideoCover(gridMedia: GridMedia, videoPath: String) {
+        gridMedia.path = videoPath
     }
 
     override fun setVideoUrls(videoUrls: List<String>) {
-        val progressMedias = ArrayList<ProgressMedia>()
+        val progressMedias = ArrayList<GridMedia>()
         for (i in videoUrls.indices) {
-            val progressMedia = ProgressMedia(MimeType.MP4.mimeTypeName)
+            val progressMedia = GridMedia(MimeType.MP4.mimeTypeName)
             progressMedia.isUploading = false
             progressMedia.url = videoUrls[i]
             progressMedias.add(progressMedia)
@@ -359,14 +359,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     }
 
     override fun setAudioUrls(audioUrls: List<String>) {
-        val progressMedias: ArrayList<ProgressMedia> = ArrayList()
+        val gridMedia: ArrayList<GridMedia> = ArrayList()
         for (item in audioUrls) {
-            val progressMedia = ProgressMedia(MimeType.AAC.mimeTypeName)
+            val progressMedia = GridMedia(MimeType.AAC.mimeTypeName)
             progressMedia.url = item
             audioList.add(progressMedia)
-            progressMedias.add(progressMedia)
+            gridMedia.add(progressMedia)
         }
-        createPlayProgressView(progressMedias, 0)
+        createPlayProgressView(gridMedia, 0)
     }
 
     override fun setAudioCover(view: View, file: String) {
@@ -376,7 +376,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         // ms,时长
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
             ?: -1
-        val progressMedia = ProgressMedia(MimeType.AAC.mimeTypeName)
+        val progressMedia = GridMedia(MimeType.AAC.mimeTypeName)
         progressMedia.absolutePath = file
         progressMedia.path = mMediaStoreCompat.getUri(file).toString()
         progressMedia.duration = duration
@@ -405,19 +405,19 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         return mPhotoAdapter.getDataByLocalMedia()
     }
 
-    override fun getImagesAndVideos(): ArrayList<ProgressMedia> {
+    override fun getImagesAndVideos(): ArrayList<GridMedia> {
         return mPhotoAdapter.getData()
     }
 
-    override fun getImages(): ArrayList<ProgressMedia> {
+    override fun getImages(): ArrayList<GridMedia> {
         return mPhotoAdapter.getImageData()
     }
 
-    override fun getVideos(): ArrayList<ProgressMedia> {
+    override fun getVideos(): ArrayList<GridMedia> {
         return mPhotoAdapter.getVideoData()
     }
 
-    override fun getAudios(): ArrayList<ProgressMedia> {
+    override fun getAudios(): ArrayList<GridMedia> {
         return audioList
     }
 
@@ -497,26 +497,26 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 递归、有序的创建并且加入音频控件
      */
-    private fun createPlayProgressView(audioProgressMedia: List<ProgressMedia>, position: Int) {
-        if (position >= audioProgressMedia.size) {
+    private fun createPlayProgressView(audioGridMedia: List<GridMedia>, position: Int) {
+        if (position >= audioGridMedia.size) {
             // 加载完毕
-            maskProgressLayoutListener?.onAddDataSuccess(audioProgressMedia)
+            maskProgressLayoutListener?.onAddDataSuccess(audioGridMedia)
             return
         }
-        ThreadUtils.executeByIo(getCreatePlayProgressViewTask(audioProgressMedia, position))
+        ThreadUtils.executeByIo(getCreatePlayProgressViewTask(audioGridMedia, position))
     }
 
     /**
      * 创建音频控件的线程
      */
     private fun getCreatePlayProgressViewTask(
-        audioProgressMedia: List<ProgressMedia>,
+        audioGridMedia: List<GridMedia>,
         position: Int
     ): SimpleTask<PlayProgressView> {
         mCreatePlayProgressViewTask = object : SimpleTask<PlayProgressView>() {
             override fun doInBackground(): PlayProgressView {
                 val playProgressView: PlayProgressView =
-                    newPlayProgressView(audioProgressMedia[position])
+                    newPlayProgressView(audioGridMedia[position])
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 playProgressView.mViewHolder.playView.visibility = View.VISIBLE
                 // 隐藏上传进度
@@ -525,7 +525,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
                 // 设置数据源
                 val recordingItem = RecordingItem()
-                recordingItem.url = audioProgressMedia[position].url
+                recordingItem.url = audioGridMedia[position].url
                 playProgressView.setData(recordingItem, audioProgressColor)
                 return playProgressView
             }
@@ -534,7 +534,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
                 // 添加入view
                 mViewHolder.llContent.addView(result)
                 val newPosition = position + 1
-                createPlayProgressView(audioProgressMedia, newPosition)
+                createPlayProgressView(audioGridMedia, newPosition)
             }
         }
         return mCreatePlayProgressViewTask as SimpleTask<PlayProgressView>
@@ -560,9 +560,9 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
      */
     private fun addVideo(videoUris: List<Uri>, icClean: Boolean, isUploading: Boolean) {
         isAuthority()
-        val progressMedias = ArrayList<ProgressMedia>()
+        val progressMedias = ArrayList<GridMedia>()
         for (i in videoUris.indices) {
-            val progressMedia = ProgressMedia(MimeType.MP4.mimeTypeName)
+            val progressMedia = GridMedia(MimeType.MP4.mimeTypeName)
             progressMedia.path = videoUris[i].toString()
             progressMedia.isUploading = isUploading
             progressMedias.add(progressMedia)
@@ -577,18 +577,18 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 添加音频数据
      *
-     * @param progressMedia 数据
+     * @param gridMedia 数据
      */
-    private fun addAudioData(progressMedia: ProgressMedia) {
-        this.audioList.add(progressMedia)
-        val playProgressView = newPlayProgressView(progressMedia)
+    private fun addAudioData(gridMedia: GridMedia) {
+        this.audioList.add(gridMedia)
+        val playProgressView = newPlayProgressView(gridMedia)
         // 显示音频的进度条
-        this.maskProgressLayoutListener?.onItemAudioStartUploading(progressMedia, playProgressView)
+        this.maskProgressLayoutListener?.onItemAudioStartUploading(gridMedia, playProgressView)
         mViewHolder.llContent.addView(playProgressView)
         // 初始化播放控件
         val recordingItem = RecordingItem()
-        recordingItem.path = progressMedia.path
-        recordingItem.duration = progressMedia.duration
+        recordingItem.path = gridMedia.path
+        recordingItem.duration = gridMedia.duration
         playProgressView.setData(recordingItem, audioProgressColor)
         // 添加音频后重置所有当前播放中的音频
         for (i in 0 until mViewHolder.llContent.childCount) {
@@ -600,18 +600,18 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 创建一个新的playProgressView
      *
-     * @param progressMedia 这是携带view的实体控件
+     * @param gridMedia 这是携带view的实体控件
      * @return playProgressView
      */
-    private fun newPlayProgressView(progressMedia: ProgressMedia): PlayProgressView {
+    private fun newPlayProgressView(gridMedia: GridMedia): PlayProgressView {
         val playProgressView = PlayProgressView(context)
         playProgressView.callback = object : PlayProgressView.Callback {
             override fun onRemoveRecorder() {
                 if (audioList.size > 0) {
                     // 需要判断，防止是网址状态未提供实体数据的
-                    maskProgressLayoutListener?.onItemClose(progressMedia)
+                    maskProgressLayoutListener?.onItemClose(gridMedia)
                 }
-                audioList.remove(progressMedia)
+                audioList.remove(gridMedia)
             }
         }
         playProgressView.initStyle(audioDeleteColor, audioProgressColor, audioPlayColor)

@@ -2,7 +2,7 @@ package com.zhongjh.grid.listener
 
 import android.view.View
 import com.zhongjh.grid.apapter.PhotoAdapter
-import com.zhongjh.grid.entity.ProgressMedia
+import com.zhongjh.grid.entity.GridMedia
 import com.zhongjh.grid.widget.PlayProgressView
 
 /**
@@ -14,27 +14,27 @@ open class AbstractMaskProgressLayoutListener : MaskProgressLayoutListener {
 
     override fun onItemAdd(
         view: View,
-        progressMedia: ProgressMedia,
+        gridMedia: GridMedia,
         alreadyImageCount: Int,
         alreadyVideoCount: Int,
         alreadyAudioCount: Int
     ) {
     }
 
-    override fun onItemClick(view: View, progressMedia: ProgressMedia) {}
+    override fun onItemClick(view: View, gridMedia: GridMedia) {}
 
-    override fun onItemStartUploading(progressMedia: ProgressMedia, viewHolder: PhotoAdapter.PhotoViewHolder) {}
+    override fun onItemStartUploading(gridMedia: GridMedia, viewHolder: PhotoAdapter.PhotoViewHolder) {}
 
-    override fun onItemAudioStartUploading(progressMedia: ProgressMedia, playProgressView: PlayProgressView) {}
+    override fun onItemAudioStartUploading(gridMedia: GridMedia, playProgressView: PlayProgressView) {}
 
-    override fun onItemClose(progressMedia: ProgressMedia) {}
+    override fun onItemClose(gridMedia: GridMedia) {}
 
     override fun onItemAudioStartDownload(view: View, url: String) {}
 
-    override fun onItemVideoStartDownload(view: View, progressMedia: ProgressMedia): Boolean {
+    override fun onItemVideoStartDownload(view: View, gridMedia: GridMedia): Boolean {
         return false
     }
 
-    override fun onAddDataSuccess(progressMedia: List<ProgressMedia>) {}
+    override fun onAddDataSuccess(gridMedia: List<GridMedia>) {}
 
 }
