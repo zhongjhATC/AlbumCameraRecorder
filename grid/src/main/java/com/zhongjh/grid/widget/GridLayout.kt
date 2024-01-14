@@ -276,7 +276,8 @@ class GridLayout : FrameLayout, GridApi {
             // 直接处理音频
             if (progressMedia.isAudio()) {
                 addAudioData(progressMedia)
-                mPhotoAdapter.notifyItemInserted(mPhotoAdapter.getData().size - 1)
+                // 检测添加多媒体上限
+                mPhotoAdapter.notifyItemRangeChanged(0, mPhotoAdapter.getData().size - 1)
                 return
             }
             // 处理图片
