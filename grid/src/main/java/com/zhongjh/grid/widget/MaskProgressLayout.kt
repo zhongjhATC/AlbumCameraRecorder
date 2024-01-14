@@ -18,8 +18,10 @@ import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
+import com.zhongjh.common.utils.ThreadUtils.runOnUiThread
 import com.zhongjh.grid.R
 import com.zhongjh.grid.apapter.PhotoAdapter
+import com.zhongjh.grid.apapter.PhotoAdapter.Companion.PHOTO_ADAPTER_PROGRESS
 import com.zhongjh.grid.api.MaskProgressApi
 import com.zhongjh.grid.engine.ImageEngine
 import com.zhongjh.grid.entity.Masking
@@ -250,7 +252,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     }
 
     override fun setPercentage(multiMedia: ProgressMedia, percentage: Int) {
-        mPhotoAdapter.setPercentage(multiMedia, percentage)
+        multiMedia.progress = percentage
+        val position = getData().indexOf(multiMedia)
+        runOnUiThread {
+            mPhotoAdapter.notifyItemChanged(position, PHOTO_ADAPTER_PROGRESS)
+        }
     }
 
     override fun setAuthority(authority: String) {

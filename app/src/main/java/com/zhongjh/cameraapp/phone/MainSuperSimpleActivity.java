@@ -186,11 +186,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 public void run() {
                     runOnUiThread(() -> {
                         percentage++;
-                        if (viewHolder != null) {
-                            multiMedia.setPercentage(viewHolder, percentage);
-                        } else {
-                            multiMedia.setPercentage(playProgressView, percentage);
-                        }
+                        mBinding.mplImageList.setPercentage(multiMedia, percentage);
                         if (percentage == PROGRESS_MAX) {
                             this.cancel();
                         }

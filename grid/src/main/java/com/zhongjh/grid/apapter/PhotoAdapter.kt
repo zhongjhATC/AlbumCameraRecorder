@@ -45,6 +45,7 @@ class PhotoAdapter(
 
     companion object {
         val TAG: String = PhotoAdapter::class.java.simpleName
+        const val PHOTO_ADAPTER_PROGRESS = "PHOTO_ADAPTER_PROGRESS"
         const val TIME_UNIT: Int = 1000
     }
 
@@ -115,6 +116,8 @@ class PhotoAdapter(
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
+        // 取消上传动画
+        holder.mpvImage.reset()
         // 设置图片
         if (isShowAddItem(position)) {
             // 加载➕图
@@ -131,8 +134,6 @@ class PhotoAdapter(
             // 设置条目的点击事件
             holder.itemView.setOnClickListener(object : OnMoreClickListener() {
                 override fun onListener(v: View) {
-//                    mProgressMediaAdd.maskProgressView = holder.mpvImage
-//                    mProgressMediaAdd.itemView = holder.itemView
                     // 点击加载➕图
                     listener?.onItemAdd(
                         v,
@@ -143,14 +144,8 @@ class PhotoAdapter(
                     )
                 }
             })
-            holder.mpvImage.reset()
         } else {
             val multiMediaView = list[position]
-            if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
-//                multiMediaView.maskProgressView = holder.mpvImage
-//                multiMediaView.itemView = holder.itemView
-            }
-
             // 根据类型做相关设置
             if (multiMediaView.isVideo()) {
                 // 视频处理，判断是否显示播放按钮
@@ -218,11 +213,28 @@ class PhotoAdapter(
                 // 设置该对象已经上传请求过了
                 multiMediaView.isUploading = false
                 listener?.onItemStartUploading(multiMediaView, holder)
-            } else {
-                // 取消上传动画
-                holder.mpvImage.reset()
             }
+        }
+    }
 
+    /**
+     * 示例： https://blog.csdn.net/a1064072510/article/details/82871034
+     *
+     * @param holder holder
+     * @param position 索引
+     * @param payloads   用于标识 刷新布局里面的那个具体控件
+     */
+    override fun onBindViewHolder(holder: PhotoViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+            return
+        }
+        val progressMedia = list[position]
+        for (payload in payloads) {
+            when (payload) {
+                // 设置进度条
+                PHOTO_ADAPTER_PROGRESS -> holder.mpvImage.setPercentage(progressMedia.progress)
+            }
         }
     }
 
@@ -269,16 +281,6 @@ class PhotoAdapter(
      */
     fun getData(): ArrayList<ProgressMedia> {
         return list
-    }
-
-    /**
-     * 设置进度
-     *
-     * @param multiMedia 需要设置进度的实体
-     * @param percentage 进度值
-     */
-    fun setPercentage(multiMedia: ProgressMedia, percentage: Int) {
-        mPhotoAdapter.setPercentage(multiMedia, percentage)
     }
 
     /**
@@ -400,7 +402,7 @@ class PhotoAdapter(
         listener?.onItemClose(multiMediaView)
         list.remove(multiMediaView)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, list.size)
+        notifyItemRangeChanged(position, list.size - position)
     }
 
     /**

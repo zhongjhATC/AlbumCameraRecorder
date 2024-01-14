@@ -29,27 +29,23 @@ class ProgressMedia : LocalMedia, Parcelable {
      */
     var isUploading = false
 
+    /**
+     * 进度
+     */
+    var progress: Int = 0
+
     constructor() : super()
 
     constructor(parcel: Parcel) : super(parcel) {
         url = parcel.readString()
         isUploading = parcel.readByte() != 0.toByte()
+        progress = parcel.readInt()
     }
 
     constructor(localMedia: LocalMedia) : super(localMedia)
 
     constructor(mimeType: String) {
         this.mimeType = mimeType
-    }
-
-    /**
-     * 给予进度
-     *
-     * @param percent 进度数值
-     * @param viewHolder
-     */
-    fun setPercentage(viewHolder: PhotoAdapter.PhotoViewHolder, percent: Int) {
-        viewHolder.mpvImage.setPercentage(percent)
     }
 
     /**
@@ -71,6 +67,7 @@ class ProgressMedia : LocalMedia, Parcelable {
         parcel.writeLong(multiMediaId)
         parcel.writeString(url)
         parcel.writeByte(if (isUploading) 1 else 0)
+        parcel.writeInt(progress)
     }
 
     override fun describeContents(): Int {
