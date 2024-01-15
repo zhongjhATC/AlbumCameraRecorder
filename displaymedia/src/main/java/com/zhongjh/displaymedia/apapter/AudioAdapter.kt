@@ -22,6 +22,10 @@ class AudioAdapter(
     private val audioDeleteColor: Int, private val audioProgressColor: Int, private val audioPlayColor: Int
 ) : RecyclerView.Adapter<AudioAdapter.VideoHolder>() {
 
+    companion object {
+        val TAG: String = AudioAdapter::class.java.simpleName
+    }
+
     private val mInflater: LayoutInflater = LayoutInflater.from(mContext)
 
     /**
@@ -91,7 +95,7 @@ class AudioAdapter(
      * @param displayMediaList 数据集合
      */
     fun addAudioData(displayMediaList: List<DisplayMedia>) {
-        Log.d("${ImagesAndVideoAdapter.TAG} Test", "addAudioData")
+        Log.d("$TAG Test", "addAudioData")
         for (item in displayMediaList) {
             item.displayMediaId = mId++
         }
@@ -107,7 +111,7 @@ class AudioAdapter(
      * @param displayMediaList 数据集合
      */
     fun setAudioData(displayMediaList: List<DisplayMedia>) {
-        Log.d("${ImagesAndVideoAdapter.TAG} Test", "setAudioData")
+        Log.d("$TAG Test", "setAudioData")
         // 删除当前所有音频
         list.clear()
         // 增加新的视频数据

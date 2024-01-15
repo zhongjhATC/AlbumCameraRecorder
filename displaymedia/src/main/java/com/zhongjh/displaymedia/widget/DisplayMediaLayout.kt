@@ -29,6 +29,7 @@ import com.zhongjh.displaymedia.entity.PhotoAdapterEntity
 import com.zhongjh.displaymedia.entity.DisplayMedia
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * 这是返回（图片、视频、录音）等文件后，显示的Layout
@@ -276,15 +277,14 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         val progressMediaImages = ArrayList<DisplayMedia>()
         // 新添加视频的
         val progressMediaVideos = ArrayList<DisplayMedia>()
+        // 新添加音频的
+        val mediaAudios = ArrayList<DisplayMedia>()
         for (localMedia in localMediaList) {
             val progressMedia = DisplayMedia(localMedia)
             progressMedia.isUploading = true
             // 直接处理音频
             if (progressMedia.isAudio()) {
-                addAudioData(progressMedia)
-                // 检测添加多媒体上限
-                mImagesAndVideoAdapter.notifyItemRangeChanged(0, mImagesAndVideoAdapter.getData().size - 1)
-                return
+                mediaAudios.add(progressMedia)
             }
             // 处理图片
             if (progressMedia.isImageOrGif()) {
@@ -297,6 +297,10 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         }
         mImagesAndVideoAdapter.addImageData(progressMediaImages)
         mImagesAndVideoAdapter.addVideoData(progressMediaVideos)
+        mAudioAdapter.addAudioData(mediaAudios)
+        // 检测添加多媒体上限
+        mImagesAndVideoAdapter.notifyItemRangeChanged(0, mImagesAndVideoAdapter.getData().size - 1)
+        return
     }
 
     override fun addLocalMediaListStartUploadSingle(localMediaList: List<LocalMedia>) {
