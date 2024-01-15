@@ -10,11 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.cameraapp.R;
-import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.GridMedia;
-import com.zhongjh.grid.listener.MaskProgressLayoutListener;
-import com.zhongjh.grid.widget.GridLayout;
-import com.zhongjh.grid.widget.PlayProgressView;
+import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
+import com.zhongjh.displaymedia.entity.DisplayMedia;
+import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
+import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
+import com.zhongjh.displaymedia.widget.AudioProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -90,35 +90,35 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         if (data.get(position).getVideoUrls().size() > 0) {
             holder.mplImageList.setVideoUrls(data.get(position).getVideoUrls());
         }
-        holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+        holder.mplImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
+            public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
 
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull DisplayMedia displayMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 Toast.makeText(mActivity.getApplicationContext(), "这边写跳转相册代码获取到的数据填充该RecyclerView即可", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
+            public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
 
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
 
             }
 
             @Override
-            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
+            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
 
             }
 
             @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
+            public void onItemClose(@NotNull DisplayMedia displayMedia) {
 
             }
 
@@ -128,7 +128,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull GridMedia gridMedia) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 return false;
             }
         });
@@ -141,7 +141,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public GridLayout mplImageList;
+        public DisplayMediaLayout mplImageList;
 
         public ViewHolder(View view) {
             super(view);

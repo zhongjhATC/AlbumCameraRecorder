@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/flMain"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.zhongjh.displaymedia.widget.MaskProgressView
+        android:id="@+id/mpvImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/selector_image_add_zhongjh" />
+
+    <com.sdsmdg.harjot.vectormaster.VectorMasterView
+        android:id="@+id/vmvClose"
+        android:layout_width="32dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:paddingBottom="8dp"
+        android:layout_height="32dp"
+        android:contentDescription="@string/z_progress_library_delete_button"
+        android:visibility="gone"
+        app:vector_src="@drawable/ic_twotone_highlight_off_24dp_zhongjh"
+        tools:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/imgClose"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp"
+        android:contentDescription="@string/z_progress_library_delete_button"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_twotone_highlight_off_24dp_zhongjh"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/imgGif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_gif"
+        tools:visibility="visible"
+        android:visibility="gone"
+        android:contentDescription="标识是否gif"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tvVideoDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        tools:text="12333222222222"
+        tools:visibility="visible"
+        android:visibility="gone" />
+
+</FrameLayout>

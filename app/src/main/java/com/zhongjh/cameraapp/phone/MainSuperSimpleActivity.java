@@ -17,10 +17,10 @@ import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.GridMedia;
-import com.zhongjh.grid.listener.AbstractMaskProgressLayoutListener;
-import com.zhongjh.grid.widget.PlayProgressView;
+import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
+import com.zhongjh.displaymedia.entity.DisplayMedia;
+import com.zhongjh.displaymedia.listener.AbstractDisplayMediaLayoutListener;
+import com.zhongjh.displaymedia.widget.AudioProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +49,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     /**
      * 模拟上传进度
      */
-    protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
+    protected HashMap<DisplayMedia, MyTask> timers = new HashMap<>();
 
     /**
      * @param activity 要跳转的activity
@@ -69,7 +69,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<DisplayMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         mBinding.mplImageList.onDestroy();
@@ -131,34 +131,34 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 这里是将AlbumCameraRecorder和Mask控件合并，需要放在初始化最后，alreadyImageCount才能以最新生效
         mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
-                mGlobalSetting, mBinding.mplImageList, new AbstractMaskProgressLayoutListener() {
+                mGlobalSetting, mBinding.mplImageList, new AbstractDisplayMediaLayoutListener() {
 
             @Override
-            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
-                super.onItemStartUploading(gridMedia, viewHolder);
+            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
+                super.onItemStartUploading(displayMedia, viewHolder);
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(gridMedia, viewHolder, null);
-                timers.put(gridMedia, timer);
+                MyTask timer = new MyTask(displayMedia, viewHolder, null);
+                timers.put(displayMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
-                super.onItemAudioStartUploading(gridMedia, playProgressView);
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
+                super.onItemAudioStartUploading(displayMedia, audioProgressView);
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(gridMedia, null, playProgressView);
-                timers.put(gridMedia, timer);
+                MyTask timer = new MyTask(displayMedia, null, audioProgressView);
+                timers.put(displayMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
-                super.onItemClose(gridMedia);
+            public void onItemClose(@NotNull DisplayMedia displayMedia) {
+                super.onItemClose(displayMedia);
                 // 停止上传
-                MyTask myTask = timers.get(gridMedia);
+                MyTask myTask = timers.get(displayMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(gridMedia);
+                    timers.remove(displayMedia);
                 }
             }
         });
@@ -168,14 +168,14 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        GridMedia multiMedia;
-        PhotoAdapter.PhotoViewHolder viewHolder;
-        PlayProgressView playProgressView;
+        DisplayMedia multiMedia;
+        ImagesAndVideoAdapter.PhotoViewHolder viewHolder;
+        AudioProgressView audioProgressView;
 
-        public MyTask(GridMedia multiMedia, PhotoAdapter.PhotoViewHolder viewHolder, PlayProgressView playProgressView) {
+        public MyTask(DisplayMedia multiMedia, ImagesAndVideoAdapter.PhotoViewHolder viewHolder, AudioProgressView audioProgressView) {
             this.multiMedia = multiMedia;
             this.viewHolder = viewHolder;
-            this.playProgressView = playProgressView;
+            this.audioProgressView = audioProgressView;
         }
 
         public void schedule() {

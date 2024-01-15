@@ -24,11 +24,11 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.zhongjh.grid.engine.ImageEngine;
+import com.zhongjh.displaymedia.engine.ImageEngine;
 
 
 /**
- * 这是配合展示数据九宫格view使用的 com.zhongjh.grid.widget.MaskProgressLayout
+ * 这是配合展示数据九宫格view使用的 com.zhongjh.displaymedia.widget.MaskProgressLayout
  * {@link ImageEngine} implementation using Glide.
  *
  * @author zhongjh
