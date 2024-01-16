@@ -132,13 +132,6 @@ class AudioView : FrameLayout {
     }
 
     /**
-     * 更新总数
-     */
-    fun updateTotal() {
-        mViewHolder.tvTotalProgress.text = generateTime(mRecordingItem.duration, 0)
-    }
-
-    /**
      * 重置播放器
      */
     fun reset() {

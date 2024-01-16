@@ -93,11 +93,6 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
             mImagesAndVideoAdapter.listener = value
         }
 
-    /**
-     * 创建view的异步线程
-     */
-    var mCreateAudioProgressViewTask: SimpleTask<AudioProgressView>? = null
-
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -254,13 +249,14 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
 
     override fun setPercentage(multiMedia: DisplayMedia, percentage: Int) {
         multiMedia.progress = percentage
-        val position = getAllData().indexOf(multiMedia)
         if (multiMedia.isAudio()) {
             runOnUiThread {
+                val position = getAudios().indexOf(multiMedia)
                 mAudioAdapter.notifyItemChanged(position, PHOTO_ADAPTER_PROGRESS)
             }
         } else {
             runOnUiThread {
+                val position = getImagesAndVideos().indexOf(multiMedia)
                 mImagesAndVideoAdapter.notifyItemChanged(position, PHOTO_ADAPTER_PROGRESS)
             }
         }
@@ -458,7 +454,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
     }
 
     override fun onDestroy() {
-//        mImagesAndVideoAdapter.listener = null
+        mImagesAndVideoAdapter.listener = null
 //        for (i in 0 until mViewHolder.llContent.childCount) {
 //            val item = mViewHolder.llContent.getChildAt(i) as PlayProgressView
 //            item.mViewHolder.playView.onDestroy()

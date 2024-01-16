@@ -81,6 +81,10 @@ class ImagesAndVideoAdapter(
     private var mVideoCount = 0
     private var mItemHeight: Int = 0
 
+    override fun getItemViewType(position: Int): Int {
+        return 0
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val view: View = mInflater.inflate(R.layout.item_image_zjh, parent, false)
         val photoViewHolder = PhotoViewHolder(view)

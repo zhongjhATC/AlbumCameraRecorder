@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_margin="16dp"
     android:layout_height="wrap_content"
     android:background="#00000020">
 
@@ -28,6 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toStartOf="@+id/imgRemoveRecorder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvRecorderTip" />
@@ -37,6 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        tools:visibility="invisible"
         app:layout_constraintEnd_toStartOf="@+id/imgRemoveRecorder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -46,8 +49,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/z_progress_library_delete_button"
-        android:padding="16dp"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

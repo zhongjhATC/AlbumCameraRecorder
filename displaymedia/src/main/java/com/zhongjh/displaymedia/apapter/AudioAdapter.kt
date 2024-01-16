@@ -72,16 +72,16 @@ class AudioAdapter(
     }
 
     override fun onBindViewHolder(holder: VideoHolder, position: Int) {
-        val progressMedia = list[position]
+        val displayMedia = list[position]
         // 显示完成后的音频
         showPlayView(holder)
         isShowRemoveRecorder(holder)
         // 设置数据源
         val recordingItem = RecordingItem()
-        recordingItem.url = progressMedia.url
+        recordingItem.path = displayMedia.path
+        recordingItem.duration = displayMedia.duration
         holder.audioView.setData(recordingItem, audioProgressColor)
-
-        initListener(holder)
+        initListener(holder, displayMedia, position)
     }
 
     /**
@@ -144,14 +144,13 @@ class AudioAdapter(
     /**
      * 初始化所有事件
      */
-    private fun initListener(holder: VideoHolder) {
+    private fun initListener(holder: VideoHolder, displayMedia: DisplayMedia, position: Int) {
         // 音频删除事件
         holder.imgRemoveRecorder.setOnClickListener {
             callback?.onRemoveRecorder(holder)
-            // 隐藏音频相关控件
-            holder.groupRecorderProgress.visibility = View.GONE
-            holder.audioView.visibility = View.GONE
-            holder.imgRemoveRecorder.visibility = View.GONE
+            list.remove(displayMedia)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, list.size - position)
         }
     }
 
@@ -172,7 +171,7 @@ class AudioAdapter(
         } else {
             // 显示进度中的
             holder.groupRecorderProgress.visibility = View.VISIBLE
-            holder.audioView.visibility = View.GONE
+            holder.audioView.visibility = View.INVISIBLE
             holder.numberProgressBar.progress = progress
         }
     }
