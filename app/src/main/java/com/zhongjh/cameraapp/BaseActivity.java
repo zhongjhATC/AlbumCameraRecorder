@@ -190,14 +190,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        DisplayMedia multiMedia;
-        ImagesAndVideoAdapter.PhotoViewHolder viewHolder;
-        AudioProgressView audioProgressView;
+        DisplayMedia displayMedia;
 
-        public MyTask(DisplayMedia multiMedia, ImagesAndVideoAdapter.PhotoViewHolder viewHolder, AudioProgressView audioProgressView) {
-            this.multiMedia = multiMedia;
-            this.viewHolder = viewHolder;
-            this.audioProgressView = audioProgressView;
+        public MyTask(DisplayMedia displayMedia) {
+            this.displayMedia = displayMedia;
         }
 
         public void schedule() {
@@ -205,7 +201,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     percentage++;
-                    getMaskProgressLayout().setPercentage(multiMedia, percentage);
+                    getMaskProgressLayout().setPercentage(displayMedia, percentage);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();
                     }

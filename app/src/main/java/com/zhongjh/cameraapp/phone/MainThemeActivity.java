@@ -55,7 +55,7 @@ public class MainThemeActivity extends BaseActivity {
         setContentView(mBinding.getRoot());
 
         // 以下为点击事件
-        mBinding.mplImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
+        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
@@ -79,15 +79,15 @@ public class MainThemeActivity extends BaseActivity {
                 // 点击详情
                 if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainThemeActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
+//                            mBinding.dmlImageList.getImagesAndVideos(),
+//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
             @Override
             public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, null, audioProgressView);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -95,7 +95,7 @@ public class MainThemeActivity extends BaseActivity {
             @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, viewHolder, null);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -133,7 +133,7 @@ public class MainThemeActivity extends BaseActivity {
 
     @Override
     protected DisplayMediaLayout getMaskProgressLayout() {
-        return mBinding.mplImageList;
+        return mBinding.dmlImageList;
     }
 
     @Override

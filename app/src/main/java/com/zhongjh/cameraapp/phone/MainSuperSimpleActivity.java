@@ -72,7 +72,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         for (Map.Entry<DisplayMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
-        mBinding.mplImageList.onDestroy();
+        mBinding.dmlImageList.onDestroy();
 
         if (mGlobalSetting != null) {
             mGlobalSetting.onDestroy();
@@ -131,7 +131,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 这里是将AlbumCameraRecorder和Mask控件合并，需要放在初始化最后，alreadyImageCount才能以最新生效
         mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
-                mGlobalSetting, mBinding.mplImageList, new AbstractDisplayMediaLayoutListener() {
+                mGlobalSetting, mBinding.dmlImageList, new AbstractDisplayMediaLayoutListener() {
 
             @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
@@ -184,7 +184,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 public void run() {
                     runOnUiThread(() -> {
                         percentage++;
-                        mBinding.mplImageList.setPercentage(multiMedia, percentage);
+                        mBinding.dmlImageList.setPercentage(multiMedia, percentage);
                         if (percentage == PROGRESS_MAX) {
                             this.cancel();
                         }

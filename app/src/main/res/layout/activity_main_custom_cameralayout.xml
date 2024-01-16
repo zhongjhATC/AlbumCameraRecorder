@@ -42,7 +42,7 @@
             </RadioGroup>
 
             <com.zhongjh.displaymedia.widget.DisplayMediaLayout
-                android:id="@+id/mplImageList"
+                android:id="@+id/dmlImageList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:audioDeleteColor="@color/blue_primary"

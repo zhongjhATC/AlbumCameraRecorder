@@ -73,20 +73,38 @@ class AudioAdapter(
 
     override fun onBindViewHolder(holder: VideoHolder, position: Int) {
         val progressMedia = list[position]
-
-        if (progressMedia.progress == FULL_PERCENT) {
-            // 显示完成后的音频
-            holder.groupRecorderProgress.visibility = View.GONE
-            holder.audioView.visibility = View.VISIBLE
-            isShowRemoveRecorder(holder)
-        }
-
+        // 显示完成后的音频
+        showPlayView(holder)
+        isShowRemoveRecorder(holder)
         // 设置数据源
         val recordingItem = RecordingItem()
         recordingItem.url = progressMedia.url
         holder.audioView.setData(recordingItem, audioProgressColor)
 
         initListener(holder)
+    }
+
+    /**
+     * 示例： https://blog.csdn.net/a1064072510/article/details/82871034
+     *
+     * @param holder holder
+     * @param position 索引
+     * @param payloads   用于标识 刷新布局里面的那个具体控件
+     */
+    override fun onBindViewHolder(holder: VideoHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+            return
+        }
+        val progressMedia = list[position]
+        for (payload in payloads) {
+            when (payload) {
+                // 设置进度条
+                ImagesAndVideoAdapter.PHOTO_ADAPTER_PROGRESS -> {
+                    showProgress(holder, progressMedia.progress)
+                }
+            }
+        }
     }
 
     /**
@@ -134,6 +152,28 @@ class AudioAdapter(
             holder.groupRecorderProgress.visibility = View.GONE
             holder.audioView.visibility = View.GONE
             holder.imgRemoveRecorder.visibility = View.GONE
+        }
+    }
+
+    /**
+     * 显示播放的view
+     */
+    private fun showPlayView(holder: VideoHolder) {
+        holder.groupRecorderProgress.visibility = View.GONE
+        holder.audioView.visibility = View.VISIBLE
+    }
+
+    /**
+     * 显示进度的view
+     */
+    private fun showProgress(holder: VideoHolder, progress: Int) {
+        if (progress == FULL_PERCENT) {
+            showPlayView(holder)
+        } else {
+            // 显示进度中的
+            holder.groupRecorderProgress.visibility = View.VISIBLE
+            holder.audioView.visibility = View.GONE
+            holder.numberProgressBar.progress = progress
         }
     }
 

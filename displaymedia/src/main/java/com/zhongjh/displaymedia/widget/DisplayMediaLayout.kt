@@ -9,27 +9,27 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
-import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.common.utils.ThreadUtils.runOnUiThread
 import com.zhongjh.displaymedia.R
+import com.zhongjh.displaymedia.apapter.AudioAdapter
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter.Companion.PHOTO_ADAPTER_PROGRESS
-import com.zhongjh.displaymedia.apapter.AudioAdapter
 import com.zhongjh.displaymedia.api.DisplayMediaApi
 import com.zhongjh.displaymedia.engine.ImageEngine
+import com.zhongjh.displaymedia.entity.DisplayMedia
 import com.zhongjh.displaymedia.entity.Masking
 import com.zhongjh.displaymedia.entity.PhotoAdapterEntity
-import com.zhongjh.displaymedia.entity.DisplayMedia
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 /**
  * 这是返回（图片、视频、录音）等文件后，显示的Layout
@@ -169,12 +169,12 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         mViewHolder = ViewHolder(view)
 
         // 初始化音频的控件
+        mViewHolder.rlAudio.layoutManager = LinearLayoutManager(context)
         mAudioAdapter = AudioAdapter(context, audioDeleteColor, audioProgressColor, audioPlayColor)
         mViewHolder.rlAudio.adapter = mAudioAdapter
 
         // 初始化九宫格的控件
         mViewHolder.rlGrid.layoutManager = GridLayoutManager(context, columnNumber)
-
         mImagesAndVideoAdapter = ImagesAndVideoAdapter(
             context,
             (mViewHolder.rlGrid.layoutManager as GridLayoutManager?)!!,
@@ -254,7 +254,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
 
     override fun setPercentage(multiMedia: DisplayMedia, percentage: Int) {
         multiMedia.progress = percentage
-        val position = getData().indexOf(multiMedia)
+        val position = getAllData().indexOf(multiMedia)
         if (multiMedia.isAudio()) {
             runOnUiThread {
                 mAudioAdapter.notifyItemChanged(position, PHOTO_ADAPTER_PROGRESS)
@@ -407,8 +407,11 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         mImagesAndVideoAdapter.clearAll()
     }
 
-    override fun getData(): ArrayList<LocalMedia> {
-        return mImagesAndVideoAdapter.getDataByLocalMedia()
+    override fun getAllData(): ArrayList<DisplayMedia> {
+        val list = ArrayList<DisplayMedia>()
+        list.addAll(mImagesAndVideoAdapter.getData())
+        list.addAll(mAudioAdapter.list)
+        return list
     }
 
     override fun getImagesAndVideos(): ArrayList<DisplayMedia> {

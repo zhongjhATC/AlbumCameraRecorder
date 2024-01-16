@@ -58,10 +58,10 @@ public class MainSimpleActivity extends BaseActivity {
         mBinding = ActivityMainSimpleBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        mBinding.mplImageList.setMaxMediaCount(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE);
+        mBinding.dmlImageList.setMaxMediaCount(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE);
 
         // 以下为点击事件
-        mBinding.mplImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
+        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
@@ -85,15 +85,15 @@ public class MainSimpleActivity extends BaseActivity {
                 // 点击详情
                 if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainSimpleActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
+//                            mBinding.dmlImageList.getImagesAndVideos(),
+//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
             @Override
             public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, null, audioProgressView);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -101,7 +101,7 @@ public class MainSimpleActivity extends BaseActivity {
             @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, viewHolder, null);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -139,7 +139,7 @@ public class MainSimpleActivity extends BaseActivity {
 
     @Override
     protected DisplayMediaLayout getMaskProgressLayout() {
-        return mBinding.mplImageList;
+        return mBinding.dmlImageList;
     }
 
     @Override
@@ -186,7 +186,7 @@ public class MainSimpleActivity extends BaseActivity {
                 .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格MaskProgressLayout的maxCount也改动 mBinding.mplImageList.setMaxMediaCount();
+                // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格MaskProgressLayout的maxCount也改动 mBinding.dmlImageList.setMaxMediaCount();
                 .maxSelectablePerMediaType(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE,
                         alreadyImageCount,
                         alreadyVideoCount,

@@ -145,7 +145,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
         public ViewHolder(View view) {
             super(view);
-            mplImageList = view.findViewById(R.id.mplImageList);
+            mplImageList = view.findViewById(R.id.dmlImageList);
         }
     }
 }

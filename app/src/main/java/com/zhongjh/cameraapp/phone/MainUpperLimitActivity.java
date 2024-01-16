@@ -67,7 +67,7 @@ public class MainUpperLimitActivity extends BaseActivity {
         mBinding.tvMessage.append("5. 如果其中一个例如图片为null，那么图片可选择无限，但是受限于总上限。");
 
         // 以下为点击事件
-        mBinding.mplImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
+        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
@@ -91,15 +91,15 @@ public class MainUpperLimitActivity extends BaseActivity {
                 // 点击详情
                 if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainUpperLimitActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
+//                            mBinding.dmlImageList.getImagesAndVideos(),
+//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
             @Override
             public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, null, audioProgressView);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -107,7 +107,7 @@ public class MainUpperLimitActivity extends BaseActivity {
             @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, viewHolder, null);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -136,7 +136,7 @@ public class MainUpperLimitActivity extends BaseActivity {
 
         // 清空重置
         mBinding.btnReset.setOnClickListener(v -> {
-            mBinding.mplImageList.reset();
+            mBinding.dmlImageList.reset();
             // 停止所有的上传
             for (Map.Entry<DisplayMedia, MyTask> entry : timers.entrySet()) {
                 entry.getValue().cancel();
@@ -155,7 +155,7 @@ public class MainUpperLimitActivity extends BaseActivity {
 
     @Override
     protected DisplayMediaLayout getMaskProgressLayout() {
-        return mBinding.mplImageList;
+        return mBinding.dmlImageList;
     }
 
     @Override
@@ -193,7 +193,7 @@ public class MainUpperLimitActivity extends BaseActivity {
 
         // 最大5张图片、最大3个视频、最大1个音频
         LimitModel limitModel = getLimitModel();
-        mBinding.mplImageList.setMaxMediaCount(limitModel.getMaxSelectable(),
+        mBinding.dmlImageList.setMaxMediaCount(limitModel.getMaxSelectable(),
                 limitModel.getMaxImageSelectable(),
                 limitModel.getMaxVideoSelectable(),
                 limitModel.getMaxAudioSelectable());

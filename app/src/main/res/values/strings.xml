@@ -4,6 +4,7 @@
     <string name="error_gif">The length and width shall not be less than %1$dpx, and the size shall not exceed %2$sM</string>
     <string name="error_original">The size is not more than %1$sM。</string>
     <string name="up_upload_is_customizable">Upupload is customizable</string>
+    <string name="submit_upload">Submit Upload</string>
     <string name="global_configuration">Global configuration</string>
     <string name="global_function">Global function</string>
     <string name="support_all">Support all</string>

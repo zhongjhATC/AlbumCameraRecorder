@@ -92,10 +92,10 @@ interface DisplayMediaApi {
     fun reset()
 
     /**
-     * 获取图片、视频数据 - LocalMedia实体
+     * 获取图片、视频、音频所有数据 - DisplayMedia实体
      * @return 返回当前包含url的图片、视频数据
      */
-    fun getData(): ArrayList<LocalMedia>
+    fun getAllData(): ArrayList<DisplayMedia>
 
     /**
      * 获取图片、视频数据 - MultiMediaView实体

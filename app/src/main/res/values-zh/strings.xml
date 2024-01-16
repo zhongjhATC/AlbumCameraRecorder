@@ -4,6 +4,7 @@
     <string name="error_gif">长宽不小于 %1$dpx，且大小不超过 %2$sM。</string>
     <string name="error_original">大小不超过 %1$sM。</string>
     <string name="up_upload_is_customizable">上传中可自定义</string>
+    <string name="submit_upload">提交上传</string>
     <string name="global_configuration">全局配置</string>
     <string name="global_function">全局功能</string>
     <string name="support_all">支持全部</string>

@@ -78,15 +78,25 @@ public class MainActivity extends BaseActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
+        // 提交进行上传
+        mBinding.btnSubmitUpload.setOnClickListener(v -> {
+            // 开始模拟上传 - 指所有
+            for (DisplayMedia displayMedia : mBinding.dmlImageList.getAllData()){
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
+                timer.schedule();
+            }
+        });
+
         mBinding.llScreenOrientation.setOnClickListener(v -> showPopupMenu());
 
         mBinding.llFlashModel.setOnClickListener(v -> showFlashPopupMenu());
 
         // 设置九宫格的最大呈现数据
-        mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
+        mBinding.dmlImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
 
         // 以下为点击事件
-        mBinding.mplImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
+        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
@@ -110,7 +120,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemStartUploading(@NotNull DisplayMedia displayMedia, @NotNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, viewHolder, null);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -118,7 +128,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, null, audioProgressView);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -162,7 +172,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected DisplayMediaLayout getMaskProgressLayout() {
-        return mBinding.mplImageList;
+        return mBinding.dmlImageList;
     }
 
     /**
@@ -178,7 +188,7 @@ public class MainActivity extends BaseActivity {
         }
 
         // 刷新九宫格的最大呈现数据
-        mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
+        mBinding.dmlImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
 
         // 拍摄有关设置
         CameraSetting cameraSetting = initCameraSetting();

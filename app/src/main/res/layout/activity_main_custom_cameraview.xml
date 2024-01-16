@@ -15,7 +15,7 @@
             android:text="这是单纯演示如何自定义CameraView的一些参数，当然如果没必要的话，最好是不要自定义" />
 
         <com.zhongjh.displaymedia.widget.DisplayMediaLayout
-            android:id="@+id/mplImageList"
+            android:id="@+id/dmlImageList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:audioDeleteColor="@color/blue_primary"

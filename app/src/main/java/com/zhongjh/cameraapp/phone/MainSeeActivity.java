@@ -81,7 +81,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         mBinding = ActivityMainSeeBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         progressDialog = new ProgressDialog(MainSeeActivity.this);
-        mBinding.mplImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
+        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
@@ -120,15 +120,15 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 Log.d(TAG, "onResult 宽高: " + displayMedia.getWidth() + "x" + displayMedia.getHeight());
                 if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
+//                            mBinding.dmlImageList.getImagesAndVideos(),
+//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
             @Override
             public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, null, audioProgressView);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -136,7 +136,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, viewHolder, null);
+                MyTask timer = new MyTask(displayMedia);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -164,8 +164,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                         mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
                     } else {
                         // 直接赋值
-                        mBinding.mplImageList.setAudioCover(view, fileFullPath[0] + File.separator + fileFullPath[1]);
-                        mBinding.mplImageList.onAudioClick(view);
+                        mBinding.dmlImageList.setAudioCover(view, fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.dmlImageList.onAudioClick(view);
                     }
                 }
             }
@@ -184,7 +184,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                         return false;
                     } else {
                         // 直接赋值
-                        mBinding.mplImageList.setVideoCover(displayMedia, fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.dmlImageList.setVideoCover(displayMedia, fileFullPath[0] + File.separator + fileFullPath[1]);
                         // 赋值本地播放地址后,返回true是可以继续播放的播放事件
                         return true;
                     }
@@ -197,7 +197,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         initData();
         initListener();
         findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
+        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.dmlImageList.reset());
     }
 
     @Override
@@ -269,19 +269,19 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * 初始化数据
      */
     private void initData() {
-        mBinding.mplImageList.setOperation(true);
+        mBinding.dmlImageList.setOperation(true);
 
         // 音频数据
         List<String> audioUrls = new ArrayList<>();
         audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
         audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        mBinding.mplImageList.setAudioUrls(audioUrls);
+        mBinding.dmlImageList.setAudioUrls(audioUrls);
 
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
         videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
         videoUrls.add("https://www.w3school.com.cn/example/html5/mov_bbb.mp4");
-        mBinding.mplImageList.setVideoUrls(videoUrls);
+        mBinding.dmlImageList.setVideoUrls(videoUrls);
 
         // 图片数据
         List<String> imageUrls = new ArrayList<>();
@@ -293,7 +293,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        mBinding.mplImageList.setImageUrls(imageUrls);
+        mBinding.dmlImageList.setImageUrls(imageUrls);
     }
 
     /**
@@ -305,7 +305,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
     @Override
     protected DisplayMediaLayout getMaskProgressLayout() {
-        return mBinding.mplImageList;
+        return mBinding.dmlImageList;
     }
 
     /**
@@ -344,10 +344,10 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         String suffix = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
         switch (suffix) {
             case "mp3":
-                mBinding.mplImageList.setAudioCover(mAudioView, file.getPath());
+                mBinding.dmlImageList.setAudioCover(mAudioView, file.getPath());
                 break;
             case "mp4":
-                mBinding.mplImageList.setVideoCover(mVideoDisplayMedia, file.getPath());
+                mBinding.dmlImageList.setVideoCover(mVideoDisplayMedia, file.getPath());
                 break;
             default:
                 break;
