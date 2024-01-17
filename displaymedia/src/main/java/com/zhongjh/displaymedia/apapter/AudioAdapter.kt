@@ -185,6 +185,7 @@ class AudioAdapter(
     }
 
     class VideoHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         val numberProgressBar: NumberProgressBar = itemView.findViewById(R.id.numberProgressBar)
         val imgRemoveRecorder: ImageView = itemView.findViewById(R.id.imgRemoveRecorder)
         val groupRecorderProgress: Group = itemView.findViewById(R.id.groupRecorderProgress)

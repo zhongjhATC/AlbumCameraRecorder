@@ -24,7 +24,6 @@ import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 
 /**
@@ -72,7 +71,7 @@ class AudioView : FrameLayout {
 
     /**
      * 代替Timer
-     * 定时器  由于功能中有付费播放功能，需要定时器来判断
+     * 定时器  由于功能中有播放功能，需要定时器来判断
      */
     private var mExecutorService: ScheduledThreadPoolExecutor? = null
     private var mTimerTask: TimerTask? = null
@@ -239,7 +238,7 @@ class AudioView : FrameLayout {
             mMediaPlayer.start()
             // 定时器 更新进度
             if (mExecutorService == null) {
-                mExecutorService = ScheduledThreadPoolExecutor(1, ThreadFactory { runnable: Runnable? -> Thread(runnable) })
+                mExecutorService = ScheduledThreadPoolExecutor(1) { runnable: Runnable? -> Thread(runnable) }
                 mTimerTask = object : TimerTask() {
                     override fun run() {
                         if (isChanging) {
@@ -251,7 +250,7 @@ class AudioView : FrameLayout {
                         }
                     }
                 }
-                mExecutorService!!.scheduleAtFixedRate(mTimerTask, 0, 1000, TimeUnit.MILLISECONDS)
+                mExecutorService?.scheduleAtFixedRate(mTimerTask, 0, 1000, TimeUnit.MILLISECONDS)
             }
         }
         mIsPlaying = !mIsPlaying
@@ -317,6 +316,5 @@ class AudioView : FrameLayout {
         val tvCurrentProgress: TextView = rootView.findViewById(R.id.tvCurrentProgress)
         val tvTotalProgress: TextView = rootView.findViewById(R.id.tvTotalProgress)
     }
-
 
 }
