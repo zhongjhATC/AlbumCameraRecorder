@@ -182,17 +182,15 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
             this.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    runOnUiThread(() -> {
-                        percentage++;
-                        mBinding.dmlImageList.setPercentage(multiMedia, percentage);
-                        if (percentage == PROGRESS_MAX) {
-                            this.cancel();
-                        }
-                        // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：
+                    percentage++;
+                    mBinding.dmlImageList.setPercentage(multiMedia, percentage);
+                    if (percentage == PROGRESS_MAX) {
+                        this.cancel();
+                    }
+                    // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：
 //                        // 赋值完成
 //                        multiMedia.setUrl(url);
 //                        multiMedia.setPercentage(100);
-                    });
                 }
             }, 1000, 100);
         }

@@ -250,14 +250,24 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
     override fun setPercentage(multiMedia: DisplayMedia, percentage: Int) {
         multiMedia.progress = percentage
         if (multiMedia.isAudio()) {
+            // 找出音频的 viewHolder 赋值
             runOnUiThread {
                 val position = getAudios().indexOf(multiMedia)
-                mAudioAdapter.notifyItemChanged(position, PHOTO_ADAPTER_PROGRESS)
+                val videoHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position)
+                videoHolder?.let {
+                    it as AudioAdapter.VideoHolder
+                    it.showProgress(percentage)
+                }
             }
         } else {
+            // 找出图片视频的 viewHolder 赋值
             runOnUiThread {
                 val position = getImagesAndVideos().indexOf(multiMedia)
-                mImagesAndVideoAdapter.notifyItemChanged(position, PHOTO_ADAPTER_PROGRESS)
+                val photoViewHolder = mViewHolder.rlGrid.findViewHolderForAdapterPosition(position)
+                photoViewHolder?.let {
+                    it as ImagesAndVideoAdapter.PhotoViewHolder
+                    it.setProgress(percentage)
+                }
             }
         }
     }

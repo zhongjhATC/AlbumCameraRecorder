@@ -74,7 +74,7 @@ class AudioAdapter(
     override fun onBindViewHolder(holder: VideoHolder, position: Int) {
         val displayMedia = list[position]
         // 显示完成后的音频
-        showPlayView(holder)
+        holder.showPlayView()
         isShowRemoveRecorder(holder)
         // 设置数据源
         val recordingItem = RecordingItem()
@@ -101,7 +101,7 @@ class AudioAdapter(
             when (payload) {
                 // 设置进度条
                 ImagesAndVideoAdapter.PHOTO_ADAPTER_PROGRESS -> {
-                    showProgress(holder, progressMedia.progress)
+                    holder.showProgress(progressMedia.progress)
                 }
             }
         }
@@ -155,28 +155,6 @@ class AudioAdapter(
     }
 
     /**
-     * 显示播放的view
-     */
-    private fun showPlayView(holder: VideoHolder) {
-        holder.groupRecorderProgress.visibility = View.GONE
-        holder.audioView.visibility = View.VISIBLE
-    }
-
-    /**
-     * 显示进度的view
-     */
-    private fun showProgress(holder: VideoHolder, progress: Int) {
-        if (progress == FULL_PERCENT) {
-            showPlayView(holder)
-        } else {
-            // 显示进度中的
-            holder.groupRecorderProgress.visibility = View.VISIBLE
-            holder.audioView.visibility = View.INVISIBLE
-            holder.numberProgressBar.progress = progress
-        }
-    }
-
-    /**
      * 设置是否显示删除音频按钮
      */
     private fun isShowRemoveRecorder(holder: VideoHolder) {
@@ -212,6 +190,29 @@ class AudioAdapter(
         val groupRecorderProgress: Group = itemView.findViewById(R.id.groupRecorderProgress)
         val audioView: AudioView = itemView.findViewById(R.id.playView)
         val tvRecorderTip: TextView = itemView.findViewById(R.id.tvRecorderTip)
+
+        /**
+         * 显示进度的view
+         */
+        fun showProgress(progress: Int) {
+            if (progress == FULL_PERCENT) {
+                showPlayView()
+            } else {
+                // 显示进度中的
+                groupRecorderProgress.visibility = View.VISIBLE
+                audioView.visibility = View.INVISIBLE
+                numberProgressBar.progress = progress
+            }
+        }
+
+        /**
+         * 显示播放的view
+         */
+        fun showPlayView() {
+            groupRecorderProgress.visibility = View.GONE
+            audioView.visibility = View.VISIBLE
+        }
+
     }
 
 

@@ -510,6 +510,13 @@ class ImagesAndVideoAdapter(
             }
         }
 
+        /**
+         * 显示进度的view
+         */
+        fun setProgress(progress: Int) {
+            mpvImage.setPercentage(progress)
+        }
+
     }
 
 }
