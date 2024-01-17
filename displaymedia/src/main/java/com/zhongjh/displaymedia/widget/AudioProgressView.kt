@@ -1,12 +1,15 @@
 package com.zhongjh.displaymedia.widget
 
+import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
+import androidx.core.app.ActivityCompat
 import com.daimajia.numberprogressbar.NumberProgressBar
 import com.zhongjh.displaymedia.R
 import com.zhongjh.common.entity.RecordingItem

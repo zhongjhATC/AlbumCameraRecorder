@@ -50,24 +50,9 @@ class AudioView : FrameLayout {
      */
     var listener: DisplayMediaLayoutListener? = null
 
-    /**
-     * 当前音频数据
-     */
-    private lateinit var mRecordingItem: RecordingItem
-
-    /**
-     * 标记当前播放状态
-     */
-    private var mIsPlaying = false
-
-    /**
-     * 标记是否播放结束
-     */
-    private var mIsCompletion = true
-
     // region 有关音频
 
-    private lateinit var mMediaPlayer: MediaPlayer
+
 
     /**
      * 代替Timer
@@ -76,10 +61,6 @@ class AudioView : FrameLayout {
     private var mExecutorService: ScheduledThreadPoolExecutor? = null
     private var mTimerTask: TimerTask? = null
 
-    /**
-     * 互斥变量，防止定时器与SeekBar拖动时进度冲突
-     */
-    private var isChanging = false
 
     private val mHandler: Handler = MyHandler(context.mainLooper, this)
 
@@ -92,9 +73,6 @@ class AudioView : FrameLayout {
     }
 
     private fun initView() {
-        if (!isInEditMode) {
-            mMediaPlayer = MediaPlayer()
-        }
         val view = LayoutInflater.from(context).inflate(R.layout.item_audio_zjh, this, true)
         mViewHolder = ViewHolder(view)
         // 自定义View中如果重写了onDraw()即自定义了绘制，那么就应该在构造函数中调用view的setWillNotDraw(false).
@@ -167,18 +145,6 @@ class AudioView : FrameLayout {
         // 进度条
         mViewHolder.seekBar.setOnSeekBarChangeListener(MySeekBar())
 
-        // 播放按钮
-        mViewHolder.imgPlay.setOnClickListener {
-            Log.d(TAG, "setOnClickListener")
-            // 判断该音频是否有文件地址，如果没有则请求下载
-            if (!TextUtils.isEmpty(mRecordingItem.path)) {
-                onPlay()
-            } else {
-                // 调用下载
-                listener?.onItemAudioStartDownload(this, mRecordingItem.url!!)
-            }
-        }
-
         if (!isInEditMode) {
             // 异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
             mMediaPlayer.setOnPreparedListener {
@@ -213,48 +179,6 @@ class AudioView : FrameLayout {
             }
         }
 
-    }
-
-    private fun onPlay() {
-        if (mIsPlaying) {
-            // 如果当前正在播放  停止播放 更改控制栏播放状态
-            if (mMediaPlayer.isPlaying) {
-                mMediaPlayer.pause()
-                mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
-            }
-        } else {
-            // 如果当前停止播放  继续播放 更改控制栏状态
-            Log.d(TAG, "播放")
-            mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp_zhongjh)
-            // 判断如果是结束了就是重新播放，否则就是继续播放
-            if (mIsCompletion) {
-                try {
-                    mMediaPlayer.setDataSource(mRecordingItem.path)
-                    mMediaPlayer.prepare()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-            mMediaPlayer.start()
-            // 定时器 更新进度
-            if (mExecutorService == null) {
-                mExecutorService = ScheduledThreadPoolExecutor(1) { runnable: Runnable? -> Thread(runnable) }
-                mTimerTask = object : TimerTask() {
-                    override fun run() {
-                        if (isChanging) {
-                            return
-                        }
-                        if (mIsPlaying) {
-                            mHandler.sendEmptyMessage(0)
-                            mViewHolder.seekBar.progress = mMediaPlayer.currentPosition
-                        }
-                    }
-                }
-                mExecutorService?.scheduleAtFixedRate(mTimerTask, 0, 1000, TimeUnit.MILLISECONDS)
-            }
-        }
-        mIsPlaying = !mIsPlaying
-        mIsCompletion = false
     }
 
     private fun generateTime(time: Long, secondsAdd: Int): String {

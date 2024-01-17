@@ -1,21 +1,31 @@
 package com.zhongjh.displaymedia.apapter
 
 import android.content.Context
+import android.media.MediaPlayer
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.Group
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.numberprogressbar.NumberProgressBar
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.RecordingItem
+import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.common.utils.ThreadUtils.SimpleTask
+import com.zhongjh.common.utils.ThreadUtils.Task
 import com.zhongjh.displaymedia.R
 import com.zhongjh.displaymedia.entity.DisplayMedia
 import com.zhongjh.displaymedia.entity.DisplayMedia.CREATOR.FULL_PERCENT
 import com.zhongjh.displaymedia.widget.AudioView
-import java.util.ArrayList
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 class AudioAdapter(
     private val mContext: Context,
@@ -24,9 +34,17 @@ class AudioAdapter(
 
     companion object {
         val TAG: String = AudioAdapter::class.java.simpleName
+        const val AUDIO_IS_PLAY = "AUDIO_IS_PLAY"
     }
 
     private val mInflater: LayoutInflater = LayoutInflater.from(mContext)
+
+    /**
+     * 音频播放器，只允许播放一个
+     */
+    private val mMediaPlayer by lazy {
+        MediaPlayer()
+    }
 
     /**
      * 音频数据源
@@ -42,6 +60,11 @@ class AudioAdapter(
      * 是否允许操作(一般只用于展览作用)
      */
     var isOperation = true
+
+    /**
+     * 互斥变量，防止定时器与SeekBar拖动时进度冲突
+     */
+    private var isChanging = false
 
     var callback: Callback? = null
 
@@ -103,6 +126,9 @@ class AudioAdapter(
                 ImagesAndVideoAdapter.PHOTO_ADAPTER_PROGRESS -> {
                     holder.showProgress(progressMedia.progress)
                 }
+                AUDIO_IS_PLAY -> {
+                    holder.audioView.mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
+                }
             }
         }
     }
@@ -152,6 +178,17 @@ class AudioAdapter(
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, list.size - position)
         }
+
+        // 播放按钮
+        holder.audioView.mViewHolder.imgPlay.setOnClickListener {
+            // 判断该音频是否有文件地址，如果没有则请求下载
+            if (!TextUtils.isEmpty(displayMedia.path)) {
+                onPlay(holder, displayMedia)
+            } else {
+                // 调用下载
+                listener?.onItemAudioStartDownload(this, mRecordingItem.url!!)
+            }
+        }
     }
 
     /**
@@ -172,6 +209,9 @@ class AudioAdapter(
         }
     }
 
+    /**
+     * 获取数量
+     */
     override fun getItemCount(): Int {
         return list.size
     }
@@ -182,6 +222,81 @@ class AudioAdapter(
     fun clearAll() {
         notifyItemRangeRemoved(0, list.size)
         list.clear()
+    }
+
+    /**
+     * 播放音频
+     */
+    private fun onPlay(holder: VideoHolder, displayMedia: DisplayMedia) {
+        displayMedia.videoMedia?.let {
+            if (it.isPlaying) {
+                // 如果当前正在播放  停止播放 更改控制栏播放状态
+                if (mMediaPlayer.isPlaying) {
+                    mMediaPlayer.pause()
+                    holder.audioView.mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
+                }
+            } else {
+                // 暂停线程
+                mPlayTask.cancel()
+                // 循环所有列表设置停止
+                for (i in list.indices.reversed()) {
+                    list[i].videoMedia?.let { videoMedia ->
+                        if (videoMedia.isPlaying) {
+                            // 设置暂停
+                            videoMedia.isPlaying = false
+                            videoMedia.isCompletion = true
+                            notifyItemChanged(i, AUDIO_IS_PLAY)
+                        }
+                    }
+                }
+                // 如果当前停止播放  继续播放 更改控制栏状态
+                holder.audioView.mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp_zhongjh)
+                // 判断如果是结束了就是重新播放，否则就是继续播放
+                if (it.isCompletion) {
+                    try {
+                        mMediaPlayer.setDataSource(displayMedia.path)
+                        mMediaPlayer.prepare()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+                mMediaPlayer.start()
+                // 定时器 更新进度
+                ThreadUtils.executeByIoAtFixRate(mPlayTask, 1, TimeUnit.SECONDS)
+            }
+            it.isPlaying = !it.isPlaying
+            it.isCompletion = false
+        }
+    }
+
+    private val mPlayTask by lazy {
+        object : SimpleTask<Boolean>() {
+            override fun doInBackground(): Boolean {
+                if (isChanging) {
+                    return false
+                }
+                return true
+            }
+
+            override fun onSuccess(result: Boolean) {
+                mHandler.sendEmptyMessage(0)
+                mViewHolder.seekBar.progress = mMediaPlayer.currentPosition
+                setResultOk(result)
+            }
+
+            override fun onFail(t: Throwable) {
+                super.onFail(t)
+                // 结束loading
+                setControlTouchEnable(true)
+                Toast.makeText(requireActivity().getApplicationContext(), t.message, Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onCancel() {
+                super.onCancel()
+                // 结束loading
+                setControlTouchEnable(true)
+            }
+        }
     }
 
     class VideoHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

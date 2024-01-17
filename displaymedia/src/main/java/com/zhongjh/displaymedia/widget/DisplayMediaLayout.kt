@@ -1,5 +1,6 @@
 package com.zhongjh.displaymedia.widget
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.TypedArray
 import android.media.MediaMetadataRetriever

@@ -3,7 +3,6 @@ package com.zhongjh.displaymedia.entity
 import android.os.Parcel
 import android.os.Parcelable
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.displaymedia.widget.AudioProgressView
 
 /**
  * 多媒体实体类,主要用于展示和显示进度
@@ -33,12 +32,18 @@ class DisplayMedia : LocalMedia, Parcelable {
      */
     var progress: Int = 0
 
+    /**
+     * 音频类
+     */
+    var videoMedia: VideoMedia? = null
+
     constructor() : super()
 
     constructor(parcel: Parcel) : super(parcel) {
         url = parcel.readString()
         isUploading = parcel.readByte() != 0.toByte()
         progress = parcel.readInt()
+        videoMedia = parcel.readParcelable(VideoMedia::class.java.classLoader)
     }
 
     constructor(localMedia: LocalMedia) : super(localMedia)
@@ -47,26 +52,15 @@ class DisplayMedia : LocalMedia, Parcelable {
         this.mimeType = mimeType
     }
 
-    /**
-     * 给予进度
-     *
-     * @param percent 进度数值
-     * @param audioProgressView
-     */
-    fun setPercentage(audioProgressView: AudioProgressView, percent: Int) {
-        // 隐藏显示音频的设置一系列动作
-        audioProgressView.mViewHolder.numberProgressBar.progress = percent
-        if (percent == FULL_PERCENT) {
-            audioProgressView.audioUploadCompleted()
-        }
-    }
-
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         super.writeToParcel(parcel, flags)
         parcel.writeLong(displayMediaId)
         parcel.writeString(url)
         parcel.writeByte(if (isUploading) 1 else 0)
         parcel.writeInt(progress)
+        videoMedia?.let {
+            parcel.writeParcelable(it, 0)
+        }
     }
 
     override fun describeContents(): Int {
