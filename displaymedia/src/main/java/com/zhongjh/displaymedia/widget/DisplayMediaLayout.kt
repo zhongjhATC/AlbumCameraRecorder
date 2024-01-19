@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
@@ -404,9 +403,9 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         view.visibility = View.VISIBLE
         isShowRemoveRecorder()
-        val recordingItem = RecordingItem()
-        recordingItem.path = file
-        recordingItem.duration = duration
+//        val recordingItem = RecordingItem()
+//        recordingItem.path = file
+//        recordingItem.duration = duration
 //        (view as AudioView).setData(recordingItem, audioProgressColor)
     }
 

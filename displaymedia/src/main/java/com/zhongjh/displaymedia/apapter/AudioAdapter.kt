@@ -15,7 +15,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.numberprogressbar.NumberProgressBar
-import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.displaymedia.R
@@ -105,7 +104,7 @@ class AudioAdapter(
                     mPlayViewHolder?.let {
                         //设置当前播放进度
                         it.seekBar.progress = mMediaPlayer.currentPosition
-                        it.tvCurrentProgress.text = generateTime(mMediaPlayer.currentPosition.toLong(), 1) + File.separator
+                        it.tvCurrentProgress.text = generateTime(mMediaPlayer.currentPosition.toLong()) + File.separator
                     }
                 }
             }
@@ -136,11 +135,8 @@ class AudioAdapter(
         val displayMedia = list[position]
         // 显示完成后的音频
         holder.showPlayView()
+        showAudioView(holder, displayMedia)
         isShowRemoveRecorder(holder)
-        // 设置数据源
-        val recordingItem = RecordingItem()
-        recordingItem.path = displayMedia.path
-        recordingItem.duration = displayMedia.duration
         initListener(holder, displayMedia, position)
     }
 
@@ -209,12 +205,21 @@ class AudioAdapter(
      */
     fun onDestroy() {
         // 试图停止所有正在执行的活动任务
+        stopMediaPlayer()
+        mMediaPlayer.release()
+        listener = null
+    }
+
+    /**
+     * 停止音频
+     */
+    private fun stopMediaPlayer() {
+        // 试图停止所有正在执行的活动任务
         mPlayTask?.cancel()
         if (mMediaPlayer.isPlaying) {
             mMediaPlayer.stop()
+            mMediaPlayer.reset()
         }
-        mMediaPlayer.release()
-        listener = null
     }
 
     /**
@@ -228,6 +233,12 @@ class AudioAdapter(
             list.remove(displayMedia)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, list.size - position)
+            displayMedia.videoMedia?.let {
+                // 关闭音频
+                if (it.isPlaying) {
+                    stopMediaPlayer()
+                }
+            }
         }
 
         // 播放按钮
@@ -245,18 +256,12 @@ class AudioAdapter(
 
         // 异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
         mMediaPlayer.setOnPreparedListener {
-            holder.seekBar.progress = 0
-            holder.imgPlay.isEnabled = true
-            // 当前时间
-            holder.tvCurrentProgress.text = "00:00/"
-            // 总计时间
-            holder.tvTotalProgress.text = generateTime(mMediaPlayer.duration.toLong(), 0)
-            // 设置进度条
-            holder.seekBar.max = mMediaPlayer.duration
+            showAudioView(holder, displayMedia)
         }
 
-        // 播放完成事件
         mMediaPlayer.setOnCompletionListener {
+            // 线程停止
+            mPlayTask?.cancel()
             // 进度归零
             mMediaPlayer.seekTo(0)
             // 进度条归零
@@ -267,7 +272,7 @@ class AudioAdapter(
             // 当前时间
             holder.tvCurrentProgress.text = "00:00/"
             // 总计时间
-            holder.tvTotalProgress.text = generateTime(mMediaPlayer.duration.toLong(), 0)
+            holder.tvTotalProgress.text = generateTime(mMediaPlayer.duration.toLong())
             // 重置并准备重新播放
             mMediaPlayer.reset()
             displayMedia.videoMedia?.isCompletion = true
@@ -275,6 +280,17 @@ class AudioAdapter(
 
         // 进度条
         holder.seekBar.setOnSeekBarChangeListener(MySeekBar())
+    }
+
+    private fun showAudioView(holder: VideoHolder, displayMedia: DisplayMedia) {
+        holder.seekBar.progress = 0
+        holder.imgPlay.isEnabled = true
+        // 当前时间
+        holder.tvCurrentProgress.text = "00:00/"
+        // 总计时间
+        holder.tvTotalProgress.text = generateTime(displayMedia.duration)
+        // 设置进度条
+        holder.seekBar.max = displayMedia.duration.toInt()
     }
 
     /**
@@ -350,7 +366,7 @@ class AudioAdapter(
                 }
                 mMediaPlayer.start()
                 // 定时器 更新进度
-                ThreadUtils.executeBySingleAtFixRate(getCompressFileTask(), 1, TimeUnit.SECONDS)
+                ThreadUtils.executeBySingleAtFixRate(getCompressFileTask(), 1L, 1, TimeUnit.SECONDS)
             }
             it.isPlaying = !it.isPlaying
             it.isCompletion = false
@@ -378,7 +394,7 @@ class AudioAdapter(
                 mMediaPlayer.seekTo(it.progress)
             }
             mPlayViewHolder?.tvCurrentProgress?.let {
-                it.text = generateTime(mMediaPlayer.currentPosition.toLong(), 0) + File.separator
+                it.text = generateTime(mMediaPlayer.currentPosition.toLong()) + File.separator
             }
             mIsChanging = false
         }
@@ -387,15 +403,15 @@ class AudioAdapter(
     /**
      * 时间
      */
-    private fun generateTime(time: Long, secondsAdd: Int): String {
+    private fun generateTime(time: Long): String {
         val totalSeconds = (time / 1000).toInt()
         val seconds = totalSeconds % 60
         val minutes = totalSeconds / 60 % 60
         val hours = totalSeconds / 3600
         return if (hours > 0) {
-            java.lang.String.format(Locale.CANADA, "%02d:%02d:%02d", hours, minutes, seconds + secondsAdd)
+            java.lang.String.format(Locale.CANADA, "%02d:%02d:%02d", hours, minutes, seconds)
         } else {
-            java.lang.String.format(Locale.CANADA, "%02d:%02d", minutes, seconds + secondsAdd)
+            java.lang.String.format(Locale.CANADA, "%02d:%02d", minutes, seconds)
         }
     }
 

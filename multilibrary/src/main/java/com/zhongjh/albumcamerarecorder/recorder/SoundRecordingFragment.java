@@ -355,9 +355,7 @@ public class SoundRecordingFragment extends BaseFragment {
                     System.out.println("was not successful.");
                 }
             }
-            // 开始计时,从1秒开始算起
-            mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime() - 1000);
-            mViewHolder.chronometer.start();
+            Log.d(TAG,"onRecord");
 
             // start RecordingService
             startRecording();
@@ -548,6 +546,9 @@ public class SoundRecordingFragment extends BaseFragment {
         try {
             mRecorder.prepare();
             mRecorder.start();
+            // 开始计时,从0秒开始算起
+            mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
+            mViewHolder.chronometer.start();
             mStartingTimeMillis = System.currentTimeMillis();
 
             //startTimer();

@@ -10,7 +10,7 @@ object RecordeSpec {
     /**
      * 最长录制时间
      */
-    var duration = 10
+    var duration = 11
 
     /**
      * 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
@@ -31,7 +31,7 @@ object RecordeSpec {
      */
     private fun reset() {
         // 最长录制时间
-        duration = 10
+        duration = 11
         // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
         minDuration = 1500
     }
