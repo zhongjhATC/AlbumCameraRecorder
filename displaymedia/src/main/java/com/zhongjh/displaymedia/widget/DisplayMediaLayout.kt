@@ -28,6 +28,7 @@ import com.zhongjh.displaymedia.engine.ImageEngine
 import com.zhongjh.displaymedia.entity.DisplayMedia
 import com.zhongjh.displaymedia.entity.Masking
 import com.zhongjh.displaymedia.entity.PhotoAdapterEntity
+import com.zhongjh.displaymedia.entity.VideoMedia
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener
 import java.util.*
 
@@ -291,6 +292,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
             progressMedia.isUploading = true
             // 直接处理音频
             if (progressMedia.isAudio()) {
+                progressMedia.videoMedia = VideoMedia()
                 mediaAudios.add(progressMedia)
             }
             // 处理图片
@@ -405,7 +407,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         val recordingItem = RecordingItem()
         recordingItem.path = file
         recordingItem.duration = duration
-        (view as AudioView).setData(recordingItem, audioProgressColor)
+//        (view as AudioView).setData(recordingItem, audioProgressColor)
     }
 
     override fun reset() {
@@ -438,7 +440,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
     }
 
     override fun onAudioClick(view: View) {
-        (view as AudioView).mViewHolder.imgPlay.performClick()
+//        (view as AudioView).mViewHolder.imgPlay.performClick()
     }
 
     fun getPhotoViewHolder(position: Int): ImagesAndVideoAdapter.PhotoViewHolder? {

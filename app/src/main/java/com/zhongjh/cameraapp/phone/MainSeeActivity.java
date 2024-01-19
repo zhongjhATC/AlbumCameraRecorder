@@ -23,11 +23,11 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
 import com.zhongjh.displaymedia.entity.DisplayMedia;
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
 import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-import com.zhongjh.displaymedia.widget.AudioProgressView;
 import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
 import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
 
@@ -84,6 +84,33 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+//                boolean isOk = getPermissions(true);
+//                if (isOk) {
+//                    // 判断是否存在文件
+//                    String[] fileFullPath = getFileFullPath(url, 0);
+//                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
+//                    if (!isExists) {
+//                        // 调用方法
+//                        mAudioView = view;
+//                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
+//                    } else {
+//                        // 直接赋值
+//                        mBinding.dmlImageList.setAudioCover(view, fileFullPath[0] + File.separator + fileFullPath[1]);
+//                        mBinding.dmlImageList.onAudioClick(view);
+//                    }
+//                }
+            }
+
+            @Override
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
             }
 
@@ -126,14 +153,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
-                timer.schedule();
-            }
-
-            @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
                 MyTask timer = new MyTask(displayMedia);
@@ -148,25 +167,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 if (myTask != null) {
                     myTask.cancel();
                     timers.remove(displayMedia);
-                }
-            }
-
-            @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-                boolean isOk = getPermissions(true);
-                if (isOk) {
-                    // 判断是否存在文件
-                    String[] fileFullPath = getFileFullPath(url, 0);
-                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
-                    if (!isExists) {
-                        // 调用方法
-                        mAudioView = view;
-                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
-                    } else {
-                        // 直接赋值
-                        mBinding.dmlImageList.setAudioCover(view, fileFullPath[0] + File.separator + fileFullPath[1]);
-                        mBinding.dmlImageList.onAudioClick(view);
-                    }
                 }
             }
 

@@ -21,11 +21,11 @@ import com.zhongjh.cameraapp.databinding.ActivityMainUpperLimitBinding;
 import com.zhongjh.cameraapp.model.LimitModel;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
 import com.zhongjh.displaymedia.entity.DisplayMedia;
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
 import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-import com.zhongjh.displaymedia.widget.AudioProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -70,6 +70,19 @@ public class MainUpperLimitActivity extends BaseActivity {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+
+            }
+
+            @Override
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
                 //                // 如果需要其他参数的话，循环数据初始化相关数值，这个读取时间会较长，建议异步线程执行
 //                for (MultiMediaView item : multiMediaViews) {
@@ -97,14 +110,6 @@ public class MainUpperLimitActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
-                timer.schedule();
-            }
-
-            @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
                 MyTask timer = new MyTask(displayMedia);
@@ -120,11 +125,6 @@ public class MainUpperLimitActivity extends BaseActivity {
                     myTask.cancel();
                     timers.remove(displayMedia);
                 }
-            }
-
-            @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-
             }
 
             @Override

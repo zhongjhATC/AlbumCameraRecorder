@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_margin="16dp"
     android:layout_height="wrap_content"
+    android:layout_margin="16dp"
     android:background="#00000020">
 
     <androidx.constraintlayout.widget.Group
@@ -34,15 +34,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvRecorderTip" />
 
-    <com.zhongjh.displaymedia.widget.AudioView
-        android:id="@+id/playView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="invisible"
-        app:layout_constraintEnd_toStartOf="@+id/imgRemoveRecorder"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <include layout="@layout/item_audio_zjh" />
 
     <ImageView
         android:id="@+id/imgRemoveRecorder"
@@ -50,10 +42,10 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/z_progress_library_delete_button"
         android:visibility="gone"
-        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_remove_circle_black_24dp_zhongjh" />
+        app:srcCompat="@drawable/ic_remove_circle_black_24dp_zhongjh"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

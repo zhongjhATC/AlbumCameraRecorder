@@ -10,12 +10,12 @@ import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
 import com.zhongjh.displaymedia.entity.DisplayMedia;
 import com.zhongjh.displaymedia.listener.AbstractDisplayMediaLayoutListener;
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
 import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-import com.zhongjh.displaymedia.widget.AudioProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -53,6 +53,16 @@ public class Combined {
         maskProgressLayout.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+                listener.onItemAudioStartDownload(holder, url);
+            }
+
+            @Override
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+                listener.onItemAudioStartUploading(displayMedia, viewHolder);
+            }
+
+            @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
             }
 
@@ -77,11 +87,6 @@ public class Combined {
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
-                listener.onItemAudioStartUploading(displayMedia, audioProgressView);
-            }
-
-            @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 listener.onItemStartUploading(displayMedia, viewHolder);
             }
@@ -89,11 +94,6 @@ public class Combined {
             @Override
             public void onItemClose(@NotNull DisplayMedia displayMedia) {
                 listener.onItemClose(displayMedia);
-            }
-
-            @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-                listener.onItemAudioStartDownload(view, url);
             }
 
             @Override

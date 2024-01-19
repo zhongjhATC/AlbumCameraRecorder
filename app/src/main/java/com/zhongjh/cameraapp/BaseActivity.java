@@ -10,10 +10,8 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.utils.MediaUtils;
-import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
 import com.zhongjh.displaymedia.entity.DisplayMedia;
 import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-import com.zhongjh.displaymedia.widget.AudioProgressView;
 
 import java.util.ArrayList;
 import java.util.HashMap;

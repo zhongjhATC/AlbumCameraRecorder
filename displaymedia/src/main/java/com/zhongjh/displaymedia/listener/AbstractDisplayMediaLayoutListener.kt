@@ -1,9 +1,9 @@
 package com.zhongjh.displaymedia.listener
 
 import android.view.View
+import com.zhongjh.displaymedia.apapter.AudioAdapter
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter
 import com.zhongjh.displaymedia.entity.DisplayMedia
-import com.zhongjh.displaymedia.widget.AudioProgressView
 
 /**
  * 抽象接口
@@ -25,11 +25,11 @@ open class AbstractDisplayMediaLayoutListener : DisplayMediaLayoutListener {
 
     override fun onItemStartUploading(displayMedia: DisplayMedia, viewHolder: ImagesAndVideoAdapter.PhotoViewHolder) {}
 
-    override fun onItemAudioStartUploading(displayMedia: DisplayMedia, audioProgressView: AudioProgressView) {}
+    override fun onItemAudioStartUploading(displayMedia: DisplayMedia, viewHolder: AudioAdapter.VideoHolder) {}
 
     override fun onItemClose(displayMedia: DisplayMedia) {}
 
-    override fun onItemAudioStartDownload(view: View, url: String) {}
+    override fun onItemAudioStartDownload(holder: AudioAdapter.VideoHolder, url: String) {}
 
     override fun onItemVideoStartDownload(view: View, displayMedia: DisplayMedia): Boolean {
         return false

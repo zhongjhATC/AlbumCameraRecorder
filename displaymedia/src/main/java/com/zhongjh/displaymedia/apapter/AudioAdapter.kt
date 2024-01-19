@@ -1,5 +1,6 @@
 package com.zhongjh.displaymedia.apapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaPlayer
 import android.text.TextUtils
@@ -8,23 +9,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
-import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.numberprogressbar.NumberProgressBar
-import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
-import com.zhongjh.common.utils.ThreadUtils.Task
 import com.zhongjh.displaymedia.R
 import com.zhongjh.displaymedia.entity.DisplayMedia
 import com.zhongjh.displaymedia.entity.DisplayMedia.CREATOR.FULL_PERCENT
-import com.zhongjh.displaymedia.widget.AudioView
+import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener
+import java.io.File
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 class AudioAdapter(
@@ -37,6 +37,23 @@ class AudioAdapter(
         const val AUDIO_IS_PLAY = "AUDIO_IS_PLAY"
     }
 
+    /**
+     * 音频数据源
+     */
+    val list = ArrayList<DisplayMedia>()
+
+    /**
+     * 是否允许操作(一般只用于展览作用)
+     */
+    var isOperation = true
+
+    var callback: Callback? = null
+
+    /**
+     * 相关事件
+     */
+    var listener: DisplayMediaLayoutListener? = null
+
     private val mInflater: LayoutInflater = LayoutInflater.from(mContext)
 
     /**
@@ -47,32 +64,53 @@ class AudioAdapter(
     }
 
     /**
-     * 音频数据源
-     */
-    val list = ArrayList<DisplayMedia>()
-
-    /**
      * 每次添加数据增长的id
      */
     private var mId: Long = 0
 
     /**
-     * 是否允许操作(一般只用于展览作用)
-     */
-    var isOperation = true
-
-    /**
      * 互斥变量，防止定时器与SeekBar拖动时进度冲突
      */
-    private var isChanging = false
+    private var mIsChanging = false
 
-    var callback: Callback? = null
+    /**
+     * 启动播放事件的viewHolder
+     */
+    private var mPlayViewHolder: VideoHolder? = null
 
     interface Callback {
         /**
          * 音频删除事件
          */
         fun onRemoveRecorder(holder: VideoHolder)
+    }
+
+    /**
+     * 异步任务
+     */
+    private var mPlayTask: SimpleTask<Boolean>? = null
+
+    private fun getCompressFileTask(): SimpleTask<Boolean>? {
+        mPlayTask = object : SimpleTask<Boolean>() {
+            override fun doInBackground(): Boolean {
+                if (mIsChanging) {
+                    return false
+                }
+                return true
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onSuccess(result: Boolean) {
+                if (result) {
+                    mPlayViewHolder?.let {
+                        //设置当前播放进度
+                        it.seekBar.progress = mMediaPlayer.currentPosition
+                        it.tvCurrentProgress.text = generateTime(mMediaPlayer.currentPosition.toLong(), 1) + File.separator
+                    }
+                }
+            }
+        }
+        return mPlayTask
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoHolder {
@@ -87,9 +125,9 @@ class AudioAdapter(
         videoHolder.tvRecorderTip.setTextColor(audioProgressColor)
 
         // 设置播放控件里面的播放按钮的颜色
-        videoHolder.audioView.mViewHolder.imgPlay.setColorFilter(audioPlayColor)
-        videoHolder.audioView.mViewHolder.tvCurrentProgress.setTextColor(audioProgressColor)
-        videoHolder.audioView.mViewHolder.tvTotalProgress.setTextColor(audioProgressColor)
+        videoHolder.imgPlay.setColorFilter(audioPlayColor)
+        videoHolder.tvCurrentProgress.setTextColor(audioProgressColor)
+        videoHolder.tvTotalProgress.setTextColor(audioProgressColor)
 
         return videoHolder
     }
@@ -103,7 +141,6 @@ class AudioAdapter(
         val recordingItem = RecordingItem()
         recordingItem.path = displayMedia.path
         recordingItem.duration = displayMedia.duration
-        holder.audioView.setData(recordingItem, audioProgressColor)
         initListener(holder, displayMedia, position)
     }
 
@@ -127,7 +164,7 @@ class AudioAdapter(
                     holder.showProgress(progressMedia.progress)
                 }
                 AUDIO_IS_PLAY -> {
-                    holder.audioView.mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
+                    holder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
                 }
             }
         }
@@ -168,8 +205,22 @@ class AudioAdapter(
     }
 
     /**
+     * 销毁播放器
+     */
+    fun onDestroy() {
+        // 试图停止所有正在执行的活动任务
+        mPlayTask?.cancel()
+        if (mMediaPlayer.isPlaying) {
+            mMediaPlayer.stop()
+        }
+        mMediaPlayer.release()
+        listener = null
+    }
+
+    /**
      * 初始化所有事件
      */
+    @SuppressLint("SetTextI18n")
     private fun initListener(holder: VideoHolder, displayMedia: DisplayMedia, position: Int) {
         // 音频删除事件
         holder.imgRemoveRecorder.setOnClickListener {
@@ -180,15 +231,50 @@ class AudioAdapter(
         }
 
         // 播放按钮
-        holder.audioView.mViewHolder.imgPlay.setOnClickListener {
+        holder.imgPlay.setOnClickListener {
             // 判断该音频是否有文件地址，如果没有则请求下载
             if (!TextUtils.isEmpty(displayMedia.path)) {
                 onPlay(holder, displayMedia)
             } else {
                 // 调用下载
-                listener?.onItemAudioStartDownload(this, mRecordingItem.url!!)
+                displayMedia.url?.let {
+                    listener?.onItemAudioStartDownload(holder, it)
+                }
             }
         }
+
+        // 异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
+        mMediaPlayer.setOnPreparedListener {
+            holder.seekBar.progress = 0
+            holder.imgPlay.isEnabled = true
+            // 当前时间
+            holder.tvCurrentProgress.text = "00:00/"
+            // 总计时间
+            holder.tvTotalProgress.text = generateTime(mMediaPlayer.duration.toLong(), 0)
+            // 设置进度条
+            holder.seekBar.max = mMediaPlayer.duration
+        }
+
+        // 播放完成事件
+        mMediaPlayer.setOnCompletionListener {
+            // 进度归零
+            mMediaPlayer.seekTo(0)
+            // 进度条归零
+            holder.seekBar.progress = 0
+            // 控制栏中的播放按钮显示暂停状态
+            holder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
+            displayMedia.videoMedia?.isPlaying = false
+            // 当前时间
+            holder.tvCurrentProgress.text = "00:00/"
+            // 总计时间
+            holder.tvTotalProgress.text = generateTime(mMediaPlayer.duration.toLong(), 0)
+            // 重置并准备重新播放
+            mMediaPlayer.reset()
+            displayMedia.videoMedia?.isCompletion = true
+        }
+
+        // 进度条
+        holder.seekBar.setOnSeekBarChangeListener(MySeekBar())
     }
 
     /**
@@ -197,7 +283,7 @@ class AudioAdapter(
     private fun isShowRemoveRecorder(holder: VideoHolder) {
         if (isOperation) {
             // 如果是可操作的，就判断是否有音频数据
-            if (holder.audioView.visibility == View.VISIBLE
+            if (holder.clPlay.visibility == View.VISIBLE
                 || holder.groupRecorderProgress.visibility == View.VISIBLE
             ) {
                 holder.imgRemoveRecorder.visibility = View.VISIBLE
@@ -233,11 +319,13 @@ class AudioAdapter(
                 // 如果当前正在播放  停止播放 更改控制栏播放状态
                 if (mMediaPlayer.isPlaying) {
                     mMediaPlayer.pause()
-                    holder.audioView.mViewHolder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
+                    holder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
                 }
             } else {
                 // 暂停线程
-                mPlayTask.cancel()
+                mPlayTask?.cancel()
+                // 设置当前viewHolder
+                mPlayViewHolder = holder
                 // 循环所有列表设置停止
                 for (i in list.indices.reversed()) {
                     list[i].videoMedia?.let { videoMedia ->
@@ -250,7 +338,7 @@ class AudioAdapter(
                     }
                 }
                 // 如果当前停止播放  继续播放 更改控制栏状态
-                holder.audioView.mViewHolder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp_zhongjh)
+                holder.imgPlay.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp_zhongjh)
                 // 判断如果是结束了就是重新播放，否则就是继续播放
                 if (it.isCompletion) {
                     try {
@@ -262,40 +350,52 @@ class AudioAdapter(
                 }
                 mMediaPlayer.start()
                 // 定时器 更新进度
-                ThreadUtils.executeByIoAtFixRate(mPlayTask, 1, TimeUnit.SECONDS)
+                ThreadUtils.executeBySingleAtFixRate(getCompressFileTask(), 1, TimeUnit.SECONDS)
             }
             it.isPlaying = !it.isPlaying
             it.isCompletion = false
         }
     }
 
-    private val mPlayTask by lazy {
-        object : SimpleTask<Boolean>() {
-            override fun doInBackground(): Boolean {
-                if (isChanging) {
-                    return false
-                }
-                return true
-            }
+    /**
+     * 进度条的进度变化事件
+     */
+    internal inner class MySeekBar : SeekBar.OnSeekBarChangeListener {
 
-            override fun onSuccess(result: Boolean) {
-                mHandler.sendEmptyMessage(0)
-                mViewHolder.seekBar.progress = mMediaPlayer.currentPosition
-                setResultOk(result)
-            }
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            // 当进度条变化时触发
+        }
 
-            override fun onFail(t: Throwable) {
-                super.onFail(t)
-                // 结束loading
-                setControlTouchEnable(true)
-                Toast.makeText(requireActivity().getApplicationContext(), t.message, Toast.LENGTH_SHORT).show()
-            }
+        override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            // 开始拖拽进度条
+            mIsChanging = true
+        }
 
-            override fun onCancel() {
-                super.onCancel()
-                // 结束loading
-                setControlTouchEnable(true)
+        @SuppressLint("SetTextI18n")
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            // 停止拖拽进度条
+            mPlayViewHolder?.seekBar?.let {
+                mMediaPlayer.seekTo(it.progress)
             }
+            mPlayViewHolder?.tvCurrentProgress?.let {
+                it.text = generateTime(mMediaPlayer.currentPosition.toLong(), 0) + File.separator
+            }
+            mIsChanging = false
+        }
+    }
+
+    /**
+     * 时间
+     */
+    private fun generateTime(time: Long, secondsAdd: Int): String {
+        val totalSeconds = (time / 1000).toInt()
+        val seconds = totalSeconds % 60
+        val minutes = totalSeconds / 60 % 60
+        val hours = totalSeconds / 3600
+        return if (hours > 0) {
+            java.lang.String.format(Locale.CANADA, "%02d:%02d:%02d", hours, minutes, seconds + secondsAdd)
+        } else {
+            java.lang.String.format(Locale.CANADA, "%02d:%02d", minutes, seconds + secondsAdd)
         }
     }
 
@@ -304,8 +404,13 @@ class AudioAdapter(
         val numberProgressBar: NumberProgressBar = itemView.findViewById(R.id.numberProgressBar)
         val imgRemoveRecorder: ImageView = itemView.findViewById(R.id.imgRemoveRecorder)
         val groupRecorderProgress: Group = itemView.findViewById(R.id.groupRecorderProgress)
-        val audioView: AudioView = itemView.findViewById(R.id.playView)
         val tvRecorderTip: TextView = itemView.findViewById(R.id.tvRecorderTip)
+
+        val clPlay: ConstraintLayout = itemView.findViewById(R.id.clPlay)
+        val imgPlay: ImageView = itemView.findViewById(R.id.imgPlay)
+        val seekBar: SeekBar = itemView.findViewById(R.id.seekBar)
+        val tvCurrentProgress: TextView = itemView.findViewById(R.id.tvCurrentProgress)
+        val tvTotalProgress: TextView = itemView.findViewById(R.id.tvTotalProgress)
 
         /**
          * 显示进度的view
@@ -316,7 +421,7 @@ class AudioAdapter(
             } else {
                 // 显示进度中的
                 groupRecorderProgress.visibility = View.VISIBLE
-                audioView.visibility = View.INVISIBLE
+                clPlay.visibility = View.INVISIBLE
                 numberProgressBar.progress = progress
             }
         }
@@ -326,7 +431,7 @@ class AudioAdapter(
          */
         fun showPlayView() {
             groupRecorderProgress.visibility = View.GONE
-            audioView.visibility = View.VISIBLE
+            clPlay.visibility = View.VISIBLE
         }
 
     }

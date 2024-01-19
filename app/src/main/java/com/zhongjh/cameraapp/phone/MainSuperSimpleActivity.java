@@ -17,10 +17,10 @@ import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
 import com.zhongjh.displaymedia.entity.DisplayMedia;
 import com.zhongjh.displaymedia.listener.AbstractDisplayMediaLayoutListener;
-import com.zhongjh.displaymedia.widget.AudioProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -143,10 +143,10 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
-                super.onItemAudioStartUploading(displayMedia, audioProgressView);
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+                super.onItemAudioStartUploading(displayMedia, viewHolder);
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, null, audioProgressView);
+                MyTask timer = new MyTask(displayMedia, null, viewHolder);
                 timers.put(displayMedia, timer);
                 timer.schedule();
             }
@@ -170,12 +170,12 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         int percentage = 0;
         DisplayMedia multiMedia;
         ImagesAndVideoAdapter.PhotoViewHolder viewHolder;
-        AudioProgressView audioProgressView;
+        AudioAdapter.VideoHolder videoHolder;
 
-        public MyTask(DisplayMedia multiMedia, ImagesAndVideoAdapter.PhotoViewHolder viewHolder, AudioProgressView audioProgressView) {
+        public MyTask(DisplayMedia multiMedia, ImagesAndVideoAdapter.PhotoViewHolder viewHolder, AudioAdapter.VideoHolder videoHolder) {
             this.multiMedia = multiMedia;
             this.viewHolder = viewHolder;
-            this.audioProgressView = audioProgressView;
+            this.videoHolder = videoHolder;
         }
 
         public void schedule() {

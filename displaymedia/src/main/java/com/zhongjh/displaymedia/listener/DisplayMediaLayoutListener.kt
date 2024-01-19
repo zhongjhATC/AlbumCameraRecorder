@@ -1,9 +1,9 @@
 package com.zhongjh.displaymedia.listener
 
 import android.view.View
+import com.zhongjh.displaymedia.apapter.AudioAdapter
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter
 import com.zhongjh.displaymedia.entity.DisplayMedia
-import com.zhongjh.displaymedia.widget.AudioProgressView
 
 /**
  * MaskProgressLayout的有关事件
@@ -57,18 +57,18 @@ interface DisplayMediaLayoutListener {
      * 开始上传音频
      *
      * @param displayMedia 传递的多媒体实体
-     * @param audioProgressView 音频控件
+     * @param viewHolder 音频列表ViewHolder
      *
      */
-    fun onItemAudioStartUploading(displayMedia: DisplayMedia, audioProgressView: AudioProgressView)
+    fun onItemAudioStartUploading(displayMedia: DisplayMedia, viewHolder: AudioAdapter.VideoHolder)
 
     /**
      * 开始下载音频
      *
-     * @param view 点击的view
+     * @param holder 音频的viewHolder
      * @param url  网址
      */
-    fun onItemAudioStartDownload(view: View, url: String)
+    fun onItemAudioStartDownload(holder: AudioAdapter.VideoHolder, url: String)
 
     /**
      * 开始下载视频

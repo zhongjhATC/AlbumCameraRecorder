@@ -10,11 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.cameraapp.R;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
 import com.zhongjh.displaymedia.entity.DisplayMedia;
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
 import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-import com.zhongjh.displaymedia.widget.AudioProgressView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -93,6 +93,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.mplImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+
+            }
+
+            @Override
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+
+            }
+
+            @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
 
             }
@@ -108,22 +118,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioProgressView audioProgressView) {
-
-            }
-
-            @Override
             public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
 
             }
 
             @Override
             public void onItemClose(@NotNull DisplayMedia displayMedia) {
-
-            }
-
-            @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
             }
 
