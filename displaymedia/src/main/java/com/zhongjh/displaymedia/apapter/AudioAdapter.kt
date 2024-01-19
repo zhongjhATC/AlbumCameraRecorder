@@ -72,16 +72,11 @@ class AudioAdapter(
      */
     private var mIsChanging = false
 
-    /**
-     * 启动播放事件的viewHolder
-     */
-    private var mPlayViewHolder: VideoHolder? = null
-
     interface Callback {
         /**
-         * 音频删除事件
+         * 音频播放进度事件
          */
-        fun onRemoveRecorder(holder: VideoHolder)
+        fun onPlayProgress(position: Int, mediaPlayerCurrentPosition: Int)
     }
 
     /**
@@ -89,7 +84,8 @@ class AudioAdapter(
      */
     private var mPlayTask: SimpleTask<Boolean>? = null
 
-    private fun getCompressFileTask(): SimpleTask<Boolean>? {
+    private fun getPlayTask(displayMedia: DisplayMedia): SimpleTask<Boolean>? {
+        val position = list.indexOf(displayMedia)
         mPlayTask = object : SimpleTask<Boolean>() {
             override fun doInBackground(): Boolean {
                 if (mIsChanging) {
@@ -101,11 +97,7 @@ class AudioAdapter(
             @SuppressLint("SetTextI18n")
             override fun onSuccess(result: Boolean) {
                 if (result) {
-                    mPlayViewHolder?.let {
-                        //设置当前播放进度
-                        it.seekBar.progress = mMediaPlayer.currentPosition
-                        it.tvCurrentProgress.text = generateTime(mMediaPlayer.currentPosition.toLong()) + File.separator
-                    }
+                    callback?.onPlayProgress(position, mMediaPlayer.currentPosition)
                 }
             }
         }
@@ -229,7 +221,6 @@ class AudioAdapter(
     private fun initListener(holder: VideoHolder, displayMedia: DisplayMedia, position: Int) {
         // 音频删除事件
         holder.imgRemoveRecorder.setOnClickListener {
-            callback?.onRemoveRecorder(holder)
             list.remove(displayMedia)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, list.size - position)
@@ -254,34 +245,11 @@ class AudioAdapter(
             }
         }
 
-        // 异步准备（准备完成），准备到准备完成期间可以显示进度条之类的东西。
-        mMediaPlayer.setOnPreparedListener {
-            showAudioView(holder, displayMedia)
-        }
-
-        mMediaPlayer.setOnCompletionListener {
-            // 线程停止
-            mPlayTask?.cancel()
-            // 进度归零
-            mMediaPlayer.seekTo(0)
-            // 进度条归零
-            holder.seekBar.progress = 0
-            // 控制栏中的播放按钮显示暂停状态
-            holder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
-            displayMedia.videoMedia?.isPlaying = false
-            // 当前时间
-            holder.tvCurrentProgress.text = "00:00/"
-            // 总计时间
-            holder.tvTotalProgress.text = generateTime(mMediaPlayer.duration.toLong())
-            // 重置并准备重新播放
-            mMediaPlayer.reset()
-            displayMedia.videoMedia?.isCompletion = true
-        }
-
         // 进度条
-        holder.seekBar.setOnSeekBarChangeListener(MySeekBar())
+        holder.seekBar.setOnSeekBarChangeListener(MySeekBar(holder))
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showAudioView(holder: VideoHolder, displayMedia: DisplayMedia) {
         holder.seekBar.progress = 0
         holder.imgPlay.isEnabled = true
@@ -329,6 +297,7 @@ class AudioAdapter(
     /**
      * 播放音频
      */
+    @SuppressLint("SetTextI18n")
     private fun onPlay(holder: VideoHolder, displayMedia: DisplayMedia) {
         displayMedia.videoMedia?.let {
             if (it.isPlaying) {
@@ -338,10 +307,27 @@ class AudioAdapter(
                     holder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
                 }
             } else {
-                // 暂停线程
-                mPlayTask?.cancel()
-                // 设置当前viewHolder
-                mPlayViewHolder = holder
+                // 暂停音频
+                stopMediaPlayer()
+                // 重新设置完成事件
+                mMediaPlayer.setOnCompletionListener {
+                    // 线程停止
+                    mPlayTask?.cancel()
+                    // 进度归零
+                    mMediaPlayer.seekTo(0)
+                    // 进度条归零
+                    holder.seekBar.progress = 0
+                    // 控制栏中的播放按钮显示暂停状态
+                    holder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
+                    displayMedia.videoMedia?.isPlaying = false
+                    // 当前时间
+                    holder.tvCurrentProgress.text = "00:00/"
+                    // 总计时间
+                    holder.tvTotalProgress.text = generateTime(mMediaPlayer.duration.toLong())
+                    // 重置并准备重新播放
+                    mMediaPlayer.reset()
+                    displayMedia.videoMedia?.isCompletion = true
+                }
                 // 循环所有列表设置停止
                 for (i in list.indices.reversed()) {
                     list[i].videoMedia?.let { videoMedia ->
@@ -366,7 +352,7 @@ class AudioAdapter(
                 }
                 mMediaPlayer.start()
                 // 定时器 更新进度
-                ThreadUtils.executeBySingleAtFixRate(getCompressFileTask(), 1L, 1, TimeUnit.SECONDS)
+                ThreadUtils.executeBySingleAtFixRate(getPlayTask(displayMedia), 1L, 1, TimeUnit.SECONDS)
             }
             it.isPlaying = !it.isPlaying
             it.isCompletion = false
@@ -376,7 +362,9 @@ class AudioAdapter(
     /**
      * 进度条的进度变化事件
      */
-    internal inner class MySeekBar : SeekBar.OnSeekBarChangeListener {
+    internal inner class MySeekBar(holder: VideoHolder) : SeekBar.OnSeekBarChangeListener {
+
+        var holder: VideoHolder? = holder
 
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             // 当进度条变化时触发
@@ -390,10 +378,10 @@ class AudioAdapter(
         @SuppressLint("SetTextI18n")
         override fun onStopTrackingTouch(seekBar: SeekBar?) {
             // 停止拖拽进度条
-            mPlayViewHolder?.seekBar?.let {
+            holder?.seekBar?.let {
                 mMediaPlayer.seekTo(it.progress)
             }
-            mPlayViewHolder?.tvCurrentProgress?.let {
+            holder?.tvCurrentProgress?.let {
                 it.text = generateTime(mMediaPlayer.currentPosition.toLong()) + File.separator
             }
             mIsChanging = false
@@ -403,7 +391,7 @@ class AudioAdapter(
     /**
      * 时间
      */
-    private fun generateTime(time: Long): String {
+    fun generateTime(time: Long): String {
         val totalSeconds = (time / 1000).toInt()
         val seconds = totalSeconds % 60
         val minutes = totalSeconds / 60 % 60

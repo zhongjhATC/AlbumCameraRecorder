@@ -1,5 +1,6 @@
 package com.zhongjh.displaymedia.widget
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.res.TypedArray
@@ -29,6 +30,7 @@ import com.zhongjh.displaymedia.entity.Masking
 import com.zhongjh.displaymedia.entity.PhotoAdapterEntity
 import com.zhongjh.displaymedia.entity.VideoMedia
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener
+import java.io.File
 import java.util.*
 
 
@@ -167,6 +169,20 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         // 初始化音频的控件
         mViewHolder.rlAudio.layoutManager = LinearLayoutManager(context)
         mAudioAdapter = AudioAdapter(context, audioDeleteColor, audioProgressColor, audioPlayColor)
+        mAudioAdapter.callback = object : AudioAdapter.Callback {
+
+            @SuppressLint("SetTextI18n")
+            override fun onPlayProgress(position: Int, mediaPlayerCurrentPosition: Int) {
+                val playViewHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position)
+                playViewHolder?.let {
+                    it as AudioAdapter.VideoHolder
+                    // 设置当前播放进度
+                    it.seekBar.progress = mediaPlayerCurrentPosition
+                    it.tvCurrentProgress.text = mAudioAdapter.generateTime(mediaPlayerCurrentPosition.toLong()) + File.separator
+                }
+            }
+
+        }
         mViewHolder.rlAudio.adapter = mAudioAdapter
 
         // 初始化九宫格的控件
@@ -292,6 +308,25 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
             // 直接处理音频
             if (progressMedia.isAudio()) {
                 progressMedia.videoMedia = VideoMedia()
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
+                mediaAudios.add(progressMedia)
                 mediaAudios.add(progressMedia)
             }
             // 处理图片
