@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,7 +61,6 @@ public class SoundRecordingFragment extends BaseFragment {
      * 满进度
      */
     private final static int FULL = 100;
-    protected Activity mActivity;
     private Context mContext;
 
     /**
@@ -112,13 +110,6 @@ public class SoundRecordingFragment extends BaseFragment {
         return new SoundRecordingFragment();
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onAttach(@NonNull Activity activity) {
-        super.onAttach(activity);
-        this.mActivity = activity;
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -163,7 +154,7 @@ public class SoundRecordingFragment extends BaseFragment {
             // 与上次点击返回键时刻作差
             if ((System.currentTimeMillis() - mExitTime) > AGAIN_TIME) {
                 // 大于2000ms则认为是误操作，使用Toast进行提示
-                Toast.makeText(mActivity.getApplicationContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity().getApplicationContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
                 // 并记录下本次点击“返回键”的时刻，以便下次进行判断
                 mExitTime = System.currentTimeMillis();
                 return true;
@@ -194,7 +185,7 @@ public class SoundRecordingFragment extends BaseFragment {
             @Override
             public void actionDown() {
                 // 母窗体禁止滑动
-                ((MainActivity) mActivity).showHideTableLayout(false);
+                ((MainActivity) requireActivity()).showHideTableLayout(false);
             }
 
             @Override
@@ -210,7 +201,7 @@ public class SoundRecordingFragment extends BaseFragment {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> onRecord(false, true), mRecordSpec.getMinDuration() - time);
                 mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
                 // 母窗体启动滑动
-                ((MainActivity) mActivity).showHideTableLayout(true);
+                ((MainActivity) requireActivity()).showHideTableLayout(true);
             }
 
             @Override
@@ -272,7 +263,7 @@ public class SoundRecordingFragment extends BaseFragment {
             @Override
             public void cancel() {
                 // 母窗体启动滑动
-                ((MainActivity) mActivity).showHideTableLayout(true);
+                ((MainActivity) requireActivity()).showHideTableLayout(true);
                 // 重置取消确认按钮
                 mViewHolder.pvLayout.reset();
                 // 重置时间
@@ -306,7 +297,7 @@ public class SoundRecordingFragment extends BaseFragment {
     private void initAudio() {
         // 获取service存储的数据
         localMedia = new LocalMedia();
-        SharedPreferences sharePreferences = mActivity.getSharedPreferences("sp_name_audio", MODE_PRIVATE);
+        SharedPreferences sharePreferences = requireActivity().getSharedPreferences("sp_name_audio", MODE_PRIVATE);
         final String filePath = sharePreferences.getString("audio_path", "");
         long elapsed = sharePreferences.getLong("elapsed", 0);
         localMedia.setPath(filePath);
@@ -347,7 +338,7 @@ public class SoundRecordingFragment extends BaseFragment {
     private void onRecord(boolean start, boolean isShort) {
         if (start) {
             // 创建文件
-            File folder = new File(mActivity.getExternalFilesDir(null) + "/SoundRecorder");
+            File folder = new File(requireActivity().getExternalFilesDir(null) + "/SoundRecorder");
             if (!folder.exists()) {
                 // folder /SoundRecorder doesn't exist, create the folder
                 boolean wasSuccessful = folder.mkdir();
@@ -360,14 +351,14 @@ public class SoundRecordingFragment extends BaseFragment {
             // start RecordingService
             startRecording();
             // keep screen on while recording
-            mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             mViewHolder.chronometer.stop();
             timeWhenPaused = 0;
 
             stopRecording(isShort);
             // allow the screen to turn off again once recording is finished
-            mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
@@ -413,7 +404,7 @@ public class SoundRecordingFragment extends BaseFragment {
         mMediaPlayer.setOnCompletionListener(mp -> stopPlaying());
 
         //keep screen on while playing audio
-        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     /**
@@ -449,7 +440,7 @@ public class SoundRecordingFragment extends BaseFragment {
         isPlaying = !isPlaying;
 
         // 一旦音频播放完毕，保持屏幕常亮 这个设置关闭
-        mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     /**
@@ -497,13 +488,13 @@ public class SoundRecordingFragment extends BaseFragment {
                             ArrayList<LocalMedia> localFiles = new ArrayList<>();
                             localFiles.add(localMedia);
                             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localFiles);
-                            mActivity.setResult(RESULT_OK, result);
+                            requireActivity().setResult(RESULT_OK, result);
                         } else {
                             ArrayList<LocalMedia> localMediaArrayList = new ArrayList<>();
                             localMediaArrayList.add(localMedia);
                             mGlobalSpec.getOnResultCallbackListener().onResult(localMediaArrayList);
                         }
-                        mActivity.finish();
+                        requireActivity().finish();
                     }
                 });
             });
@@ -589,7 +580,7 @@ public class SoundRecordingFragment extends BaseFragment {
                 } else {
                     long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
                     // 存储到缓存的文件地址
-                    mActivity.getSharedPreferences("sp_name_audio", MODE_PRIVATE)
+                    requireActivity().getSharedPreferences("sp_name_audio", MODE_PRIVATE)
                             .edit()
                             .putString("audio_path", mFile.getPath())
                             .putLong("elapsed", mElapsedMillis)

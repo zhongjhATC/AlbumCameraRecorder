@@ -2,7 +2,6 @@ package com.zhongjh.albumcamerarecorder.settings
 
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels
-import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
@@ -115,11 +114,6 @@ object CameraSpec {
      */
     val isMergeEnable: Boolean
         get() = videoMergeCoordinator != null
-
-    /**
-     * CameraView有关事件
-     */
-    var onCameraViewListener: OnCameraViewListener? = null
 
     /**
      * 拍摄后操作图片的事件

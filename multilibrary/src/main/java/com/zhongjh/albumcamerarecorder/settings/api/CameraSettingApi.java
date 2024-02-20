@@ -3,7 +3,6 @@ package com.zhongjh.albumcamerarecorder.settings.api;
 import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
-import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
@@ -157,15 +156,6 @@ public interface CameraSettingApi {
      * @return {@link CameraSetting} for fluent API.
      */
     CameraSetting enableFlashMemoryModel(boolean enableFlashMemoryModel);
-
-    /**
-     * 有关CameraView事件, 自定义相关属性
-     * <p>
-     *
-     * @param listener {@link OnCameraViewListener}
-     * @return {@link CameraSetting} this
-     */
-    CameraSetting setOnCameraViewListener(OnCameraViewListener listener);
 
     /**
      * 有关拍摄后添加、删除图片后触发的事件

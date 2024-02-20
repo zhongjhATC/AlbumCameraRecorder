@@ -10,30 +10,11 @@
     android:orientation="vertical"
     android:paddingTop="1dp">
 
-    <!-- 拍摄 -->
-    <com.otaliastudios.cameraview.CameraView
-        android:id="@+id/cameraView"
+    <!-- 预览拍摄 -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/pvCamera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:keepScreenOn="true"
-        app:cameraAudio="on"
-        app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"
-        app:cameraEngine="camera1"
-        app:cameraExperimental="true"
-        app:cameraFacing="back"
-        app:cameraFlash="auto"
-        app:cameraGestureLongTap="none"
-        app:cameraGesturePinch="zoom"
-        app:cameraGestureScrollHorizontal="filterControl1"
-        app:cameraGestureScrollVertical="exposureCorrection"
-        app:cameraGestureTap="autoFocus"
-        app:cameraGrid="off"
-        app:cameraMode="video"
-        app:cameraPlaySounds="true"
-        app:cameraPreview="glSurface"
-        app:cameraPreviewFrameRate="22" />
+        android:layout_height="match_parent" />
 
     <com.zhongjh.albumcamerarecorder.widget.ImageViewTouch
         android:id="@+id/imgPhoto"

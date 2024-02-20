@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.ImageViewTouch;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
@@ -57,14 +56,6 @@ public interface ICameraView {
      */
     @Nullable
     View getTopView();
-
-    /**
-     * 设置CameraView
-     *
-     * @return 返回CameraView，主要用于拍摄、录制，里面包含水印
-     */
-    @NonNull
-    CameraView getCameraView();
 
     /**
      * 当想使用自带的多图显示控件，请设置它

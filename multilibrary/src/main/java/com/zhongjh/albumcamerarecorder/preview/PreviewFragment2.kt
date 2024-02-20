@@ -46,6 +46,7 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
+import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
@@ -322,7 +323,7 @@ class PreviewFragment2 : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // 获取宽高
-        screenWidth = getRealScreenWidth(requireContext())
+        screenWidth = getScreenWidth(requireContext())
         screenHeight = getScreenHeight(requireContext())
         // 初始化回调
         initActivityResult()

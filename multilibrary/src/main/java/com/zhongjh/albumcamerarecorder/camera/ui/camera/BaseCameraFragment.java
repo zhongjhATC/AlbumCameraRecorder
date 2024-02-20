@@ -3,11 +3,11 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera;
 import static android.app.Activity.RESULT_OK;
 import static com.otaliastudios.cameraview.controls.Mode.PICTURE;
 import static com.otaliastudios.cameraview.controls.Mode.VIDEO;
-import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -255,6 +254,7 @@ public abstract class BaseCameraFragment
     public void onDestroy() {
         onDestroy(isCommit);
         getPhotoVideoLayout().onDestroy();
+        getCameraView().destroy();
         super.onDestroy();
     }
 

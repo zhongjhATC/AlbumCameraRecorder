@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.utils
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.media.ExifInterface
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
@@ -13,7 +14,6 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.IntDef
 import androidx.annotation.RequiresApi
-import androidx.exifinterface.media.ExifInterface
 import com.zhongjh.common.utils.AppUtils.getAppName
 import com.zhongjh.common.utils.MediaStoreCompat
 import java.io.File

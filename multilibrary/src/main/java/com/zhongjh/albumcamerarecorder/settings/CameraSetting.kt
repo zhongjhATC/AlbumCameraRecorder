@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter
@@ -28,7 +27,7 @@ class CameraSetting : CameraSettingApi {
      * 销毁事件
      */
     fun onDestroy() {
-        mCameraSpec.onCameraViewListener = null
+
     }
 
     /**
@@ -132,11 +131,6 @@ class CameraSetting : CameraSettingApi {
 
     override fun enableFlashMemoryModel(enableFlashMemoryModel: Boolean): CameraSetting {
         mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel
-        return this
-    }
-
-    override fun setOnCameraViewListener(listener: OnCameraViewListener): CameraSetting {
-        mCameraSpec.onCameraViewListener = WeakReference(listener).get()
         return this
     }
 

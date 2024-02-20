@@ -64,8 +64,15 @@ dependencies {
     compileOnly 'com.github.bumptech.glide:glide:3.7.0'
     compileOnly 'com.squareup.picasso:picasso:2.5.2'
 
-    // 拍摄、录像核心类 https://github.com/natario1/CameraView
-    api 'com.otaliastudios:cameraview:2.7.1'
+    // 拍摄、录像核心类 放弃[https://github.com/natario1/CameraView]是因为某些最新系统的机器造成内存泄漏
+    def camerax_version = "1.2.0-alpha01"
+    implementation "androidx.camera:camera-core:${camerax_version}"
+    implementation "androidx.camera:camera-camera2:${camerax_version}"
+    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+    implementation "androidx.camera:camera-video:${camerax_version}"
+
+    implementation "androidx.camera:camera-view:${camerax_version}"
+    implementation "androidx.camera:camera-extensions:${camerax_version}"
 
     // 自制按钮进度 https://github.com/zhongjhATC/CircularProgressView
     api 'com.github.zhongjhATC:CircularProgressView:1.8'

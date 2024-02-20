@@ -8,10 +8,10 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.camera.view.PreviewView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
@@ -57,12 +57,6 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
     @Override
     public View getTopView() {
         return mViewHolder.clMenu;
-    }
-
-    @NonNull
-    @Override
-    public CameraView getCameraView() {
-        return mViewHolder.cameraView;
     }
 
     @Override
@@ -136,7 +130,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
         View vLine1;
         View vLine2;
         ImageView imgClose;
-        CameraView cameraView;
+        PreviewView pvCamera;
         ConstraintLayout clMenu;
 
         ViewHolder(View rootView) {
@@ -150,7 +144,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
             this.vLine1 = rootView.findViewById(R.id.vLine1);
             this.vLine2 = rootView.findViewById(R.id.vLine2);
             this.imgClose = rootView.findViewById(R.id.imgClose);
-            this.cameraView = rootView.findViewById(R.id.cameraView);
+            this.pvCamera = rootView.findViewById(R.id.pvCamera);
             this.clMenu = rootView.findViewById(R.id.clMenu);
         }
     }
