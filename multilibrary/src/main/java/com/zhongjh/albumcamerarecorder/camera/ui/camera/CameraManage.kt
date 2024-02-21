@@ -237,6 +237,42 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
     }
 
     /**
+     * bindCameraWithUserCases
+     */
+    private fun bindCameraWithUserCases() {
+        try {
+            val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+            // Preview
+            val preview = Preview.Builder()
+                .setTargetRotation(mCameraPreviewView.getDisplay().getRotation())
+                .build()
+            // ImageCapture
+            buildImageCapture()
+            // VideoCapture
+            buildVideoCapture()
+            val useCase = UseCaseGroup.Builder()
+            useCase.addUseCase(preview)
+            useCase.addUseCase(mImageCapture!!)
+            useCase.addUseCase(mVideoCapture!!)
+            val useCaseGroup = useCase.build()
+            // Must unbind the use-cases before rebinding them
+            mCameraProvider.unbindAll()
+            // A variable number of use-cases can be passed here -
+            // camera provides access to CameraControl & CameraInfo
+            val camera = mCameraProvider.bindToLifecycle((getContext() as LifecycleOwner?)!!, cameraSelector, useCaseGroup)
+            // Attach the viewfinder's surface provider to preview use case
+            preview.setSurfaceProvider(mCameraPreviewView.getSurfaceProvider())
+            // setFlashMode
+            setFlashMode()
+            mCameraInfo = camera.cameraInfo
+            mCameraControl = camera.cameraControl
+            initCameraPreviewListener()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
      * 初始化ImageCapture
      *
      * @param screenAspectRatio 计算后适合的比例
@@ -257,6 +293,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
     private fun initVideoCapture() {
         val videoBuilder = VideoCapture.Builder()
         videoBuilder.setTargetRotation(mViewHolder.previewView.display.rotation)
+        // 设置相关属性
         if (mCameraSpec.videoFrameRate > 0) {
             videoBuilder.setVideoFrameRate(mCameraSpec.videoFrameRate)
         }
