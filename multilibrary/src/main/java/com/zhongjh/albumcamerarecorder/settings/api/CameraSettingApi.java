@@ -42,6 +42,22 @@ public interface CameraSettingApi {
     CameraSetting mimeTypeSet(@NonNull Set<MimeType> mimeTypes);
 
     /**
+     * 设置每秒的录制帧数
+     *
+     * @param videoFrameRate 录制帧数
+     * @return {@link CameraSetting} for fluent API.
+     */
+    CameraSetting videoFrameRate(int videoFrameRate);
+
+    /**
+     * 设置编码比特率
+     *
+     * @param videoBitRate 编码比特率
+     * @return {@link CameraSetting} for fluent API.
+     */
+    CameraSetting videoBitRate(int videoBitRate);
+
+    /**
      * 是否开启图片高清拍摄
      * 注意开启该模式后，录制界面不能同时存在拍摄图片功能和录制视频功能
      *

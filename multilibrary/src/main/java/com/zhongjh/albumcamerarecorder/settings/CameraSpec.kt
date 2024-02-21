@@ -22,6 +22,16 @@ object CameraSpec {
     var mimeTypeSet: Set<MimeType>? = null
 
     /**
+     * 设置每秒的录制帧数
+     */
+    var videoFrameRate = 0
+
+    /**
+     * 设置编码比特率
+     */
+    var videoBitRate = 0
+
+    /**
      * 是否开启图片高清拍摄
      * 注意开启该模式后，录制界面不能同时存在拍摄图片功能和录制视频功能
      */
@@ -134,6 +144,8 @@ object CameraSpec {
      */
     private fun reset() {
         mimeTypeSet = null
+        videoFrameRate = 0
+        videoBitRate = 0
         // 切换前置/后置摄像头图标资源
         imageSwitch = R.drawable.ic_camera_zjh
         // 闪光灯开启状态图标

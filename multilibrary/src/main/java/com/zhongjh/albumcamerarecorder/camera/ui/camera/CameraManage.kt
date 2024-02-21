@@ -1,16 +1,20 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Point
 import android.hardware.display.DisplayManager
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.zhongjh.albumcamerarecorder.camera.listener.CameraXOrientationEventListener
+import com.zhongjh.albumcamerarecorder.camera.listener.CameraXPreviewViewTouchListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment.ViewHolder
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import java.util.concurrent.Executor
+import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -39,16 +43,19 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
      * 拍摄配置
      */
     private val mCameraSpec by lazy { CameraSpec }
-    private var mCameraProvider: ProcessCameraProvider? = null
+    private lateinit var mCameraProvider: ProcessCameraProvider
     private var mImageCapture: ImageCapture? = null
     private var mImageAnalyzer: ImageAnalysis? = null
-    private val mVideoCapture: VideoCapture? = null
+    private var mVideoCapture: VideoCapture? = null
     private val mDisplayManager by lazy { mContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
     private val mDisplayListener by lazy { DisplayListener() }
     private val orientationEventListener by lazy { CameraXOrientationEventListener(mContext, this) }
-    private var mCameraInfo: CameraInfo? = null
-    private var mCameraControl: CameraControl? = null
-    private val focusImageView: FocusImageView? = null
+    private lateinit var mCameraInfo: CameraInfo
+
+    /**
+     * 摄像头控制器
+     */
+    private lateinit var mCameraControl: CameraControl
     private val mainExecutor: Executor by lazy { ContextCompat.getMainExecutor(mContext) }
 
     private var displayId = -1
@@ -69,7 +76,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
      */
     fun create() {
         mDisplayManager.registerDisplayListener(mDisplayListener, null)
-        mViewHolder.pvCamera.post { displayId = mViewHolder.pvCamera.display.displayId }
+        mViewHolder.previewView.post { displayId = mViewHolder.previewView.display.displayId }
     }
 
     /**
@@ -86,6 +93,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
         val cameraProviderFuture = ProcessCameraProvider.getInstance(mContext)
         cameraProviderFuture.addListener({
             try {
+                // 在 Runnable 中，添加 ProcessCameraProvider。它用于将相机的生命周期绑定到应用进程中的 LifecycleOwner
                 mCameraProvider = cameraProviderFuture.get()
                 initCameraPreviewMode()
             } catch (e: Exception) {
@@ -100,7 +108,6 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
     fun onDestroy() {
         mDisplayManager.unregisterDisplayListener(mDisplayListener)
         stopCheckOrientation()
-        focusImageView.destroy()
     }
 
     /**
@@ -130,70 +137,97 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
      * 闪光灯模式
      */
     private fun setFlashMode() {
-        if (mImageCapture == null) {
-            return
-        }
-        when (typeFlash) {
-            TYPE_FLASH_AUTO -> {
-                mImageCapture.flashMode = ImageCapture.FLASH_MODE_AUTO
-            }
-            TYPE_FLASH_ON -> {
-                mImageCapture.flashMode = ImageCapture.FLASH_MODE_ON
-            }
-            TYPE_FLASH_OFF -> {
-                mImageCapture.flashMode = ImageCapture.FLASH_MODE_OFF
+        mImageCapture?.let {
+            when (typeFlash) {
+                TYPE_FLASH_AUTO -> {
+                    it.flashMode = ImageCapture.FLASH_MODE_AUTO
+                }
+                TYPE_FLASH_ON -> {
+                    it.flashMode = ImageCapture.FLASH_MODE_ON
+                }
+                TYPE_FLASH_OFF -> {
+                    it.flashMode = ImageCapture.FLASH_MODE_OFF
+                }
             }
         }
     }
 
     /**
-     * 初始相机预览模式
+     * 绑定相机预览模式
      */
     private fun initCameraPreviewMode() {
         if (mCameraSpec.onlySupportImages()) {
-            initCameraPreviewModeByImage()
+            bindCameraPreviewModeByImage()
         } else if (mCameraSpec.onlySupportVideos()) {
-            bindCameraVideoUseCases()
+            bindCameraPreviewModeByVideo()
         } else {
             bindCameraWithUserCases()
         }
     }
 
     /**
-     * 初始化只拍照模式
+     * 绑定 - 只拍照模式
      */
-    private fun initCameraPreviewModeByImage() {
+    private fun bindCameraPreviewModeByImage() {
         try {
             // 获取适合的比例
             val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(mContext), DisplayMetricsUtils.getScreenHeight(mContext))
             // 获取当前预览的角度
-            val rotation: Int = mViewHolder.pvCamera.display.rotation
+            val rotation: Int = mViewHolder.previewView.display.rotation
             // 获取前后置摄像头
             val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-            // 初始化 Preview 对象
+            // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
             val preview = Preview.Builder()
                 .setTargetAspectRatio(screenAspectRatio)
                 .setTargetRotation(rotation)
-                .build()
+                .build().also {
+                    it.setSurfaceProvider(mViewHolder.previewView.surfaceProvider)
+                }
 
-            // ImageCapture
-            initImageCapture()
+            // 初始化 ImageCapture
+            initImageCapture(screenAspectRatio)
 
-            // ImageAnalysis
+            // 初始化 ImageAnalysis
             mImageAnalyzer = ImageAnalysis.Builder()
                 .setTargetAspectRatio(screenAspectRatio)
                 .setTargetRotation(rotation)
                 .build()
 
-            // Must unbind the use-cases before rebinding them
-            mCameraProvider!!.unbindAll()
-            // A variable number of use-cases can be passed here -
-            // camera provides access to CameraControl & CameraInfo
-            val camera = mCameraProvider!!.bindToLifecycle((getContext() as LifecycleOwner?)!!, cameraSelector, preview, mImageCapture, mImageAnalyzer)
-            // Attach the viewfinder's surface provider to preview use case
-            preview.setSurfaceProvider(mCameraPreviewView.getSurfaceProvider())
+            // 确保没有任何内容绑定到 cameraProvider
+            mCameraProvider.unbindAll()
+            // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
+            val camera = mCameraProvider.bindToLifecycle((mContext as LifecycleOwner), cameraSelector, preview, mImageCapture, mImageAnalyzer)
             // setFlashMode
             setFlashMode()
+            mCameraInfo = camera.cameraInfo
+            mCameraControl = camera.cameraControl
+            initCameraPreviewListener()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * 绑定 - 只录制视频模式
+     */
+    private fun bindCameraPreviewModeByVideo() {
+        try {
+            // 获取当前预览的角度
+            val rotation: Int = mViewHolder.previewView.display.rotation
+            // 获取前后置摄像头
+            val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+            // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
+            val preview = Preview.Builder()
+                .setTargetRotation(rotation)
+                .build().also {
+                    it.setSurfaceProvider(mViewHolder.previewView.surfaceProvider)
+                }
+            // 初始化 VideoCapture
+            initVideoCapture()
+            // 确保没有任何内容绑定到 cameraProvider
+            mCameraProvider.unbindAll()
+            // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
+            val camera = mCameraProvider.bindToLifecycle((mContext as LifecycleOwner), cameraSelector, preview, mVideoCapture)
             mCameraInfo = camera.cameraInfo
             mCameraControl = camera.cameraControl
             initCameraPreviewListener()
@@ -212,8 +246,24 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
         mImageCapture = ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(mViewHolder.pvCamera.display.rotation)
+            .setTargetRotation(mViewHolder.previewView.display.rotation)
             .build()
+    }
+
+    /**
+     * 初始化VideoCapture
+     */
+    @SuppressLint("RestrictedApi")
+    private fun initVideoCapture() {
+        val videoBuilder = VideoCapture.Builder()
+        videoBuilder.setTargetRotation(mViewHolder.previewView.display.rotation)
+        if (mCameraSpec.videoFrameRate > 0) {
+            videoBuilder.setVideoFrameRate(mCameraSpec.videoFrameRate)
+        }
+        if (mCameraSpec.videoBitRate > 0) {
+            videoBuilder.setBitRate(mCameraSpec.videoBitRate)
+        }
+        mVideoCapture = videoBuilder.build()
     }
 
     /**
@@ -255,6 +305,67 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
     }
 
     /**
+     * 初始化预览的触摸事件
+     */
+    private fun initCameraPreviewListener() {
+        val zoomState = mCameraInfo.zoomState
+        val cameraXPreviewViewTouchListener = CameraXPreviewViewTouchListener(mContext)
+        cameraXPreviewViewTouchListener.setCustomTouchListener(object : CameraXPreviewViewTouchListener.CustomTouchListener {
+
+            override fun zoom(delta: Float) {
+                // 进行缩放
+                zoomState.value?.let {
+                    val currentZoomRatio = it.zoomRatio
+                    mCameraControl.setZoomRatio(currentZoomRatio * delta)
+                }
+            }
+
+            override fun click(x: Float, y: Float) {
+                // 控制对焦目标给xy坐标
+                val meteringPointFactory: MeteringPointFactory = mViewHolder.previewView.meteringPointFactory
+                val point = meteringPointFactory.createPoint(x, y)
+                val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+                    .setAutoCancelDuration(3, TimeUnit.SECONDS)
+                    .build()
+                if (mCameraInfo.isFocusMeteringSupported(action)) {
+                    mCameraControl.cancelFocusAndMetering()
+                    mViewHolder.focusView.setDisappear(false)
+                    mViewHolder.focusView.startFocusIng((Point(x.toInt(), y.toInt())))
+                    val future = mCameraControl.startFocusAndMetering(action)
+                    future.addListener({
+                        try {
+                            val result = future.get()
+                            mViewHolder.focusView.setDisappear(true)
+                            if (result.isFocusSuccessful) {
+                                mViewHolder.focusView.changeFocusSuccess()
+                            } else {
+                                mViewHolder.focusView.changeFocusFailed()
+                            }
+                        } catch (ignored: java.lang.Exception) {
+                        }
+                    }, mainExecutor)
+                }
+            }
+
+            override fun doubleClick(x: Float, y: Float) {
+                // 双击控制缩放
+                zoomState.value?.let {
+                    val currentZoomRatio = it.zoomRatio
+                    val minZoomRatio = it.minZoomRatio
+                    // 如果当前比最小的缩放大
+                    if (currentZoomRatio > minZoomRatio) {
+                        // 重置
+                        mCameraControl.setLinearZoom(0f)
+                    } else {
+                        mCameraControl.setLinearZoom(0.5f)
+                    }
+                }
+            }
+        })
+        mViewHolder.previewView.setOnTouchListener(cameraXPreviewViewTouchListener)
+    }
+
+    /**
      * 使用显示器更改事件，更改图片拍摄器的旋转
      */
     internal inner class DisplayListener : DisplayManager.DisplayListener {
@@ -262,8 +373,8 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
         override fun onDisplayRemoved(displayId: Int) {}
         override fun onDisplayChanged(displayId: Int) {
             if (displayId == this@CameraManage.displayId) {
-                mImageCapture?.targetRotation = mViewHolder.pvCamera.display.rotation
-                mImageAnalyzer?.targetRotation = mViewHolder.pvCamera.display.rotation
+                mImageCapture?.targetRotation = mViewHolder.previewView.display.rotation
+                mImageAnalyzer?.targetRotation = mViewHolder.previewView.display.rotation
             }
         }
     }

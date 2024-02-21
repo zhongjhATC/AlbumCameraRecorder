@@ -55,6 +55,14 @@ class CameraSetting : CameraSettingApi {
         return this
     }
 
+    override fun videoFrameRate(videoFrameRate: Int): CameraSetting {
+        TODO("Not yet implemented")
+    }
+
+    override fun videoBitRate(videoBitRate: Int): CameraSetting {
+        TODO("Not yet implemented")
+    }
+
     override fun enableImageHighDefinition(enable: Boolean): CameraSetting {
         mCameraSpec.enableImageHighDefinition = enable
         // 如果启用图片高清，就禁用录制视频
