@@ -55,7 +55,7 @@ interface AlbumSettingApi {
     /**
      * 是否支持heic,默认为true
      * 当设置为false的时候，会在相册数据源剔除掉heic文件
-     * @param isSupport 是否支持
+     * @param isSupportHeic 是否支持
      * @return [AlbumSetting] this
      */
     fun isSupportHeic(isSupportHeic: Boolean): AlbumSetting

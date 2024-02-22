@@ -75,6 +75,26 @@ object CameraSpec {
     var keyCodeTakePhoto = 0
 
     /**
+     * 自定义拍照、录制的输出文件夹路径
+     */
+    var outPutCameraDir: String? = null
+
+    /**
+     * 输出文件的名称
+     */
+    var outPutCameraFileName: String? = null
+
+    /**
+     * 输出图片文件的后缀名
+     */
+    var imageFormat: String? = null
+
+    /**
+     * 输出视频文件的后缀名
+     */
+    var videoFormat: String? = null
+
+    /**
      * 是否开启闪光灯记忆模式
      * 在开启闪光某个模式（例如闪光灯开启模式）后，在界面结束时，会自动记录当前模式（例如闪光灯开启模式），下次再打开时，依然是这个模式（例如闪光灯开启模式）
      */
@@ -155,6 +175,11 @@ object CameraSpec {
         // 闪光灯自动状态图标
         imageFlashAuto = R.drawable.ic_flash_auto
         flashModel = FlashModels.TYPE_FLASH_OFF
+        keyCodeTakePhoto = 0
+        outPutCameraDir = null
+        outPutCameraFileName = null
+        imageFormat = null
+        videoFormat = null
         enableFlashMemoryModel = false
         // 最长录制时间
         maxDuration = 1000

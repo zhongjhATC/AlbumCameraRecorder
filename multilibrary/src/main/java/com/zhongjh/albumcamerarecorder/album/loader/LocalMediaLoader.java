@@ -149,7 +149,7 @@
 //        }
 //        long maxS = albumSpec.getVideoMaxSecond() == 0 ? Long.MAX_VALUE : albumSpec.getVideoMaxSecond();
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            return String.format(Locale.CHINA, "%d <%s " + duration + " and " + duration + " <= %d",
+//            return String.format(Locale.US, "%d <%s " + duration + " and " + duration + " <= %d",
 //                    Math.max((long) 0, albumSpec.getVideoMinSecond()),
 //                    Math.max((long) 0, albumSpec.getVideoMinSecond()) == 0 ? "" : "=",
 //                    maxS);
@@ -163,7 +163,7 @@
 //     */
 //    protected String getFileSizeCondition() {
 //        long maxS = getConfig().filterMaxFileSize == 0 ? Long.MAX_VALUE : getConfig().filterMaxFileSize;
-//        return String.format(Locale.CHINA, "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
+//        return String.format(Locale.US, "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
 //                Math.max(0, getConfig().filterMinFileSize), "=", maxS);
 //    }
 //

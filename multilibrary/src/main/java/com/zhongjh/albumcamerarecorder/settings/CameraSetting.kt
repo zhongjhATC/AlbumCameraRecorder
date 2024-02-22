@@ -137,6 +137,26 @@ class CameraSetting : CameraSettingApi {
         return this
     }
 
+    override fun outPutCameraDir(outPutCameraDir: String): CameraSetting {
+        mCameraSpec.outPutCameraDir = outPutCameraDir
+        return this
+    }
+
+    override fun outPutCameraFileName(outPutCameraFileName: String): CameraSetting {
+        mCameraSpec.outPutCameraFileName = outPutCameraFileName
+        return this
+    }
+
+    override fun imageFormat(imageFormat: String): CameraSetting {
+        mCameraSpec.imageFormat = imageFormat
+        return this
+    }
+
+    override fun videoFormat(videoFormat: String): CameraSetting {
+        mCameraSpec.videoFormat = videoFormat
+        return this
+    }
+
     override fun enableFlashMemoryModel(enableFlashMemoryModel: Boolean): CameraSetting {
         mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel
         return this
