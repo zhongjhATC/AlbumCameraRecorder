@@ -21,6 +21,7 @@ import com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO
 import com.zhongjh.albumcamerarecorder.camera.listener.CameraXOrientationEventListener
 import com.zhongjh.albumcamerarecorder.camera.listener.CameraXPreviewViewTouchListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment.ViewHolder
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView
 import com.zhongjh.albumcamerarecorder.constants.Constant.ALBUM_CAMERA_RECORDER
 import com.zhongjh.albumcamerarecorder.constants.Constant.JPEG
 import com.zhongjh.albumcamerarecorder.constants.Constant.MP4
@@ -39,7 +40,7 @@ import kotlin.math.min
 /**
  * 拍摄/录制 管理
  */
-class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraXOrientationEventListener.OnOrientationChangedListener {
+class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICameraView : ICameraView) : CameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
         /**
@@ -578,7 +579,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder) : CameraX
      * 拍照回调
      */
     private class MyImageResultCallback(
-        cameraManage: CameraManage, imagePreview: ImageView, imagePreviewBg: View, captureLayout: CaptureLayout?,
+        cameraManage: CameraManage, imagePreview: ImageView, imagePreviewBg: View, iCameraView : ICameraView?,
         imageCallbackListener: ImageCallbackListener,
         cameraListener: CameraListener?
     ) : ImageCapture.OnImageSavedCallback {
