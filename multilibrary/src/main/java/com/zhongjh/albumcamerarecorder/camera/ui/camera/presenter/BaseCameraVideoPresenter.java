@@ -202,9 +202,9 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
             videoFile = videoMediaStoreCompat.createFile(1, true, "mp4");
         }
         if (baseCameraFragment.getCameraSpec().getEnableVideoHighDefinition()) {
-            baseCameraFragment.getCameraView().takeVideo(videoFile);
+            baseCameraFragment.getCameraManage().takeVideo(videoFile);
         } else {
-            baseCameraFragment.getCameraView().takeVideoSnapshot(videoFile);
+            baseCameraFragment.getCameraManage().takeVideoSnapshot(videoFile);
         }
     }
 

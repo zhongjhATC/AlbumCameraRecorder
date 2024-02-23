@@ -89,7 +89,7 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManagement, B
 
     @NonNull
     @Override
-    public CameraView getCameraView() {
+    public CameraView getCameraManage() {
         return mBinding.cameraView;
     }
 

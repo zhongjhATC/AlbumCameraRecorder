@@ -95,11 +95,7 @@ public class BaseCameraPicturePresenter
     private final Runnable cameraTakePictureRunnable = new Runnable() {
         @Override
         public void run() {
-            if (baseCameraFragment.getCameraSpec().getEnableImageHighDefinition()) {
-                baseCameraFragment.getCameraView().takePicture();
-            } else {
-                baseCameraFragment.getCameraView().takePictureSnapshot();
-            }
+            baseCameraFragment.getCameraManage().takePicture();
         }
     };
     /**
@@ -216,14 +212,14 @@ public class BaseCameraPicturePresenter
     @Override
     public void takePhoto() {
         // 开启才能执行别的事件, 如果已经有分段视频，则不允许拍照了
-        if (baseCameraFragment.getCameraView().isOpened() && baseCameraFragment.getCameraVideoPresenter().getVideoTimes().size() <= 0) {
+        if (baseCameraFragment.getCameraManage().isOpened() && baseCameraFragment.getCameraVideoPresenter().getVideoTimes().size() <= 0) {
             // 判断数量
             if (photoAdapter.getItemCount() < SelectableUtils.getImageMaxCount()) {
                 // 设置不能点击，防止多次点击报错
                 baseCameraFragment.getChildClickableLayout().setChildClickable(false);
                 // 判断如果是自动闪光灯模式便开启闪光灯
                 if (baseCameraFragment.getFlashModel() == TYPE_FLASH_AUTO) {
-                    baseCameraFragment.getCameraView().setFlash(Flash.TORCH);
+                    baseCameraFragment.getCameraManage().setFlash(Flash.TORCH);
                     // 延迟1秒拍照
                     cameraTakePictureHandler.postDelayed(cameraTakePictureRunnable, 1000);
                 } else {

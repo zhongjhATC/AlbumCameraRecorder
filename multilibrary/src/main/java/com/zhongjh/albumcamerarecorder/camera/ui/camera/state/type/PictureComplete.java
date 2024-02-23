@@ -31,8 +31,8 @@ public class PictureComplete extends StateMode {
     @Override
     public void resetState() {
         // 重新启用cameraView
-        if (!getCameraFragment().getCameraView().isOpened()) {
-            getCameraFragment().getCameraView().open();
+        if (!getCameraFragment().getCameraManage().isOpened()) {
+            getCameraFragment().getCameraManage().open();
         }
 
         // 隐藏图片view
@@ -72,7 +72,7 @@ public class PictureComplete extends StateMode {
     @Override
     public void pvLayoutCancel() {
         getCameraFragment().cancelOnResetBySinglePicture();
-        getCameraFragment().getCameraView().open();
+        getCameraFragment().getCameraManage().open();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }

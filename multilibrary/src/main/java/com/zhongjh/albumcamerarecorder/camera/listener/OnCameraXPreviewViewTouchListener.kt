@@ -10,7 +10,7 @@ import android.view.View
 /**
  * 监听预览摄像的Touch
  */
-class CameraXPreviewViewTouchListener(context: Context) : View.OnTouchListener {
+class OnCameraXPreviewViewTouchListener(context: Context) : View.OnTouchListener {
     /**
      * 手势识别 - 主要捕获点击、双击
      */

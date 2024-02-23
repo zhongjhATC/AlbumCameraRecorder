@@ -144,6 +144,12 @@ public abstract class BaseCameraFragment
     private View[] multiplePhotoViews;
 
     /**
+     * 拍摄类管理，处理拍摄照片、录制、水印
+     */
+    @NonNull
+    public abstract CameraManage getCameraManage();
+
+    /**
      * 设置状态管理,处理不同状态下进行相关逻辑
      * 有以下状态：
      * [Preview]
@@ -237,7 +243,6 @@ public abstract class BaseCameraFragment
         getPhotoVideoLayout().getViewHolder().btnClickOrLong.reset();
         // 重置当前按钮的功能
         initPvLayoutButtonFeatures();
-        getCameraView().open();
     }
 
     /**
@@ -247,14 +252,13 @@ public abstract class BaseCameraFragment
     public void onPause() {
         super.onPause();
         LogUtil.i("CameraLayout onPause");
-        getCameraView().close();
     }
 
     @Override
     public void onDestroy() {
         onDestroy(isCommit);
         getPhotoVideoLayout().onDestroy();
-        getCameraView().destroy();
+        getCameraManage().onDestroy();
         super.onDestroy();
     }
 
@@ -264,22 +268,14 @@ public abstract class BaseCameraFragment
     protected void setView() {
         multiplePhotoViews = getMultiplePhotoView();
 
-        // 如果有设置高清模式，则根据相应高清模式更改模式
-        if (cameraSpec.getEnableImageHighDefinition()) {
-            getCameraView().setMode(PICTURE);
-        } else if (cameraSpec.getEnableVideoHighDefinition()) {
-            getCameraView().setMode(VIDEO);
-        } else {
-            getCameraView().setMode(VIDEO);
-        }
-
+        // 水印资源
         if (cameraSpec.getWatermarkResource() != -1) {
-            LayoutInflater.from(getContext()).inflate(cameraSpec.getWatermarkResource(), getCameraView(), true);
+            LayoutInflater.from(getContext()).inflate(cameraSpec.getWatermarkResource(), getCameraManage(), true);
         }
 
         // 回调cameraView可以自定义相关参数
         if (cameraSpec.getOnCameraViewListener() != null) {
-            cameraSpec.getOnCameraViewListener().onInitListener(getCameraView());
+            cameraSpec.getOnCameraViewListener().onInitListener(getCameraManage());
         }
 
         // 兼容沉倾状态栏
@@ -302,7 +298,7 @@ public abstract class BaseCameraFragment
 
         // 初始化cameraView,判断是否开启录制视频，如果开启就开启录制声音
         if (!SelectableUtils.videoValid()) {
-            getCameraView().setAudio(Audio.OFF);
+            getCameraManage().setAudio(Audio.OFF);
         }
 
         // 设置闪光灯模式
@@ -401,8 +397,7 @@ public abstract class BaseCameraFragment
      */
     private void initImgSwitchListener() {
         if (getSwitchView() != null) {
-            getSwitchView().setOnClickListener(v -> getCameraView().toggleFacing());
-            getSwitchView().setOnClickListener(v -> getCameraView().toggleFacing());
+            getSwitchView().setOnClickListener(v -> getCameraManage().toggleFacing());
         }
     }
 
@@ -436,7 +431,7 @@ public abstract class BaseCameraFragment
             public void onLongClick() {
                 Log.d(TAG, "pvLayout onLongClick ");
                 // 开启录制功能才能录制事件
-                if (getCameraView().isOpened()) {
+                if (getCameraManage().isOpened()) {
                     getCameraVideoPresenter().recordVideo();
                     // 设置录制状态
                     if (getCameraVideoPresenter().isSectionRecord()) {
@@ -538,13 +533,13 @@ public abstract class BaseCameraFragment
      * 拍照、录制监听
      */
     private void initCameraViewListener() {
-        getCameraView().addCameraListener(new CameraListener() {
+        getCameraManage().addCameraListener(new CameraListener() {
 
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
                 // 如果是自动闪光灯模式便关闭闪光灯
                 if (flashModel == TYPE_FLASH_AUTO) {
-                    getCameraView().setFlash(Flash.OFF);
+                    getCameraManage().setFlash(Flash.OFF);
                 }
                 result.toBitmap(bitmap -> {
                     // 显示图片
@@ -662,7 +657,7 @@ public abstract class BaseCameraFragment
             getCameraPicturePresenter().onDestroy(isCommit);
             getCameraVideoPresenter().onDestroy(isCommit);
             getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-            getCameraView().destroy();
+            getCameraManage().destroy();
             // 记忆模式
             flashSaveCache();
             cameraSpec.setOnCaptureListener(null);
@@ -862,7 +857,7 @@ public abstract class BaseCameraFragment
         getSinglePhotoView().setZoomable(true);
         getSinglePhotoView().setVisibility(View.VISIBLE);
         globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getPath());
-        getCameraView().close();
+        getCameraManage().close();
         getPhotoVideoLayout().startTipAlphaAnimation();
         getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
 
@@ -1036,15 +1031,15 @@ public abstract class BaseCameraFragment
             switch (flashModel) {
                 case TYPE_FLASH_AUTO:
                     getFlashView().setImageResource(cameraSpec.getImageFlashAuto());
-                    getCameraView().setFlash(Flash.AUTO);
+                    getCameraManage().setFlash(Flash.AUTO);
                     break;
                 case TYPE_FLASH_ON:
                     getFlashView().setImageResource(cameraSpec.getImageFlashOn());
-                    getCameraView().setFlash(Flash.TORCH);
+                    getCameraManage().setFlash(Flash.TORCH);
                     break;
                 case TYPE_FLASH_OFF:
                     getFlashView().setImageResource(cameraSpec.getImageFlashOff());
-                    getCameraView().setFlash(Flash.OFF);
+                    getCameraManage().setFlash(Flash.OFF);
                     break;
                 default:
                     break;

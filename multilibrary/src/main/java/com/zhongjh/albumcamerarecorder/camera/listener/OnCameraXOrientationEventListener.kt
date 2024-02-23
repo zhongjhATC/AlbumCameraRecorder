@@ -7,7 +7,7 @@ import android.view.Surface
 /**
  * 用于监控手机方向
  */
-class CameraXOrientationEventListener(context: Context, private val changedListener: OnOrientationChangedListener) : OrientationEventListener(context) {
+class OnCameraXOrientationEventListener(context: Context, private val changedListener: OnOrientationChangedListener) : OrientationEventListener(context) {
 
     private var mRotation = Surface.ROTATION_0
 

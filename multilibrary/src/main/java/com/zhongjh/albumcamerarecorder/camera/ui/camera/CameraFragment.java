@@ -32,6 +32,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
     ViewHolder mViewHolder;
     BaseCameraPicturePresenter cameraPicturePresenter = new BaseCameraPicturePresenter(this);
     BaseCameraVideoPresenter cameraVideoPresenter = new BaseCameraVideoPresenter(this);
+    CameraManage cameraManage = new CameraManage(getMyContext(), mViewHolder, this);
     CameraStateManagement cameraStateManagement = new CameraStateManagement(this);
 
     public static CameraFragment newInstance() {
@@ -99,6 +100,12 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
     @Override
     public ImageView getSwitchView() {
         return mViewHolder.imgSwitch;
+    }
+
+    @NonNull
+    @Override
+    public CameraManage getCameraManage() {
+        return cameraManage;
     }
 
     @NonNull

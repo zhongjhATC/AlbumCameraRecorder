@@ -119,7 +119,7 @@ public class CameraStateManagement implements IState {
     public void stopRecord(boolean isShort) {
         Log.d(TAG, "stopRecord");
         mCameraFragment.getCameraVideoPresenter().setShort(isShort);
-        mCameraFragment.getCameraView().stopVideo();
+        mCameraFragment.getCameraManage().stopVideo();
         // 显示菜单
         mCameraFragment.setMenuVisibility(View.VISIBLE);
         state.stopRecord(isShort);

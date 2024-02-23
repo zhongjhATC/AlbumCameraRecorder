@@ -34,7 +34,7 @@ public class VideoIn extends StateMode {
     public Boolean onBackPressed() {
         // 如果是录制中则暂停视频
         getCameraFragment().getCameraVideoPresenter().setBreakOff(true);
-        getCameraFragment().getCameraView().stopVideo();
+        getCameraFragment().getCameraManage().stopVideo();
         // 重置按钮
         getCameraFragment().getPhotoVideoLayout().reset();
         // 恢复预览状态

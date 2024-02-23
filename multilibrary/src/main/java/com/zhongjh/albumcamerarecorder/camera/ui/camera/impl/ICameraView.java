@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.ImageViewTouch;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
@@ -26,9 +27,9 @@ public interface ICameraView {
 
     /**
      * 初始化根布局
-     * @param inflater onCreateView方法下面的inflater
-     * @param container  onCreateView方法下面的container
      *
+     * @param inflater  onCreateView方法下面的inflater
+     * @param container onCreateView方法下面的container
      * @return 返回布局View
      */
     View setContentView(LayoutInflater inflater, ViewGroup container);

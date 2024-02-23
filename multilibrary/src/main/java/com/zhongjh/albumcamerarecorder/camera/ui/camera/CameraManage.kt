@@ -1,16 +1,12 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.graphics.Point
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
-import android.view.Surface
-import android.view.View
-import android.widget.ImageView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.LifecycleCameraController
@@ -18,14 +14,16 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE
 import com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO
-import com.zhongjh.albumcamerarecorder.camera.listener.CameraXOrientationEventListener
-import com.zhongjh.albumcamerarecorder.camera.listener.CameraXPreviewViewTouchListener
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEventListener
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXPreviewViewTouchListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment.ViewHolder
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView
 import com.zhongjh.albumcamerarecorder.constants.Constant.ALBUM_CAMERA_RECORDER
 import com.zhongjh.albumcamerarecorder.constants.Constant.JPEG
 import com.zhongjh.albumcamerarecorder.constants.Constant.MP4
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import java.io.File
 import java.lang.ref.WeakReference
@@ -40,7 +38,8 @@ import kotlin.math.min
 /**
  * 拍摄/录制 管理
  */
-class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICameraView : ICameraView) : CameraXOrientationEventListener.OnOrientationChangedListener {
+class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICameraView: ICameraView) :
+    OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
         /**
@@ -57,6 +56,12 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
         const val RATIO_16_9_VALUE = 16.0 / 9.0
     }
 
+
+    /**
+     * 回调监听
+     */
+    var onCameraManageListener: OnCameraManageListener? = null
+
     /**
      * 拍摄配置
      */
@@ -67,7 +72,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
     private lateinit var mVideoCapture: VideoCapture
     private val mDisplayManager by lazy { mContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
     private val mDisplayListener by lazy { DisplayListener() }
-    private val orientationEventListener by lazy { CameraXOrientationEventListener(mContext, this) }
+    private val mOrientationEventListener by lazy { OnCameraXOrientationEventListener(mContext, this) }
     private lateinit var mCameraInfo: CameraInfo
 
     /**
@@ -105,27 +110,15 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
     }
 
     /**
-     * 启动预览
-     */
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(mContext)
-        cameraProviderFuture.addListener({
-            try {
-                // 在 Runnable 中，添加 ProcessCameraProvider。它用于将相机的生命周期绑定到应用进程中的 LifecycleOwner
-                mCameraProvider = cameraProviderFuture.get()
-                initCameraPreviewMode()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }, mainExecutor)
-    }
-
-    /**
      * onDestroy
      */
     fun onDestroy() {
         mDisplayManager.unregisterDisplayListener(mDisplayListener)
         stopCheckOrientation()
+    }
+
+    fun isBound() {
+
     }
 
     /**
@@ -154,14 +147,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
         cameraFile?.let {
             fileOptions = ImageCapture.OutputFileOptions.Builder(cameraFile)
                 .setMetadata(metadata).build()
-
-            mImageCapture.takePicture(
-                fileOptions, mainExecutor,
-                com.luck.lib.camerax.CustomCameraView.MyImageResultCallback(
-                    this@CustomCameraView, mImagePreview, mImagePreviewBg,
-                    mCaptureLayout, mImageCallbackListener, mCameraListener
-                )
-            )
+            mImageCapture.takePicture(fileOptions, mainExecutor, TakePictureCallback(this@CameraManage, onCameraManageListener))
         }
 
     }
@@ -180,13 +166,29 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
     /**
      * 切换前后摄像头
      */
-    fun toggleCamera() {
+    fun toggleFacing() {
         lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
             CameraSelector.LENS_FACING_BACK
         } else {
             CameraSelector.LENS_FACING_FRONT
         }
         initCameraPreviewMode()
+    }
+
+    /**
+     * 启动预览
+     */
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(mContext)
+        cameraProviderFuture.addListener({
+            try {
+                // 在 Runnable 中，添加 ProcessCameraProvider。它用于将相机的生命周期绑定到应用进程中的 LifecycleOwner
+                mCameraProvider = cameraProviderFuture.get()
+                initCameraPreviewMode()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }, mainExecutor)
     }
 
     /**
@@ -212,12 +214,20 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
      * 绑定相机预览模式
      */
     private fun initCameraPreviewMode() {
-        if (mCameraSpec.onlySupportImages()) {
+        // 如果有设置高清模式，则根据相应高清模式更改模式
+        if (mCameraSpec.enableImageHighDefinition) {
             bindCameraPreviewModeByImage()
-        } else if (mCameraSpec.onlySupportVideos()) {
+        } else if (mCameraSpec.enableVideoHighDefinition) {
             bindCameraPreviewModeByVideo()
         } else {
-            bindCameraPreviewModeImageAndVideo()
+            // 最后再判断具体什么模式
+            if (mCameraSpec.onlySupportImages()) {
+                bindCameraPreviewModeByImage()
+            } else if (mCameraSpec.onlySupportVideos()) {
+                bindCameraPreviewModeByVideo()
+            } else {
+                bindCameraPreviewModeImageAndVideo()
+            }
         }
     }
 
@@ -378,14 +388,14 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
      * 检测手机方向
      */
     private fun startCheckOrientation() {
-        orientationEventListener.star()
+        mOrientationEventListener.star()
     }
 
     /**
      * 停止检测手机方向
      */
     private fun stopCheckOrientation() {
-        orientationEventListener.stop()
+        mOrientationEventListener.stop()
     }
 
     /**
@@ -393,8 +403,8 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
      */
     private fun initCameraPreviewListener() {
         val zoomState = mCameraInfo.zoomState
-        val cameraXPreviewViewTouchListener = CameraXPreviewViewTouchListener(mContext)
-        cameraXPreviewViewTouchListener.setCustomTouchListener(object : CameraXPreviewViewTouchListener.CustomTouchListener {
+        val onCameraXPreviewViewTouchListener = OnCameraXPreviewViewTouchListener(mContext)
+        onCameraXPreviewViewTouchListener.setCustomTouchListener(object : OnCameraXPreviewViewTouchListener.CustomTouchListener {
 
             override fun zoom(delta: Float) {
                 // 进行缩放
@@ -444,7 +454,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
                 }
             }
         })
-        mViewHolder.previewView.setOnTouchListener(cameraXPreviewViewTouchListener)
+        mViewHolder.previewView.setOnTouchListener(onCameraXPreviewViewTouchListener)
     }
 
     /**
@@ -578,75 +588,65 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
     /**
      * 拍照回调
      */
-    private class MyImageResultCallback(
-        cameraManage: CameraManage, imagePreview: ImageView, imagePreviewBg: View, iCameraView : ICameraView?,
-        imageCallbackListener: ImageCallbackListener,
-        cameraListener: CameraListener?
+    private class TakePictureCallback(
+        cameraManage: CameraManage, onCameraManageListener: OnCameraManageListener?
     ) : ImageCapture.OnImageSavedCallback {
-        private val mImagePreviewReference: WeakReference<ImageView>
-        private val mImagePreviewBgReference: WeakReference<View>
-        private val mCaptureLayoutReference: WeakReference<CaptureLayout?>
-        private val mImageCallbackListenerReference: WeakReference<ImageCallbackListener>
-        private val mCameraListenerReference: WeakReference<CameraListener?>
-        private val mCameraViewLayoutReference: WeakReference<com.luck.lib.camerax.CustomCameraView>
+
+        private val mCameraManageReference: WeakReference<CameraManage>
+        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener>
 
         init {
-            mCameraViewLayoutReference = WeakReference<com.luck.lib.camerax.CustomCameraView>(cameraManage)
-            mImagePreviewReference = WeakReference(imagePreview)
-            mImagePreviewBgReference = WeakReference(imagePreviewBg)
-            mCaptureLayoutReference = WeakReference<CaptureLayout?>(captureLayout)
-            mImageCallbackListenerReference = WeakReference<ImageCallbackListener>(imageCallbackListener)
-            mCameraListenerReference = WeakReference<CameraListener?>(cameraListener)
+            mCameraManageReference = WeakReference<CameraManage>(cameraManage)
+            mOnCameraManageListenerReference = WeakReference<OnCameraManageListener>(onCameraManageListener)
         }
 
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
             val savedUri = outputFileResults.savedUri
-            if (savedUri != null) {
-                val customCameraView: com.luck.lib.camerax.CustomCameraView? = mCameraViewLayoutReference.get()
-                if (customCameraView != null) {
-                    customCameraView.stopCheckOrientation()
-                }
-                val mImagePreview = mImagePreviewReference.get()
-                if (mImagePreview != null) {
-                    val context = mImagePreview.context
-                    SimpleCameraX.putOutputUri((context as Activity).intent, savedUri)
-                    mImagePreview.visibility = View.VISIBLE
-                    if (customCameraView != null && customCameraView.isAutoRotation) {
-                        val targetRotation: Int = customCameraView.getTargetRotation()
-                        // 这种角度拍出来的图片宽比高大，所以使用ScaleType.FIT_CENTER缩放模式
-                        if (targetRotation == Surface.ROTATION_90 || targetRotation == Surface.ROTATION_270) {
-                            mImagePreview.adjustViewBounds = true
-                            val mImagePreviewBackground = mImagePreviewBgReference.get()
-                            mImagePreviewBackground?.animate()?.alpha(1f)?.setDuration(220)?.start()
-                        } else {
-                            mImagePreview.adjustViewBounds = false
-                            mImagePreview.scaleType = ImageView.ScaleType.CENTER_CROP
-                        }
+            savedUri?.let {
+                val cameraManage: CameraManage? = mCameraManageReference.get()
+                cameraManage?.stopCheckOrientation()
+                val onCameraManageListenerReference: OnCameraManageListener? = mOnCameraManageListenerReference.get()
+                onCameraManageListenerReference?.let {
+                    val outPutCameraPath = if (MimeType.isContent(savedUri.toString())) {
+                        savedUri.toString()
+                    } else {
+                        savedUri.path
                     }
-                    val imageCallbackListener: ImageCallbackListener? = mImageCallbackListenerReference.get()
-                    if (imageCallbackListener != null) {
-                        val outPutCameraPath = if (FileUtils.isContent(savedUri.toString())) savedUri.toString() else savedUri.path!!
-                        imageCallbackListener.onLoadImage(outPutCameraPath, mImagePreview)
+                    if (outPutCameraPath != null) {
+                        onCameraManageListenerReference.onPictureSuccess(outPutCameraPath)
                     }
                 }
-                val captureLayout: CaptureLayout? = mCaptureLayoutReference.get()
-                if (captureLayout != null) {
-                    captureLayout.setButtonCaptureEnabled(true)
-                    captureLayout.startTypeBtnAnimator()
-                }
+//                val mImagePreview = mImagePreviewReference.get()
+//                if (mImagePreview != null) {
+//                    val context = mImagePreview.context
+//                    SimpleCameraX.putOutputUri((context as Activity).intent, savedUri)
+//                    mImagePreview.visibility = View.VISIBLE
+//                    if (cameraManage != null && cameraManage.isAutoRotation) {
+//                        val targetRotation: Int = cameraManage.getTargetRotation()
+//                        // 这种角度拍出来的图片宽比高大，所以使用ScaleType.FIT_CENTER缩放模式
+//                        if (targetRotation == Surface.ROTATION_90 || targetRotation == Surface.ROTATION_270) {
+//                            mImagePreview.adjustViewBounds = true
+//                            val mImagePreviewBackground = mImagePreviewBgReference.get()
+//                            mImagePreviewBackground?.animate()?.alpha(1f)?.setDuration(220)?.start()
+//                        } else {
+//                            mImagePreview.adjustViewBounds = false
+//                            mImagePreview.scaleType = ImageView.ScaleType.CENTER_CROP
+//                        }
+//                    }
+//
+//                }
+//                val iCameraView: ICameraView? = mICameraView.get()
+//                iCameraView?.let {
+//                    iCameraView.childClickableLayout.setChildClickable(true)
+//                }
             }
         }
 
         override fun onError(exception: ImageCaptureException) {
-            if (mCaptureLayoutReference.get() != null) {
-                mCaptureLayoutReference.get().setButtonCaptureEnabled(true)
-            }
-            if (mCameraListenerReference.get() != null) {
-                mCameraListenerReference.get().onError(
-                    exception.imageCaptureError,
-                    exception.message, exception.cause
-                )
-            }
+//            if (mICameraView.get() != null) {
+//                mICameraView.get().setButtonCaptureEnabled(true)
+//            }
+            mOnCameraManageListenerReference.get()?.onError(exception.imageCaptureError, exception.message, exception.cause)
         }
     }
 
@@ -658,8 +658,8 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder,val mICame
         override fun onDisplayRemoved(displayId: Int) {}
         override fun onDisplayChanged(displayId: Int) {
             if (displayId == this@CameraManage.displayId) {
-                mImageCapture?.targetRotation = mViewHolder.previewView.display.rotation
-                mImageAnalyzer?.targetRotation = mViewHolder.previewView.display.rotation
+                mImageCapture.targetRotation = mViewHolder.previewView.display.rotation
+                mImageAnalyzer.targetRotation = mViewHolder.previewView.display.rotation
             }
         }
     }
