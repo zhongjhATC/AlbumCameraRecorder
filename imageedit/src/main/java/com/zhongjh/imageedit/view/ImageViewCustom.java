@@ -25,7 +25,7 @@ import android.widget.FrameLayout;
 
 import com.zhongjh.imageedit.core.ImageCustom;
 import com.zhongjh.imageedit.core.ImageMode;
-import com.zhongjh.imageedit.core.ImagePath;
+import com.zhongjh.imageedit.core.ImagePen;
 import com.zhongjh.imageedit.core.ImageText;
 import com.zhongjh.imageedit.core.anim.ImageHomingAnimator;
 import com.zhongjh.imageedit.core.homing.ImageHoming;
@@ -33,6 +33,8 @@ import com.zhongjh.imageedit.core.sticker.ImageSticker;
 import com.zhongjh.imageedit.core.sticker.ImageStickerPortrait;
 
 /**
+ * 用于辅助编辑图片界面的显示图片控件
+ *
  * ImageView
  * clip外不加入path
  *
@@ -78,17 +80,17 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     {
         // 涂鸦画刷
         mDoodlePaint.setStyle(Paint.Style.STROKE);
-        mDoodlePaint.setStrokeWidth(ImagePath.BASE_DOODLE_WIDTH);
+        mDoodlePaint.setStrokeWidth(ImagePen.BASE_DOODLE_WIDTH);
         mDoodlePaint.setColor(Color.RED);
-        mDoodlePaint.setPathEffect(new CornerPathEffect(ImagePath.BASE_DOODLE_WIDTH));
+        mDoodlePaint.setPathEffect(new CornerPathEffect(ImagePen.BASE_DOODLE_WIDTH));
         mDoodlePaint.setStrokeCap(Paint.Cap.ROUND);
         mDoodlePaint.setStrokeJoin(Paint.Join.ROUND);
 
         // 马赛克画刷
         mMosaicPaint.setStyle(Paint.Style.STROKE);
-        mMosaicPaint.setStrokeWidth(ImagePath.BASE_MOSAIC_WIDTH);
+        mMosaicPaint.setStrokeWidth(ImagePen.BASE_MOSAIC_WIDTH);
         mMosaicPaint.setColor(Color.BLACK);
-        mMosaicPaint.setPathEffect(new CornerPathEffect(ImagePath.BASE_MOSAIC_WIDTH));
+        mMosaicPaint.setPathEffect(new CornerPathEffect(ImagePen.BASE_MOSAIC_WIDTH));
         mMosaicPaint.setStrokeCap(Paint.Cap.ROUND);
         mMosaicPaint.setStrokeJoin(Paint.Join.ROUND);
     }
@@ -279,7 +281,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         if (isMosaic) {
             int count = mImage.onDrawMosaicsPath(canvas);
             if (mImage.getMode() == ImageMode.MOSAIC && !mPen.isEmpty()) {
-                mDoodlePaint.setStrokeWidth(ImagePath.BASE_MOSAIC_WIDTH);
+                mDoodlePaint.setStrokeWidth(ImagePen.BASE_MOSAIC_WIDTH);
                 canvas.save();
                 RectF frame = mImage.getClipFrame();
                 canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
@@ -294,7 +296,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         mImage.onDrawDoodles(canvas);
         if (mImage.getMode() == ImageMode.DOODLE && !mPen.isEmpty()) {
             mDoodlePaint.setColor(mPen.getColor());
-            mDoodlePaint.setStrokeWidth(ImagePath.BASE_DOODLE_WIDTH * mImage.getScale());
+            mDoodlePaint.setStrokeWidth(ImagePen.BASE_DOODLE_WIDTH * mImage.getScale());
             canvas.save();
             RectF frame = mImage.getClipFrame();
             canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
@@ -760,7 +762,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     /**
      * 钢笔实体
      */
-    private static class Pen extends ImagePath {
+    private static class Pen extends ImagePen {
 
         /**
          * event的身份证
@@ -794,8 +796,8 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
             return this.path.isEmpty();
         }
 
-        ImagePath toPath() {
-            return new ImagePath(new Path(this.path), getMode(), getColor(), getWidth());
+        ImagePen toPath() {
+            return new ImagePen(new Path(this.path), getMode(), getColor(), getWidth());
         }
     }
 }

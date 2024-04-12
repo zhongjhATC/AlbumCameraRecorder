@@ -7,12 +7,13 @@ import android.graphics.Paint;
 import android.graphics.Path;
 
 /**
+ * 绘制图片的钢笔
  *
  * @author felix
  * @date 2017/11/22 下午6:13
  */
 
-public class ImagePath {
+public class ImagePen {
 
     protected Path path;
 
@@ -29,23 +30,23 @@ public class ImagePath {
 
     public static final float BASE_MOSAIC_WIDTH = 72f;
 
-    public ImagePath() {
+    public ImagePen() {
         this(new Path());
     }
 
-    public ImagePath(Path path) {
+    public ImagePen(Path path) {
         this(path, ImageMode.DOODLE);
     }
 
-    public ImagePath(Path path, ImageMode mode) {
+    public ImagePen(Path path, ImageMode mode) {
         this(path, mode, Color.RED);
     }
 
-    public ImagePath(Path path, ImageMode mode, int color) {
+    public ImagePen(Path path, ImageMode mode, int color) {
         this(path, mode, color, BASE_MOSAIC_WIDTH);
     }
 
-    public ImagePath(Path path, ImageMode mode, int color, float width) {
+    public ImagePen(Path path, ImageMode mode, int color, float width) {
         this.path = path;
         this.mode = mode;
         this.color = color;

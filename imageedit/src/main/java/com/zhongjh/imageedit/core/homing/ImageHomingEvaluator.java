@@ -3,7 +3,8 @@ package com.zhongjh.imageedit.core.homing;
 import android.animation.TypeEvaluator;
 
 /**
- * @author felix
+ * 用来处理放大-旋转的实体
+ * @author zhongjh
  * @date 2017/11/28 下午4:13
  */
 public class ImageHomingEvaluator implements TypeEvaluator<ImageHoming> {
