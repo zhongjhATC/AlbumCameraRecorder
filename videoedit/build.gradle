@@ -39,6 +39,7 @@ dependencies {
 
     compileOnly project(':common')
     // https://github.com/microshow/RxFFmpeg
+    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     implementation 'com.github.microshow:RxFFmpeg:4.9.0-lite'
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
 }

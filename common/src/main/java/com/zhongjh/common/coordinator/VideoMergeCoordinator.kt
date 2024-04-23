@@ -1,6 +1,7 @@
 package com.zhongjh.common.coordinator
 
 import com.zhongjh.common.listener.VideoEditListener
+import java.io.IOException
 import java.util.*
 
 /**
@@ -25,6 +26,11 @@ interface VideoMergeCoordinator {
      * @param txtPath 多个视频的集合地址文本，用 ffmpeg 才能合并
      */
     fun merge(cls: Class<*>, newPath: String, paths: ArrayList<String?>, txtPath: String)
+
+    /**
+     * 合并视频
+     */
+    fun merge(mp4PathList: List<String>, outPutPath: String)
 
     /**
      * 销毁合并事件
