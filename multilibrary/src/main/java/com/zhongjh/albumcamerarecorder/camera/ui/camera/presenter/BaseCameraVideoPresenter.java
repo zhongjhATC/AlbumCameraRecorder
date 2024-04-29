@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -14,13 +15,16 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraVideo;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * 这是专门处理视频的有关逻辑
@@ -50,6 +54,11 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
      * 录像文件配置路径
      */
     private MediaStoreCompat videoMediaStoreCompat;
+
+    /**
+     * 合并视频线程
+     */
+    private final ArrayList<ThreadUtils.SimpleTask<Boolean>> mMergeVideoTasks = new ArrayList<>();
     /**
      * 处于分段录制模式下的视频的文件列表
      */
@@ -122,43 +131,6 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
     }
 
     /**
-     * 视频编辑后的事件，目前 有分段录制后合并、压缩视频
-     */
-    @Override
-    public void initVideoEditListener() {
-        if (baseCameraFragment.getCameraSpec().isMergeEnable() && baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
-            baseCameraFragment.getCameraSpec().getVideoMergeCoordinator().setVideoMergeListener(this.getClass(), new VideoEditListener() {
-                @Override
-                public void onFinish() {
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
-                    PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
-                }
-
-                @Override
-                public void onProgress(int progress, long progressTime) {
-                    if (progress >= PROGRESS_MAX) {
-                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(99);
-                    } else {
-                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(progress);
-                    }
-                }
-
-                @Override
-                public void onCancel() {
-                    // 重置按钮
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-                }
-
-                @Override
-                public void onError(@NotNull String message) {
-                    // 重置按钮
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-                }
-            });
-        }
-    }
-
-    /**
      * 生命周期onDestroy
      *
      * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
@@ -186,10 +158,10 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
         }
         if (baseCameraFragment.getCameraSpec() != null && baseCameraFragment.getCameraSpec().isMergeEnable()) {
             if (baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
-                baseCameraFragment.getCameraSpec().getVideoMergeCoordinator().onMergeDestroy(this.getClass());
                 baseCameraFragment.getCameraSpec().setVideoMergeCoordinator(null);
             }
         }
+        stopVideoMultiple();
     }
 
     /**
@@ -273,12 +245,42 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
     @Override
     public void openPreviewVideoActivity() {
         if (isSectionRecord && baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
-            // 合并视频
+            // 创建合并视频后的路径
             newSectionVideoPath = videoMediaStoreCompat.createFile(1, true, "mp4").getPath();
-            // 合并结束后会执行 mCameraSpec.getVideoMergeCoordinator() 的相关回调
-            baseCameraFragment.getCameraSpec().getVideoMergeCoordinator().merge
-                    (this.getClass(), newSectionVideoPath, videoPaths,
-                            baseCameraFragment.getMyContext().getCacheDir().getPath() + File.separator + "cam.txt");
+
+            // 开始进行合并线程
+            baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(50);
+            ThreadUtils.SimpleTask<Boolean> simpleTask = new ThreadUtils.SimpleTask<Boolean>() {
+
+                @Override
+                public Boolean doInBackground() {
+                    Objects.requireNonNull(baseCameraFragment.getCameraSpec().getVideoMergeCoordinator()).merge(videoPaths, newSectionVideoPath);
+                    return true;
+                }
+
+                @Override
+                public void onSuccess(Boolean result) {
+                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
+                    PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
+                }
+
+                @Override
+                public void onFail(Throwable t) {
+                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+                    super.onFail(t);
+                }
+            };
+            mMergeVideoTasks.add(simpleTask);
+            ThreadUtils.executeByIo(simpleTask);
+        }
+    }
+
+    /**
+     * 停止所有合并视频线程
+     */
+    public void stopVideoMultiple() {
+        for (ThreadUtils.SimpleTask<Boolean> item : mMergeVideoTasks) {
+            item.cancel();
         }
     }
 

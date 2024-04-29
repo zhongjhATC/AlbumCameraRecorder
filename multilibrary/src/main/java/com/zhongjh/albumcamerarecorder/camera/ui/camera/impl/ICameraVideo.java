@@ -16,11 +16,6 @@ public interface ICameraVideo {
     void initData();
 
     /**
-     * 视频编辑后的事件，目前 有分段录制后合并、压缩视频
-     */
-    void initVideoEditListener();
-
-    /**
      * 生命周期onDestroy
      *
      * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
