@@ -1,4 +1,4 @@
-package com.zhongjh.videoedit
+package com.zhongjh.videomerge
 
 import android.util.Log
 import com.coremedia.iso.boxes.Container
@@ -8,11 +8,6 @@ import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
-import com.zhongjh.common.listener.VideoEditListener
-import com.zhongjh.common.utils.FileUtils
-import io.microshow.rxffmpeg.RxFFmpegInvoke
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.io.RandomAccessFile
 import java.nio.channels.FileChannel
@@ -24,56 +19,6 @@ import java.util.*
  * @author zhongjh
  */
 class VideoMergeManager : VideoMergeCoordinator {
-    private var mMyRxFfmpegMergeSubscriber = HashMap<Class<*>, MyRxFfmpegSubscriber?>()
-    private var mVideoMergeListener = HashMap<Class<*>, VideoEditListener>()
-
-    override fun setVideoMergeListener(cls: Class<*>, videoMergeListener: VideoEditListener) {
-        mVideoMergeListener[cls] = videoMergeListener
-    }
-
-    override fun merge(cls: Class<*>, newPath: String, paths: ArrayList<String?>, txtPath: String) {
-        // 创建文本文件
-        val file = File(txtPath)
-        FileUtils.createOrExistsFile(file)
-        if (!file.exists()) {
-            return
-        }
-        if (mVideoMergeListener[cls] == null) {
-            return
-        }
-        var myRxFfmpegSubscriber = mMyRxFfmpegMergeSubscriber[cls]
-        if (myRxFfmpegSubscriber == null) {
-            myRxFfmpegSubscriber = MyRxFfmpegSubscriber(mVideoMergeListener[cls]!!)
-        }
-        val stringBuilderFile = StringBuilder()
-        for (path in paths) {
-            stringBuilderFile.append("file ").append("'").append(path).append("'").append("\r\n")
-        }
-        val outStream: FileOutputStream
-        try {
-            outStream = FileOutputStream(file)
-            outStream.write(stringBuilderFile.toString().toByteArray())
-            outStream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        val commands = "ffmpeg -y -f concat -safe 0 -i " + file.path + " -c copy " + newPath
-
-        // 开始执行FFmpeg命令
-        RxFFmpegInvoke.getInstance()
-                .runCommandRxJava(commands.split(" ".toRegex()).toTypedArray())
-                .subscribe(myRxFfmpegSubscriber)
-    }
-
-    override fun onMergeDestroy(cls: Class<*>) {
-        mMyRxFfmpegMergeSubscriber[cls]?.dispose()
-        mMyRxFfmpegMergeSubscriber[cls] = null
-    }
-
-    override fun onMergeDispose(cls: Class<*>) {
-        mMyRxFfmpegMergeSubscriber[cls]?.dispose()
-    }
-
 
     /**
      * 对Mp4文件集合进行追加合并(按照顺序一个一个拼接起来)

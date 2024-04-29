@@ -131,43 +131,6 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
     }
 
     /**
-     * 视频编辑后的事件，目前 有分段录制后合并、压缩视频
-     */
-    @Override
-    public void initVideoEditListener() {
-        if (baseCameraFragment.getCameraSpec().isMergeEnable() && baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
-            baseCameraFragment.getCameraSpec().getVideoMergeCoordinator().setVideoMergeListener(this.getClass(), new VideoEditListener() {
-                @Override
-                public void onFinish() {
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
-                    PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
-                }
-
-                @Override
-                public void onProgress(int progress, long progressTime) {
-                    if (progress >= PROGRESS_MAX) {
-                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(99);
-                    } else {
-                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(progress);
-                    }
-                }
-
-                @Override
-                public void onCancel() {
-                    // 重置按钮
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-                }
-
-                @Override
-                public void onError(@NotNull String message) {
-                    // 重置按钮
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-                }
-            });
-        }
-    }
-
-    /**
      * 生命周期onDestroy
      *
      * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
@@ -195,13 +158,10 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
         }
         if (baseCameraFragment.getCameraSpec() != null && baseCameraFragment.getCameraSpec().isMergeEnable()) {
             if (baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
-                baseCameraFragment.getCameraSpec().getVideoMergeCoordinator().onMergeDestroy(this.getClass());
                 baseCameraFragment.getCameraSpec().setVideoMergeCoordinator(null);
             }
         }
-        for (ThreadUtils.SimpleTask<Boolean> item : mMergeVideoTasks) {
-            item.cancel();
-        }
+        stopVideoMultiple();
     }
 
     /**
@@ -312,6 +272,15 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
             };
             mMergeVideoTasks.add(simpleTask);
             ThreadUtils.executeByIo(simpleTask);
+        }
+    }
+
+    /**
+     * 停止所有合并视频线程
+     */
+    public void stopVideoMultiple() {
+        for (ThreadUtils.SimpleTask<Boolean> item : mMergeVideoTasks) {
+            item.cancel();
         }
     }
 

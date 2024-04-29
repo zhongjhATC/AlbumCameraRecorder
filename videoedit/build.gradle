@@ -37,9 +37,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "com.google.android.material:material:$rootProject.ext.androidMaterialSdkVersion"
 
-    compileOnly project(':common')
+    compileOnly project(path: ':common')
     // https://github.com/microshow/RxFFmpeg
-    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     implementation 'com.github.microshow:RxFFmpeg:4.9.0-lite'
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
 }

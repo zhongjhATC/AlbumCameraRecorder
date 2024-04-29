@@ -357,8 +357,6 @@ public abstract class BaseCameraFragment
         initPvLayoutOperateListener();
         // 录制界面按钮事件监听，目前只有一个，点击分段录制
         initPvLayoutRecordListener();
-        // 视频编辑后的事件，目前只有分段录制后合并
-        getCameraVideoPresenter().initVideoEditListener();
         // 拍照监听
         initCameraViewListener();
         // 编辑图片事件
@@ -1131,9 +1129,7 @@ public abstract class BaseCameraFragment
      * 多视频分段录制中止提交
      */
     public void stopVideoMultiple() {
-        if (cameraSpec.isMergeEnable() && cameraSpec.getVideoMergeCoordinator() != null) {
-            cameraSpec.getVideoMergeCoordinator().onMergeDispose(this.getClass());
-        }
+        getCameraVideoPresenter().stopVideoMultiple();
     }
 
     /**

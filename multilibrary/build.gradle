@@ -61,6 +61,6 @@ dependencies {
     // 自制按钮进度 https://github.com/zhongjhATC/CircularProgressView
     api 'com.github.zhongjhATC:CircularProgressView:1.8'
 
-    compileOnly project(':common')
-    compileOnly project(':imageedit')
+    compileOnly project(path: ':common')
+    compileOnly project(path: ':imageedit')
 }

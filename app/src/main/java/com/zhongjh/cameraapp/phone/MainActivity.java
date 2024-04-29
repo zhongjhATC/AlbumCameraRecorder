@@ -42,7 +42,7 @@ import com.zhongjh.progresslibrary.entity.MultiMediaView;
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener;
 import com.zhongjh.progresslibrary.widget.MaskProgressLayout;
 import com.zhongjh.videoedit.VideoCompressManager;
-import com.zhongjh.videoedit.VideoMergeManager;
+import com.zhongjh.videomerge.VideoMergeManager;
 
 import org.jetbrains.annotations.NotNull;
 
