@@ -1,8 +1,8 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera;
 
 import static android.app.Activity.RESULT_OK;
-import static com.otaliastudios.cameraview.controls.Mode.PICTURE;
-import static com.otaliastudios.cameraview.controls.Mode.VIDEO;
+import static androidx.camera.core.ImageCapture.FLASH_MODE_AUTO;
+import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
 import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,20 +37,16 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.camera.core.ImageProxy;
 import androidx.core.content.ContextCompat;
 
-import com.otaliastudios.cameraview.CameraException;
-import com.otaliastudios.cameraview.CameraListener;
-import com.otaliastudios.cameraview.PictureResult;
-import com.otaliastudios.cameraview.VideoResult;
-import com.otaliastudios.cameraview.controls.Audio;
-import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.constants.FlashCacheUtils;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
+import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
@@ -120,7 +117,7 @@ public abstract class BaseCameraFragment
     /**
      * 闪关灯状态 默认关闭
      */
-    private int flashModel = TYPE_FLASH_OFF;
+    private int flashModel = FLASH_MODE_OFF;
     /**
      * 请求权限的回调
      */
@@ -268,15 +265,15 @@ public abstract class BaseCameraFragment
     protected void setView() {
         multiplePhotoViews = getMultiplePhotoView();
 
-        // 水印资源
-        if (cameraSpec.getWatermarkResource() != -1) {
-            LayoutInflater.from(getContext()).inflate(cameraSpec.getWatermarkResource(), getCameraManage(), true);
-        }
+//        // 水印资源 TODO
+//        if (cameraSpec.getWatermarkResource() != -1) {
+//            LayoutInflater.from(getContext()).inflate(cameraSpec.getWatermarkResource(), getCameraManage(), true);
+//        }
 
-        // 回调cameraView可以自定义相关参数
-        if (cameraSpec.getOnCameraViewListener() != null) {
-            cameraSpec.getOnCameraViewListener().onInitListener(getCameraManage());
-        }
+//        // 回调cameraView可以自定义相关参数 TODO
+//        if (cameraSpec.getOnCameraViewListener() != null) {
+//            cameraSpec.getOnCameraViewListener().onInitListener(getCameraManage());
+//        }
 
         // 兼容沉倾状态栏
         if (getTopView() != null) {
@@ -296,10 +293,10 @@ public abstract class BaseCameraFragment
         // 处理图片、视频等需要进度显示
         getPhotoVideoLayout().getViewHolder().btnConfirm.setProgressMode(true);
 
-        // 初始化cameraView,判断是否开启录制视频，如果开启就开启录制声音
-        if (!SelectableUtils.videoValid()) {
-            getCameraManage().setAudio(Audio.OFF);
-        }
+//        // 初始化cameraView,判断是否开启录制视频，如果开启就开启录制声音 TODO
+//        if (!SelectableUtils.videoValid()) {
+//            getCameraManage().setAudio(Audio.OFF);
+//        }
 
         // 设置闪光灯模式
         setFlashLamp();
@@ -381,8 +378,8 @@ public abstract class BaseCameraFragment
         if (getFlashView() != null) {
             getFlashView().setOnClickListener(v -> {
                 flashModel++;
-                if (flashModel > TYPE_FLASH_OFF) {
-                    flashModel = TYPE_FLASH_AUTO;
+                if (flashModel > FLASH_MODE_OFF) {
+                    flashModel = FLASH_MODE_AUTO;
                 }
                 // 重新设置当前闪光灯模式
                 setFlashLamp();
@@ -428,18 +425,15 @@ public abstract class BaseCameraFragment
             @Override
             public void onLongClick() {
                 Log.d(TAG, "pvLayout onLongClick ");
-                // 开启录制功能才能录制事件
-                if (getCameraManage().isOpened()) {
-                    getCameraVideoPresenter().recordVideo();
-                    // 设置录制状态
-                    if (getCameraVideoPresenter().isSectionRecord()) {
-                        getCameraStateManagement().setState(getCameraStateManagement().getVideoMultipleIn());
-                    } else {
-                        getCameraStateManagement().setState(getCameraStateManagement().getVideoIn());
-                    }
-                    // 开始录像
-                    setMenuVisibility(View.INVISIBLE);
+                getCameraVideoPresenter().recordVideo();
+                // 设置录制状态
+                if (getCameraVideoPresenter().isSectionRecord()) {
+                    getCameraStateManagement().setState(getCameraStateManagement().getVideoMultipleIn());
+                } else {
+                    getCameraStateManagement().setState(getCameraStateManagement().getVideoIn());
                 }
+                // 开始录像
+                setMenuVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -531,53 +525,67 @@ public abstract class BaseCameraFragment
      * 拍照、录制监听
      */
     private void initCameraViewListener() {
-        getCameraManage().addCameraListener(new CameraListener() {
+        getCameraManage().setOnCameraManageListener(new OnCameraManageListener() {
 
             @Override
-            public void onPictureTaken(@NonNull PictureResult result) {
-                // 如果是自动闪光灯模式便关闭闪光灯
-                if (flashModel == TYPE_FLASH_AUTO) {
-                    getCameraManage().setFlash(Flash.OFF);
-                }
-                result.toBitmap(bitmap -> {
-                    // 显示图片
-                    getCameraPicturePresenter().addCaptureData(bitmap);
-                    // 恢复点击
-                    getChildClickableLayout().setChildClickable(true);
-                });
-                super.onPictureTaken(result);
+            public void onPictureSuccess(@NonNull Bitmap bitmap) {
+                Log.d(TAG, "onPictureSuccess");
+                // 显示图片
+                getCameraPicturePresenter().addCaptureData(bitmap);
+                // 恢复点击
+                getChildClickableLayout().setChildClickable(true);
             }
 
             @Override
-            public void onVideoTaken(@NonNull VideoResult result) {
-                Log.d(TAG, "onVideoTaken");
-                super.onVideoTaken(result);
-                getCameraVideoPresenter().onVideoTaken(result);
+            public void onRecordSuccess(@NonNull String path) {
+                Log.d(TAG, "onRecordSuccess");
+                getCameraVideoPresenter().onVideoTaken(path);
             }
 
             @Override
-            public void onVideoRecordingStart() {
-                Log.d(TAG, "onVideoRecordingStart");
-                super.onVideoRecordingStart();
-                // 录制开始后，在没有结果之前，禁止第二次点击
-                getPhotoVideoLayout().setEnabled(false);
-            }
+            public void onError(int errorCode, @Nullable String message, @Nullable Throwable cause) {
 
-            @Override
-            public void onCameraError(@NonNull CameraException exception) {
-                Log.d(TAG, "onCameraError");
-                super.onCameraError(exception);
-                if (getCameraVideoPresenter().isSectionRecord()) {
-                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_recording_error_roll_back_previous_paragraph));
-                    getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
-                }
-                if (!TextUtils.isEmpty(exception.getMessage())) {
-                    Log.d(TAG, "onCameraError:" + exception.getMessage() + " " + exception.getReason());
-                }
-                getPhotoVideoLayout().setEnabled(true);
             }
 
         });
+//        .addCameraListener(new CameraListener() {
+//
+//            @Override
+//            public void onPictureTaken(@NonNull PictureResult result) {
+//
+//                super.onPictureTaken(result);
+//            }
+//
+//            @Override
+//            public void onVideoTaken(@NonNull VideoResult result) {
+//                Log.d(TAG, "onVideoTaken");
+//                super.onVideoTaken(result);
+//                getCameraVideoPresenter().onVideoTaken(result);
+//            }
+//
+//            @Override
+//            public void onVideoRecordingStart() {
+//                Log.d(TAG, "onVideoRecordingStart");
+//                super.onVideoRecordingStart();
+//                // 录制开始后，在没有结果之前，禁止第二次点击
+//                getPhotoVideoLayout().setEnabled(false);
+//            }
+//
+//            @Override
+//            public void onCameraError(@NonNull CameraException exception) {
+//                Log.d(TAG, "onCameraError");
+//                super.onCameraError(exception);
+//                if (getCameraVideoPresenter().isSectionRecord()) {
+//                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_recording_error_roll_back_previous_paragraph));
+//                    getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
+//                }
+//                if (!TextUtils.isEmpty(exception.getMessage())) {
+//                    Log.d(TAG, "onCameraError:" + exception.getMessage() + " " + exception.getReason());
+//                }
+//                getPhotoVideoLayout().setEnabled(true);
+//            }
+//
+//        });
     }
 
     /**

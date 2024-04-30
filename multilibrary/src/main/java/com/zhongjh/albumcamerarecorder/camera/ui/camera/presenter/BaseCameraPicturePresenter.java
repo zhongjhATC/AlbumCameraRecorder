@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter;
 
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
@@ -17,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.otaliastudios.cameraview.controls.Flash;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterListener;
@@ -88,16 +86,6 @@ public class BaseCameraPicturePresenter
      * 图片的文件操作
      */
     private MediaStoreCompat pictureMediaStoreCompat;
-    /**
-     * 延迟拍摄，用于打开闪光灯再拍摄
-     */
-    private final Handler cameraTakePictureHandler = new Handler(Looper.getMainLooper());
-    private final Runnable cameraTakePictureRunnable = new Runnable() {
-        @Override
-        public void run() {
-            baseCameraFragment.getCameraManage().takePicture();
-        }
-    };
     /**
      * 一个迁移图片的异步线程
      */
@@ -200,7 +188,6 @@ public class BaseCameraPicturePresenter
                 }
             }
         }
-        cameraTakePictureHandler.removeCallbacks(cameraTakePictureRunnable);
         if (movePictureFileTask != null) {
             movePictureFileTask.cancel();
         }
@@ -211,20 +198,13 @@ public class BaseCameraPicturePresenter
      */
     @Override
     public void takePhoto() {
-        // 开启才能执行别的事件, 如果已经有分段视频，则不允许拍照了
-        if (baseCameraFragment.getCameraManage().isOpened() && baseCameraFragment.getCameraVideoPresenter().getVideoTimes().size() <= 0) {
+        // 如果已经有分段视频，则不允许拍照了
+        if (baseCameraFragment.getCameraVideoPresenter().getVideoTimes().size() <= 0) {
             // 判断数量
             if (photoAdapter.getItemCount() < SelectableUtils.getImageMaxCount()) {
                 // 设置不能点击，防止多次点击报错
                 baseCameraFragment.getChildClickableLayout().setChildClickable(false);
-                // 判断如果是自动闪光灯模式便开启闪光灯
-                if (baseCameraFragment.getFlashModel() == TYPE_FLASH_AUTO) {
-                    baseCameraFragment.getCameraManage().setFlash(Flash.TORCH);
-                    // 延迟1秒拍照
-                    cameraTakePictureHandler.postDelayed(cameraTakePictureRunnable, 1000);
-                } else {
-                    cameraTakePictureRunnable.run();
-                }
+                baseCameraFragment.getCameraManage().takePictures();
             } else {
                 baseCameraFragment.getPhotoVideoLayout().setTipAlphaAnimation(baseCameraFragment.getResources().getString(R.string.z_multi_library_the_camera_limit_has_been_reached));
             }

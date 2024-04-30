@@ -3,7 +3,6 @@ package com.zhongjh.albumcamerarecorder.camera.constants;
 import android.content.Context;
 
 import com.zhongjh.albumcamerarecorder.camera.util.SharedPreferencesUtil;
-import com.zhongjh.common.utils.DisplayMetricsUtils;
 
 /**
  * 记忆模式下缓存闪光灯
@@ -37,7 +36,7 @@ public class FlashCacheUtils {
      * @param context 上下文
      * @param flashModel 闪光灯模式
      */
-    public static void saveFlashModel(Context context, @FlashModels int flashModel) {
+    public static void saveFlashModel(Context context, int flashModel) {
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(context, CAMERAVIEWSOUNDRECORDERSHAREDPREFERENCESFLASHCACHE);
         sharedPreferencesUtil.putInt(FLASH_MODEL, flashModel);
     }

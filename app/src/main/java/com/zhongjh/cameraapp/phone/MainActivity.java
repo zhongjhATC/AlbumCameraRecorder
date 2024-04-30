@@ -15,7 +15,6 @@ import androidx.appcompat.widget.PopupMenu;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
@@ -62,7 +61,6 @@ public class MainActivity extends BaseActivity {
 
     @GlobalSetting.ScreenOrientation
     int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    @FlashModels
     int flashModel = FlashModels.TYPE_FLASH_OFF;
 
     /**

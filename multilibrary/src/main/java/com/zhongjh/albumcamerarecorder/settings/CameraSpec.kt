@@ -1,7 +1,7 @@
 package com.zhongjh.albumcamerarecorder.settings
 
+import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
@@ -67,7 +67,7 @@ object CameraSpec {
      * 闪光灯模式
      * 默认闪光灯关闭模式
      */
-    var flashModel = FlashModels.TYPE_FLASH_OFF
+    var flashModel = FLASH_MODE_OFF
 
     /**
      * 通过keyCode触发拍照事件
@@ -174,7 +174,7 @@ object CameraSpec {
         imageFlashOff = R.drawable.ic_flash_off
         // 闪光灯自动状态图标
         imageFlashAuto = R.drawable.ic_flash_auto
-        flashModel = FlashModels.TYPE_FLASH_OFF
+        flashModel = FLASH_MODE_OFF
         keyCodeTakePhoto = 0
         outPutCameraDir = null
         outPutCameraFileName = null

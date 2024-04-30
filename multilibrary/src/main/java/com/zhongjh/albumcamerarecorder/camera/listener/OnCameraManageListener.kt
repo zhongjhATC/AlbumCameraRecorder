@@ -1,12 +1,14 @@
 package com.zhongjh.albumcamerarecorder.camera.listener
 
+import android.graphics.Bitmap
+
 interface OnCameraManageListener {
     /**
      * 拍照成功返回
      *
-     * @param path 文件地址
+     * @param bitmap 图片数据源
      */
-    fun onPictureSuccess(path: String)
+    fun onPictureSuccess(bitmap: Bitmap)
 
     /**
      * 录像成功返回

@@ -8,11 +8,14 @@ import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
 import androidx.camera.core.*
+import androidx.camera.core.ImageCapture.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.Recorder
 import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.video.OnVideoSavedCallback
+import androidx.camera.view.video.OutputFileResults
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_PICTURE
 import com.zhongjh.albumcamerarecorder.camera.constants.CameraTypes.TYPE_VIDEO
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEventListener
@@ -23,7 +26,7 @@ import com.zhongjh.albumcamerarecorder.constants.Constant.ALBUM_CAMERA_RECORDER
 import com.zhongjh.albumcamerarecorder.constants.Constant.JPEG
 import com.zhongjh.albumcamerarecorder.constants.Constant.MP4
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
-import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.utils.BitmapUtils.toBitmap
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import java.io.File
 import java.lang.ref.WeakReference
@@ -35,6 +38,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+
 /**
  * 拍摄/录制 管理
  */
@@ -42,13 +46,6 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
     OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
-        /**
-         * 闪关灯状态
-         */
-        const val TYPE_FLASH_AUTO = 0x0101
-        const val TYPE_FLASH_ON = 0x0102
-        const val TYPE_FLASH_OFF = 0x0103
-
         /**
          * 两个宽高比例
          */
@@ -69,7 +66,8 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
     private lateinit var mCameraProvider: ProcessCameraProvider
     private lateinit var mImageCapture: ImageCapture
     private lateinit var mImageAnalyzer: ImageAnalysis
-    private lateinit var mVideoCapture: VideoCapture
+    private lateinit var mVideoCapture: androidx.camera.video.VideoCapture<Recorder>
+
     private val mDisplayManager by lazy { mContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
     private val mDisplayListener by lazy { DisplayListener() }
     private val mOrientationEventListener by lazy { OnCameraXOrientationEventListener(mContext, this) }
@@ -87,7 +85,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
      * 相机模式
      */
     private var mUseCameraCases = LifecycleCameraController.IMAGE_CAPTURE
-    private var typeFlash = TYPE_FLASH_OFF
+    private var typeFlash = FLASH_MODE_OFF
 
     /**
      * 摄像头方向
@@ -117,10 +115,6 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
         stopCheckOrientation()
     }
 
-    fun isBound() {
-
-    }
-
     /**
      * 拍照
      */
@@ -133,23 +127,37 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
         mUseCameraCases = LifecycleCameraController.IMAGE_CAPTURE
         // 该设置解决 前置摄像头左右镜像 问题
         val isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
-        val metadata = ImageCapture.Metadata()
+        val metadata = Metadata()
         metadata.isReversedHorizontal = isReversedHorizontal
-        val fileOptions: ImageCapture.OutputFileOptions
+        // 进行拍照
+        mImageCapture.takePicture(mainExecutor, TakePictureCallback(this@CameraManage, onCameraManageListener))
+    }
+
+    /**
+     * 录制
+     */
+    @SuppressLint("UnsafeOptInUsageError", "MissingPermission", "RestrictedApi")
+    fun takeVideo() {
+        // 判断是否绑定了mVideoCapture
+        if (!mCameraProvider.isBound(mVideoCapture)) {
+            bindCameraPreviewModeByVideo()
+        }
+        // 设置视频模式
+        mUseCameraCases = LifecycleCameraController.VIDEO_CAPTURE
         // 设置输出路径
         val cameraFile: File? = if (isSaveExternal()) {
             // 创建内部文件夹
             createTempFile(false)
         } else {
             // 创建自定义路径下的文件夹
-            createOutFile(mContext, TYPE_PICTURE, mCameraSpec.outPutCameraFileName, mCameraSpec.imageFormat, mCameraSpec.outPutCameraDir)
+            createOutFile(mContext, TYPE_VIDEO, mCameraSpec.outPutCameraFileName, mCameraSpec.videoFormat, mCameraSpec.outPutCameraDir)
         }
         cameraFile?.let {
-            fileOptions = ImageCapture.OutputFileOptions.Builder(cameraFile)
-                .setMetadata(metadata).build()
-            mImageCapture.takePicture(fileOptions, mainExecutor, TakePictureCallback(this@CameraManage, onCameraManageListener))
+            val fileOptions = OutputFileOptions.Builder(cameraFile).build()
+            mVideoCapture.startRecording(fileOptions, mainExecutor, TakeVideoCallback(this@CameraManage, onCameraManageListener))
+            mVideoCapture.startRecording(fileOptions,mainExecutor,TakeVideoCallback)
+            mVideoCapture.star
         }
-
     }
 
     /**
@@ -157,8 +165,8 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
      */
     fun setFlashLamp() {
         typeFlash++
-        if (typeFlash > TYPE_FLASH_OFF) {
-            typeFlash = TYPE_FLASH_AUTO
+        if (typeFlash > FLASH_MODE_OFF) {
+            typeFlash = FLASH_MODE_AUTO
         }
         setFlashMode()
     }
@@ -195,19 +203,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
      * 闪光灯模式
      */
     private fun setFlashMode() {
-        mImageCapture.let {
-            when (typeFlash) {
-                TYPE_FLASH_AUTO -> {
-                    it.flashMode = ImageCapture.FLASH_MODE_AUTO
-                }
-                TYPE_FLASH_ON -> {
-                    it.flashMode = ImageCapture.FLASH_MODE_ON
-                }
-                TYPE_FLASH_OFF -> {
-                    it.flashMode = ImageCapture.FLASH_MODE_OFF
-                }
-            }
-        }
+        mImageCapture.flashMode = typeFlash
     }
 
     /**
@@ -357,7 +353,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
         if (mCameraSpec.videoBitRate > 0) {
             videoBuilder.setBitRate(mCameraSpec.videoBitRate)
         }
-        mVideoCapture = videoBuilder.build()
+        mVideoCapture = androidx.camera.video.VideoCapture.withOutput(Recorder.Builder().build())
     }
 
     /**
@@ -590,7 +586,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
      */
     private class TakePictureCallback(
         cameraManage: CameraManage, onCameraManageListener: OnCameraManageListener?
-    ) : ImageCapture.OnImageSavedCallback {
+    ) : OnImageCapturedCallback() {
 
         private val mCameraManageReference: WeakReference<CameraManage>
         private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener>
@@ -600,54 +596,56 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
             mOnCameraManageListenerReference = WeakReference<OnCameraManageListener>(onCameraManageListener)
         }
 
-        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-            val savedUri = outputFileResults.savedUri
-            savedUri?.let {
-                val cameraManage: CameraManage? = mCameraManageReference.get()
-                cameraManage?.stopCheckOrientation()
-                val onCameraManageListenerReference: OnCameraManageListener? = mOnCameraManageListenerReference.get()
-                onCameraManageListenerReference?.let {
-                    val outPutCameraPath = if (MimeType.isContent(savedUri.toString())) {
-                        savedUri.toString()
-                    } else {
-                        savedUri.path
-                    }
-                    if (outPutCameraPath != null) {
-                        onCameraManageListenerReference.onPictureSuccess(outPutCameraPath)
-                    }
+        @SuppressLint("UnsafeOptInUsageError")
+        override fun onCaptureSuccess(image: ImageProxy) {
+            super.onCaptureSuccess(image)
+            val cameraManage: CameraManage? = mCameraManageReference.get()
+            cameraManage?.stopCheckOrientation()
+
+            val onCameraManageListenerReference: OnCameraManageListener? = mOnCameraManageListenerReference.get()
+            onCameraManageListenerReference?.let {
+                image.image?.let {
+                    onCameraManageListenerReference.onPictureSuccess(toBitmap(it))
                 }
-//                val mImagePreview = mImagePreviewReference.get()
-//                if (mImagePreview != null) {
-//                    val context = mImagePreview.context
-//                    SimpleCameraX.putOutputUri((context as Activity).intent, savedUri)
-//                    mImagePreview.visibility = View.VISIBLE
-//                    if (cameraManage != null && cameraManage.isAutoRotation) {
-//                        val targetRotation: Int = cameraManage.getTargetRotation()
-//                        // 这种角度拍出来的图片宽比高大，所以使用ScaleType.FIT_CENTER缩放模式
-//                        if (targetRotation == Surface.ROTATION_90 || targetRotation == Surface.ROTATION_270) {
-//                            mImagePreview.adjustViewBounds = true
-//                            val mImagePreviewBackground = mImagePreviewBgReference.get()
-//                            mImagePreviewBackground?.animate()?.alpha(1f)?.setDuration(220)?.start()
-//                        } else {
-//                            mImagePreview.adjustViewBounds = false
-//                            mImagePreview.scaleType = ImageView.ScaleType.CENTER_CROP
-//                        }
-//                    }
-//
-//                }
-//                val iCameraView: ICameraView? = mICameraView.get()
-//                iCameraView?.let {
-//                    iCameraView.childClickableLayout.setChildClickable(true)
-//                }
             }
         }
 
         override fun onError(exception: ImageCaptureException) {
-//            if (mICameraView.get() != null) {
-//                mICameraView.get().setButtonCaptureEnabled(true)
-//            }
+            super.onError(exception)
             mOnCameraManageListenerReference.get()?.onError(exception.imageCaptureError, exception.message, exception.cause)
         }
+    }
+
+    /**
+     * 视频回调
+     */
+    @SuppressLint("UnsafeOptInUsageError")
+    private class TakeVideoCallback(
+        cameraManage: CameraManage, onCameraManageListener: OnCameraManageListener?
+    ) : OnVideoSavedCallback {
+
+        private val mCameraManageReference: WeakReference<CameraManage>
+        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener>
+
+        init {
+            mCameraManageReference = WeakReference<CameraManage>(cameraManage)
+            mOnCameraManageListenerReference = WeakReference<OnCameraManageListener>(onCameraManageListener)
+        }
+
+        @SuppressLint("UnsafeOptInUsageError")
+        override fun onVideoSaved(outputFileResults: OutputFileResults) {
+            TODO("Not yet implemented")
+        }
+
+        @SuppressLint("UnsafeOptInUsageError")
+        override fun onError(videoCaptureError: Int, message: String, cause: Throwable?) {
+            TODO("Not yet implemented")
+        }
+    }
+
+
+    private fun getTargetRotation(): Int {
+        return mImageCapture.targetRotation
     }
 
     /**

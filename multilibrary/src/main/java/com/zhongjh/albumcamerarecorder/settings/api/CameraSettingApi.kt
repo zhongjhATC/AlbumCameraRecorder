@@ -6,9 +6,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPict
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
-import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
-import com.zhongjh.albumcamerarecorder.settings.CameraSpec.imageFormat
 import com.zhongjh.common.enums.MimeType
 
 /**

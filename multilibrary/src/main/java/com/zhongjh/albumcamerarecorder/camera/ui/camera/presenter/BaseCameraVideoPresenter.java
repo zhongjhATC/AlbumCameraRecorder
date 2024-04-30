@@ -4,23 +4,17 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
-import com.otaliastudios.cameraview.VideoResult;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraVideo;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-import com.zhongjh.common.entity.LocalFile;
-import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.ThreadUtils;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -174,7 +168,7 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
             videoFile = videoMediaStoreCompat.createFile(1, true, "mp4");
         }
         if (baseCameraFragment.getCameraSpec().getEnableVideoHighDefinition()) {
-            baseCameraFragment.getCameraManage().takeVideo(videoFile);
+            baseCameraFragment.getCameraManage().takePictures().takeVideo(videoFile);
         } else {
             baseCameraFragment.getCameraManage().takeVideoSnapshot(videoFile);
         }
@@ -184,12 +178,12 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
      * 视频录制结束后
      */
     @Override
-    public void onVideoTaken(VideoResult result) {
+    public void onVideoTaken(String path) {
         // 判断是否短时间结束
         if (!isShort && !isBreakOff()) {
             if (!isSectionRecord) {
                 //  如果录制结束，打开该视频。打开底部菜单
-                PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, result.getFile().getPath());
+                PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path);
             } else {
                 videoTimes.add(sectionRecordTime);
                 // 如果已经有录像缓存，那么就不执行这个动作了
@@ -198,7 +192,7 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
                     baseCameraFragment.getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
                 }
                 // 加入视频列表
-                videoPaths.add(result.getFile().getPath());
+                videoPaths.add(path);
                 // 显示当前进度
                 baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
                 // 创建新的file

@@ -92,23 +92,36 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         // 进行拍照。对 imageCapture 对象调用 takePicture()。传入 outputOptions、执行器和保存图片时使用的回调。接下来，您需要填写回调。
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
-                // 如果图片拍摄失败或保存图片失败，请添加错误情况以记录失败。
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                }
+//        imageCapture.takePicture(
+//            outputOptions,
+//            ContextCompat.getMainExecutor(this),
+//            object : ImageCapture.OnImageSavedCallback {
+//                // 如果图片拍摄失败或保存图片失败，请添加错误情况以记录失败。
+//                override fun onError(exc: ImageCaptureException) {
+//                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+//                }
+//
+//                // 如果拍摄未失败，即表示照片拍摄成功！将照片保存到我们之前创建的文件中，显示消息框，让用户知道照片已拍摄成功，并输出日志语句。
+//                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+//                    val msg = "Photo capture succeeded: ${output.savedUri}"
+//                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+//                    Log.d(TAG, msg)
+//                }
+//            }
+//        )
 
-                // 如果拍摄未失败，即表示照片拍摄成功！将照片保存到我们之前创建的文件中，显示消息框，让用户知道照片已拍摄成功，并输出日志语句。
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
-                }
+        imageCapture.takePicture(ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                super.onCaptureSuccess(image)
+                var str = ""
+                str = str + image.height + " " + image.width
+                Toast.makeText(baseContext, str, Toast.LENGTH_SHORT).show()
             }
-        )
+
+            override fun onError(exception: ImageCaptureException) {
+                super.onError(exception)
+            }
+        })
     }
 
     /**
