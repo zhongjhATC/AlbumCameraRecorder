@@ -62,6 +62,16 @@
         app:operationButtonZhongjhType="confirm"
         tools:visibility="visible" />
 
+    <ProgressBar
+        android:id="@+id/pbConfirm"
+        android:indeterminateTint="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
+        app:layout_constraintEnd_toStartOf="@+id/guideline88"
+        app:layout_constraintStart_toStartOf="@+id/guideline72"
+        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
+        android:layout_width="0dp"
+        android:layout_height="0dp"/>
+
     <!-- 中间的操作按钮 -->
     <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
         android:id="@+id/btnClickOrLong"

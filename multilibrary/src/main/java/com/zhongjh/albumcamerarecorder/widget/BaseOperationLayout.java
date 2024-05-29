@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -565,6 +566,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
         public ClickOrLongButton btnClickOrLong;
         TextView tvTip;
         public TextView tvSectionRecord;
+        public ProgressBar pbConfirm;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -573,6 +575,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
             this.btnClickOrLong = rootView.findViewById(R.id.btnClickOrLong);
             this.tvTip = rootView.findViewById(R.id.tvTip);
             this.tvSectionRecord = rootView.findViewById(R.id.tvSectionRecord);
+            this.pbConfirm = rootView.findViewById(R.id.pbConfirm);
         }
 
     }

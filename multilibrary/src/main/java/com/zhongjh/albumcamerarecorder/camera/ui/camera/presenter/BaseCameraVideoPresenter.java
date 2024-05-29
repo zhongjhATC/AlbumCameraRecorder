@@ -248,6 +248,8 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
             // 创建合并视频后的路径
             newSectionVideoPath = videoMediaStoreCompat.createFile(1, true, "mp4").getPath();
 
+            // 显示loading
+            baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.VISIBLE);
             // 开始进行合并线程
             baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(50);
             ThreadUtils.SimpleTask<Boolean> simpleTask = new ThreadUtils.SimpleTask<Boolean>() {
@@ -260,12 +262,14 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
 
                 @Override
                 public void onSuccess(Boolean result) {
+                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
                     baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
                     PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
                 }
 
                 @Override
                 public void onFail(Throwable t) {
+                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
                     baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
                     super.onFail(t);
                 }
@@ -279,6 +283,7 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
      * 停止所有合并视频线程
      */
     public void stopVideoMultiple() {
+        baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
         for (ThreadUtils.SimpleTask<Boolean> item : mMergeVideoTasks) {
             item.cancel();
         }
