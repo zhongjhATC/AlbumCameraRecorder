@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton;
@@ -566,7 +567,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
         public ClickOrLongButton btnClickOrLong;
         TextView tvTip;
         public TextView tvSectionRecord;
-        public ProgressBar pbConfirm;
+        public CircularProgressView pbConfirm;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
