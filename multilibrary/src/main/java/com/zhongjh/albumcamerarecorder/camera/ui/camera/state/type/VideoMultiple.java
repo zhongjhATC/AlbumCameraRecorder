@@ -5,6 +5,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVide
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.circularprogressview.CircularProgressState;
 
 /**
  * 多个视频模式
@@ -45,7 +46,12 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void pvLayoutCommit() {
-        getCameraFragment().getCameraVideoPresenter().openPreviewVideoActivity();
+        // 判断是否加载中,如果是《合成视频中》则取消《合成视频》,否则进行《合成视频》
+        if (getCameraFragment().getPhotoVideoLayout().getViewHolder().btnConfirm.mState == CircularProgressState.STOP) {
+            getCameraFragment().getCameraVideoPresenter().openPreviewVideoActivity();
+        } else {
+            stopProgress();
+        }
     }
 
     @Override

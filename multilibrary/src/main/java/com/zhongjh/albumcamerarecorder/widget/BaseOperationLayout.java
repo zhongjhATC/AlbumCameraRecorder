@@ -10,11 +10,13 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton;
@@ -588,6 +590,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
         public ClickOrLongButton btnClickOrLong;
         TextView tvTip;
         public TextView tvSectionRecord;
+        public CircularProgressView pbConfirm;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -596,6 +599,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
             this.btnClickOrLong = rootView.findViewById(R.id.btnClickOrLong);
             this.tvTip = rootView.findViewById(R.id.tvTip);
             this.tvSectionRecord = rootView.findViewById(R.id.tvSectionRecord);
+            this.pbConfirm = rootView.findViewById(R.id.pbConfirm);
         }
 
     }
