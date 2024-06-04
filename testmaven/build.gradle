@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.zhongjh.testmaven'
+    compileSdk 32
+
+    defaultConfig {
+        applicationId "com.zhongjh.testmaven"
+        minSdk 21
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.navigation:navigation-fragment:2.4.1'
+    implementation 'androidx.navigation:navigation-ui:2.4.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // 公共库，如果不使用上面的combined库
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.95X'
+    // 核心lib，调用显示相册、录屏、录音等
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.95X'
+    // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.95X'
+
+    // 配套编辑图片使用
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.95X'
+    // 配套编辑视频使用,目前只有压缩功能,后续持续添加相关功能,因为该库使用了ffmpeg,占用了文件大小25M,根据实际情况选择是否使用
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.95X'
+    // 配套合并视频使用,因为该库使用了mp4parser,占用了文件大小约300kb,根据实际情况选择是否使用
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videomerge:1.1.95X'
+}

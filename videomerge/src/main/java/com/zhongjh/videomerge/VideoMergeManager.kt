@@ -8,6 +8,7 @@ import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
+import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
 import java.nio.channels.FileChannel
@@ -33,7 +34,6 @@ class VideoMergeManager : VideoMergeCoordinator {
         val mp4MovieList: MutableList<Movie> = ArrayList()
         // 将每个文件路径都构建成一个Movie对象
         for (mp4Path in mp4PathList) {
-            Log.d(tag, "视频路径: $mp4Path")
             mp4MovieList.add(MovieCreator.build(mp4Path))
         }
         // 音频通道集合

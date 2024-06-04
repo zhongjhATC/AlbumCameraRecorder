@@ -539,6 +539,7 @@ public abstract class BaseCameraFragment
             @Override
             public void onRecordSuccess(@NonNull String path) {
                 Log.d(TAG, "onRecordSuccess");
+                // 处理视频文件,最后会解除《禁止点击》
                 getCameraVideoPresenter().onVideoTaken(path);
             }
 
