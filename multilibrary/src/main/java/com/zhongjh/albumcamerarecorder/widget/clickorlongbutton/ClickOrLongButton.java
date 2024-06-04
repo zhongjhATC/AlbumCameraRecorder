@@ -491,6 +491,7 @@ public class ClickOrLongButton extends View {
                         // 进度已满,不执行任何动作
                         return true;
                     }
+                    // 判断是否禁用模式
                     if (!touchable) {
                         mClickOrLongListener.onBanClickTips();
                         return true;
@@ -510,7 +511,12 @@ public class ClickOrLongButton extends View {
             case MotionEvent.ACTION_UP:
                 if (mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
                     // 点击即长按模式
-                    if (recordState == RECORD_NOT_STARTED) {
+                    if (recordState != RECORD_STARTED) {
+                        // 判断是否禁用模式
+                        if (!touchable) {
+                            mClickOrLongListener.onBanClickTips();
+                            return true;
+                        }
                         // 未启动状态，即立刻启动长按动画
                         step = STEP_ACTION_DOWN;
                         startTicking();

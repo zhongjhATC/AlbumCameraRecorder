@@ -558,6 +558,7 @@ public abstract class BaseCameraFragment
             public void onVideoTaken(@NonNull VideoResult result) {
                 Log.d(TAG, "onVideoTaken");
                 super.onVideoTaken(result);
+                // 处理视频文件,最后会解除《禁止点击》
                 getCameraVideoPresenter().onVideoTaken(result);
             }
 
