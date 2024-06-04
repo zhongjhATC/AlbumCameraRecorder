@@ -2,7 +2,10 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.media.MediaMetadataRetriever;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -35,6 +38,7 @@ import java.util.Objects;
 public class BaseCameraVideoPresenter implements ICameraVideo {
 
     private final static int PROGRESS_MAX = 100;
+    private final static String TAG = "BaseCameraVideoPresenter";
 
     public BaseCameraVideoPresenter(
             BaseCameraFragment<? extends CameraStateManagement,
@@ -183,14 +187,22 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
     /**
      * 视频录制结束后
      */
+    @SuppressLint("LongLogTag")
     @Override
     public void onVideoTaken(VideoResult result) {
+        // 判断文件是否超过1秒才属于合格的视频
+        long mediaDuration = getMediaDuration(result.getFile().getPath());
+        if (mediaDuration < 1000) {
+            baseCameraFragment.setShortTip();
+            Log.d(TAG,"视频时间低于1秒");
+        }
         // 判断是否短时间结束
-        if (!isShort && !isBreakOff()) {
+        if (!isShort && !isBreakOff() && mediaDuration >= 1000) {
             if (!isSectionRecord) {
                 //  如果录制结束，打开该视频。打开底部菜单
                 PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, result.getFile().getPath());
             } else {
+                Log.d(TAG, result.getFile().getPath() + " 是否存在:" + result.getFile().exists());
                 videoTimes.add(sectionRecordTime);
                 // 如果已经有录像缓存，那么就不执行这个动作了
                 if (videoPaths.size() <= 0) {
@@ -286,6 +298,29 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
         baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
         for (ThreadUtils.SimpleTask<Boolean> item : mMergeVideoTasks) {
             item.cancel();
+        }
+    }
+
+    /**
+     * 获取视频的时间
+     *
+     * @param filePath 视频文件
+     * @return 视频的时间
+     */
+    private long getMediaDuration(String filePath) {
+        try {
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(filePath);
+            String metaData = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            long duration = 0L;
+            if (metaData != null) {
+                duration = Long.parseLong(metaData);
+            }
+            retriever.close();
+            return duration;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return 0;
         }
     }
 

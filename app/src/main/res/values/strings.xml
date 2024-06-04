@@ -54,7 +54,8 @@
     <string name="take_pictures_in_hd">Take pictures in HD(Lost video recording function)</string>
     <string name="take_video_in_hd">Take video in HD(Losing the ability to take pictures)</string>
     <string name="maximum_recording_time">Maximum recording time</string>
-    <string name="minimum_recording_time_milliseconds">Minimum recording time (milliseconds)</string>
+    <string name="minimum_recording_time_milliseconds">Minimum recording time (milliseconds),Cannot be lower than 2000</string>
+    <string name="press_and_hold_for_the_specified_time_to_start_recording">press and hold for the specified time to start recording</string>
     <string name="enable_recording">Enable recording</string>
     <string name="simple_version">Simple version of</string>
     <string name="super_simple_version">Super simple</string>

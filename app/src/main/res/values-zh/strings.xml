@@ -54,7 +54,8 @@
     <string name="take_pictures_in_hd">高清拍照(失去录像功能)</string>
     <string name="take_video_in_hd">高清录像(失去拍照功能)</string>
     <string name="maximum_recording_time">最长录制时间</string>
-    <string name="minimum_recording_time_milliseconds">最短录制时间(毫秒)</string>
+    <string name="minimum_recording_time_milliseconds">最短录制时间(毫秒),不能低于2000</string>
+    <string name="press_and_hold_for_the_specified_time_to_start_recording">长按达到设置时间后，才开启录制</string>
     <string name="enable_recording">开启录音功能</string>
     <string name="simple_version">简单版</string>
     <string name="super_simple_version">超级简单版</string>

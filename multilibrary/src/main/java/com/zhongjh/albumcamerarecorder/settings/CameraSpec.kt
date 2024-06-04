@@ -77,9 +77,15 @@ object CameraSpec {
     var duration = 10
 
     /**
-     * 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+     * 最短录制时间限制，单位为毫秒，如果录制期间低于2000毫秒，均不算录制
+     * 值不能低于2000，如果低于2000还是以2000为准
      */
-    var minDuration = 1500
+    var minDuration = 2000
+
+    /**
+     * 长按准备时间，单位为毫秒，即是如果长按在1000毫秒内，都暂时不开启录制
+     */
+    var readinessDuration = 1000
 
     /**
      * 视频分段录制合并功能
@@ -152,8 +158,8 @@ object CameraSpec {
         enableFlashMemoryModel = false
         // 最长录制时间
         duration = 10
-        // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
-        minDuration = 1500
+        minDuration = 2000
+        readinessDuration = 1000
         videoMergeCoordinator = null
         watermarkResource = -1
     }

@@ -114,7 +114,7 @@ public class ClickOrLongButton extends View {
     /**
      * 最短录制时间限制
      */
-    private int mMinDuration = 1500;
+    private int mMinDuration = 2000;
     /**
      * 动画的预备时间
      */
@@ -510,7 +510,7 @@ public class ClickOrLongButton extends View {
             case MotionEvent.ACTION_UP:
                 if (mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
                     // 点击即长按模式
-                    if (recordState != RECORD_STARTED) {
+                    if (recordState == RECORD_NOT_STARTED) {
                         // 未启动状态，即立刻启动长按动画
                         step = STEP_ACTION_DOWN;
                         startTicking();
@@ -698,10 +698,22 @@ public class ClickOrLongButton extends View {
      * @param duration 时间
      */
     public void setMinDuration(int duration) {
-        mMinDuration = duration;
+        if (duration > mMinDuration) {
+            mMinDuration = duration;
+        }
+    }
+
+    /**
+     * 长按准备时间
+     * 长按达到duration时间后，才开启录制
+     *
+     * @param duration 时间
+     */
+    public void setReadinessDuration(int duration) {
         mMinDurationAnimation = duration;
         mMinDurationAnimationCurrent = mMinDurationAnimation;
     }
+
 
     /**
      * 设置当前已录制的时间，用于分段录制

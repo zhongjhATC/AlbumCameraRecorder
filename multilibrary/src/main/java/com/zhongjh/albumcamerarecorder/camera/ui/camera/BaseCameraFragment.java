@@ -314,6 +314,7 @@ public abstract class BaseCameraFragment
         getPhotoVideoLayout().setDuration(cameraSpec.getDuration() * 1000);
         // 最短录制时间
         getPhotoVideoLayout().setMinDuration(cameraSpec.getMinDuration());
+        getPhotoVideoLayout().setReadinessDuration(cameraSpec.getReadinessDuration());
     }
 
     /**
@@ -776,6 +777,14 @@ public abstract class BaseCameraFragment
         setMenuVisibility(View.VISIBLE);
         // 停止录像
         stopRecord(true);
+    }
+
+    /**
+     * 提示过短
+     */
+    public void setShortTip() {
+        // 提示过短
+        getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
     }
 
     /**

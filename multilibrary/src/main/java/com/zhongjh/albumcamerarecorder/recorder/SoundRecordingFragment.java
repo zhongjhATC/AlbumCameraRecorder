@@ -142,6 +142,7 @@ public class SoundRecordingFragment extends BaseFragment {
         mViewHolder.pvLayout.setDuration(mRecordSpec.getDuration() * 1000);
         // 最短录制时间
         mViewHolder.pvLayout.setMinDuration(mRecordSpec.getMinDuration());
+        mViewHolder.pvLayout.setReadinessDuration(mRecordSpec.getReadinessDuration());
         // 设置只能长按
         mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
 
