@@ -55,21 +55,21 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 
 	dependencies {
 	     // if you want to simplify the code and at the same time use multilibrary and progresslibrary, albumCameraRecorderCommon, can directly use the combined library
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.97X'
 
 	     // Public library, if not using the combined library above
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.97X'
 	     // core lib, call display album, screen recording, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.94X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.97X'
          // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.94X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:1.1.97X'
 
          // use it with editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.97X'
 	     // Supporting editing video use, currently only compression function, continue to add related functions, because the library uses ffmpeg, occupies a file size of 25M, according to the actual situation to choose whether to use
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.97X'
 	     // Because the library uses mp4parser, which takes up a file size of about 300kb, choose whether to use it according to the actual situation
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videomerge:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videomerge:1.1.97X'
 	}
 
 ## snapshoot
