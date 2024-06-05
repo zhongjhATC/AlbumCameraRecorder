@@ -192,12 +192,12 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
     public void onVideoTaken(VideoResult result) {
         // 判断文件是否超过1秒才属于合格的视频
         long mediaDuration = getMediaDuration(result.getFile().getPath());
-        if (mediaDuration < 1000) {
+        if (mediaDuration < 1500) {
             baseCameraFragment.setShortTip();
             Log.d(TAG,"视频时间低于1秒");
         }
         // 判断是否短时间结束
-        if (!isShort && !isBreakOff() && mediaDuration >= 1000) {
+        if (!isShort && !isBreakOff() && mediaDuration >= 1500) {
             if (!isSectionRecord) {
                 //  如果录制结束，打开该视频。打开底部菜单
                 PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, result.getFile().getPath());
