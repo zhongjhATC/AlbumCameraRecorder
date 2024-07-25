@@ -316,7 +316,7 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
             if (metaData != null) {
                 duration = Long.parseLong(metaData);
             }
-            retriever.close();
+            retriever.release();
             return duration;
         } catch (Exception exception) {
             exception.printStackTrace();
