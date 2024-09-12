@@ -265,9 +265,9 @@ public class MainActivity extends AppCompatActivity {
                 mLayoutMediator = new TabLayoutMediator(mTabLayout, mVpPager, false, true,
                         (tab, position) -> tab.setText(adapterViewPager.mTitles.get(position)));
                 mLayoutMediator.attach();
-                // 禁滑viewPager
-                mVpPager.setUserInputEnabled(false);
             }
+            // 禁滑viewPager
+            mVpPager.setUserInputEnabled(false);
 
             mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
