@@ -3,7 +3,6 @@ buildscript {
     repositories {
         // 有时候碰到编译不了的提示maven下载失败或者https的问题，就调整下maven顺序
         google()
-        jcenter()
         mavenCentral()
         maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
         maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
@@ -21,7 +20,6 @@ allprojects {
     repositories {
         // 有时候碰到编译不了的提示maven下载失败或者https的问题，就调整下maven顺序
         google()
-        jcenter()
         mavenCentral()
         maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
         maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
