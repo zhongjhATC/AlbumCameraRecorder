@@ -516,9 +516,7 @@ open class MainActivity : AppCompatActivity() {
         }
     }
 
-    inner class MyPagerAdapter(fa: FragmentActivity?, mSpec: GlobalSpec) : FragmentStateAdapter(
-        fa!!
-    ) {
+    inner class MyPagerAdapter(fa: FragmentActivity?, mSpec: GlobalSpec) : FragmentStateAdapter(fa!!) {
         /**
          * 数量
          */

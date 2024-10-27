@@ -1,6 +1,7 @@
 package com.zhongjh.imageedit.core;
 
 /**
+ * 图片模式
  *
  * @author felix
  * @date 2017/11/22 下午6:18

@@ -8,14 +8,15 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.camera.view.PreviewView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.widget.FocusView;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
@@ -31,6 +32,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
     ViewHolder mViewHolder;
     BaseCameraPicturePresenter cameraPicturePresenter = new BaseCameraPicturePresenter(this);
     BaseCameraVideoPresenter cameraVideoPresenter = new BaseCameraVideoPresenter(this);
+    CameraManage cameraManage = new CameraManage(getMyContext(), mViewHolder, this);
     CameraStateManagement cameraStateManagement = new CameraStateManagement(this);
 
     public static CameraFragment newInstance() {
@@ -57,12 +59,6 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
     @Override
     public View getTopView() {
         return mViewHolder.clMenu;
-    }
-
-    @NonNull
-    @Override
-    public CameraView getCameraView() {
-        return mViewHolder.cameraView;
     }
 
     @Override
@@ -108,6 +104,12 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
 
     @NonNull
     @Override
+    public CameraManage getCameraManage() {
+        return cameraManage;
+    }
+
+    @NonNull
+    @Override
     public CameraStateManagement getCameraStateManagement() {
         return cameraStateManagement;
     }
@@ -136,8 +138,9 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
         View vLine1;
         View vLine2;
         ImageView imgClose;
-        CameraView cameraView;
         ConstraintLayout clMenu;
+        PreviewView previewView;
+        FocusView focusView;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
@@ -150,8 +153,9 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
             this.vLine1 = rootView.findViewById(R.id.vLine1);
             this.vLine2 = rootView.findViewById(R.id.vLine2);
             this.imgClose = rootView.findViewById(R.id.imgClose);
-            this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);
+            this.previewView = rootView.findViewById(R.id.previewView);
+            this.focusView = rootView.findViewById(R.id.focusView);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.zhongjh.imageedit.core.homing;
 
 /**
+ * 用来处理放大-旋转的实体
  * @author felix
  * @date 2017/11/28 下午4:14
  */

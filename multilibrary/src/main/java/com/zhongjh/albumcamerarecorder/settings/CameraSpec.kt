@@ -1,8 +1,7 @@
 package com.zhongjh.albumcamerarecorder.settings
 
+import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
 import com.zhongjh.albumcamerarecorder.R
-import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels
-import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
@@ -21,6 +20,16 @@ object CameraSpec {
      * 选择 视频图片 的类型，MimeType.allOf()
      */
     var mimeTypeSet: Set<MimeType>? = null
+
+    /**
+     * 设置每秒的录制帧数
+     */
+    var videoFrameRate = 0
+
+    /**
+     * 设置编码比特率
+     */
+    var videoBitRate = 0
 
     /**
      * 是否开启图片高清拍摄
@@ -58,12 +67,32 @@ object CameraSpec {
      * 闪光灯模式
      * 默认闪光灯关闭模式
      */
-    var flashModel = FlashModels.TYPE_FLASH_OFF
+    var flashModel = FLASH_MODE_OFF
 
     /**
      * 通过keyCode触发拍照事件
      */
     var keyCodeTakePhoto = 0
+
+    /**
+     * 自定义拍照、录制的输出文件夹路径
+     */
+    var outPutCameraDir: String? = null
+
+    /**
+     * 输出文件的名称
+     */
+    var outPutCameraFileName: String? = null
+
+    /**
+     * 输出图片文件的后缀名
+     */
+    var imageFormat: String? = null
+
+    /**
+     * 输出视频文件的后缀名
+     */
+    var videoFormat: String? = null
 
     /**
      * 是否开启闪光灯记忆模式
@@ -77,9 +106,15 @@ object CameraSpec {
     var maxDuration = 1000
 
     /**
-     * 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+     * 最短录制时间限制，单位为毫秒，如果录制期间低于2000毫秒，均不算录制
+     * 值不能低于2000，如果低于2000还是以2000为准
      */
-    var minDuration = 1500
+    var minDuration = 2000
+
+    /**
+     * 长按准备时间，单位为毫秒，即是如果长按在1000毫秒内，都暂时不开启录制
+     */
+    var readinessDuration = 1000
 
     /**
      * 视频分段录制合并功能
@@ -117,11 +152,6 @@ object CameraSpec {
         get() = videoMergeCoordinator != null
 
     /**
-     * CameraView有关事件
-     */
-    var onCameraViewListener: OnCameraViewListener? = null
-
-    /**
      * 拍摄后操作图片的事件
      */
     var onCaptureListener: OnCaptureListener? = null
@@ -140,6 +170,8 @@ object CameraSpec {
      */
     private fun reset() {
         mimeTypeSet = null
+        videoFrameRate = 0
+        videoBitRate = 0
         // 切换前置/后置摄像头图标资源
         imageSwitch = R.drawable.ic_camera_zjh
         // 闪光灯开启状态图标
@@ -148,12 +180,17 @@ object CameraSpec {
         imageFlashOff = R.drawable.ic_flash_off
         // 闪光灯自动状态图标
         imageFlashAuto = R.drawable.ic_flash_auto
-        flashModel = FlashModels.TYPE_FLASH_OFF
+        flashModel = FLASH_MODE_OFF
+        keyCodeTakePhoto = 0
+        outPutCameraDir = null
+        outPutCameraFileName = null
+        imageFormat = null
+        videoFormat = null
         enableFlashMemoryModel = false
         // 最长录制时间
         maxDuration = 1000
-        // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
-        minDuration = 1500
+        minDuration = 2000
+        readinessDuration = 1000
         videoMergeCoordinator = null
         watermarkResource = -1
     }

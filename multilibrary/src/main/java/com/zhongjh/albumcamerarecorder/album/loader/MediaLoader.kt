@@ -374,7 +374,7 @@ class MediaLoader(val application: Application) {
             AlbumSpec.videoMaxSecond
         }
         return String.format(
-            Locale.CHINA,
+            Locale.US,
             "%d <%s $DURATION and $DURATION <= %d",
             max(0, AlbumSpec.videoMinSecond),
             "=",
@@ -392,7 +392,7 @@ class MediaLoader(val application: Application) {
             AlbumSpec.filterMaxFileSize
         }
         return String.format(
-            Locale.CHINA,
+            Locale.US,
             "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
             max(0, AlbumSpec.filterMinFileSize),
             "=",

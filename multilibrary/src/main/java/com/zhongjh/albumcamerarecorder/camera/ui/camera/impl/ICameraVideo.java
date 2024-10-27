@@ -1,7 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.impl;
 
-import com.otaliastudios.cameraview.VideoResult;
-
 /**
  * 拍摄界面的有关视频View的接口
  *
@@ -14,11 +12,6 @@ public interface ICameraVideo {
      * 初始化有关视频的配置数据
      */
     void initData();
-
-    /**
-     * 视频编辑后的事件，目前 有分段录制后合并、压缩视频
-     */
-    void initVideoEditListener();
 
     /**
      * 生命周期onDestroy
@@ -35,9 +28,9 @@ public interface ICameraVideo {
     /**
      * 视频录制结束后
      *
-     * @param result 视频录制结束后提供的数据源
+     * @param path 视频录制结束后提供的路径
      */
-    void onVideoTaken(VideoResult result);
+    void onVideoTaken(String path);
 
     /**
      * 删除视频 - 多个模式

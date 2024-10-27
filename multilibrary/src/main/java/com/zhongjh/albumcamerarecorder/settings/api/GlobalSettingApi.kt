@@ -152,8 +152,8 @@ interface GlobalSettingApi {
      *
      *
      * 有两个内置图像引擎：
-     * 1. [com.zhongjh.albumcamerarecorder.album.engine.impl.GlideEngine]
-     * 2. [com.zhongjh.albumcamerarecorder.album.engine.impl.PicassoEngine]
+     * 1. [com.zhongjh.common.engine.impl.GlideEngine]
+     * 2. [com.zhongjh.common.engine.impl.PicassoEngine]
      * 你可以实现你自己的图像引擎。
      *
      * @param imageEngine [ImageEngine]

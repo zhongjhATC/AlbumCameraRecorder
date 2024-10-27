@@ -40,7 +40,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // 如果想简化代码并且同时用到multilibrary和grid、albumCameraRecorderCommon,可以直接使用combined库
-    implementation project(':combined')
-    implementation project(path: ':imageedit')
-    implementation project(path: ':videoedit')
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.89X'
+    // 配套编辑图片使用
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.89X'
+    // 配套编辑视频使用
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.89X'
 }

@@ -10,12 +10,12 @@ import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.GridMedia;
-import com.zhongjh.grid.listener.AbstractMaskProgressLayoutListener;
-import com.zhongjh.grid.listener.MaskProgressLayoutListener;
-import com.zhongjh.grid.widget.GridLayout;
-import com.zhongjh.grid.widget.PlayProgressView;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
+import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
+import com.zhongjh.displaymedia.entity.DisplayMedia;
+import com.zhongjh.displaymedia.listener.AbstractDisplayMediaLayoutListener;
+import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
+import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +32,7 @@ public class Combined {
 
     Activity activity;
     int requestCode;
-    GridLayout maskProgressLayout;
+    DisplayMediaLayout maskProgressLayout;
 
     /**
      * AlbumCameraRecorder和Mask控件合并
@@ -45,60 +45,60 @@ public class Combined {
      */
     public Combined(Activity activity, int requestCode,
                     GlobalSetting globalSetting,
-                    GridLayout maskProgressLayout,
-                    AbstractMaskProgressLayoutListener listener) {
+                    DisplayMediaLayout maskProgressLayout,
+                    AbstractDisplayMediaLayoutListener listener) {
         this.activity = activity;
         this.requestCode = requestCode;
         this.maskProgressLayout = maskProgressLayout;
-        maskProgressLayout.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+        maskProgressLayout.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+                listener.onItemAudioStartDownload(holder, url);
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+                listener.onItemAudioStartUploading(displayMedia, viewHolder);
+            }
+
+            @Override
+            public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
+            }
+
+            @Override
+            public void onItemAdd(@NotNull View view, @NotNull DisplayMedia displayMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击Add
                 globalSetting.alreadyCount(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
                 globalSetting.forResult(requestCode);
-                listener.onItemAdd(view, gridMedia, alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
+                listener.onItemAdd(view, displayMedia, alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
+            public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
+                if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
                     // 预览
 //                    globalSetting.openPreviewData(activity, requestCode,
 //                            maskProgressLayout.getImagesAndVideos(),
 //                            maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
                 }
-                listener.onItemClick(view, gridMedia);
+                listener.onItemClick(view, displayMedia);
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
-                listener.onItemAudioStartUploading(gridMedia, playProgressView);
+            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
+                listener.onItemStartUploading(displayMedia, viewHolder);
             }
 
             @Override
-            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
-                listener.onItemStartUploading(gridMedia, viewHolder);
+            public void onItemClose(@NotNull DisplayMedia displayMedia) {
+                listener.onItemClose(displayMedia);
             }
 
             @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
-                listener.onItemClose(gridMedia);
-            }
-
-            @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-                listener.onItemAudioStartDownload(view, url);
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull GridMedia gridMedia) {
-                return listener.onItemVideoStartDownload(view, gridMedia);
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
+                return listener.onItemVideoStartDownload(view, displayMedia);
             }
         });
     }

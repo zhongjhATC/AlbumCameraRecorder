@@ -15,7 +15,6 @@ import androidx.appcompat.widget.PopupMenu;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.camera.constants.FlashModels;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
@@ -33,13 +32,13 @@ import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.GridMedia;
-import com.zhongjh.grid.listener.MaskProgressLayoutListener;
-import com.zhongjh.grid.widget.GridLayout;
-import com.zhongjh.grid.widget.PlayProgressView;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
+import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
+import com.zhongjh.displaymedia.entity.DisplayMedia;
+import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
+import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
 import com.zhongjh.videoedit.VideoCompressManager;
-import com.zhongjh.videoedit.VideoMergeManager;
+import com.zhongjh.videomerge.VideoMergeManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -62,7 +61,6 @@ public class MainActivity extends BaseActivity {
 
     @GlobalSetting.ScreenOrientation
     int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    @FlashModels
     int flashModel = FlashModels.TYPE_FLASH_OFF;
 
     /**
@@ -78,29 +76,52 @@ public class MainActivity extends BaseActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
+        // 提交进行上传
+        mBinding.btnSubmitUpload.setOnClickListener(v -> {
+            // 开始模拟上传 - 指所有
+            for (DisplayMedia displayMedia : mBinding.dmlImageList.getAllData()){
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
+                timer.schedule();
+            }
+        });
+
         mBinding.llScreenOrientation.setOnClickListener(v -> showPopupMenu());
 
         mBinding.llFlashModel.setOnClickListener(v -> showFlashPopupMenu());
 
         // 设置九宫格的最大呈现数据
-        mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
+        mBinding.dmlImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
 
         // 以下为点击事件
-        mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
+            public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
+            }
+
+            @Override
+            public void onItemAdd(@NotNull View view, @NotNull DisplayMedia displayMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
+            public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
+                if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
 //                            mBinding.mplImageList.getImagesAndVideos(),
 //                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
@@ -108,38 +129,25 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemStartUploading(@NotNull GridMedia gridMedia, @NotNull PhotoAdapter.PhotoViewHolder viewHolder) {
+            public void onItemStartUploading(@NotNull DisplayMedia displayMedia, @NotNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(gridMedia, viewHolder, null);
-                timers.put(gridMedia, timer);
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(gridMedia, null, playProgressView);
-                timers.put(gridMedia, timer);
-                timer.schedule();
-            }
-
-            @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
+            public void onItemClose(@NotNull DisplayMedia displayMedia) {
                 // 停止上传
-                MyTask myTask = timers.get(gridMedia);
+                MyTask myTask = timers.get(displayMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(gridMedia);
+                    timers.remove(displayMedia);
                 }
             }
 
             @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull GridMedia gridMedia) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 return false;
             }
 
@@ -161,8 +169,8 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected GridLayout getMaskProgressLayout() {
-        return mBinding.mplImageList;
+    protected DisplayMediaLayout getMaskProgressLayout() {
+        return mBinding.dmlImageList;
     }
 
     /**
@@ -178,7 +186,7 @@ public class MainActivity extends BaseActivity {
         }
 
         // 刷新九宫格的最大呈现数据
-        mBinding.mplImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
+        mBinding.dmlImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
 
         // 拍摄有关设置
         CameraSetting cameraSetting = initCameraSetting();

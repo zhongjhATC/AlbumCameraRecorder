@@ -23,11 +23,11 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.GridMedia;
-import com.zhongjh.grid.listener.MaskProgressLayoutListener;
-import com.zhongjh.grid.widget.GridLayout;
-import com.zhongjh.grid.widget.PlayProgressView;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
+import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
+import com.zhongjh.displaymedia.entity.DisplayMedia;
+import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
+import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
 import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
 import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
 
@@ -57,7 +57,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     /**
      * 用于下载后记录的视频view
      */
-    GridMedia mVideoGridMedia;
+    DisplayMedia mVideoDisplayMedia;
 
     /**
      * 初始化下载
@@ -81,14 +81,41 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         mBinding = ActivityMainSeeBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         progressDialog = new ProgressDialog(MainSeeActivity.this);
-        mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+//                boolean isOk = getPermissions(true);
+//                if (isOk) {
+//                    // 判断是否存在文件
+//                    String[] fileFullPath = getFileFullPath(url, 0);
+//                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
+//                    if (!isExists) {
+//                        // 调用方法
+//                        mAudioView = view;
+//                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
+//                    } else {
+//                        // 直接赋值
+//                        mBinding.dmlImageList.setAudioCover(view, fileFullPath[0] + File.separator + fileFullPath[1]);
+//                        mBinding.dmlImageList.onAudioClick(view);
+//                    }
+//                }
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
+            public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
+            }
+
+            @Override
+            public void onItemAdd(@NotNull View view, @NotNull DisplayMedia displayMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
                 if (isOk) {
@@ -97,94 +124,67 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
+            public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
-                Log.i(TAG, "onResult id:" + gridMedia.getId());
-                Log.i(TAG, "onResult url:" + gridMedia.getUrl());
-                Log.d(TAG, "onResult 绝对路径:" + gridMedia.getPath());
-                Log.d(TAG, "onResult Uri:" + gridMedia.getPath());
-                Log.d(TAG, "onResult 文件大小: " + gridMedia.getSize());
-                Log.d(TAG, "onResult 视频音频长度: " + gridMedia.getDuration());
-                if (gridMedia.isImageOrGif()) {
-                    if (gridMedia.isImage()) {
+                Log.i(TAG, "onResult id:" + displayMedia.getId());
+                Log.i(TAG, "onResult url:" + displayMedia.getUrl());
+                Log.d(TAG, "onResult 绝对路径:" + displayMedia.getPath());
+                Log.d(TAG, "onResult Uri:" + displayMedia.getPath());
+                Log.d(TAG, "onResult 文件大小: " + displayMedia.getSize());
+                Log.d(TAG, "onResult 视频音频长度: " + displayMedia.getDuration());
+                if (displayMedia.isImageOrGif()) {
+                    if (displayMedia.isImage()) {
                         Log.d(TAG, "onResult 图片类型");
-                    } else if (gridMedia.isImage()) {
+                    } else if (displayMedia.isImage()) {
                         Log.d(TAG, "onResult 图片类型");
                     }
-                } else if (gridMedia.isVideo()) {
+                } else if (displayMedia.isVideo()) {
                     Log.d(TAG, "onResult 视频类型");
-                } else if (gridMedia.isAudio()) {
+                } else if (displayMedia.isAudio()) {
                     Log.d(TAG, "onResult 音频类型");
                 }
-                Log.d(TAG, "onResult 具体类型:" + gridMedia.getMimeType());
-                Log.d(TAG, "onResult 宽高: " + gridMedia.getWidth() + "x" + gridMedia.getHeight());
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
+                Log.d(TAG, "onResult 具体类型:" + displayMedia.getMimeType());
+                Log.d(TAG, "onResult 宽高: " + displayMedia.getWidth() + "x" + displayMedia.getHeight());
+                if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
+//                            mBinding.dmlImageList.getImagesAndVideos(),
+//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
+            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(gridMedia, null, playProgressView);
-                timers.put(gridMedia, timer);
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(gridMedia, viewHolder, null);
-                timers.put(gridMedia, timer);
-                timer.schedule();
-            }
-
-            @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
+            public void onItemClose(@NotNull DisplayMedia displayMedia) {
                 // 停止上传
-                MyTask myTask = timers.get(gridMedia);
+                MyTask myTask = timers.get(displayMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(gridMedia);
+                    timers.remove(displayMedia);
                 }
             }
 
             @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
-                    // 判断是否存在文件
-                    String[] fileFullPath = getFileFullPath(url, 0);
+                    String[] fileFullPath = getFileFullPath(displayMedia.getUrl(), 1);
                     boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
                     if (!isExists) {
                         // 调用方法
-                        mAudioView = view;
-                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
-                    } else {
-                        // 直接赋值
-                        mBinding.mplImageList.setAudioCover(view, fileFullPath[0] + File.separator + fileFullPath[1]);
-                        mBinding.mplImageList.onAudioClick(view);
-                    }
-                }
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull GridMedia gridMedia) {
-                boolean isOk = getPermissions(true);
-                if (isOk) {
-                    String[] fileFullPath = getFileFullPath(gridMedia.getUrl(), 1);
-                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
-                    if (!isExists) {
-                        // 调用方法
-                        mVideoGridMedia = gridMedia;
-                        mDownloadHelper.downloadFile(gridMedia.getUrl(), fileFullPath[0], fileFullPath[1]);
+                        mVideoDisplayMedia = displayMedia;
+                        mDownloadHelper.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1]);
                         // 返回false是中断后面的操作，先让目前视频文件下载完
                         return false;
                     } else {
                         // 直接赋值
-                        mBinding.mplImageList.setVideoCover(gridMedia, fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.dmlImageList.setVideoCover(displayMedia, fileFullPath[0] + File.separator + fileFullPath[1]);
                         // 赋值本地播放地址后,返回true是可以继续播放的播放事件
                         return true;
                     }
@@ -197,7 +197,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         initData();
         initListener();
         findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
+        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.dmlImageList.reset());
     }
 
     @Override
@@ -269,19 +269,19 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * 初始化数据
      */
     private void initData() {
-        mBinding.mplImageList.setOperation(true);
+        mBinding.dmlImageList.setOperation(true);
 
         // 音频数据
         List<String> audioUrls = new ArrayList<>();
         audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
         audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        mBinding.mplImageList.setAudioUrls(audioUrls);
+        mBinding.dmlImageList.setAudioUrls(audioUrls);
 
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
         videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
         videoUrls.add("https://www.w3school.com.cn/example/html5/mov_bbb.mp4");
-        mBinding.mplImageList.setVideoUrls(videoUrls);
+        mBinding.dmlImageList.setVideoUrls(videoUrls);
 
         // 图片数据
         List<String> imageUrls = new ArrayList<>();
@@ -293,7 +293,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        mBinding.mplImageList.setImageUrls(imageUrls);
+        mBinding.dmlImageList.setImageUrls(imageUrls);
     }
 
     /**
@@ -304,8 +304,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     }
 
     @Override
-    protected GridLayout getMaskProgressLayout() {
-        return mBinding.mplImageList;
+    protected DisplayMediaLayout getMaskProgressLayout() {
+        return mBinding.dmlImageList;
     }
 
     /**
@@ -344,10 +344,10 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         String suffix = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
         switch (suffix) {
             case "mp3":
-                mBinding.mplImageList.setAudioCover(mAudioView, file.getPath());
+                mBinding.dmlImageList.setAudioCover(mAudioView, file.getPath());
                 break;
             case "mp4":
-                mBinding.mplImageList.setVideoCover(mVideoGridMedia, file.getPath());
+                mBinding.dmlImageList.setVideoCover(mVideoDisplayMedia, file.getPath());
                 break;
             default:
                 break;

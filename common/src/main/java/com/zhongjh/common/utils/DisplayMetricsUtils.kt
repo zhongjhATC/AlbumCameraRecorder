@@ -1,5 +1,6 @@
 package com.zhongjh.common.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Point
@@ -47,16 +48,9 @@ object DisplayMetricsUtils {
      */
     @JvmStatic
     fun getScreenWidth(context: Context): Int {
-        val windowManager = context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowMetrics = windowManager.currentWindowMetrics
-            val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-            return windowMetrics.bounds.width() - insets.left - insets.right
-        } else {
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            return displayMetrics.widthPixels
-        }
+        val localDisplayMetrics = DisplayMetrics()
+        (context as Activity).windowManager.defaultDisplay.getMetrics(localDisplayMetrics)
+        return localDisplayMetrics.widthPixels
     }
 
     /**
@@ -67,17 +61,9 @@ object DisplayMetricsUtils {
      */
     @JvmStatic
     fun getScreenHeight(context: Context): Int {
-        val windowManager = context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowMetrics = windowManager.currentWindowMetrics
-            val insets = windowMetrics.windowInsets
-                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-            windowMetrics.bounds.height() - insets.bottom - insets.top
-        } else {
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            displayMetrics.heightPixels
-        }
+        val localDisplayMetrics = DisplayMetrics()
+        (context as Activity).windowManager.defaultDisplay.getMetrics(localDisplayMetrics)
+        return localDisplayMetrics.heightPixels
     }
 
     /**

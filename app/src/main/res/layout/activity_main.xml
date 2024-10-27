@@ -9,8 +9,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.zhongjh.grid.widget.GridLayout
-            android:id="@+id/mplImageList"
+        <com.zhongjh.displaymedia.widget.DisplayMediaLayout
+            android:id="@+id/dmlImageList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:audioDeleteColor="@color/blue_primary"
@@ -25,6 +25,12 @@
             app:maskingTextContent="@string/up_upload_is_customizable"
             app:maskingTextSize="12"
             app:maxCount="7" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSubmitUpload"
+            android:text="@string/submit_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -828,6 +834,31 @@
                     android:layout_height="wrap_content"
                     android:text="@string/minimum_recording_time_milliseconds" />
 
+                    <EditText
+                        android:id="@+id/etMinCameraDuration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="2000" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/press_and_hold_for_the_specified_time_to_start_recording" />
+
+                    <EditText
+                        android:id="@+id/etCameraReadinessDuration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="1000" />
                 <EditText
                     android:id="@+id/etMinCameraDuration"
                     android:layout_width="match_parent"

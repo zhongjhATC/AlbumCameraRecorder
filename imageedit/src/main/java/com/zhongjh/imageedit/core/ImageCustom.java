@@ -105,12 +105,12 @@ public class ImageCustom {
     /**
      * 涂鸦路径
      */
-    private final List<ImagePath> mDoodles = new ArrayList<>();
+    private final List<ImagePen> mDoodles = new ArrayList<>();
 
     /**
      * 马赛克路径
      */
-    private final List<ImagePath> mMosaics = new ArrayList<>();
+    private final List<ImagePen> mMosaics = new ArrayList<>();
 
     private static final int MIN_SIZE = 500;
 
@@ -138,9 +138,9 @@ public class ImageCustom {
         // Doodle&Mosaic 's paint
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(ImagePath.BASE_DOODLE_WIDTH);
+        mPaint.setStrokeWidth(ImagePen.BASE_DOODLE_WIDTH);
         mPaint.setColor(Color.RED);
-        mPaint.setPathEffect(new CornerPathEffect(ImagePath.BASE_DOODLE_WIDTH));
+        mPaint.setPathEffect(new CornerPathEffect(ImagePen.BASE_DOODLE_WIDTH));
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
     }
@@ -420,7 +420,7 @@ public class ImageCustom {
      * M.postTranslate(-mFrame.left, -mFrame.top);
      * 如果按照getScrollX()直接绘制进手机屏幕上是会出格的，因为view能缩放到比手机屏幕还要大，那么就需要减掉mFrame的x和y，剩下的就是手机绘制的正确的点
      */
-    public void addPath(ImagePath path, float sx, float sy) {
+    public void addPath(ImagePen path, float sx, float sy) {
         if (path == null) {
             return;
         }
@@ -611,7 +611,7 @@ public class ImageCustom {
             float scale = getScale();
             canvas.translate(mFrame.left, mFrame.top);
             canvas.scale(scale, scale);
-            for (ImagePath path : mMosaics) {
+            for (ImagePen path : mMosaics) {
                 path.onDrawMosaic(canvas, mPaint);
             }
             canvas.restore();
@@ -636,7 +636,7 @@ public class ImageCustom {
             float scale = getScale();
             canvas.translate(mFrame.left, mFrame.top);
             canvas.scale(scale, scale);
-            for (ImagePath path : mDoodles) {
+            for (ImagePen path : mDoodles) {
                 path.onDrawDoodle(canvas, mPaint);
             }
             canvas.restore();

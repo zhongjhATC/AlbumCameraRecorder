@@ -10,10 +10,8 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.utils.MediaUtils;
-import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.GridMedia;
-import com.zhongjh.grid.widget.GridLayout;
-import com.zhongjh.grid.widget.PlayProgressView;
+import com.zhongjh.displaymedia.entity.DisplayMedia;
+import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,14 +39,14 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 权限申请自定义码
      */
     protected final int GET_PERMISSION_REQUEST = 100;
-    protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
+    protected HashMap<DisplayMedia, MyTask> timers = new HashMap<>();
 
     /**
      * 返回九宫格
      *
      * @return MaskProgressLayout
      */
-    protected abstract GridLayout getMaskProgressLayout();
+    protected abstract DisplayMediaLayout getMaskProgressLayout();
 
     /**
      * 是否浏览
@@ -108,7 +106,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<DisplayMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         getMaskProgressLayout().onDestroy();
@@ -190,14 +188,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        GridMedia multiMedia;
-        PhotoAdapter.PhotoViewHolder viewHolder;
-        PlayProgressView playProgressView;
+        DisplayMedia displayMedia;
 
-        public MyTask(GridMedia multiMedia, PhotoAdapter.PhotoViewHolder viewHolder, PlayProgressView playProgressView) {
-            this.multiMedia = multiMedia;
-            this.viewHolder = viewHolder;
-            this.playProgressView = playProgressView;
+        public MyTask(DisplayMedia displayMedia) {
+            this.displayMedia = displayMedia;
         }
 
         public void schedule() {
@@ -205,7 +199,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     percentage++;
-                    getMaskProgressLayout().setPercentage(multiMedia, percentage);
+                    getMaskProgressLayout().setPercentage(displayMedia, percentage);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();
                     }

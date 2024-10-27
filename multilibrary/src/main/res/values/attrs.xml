@@ -71,4 +71,15 @@
 
     <!-- endregion -->
 
+
+    <!-- region FocusView相关属性 -->
+
+    <declare-styleable name="FocusView">
+        <attr name="focusIng" format="reference" />
+        <attr name="focusSuccess" format="reference" />
+        <attr name="focusFailed" format="reference" />
+    </declare-styleable>
+
+    <!-- endregion FocusView相关属性 -->
+
 </resources>

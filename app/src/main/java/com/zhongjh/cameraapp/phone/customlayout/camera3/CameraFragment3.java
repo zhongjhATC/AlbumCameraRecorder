@@ -66,7 +66,7 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManagement, B
 
     @NonNull
     @Override
-    public CameraView getCameraView() {
+    public CameraView getCameraManage() {
         return mViewHolder.cameraView;
     }
 

@@ -1,7 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraViewListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter
@@ -28,7 +27,7 @@ class CameraSetting : CameraSettingApi {
      * 销毁事件
      */
     fun onDestroy() {
-        mCameraSpec.onCameraViewListener = null
+
     }
 
     /**
@@ -54,6 +53,14 @@ class CameraSetting : CameraSettingApi {
             mCameraSpec.mimeTypeSet = mimeTypes
         }
         return this
+    }
+
+    override fun videoFrameRate(videoFrameRate: Int): CameraSetting {
+        TODO("Not yet implemented")
+    }
+
+    override fun videoBitRate(videoBitRate: Int): CameraSetting {
+        TODO("Not yet implemented")
     }
 
     override fun enableImageHighDefinition(enable: Boolean): CameraSetting {
@@ -130,13 +137,28 @@ class CameraSetting : CameraSettingApi {
         return this
     }
 
-    override fun enableFlashMemoryModel(enableFlashMemoryModel: Boolean): CameraSetting {
-        mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel
+    override fun outPutCameraDir(outPutCameraDir: String): CameraSetting {
+        mCameraSpec.outPutCameraDir = outPutCameraDir
         return this
     }
 
-    override fun setOnCameraViewListener(listener: OnCameraViewListener): CameraSetting {
-        mCameraSpec.onCameraViewListener = WeakReference(listener).get()
+    override fun outPutCameraFileName(outPutCameraFileName: String): CameraSetting {
+        mCameraSpec.outPutCameraFileName = outPutCameraFileName
+        return this
+    }
+
+    override fun imageFormat(imageFormat: String): CameraSetting {
+        mCameraSpec.imageFormat = imageFormat
+        return this
+    }
+
+    override fun videoFormat(videoFormat: String): CameraSetting {
+        mCameraSpec.videoFormat = videoFormat
+        return this
+    }
+
+    override fun enableFlashMemoryModel(enableFlashMemoryModel: Boolean): CameraSetting {
+        mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel
         return this
     }
 

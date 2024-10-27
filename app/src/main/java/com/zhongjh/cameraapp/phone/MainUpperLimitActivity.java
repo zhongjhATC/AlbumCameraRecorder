@@ -21,11 +21,11 @@ import com.zhongjh.cameraapp.databinding.ActivityMainUpperLimitBinding;
 import com.zhongjh.cameraapp.model.LimitModel;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.grid.apapter.PhotoAdapter;
-import com.zhongjh.grid.entity.GridMedia;
-import com.zhongjh.grid.listener.MaskProgressLayoutListener;
-import com.zhongjh.grid.widget.GridLayout;
-import com.zhongjh.grid.widget.PlayProgressView;
+import com.zhongjh.displaymedia.apapter.AudioAdapter;
+import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
+import com.zhongjh.displaymedia.entity.DisplayMedia;
+import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
+import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -67,10 +67,23 @@ public class MainUpperLimitActivity extends BaseActivity {
         mBinding.tvMessage.append("5. 如果其中一个例如图片为null，那么图片可选择无限，但是受限于总上限。");
 
         // 以下为点击事件
-        mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+
+            }
+
+            @Override
+            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
+                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
+                timer.schedule();
+            }
+
+            @Override
+            public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
                 //                // 如果需要其他参数的话，循环数据初始化相关数值，这个读取时间会较长，建议异步线程执行
 //                for (MultiMediaView item : multiMediaViews) {
 //                    item.initDataByPath();
@@ -78,7 +91,7 @@ public class MainUpperLimitActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull DisplayMedia displayMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
                 if (isOk) {
@@ -87,48 +100,35 @@ public class MainUpperLimitActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
+            public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
+                if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainUpperLimitActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
+//                            mBinding.dmlImageList.getImagesAndVideos(),
+//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull GridMedia gridMedia, @NonNull PlayProgressView playProgressView) {
+            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(gridMedia, null, playProgressView);
-                timers.put(gridMedia, timer);
+                MyTask timer = new MyTask(displayMedia);
+                timers.put(displayMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull PhotoAdapter.PhotoViewHolder viewHolder) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(gridMedia, viewHolder, null);
-                timers.put(gridMedia, timer);
-                timer.schedule();
-            }
-
-            @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
+            public void onItemClose(@NotNull DisplayMedia displayMedia) {
                 // 停止上传
-                MyTask myTask = timers.get(gridMedia);
+                MyTask myTask = timers.get(displayMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(gridMedia);
+                    timers.remove(displayMedia);
                 }
             }
 
             @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull GridMedia gridMedia) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 return false;
             }
 
@@ -136,9 +136,9 @@ public class MainUpperLimitActivity extends BaseActivity {
 
         // 清空重置
         mBinding.btnReset.setOnClickListener(v -> {
-            mBinding.mplImageList.reset();
+            mBinding.dmlImageList.reset();
             // 停止所有的上传
-            for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
+            for (Map.Entry<DisplayMedia, MyTask> entry : timers.entrySet()) {
                 entry.getValue().cancel();
             }
         });
@@ -154,8 +154,8 @@ public class MainUpperLimitActivity extends BaseActivity {
     }
 
     @Override
-    protected GridLayout getMaskProgressLayout() {
-        return mBinding.mplImageList;
+    protected DisplayMediaLayout getMaskProgressLayout() {
+        return mBinding.dmlImageList;
     }
 
     @Override
@@ -193,7 +193,7 @@ public class MainUpperLimitActivity extends BaseActivity {
 
         // 最大5张图片、最大3个视频、最大1个音频
         LimitModel limitModel = getLimitModel();
-        mBinding.mplImageList.setMaxMediaCount(limitModel.getMaxSelectable(),
+        mBinding.dmlImageList.setMaxMediaCount(limitModel.getMaxSelectable(),
                 limitModel.getMaxImageSelectable(),
                 limitModel.getMaxVideoSelectable(),
                 limitModel.getMaxAudioSelectable());
