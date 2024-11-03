@@ -19,6 +19,7 @@
     <string name="flash_auto">闪光灯自动</string>
     <string name="start_the_animation">启动动画</string>
     <string name="str_on_activity_result_tips">使用onActivityResult接受回调数据</string>
+    <string name="toggle_english">切换英文</string>
     <string name="take_pictures_and_add_them_to_the_album">拍照后加入相册</string>
     <string name="record_and_add_to_album">录像后加入相册</string>
     <string name="edit_the_picture_and_add_it_to_the_album">图片编辑后加入相册</string>
