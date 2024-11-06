@@ -54,6 +54,6 @@ dependencies {
     // 条形进度条
     implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
     // 处理svg图片的颜色
-    implementation 'com.sdsmdg.harjot:vectormaster:1.1.3'
+    implementation 'com.github.harjot-oberai:VectorMaster:357124ddde'
     compileOnly project(path: ':common')
 }

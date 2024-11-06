@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.camera.widget;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
@@ -45,11 +48,11 @@ public class PhotoVideoLayout extends BaseOperationLayout {
     }
 
     public PhotoVideoLayout(@NonNull Context context) {
-        super(context);
+        this(context, null);
     }
 
     public PhotoVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public PhotoVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {

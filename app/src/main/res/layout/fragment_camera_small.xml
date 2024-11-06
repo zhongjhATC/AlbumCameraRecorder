@@ -91,20 +91,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCustom2"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_below="@+id/clMenu"
-            android:text="我是自定义" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCustom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/rlPhoto"
-            android:text="我是自定义的点击我" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rlPhoto"
             android:layout_width="match_parent"
@@ -132,7 +118,7 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout
+        <com.zhongjh.cameraapp.phone.customlayout.camera4.PhotoVideoSmallLayout
             android:id="@+id/pvLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,7 +126,6 @@
             android:layout_marginBottom="50dp"
             android:background="#20000000"
             android:contentDescription="底部功能按钮"
-            android:paddingTop="16dp"
             tools:ignore="HardcodedText" />
 
     </com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout>

@@ -575,7 +575,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
         public CircularProgress btnCancel;
         public CircularProgress btnConfirm;
         public ClickOrLongButton btnClickOrLong;
-        TextView tvTip;
+        public TextView tvTip;
         public TextView tvSectionRecord;
         public CircularProgressView pbConfirm;
 
