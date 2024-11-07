@@ -141,6 +141,8 @@ object MediaUtils {
             mediaExtraInfo.duration =
                 retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                     ?.toLong() ?: 0
+            mediaExtraInfo.mimeType =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {

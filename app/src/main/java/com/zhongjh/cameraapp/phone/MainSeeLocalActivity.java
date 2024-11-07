@@ -37,16 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 这是用于设置加载数据的
- * 因为这不是重点开发加上时间因素，目前不做在线播放音频和视频。
- * 大体逻辑是先下载文件到指定目录，然后再赋值，播放。
+ * 这是用于设置加载数据的,演示本地的Demo
  *
  * @author zhongjh
- * @date 2019/2/21
+ * @date 2024/11/07
  */
-public class MainSeeActivity extends BaseActivity implements DownloadListener {
+public class MainSeeLocalActivity extends BaseActivity implements DownloadListener {
 
-    private static final String TAG = MainSeeActivity.class.getSimpleName();
+    private static final String TAG = MainSeeLocalActivity.class.getSimpleName();
 
     ActivityMainSeeBinding mBinding;
     /**
@@ -57,10 +55,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * 用于下载后记录的视频view
      */
     MultiMediaView mVideoMultiMediaView;
-    /**
-     * 用于下载后记录的视频position
-     */
-    int mVidePosition;
 
     /**
      * 初始化下载
@@ -75,14 +69,14 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * @param activity 要跳转的activity
      */
     public static void newInstance(Activity activity) {
-        activity.startActivity(new Intent(activity, MainSeeActivity.class));
+        activity.startActivity(new Intent(activity, MainSeeLocalActivity.class));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_see);
-        progressDialog = new ProgressDialog(MainSeeActivity.this);
+        progressDialog = new ProgressDialog(MainSeeLocalActivity.this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_see);
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
@@ -123,7 +117,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 Log.d(TAG, "onResult 具体类型:" + multiMediaView.getMimeType());
                 Log.d(TAG, "onResult 宽高: " + multiMediaView.getWidth() + "x" + multiMediaView.getHeight());
                 if (multiMediaView.isImageOrGif() || multiMediaView.isVideo()) {
-                    mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
+                    mGlobalSetting.openPreviewData(MainSeeLocalActivity.this, REQUEST_CODE_CHOOSE,
                             mBinding.mplImageList.getImagesAndVideos(),
                             mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
                 }
@@ -174,7 +168,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                     if (!isExists) {
                         // 调用方法
                         mVideoMultiMediaView = multiMediaView;
-                        mVidePosition = position;
                         mDownloadHelper.downloadFile(multiMediaView.getUrl(), fileFullPath[0], fileFullPath[1]);
                         // 返回false是中断后面的操作，先让目前视频文件下载完
                         return false;
@@ -244,7 +237,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         RecorderSetting recorderSetting = new RecorderSetting();
 
         // 全局
-        mGlobalSetting = MultiMediaSetting.from(MainSeeActivity.this)
+        mGlobalSetting = MultiMediaSetting.from(MainSeeLocalActivity.this)
                 .choose(MimeType.ofAll())
                 .albumSetting(albumSetting)
                 .cameraSetting(cameraSetting)
@@ -267,17 +260,10 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     private void initData() {
         mBinding.mplImageList.setOperation(true);
 
-        // 音频数据
-        List<String> audioUrls = new ArrayList<>();
-        audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        mBinding.mplImageList.setAudioUrls(audioUrls);
-
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
-        videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
-        videoUrls.add("https://www.w3school.com.cn/example/html5/mov_bbb.mp4");
-        mBinding.mplImageList.setVideoUrls(videoUrls);
+        videoUrls.add("/data/user/0/com.zhongjh.cameraapp/cache/video_20190221105749_Android_31228.mp4");
+        mBinding.mplImageList.setVideoPaths(videoUrls);
 
         // 图片数据
         List<String> imageUrls = new ArrayList<>();
@@ -344,8 +330,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 break;
             case "mp4":
                 mBinding.mplImageList.setVideoCover(mVideoMultiMediaView, file.getPath());
-                // 刷新
-                mBinding.mplImageList.refreshPosition(mVidePosition);
                 break;
             default:
                 break;
@@ -382,7 +366,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         // 获取文件名
         String fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName;
 
-        return new String[]{MainSeeActivity.this.getCacheDir().getPath(), fileName};
+        return new String[]{MainSeeLocalActivity.this.getCacheDir().getPath(), fileName};
     }
 
     /**
@@ -402,11 +386,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         }
 
         return true;
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
     }
 
 }

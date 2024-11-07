@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 
 import com.otaliastudios.cameraview.CameraView;
@@ -63,6 +64,11 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+                return false;
+            }
+
+            @Override
             public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
                 //                // 如果需要其他参数的话，循环数据初始化相关数值，这个读取时间会较长，建议异步线程执行
 //                for (MultiMediaView item : multiMediaViews) {
@@ -107,11 +113,6 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             @Override
             public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                return false;
             }
 
         });

@@ -48,6 +48,14 @@
             android:text="@string/open_the_default_data_set" />
 
         <Button
+            android:id="@+id/btnOpenSeeLocal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/open_the_default_data_set_local" />
+
+        <Button
             android:id="@+id/btnPreview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

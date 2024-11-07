@@ -96,6 +96,11 @@ public class MainActivity extends BaseActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+                return false;
+            }
+
+            @Override
             public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
             }
 
@@ -135,11 +140,6 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                return false;
             }
 
         });

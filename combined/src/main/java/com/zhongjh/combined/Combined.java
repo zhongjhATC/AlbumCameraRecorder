@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import com.zhongjh.albumcamerarecorder.preview.BasePreviewActivity;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
@@ -49,6 +51,7 @@ public class Combined {
         this.maskProgressLayout = maskProgressLayout;
         maskProgressLayout.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
+
             @Override
             public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
             }
@@ -89,9 +92,10 @@ public class Combined {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                return listener.onItemVideoStartDownload(view, multiMediaView);
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView, int position) {
+                return listener.onItemVideoStartDownload(view, multiMediaView,position);
             }
+
         });
     }
 

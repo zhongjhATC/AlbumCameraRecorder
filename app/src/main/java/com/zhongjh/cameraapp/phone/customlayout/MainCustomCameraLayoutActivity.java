@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
@@ -65,6 +66,11 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 
             @Override
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+                return false;
+            }
+
+            @Override
             public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
             }
 
@@ -105,11 +111,6 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             @Override
             public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                return false;
             }
 
         });

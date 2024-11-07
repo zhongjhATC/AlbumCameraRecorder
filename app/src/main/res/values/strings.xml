@@ -64,6 +64,7 @@
     <string name="style_version">Style version</string>
     <string name="configure_upperlimit_version">This is flexible configuration can choose xx pictures,xx videos,xx audio usage</string>
     <string name="open_the_default_data_set">Open the default data set</string>
+    <string name="open_the_default_data_set_local">Open the default data set - local</string>
     <string name="instant_preview">Instant preview</string>
     <string name="blue_style">Blue Style</string>
     <string name="black_style">Black Style</string>

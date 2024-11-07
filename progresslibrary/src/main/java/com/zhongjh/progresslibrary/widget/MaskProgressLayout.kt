@@ -16,6 +16,7 @@ import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
+import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.MediaUtils.getVideoSize
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
@@ -323,6 +324,7 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             multiMediaView.mimeType = mediaExtraInfo.mimeType
             multiMediaView.size = File(videoPath).length()
             multiMediaView.uri = mMediaStoreCompat.getUri(videoPath)
+            multiMediaView.path = videoPath
         }
     }
 
@@ -345,6 +347,22 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
     }
 
+    override fun setVideoPaths(videoPaths: List<String>) {
+        val multiMediaViews = ArrayList<MultiMediaView>()
+        for (path in videoPaths) {
+            val isExists: Boolean = fileIsExists(path)
+            val multiMediaView = MultiMediaView(MimeType.MP4.mimeTypeName)
+            if (isExists) {
+                // 如果存在,则提前获取文件相关数据
+                setVideoCover(multiMediaView, path)
+            }
+            multiMediaView.isUploading = false
+            multiMediaViews.add(multiMediaView)
+        }
+        mPhotoAdapter.setVideoData(multiMediaViews)
+        maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
+    }
+
     override fun addAudioStartUpload(filePath: String, length: Long) {
         isAuthority()
         val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
@@ -358,13 +376,32 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun setAudioUrls(audioUrls: List<String>) {
         val multiMediaViews: ArrayList<MultiMediaView> = ArrayList()
-        for (item in audioUrls) {
+        for (i in audioUrls.indices) {
+            val fileFullPath: Array<String> = getFileFullPath(audioUrls[i], 0)
+            val path = fileFullPath[0] + File.separator + fileFullPath[1]
+            val isExists: Boolean = fileIsExists(path)
             val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
-            multiMediaView.url = item
+            if (isExists) {
+                // 如果存在,则提前获取文件相关数据
+                setAudioCover(multiMediaView, path)
+            }
+            multiMediaView.isUploading = false
+            multiMediaView.url = audioUrls[i]
             audioList.add(multiMediaView)
             multiMediaViews.add(multiMediaView)
         }
         createPlayProgressView(multiMediaViews, 0)
+    }
+
+    override fun setAudioCover(multiMediaView: MultiMediaView, videoPath: String) {
+        if (TextUtils.isEmpty(multiMediaView.path)) {
+            val mediaExtraInfo = MediaUtils.getAudioSize(context, videoPath)
+            multiMediaView.duration = mediaExtraInfo.duration
+            multiMediaView.mimeType = mediaExtraInfo.mimeType
+            multiMediaView.size = File(videoPath).length()
+            multiMediaView.uri = mMediaStoreCompat.getUri(videoPath)
+            multiMediaView.path = videoPath
+        }
     }
 
     /**
@@ -423,6 +460,10 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun removePosition(position: Int) {
         mPhotoAdapter.removePosition(position)
+    }
+
+    override fun refreshPosition(position: Int) {
+        mPhotoAdapter.notifyItemRangeChanged(position, 1)
     }
 
     override fun setOperation(isOperation: Boolean) {
@@ -514,6 +555,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
                 // 设置数据源
                 val recordingItem = RecordingItem()
                 recordingItem.url = audioMultiMediaViews[position].url
+                recordingItem.duration = audioMultiMediaViews[position].duration
+                recordingItem.mimeType = audioMultiMediaViews[position].mimeType
+                recordingItem.path = audioMultiMediaViews[position].path
+                recordingItem.size = audioMultiMediaViews[position].size
+                recordingItem.uri = audioMultiMediaViews[position].uri
                 playProgressView.setData(recordingItem, audioProgressColor)
                 return playProgressView
             }

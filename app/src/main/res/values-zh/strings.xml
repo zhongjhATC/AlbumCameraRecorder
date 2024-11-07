@@ -64,6 +64,7 @@
     <string name="style_version">样式版</string>
     <string name="configure_upperlimit_version">这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例</string>
     <string name="open_the_default_data_set">打开默认有数据的</string>
+    <string name="open_the_default_data_set_local">打开默认有数据的 - 本地</string>
     <string name="instant_preview">直接预览</string>
     <string name="blue_style">蓝色样式</string>
     <string name="black_style">黑色样式</string>
