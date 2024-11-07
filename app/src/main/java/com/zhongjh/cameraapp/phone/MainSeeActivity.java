@@ -40,6 +40,8 @@ import java.util.List;
  * 因为这不是重点开发加上时间因素，目前不做在线播放音频和视频。
  * 大体逻辑是先下载文件到指定目录，然后再赋值，播放。
  *
+ * 如果真的用到该组件MaskProgressLayout，请开发者自行缓存本地数据
+ *
  * @author zhongjh
  * @date 2019/2/21
  */
@@ -103,6 +105,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 Log.d(TAG, "onResult Uri:" + multiMediaView.getUri());
                 Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
                 Log.d(TAG, "onResult 视频音频长度: " + multiMediaView.getDuration());
+
                 if (multiMediaView.isImageOrGif()) {
                     if (multiMediaView.isImage()) {
                         Log.d(TAG, "onResult 图片类型");

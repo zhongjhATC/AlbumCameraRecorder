@@ -51,8 +51,14 @@ object MediaUtils {
             } else {
                 exifInterface = ExifInterface(path)
             }
-            mediaExtraInfo.width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_NORMAL)
-            mediaExtraInfo.height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL)
+            mediaExtraInfo.width = exifInterface.getAttributeInt(
+                ExifInterface.TAG_IMAGE_WIDTH,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+            mediaExtraInfo.height = exifInterface.getAttributeInt(
+                ExifInterface.TAG_IMAGE_LENGTH,
+                ExifInterface.ORIENTATION_NORMAL
+            )
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -82,24 +88,32 @@ object MediaUtils {
             } else {
                 retriever.setDataSource(path)
             }
-            val orientation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+            val orientation =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
             val width: Int
             val height: Int
-            if (TextUtils.equals(ORIENTATION_ROTATE_90, orientation) || TextUtils.equals(ORIENTATION_ROTATE_270, orientation)) {
+            if (TextUtils.equals(ORIENTATION_ROTATE_90, orientation) || TextUtils.equals(
+                    ORIENTATION_ROTATE_270,
+                    orientation
+                )
+            ) {
                 height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-                        ?.toInt() ?: 0
+                    ?.toInt() ?: 0
                 width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-                        ?.toInt() ?: 0
+                    ?.toInt() ?: 0
             } else {
                 width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-                        ?.toInt() ?: 0
+                    ?.toInt() ?: 0
                 height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-                        ?.toInt() ?: 0
+                    ?.toInt() ?: 0
             }
             mediaExtraInfo.width = width
             mediaExtraInfo.height = height
-            mediaExtraInfo.duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            mediaExtraInfo.duration =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                     ?.toLong() ?: 0
+            mediaExtraInfo.mimeType =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -124,7 +138,8 @@ object MediaUtils {
             } else {
                 retriever.setDataSource(path)
             }
-            mediaExtraInfo.duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            mediaExtraInfo.duration =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                     ?.toLong() ?: 0
         } catch (e: Exception) {
             e.printStackTrace()
