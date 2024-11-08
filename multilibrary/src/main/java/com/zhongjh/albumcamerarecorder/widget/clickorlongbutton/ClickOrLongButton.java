@@ -334,55 +334,51 @@ public class ClickOrLongButton extends View {
             return;
         }
         // 调取样式中的颜色
-        try (TypedArray arrayRoundBorder = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_round_border});
-             TypedArray arrayInnerCircleInOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_in_operation});
-             TypedArray arrayInnerCircleNoOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_no_operation});
-             TypedArray arrayClickOrLongButtonStyle = getContext().obtainStyledAttributes(paramAttributeSet, R.styleable.ClickOrLongButton);
-        ) {
-            // 计算出倍数
-            int size = arrayClickOrLongButtonStyle.getInt(R.styleable.ClickOrLongButton_size, 100);
-            multiple = (float) size / 100;
+        TypedArray arrayRoundBorder = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_round_border});
+        TypedArray arrayInnerCircleInOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_in_operation});
+        TypedArray arrayInnerCircleNoOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_no_operation});
+        TypedArray arrayClickOrLongButtonStyle = getContext().obtainStyledAttributes(paramAttributeSet, R.styleable.ClickOrLongButton);
+        // 计算出倍数
+        int size = arrayClickOrLongButtonStyle.getInt(R.styleable.ClickOrLongButton_size, 100);
+        multiple = (float) size / 100;
 
-            int defaultRoundBorderColor = ResourcesCompat.getColor(
-                    getResources(), R.color.click_long_button_round_border,
-                    getContext().getTheme());
-            int defaultInnerCircleInOperationColor = ResourcesCompat.getColor(
-                    getResources(), R.color.click_long_button_inner_circle_in_operation,
-                    getContext().getTheme());
-            int defaultInnerCircleNoOperationColor = ResourcesCompat.getColor(
-                    getResources(), R.color.click_long_button_inner_circle_no_operation,
-                    getContext().getTheme());
+        int defaultRoundBorderColor = ResourcesCompat.getColor(
+                getResources(), R.color.click_long_button_round_border,
+                getContext().getTheme());
+        int defaultInnerCircleInOperationColor = ResourcesCompat.getColor(
+                getResources(), R.color.click_long_button_inner_circle_in_operation,
+                getContext().getTheme());
+        int defaultInnerCircleNoOperationColor = ResourcesCompat.getColor(
+                getResources(), R.color.click_long_button_inner_circle_no_operation,
+                getContext().getTheme());
 
-            touchable = recordable = true;
-            // 整块
-            mBoundingBoxSize = DisplayMetricsUtils.dip2px(100.0F * multiple);
-            // 外线宽度
-            mOutCircleWidth = DisplayMetricsUtils.dip2px(2.3F * multiple);
-            mOuterCircleWidthInc = DisplayMetricsUtils.dip2px(4.3F * multiple);
-            mInnerCircleRadius = DisplayMetricsUtils.dip2px(32.0F * multiple);
+        touchable = recordable = true;
+        // 整块
+        mBoundingBoxSize = DisplayMetricsUtils.dip2px(100.0F * multiple);
+        // 外线宽度
+        mOutCircleWidth = DisplayMetricsUtils.dip2px(2.3F * multiple);
+        mOuterCircleWidthInc = DisplayMetricsUtils.dip2px(4.3F * multiple);
+        mInnerCircleRadius = DisplayMetricsUtils.dip2px(32.0F * multiple);
 
-            TypedArray arrayInnerCircleNoOperationInterval = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_button_inner_circle_in_operation_interval});
-            int defaultInnerCircleNoOperationColorInterval = ResourcesCompat.getColor(
-                    getResources(), R.color.click_button_inner_circle_no_operation_interval,
-                    getContext().getTheme());
+        TypedArray arrayInnerCircleNoOperationInterval = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_button_inner_circle_in_operation_interval});
+        int defaultInnerCircleNoOperationColorInterval = ResourcesCompat.getColor(
+                getResources(), R.color.click_button_inner_circle_no_operation_interval,
+                getContext().getTheme());
 
-            colorRecord = arrayInnerCircleInOperation.getColor(0, defaultInnerCircleInOperationColor);
-            colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor);
-            colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor);
+        colorRecord = arrayInnerCircleInOperation.getColor(0, defaultInnerCircleInOperationColor);
+        colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor);
+        colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor);
 
-            initProcessBarPaint();
-            initOutCircle(arrayInnerCircleNoOperationInterval, defaultInnerCircleNoOperationColorInterval);
-            initCenterCircle();
-            // 状态为两者都可以
-            mButtonState = BUTTON_STATE_BOTH;
+        initProcessBarPaint();
+        initOutCircle(arrayInnerCircleNoOperationInterval, defaultInnerCircleNoOperationColorInterval);
+        initCenterCircle();
+        // 状态为两者都可以
+        mButtonState = BUTTON_STATE_BOTH;
 
-            arrayRoundBorder.recycle();
-            arrayInnerCircleInOperation.recycle();
-            arrayInnerCircleNoOperation.recycle();
-            arrayClickOrLongButtonStyle.recycle();
-        } catch (Exception exception) {
-            Log.e(TAG, exception.getMessage());
-        }
+        arrayRoundBorder.recycle();
+        arrayInnerCircleInOperation.recycle();
+        arrayInnerCircleNoOperation.recycle();
+        arrayClickOrLongButtonStyle.recycle();
 
     }
 
