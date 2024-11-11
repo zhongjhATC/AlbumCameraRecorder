@@ -192,8 +192,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         initConfig();
         initData();
         initListener();
-        findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
     }
 
     @Override
@@ -296,7 +294,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * 通过url加入的
      */
     private void initListener() {
-
+        findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
+        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
     }
 
     @Override

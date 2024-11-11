@@ -82,5 +82,8 @@
     <string name="obtain_the_cache_file_size">穫取緩存文件大小</string>
     <string name="clear_the_cache_file_size">清空緩存文件大小</string>
     <string name="viewing_the_file_path">查看文件路徑</string>
+    <string name="str_see_set_value">賦值</string>
+    <string name="str_see_get_value">獲取值</string>
+    <string name="str_see_reset_value">重置</string>
 
 </resources>

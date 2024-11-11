@@ -48,6 +48,13 @@ interface MaskProgressApi {
     fun setImageUrls(imagesUrls: List<String>)
 
     /**
+     * 设置图片本地数据
+     *
+     * @param imagesUrls 图片网址
+     */
+    fun setImagePaths(imagePaths: List<String>)
+
+    /**
      * 设置视频地址并且启动上传(一般用于刚确认了哪些数据后)
      *
      * @param videoUris 视频地址列表

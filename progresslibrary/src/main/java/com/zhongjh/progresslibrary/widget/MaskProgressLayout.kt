@@ -308,6 +308,22 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
     }
 
+    override fun setImagePaths(imagePaths: List<String>) {
+        val multiMediaViews = ArrayList<MultiMediaView>()
+        for (path in imagePaths) {
+            val isExists: Boolean = fileIsExists(path)
+            val multiMediaView = MultiMediaView(MimeType.JPEG.mimeTypeName)
+            if (isExists) {
+                // 如果存在,则提前获取文件相关数据
+                setVideoCover(multiMediaView, path)
+                multiMediaView.isUploading = false
+                multiMediaViews.add(multiMediaView)
+            }
+        }
+        mPhotoAdapter.setImageData(multiMediaViews)
+        maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
+    }
+
     override fun addVideoStartUpload(videoUris: List<Uri>) {
         addVideo(videoUris, icClean = false, isUploading = true)
     }
@@ -355,9 +371,9 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             if (isExists) {
                 // 如果存在,则提前获取文件相关数据
                 setVideoCover(multiMediaView, path)
+                multiMediaView.isUploading = false
+                multiMediaViews.add(multiMediaView)
             }
-            multiMediaView.isUploading = false
-            multiMediaViews.add(multiMediaView)
         }
         mPhotoAdapter.setVideoData(multiMediaViews)
         maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)

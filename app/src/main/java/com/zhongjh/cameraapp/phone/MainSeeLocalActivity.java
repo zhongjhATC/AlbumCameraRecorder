@@ -185,8 +185,6 @@ public class MainSeeLocalActivity extends BaseActivity implements DownloadListen
         initConfig();
         initData();
         initListener();
-        findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
     }
 
     @Override
@@ -262,27 +260,37 @@ public class MainSeeLocalActivity extends BaseActivity implements DownloadListen
 
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
+        // 添加的这个本地地址自行修改,如果本地手机不存在该文件,app是不会添加的
         videoUrls.add("/data/user/0/com.zhongjh.cameraapp/cache/video_20190221105749_Android_31228.mp4");
         mBinding.mplImageList.setVideoPaths(videoUrls);
 
         // 图片数据
         List<String> imageUrls = new ArrayList<>();
-        imageUrls.add("https://img.huoyunji.com/photo_20190221105726_Android_15181?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        mBinding.mplImageList.setImageUrls(imageUrls);
+        imageUrls.add("/storage/emulated/0/Pictures/Screenshots/Screenshot_2024-11-08-14-23-45-88_3583b5560b9060cb28008c20a0fd6fa9.jpg");
+        imageUrls.add("/storage/emulated/0/Pictures/Tencent/Qidian_Images/-6121c1c5043c13f3.png");
+        mBinding.mplImageList.setImagePaths(imageUrls);
     }
 
     /**
      * 通过url加入的
      */
     private void initListener() {
-
+        findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
+        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
+        findViewById(R.id.btnGetValue).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<MultiMediaView> value = mBinding.mplImageList.getImagesAndVideos();
+                for (MultiMediaView item : value) {
+                    Log.i(TAG, "onResult id:" + item.getId());
+                    Log.i(TAG, "onResult url:" + item.getUrl());
+                    Log.d(TAG, "onResult 绝对路径:" + item.getPath());
+                    Log.d(TAG, "onResult Uri:" + item.getUri());
+                    Log.d(TAG, "onResult 文件大小: " + item.getSize());
+                    Log.d(TAG, "onResult 视频音频长度: " + item.getDuration());
+                }
+            }
+        });
     }
 
     @Override

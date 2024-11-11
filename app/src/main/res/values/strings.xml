@@ -83,4 +83,7 @@
     <string name="obtain_the_cache_file_size">Obtain the cache file size </string>
     <string name="clear_the_cache_file_size">Clear the cache file size</string>
     <string name="viewing_the_file_path">Viewing the File Path</string>
+    <string name="str_see_set_value">set value</string>
+    <string name="str_see_get_value">get value</string>
+    <string name="str_see_reset_value">reset value</string>
 </resources>
