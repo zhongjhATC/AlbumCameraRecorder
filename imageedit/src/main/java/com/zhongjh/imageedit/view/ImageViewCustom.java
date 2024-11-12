@@ -164,7 +164,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     }
 
     /**
-     * 开始了矫正动画
+     * 开始了归位动画
      */
     private void startHoming(ImageHoming sHoming, ImageHoming eHoming) {
         Log.d(TAG, "startHoming");
@@ -633,7 +633,10 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     }
 
     /**
-     * 设置图片回归原位
+     * 设置图片的倍率、角度、图片位置,以下三种场景用到
+     * 1. 动画进行时
+     * 2. 动画结束后
+     * 3. 移动、拉伸图片后
      */
     private void toApplyHoming(ImageHoming homing) {
         Log.d(TAG, "toApplyHoming " +
@@ -646,7 +649,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     }
 
     /**
-     * 设置图片回归原位
+     * 移动自身
      */
     private boolean onScrollTo(int x, int y) {
         Log.d(TAG, "onScrollTo");
