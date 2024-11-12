@@ -694,9 +694,6 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     @Override
     public void onAnimationStart(Animator animation) {
         Log.d(TAG, "onAnimationStart");
-        if (DEBUG) {
-            Log.d(TAG, "onAnimationStart");
-        }
         mImage.onHomingStart();
     }
 
@@ -706,9 +703,6 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     @Override
     public void onAnimationEnd(Animator animation) {
         Log.d(TAG, "onAnimationEnd");
-        if (DEBUG) {
-            Log.d(TAG, "onAnimationEnd");
-        }
         if (mImage.onHomingEnd(getScrollX(), getScrollY(), mHomingAnimator.isRotate())) {
             toApplyHoming(mImage.clip(getScrollX(), getScrollY()));
         }
@@ -717,9 +711,6 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     @Override
     public void onAnimationCancel(Animator animation) {
         Log.d(TAG, "onAnimationCancel");
-        if (DEBUG) {
-            Log.d(TAG, "onAnimationCancel");
-        }
         mImage.onHomingCancel(mHomingAnimator.isRotate());
     }
 
