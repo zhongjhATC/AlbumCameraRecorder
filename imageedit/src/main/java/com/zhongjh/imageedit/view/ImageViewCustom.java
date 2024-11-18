@@ -365,7 +365,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         Log.d(TAG, "onLayout");
         super.onLayout(changed, left, top, right, bottom);
         if (changed) {
-            mImage.onWindowChanged(right - left, bottom - top);
+            mImage.onLayout(right - left, bottom - top);
         }
     }
 
