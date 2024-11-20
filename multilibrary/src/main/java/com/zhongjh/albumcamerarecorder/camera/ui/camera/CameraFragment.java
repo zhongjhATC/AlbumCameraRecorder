@@ -29,11 +29,11 @@ import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayo
  */
 public class CameraFragment extends BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter> {
 
-    ViewHolder mViewHolder;
     BaseCameraPicturePresenter cameraPicturePresenter = new BaseCameraPicturePresenter(this);
     BaseCameraVideoPresenter cameraVideoPresenter = new BaseCameraVideoPresenter(this);
-    CameraManage cameraManage = new CameraManage(getMyContext(), mViewHolder, this);
     CameraStateManagement cameraStateManagement = new CameraStateManagement(this);
+    ViewHolder mViewHolder;
+    CameraManage cameraManage;
 
     public static CameraFragment newInstance() {
         return new CameraFragment();
@@ -47,6 +47,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
     @Override
     public void initView(View view, Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(view);
+        cameraManage = new CameraManage(getMyContext(), mViewHolder, this);
     }
 
     @NonNull

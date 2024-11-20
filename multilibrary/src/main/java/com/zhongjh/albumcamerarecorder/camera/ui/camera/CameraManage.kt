@@ -392,10 +392,9 @@ class CameraManage(
      */
     private fun initImageCapture(screenAspectRatio: Int) {
         // 初始化 拍照类 imageCapture,设置 优先考虑延迟而不是图像质量、设置比例、设置角度
-        mImageCapture =
-            ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                .setTargetAspectRatio(screenAspectRatio)
-                .setTargetRotation(mViewHolder.previewView.display.rotation).build()
+        mImageCapture = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setTargetAspectRatio(screenAspectRatio)
+            .setTargetRotation(mViewHolder.previewView.display.rotation).build()
     }
 
     /**
