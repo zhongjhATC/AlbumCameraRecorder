@@ -5,22 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
 import com.zhongjh.cameraapp.R;
-import com.zhongjh.cameraapp.databinding.FragmentCamera1Binding;
 import com.zhongjh.cameraapp.databinding.FragmentCameraSmallBinding;
 
 /**
@@ -46,10 +43,15 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManagemen
         return new CameraSmallFragment();
     }
 
+//    @Override
+//    public View setContentView(LayoutInflater inflater, ViewGroup container) {
+//        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera_small, container, false);
+//        return mBinding.getRoot();
+//    }
+
     @Override
     public View setContentView(LayoutInflater inflater, ViewGroup container) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera_small, container, false);
-        return mBinding.getRoot();
+        return null;
     }
 
     @Override
@@ -76,12 +78,6 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManagemen
     @Override
     public View getTopView() {
         return mBinding.clMenu;
-    }
-
-    @NonNull
-    @Override
-    public CameraView getCameraView() {
-        return mBinding.cameraView;
     }
 
     @Override
@@ -123,6 +119,12 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManagemen
     @Override
     public ImageView getSwitchView() {
         return mBinding.imgSwitch;
+    }
+
+    @NonNull
+    @Override
+    public CameraManage getCameraManage() {
+        return null;
     }
 
     @NonNull

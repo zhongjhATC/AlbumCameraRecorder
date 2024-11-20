@@ -4,10 +4,17 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
+import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.cameraapp.R;
+import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameraviewBinding;
 import com.zhongjh.cameraapp.databinding.ActivityMainListBinding;
 import com.zhongjh.cameraapp.phone.customlayout.MainCustomCameraLayoutActivity;
+import com.zhongjh.common.entity.SaveStrategy;
+import com.zhongjh.common.enums.MimeType;
+
+import java.util.ArrayList;
 
 /**
  * list配置
@@ -40,17 +47,17 @@ public class MainListActivity extends AppCompatActivity {
         mBinding.btnOpenSee.setOnClickListener(v -> MainSeeActivity.newInstance(MainListActivity.this));
 
         // 默认有数据的 - 本地
-        mBinding.btnOpenSeeLocal.setOnClickListener(v -> MainSeeLocalActivity.newInstance(MainListActivity.this));
+//        mBinding.btnOpenSeeLocal.setOnClickListener(v -> MainSeeLocalActivity.newInstance(MainListActivity.this));
 
         // 独立预览相片功能
         mBinding.btnPreview.setOnClickListener(v -> {
-            GlobalSetting globalSetting = MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll());
-            globalSetting.allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "preview"));
-            globalSetting.imageEngine(new Glide4Engine());
-            ArrayList<Integer> list = new ArrayList<>();
-            list.add(R.drawable.ic_camera_enhance_black_24dp);
-            list.add(R.drawable.ic_play_arrow_white_24dp);
-            globalSetting.openPreviewResourceId(MainListActivity.this, list, 0);
+//            GlobalSetting globalSetting = MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll());
+//            globalSetting.allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "preview"));
+//            globalSetting.imageEngine(new Glide4Engine());
+//            ArrayList<Integer> list = new ArrayList<>();
+//            list.add(R.drawable.ic_camera_enhance_black_24dp);
+//            list.add(R.drawable.ic_play_arrow_white_24dp);
+//            globalSetting.openPreviewResourceId(MainListActivity.this, list, 0);
         });
 
         // 这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例

@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -60,7 +58,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * 用于下载后记录的视频view
      */
     DisplayMedia mVideoDisplayMedia;
-    MultiMediaView mVideoMultiMediaView;
     /**
      * 用于下载后记录的视频position
      */
@@ -91,7 +88,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
 //                boolean isOk = getPermissions(true);
 //                if (isOk) {
 //                    // 判断是否存在文件
@@ -108,14 +105,14 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
 //                    }
 //                }
             }
-
-            @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
-                timer.schedule();
-            }
+//
+//            @Override
+//            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.AudioHolder viewHolder) {
+//                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
+//                MyTask timer = new MyTask(displayMedia);
+//                timers.put(displayMedia, timer);
+//                timer.schedule();
+//            }
 
             @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
@@ -133,15 +130,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             @Override
             public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
-                Log.i(TAG, "onResult id:" + multiMediaView.getId());
-                Log.i(TAG, "onResult url:" + multiMediaView.getUrl());
-                Log.d(TAG, "onResult 绝对路径:" + multiMediaView.getPath());
-                Log.d(TAG, "onResult Uri:" + multiMediaView.getUri());
-                Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
-                Log.d(TAG, "onResult 视频音频长度: " + multiMediaView.getDuration());
-
-                if (multiMediaView.isImageOrGif()) {
-                    if (multiMediaView.isImage()) {
                 Log.i(TAG, "onResult id:" + displayMedia.getId());
                 Log.i(TAG, "onResult url:" + displayMedia.getUrl());
                 Log.d(TAG, "onResult 绝对路径:" + displayMedia.getPath());
@@ -187,17 +175,14 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView, int position) {
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia, int position) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
                     String[] fileFullPath = getFileFullPath(displayMedia.getUrl(), 1);
                     boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
                     if (!isExists) {
                         // 调用方法
-                        mVideoMultiMediaView = multiMediaView;
                         mVidePosition = position;
-                        mDownloadHelper.downloadFile(multiMediaView.getUrl(), fileFullPath[0], fileFullPath[1]);
                         mVideoDisplayMedia = displayMedia;
                         mDownloadHelper.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1]);
                         // 返回false是中断后面的操作，先让目前视频文件下载完
@@ -321,7 +306,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      */
     private void initListener() {
         findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
+        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.dmlImageList.reset());
     }
 
     @Override
@@ -368,9 +353,9 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 mBinding.dmlImageList.setAudioCover(mAudioView, file.getPath());
                 break;
             case "mp4":
-                mBinding.mplImageList.setVideoCover(mVideoMultiMediaView, file.getPath());
+                mBinding.dmlImageList.setVideoCover(mVideoDisplayMedia, file.getPath());
                 // 刷新
-                mBinding.mplImageList.refreshPosition(mVidePosition);
+                mBinding.dmlImageList.refreshPosition(mVidePosition);
                 break;
             default:
                 break;

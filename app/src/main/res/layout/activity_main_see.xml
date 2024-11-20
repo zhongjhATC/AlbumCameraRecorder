@@ -1,47 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- 注意这里的app:maxCount是包含图片、视频、音频的总数量 -->
-    <com.zhongjh.displaymedia.widget.DisplayMediaLayout
-        android:id="@+id/dmlImageList"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:album.thumbnail.placeholder="@drawable/ic_loading"
-        app:audioDeleteColor="@color/blue_primary"
-        app:audioPlayColor="@color/blue_primary"
-        app:audioProgressColor="@color/blue_primary"
-        app:authority="com.zhongjh.cameraapp.fileprovider"
-        app:imageAddDrawable="@drawable/ic_add_gray"
-        app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
-        app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
-        app:isOperation="true"
-        app:maskingColor="?attr/colorPrimary"
-        app:maskingTextColor="@color/black_eighty_percent"
-        app:maskingTextContent="@string/up_upload_is_customizable"
-        app:maskingTextSize="12"
-        app:maxCount="12" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnSetValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/str_see_set_value" />
+        <!-- 注意这里的app:maxCount是包含图片、视频、音频的总数量 -->
+        <com.zhongjh.displaymedia.widget.DisplayMediaLayout
+            android:id="@+id/dmlImageList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:album.thumbnail.placeholder="@drawable/ic_loading"
+            app:audioDeleteColor="@color/blue_primary"
+            app:audioPlayColor="@color/blue_primary"
+            app:audioProgressColor="@color/blue_primary"
+            app:authority="com.zhongjh.cameraapp.fileprovider"
+            app:imageAddDrawable="@drawable/ic_add_gray"
+            app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
+            app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
+            app:isOperation="true"
+            app:maskingColor="?attr/colorPrimary"
+            app:maskingTextColor="@color/black_eighty_percent"
+            app:maskingTextContent="@string/up_upload_is_customizable"
+            app:maskingTextSize="12"
+            app:maxCount="12" />
 
-    <Button
-        android:id="@+id/btnGetValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/str_see_get_value" />
+        <Button
+            android:id="@+id/btnSetValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/str_see_set_value" />
 
-    <Button
-        android:id="@+id/btnReset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/str_see_reset_value" />
+        <Button
+            android:id="@+id/btnGetValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/str_see_get_value" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/str_see_reset_value" />
 
+    </LinearLayout>
+</layout>

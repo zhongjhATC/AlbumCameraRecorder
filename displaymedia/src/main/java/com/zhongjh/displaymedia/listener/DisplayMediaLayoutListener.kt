@@ -40,11 +40,12 @@ interface DisplayMediaLayoutListener {
     /**
      * 开始上传 - 指刚添加后的
      *
-     * @param displayMedia 传递的多媒体实体
-     * @param viewHolder 图片/视频中的格子列表ViewHolder
-     *
+     * @param displayMedia 传递的多媒体
      */
-    fun onItemStartUploading(displayMedia: DisplayMedia, viewHolder: ImagesAndVideoAdapter.PhotoViewHolder)
+    fun onItemStartUploading(
+        displayMedia: DisplayMedia,
+        viewHolder: ImagesAndVideoAdapter.PhotoViewHolder
+    )
 
     /**
      * 回调删除事件
@@ -54,34 +55,26 @@ interface DisplayMediaLayoutListener {
     fun onItemClose(displayMedia: DisplayMedia)
 
     /**
-     * 开始上传音频
-     *
-     * @param displayMedia 传递的多媒体实体
-     * @param viewHolder 音频列表ViewHolder
-     *
-     */
-    fun onItemAudioStartUploading(displayMedia: DisplayMedia, viewHolder: AudioAdapter.VideoHolder)
-
-    /**
      * 开始下载音频
      *
-     * @param holder 音频的viewHolder
+     * @param audioHolder 点击的view
      * @param url  网址
      */
-    fun onItemAudioStartDownload(holder: AudioAdapter.VideoHolder, url: String)
+    fun onItemAudioStartDownload(audioHolder: AudioAdapter.AudioHolder, url: String)
 
     /**
      * 开始下载视频
      *
      * @param view           点击的view
      * @param displayMedia 传递的多媒体
+     * @param position 视频/图片的索引
      *
      * @return 是否触发后面的事件
      */
-    fun onItemVideoStartDownload(view: View, displayMedia: DisplayMedia): Boolean
+    fun onItemVideoStartDownload(view: View, displayMedia: DisplayMedia, position: Int): Boolean
 
     /**
      * 加载数据完毕
      */
-    fun onAddDataSuccess(displayMedia: List<DisplayMedia>)
+    fun onAddDataSuccess(displayMedias: List<DisplayMedia>)
 }

@@ -58,9 +58,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    // viewBinding
-    buildFeatures {
-        viewBinding true
+    dataBinding {
+        enabled = true
     }
 }
 
@@ -76,6 +75,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompatSdkVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintlayoutSdkVersion"
     implementation "androidx.documentfile:documentfile:$rootProject.ext.documentfileSdkVersion"
+    def camerax_version = "1.2.1"
+    implementation "androidx.camera:camera-core:${camerax_version}"
 
     // 如果想简化代码并且同时用到multilibrary和grid、albumCameraRecorderCommon,可以直接使用combined库
     implementation project(':combined')

@@ -127,8 +127,8 @@ class CameraSetting : CameraSettingApi {
         return this
     }
 
-    override fun flashModel(flashModel: Int): CameraSetting {
-        mCameraSpec.flashModel = flashModel
+    override fun flashMode(flashMode: Int): CameraSetting {
+        mCameraSpec.flashMode = flashMode
         return this
     }
 

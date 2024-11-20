@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.zhongjh.example.cameraxapp'
-    compileSdk 32
+    compileSdk rootProject.ext.androidCompileSdkVersion
 
     defaultConfig {
         applicationId "com.zhongjh.example.cameraxapp"
-        minSdk 21
-        targetSdk 32
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 

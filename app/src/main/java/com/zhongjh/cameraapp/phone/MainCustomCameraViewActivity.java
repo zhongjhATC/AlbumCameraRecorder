@@ -7,11 +7,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
 
-import com.otaliastudios.cameraview.CameraView;
-import com.otaliastudios.cameraview.controls.Preview;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
@@ -66,21 +62,13 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
-
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull DisplayMedia displayMedia, int position) {
                 return false;
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
-                timer.schedule();
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
+
             }
 
             @Override
@@ -128,11 +116,6 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                 }
             }
 
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
-                return false;
-            }
-
             public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
             }
@@ -163,14 +146,14 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 //        cameraSetting.enableImageHighDefinition(true);
         // 自定义cameraView的宽高，更多设置参考 https://github.com/natario1/CameraView 源码
-        cameraSetting.setOnCameraViewListener(cameraView -> {
-            // 可以自定义cameraView预览时候的宽高,如果定义的不是高清拍照录制模式，那么出来的成品也是跟预览一样大小
-            // 如果想做成比例方式也可以，那么计算屏幕宽度，高度这些就不用我说了吧？
-            updateSize(cameraView);
-
-            // 如果想跟系统相机一样拍摄范围更广，需要设置cameraSetting.enableImageHighDefinition(true)，同时要修改cameraPreview
-//             updateCameraPreview(cameraView);
-        });
+//        cameraSetting.setOnCameraViewListener(cameraView -> {
+//            // 可以自定义cameraView预览时候的宽高,如果定义的不是高清拍照录制模式，那么出来的成品也是跟预览一样大小
+//            // 如果想做成比例方式也可以，那么计算屏幕宽度，高度这些就不用我说了吧？
+//            updateSize(cameraView);
+//
+//            // 如果想跟系统相机一样拍摄范围更广，需要设置cameraSetting.enableImageHighDefinition(true)，同时要修改cameraPreview
+////             updateCameraPreview(cameraView);
+//        });
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(false)
@@ -214,24 +197,24 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 
-    /**
-     * 修改宽高
-     */
-    private void updateSize(CameraView cameraView) {
-        RelativeLayout.LayoutParams layoutParams =
-                new RelativeLayout.LayoutParams(400, 100);
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        cameraView.setLayoutParams(layoutParams);
-    }
-
-    /**
-     * 修改CameraPreview
-     * <p>
-     * 之前有小伙伴想做出跟系统相机预览范围一样广，但是这基本不可能的，这个是根据硬件配置而定
-     * 因为想预览界面铺满又想拍照反应快又想跟系统相机一摸一样的话，微信早就这样做出来了
-     */
-    private void updateCameraPreview(CameraView cameraView) {
-        cameraView.setPreview(Preview.SURFACE);
-    }
+//    /**
+//     * 修改宽高
+//     */
+//    private void updateSize(CameraView cameraView) {
+//        RelativeLayout.LayoutParams layoutParams =
+//                new RelativeLayout.LayoutParams(400, 100);
+//        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+//        cameraView.setLayoutParams(layoutParams);
+//    }
+//
+//    /**
+//     * 修改CameraPreview
+//     * <p>
+//     * 之前有小伙伴想做出跟系统相机预览范围一样广，但是这基本不可能的，这个是根据硬件配置而定
+//     * 因为想预览界面铺满又想拍照反应快又想跟系统相机一摸一样的话，微信早就这样做出来了
+//     */
+//    private void updateCameraPreview(CameraView cameraView) {
+//        cameraView.setPreview(Preview.SURFACE);
+//    }
 
 }

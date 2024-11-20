@@ -26,8 +26,8 @@ public class CameraPicturePresenter extends BaseCameraPicturePresenter {
     @Override
     public void takePhoto() {
         super.takePhoto();
-        TextView watermark = ((ViewGroup) baseCameraFragment.getCameraManage()).findViewById(R.id.tvWatermark);
-        watermark.setText("自定义水印");
+//        TextView watermark = ((ViewGroup) baseCameraFragment.getCameraManage()).findViewById(R.id.tvWatermark);
+//        watermark.setText("自定义水印");
         Toast.makeText(baseCameraFragment.getMyContext(), "自定义水印", Toast.LENGTH_SHORT).show();
     }
 }

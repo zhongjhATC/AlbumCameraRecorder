@@ -28,8 +28,10 @@ import java.util.concurrent.TimeUnit
 
 class AudioAdapter(
     private val mContext: Context,
-    private val audioDeleteColor: Int, private val audioProgressColor: Int, private val audioPlayColor: Int
-) : RecyclerView.Adapter<AudioAdapter.VideoHolder>() {
+    private val audioDeleteColor: Int,
+    private val audioProgressColor: Int,
+    private val audioPlayColor: Int
+) : RecyclerView.Adapter<AudioAdapter.AudioHolder>() {
 
     companion object {
         val TAG: String = AudioAdapter::class.java.simpleName
@@ -104,26 +106,26 @@ class AudioAdapter(
         return mPlayTask
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudioHolder {
         val view: View = mInflater.inflate(R.layout.item_audio_progress_zjh, parent, false)
-        val videoHolder = VideoHolder(view)
+        val audioHolder = AudioHolder(view)
 
         // 设置上传音频等属性
-        videoHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor)
-        isShowRemoveRecorder(videoHolder)
-        videoHolder.numberProgressBar.setProgressTextColor(audioProgressColor)
-        videoHolder.numberProgressBar.reachedBarColor = audioProgressColor
-        videoHolder.tvRecorderTip.setTextColor(audioProgressColor)
+        audioHolder.imgRemoveRecorder.setColorFilter(audioDeleteColor)
+        isShowRemoveRecorder(audioHolder)
+        audioHolder.numberProgressBar.setProgressTextColor(audioProgressColor)
+        audioHolder.numberProgressBar.reachedBarColor = audioProgressColor
+        audioHolder.tvRecorderTip.setTextColor(audioProgressColor)
 
         // 设置播放控件里面的播放按钮的颜色
-        videoHolder.imgPlay.setColorFilter(audioPlayColor)
-        videoHolder.tvCurrentProgress.setTextColor(audioProgressColor)
-        videoHolder.tvTotalProgress.setTextColor(audioProgressColor)
+        audioHolder.imgPlay.setColorFilter(audioPlayColor)
+        audioHolder.tvCurrentProgress.setTextColor(audioProgressColor)
+        audioHolder.tvTotalProgress.setTextColor(audioProgressColor)
 
-        return videoHolder
+        return audioHolder
     }
 
-    override fun onBindViewHolder(holder: VideoHolder, position: Int) {
+    override fun onBindViewHolder(holder: AudioHolder, position: Int) {
         val displayMedia = list[position]
         // 显示完成后的音频
         holder.showPlayView()
@@ -139,7 +141,7 @@ class AudioAdapter(
      * @param position 索引
      * @param payloads   用于标识 刷新布局里面的那个具体控件
      */
-    override fun onBindViewHolder(holder: VideoHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(holder: AudioHolder, position: Int, payloads: MutableList<Any>) {
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)
             return
@@ -151,6 +153,7 @@ class AudioAdapter(
                 ImagesAndVideoAdapter.PHOTO_ADAPTER_PROGRESS -> {
                     holder.showProgress(progressMedia.progress)
                 }
+
                 AUDIO_IS_PLAY -> {
                     holder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
                 }
@@ -218,7 +221,7 @@ class AudioAdapter(
      * 初始化所有事件
      */
     @SuppressLint("SetTextI18n")
-    private fun initListener(holder: VideoHolder, displayMedia: DisplayMedia, position: Int) {
+    private fun initListener(holder: AudioHolder, displayMedia: DisplayMedia, position: Int) {
         // 音频删除事件
         holder.imgRemoveRecorder.setOnClickListener {
             list.remove(displayMedia)
@@ -250,7 +253,7 @@ class AudioAdapter(
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showAudioView(holder: VideoHolder, displayMedia: DisplayMedia) {
+    private fun showAudioView(holder: AudioHolder, displayMedia: DisplayMedia) {
         holder.seekBar.progress = 0
         holder.imgPlay.isEnabled = true
         // 当前时间
@@ -264,7 +267,7 @@ class AudioAdapter(
     /**
      * 设置是否显示删除音频按钮
      */
-    private fun isShowRemoveRecorder(holder: VideoHolder) {
+    private fun isShowRemoveRecorder(holder: AudioHolder) {
         if (isOperation) {
             // 如果是可操作的，就判断是否有音频数据
             if (holder.clPlay.visibility == View.VISIBLE
@@ -298,7 +301,7 @@ class AudioAdapter(
      * 播放音频
      */
     @SuppressLint("SetTextI18n")
-    private fun onPlay(holder: VideoHolder, displayMedia: DisplayMedia) {
+    private fun onPlay(holder: AudioHolder, displayMedia: DisplayMedia) {
         displayMedia.videoMedia?.let {
             if (it.isPlaying) {
                 // 如果当前正在播放  停止播放 更改控制栏播放状态
@@ -352,7 +355,12 @@ class AudioAdapter(
                 }
                 mMediaPlayer.start()
                 // 定时器 更新进度
-                ThreadUtils.executeBySingleAtFixRate(getPlayTask(displayMedia), 1L, 1, TimeUnit.SECONDS)
+                ThreadUtils.executeBySingleAtFixRate(
+                    getPlayTask(displayMedia),
+                    1L,
+                    1,
+                    TimeUnit.SECONDS
+                )
             }
             it.isPlaying = !it.isPlaying
             it.isCompletion = false
@@ -362,9 +370,9 @@ class AudioAdapter(
     /**
      * 进度条的进度变化事件
      */
-    internal inner class MySeekBar(holder: VideoHolder) : SeekBar.OnSeekBarChangeListener {
+    internal inner class MySeekBar(holder: AudioHolder) : SeekBar.OnSeekBarChangeListener {
 
-        var holder: VideoHolder? = holder
+        var holder: AudioHolder? = holder
 
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             // 当进度条变化时触发
@@ -403,7 +411,7 @@ class AudioAdapter(
         }
     }
 
-    class VideoHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class AudioHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val numberProgressBar: NumberProgressBar = itemView.findViewById(R.id.numberProgressBar)
         val imgRemoveRecorder: ImageView = itemView.findViewById(R.id.imgRemoveRecorder)

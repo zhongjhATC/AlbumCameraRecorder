@@ -18,11 +18,10 @@ import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.displaymedia.R
 import com.zhongjh.displaymedia.engine.ImageEngine
-import com.zhongjh.displaymedia.entity.PhotoAdapterEntity
 import com.zhongjh.displaymedia.entity.DisplayMedia
+import com.zhongjh.displaymedia.entity.PhotoAdapterEntity
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener
 import com.zhongjh.displaymedia.widget.MaskProgressView
-import java.util.*
 
 /**
  * 九宫展示数据
@@ -148,18 +147,18 @@ class ImagesAndVideoAdapter(
                 }
             })
         } else {
-            val multiMediaView = list[position]
+            val displayMedia = list[position]
             // 根据类型做相关设置
-            if (multiMediaView.isVideo()) {
+            if (displayMedia.isVideo()) {
                 // 视频处理，判断是否显示播放按钮
                 holder.tvVideoDuration.visibility = View.VISIBLE
                 holder.tvVideoDuration.text =
-                    DateUtils.formatElapsedTime(multiMediaView.duration / TIME_UNIT)
-            } else if (multiMediaView.isImageOrGif()) {
+                    DateUtils.formatElapsedTime(displayMedia.duration / TIME_UNIT)
+            } else if (displayMedia.isImageOrGif()) {
                 holder.tvVideoDuration.visibility = View.GONE
             }
 
-            if (multiMediaView.isGif()) {
+            if (displayMedia.isGif()) {
                 holder.imgGif.visibility = View.VISIBLE
             } else {
                 holder.imgGif.visibility = View.GONE
@@ -169,7 +168,7 @@ class ImagesAndVideoAdapter(
                 mContext,
                 photoAdapterEntity.imageEngine,
                 photoAdapterEntity.placeholder,
-                multiMediaView,
+                displayMedia,
                 mItemHeight
             )
 
@@ -178,7 +177,7 @@ class ImagesAndVideoAdapter(
                 holder.vClose.visibility = View.VISIBLE
                 holder.vClose.setOnClickListener(object : OnMoreClickListener() {
                     override fun onListener(v: View) {
-                        removePosition(multiMediaView)
+                        removePosition(displayMedia)
                     }
                 })
             } else {
@@ -189,22 +188,26 @@ class ImagesAndVideoAdapter(
                 override fun onListener(v: View) {
                     if (listener != null) {
                         // 点击
-                        if (multiMediaView.isImageOrGif()) {
+                        if (displayMedia.isImageOrGif()) {
                             // 如果是图片，直接跳转详情
-                            listener!!.onItemClick(v, multiMediaView)
+                            listener!!.onItemClick(v, displayMedia)
                         } else {
                             // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
-                            if (TextUtils.isEmpty(multiMediaView.path)) {
+                            if (TextUtils.isEmpty(displayMedia.path)) {
                                 // 执行下载事件
                                 val isContinue =
-                                    listener!!.onItemVideoStartDownload(v, multiMediaView,position)
+                                    listener!!.onItemVideoStartDownload(
+                                        v,
+                                        displayMedia,
+                                        holder.adapterPosition
+                                    )
                                 if (isContinue) {
                                     // 点击事件
-                                    listener!!.onItemClick(v, multiMediaView)
+                                    listener!!.onItemClick(v, displayMedia)
                                 }
                             } else {
                                 // 点击事件
-                                listener!!.onItemClick(v, multiMediaView)
+                                listener!!.onItemClick(v, displayMedia)
                             }
                         }
                     }
@@ -212,10 +215,10 @@ class ImagesAndVideoAdapter(
             })
 
             // 是否上传
-            if (multiMediaView.isUploading) {
+            if (displayMedia.isUploading) {
                 // 设置该对象已经上传请求过了
-                multiMediaView.isUploading = false
-                listener?.onItemStartUploading(multiMediaView, holder)
+                displayMedia.isUploading = false
+                listener?.onItemStartUploading(displayMedia, holder)
             }
         }
     }
@@ -227,7 +230,11 @@ class ImagesAndVideoAdapter(
      * @param position 索引
      * @param payloads   用于标识 刷新布局里面的那个具体控件
      */
-    override fun onBindViewHolder(holder: PhotoViewHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(
+        holder: PhotoViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)
             return
@@ -443,10 +450,12 @@ class ImagesAndVideoAdapter(
             MimeType.isImageOrGif(mimeType) -> {
                 list.size.coerceAtLeast(0)
             }
+
             MimeType.isVideo(mimeType) -> {
                 // 获取图片第一个索引
                 getImageFirstPosition()
             }
+
             else -> {
                 0
             }

@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.camera.core.ImageCapture;
 
 import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
@@ -65,7 +66,7 @@ public class MainActivity extends BaseActivity {
 
     @GlobalSetting.ScreenOrientation
     int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    int flashModel = FlashModels.TYPE_FLASH_OFF;
+    int flashMode = ImageCapture.FLASH_MODE_OFF;
 
     /**
      * @param activity 要跳转的activity
@@ -92,7 +93,7 @@ public class MainActivity extends BaseActivity {
 
         mBinding.llScreenOrientation.setOnClickListener(v -> showPopupMenu());
 
-        mBinding.llFlashModel.setOnClickListener(v -> showFlashPopupMenu());
+        mBinding.llFlashMode.setOnClickListener(v -> showFlashPopupMenu());
 
         // 设置九宫格的最大呈现数据
         mBinding.dmlImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
@@ -101,21 +102,13 @@ public class MainActivity extends BaseActivity {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
-
-            }
-
-            @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
-                timer.schedule();
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull DisplayMedia displayMedia, int position) {
                 return false;
+            }
+
+            @Override
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
+
             }
 
             @Override
@@ -153,11 +146,6 @@ public class MainActivity extends BaseActivity {
                     myTask.cancel();
                     timers.remove(displayMedia);
                 }
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
-                return false;
             }
 
             public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
@@ -380,7 +368,7 @@ public class MainActivity extends BaseActivity {
         cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()));
         // 是否启用水印
         if (mBinding.cbWatermark.isChecked()) {
-            cameraSetting.watermarkResource(R.layout.watermark);
+
         }
 
         if (mBinding.cbVideoMerge.isChecked()) {
@@ -392,7 +380,7 @@ public class MainActivity extends BaseActivity {
         cameraSetting.enableFlashMemoryModel(mBinding.cbFlashMemoryModel.isChecked());
 
         // 闪光灯默认模式
-        cameraSetting.flashModel(flashModel);
+        cameraSetting.flashMode(flashMode);
 
         // 开启点击即开启录制(失去点击拍照功能)
         cameraSetting.isClickRecord(mBinding.cbClickRecord.isChecked());
@@ -627,21 +615,21 @@ public class MainActivity extends BaseActivity {
      */
     @SuppressLint("NonConstantResourceId")
     private void showFlashPopupMenu() {
-        PopupMenu popupMenu = new PopupMenu(this, mBinding.llFlashModel);
+        PopupMenu popupMenu = new PopupMenu(this, mBinding.llFlashMode);
         popupMenu.inflate(R.menu.menu_flash);
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.actionFlashOff:
-                    flashModel = FlashModels.TYPE_FLASH_OFF;
-                    mBinding.tvFlashModel.setText(getResources().getString(R.string.flash_off));
+                    flashMode = ImageCapture.FLASH_MODE_OFF;
+                    mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_off));
                     break;
                 case R.id.actionFlashOn:
-                    flashModel = FlashModels.TYPE_FLASH_ON;
-                    mBinding.tvFlashModel.setText(getResources().getString(R.string.flash_on));
+                    flashMode = ImageCapture.FLASH_MODE_ON;
+                    mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_on));
                     break;
                 case R.id.actionFlashAuto:
-                    flashModel = FlashModels.TYPE_FLASH_AUTO;
-                    mBinding.tvFlashModel.setText(getResources().getString(R.string.flash_auto));
+                    flashMode = ImageCapture.FLASH_MODE_AUTO;
+                    mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_auto));
                     break;
                 default:
                     //do nothing

@@ -1,7 +1,6 @@
 package com.zhongjh.displaymedia.widget
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.res.TypedArray
 import android.media.MediaMetadataRetriever
@@ -17,12 +16,10 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
-import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.common.utils.ThreadUtils.runOnUiThread
 import com.zhongjh.displaymedia.R
 import com.zhongjh.displaymedia.apapter.AudioAdapter
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter
-import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter.Companion.PHOTO_ADAPTER_PROGRESS
 import com.zhongjh.displaymedia.api.DisplayMediaApi
 import com.zhongjh.displaymedia.engine.ImageEngine
 import com.zhongjh.displaymedia.entity.DisplayMedia
@@ -175,7 +172,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
             override fun onPlayProgress(position: Int, mediaPlayerCurrentPosition: Int) {
                 val playViewHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position)
                 playViewHolder?.let {
-                    it as AudioAdapter.VideoHolder
+                    it as AudioAdapter.AudioHolder
                     // 设置当前播放进度
                     it.seekBar.progress = mediaPlayerCurrentPosition
                     it.tvCurrentProgress.text = mAudioAdapter.generateTime(mediaPlayerCurrentPosition.toLong()) + File.separator
@@ -272,7 +269,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
                 val position = getAudios().indexOf(multiMedia)
                 val videoHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position)
                 videoHolder?.let {
-                    it as AudioAdapter.VideoHolder
+                    it as AudioAdapter.AudioHolder
                     it.showProgress(percentage)
                 }
             }
@@ -390,6 +387,9 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         displayMediaLayoutListener?.onAddDataSuccess(progressMedias)
     }
 
+    override fun setImagePaths(imagePaths: List<String>) {
+    }
+
     override fun addVideoStartUpload(videoUris: List<Uri>) {
         addVideo(videoUris, icClean = false, isUploading = true)
     }
@@ -410,6 +410,12 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         displayMediaLayoutListener?.onAddDataSuccess(displayMedias)
     }
 
+    override fun setVideoPaths(videoPaths: List<String>) {
+    }
+
+    override fun addAudioStartUpload(filePath: String, length: Long) {
+    }
+
     override fun setAudioUrls(audioUrls: List<String>) {
         val displayMedias: ArrayList<DisplayMedia> = ArrayList()
         for (item in audioUrls) {
@@ -419,6 +425,10 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         }
         mAudioAdapter.setAudioData(displayMedias)
         displayMediaLayoutListener?.onAddDataSuccess(displayMedias)
+    }
+
+    override fun setAudioCover(displayMedia: DisplayMedia, videoPath: String) {
+        TODO("Not yet implemented")
     }
 
     override fun setAudioCover(view: View, file: String) {
@@ -487,6 +497,10 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
 
     override fun removePosition(position: Int) {
         mImagesAndVideoAdapter.removePosition(position)
+    }
+
+    override fun refreshPosition(position: Int) {
+        TODO("Not yet implemented")
     }
 
     override fun setOperation(isOperation: Boolean) {

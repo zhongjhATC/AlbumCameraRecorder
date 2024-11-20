@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -18,6 +19,8 @@
                 app:audioPlayColor="@color/blue_primary"
                 app:audioProgressColor="@color/blue_primary"
                 app:authority="com.zhongjh.cameraapp.fileprovider"
+                app:columnNumber="4"
+                app:columnSpace="10"
                 app:imageAddDrawable="@drawable/ic_add_gray"
                 app:imageDeleteDrawable="@drawable/ic_deleted_yellow"
                 app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
@@ -25,8 +28,6 @@
                 app:maskingTextColor="@color/black_eighty_percent"
                 app:maskingTextContent="@string/up_upload_is_customizable"
                 app:maskingTextSize="12"
-                app:columnNumber="4"
-                app:columnSpace="10"
                 app:maxCount="7" />
 
             <CheckBox
@@ -65,3 +66,4 @@
 
 
     </ScrollView>
+</layout>

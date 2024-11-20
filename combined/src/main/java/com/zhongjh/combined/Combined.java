@@ -53,13 +53,18 @@ public class Combined {
         maskProgressLayout.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
-                listener.onItemAudioStartDownload(holder, url);
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull DisplayMedia displayMedia, int position) {
+                return listener.onItemVideoStartDownload(view, displayMedia, position);
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
-                listener.onItemAudioStartUploading(displayMedia, viewHolder);
+            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
+                listener.onItemStartUploading(displayMedia, viewHolder);
+            }
+
+            @Override
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
+                listener.onItemAudioStartDownload(holder, url);
             }
 
             @Override
@@ -87,18 +92,8 @@ public class Combined {
             }
 
             @Override
-            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
-                listener.onItemStartUploading(displayMedia, viewHolder);
-            }
-
-            @Override
             public void onItemClose(@NotNull DisplayMedia displayMedia) {
                 listener.onItemClose(displayMedia);
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
-                return listener.onItemVideoStartDownload(view, displayMedia);
             }
         });
     }

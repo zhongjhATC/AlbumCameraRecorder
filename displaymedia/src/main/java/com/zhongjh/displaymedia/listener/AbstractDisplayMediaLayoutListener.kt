@@ -22,19 +22,24 @@ open class AbstractDisplayMediaLayoutListener : DisplayMediaLayoutListener {
     }
 
     override fun onItemClick(view: View, displayMedia: DisplayMedia) {}
-
-    override fun onItemStartUploading(displayMedia: DisplayMedia, viewHolder: ImagesAndVideoAdapter.PhotoViewHolder) {}
-
-    override fun onItemAudioStartUploading(displayMedia: DisplayMedia, viewHolder: AudioAdapter.VideoHolder) {}
-
-    override fun onItemClose(displayMedia: DisplayMedia) {}
-
-    override fun onItemAudioStartDownload(holder: AudioAdapter.VideoHolder, url: String) {}
-
-    override fun onItemVideoStartDownload(view: View, displayMedia: DisplayMedia): Boolean {
-        return false
+    override fun onItemStartUploading(
+        displayMedia: DisplayMedia,
+        viewHolder: ImagesAndVideoAdapter.PhotoViewHolder
+    ) {
     }
 
-    override fun onAddDataSuccess(displayMedia: List<DisplayMedia>) {}
+    override fun onItemClose(displayMedia: DisplayMedia) {}
+    override fun onItemAudioStartDownload(audioHolder: AudioAdapter.AudioHolder, url: String) {
+    }
+
+    override fun onItemVideoStartDownload(
+        view: View,
+        displayMedia: DisplayMedia,
+        position: Int
+    ): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAddDataSuccess(displayMedias: List<DisplayMedia>) {}
 
 }

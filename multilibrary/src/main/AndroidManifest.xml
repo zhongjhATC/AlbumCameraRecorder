@@ -29,19 +29,9 @@
             android:screenOrientation="locked"
             android:taskAffinity="" />
         <activity
-            android:name=".preview.AlbumPreviewActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
-            android:launchMode="singleTop"
-            android:screenOrientation="locked"
-            android:taskAffinity="" />
-        <activity
             android:name=".camera.ui.previewvideo.PreviewVideoActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:launchMode="singleTop"
             android:launchMode="singleTop"
             android:screenOrientation="locked"
             android:taskAffinity="" />

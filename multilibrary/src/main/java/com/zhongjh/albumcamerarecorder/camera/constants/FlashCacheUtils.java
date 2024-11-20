@@ -2,6 +2,8 @@ package com.zhongjh.albumcamerarecorder.camera.constants;
 
 import android.content.Context;
 
+import androidx.camera.core.ImageCapture;
+
 import com.zhongjh.albumcamerarecorder.camera.util.SharedPreferencesUtil;
 
 /**
@@ -17,7 +19,7 @@ public class FlashCacheUtils {
     /**
      * 记忆模式下的闪光灯模式
      */
-    public static final String FLASH_MODEL = "FlashModel";
+    public static final String FLASH_MODE = "FlashMode";
 
     /**
      * 获取记忆模式下的闪光灯模式
@@ -27,7 +29,7 @@ public class FlashCacheUtils {
      */
     public static int getFlashModel(Context context) {
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(context, CAMERAVIEWSOUNDRECORDERSHAREDPREFERENCESFLASHCACHE);
-        return sharedPreferencesUtil.getInt(FLASH_MODEL, FlashModels.TYPE_FLASH_OFF);
+        return sharedPreferencesUtil.getInt(FLASH_MODE, ImageCapture.FLASH_MODE_OFF);
     }
 
     /**
@@ -38,7 +40,7 @@ public class FlashCacheUtils {
      */
     public static void saveFlashModel(Context context, int flashModel) {
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(context, CAMERAVIEWSOUNDRECORDERSHAREDPREFERENCESFLASHCACHE);
-        sharedPreferencesUtil.putInt(FLASH_MODEL, flashModel);
+        sharedPreferencesUtil.putInt(FLASH_MODE, flashModel);
     }
 
 }

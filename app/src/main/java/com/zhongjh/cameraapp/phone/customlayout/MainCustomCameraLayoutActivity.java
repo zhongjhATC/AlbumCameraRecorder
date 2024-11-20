@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -69,21 +67,13 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull DisplayMedia displayMedia, int position) {
                 return false;
             }
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
 
-            }
-
-            @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
-                timer.schedule();
             }
 
             @Override
@@ -127,11 +117,6 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
                 }
             }
 
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
-                return false;
-            }
-
             public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
 
             }
@@ -168,8 +153,6 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             cameraSetting.setBaseCameraFragment(CameraFragment2.newInstance());
         } else if (mBinding.radioButton3.isChecked()) {
             cameraSetting.setBaseCameraFragment(CameraFragment3.newInstance());
-            // 添加水印,演示动态文字
-            cameraSetting.watermarkResource(R.layout.watermark_text);
         } else if (mBinding.radioButton4.isChecked()) {
             cameraSetting.setBaseCameraFragment(CameraSmallFragment.newInstance());
         }

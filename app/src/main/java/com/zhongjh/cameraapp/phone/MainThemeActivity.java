@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.databinding.DataBindingUtil;
+import androidx.annotation.NonNull;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -58,16 +58,8 @@ public class MainThemeActivity extends BaseActivity {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
 
-            }
-
-            @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
-                timer.schedule();
             }
 
             @Override
@@ -113,11 +105,6 @@ public class MainThemeActivity extends BaseActivity {
                     myTask.cancel();
                     timers.remove(displayMedia);
                 }
-            }
-
-            @Override
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-
             }
 
             @Override

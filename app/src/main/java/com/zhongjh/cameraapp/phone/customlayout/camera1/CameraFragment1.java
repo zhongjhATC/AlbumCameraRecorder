@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
@@ -89,8 +89,8 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManagement, B
 
     @NonNull
     @Override
-    public CameraView getCameraManage() {
-        return mBinding.cameraView;
+    public CameraManage getCameraManage() {
+        return null;
     }
 
     @Override

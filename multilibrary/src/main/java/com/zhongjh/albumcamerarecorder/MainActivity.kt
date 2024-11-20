@@ -31,7 +31,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.flyco.tablayout.listener.CustomTabEntity
 import com.flyco.tablayout.listener.OnTabSelectListener
-import com.zhongjh.albumcamerarecorder.album.ui.album.AlbumFragment
+import com.zhongjh.albumcamerarecorder.album.ui.AlbumFragment
 import com.zhongjh.albumcamerarecorder.camera.entity.TabEntity
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes

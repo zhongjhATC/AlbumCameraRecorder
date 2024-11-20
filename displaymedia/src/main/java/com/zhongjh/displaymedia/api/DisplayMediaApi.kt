@@ -103,10 +103,10 @@ interface DisplayMediaApi {
     /**
      * 设置音频文件直接覆盖
      *
-     * @param multiMediaView 实体
+     * @param displayMedia 实体
      * @param videoPath 文件路径
      */
-    fun setAudioCover(multiMediaView: MultiMediaView, videoPath: String)
+    fun setAudioCover(displayMedia: DisplayMedia, videoPath: String)
 
     /**
      * 设置音频文件直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)

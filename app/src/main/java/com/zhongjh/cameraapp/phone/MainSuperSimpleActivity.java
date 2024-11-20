@@ -143,15 +143,6 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
-                super.onItemAudioStartUploading(displayMedia, viewHolder);
-                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, null, viewHolder);
-                timers.put(displayMedia, timer);
-                timer.schedule();
-            }
-
-            @Override
             public void onItemClose(@NotNull DisplayMedia displayMedia) {
                 super.onItemClose(displayMedia);
                 // 停止上传
@@ -170,12 +161,12 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         int percentage = 0;
         DisplayMedia multiMedia;
         ImagesAndVideoAdapter.PhotoViewHolder viewHolder;
-        AudioAdapter.VideoHolder videoHolder;
+        AudioAdapter.AudioHolder audioHolder;
 
-        public MyTask(DisplayMedia multiMedia, ImagesAndVideoAdapter.PhotoViewHolder viewHolder, AudioAdapter.VideoHolder videoHolder) {
+        public MyTask(DisplayMedia multiMedia, ImagesAndVideoAdapter.PhotoViewHolder viewHolder, AudioAdapter.AudioHolder audioHolder) {
             this.multiMedia = multiMedia;
             this.viewHolder = viewHolder;
-            this.videoHolder = videoHolder;
+            this.audioHolder = audioHolder;
         }
 
         public void schedule() {

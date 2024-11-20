@@ -12,8 +12,8 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.otaliastudios.cameraview.CameraView;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
@@ -66,8 +66,8 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManagement, B
 
     @NonNull
     @Override
-    public CameraView getCameraManage() {
-        return mViewHolder.cameraView;
+    public CameraManage getCameraManage() {
+        return null;
     }
 
     @Override
@@ -141,7 +141,6 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManagement, B
         View vLine1;
         View vLine2;
         ImageView imgClose;
-        CameraView cameraView;
         ConstraintLayout clMenu;
         AppCompatButton btnCustom;
 
@@ -156,7 +155,6 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManagement, B
             this.vLine1 = rootView.findViewById(R.id.vLine1);
             this.vLine2 = rootView.findViewById(R.id.vLine2);
             this.imgClose = rootView.findViewById(R.id.imgClose);
-            this.cameraView = rootView.findViewById(R.id.cameraView);
             this.clMenu = rootView.findViewById(R.id.clMenu);
             this.btnCustom = rootView.findViewById(R.id.btnCustom);
         }

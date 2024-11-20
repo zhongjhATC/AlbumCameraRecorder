@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings.api
 
+import androidx.camera.core.ImageCapture
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter
@@ -143,10 +144,10 @@ interface CameraSettingApi {
     /**
      * 更换 闪光灯默认模式，默认是闪光灯关闭模式
      *
-     * @param flashModel 闪光灯默认模式
+     * @param flashMode 闪光灯默认模式
      * @return [CameraSetting] for fluent API.
      */
-    fun flashModel(@FlashModels flashModel: Int): CameraSetting
+    fun flashMode(@ImageCapture.FlashMode flashMode: Int): CameraSetting
 
     /**
      * 通过Key触发拍照事件

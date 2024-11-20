@@ -3,9 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera;
 import static android.app.Activity.RESULT_OK;
 import static androidx.camera.core.ImageCapture.FLASH_MODE_AUTO;
 import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
-import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_AUTO;
-import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_OFF;
-import static com.zhongjh.albumcamerarecorder.camera.constants.FlashModels.TYPE_FLASH_ON;
+import static androidx.camera.core.ImageCapture.FLASH_MODE_ON;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
@@ -23,7 +21,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -37,7 +34,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.camera.core.ImageProxy;
 import androidx.core.content.ContextCompat;
 
 import com.zhongjh.albumcamerarecorder.BaseFragment;
@@ -117,7 +113,7 @@ public abstract class BaseCameraFragment
     /**
      * 闪关灯状态 默认关闭
      */
-    private int flashModel = FLASH_MODE_OFF;
+    private int flashMode = FLASH_MODE_OFF;
     /**
      * 请求权限的回调
      */
@@ -326,7 +322,7 @@ public abstract class BaseCameraFragment
         mPlaceholder = ta.getDrawable(0);
 
         // 闪光灯修改默认模式
-        flashModel = cameraSpec.getFlashModel();
+        flashMode = cameraSpec.getFlashMode();
         // 记忆模式
         flashGetCache();
 
@@ -377,9 +373,9 @@ public abstract class BaseCameraFragment
     private void initImgFlashListener() {
         if (getFlashView() != null) {
             getFlashView().setOnClickListener(v -> {
-                flashModel++;
-                if (flashModel > FLASH_MODE_OFF) {
-                    flashModel = FLASH_MODE_AUTO;
+                flashMode++;
+                if (flashMode > FLASH_MODE_OFF) {
+                    flashMode = FLASH_MODE_AUTO;
                 }
                 // 重新设置当前闪光灯模式
                 setFlashLamp();
@@ -518,7 +514,6 @@ public abstract class BaseCameraFragment
         getPhotoVideoLayout().setRecordListener(tag -> {
             getCameraVideoPresenter().setSectionRecord("1".equals(tag));
             getPhotoVideoLayout().setProgressMode(true);
-            getCameraView().setUseDeviceOrientation("1".equals(tag));
         });
     }
 
@@ -665,7 +660,7 @@ public abstract class BaseCameraFragment
             getCameraPicturePresenter().onDestroy(isCommit);
             getCameraVideoPresenter().onDestroy(isCommit);
             getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-            getCameraManage().destroy();
+            getCameraManage().onDestroy();
             // 记忆模式
             flashSaveCache();
             cameraSpec.setOnCaptureListener(null);
@@ -794,6 +789,14 @@ public abstract class BaseCameraFragment
     }
 
     /**
+     * 提示过短
+     */
+    public void setShortTip() {
+        // 提示过短
+        getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
+    }
+
+    /**
      * 初始化中心按钮状态
      */
     protected void initPvLayoutButtonFeatures() {
@@ -865,7 +868,7 @@ public abstract class BaseCameraFragment
         getSinglePhotoView().setZoomable(true);
         getSinglePhotoView().setVisibility(View.VISIBLE);
         globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getPath());
-        getCameraManage().close();
+        getCameraManage().onClose();
         getPhotoVideoLayout().startTipAlphaAnimation();
         getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
 
@@ -1036,22 +1039,20 @@ public abstract class BaseCameraFragment
      */
     private void setFlashLamp() {
         if (getFlashView() != null) {
-            switch (flashModel) {
-                case TYPE_FLASH_AUTO:
+            switch (flashMode) {
+                case FLASH_MODE_AUTO:
                     getFlashView().setImageResource(cameraSpec.getImageFlashAuto());
-                    getCameraManage().setFlash(Flash.AUTO);
                     break;
-                case TYPE_FLASH_ON:
+                case FLASH_MODE_ON:
                     getFlashView().setImageResource(cameraSpec.getImageFlashOn());
-                    getCameraManage().setFlash(Flash.TORCH);
                     break;
-                case TYPE_FLASH_OFF:
+                case FLASH_MODE_OFF:
                     getFlashView().setImageResource(cameraSpec.getImageFlashOff());
-                    getCameraManage().setFlash(Flash.OFF);
                     break;
                 default:
                     break;
             }
+            getCameraManage().setFlashLamp();
         }
     }
 
@@ -1061,7 +1062,7 @@ public abstract class BaseCameraFragment
     private void flashGetCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则使用上个闪光灯模式
         if (cameraSpec.getEnableFlashMemoryModel()) {
-            flashModel = FlashCacheUtils.getFlashModel(getContext());
+            flashMode = FlashCacheUtils.getFlashModel(getContext());
         }
     }
 
@@ -1071,7 +1072,7 @@ public abstract class BaseCameraFragment
     private void flashSaveCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则存储当前闪光灯模式
         if (cameraSpec.getEnableFlashMemoryModel()) {
-            FlashCacheUtils.saveFlashModel(getContext(), flashModel);
+            FlashCacheUtils.saveFlashModel(getContext(), flashMode);
         }
     }
 
@@ -1084,7 +1085,7 @@ public abstract class BaseCameraFragment
         // 判断权限，权限通过才可以初始化相关
         if (globalSpec.isAddAlbumByCamera()) {
             ArrayList<String> needPermissions = getNeedPermissions();
-            if (needPermissions.size() > 0) {
+            if (!needPermissions.isEmpty()) {
                 // 请求权限
                 requestPermissionsDialog();
                 return false;
@@ -1156,8 +1157,8 @@ public abstract class BaseCameraFragment
         getCameraStateManagement().stopRecord(isShort);
     }
 
-    public int getFlashModel() {
-        return flashModel;
+    public int getFlashMode() {
+        return flashMode;
     }
 
     public Context getMyContext() {
