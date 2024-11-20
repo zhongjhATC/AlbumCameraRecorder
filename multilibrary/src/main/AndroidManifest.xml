@@ -16,20 +16,35 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
+            android:exported="false"
             android:hardwareAccelerated="true"
+            android:launchMode="singleTop"
             android:screenOrientation="locked"
-            android:launchMode="singleTop" />
+            android:taskAffinity="" />
         <activity
             android:name=".preview.PreviewActivity"
             android:configChanges="orientation|screenSize"
-            android:hardwareAccelerated="true"
+            android:exported="false"
+            android:launchMode="singleTop"
             android:screenOrientation="locked"
-            android:launchMode="singleTop" />
+            android:taskAffinity="" />
+        <activity
+            android:name=".preview.AlbumPreviewActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTop"
+            android:launchMode="singleTop"
+            android:screenOrientation="locked"
+            android:taskAffinity="" />
         <activity
             android:name=".camera.ui.previewvideo.PreviewVideoActivity"
             android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:launchMode="singleTop"
             android:screenOrientation="locked"
-            android:launchMode="singleTop" />
+            android:taskAffinity="" />
 
     </application>
 

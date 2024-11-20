@@ -4,8 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -43,6 +46,7 @@ import com.zhongjh.videomerge.VideoMergeManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -110,6 +114,11 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+                return false;
+            }
+
+            @Override
             public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
             }
 
@@ -149,6 +158,10 @@ public class MainActivity extends BaseActivity {
             @Override
             public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 return false;
+            }
+
+            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
+
             }
 
         });
@@ -210,6 +223,23 @@ public class MainActivity extends BaseActivity {
         mGlobalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
         // 默认从第二个开始
         mGlobalSetting.defaultPosition(1);
+        // 这种是App内自己修改成强制英文
+        if (mBinding.cbEnglish.isChecked()) {
+            Resources resources = getResources();
+            DisplayMetrics dm = resources.getDisplayMetrics();
+            Configuration config = resources.getConfiguration();
+            // 应用用户选择语言
+            config.setLocale(Locale.ENGLISH);
+            resources.updateConfiguration(config, dm);
+        } else {
+            Resources resources = getResources();
+            DisplayMetrics dm = resources.getDisplayMetrics();
+            Configuration config = resources.getConfiguration();
+            // 应用用户选择语言
+            config.setLocale(Locale.getDefault());
+            resources.updateConfiguration(config, dm);
+        }
+
         // 启动过场动画，从下往上动画
         mGlobalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());
         // 设置图片编辑、拍照、录像后是否加入相册功能，默认加入
@@ -621,5 +651,4 @@ public class MainActivity extends BaseActivity {
         });
         popupMenu.show();
     }
-
 }

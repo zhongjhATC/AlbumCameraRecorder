@@ -92,6 +92,10 @@ public class ClickOrLongButton extends View {
     private static final int STEP_ACTION_UP = 2;
 
     /**
+     * 倍数,控制该控件的大小
+     */
+    private float multiple = 1F;
+    /**
      * 录制时间
      */
     private float timeLimitInMils = 10000.0F;
@@ -312,41 +316,49 @@ public class ClickOrLongButton extends View {
 
     public ClickOrLongButton(Context paramContext) {
         super(paramContext);
-        init();
+        init(null);
     }
 
     public ClickOrLongButton(Context paramContext, AttributeSet paramAttributeSet) {
         super(paramContext, paramAttributeSet);
-        init();
+        init(paramAttributeSet);
     }
 
     public ClickOrLongButton(Context paramContext, AttributeSet paramAttributeSet, int paramInt) {
         super(paramContext, paramAttributeSet, paramInt);
-        init();
+        init(paramAttributeSet);
     }
 
-    private void init() {
-        touchable = recordable = true;
-        // 整块
-        mBoundingBoxSize = DisplayMetricsUtils.dip2px(100.0F);
-        // 外线宽度
-        mOutCircleWidth = DisplayMetricsUtils.dip2px(2.3F);
-        mOuterCircleWidthInc = DisplayMetricsUtils.dip2px(4.3F);
-        mInnerCircleRadius = DisplayMetricsUtils.dip2px(32.0F);
-
+    private void init(AttributeSet paramAttributeSet) {
+        if (getContext() == null || getContext().getTheme() == null) {
+            return;
+        }
         // 调取样式中的颜色
         TypedArray arrayRoundBorder = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_round_border});
+        TypedArray arrayInnerCircleInOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_in_operation});
+        TypedArray arrayInnerCircleNoOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_no_operation});
+        TypedArray arrayClickOrLongButtonStyle = getContext().obtainStyledAttributes(paramAttributeSet, R.styleable.ClickOrLongButton);
+        // 计算出倍数
+        int size = arrayClickOrLongButtonStyle.getInt(R.styleable.ClickOrLongButton_size, 100);
+        multiple = (float) size / 100;
+
         int defaultRoundBorderColor = ResourcesCompat.getColor(
                 getResources(), R.color.click_long_button_round_border,
                 getContext().getTheme());
-        TypedArray arrayInnerCircleInOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_in_operation});
         int defaultInnerCircleInOperationColor = ResourcesCompat.getColor(
                 getResources(), R.color.click_long_button_inner_circle_in_operation,
                 getContext().getTheme());
-        TypedArray arrayInnerCircleNoOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_no_operation});
         int defaultInnerCircleNoOperationColor = ResourcesCompat.getColor(
                 getResources(), R.color.click_long_button_inner_circle_no_operation,
                 getContext().getTheme());
+
+        touchable = recordable = true;
+        // 整块
+        mBoundingBoxSize = DisplayMetricsUtils.dip2px(100.0F * multiple);
+        // 外线宽度
+        mOutCircleWidth = DisplayMetricsUtils.dip2px(2.3F * multiple);
+        mOuterCircleWidthInc = DisplayMetricsUtils.dip2px(4.3F * multiple);
+        mInnerCircleRadius = DisplayMetricsUtils.dip2px(32.0F * multiple);
 
         TypedArray arrayInnerCircleNoOperationInterval = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_button_inner_circle_in_operation_interval});
         int defaultInnerCircleNoOperationColorInterval = ResourcesCompat.getColor(
@@ -360,10 +372,14 @@ public class ClickOrLongButton extends View {
         initProcessBarPaint();
         initOutCircle(arrayInnerCircleNoOperationInterval, defaultInnerCircleNoOperationColorInterval);
         initCenterCircle();
-
-
         // 状态为两者都可以
         mButtonState = BUTTON_STATE_BOTH;
+
+        arrayRoundBorder.recycle();
+        arrayInnerCircleInOperation.recycle();
+        arrayInnerCircleNoOperation.recycle();
+        arrayClickOrLongButtonStyle.recycle();
+
     }
 
     /**
@@ -431,9 +447,9 @@ public class ClickOrLongButton extends View {
         translucentPaint.setStyle(Style.FILL_AND_STROKE);
         centerX = (mBoundingBoxSize / 2f);
         centerY = (mBoundingBoxSize / 2f);
-        outMostCircleRadius = DisplayMetricsUtils.dip2px(37.0F);
-        outBlackCircleRadiusInc = DisplayMetricsUtils.dip2px(7.0F);
-        innerCircleRadiusWhenRecord = DisplayMetricsUtils.dip2px(35.0F);
+        outMostCircleRadius = DisplayMetricsUtils.dip2px(37.0F * multiple);
+        outBlackCircleRadiusInc = DisplayMetricsUtils.dip2px(7.0F * multiple);
+        innerCircleRadiusWhenRecord = DisplayMetricsUtils.dip2px(35.0F * multiple);
         innerCircleRadiusToDraw = mInnerCircleRadius;
         outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
         outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);

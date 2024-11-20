@@ -518,6 +518,7 @@ public abstract class BaseCameraFragment
         getPhotoVideoLayout().setRecordListener(tag -> {
             getCameraVideoPresenter().setSectionRecord("1".equals(tag));
             getPhotoVideoLayout().setProgressMode(true);
+            getCameraView().setUseDeviceOrientation("1".equals(tag));
         });
     }
 

@@ -197,7 +197,7 @@ class ImagesAndVideoAdapter(
                             if (TextUtils.isEmpty(multiMediaView.path)) {
                                 // 执行下载事件
                                 val isContinue =
-                                    listener!!.onItemVideoStartDownload(v, multiMediaView)
+                                    listener!!.onItemVideoStartDownload(v, multiMediaView,position)
                                 if (isContinue) {
                                     // 点击事件
                                     listener!!.onItemClick(v, multiMediaView)

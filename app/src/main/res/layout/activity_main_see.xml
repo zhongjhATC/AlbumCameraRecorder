@@ -29,12 +29,19 @@
         android:id="@+id/btnSetValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="赋值" />
+        android:text="@string/str_see_set_value" />
+
+    <Button
+        android:id="@+id/btnGetValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/str_see_get_value" />
 
     <Button
         android:id="@+id/btnReset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="重置" />
+        android:text="@string/str_see_reset_value" />
 
 </LinearLayout>
+

@@ -56,6 +56,7 @@
             android:configChanges="orientation|keyboardHidden|navigation" />
 
         <activity android:name=".phone.MainSeeActivity" />
+        <activity android:name=".phone.MainSeeLocalActivity" />
 
         <activity android:name=".phone.MainUpperLimitActivity" />
 

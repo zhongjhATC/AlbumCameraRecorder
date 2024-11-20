@@ -17,22 +17,4 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/nav_graph" />
 
-    <com.zhongjh.progresslibrary.widget.MaskProgressLayout
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/mplImageList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:audioDeleteColor="@color/blue_primary"
-        app:audioPlayColor="@color/blue_primary"
-        app:audioProgressColor="@color/blue_primary"
-        app:authority="com.zhongjh.cameraapp.fileprovider"
-        app:imageEngine="com.zhongjh.cameraapp.configuration.Glide4EngineProgress"
-        app:maskingColor="?attr/colorPrimary"
-        app:maskingTextColor="@color/black_eighty_percent"
-        app:maskingTextSize="12"
-        app:maxCount="7" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

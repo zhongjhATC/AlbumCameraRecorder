@@ -50,6 +50,13 @@ interface DisplayMediaApi {
     fun setImageUrls(imagesUrls: List<String>)
 
     /**
+     * 设置图片本地数据
+     *
+     * @param imagesUrls 图片网址
+     */
+    fun setImagePaths(imagePaths: List<String>)
+
+    /**
      * 设置视频地址并且启动上传(一般用于刚确认了哪些数据后)
      *
      * @param videoUris 视频地址列表
@@ -72,11 +79,34 @@ interface DisplayMediaApi {
     fun setVideoUrls(videoUrls: List<String>)
 
     /**
+     * 设置视频本地数据
+     *
+     * @param videoPaths 本地文件列表
+     */
+    fun setVideoPaths(videoPaths: List<String>)
+
+    /**
+     * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)
+     *
+     * @param filePath 音频文件地址
+     * @param length   音频文件长度
+     */
+    fun addAudioStartUpload(filePath: String, length: Long)
+
+    /**
      * 添加音频网址数据
      *
      * @param audioUrls 音频网址列表
      */
     fun setAudioUrls(audioUrls: List<String>)
+
+    /**
+     * 设置音频文件直接覆盖
+     *
+     * @param multiMediaView 实体
+     * @param videoPath 文件路径
+     */
+    fun setAudioCover(multiMediaView: MultiMediaView, videoPath: String)
 
     /**
      * 设置音频文件直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
@@ -138,6 +168,11 @@ interface DisplayMediaApi {
      * @param position 图片的索引，该索引列表不包含视频等
      */
     fun removePosition(position: Int)
+
+    /**
+     * 刷新 视频/图片 某条数据
+     */
+    fun refreshPosition(position: Int)
 
     /**
      * 设置是否可操作(一般只用于展览作用)

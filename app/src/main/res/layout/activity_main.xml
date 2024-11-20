@@ -92,728 +92,727 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/str_on_activity_result_tips" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/toggle_english" />
 
-                <CheckBox
-                    android:id="@+id/cbIsActivityResult"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="true" />
+                    <CheckBox
+                        android:id="@+id/cbEnglish"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"
+                        android:text="true" />
 
-            </LinearLayout>
+                </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/start_the_animation" />
-
-                <CheckBox
-                    android:id="@+id/cbIsCutscenes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="true" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/take_pictures_and_add_them_to_the_album" />
-
-                <CheckBox
-                    android:id="@+id/cbIsAddAlbumByCamera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="true" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/record_and_add_to_album" />
-
-                <CheckBox
-                    android:id="@+id/cbIsAddAlbumByVideo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="true" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/edit_the_picture_and_add_it_to_the_album" />
-
-                <CheckBox
-                    android:id="@+id/cbIsAddAlbumByEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="true" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/support_for_editing_images" />
-
-                <CheckBox
-                    android:id="@+id/cbIsEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="true" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/support_compression_images" />
-
-                <CheckBox
-                    android:id="@+id/cb_is_compress_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="true" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/support_compression_videos" />
-
-                <CheckBox
-                    android:id="@+id/cb_is_compress_video"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="true" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/save_all_file_paths" />
-
-                <EditText
-                    android:id="@+id/etAllFile"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="AA/test" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_on_activity_result_tips" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <CheckBox
+                        android:id="@+id/cbIsActivityResult"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/start_the_animation" />
+
+                    <CheckBox
+                        android:id="@+id/cbIsCutscenes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/take_pictures_and_add_them_to_the_album" />
+
+                    <CheckBox
+                        android:id="@+id/cbIsAddAlbumByCamera"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/record_and_add_to_album" />
+
+                    <CheckBox
+                        android:id="@+id/cbIsAddAlbumByVideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/edit_the_picture_and_add_it_to_the_album" />
+
+                    <CheckBox
+                        android:id="@+id/cbIsAddAlbumByEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_for_editing_images" />
+
+                    <CheckBox
+                        android:id="@+id/cbIsEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_compression_images" />
+
+                    <CheckBox
+                        android:id="@+id/cb_is_compress_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_compression_videos" />
+
+                    <CheckBox
+                        android:id="@+id/cb_is_compress_video"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/save_all_file_paths" />
+
+                    <EditText
+                        android:id="@+id/etAllFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/test" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/save_the_image_path" />
+
+                    <EditText
+                        android:id="@+id/etPictureFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/picture" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/save_the_path_to_the_video_file" />
+
+                    <EditText
+                        android:id="@+id/etVideoFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/video" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/save_the_path_to_the_audio_file" />
+
+                    <EditText
+                        android:id="@+id/etAudioFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AA/audio" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/save_the_image_path" />
+                    android:text="@string/you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations" />
 
                 <EditText
-                    android:id="@+id/etPictureFile"
+                    android:id="@+id/etMaxCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="AA/picture" />
+                    android:inputType="number"
+                    android:text="10" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/save_the_path_to_the_video_file" />
-
-                <EditText
-                    android:id="@+id/etVideoFile"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="AA/video" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/you_can_set_up_to_several_images" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/etAlbumCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="5" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/save_the_path_to_the_audio_file" />
 
-                <EditText
-                    android:id="@+id/etAudioFile"
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="AA/audio" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment" />
+
+                    <EditText
+                        android:id="@+id/etVideoCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one" />
+
+                    <EditText
+                        android:id="@+id/etAudioCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llScreenOrientation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/horizontal_and_vertical_settings" />
+
+                    <TextView
+                        android:id="@+id/tvScreenOrientation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="SCREEN_ORIENTATION_PORTRAIT" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/you_can_set_up_to_a_few_images_video_audio_if_set_to_0_the_total_is_the_sum_of_the_following_three_configurations" />
-
-            <EditText
-                android:id="@+id/etMaxCount"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:text="10" />
+                android:layout_height="40dp"
+                android:background="@color/blue_album_dropdown_count_text"
+                android:gravity="center"
+                android:text="@string/album_configuration"
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <CheckBox
+                    android:id="@+id/cbAlbum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:checked="true"
+                    android:text="@string/open_the_album_function" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/you_can_set_up_to_several_images" />
+                    android:text="@string/if_these_are_checked_the_album_functionality_is_based_on_the_following" />
 
-                <EditText
-                    android:id="@+id/etAlbumCount"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:text="5" />
+                    android:orientation="horizontal">
 
+                    <CheckBox
+                        android:id="@+id/cbAlbumImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/support_image" />
+
+                    <CheckBox
+                        android:id="@+id/cbAlbumGif"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/support_gif"
+                        android:visibility="gone" />
+
+                    <CheckBox
+                        android:id="@+id/cbAlbumVideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/support_video" />
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment" />
-
-                <EditText
-                    android:id="@+id/etVideoCount"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:text="1" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/cbMediaTypeExclusive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/if_the_selected_media_has_images_or_video_whether_both_can_be_selected" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/you_can_set_up_to_several_audio_add_can_set_more_than_one_rendering_function_is_not_considered_more_than_one" />
-
-                <EditText
-                    android:id="@+id/etAudioCount"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:text="1" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/cbShowSingleMediaTypeTrue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/whether_to_display_only_one_media_type_if_the_media_selected_is_only_images_or_video" />
 
-            <LinearLayout
-                android:id="@+id/llScreenOrientation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/horizontal_and_vertical_settings" />
-
-                <TextView
-                    android:id="@+id/tvScreenOrientation"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="SCREEN_ORIENTATION_PORTRAIT" />
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbCountableTrue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/whether_to_display_the_number_of_multiple_selected_images" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nine_grid_size_DP" />
+
+                    <EditText
+                        android:id="@+id/etGridExpectedSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="120" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/custom_filters"
+                        android:textColor="@color/dracula_album_dropdown_thumbnail_placeholder"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/the_filter_width_should_be_no_less_than_px" />
+
+                    <EditText
+                        android:id="@+id/etAddFilterMinWidth"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="320" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/the_filter_height_shall_be_no_less_than_px" />
+
+                    <EditText
+                        android:id="@+id/etAddFilterMinHeight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="320" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/files_cannot_be_larger_than__m" />
+
+                    <EditText
+                        android:id="@+id/etMaxSizeInBytes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="5" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/filter_image_scaling_up_to_1" />
+
+                    <EditText
+                        android:id="@+id/etThumbnailScale"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="0.85" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbOriginalEnableTrue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/whether_to_enable_the_original_image_option" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbSlideHideEnable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/whether_to_start_the_album_list_slide_hide" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:lines="3"
+                        android:text="@string/maximum_original_size_valid_only_if_original_enable_is_true_m" />
+
+                    <EditText
+                        android:id="@+id/etMaxOriginalSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="1" />
+
+                </LinearLayout>
 
             </LinearLayout>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/blue_album_dropdown_count_text"
-            android:gravity="center"
-            android:text="@string/album_configuration"
-            android:textColor="@color/white" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <CheckBox
-                android:id="@+id/cbAlbum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:checked="true"
-                android:text="@string/open_the_album_function" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/if_these_are_checked_the_album_functionality_is_based_on_the_following" />
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/blue_album_dropdown_count_text"
+                android:gravity="center"
+                android:text="@string/the_recording_configuration"
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <CheckBox
-                    android:id="@+id/cbAlbumImage"
+                    android:id="@+id/cbCamera"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:checked="true"
-                    android:text="@string/support_image" />
+                    android:text="@string/turn_on_the_shooting_function" />
 
-                <CheckBox
-                    android:id="@+id/cbAlbumGif"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/support_gif"
-                    android:visibility="gone" />
-
-                <CheckBox
-                    android:id="@+id/cbAlbumVideo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/support_video" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/cbMediaTypeExclusive"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/if_the_selected_media_has_images_or_video_whether_both_can_be_selected" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/cbShowSingleMediaTypeTrue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/whether_to_display_only_one_media_type_if_the_media_selected_is_only_images_or_video" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/cbCountableTrue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/whether_to_display_the_number_of_multiple_selected_images" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nine_grid_size_DP" />
-
-                <EditText
-                    android:id="@+id/etGridExpectedSize"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:text="120" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/cbCameraImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/support_image" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <CheckBox
+                        android:id="@+id/cbCameraVideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/support_video" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/custom_filters"
-                    android:textColor="@color/dracula_album_dropdown_thumbnail_placeholder"
-                    android:textSize="18sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/the_filter_width_should_be_no_less_than_px" />
-
-                <EditText
-                    android:id="@+id/etAddFilterMinWidth"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="320" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/the_filter_height_shall_be_no_less_than_px" />
-
-                <EditText
-                    android:id="@+id/etAddFilterMinHeight"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="320" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/files_cannot_be_larger_than__m" />
-
-                <EditText
-                    android:id="@+id/etMaxSizeInBytes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="5" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/filter_image_scaling_up_to_1" />
-
-                <EditText
-                    android:id="@+id/etThumbnailScale"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="0.85" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                </LinearLayout>
 
                 <CheckBox
-                    android:id="@+id/cbOriginalEnableTrue"
+                    android:id="@+id/cb_video_merge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:checked="true"
-                    android:text="@string/whether_to_enable_the_original_image_option" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    android:text="@string/enable_segmented_recording" />
 
                 <CheckBox
-                    android:id="@+id/cbSlideHideEnable"
+                    android:id="@+id/cbClickRecord"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/whether_to_start_the_album_list_slide_hide" />
+                    android:text="@string/click_to_start_recording_lose_the_click_to_take_photos_function" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="200dp"
+                <CheckBox
+                    android:id="@+id/cbPictureHD"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:lines="3"
-                    android:text="@string/maximum_original_size_valid_only_if_original_enable_is_true_m" />
+                    android:layout_marginTop="10dp"
+                    android:text="@string/take_pictures_in_hd" />
 
-                <EditText
-                    android:id="@+id/etMaxOriginalSize"
+                <CheckBox
+                    android:id="@+id/cbVideoHD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/take_video_in_hd" />
+
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="1" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/cbWatermark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/start_the_watermark" />
 
-        </LinearLayout>
+                </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/blue_album_dropdown_count_text"
-            android:gravity="center"
-            android:text="@string/the_recording_configuration"
-            android:textColor="@color/white" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <CheckBox
-                android:id="@+id/cbCamera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:checked="true"
-                android:text="@string/turn_on_the_shooting_function" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/cbCameraImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/support_image" />
-
-                <CheckBox
-                    android:id="@+id/cbCameraVideo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/support_video" />
-
-            </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/cb_video_merge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:checked="true"
-                android:text="@string/enable_segmented_recording" />
-
-            <CheckBox
-                android:id="@+id/cbClickRecord"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/click_to_start_recording_lose_the_click_to_take_photos_function" />
-
-            <CheckBox
-                android:id="@+id/cbPictureHD"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/take_pictures_in_hd" />
-
-            <CheckBox
-                android:id="@+id/cbVideoHD"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/take_video_in_hd" />
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/cbWatermark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/start_the_watermark" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/llFlashModel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/flash_settings" />
-
-                <TextView
-                    android:id="@+id/tvFlashModel"
+                <LinearLayout
+                    android:id="@+id/llFlashModel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/flash_off" />
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/flash_settings" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tvFlashModel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/flash_off" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbFlashMemoryModel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/start_flash_memory_model" />
+
+                </LinearLayout>
 
                 <CheckBox
-                    android:id="@+id/cbFlashMemoryModel"
+                    android:id="@+id/cbOnKeyDownTakePhoto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/start_flash_memory_model" />
+                    android:text="@string/volume_button_trigger_photo_taking" />
 
-            </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/cbOnKeyDownTakePhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/volume_button_trigger_photo_taking" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/maximum_recording_time" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/maximum_recording_time" />
 
                 <EditText
                     android:id="@+id/etCameraDuration"
@@ -822,17 +821,17 @@
                     android:inputType="number"
                     android:text="20000" />
 
-            </LinearLayout>
+                </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/minimum_recording_time_milliseconds" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/minimum_recording_time_milliseconds" />
 
                     <EditText
                         android:id="@+id/etMinCameraDuration"
@@ -866,77 +865,77 @@
                     android:inputType="number"
                     android:text="1000" />
 
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/blue_album_dropdown_count_text"
+                android:gravity="center"
+                android:text="@string/recording_configuration"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <CheckBox
+                    android:id="@+id/cbRecorder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:checked="true"
+                    android:text="@string/enable_recording" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/blue_album_dropdown_count_text"
+                android:gravity="center"
+                android:text="@string/other_api"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnFileSize"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:text="@string/obtain_the_cache_file_size" />
+
+                <TextView
+                    android:id="@+id/tvFileSize"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnDeleteFileCache"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:text="@string/clear_the_cache_file_size" />
+
             </LinearLayout>
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/blue_album_dropdown_count_text"
-            android:gravity="center"
-            android:text="@string/recording_configuration"
-            android:textColor="@color/white" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <CheckBox
-                android:id="@+id/cbRecorder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:checked="true"
-                android:text="@string/enable_recording" />
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/blue_album_dropdown_count_text"
-            android:gravity="center"
-            android:text="@string/other_api"
-            android:textColor="@color/white" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnFileSize"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="7"
-                android:text="@string/obtain_the_cache_file_size" />
-
-            <TextView
-                android:id="@+id/tvFileSize"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnDeleteFileCache"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="7"
-                android:text="@string/clear_the_cache_file_size" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
 

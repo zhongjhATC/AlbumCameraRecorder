@@ -82,4 +82,8 @@
 
     <!-- endregion FocusView相关属性 -->
 
+    <declare-styleable name="ClickOrLongButton">
+        <attr name="size" format="integer" /><!-- 整体大小 -->
+    </declare-styleable>
+
 </resources>

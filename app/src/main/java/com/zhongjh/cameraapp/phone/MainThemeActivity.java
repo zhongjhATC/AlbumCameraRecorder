@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
@@ -116,7 +116,12 @@ public class MainThemeActivity extends BaseActivity {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
+            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
+
+            }
+
+            @Override
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia, int position) {
                 return false;
             }
 

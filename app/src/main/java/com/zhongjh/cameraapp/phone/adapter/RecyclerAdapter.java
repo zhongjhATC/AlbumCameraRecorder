@@ -90,11 +90,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         if (data.get(position).getVideoUrls().size() > 0) {
             holder.mplImageList.setVideoUrls(data.get(position).getVideoUrls());
         }
-        holder.mplImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
-
+        holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.VideoHolder holder, @NonNull String url) {
-
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+                return false;
             }
 
             @Override
@@ -128,7 +127,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
+            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
+
+            }
+
+            @Override
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
                 return false;
             }
         });

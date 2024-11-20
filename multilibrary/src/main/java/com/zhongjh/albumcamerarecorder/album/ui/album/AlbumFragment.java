@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.album.ui.album;
+package com.zhongjh.albumcamerarecorder.album.ui;
 
 
 import static android.app.Activity.RESULT_OK;
@@ -547,7 +547,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     private void showBottomView(int count) {
         // 当前选择图片数量 > 0 并且 处于相册界面
         if (((MainActivity) requireActivity()).getMActivityMainZjhBinding().tableLayout.getCurrentTab() == 0) {
-            if (count > 0 ) {
+            if (count > 0) {
                 // 显示底部
                 mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
                 // 隐藏母窗体的table

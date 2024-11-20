@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.controls.Preview;
@@ -69,6 +71,11 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             }
 
             @Override
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+                return false;
+            }
+
+            @Override
             public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.VideoHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
                 MyTask timer = new MyTask(displayMedia);
@@ -124,6 +131,10 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             @Override
             public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia) {
                 return false;
+            }
+
+            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
+
             }
 
         });

@@ -20,6 +20,7 @@
     <string name="flash_auto">FLASH AUTO</string>
     <string name="start_the_animation">Start the animation</string>
     <string name="str_on_activity_result_tips">Use onActivityResult to accept callback data</string>
+    <string name="toggle_english">toggle english</string>
     <string name="take_pictures_and_add_them_to_the_album">Take pictures and add them to the album</string>
     <string name="record_and_add_to_album">Record and add to album</string>
     <string name="edit_the_picture_and_add_it_to_the_album">Edit the picture and add it to the album</string>
@@ -64,6 +65,7 @@
     <string name="style_version">Style version</string>
     <string name="configure_upperlimit_version">This is flexible configuration can choose xx pictures,xx videos,xx audio usage</string>
     <string name="open_the_default_data_set">Open the default data set</string>
+    <string name="open_the_default_data_set_local">Open the default data set - local</string>
     <string name="instant_preview">Instant preview</string>
     <string name="blue_style">Blue Style</string>
     <string name="black_style">Black Style</string>
@@ -82,4 +84,7 @@
     <string name="obtain_the_cache_file_size">Obtain the cache file size </string>
     <string name="clear_the_cache_file_size">Clear the cache file size</string>
     <string name="viewing_the_file_path">Viewing the File Path</string>
+    <string name="str_see_set_value">set value</string>
+    <string name="str_see_get_value">get value</string>
+    <string name="str_see_reset_value">reset value</string>
 </resources>

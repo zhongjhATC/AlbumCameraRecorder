@@ -337,7 +337,7 @@ public class ImageCustom {
     private void onImageChanged() {
         Log.d(TAG, "onImageChanged");
         isInitialHoming = false;
-        onWindowChanged(mWindow.width(), mWindow.height());
+        onLayout(mWindow.width(), mWindow.height());
 
         if (mMode == ImageMode.CLIP) {
             mClipWin.reset(mClipFrame, getTargetRotate());
@@ -519,8 +519,8 @@ public class ImageCustom {
         }
     }
 
-    public void onWindowChanged(float width, float height) {
-        Log.d(TAG, "onWindowChanged");
+    public void onLayout(float width, float height) {
+        Log.d(TAG, "onLayout");
         if (width == 0 || height == 0) {
             return;
         }
