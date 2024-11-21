@@ -2,10 +2,10 @@ package com.zhongjh.common.utils
 
 import android.graphics.*
 import android.media.Image
-import java.io.ByteArrayOutputStream
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
+
 
 /**
  * @author：luck
@@ -17,23 +17,12 @@ object BitmapUtils {
     private const val MAX_BITMAP_SIZE = 100 * 1024 * 1024
     private const val UNSET = -1
 
-    fun toBitmap(image: Image): Bitmap {
-        val yBuffer = image.planes[0].buffer
-        val vuBuffer = image.planes[2].buffer
-
-        val ySize = yBuffer.remaining()
-        val vuSize = vuBuffer.remaining()
-
-        val nv21 = ByteArray(ySize + vuSize)
-
-        yBuffer.get(nv21, 0, ySize)
-        vuBuffer.get(nv21, ySize, vuSize)
-
-        val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
-        val out = ByteArrayOutputStream()
-        yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
-        val imageBytes = out.toByteArray()
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    fun Image.toBitmap(): Bitmap {
+        val buffer = planes[0].buffer
+        buffer.rewind()
+        val bytes = ByteArray(buffer.capacity())
+        buffer.get(bytes)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
     /**
@@ -81,12 +70,15 @@ object BitmapUtils {
                 longSide < 1664 -> {
                     1
                 }
+
                 longSide < 4990 -> {
                     2
                 }
+
                 longSide in 4991..10239 -> {
                     4
                 }
+
                 else -> {
                     longSide / 1280
                 }

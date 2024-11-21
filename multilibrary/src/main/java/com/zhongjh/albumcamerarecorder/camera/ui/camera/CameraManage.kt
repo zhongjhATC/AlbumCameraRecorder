@@ -2,11 +2,15 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageFormat
+import android.graphics.ImageFormat.YUV_420_888
 import android.graphics.Point
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
+import android.util.Log
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraInfo
@@ -44,8 +48,10 @@ import com.zhongjh.albumcamerarecorder.constants.Constant.MP4
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.common.utils.BitmapUtils.toBitmap
 import com.zhongjh.common.utils.DisplayMetricsUtils
+import com.zhongjh.common.utils.ThreadUtils
 import java.io.File
 import java.lang.ref.WeakReference
+import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Executor
@@ -66,6 +72,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
          */
         const val RATIO_4_3_VALUE = 4.0 / 3.0
         const val RATIO_16_9_VALUE = 16.0 / 9.0
+        const val TAG = "CameraManage"
     }
 
     /**
@@ -660,6 +667,7 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
         @SuppressLint("UnsafeOptInUsageError")
         override fun onCaptureSuccess(image: ImageProxy) {
             super.onCaptureSuccess(image)
+            Log.d(TAG, "onCaptureSuccess")
             val cameraManage: CameraManage? = mCameraManageReference.get()
             cameraManage?.stopCheckOrientation()
 
@@ -667,16 +675,19 @@ class CameraManage(val mContext: Context, val mViewHolder: ViewHolder, val mICam
                 mOnCameraManageListenerReference.get()
             onCameraManageListenerReference?.let {
                 image.image?.let {
-                    onCameraManageListenerReference.onPictureSuccess(toBitmap(it))
+                    onCameraManageListenerReference.onPictureSuccess(it.toBitmap())
                 }
+                image.close()
             }
         }
 
         override fun onError(exception: ImageCaptureException) {
             super.onError(exception)
+            Log.d(TAG, "onError")
             mOnCameraManageListenerReference.get()
                 ?.onError(exception.imageCaptureError, exception.message, exception.cause)
         }
+
     }
 
     /**
