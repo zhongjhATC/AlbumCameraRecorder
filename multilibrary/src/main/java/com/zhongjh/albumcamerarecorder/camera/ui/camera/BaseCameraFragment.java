@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -66,7 +65,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -260,6 +258,7 @@ public abstract class BaseCameraFragment
      */
     protected void setView() {
         multiplePhotoViews = getMultiplePhotoView();
+        getCameraManage().init();
 
 //        // 水印资源 TODO
 //        if (cameraSpec.getWatermarkResource() != -1) {
@@ -293,9 +292,6 @@ public abstract class BaseCameraFragment
 //        if (!SelectableUtils.videoValid()) {
 //            getCameraManage().setAudio(Audio.OFF);
 //        }
-
-        // 设置闪光灯模式
-        setFlashLamp();
         if (getSwitchView() != null) {
             getSwitchView().setImageResource(cameraSpec.getImageSwitch());
         }
@@ -524,6 +520,12 @@ public abstract class BaseCameraFragment
         getCameraManage().setOnCameraManageListener(new OnCameraManageListener() {
 
             @Override
+            public void bindSucceed() {
+                // 设置闪光灯模式
+                setFlashLamp();
+            }
+
+            @Override
             public void onPictureSuccess(@NonNull Bitmap bitmap) {
                 Log.d(TAG, "onPictureSuccess");
                 // 显示图片
@@ -622,16 +624,13 @@ public abstract class BaseCameraFragment
             }
         });
         // 创建权限申请回调
-        mRequestPermissionActivityResult = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
-            @Override
-            public void onActivityResult(Map<String, Boolean> result) {
-                if (result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null
-                        && result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null) {
-                    if (Objects.requireNonNull(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE)).equals(true)
-                            && Objects.requireNonNull(result.get(Manifest.permission.READ_EXTERNAL_STORAGE)).equals(true)) {
-                        //权限全部获取到之后的动作
-                        getCameraStateManagement().pvLayoutCommit();
-                    }
+        mRequestPermissionActivityResult = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+            if (result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null
+                    && result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null) {
+                if (Objects.requireNonNull(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE)).equals(true)
+                        && Objects.requireNonNull(result.get(Manifest.permission.READ_EXTERNAL_STORAGE)).equals(true)) {
+                    //权限全部获取到之后的动作
+                    getCameraStateManagement().pvLayoutCommit();
                 }
             }
         });
@@ -672,7 +671,7 @@ public abstract class BaseCameraFragment
     /**
      * 提交图片成功后，返回数据给上一个页面
      *
-     * @param newFiles
+     * @param newFiles 新的文件
      */
     @Override
     public void commitPictureSuccess(ArrayList<LocalMedia> newFiles) {
@@ -1052,7 +1051,7 @@ public abstract class BaseCameraFragment
                 default:
                     break;
             }
-            getCameraManage().setFlashLamp();
+            getCameraManage().setFlashMode(flashMode);
         }
     }
 

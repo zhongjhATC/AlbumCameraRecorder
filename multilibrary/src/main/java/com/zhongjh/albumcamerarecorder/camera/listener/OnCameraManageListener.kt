@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.listener
 
 import android.graphics.Bitmap
+import androidx.camera.core.ImageCapture.FlashMode
 
 interface OnCameraManageListener {
     /**
@@ -25,4 +26,9 @@ interface OnCameraManageListener {
      * @param cause     错误类
      */
     fun onError(errorCode: Int, message: String?, cause: Throwable?)
+
+    /**
+     * Camera绑定模式成功后触发
+     */
+    fun bindSucceed()
 }

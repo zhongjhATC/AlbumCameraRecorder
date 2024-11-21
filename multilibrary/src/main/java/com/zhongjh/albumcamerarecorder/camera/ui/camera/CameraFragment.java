@@ -47,7 +47,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
     @Override
     public void initView(View view, Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(view);
-        cameraManage = new CameraManage(getMyContext(), mViewHolder, this);
+        cameraManage = new CameraManage(getMainActivity(), mViewHolder, this);
     }
 
     @NonNull

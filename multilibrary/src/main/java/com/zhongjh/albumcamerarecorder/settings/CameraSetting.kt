@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.settings
 
+import androidx.camera.core.ImageCapture.FlashMode
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter
@@ -126,8 +127,8 @@ class CameraSetting : CameraSettingApi {
         mCameraSpec.imageFlashAuto = imageFlashAuto
         return this
     }
-
-    override fun flashMode(flashMode: Int): CameraSetting {
+    
+    override fun flashMode(@FlashMode flashMode: Int): CameraSetting {
         mCameraSpec.flashMode = flashMode
         return this
     }

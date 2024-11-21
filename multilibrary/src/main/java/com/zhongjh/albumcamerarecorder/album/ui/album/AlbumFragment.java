@@ -255,7 +255,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         }
         updateBottomToolbar();
 
-        mAlbumSpinner = new AlbumSpinner(this.mContext);
+        mAlbumSpinner = new AlbumSpinner(getActivity());
         mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
         mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
 

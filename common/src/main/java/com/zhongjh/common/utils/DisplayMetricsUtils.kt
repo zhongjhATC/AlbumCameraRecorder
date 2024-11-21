@@ -73,8 +73,7 @@ object DisplayMetricsUtils {
      * @return
      */
     fun getRealScreenWidth(context: Context): Int {
-        val wm =
-            context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val wm = context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val point = Point()
         wm.defaultDisplay.getRealSize(point)
         return point.x
@@ -86,8 +85,7 @@ object DisplayMetricsUtils {
      * @param context
      */
     fun getRealScreenHeight(context: Context): Int {
-        val wm =
-            context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val wm = context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val point = Point()
         wm.defaultDisplay.getRealSize(point)
         return point.y
