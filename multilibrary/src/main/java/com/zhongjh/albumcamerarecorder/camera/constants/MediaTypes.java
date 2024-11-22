@@ -2,22 +2,18 @@ package com.zhongjh.albumcamerarecorder.camera.constants;
 
 import androidx.annotation.IntDef;
 
-import com.zhongjh.albumcamerarecorder.constants.ModuleTypes;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
  * 拍摄界面标记的两个类型
+ *
  * @author zhongjh
  * @date 2021/12/22
  */
-@IntDef({
-        CameraTypes.TYPE_PICTURE,
-        CameraTypes.TYPE_VIDEO
-})
+@IntDef({MediaTypes.TYPE_PICTURE, MediaTypes.TYPE_VIDEO, MediaTypes.TYPE_AUDIO})
 @Retention(RetentionPolicy.SOURCE)
-public @interface CameraTypes {
+public @interface MediaTypes {
 
     /**
      * 图片
@@ -27,5 +23,10 @@ public @interface CameraTypes {
      * 视频
      */
     int TYPE_VIDEO = 0x002;
+
+    /**
+     * 音频
+     */
+    int TYPE_AUDIO = 0x003;
 
 }

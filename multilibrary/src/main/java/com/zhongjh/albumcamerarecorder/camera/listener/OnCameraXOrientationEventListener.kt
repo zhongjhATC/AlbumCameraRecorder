@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.listener
 
 import android.content.Context
+import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 
@@ -9,6 +10,10 @@ import android.view.Surface
  */
 class OnCameraXOrientationEventListener(context: Context, private val changedListener: OnOrientationChangedListener) : OrientationEventListener(context) {
 
+    companion object {
+        const val TAG = "OrientationListener"
+    }
+
     private var mRotation = Surface.ROTATION_0
 
     override fun onOrientationChanged(orientation: Int) {
@@ -16,19 +21,12 @@ class OnCameraXOrientationEventListener(context: Context, private val changedLis
             return
         }
         val currentRotation: Int = when (orientation) {
-            in 81..99 -> {
-                Surface.ROTATION_270
-            }
-            in 171..189 -> {
-                Surface.ROTATION_180
-            }
-            in 261..279 -> {
-                Surface.ROTATION_90
-            }
-            else -> {
-                Surface.ROTATION_0
-            }
+            in 81..99 ->  Surface.ROTATION_270
+            in 171..189 -> Surface.ROTATION_180
+            in 261..279 ->  Surface.ROTATION_90
+            else -> Surface.ROTATION_0
         }
+        Log.d(TAG, "rotation:$mRotation")
         if (mRotation != currentRotation) {
             mRotation = currentRotation
             changedListener.onOrientationChanged(mRotation)

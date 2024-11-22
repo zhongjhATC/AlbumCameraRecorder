@@ -14,6 +14,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.IntDef
 import androidx.annotation.RequiresApi
+import com.zhongjh.albumcamerarecorder.camera.constants.MediaTypes
 import com.zhongjh.common.utils.AppUtils.getAppName
 import com.zhongjh.common.utils.MediaStoreCompat
 import java.io.File
@@ -222,27 +223,6 @@ object MediaStoreUtils {
             uriPath!!.substring(uriPath.lastIndexOf("/") + 1).toLong()
         } catch (exception: Exception) {
             0L
-        }
-    }
-
-    @IntDef(MediaTypes.TYPE_PICTURE, MediaTypes.TYPE_VIDEO, MediaTypes.TYPE_AUDIO)
-    @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
-    annotation class MediaTypes {
-        companion object {
-            /**
-             * 图片
-             */
-            const val TYPE_PICTURE = 0x001
-
-            /**
-             * 视频
-             */
-            const val TYPE_VIDEO = 0x002
-
-            /**
-             * 音频
-             */
-            const val TYPE_AUDIO = 0x003
         }
     }
 }

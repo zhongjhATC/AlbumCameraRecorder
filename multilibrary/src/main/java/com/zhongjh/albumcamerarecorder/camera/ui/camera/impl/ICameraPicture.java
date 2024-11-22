@@ -3,7 +3,7 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera.impl;
 import android.graphics.Bitmap;
 
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import java.util.ArrayList;
@@ -59,9 +59,9 @@ public interface ICameraPicture {
     /**
      * 刷新多个图片
      *
-     * @param bitmapDatas 最新的多图数据源
+     * @param bitmapDataList 最新的多图数据源
      */
-    void refreshMultiPhoto(ArrayList<BitmapData> bitmapDatas);
+    void refreshMultiPhoto(ArrayList<BitmapData> bitmapDataList);
 
     /**
      * 刷新编辑后的单图
@@ -75,7 +75,7 @@ public interface ICameraPicture {
      * 返回迁移图片的线程
      * @return 迁移图片的线程
      */
-    ThreadUtils.SimpleTask<ArrayList<LocalFile>> getMovePictureFileTask();
+    ThreadUtils.SimpleTask<ArrayList<LocalMedia>> getMovePictureFileTask();
 
     /**
      * 删除临时图片
@@ -85,7 +85,7 @@ public interface ICameraPicture {
     /**
      * 清除数据源
      */
-    void clearBitmapDatas();
+    void clearBitmapDataList();
 
     /**
      * 停止迁移图片的线程运行

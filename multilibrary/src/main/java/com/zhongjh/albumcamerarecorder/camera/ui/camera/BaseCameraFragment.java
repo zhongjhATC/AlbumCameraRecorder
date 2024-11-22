@@ -932,7 +932,7 @@ public abstract class BaseCameraFragment
      * 取消单图后的重置
      */
     public void cancelOnResetBySinglePicture() {
-        getCameraPicturePresenter().clearBitmapDatas();
+        getCameraPicturePresenter().clearBitmapDataList();
 
         // 根据不同状态处理相应的事件
         resetStateAll();

@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.previewvideo;
 
-import static com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.MediaTypes.TYPE_VIDEO;
+
+import static com.zhongjh.albumcamerarecorder.camera.constants.MediaTypes.TYPE_VIDEO;
 
 import android.content.Intent;
 import android.net.Uri;
