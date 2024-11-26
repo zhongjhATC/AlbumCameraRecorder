@@ -7,9 +7,9 @@ interface OnCameraManageListener {
     /**
      * 拍照成功返回
      *
-     * @param bitmap 图片数据源
+     * @param path 图片地址
      */
-    fun onPictureSuccess(bitmap: Bitmap)
+    fun onPictureSuccess(path: String)
 
     /**
      * 录像成功返回

@@ -42,48 +42,6 @@ object MediaUtils {
     private const val ORIENTATION_ROTATE_270 = "270"
 
     /**
-     * 获取图片的宽高
-     *
-     * @param context 上下文
-     * @param path    path
-     * @return 根据图片path获取相关参数
-     */
-    fun getImageSize(context: Context, path: String): MediaExtraInfo {
-        val mediaExtraInfo = MediaExtraInfo()
-        val exifInterface: ExifInterface
-        var inputStream: InputStream? = null
-        try {
-            if (MimeType.isContent(path)) {
-                inputStream = context.contentResolver.openInputStream(Uri.parse(path))
-                exifInterface = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    ExifInterface(inputStream!!)
-                } else {
-                    ExifInterface(path)
-                }
-            } else {
-                exifInterface = ExifInterface(path)
-            }
-            mediaExtraInfo.width = exifInterface.getAttributeInt(
-                ExifInterface.TAG_IMAGE_WIDTH,
-                ExifInterface.ORIENTATION_NORMAL
-            )
-            mediaExtraInfo.height = exifInterface.getAttributeInt(
-                ExifInterface.TAG_IMAGE_LENGTH,
-                ExifInterface.ORIENTATION_NORMAL
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            try {
-                inputStream?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        return mediaExtraInfo
-    }
-
-    /**
      * 获取视频的宽高、时长
      *
      * @param context 上下文
@@ -104,11 +62,7 @@ object MediaUtils {
                 retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
             val width: Int
             val height: Int
-            if (TextUtils.equals(ORIENTATION_ROTATE_90, orientation) || TextUtils.equals(
-                    ORIENTATION_ROTATE_270,
-                    orientation
-                )
-            ) {
+            if (TextUtils.equals(ORIENTATION_ROTATE_90, orientation) || TextUtils.equals(ORIENTATION_ROTATE_270, orientation)) {
                 height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
                     ?.toInt() ?: 0
                 width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
@@ -195,7 +149,7 @@ object MediaUtils {
      */
     @ExperimentalCoroutinesApi
     suspend fun getMediaInfo(context: Context, mimeType: String?, path: String): LocalMedia {
-        Log.d(TAG,"关闭流 FileUtils.close")
+        Log.d(TAG, "关闭流 FileUtils.close")
         return withContext(Dispatchers.IO) {
             suspendCancellableCoroutine {
                 val localMedia = LocalMedia()
@@ -286,7 +240,7 @@ object MediaUtils {
                     }
 
                 }
-                Log.d(TAG,"关闭流 FileUtils.close")
+                Log.d(TAG, "关闭流 FileUtils.close")
                 it.resume(localMedia) {
                 }
             }

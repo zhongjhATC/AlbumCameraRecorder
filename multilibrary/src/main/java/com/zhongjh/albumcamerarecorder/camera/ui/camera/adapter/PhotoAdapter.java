@@ -105,8 +105,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             localMedia.setAbsolutePath(item.getAbsolutePath());
             localMedia.setPath(item.getPath());
             localMedia.setMimeType(MimeType.JPEG.toString());
-            localMedia.setWidth(item.getWidth());
-            localMedia.setHeight(item.getHeight());
             items.add(localMedia);
         }
 
@@ -116,8 +114,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         item.setAbsolutePath(bitmapData.getAbsolutePath());
         item.setPath(bitmapData.getPath());
         item.setMimeType(MimeType.JPEG.toString());
-        item.setWidth(bitmapData.getWidth());
-        item.setHeight(bitmapData.getHeight());
         intent.putExtra(STATE_SELECTION, items);
         intent.putExtra(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
         intent.putExtra(PreviewFragment2.EXTRA_ITEM, item);

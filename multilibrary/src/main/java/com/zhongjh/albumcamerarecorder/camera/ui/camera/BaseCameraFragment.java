@@ -520,18 +520,18 @@ public abstract class BaseCameraFragment
         getCameraManage().setOnCameraManageListener(new OnCameraManageListener() {
 
             @Override
-            public void bindSucceed() {
-                // 设置闪光灯模式
-                setFlashLamp();
+            public void onPictureSuccess(@NonNull String path) {
+                Log.d(TAG, "onPictureSuccess");
+                // 显示图片
+                getCameraPicturePresenter().addCaptureData(path);
+                // 恢复点击
+                getChildClickableLayout().setChildClickable(true);
             }
 
             @Override
-            public void onPictureSuccess(@NonNull Bitmap bitmap) {
-                Log.d(TAG, "onPictureSuccess");
-                // 显示图片
-                getCameraPicturePresenter().addCaptureData(bitmap);
-                // 恢复点击
-                getChildClickableLayout().setChildClickable(true);
+            public void bindSucceed() {
+                // 设置闪光灯模式
+                setFlashLamp();
             }
 
             @Override
@@ -613,13 +613,13 @@ public abstract class BaseCameraFragment
                         return;
                     }
                     // 重新赋值
-                    ArrayList<BitmapData> bitmapDatas = new ArrayList<>();
+                    ArrayList<BitmapData> bitmapDataArrayList = new ArrayList<>();
                     for (LocalMedia item : selected) {
-                        BitmapData bitmapData = new BitmapData(item.getId(), item.getPath(), item.getAbsolutePath(), item.getWidth(), item.getHeight());
-                        bitmapDatas.add(bitmapData);
+                        BitmapData bitmapData = new BitmapData(item.getId(), item.getPath(), item.getAbsolutePath());
+                        bitmapDataArrayList.add(bitmapData);
                     }
                     // 全部刷新
-                    getCameraPicturePresenter().refreshMultiPhoto(bitmapDatas);
+                    getCameraPicturePresenter().refreshMultiPhoto(bitmapDataArrayList);
                 }
             }
         });

@@ -2,12 +2,12 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.hardware.camera2.CameraMetadata.FLASH_MODE_OFF
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import androidx.camera.core.AspectRatio
@@ -46,6 +46,7 @@ import com.zhongjh.albumcamerarecorder.constants.Constant.ALBUM_CAMERA_RECORDER
 import com.zhongjh.albumcamerarecorder.constants.Constant.JPEG
 import com.zhongjh.albumcamerarecorder.constants.Constant.MP4
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.BitmapUtils.toBitmap
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import java.io.File
@@ -668,42 +669,6 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     /**
      * 拍照回调
      */
-    private class TakePictureCallback(
-        cameraManage: CameraManage, onCameraManageListener: OnCameraManageListener?
-    ) : OnImageCapturedCallback() {
-
-        private val mCameraManageReference: WeakReference<CameraManage> = WeakReference<CameraManage>(cameraManage)
-        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener> = WeakReference<OnCameraManageListener>(onCameraManageListener)
-
-        @SuppressLint("UnsafeOptInUsageError")
-        override fun onCaptureSuccess(image: ImageProxy) {
-            super.onCaptureSuccess(image)
-            Log.d(TAG, "onCaptureSuccess")
-            val cameraManage: CameraManage? = mCameraManageReference.get()
-            cameraManage?.stopCheckOrientation()
-
-            val onCameraManageListenerReference: OnCameraManageListener? =
-                mOnCameraManageListenerReference.get()
-            onCameraManageListenerReference?.let {
-                image.image?.let {
-                    onCameraManageListenerReference.onPictureSuccess(it.toBitmap())
-                }
-                image.close()
-            }
-        }
-
-        override fun onError(exception: ImageCaptureException) {
-            super.onError(exception)
-            Log.d(TAG, "onError")
-            mOnCameraManageListenerReference.get()
-                ?.onError(exception.imageCaptureError, exception.message, exception.cause)
-        }
-
-    }
-
-    /**
-     * 拍照回调
-     */
     private class TakePictureCallback2(
         cameraManage: CameraManage, onCameraManageListener: OnCameraManageListener?
     ) : ImageCapture.OnImageSavedCallback {
@@ -713,12 +678,11 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
             val cameraManage: CameraManage? = mCameraManageReference.get()
             var uri = outputFileResults.savedUri
-            val bitmap = MediaStore.Images.Media.getBitmap(cameraManage?.context?.contentResolver, uri)
             cameraManage?.stopCheckOrientation()
-            val onCameraManageListenerReference: OnCameraManageListener? =
-                mOnCameraManageListenerReference.get()
+            val onCameraManageListenerReference: OnCameraManageListener? = mOnCameraManageListenerReference.get()
             onCameraManageListenerReference?.let {
-                onCameraManageListenerReference.onPictureSuccess(bitmap)
+                val path: String = if (MimeType.isContent(uri.toString())) uri.toString() else uri?.path.toString()
+                onCameraManageListenerReference.onPictureSuccess(path)
             }
         }
 

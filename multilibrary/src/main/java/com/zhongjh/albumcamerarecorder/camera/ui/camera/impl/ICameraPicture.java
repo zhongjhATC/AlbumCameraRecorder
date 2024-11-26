@@ -52,9 +52,9 @@ public interface ICameraPicture {
     /**
      * 添加入数据源
      *
-     * @param bitmap bitmap
+     * @param path 文件路径
      */
-    void addCaptureData(Bitmap bitmap);
+    void addCaptureData(String path);
 
     /**
      * 刷新多个图片
@@ -73,6 +73,7 @@ public interface ICameraPicture {
 
     /**
      * 返回迁移图片的线程
+     *
      * @return 迁移图片的线程
      */
     ThreadUtils.SimpleTask<ArrayList<LocalMedia>> getMovePictureFileTask();

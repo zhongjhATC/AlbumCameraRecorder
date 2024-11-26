@@ -22,15 +22,11 @@ public class BitmapData {
      * 真实路径
      */
     private String absolutePath;
-    private int width;
-    private int height;
 
-    public BitmapData(Long temporaryId, String path, String absolutePath, int width, int height) {
+    public BitmapData(Long temporaryId, String path, String absolutePath) {
         this.temporaryId = temporaryId;
         this.path = path;
         this.absolutePath = absolutePath;
-        this.width = width;
-        this.height = height;
     }
 
     public Long getTemporaryId() {
@@ -55,22 +51,6 @@ public class BitmapData {
 
     public void setAbsolutePath(String absolutePath) {
         this.absolutePath = absolutePath;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 
 

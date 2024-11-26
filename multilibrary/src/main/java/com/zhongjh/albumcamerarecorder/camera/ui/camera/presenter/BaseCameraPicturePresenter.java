@@ -27,8 +27,10 @@ import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalMedia;
+import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.MediaStoreCompat;
+import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
 
@@ -216,18 +218,14 @@ public class BaseCameraPicturePresenter
     /**
      * 添加入数据源
      *
-     * @param bitmap bitmap
+     * @param path 文件路径
      */
     @Override
-    public void addCaptureData(Bitmap bitmap) {
+    public void addCaptureData(String path) {
         // 初始化数据并且存储进file
-        File file = pictureMediaStoreCompat.saveFileByBitmap(bitmap, true);
-        BitmapData bitmapData = new BitmapData(System.currentTimeMillis(), file.getPath(), file.getPath(), bitmap.getWidth(), bitmap.getHeight());
-        // 回收bitmap
-        if (bitmap.isRecycled()) {
-            // 回收并且置为null
-            bitmap.recycle();
-        }
+        File file = new File(path);
+        MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(baseCameraFragment.getMyContext(), path);
+        BitmapData bitmapData = new BitmapData(System.currentTimeMillis(), file.getPath(), file.getPath());
         // 加速回收机制
         System.gc();
         // 判断是否多个图片
@@ -284,7 +282,7 @@ public class BaseCameraPicturePresenter
         singlePhotoPath = photoFile.getPath();
 
         // 重置mCaptureBitmaps
-        BitmapData bitmapData = new BitmapData(bitmapDataList.get(0).getTemporaryId(), photoFile.getPath(), photoFile.getPath(), width, height);
+        BitmapData bitmapData = new BitmapData(bitmapDataList.get(0).getTemporaryId(), photoFile.getPath(), photoFile.getPath());
         bitmapDataList.clear();
         this.bitmapDataList.add(bitmapData);
 
@@ -325,8 +323,6 @@ public class BaseCameraPicturePresenter
                     // 先用临时id作为id
                     localMedia.setId(item.getTemporaryId());
                     localMedia.setPath(newFile.getAbsolutePath());
-                    localMedia.setWidth(item.getWidth());
-                    localMedia.setHeight(item.getHeight());
                     localMedia.setSize(compressionFile.length());
                     newFiles.add(localMedia);
                     FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
