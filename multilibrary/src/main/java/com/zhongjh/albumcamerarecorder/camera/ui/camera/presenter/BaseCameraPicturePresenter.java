@@ -29,6 +29,7 @@ import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.BitmapUtils;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
@@ -289,6 +290,7 @@ public class BaseCameraPicturePresenter
                 ArrayList<LocalMedia> newFiles = new ArrayList<>();
                 // 将 缓存文件 拷贝到 配置目录
                 for (BitmapData item : bitmapDataList) {
+                    BitmapUtils.INSTANCE.rotateImage(baseCameraFragment.getMyContext(), item.getPath());
                     File oldFile = new File(item.getPath());
                     // 压缩图片
                     File compressionFile;

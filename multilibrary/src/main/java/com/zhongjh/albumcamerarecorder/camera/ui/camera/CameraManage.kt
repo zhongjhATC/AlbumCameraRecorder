@@ -317,8 +317,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
-            val camera =
-                cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, preview, videoCapture)
+            val camera = cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, preview, videoCapture)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl

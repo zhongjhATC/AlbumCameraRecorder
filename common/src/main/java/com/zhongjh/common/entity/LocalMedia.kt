@@ -53,12 +53,12 @@ open class LocalMedia() : Parcelable, BaseMedia {
     /**
      * 初始的uri路径，未压缩、未编辑前的，即是原图
      */
-    var path: String? = ""
+    var path: String = ""
 
     /**
      * 初始的真实路径，未压缩、未编辑前的，即是原图
      */
-    var absolutePath: String? = ""
+    var absolutePath: String = ""
 
     /**
      * 视频的持续时间

@@ -1,7 +1,15 @@
 package com.zhongjh.common.utils
 
-import android.graphics.*
-import android.media.Image
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.net.Uri
+import androidx.exifinterface.media.ExifInterface
+import com.zhongjh.common.enums.MimeType
+import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
+import java.io.InputStream
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -17,12 +25,57 @@ object BitmapUtils {
     private const val MAX_BITMAP_SIZE = 100 * 1024 * 1024
     private const val UNSET = -1
 
-    fun Image.toBitmap(): Bitmap {
-        val buffer = planes[0].buffer
-        buffer.rewind()
-        val bytes = ByteArray(buffer.capacity())
-        buffer.get(bytes)
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    /**
+     * 判断拍照 图片是否旋转
+     * 如果旋转则纠正
+     *
+     * @param context 上下文
+     * @param path    图片路径
+     */
+    fun rotateImage(context: Context, path: String) {
+        var inputStream: InputStream? = null
+        var outputStream: FileOutputStream? = null
+        var bitmap: Bitmap? = null
+        try {
+            val degree: Int = readPictureDegree(context, path)
+            if (degree > 0) {
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                if (MimeType.isContent(path)) {
+                    inputStream = context.contentResolver.openInputStream(Uri.parse(path))
+                    BitmapFactory.decodeStream(inputStream, null, options)
+                } else {
+                    BitmapFactory.decodeFile(path, options)
+                }
+                // 算出比例,随后按照比例缩小
+                options.inSampleSize = computeSize(options.outWidth, options.outHeight)
+                options.inJustDecodeBounds = false
+                if (MimeType.isContent(path)) {
+                    inputStream = context.contentResolver.openInputStream(Uri.parse(path))
+                    bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+                } else {
+                    bitmap = BitmapFactory.decodeFile(path, options)
+                }
+                if (bitmap != null) {
+                    // 对图片进行旋转
+                    bitmap = rotatingImage(bitmap, degree)
+                    outputStream = if (MimeType.isContent(path)) {
+                        context.contentResolver.openOutputStream(Uri.parse(path)) as FileOutputStream
+                    } else {
+                        FileOutputStream(path)
+                    }
+                    saveBitmapFile(bitmap, outputStream)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            inputStream?.close()
+            outputStream?.close()
+            if (bitmap != null && !bitmap.isRecycled) {
+                bitmap.recycle()
+            }
+        }
     }
 
     /**
@@ -94,4 +147,75 @@ object BitmapUtils {
         val totalMemory = Runtime.getRuntime().totalMemory()
         return if (totalMemory > MAX_BITMAP_SIZE) MAX_BITMAP_SIZE.toLong() else totalMemory
     }
+
+    /**
+     * 读取图片属性：旋转的角度
+     *
+     * @param context
+     * @param filePath 图片绝对路径
+     * @return degree旋转的角度
+     */
+    private fun readPictureDegree(context: Context, filePath: String): Int {
+        var exifInterface: ExifInterface? = null
+        var inputStream: InputStream? = null
+        try {
+            if (MimeType.isContent(filePath)) {
+                inputStream = context.contentResolver.openInputStream(Uri.parse(filePath))
+                inputStream?.let {
+                    exifInterface = ExifInterface(inputStream)
+                }
+            } else {
+                exifInterface = ExifInterface(filePath)
+            }
+            val orientation =
+                exifInterface?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL) ?: 0
+            return when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                else -> 0
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            return 0
+        } finally {
+            inputStream?.close()
+        }
+    }
+
+    /**
+     * 旋转Bitmap
+     *
+     * @param bitmap
+     * @param angle
+     * @return
+     */
+    private fun rotatingImage(bitmap: Bitmap, angle: Int): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(angle.toFloat())
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    /**
+     * 保存Bitmap至本地
+     *
+     * @param bitmap
+     * @param fos
+     */
+    private fun saveBitmapFile(bitmap: Bitmap, fos: FileOutputStream) {
+        var stream: ByteArrayOutputStream? = null
+        try {
+            stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.write(stream.toByteArray())
+            fos.flush()
+            fos.close()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            fos.close()
+            stream?.close()
+        }
+    }
+
 }
