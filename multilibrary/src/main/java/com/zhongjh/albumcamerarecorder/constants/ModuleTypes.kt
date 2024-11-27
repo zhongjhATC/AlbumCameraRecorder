@@ -10,7 +10,7 @@ import androidx.annotation.IntDef
  */
 // @IntDef 限定常量不允许重复
 @IntDef(ModuleTypes.ALBUM, ModuleTypes.CAMERA, ModuleTypes.RECORDER)
-@kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.SOURCE)
 annotation class ModuleTypes {
     companion object {
         const val ALBUM = 0

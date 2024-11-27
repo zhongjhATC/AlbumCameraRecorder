@@ -3,12 +3,10 @@ package com.zhongjh.albumcamerarecorder.constants
 import androidx.annotation.IntDef
 
 /**
- * <pre>
- * author: Blankj
- * blog  : http://blankj.com
- * time  : 2017/03/13
- * desc  : constants of memory
-</pre> *
+ * 文件大小值
+ *
+ * @author zhongjh
+ * @date 2024/11/26
  */
 object MemoryConstants {
     const val BYTE = 1
@@ -17,6 +15,6 @@ object MemoryConstants {
     const val GB = 1073741824
 
     @IntDef(BYTE, KB, MB, GB)
-    @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+    @Retention(AnnotationRetention.SOURCE)
     annotation class Unit
 }

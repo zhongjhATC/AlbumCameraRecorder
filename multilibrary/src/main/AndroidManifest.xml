@@ -13,6 +13,17 @@
 
     <application>
 
+
+        <provider
+            android:name="com.zhongjh.albumcamerarecorder.AlbumCameraRecorderFileProvider"
+            android:authorities="${applicationId}.luckProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths_public" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"

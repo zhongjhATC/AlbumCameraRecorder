@@ -1,12 +1,11 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter;
 
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.camera.constants.MediaTypes.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.constants.MediaTypes.TYPE_PICTURE;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
 
@@ -16,20 +15,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterListener;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraPicture;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
@@ -87,10 +86,6 @@ public class BaseCameraPicturePresenter
      */
     private String singlePhotoPath;
     /**
-     * 图片的文件操作
-     */
-    private MediaStoreCompat pictureMediaStoreCompat;
-    /**
      * 一个迁移图片的异步线程
      */
     public ThreadUtils.SimpleTask<ArrayList<LocalMedia>> movePictureFileTask;
@@ -100,18 +95,6 @@ public class BaseCameraPicturePresenter
      */
     @Override
     public void initData() {
-        // 设置图片路径
-        if (baseCameraFragment.getGlobalSpec().getPictureStrategy() != null) {
-            // 如果设置了视频的文件夹路径，就使用它的
-            pictureMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getPictureStrategy());
-        } else {
-            // 否则使用全局的
-            if (baseCameraFragment.getGlobalSpec().getSaveStrategy() == null) {
-                throw new RuntimeException("Don't forget to set SaveStrategy.");
-            } else {
-                pictureMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getSaveStrategy());
-            }
-        }
     }
 
     /**
@@ -162,7 +145,7 @@ public class BaseCameraPicturePresenter
     public void initPhotoEditListener() {
         baseCameraFragment.getPhotoVideoLayout().getViewHolder().rlEdit.setOnClickListener(view -> {
             Uri uri = (Uri) view.getTag();
-            photoEditFile = pictureMediaStoreCompat.createFile(0, true, "jpg");
+            photoEditFile = FileMediaUtil.INSTANCE.createCacheFile(baseCameraFragment.getMyContext(), TYPE_PICTURE);
             Intent intent = new Intent();
             intent.setClass(baseCameraFragment.getMyContext(), ImageEditActivity.class);
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.getMainActivity().getRequestedOrientation());
@@ -224,7 +207,6 @@ public class BaseCameraPicturePresenter
     public void addCaptureData(String path) {
         // 初始化数据并且存储进file
         File file = new File(path);
-        MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(baseCameraFragment.getMyContext(), path);
         BitmapData bitmapData = new BitmapData(System.currentTimeMillis(), file.getPath(), file.getPath());
         // 加速回收机制
         System.gc();
@@ -315,9 +297,8 @@ public class BaseCameraPicturePresenter
                     } else {
                         compressionFile = oldFile;
                     }
-                    // 移动文件,获取文件名称
-                    String newFileName = item.getPath().substring(item.getPath().lastIndexOf(File.separator));
-                    File newFile = pictureMediaStoreCompat.createFile(newFileName, 0, false);
+                    // 移动文件
+                    File newFile = FileMediaUtil.INSTANCE.getOutFile(baseCameraFragment.getMyContext(), baseCameraFragment.getCameraSpec(), TYPE_PICTURE);
                     // new LocalMedia
                     LocalMedia localMedia = new LocalMedia();
                     // 先用临时id作为id
@@ -337,7 +318,7 @@ public class BaseCameraPicturePresenter
                     if (baseCameraFragment.getGlobalSpec().isAddAlbumByCamera()) {
                         // 加入图片到android系统库里面
                         Uri uri = MediaStoreUtils.displayToGallery(baseCameraFragment.getMyContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
-                                pictureMediaStoreCompat.getSaveStrategy().getDirectory(), pictureMediaStoreCompat);
+                                FileMediaUtil.INSTANCE.getDir(baseCameraFragment.getCameraSpec().getOutPutCameraDir()));
                         // 加入相册后的最后是id，直接使用该id
                         item.setId(MediaStoreUtils.getId(uri));
                     }

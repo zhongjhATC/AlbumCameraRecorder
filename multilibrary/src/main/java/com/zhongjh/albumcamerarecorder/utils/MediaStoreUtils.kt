@@ -3,7 +3,6 @@ package com.zhongjh.albumcamerarecorder.utils
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.media.ExifInterface
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
@@ -12,11 +11,10 @@ import android.os.FileUtils
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
-import androidx.annotation.IntDef
 import androidx.annotation.RequiresApi
-import com.zhongjh.albumcamerarecorder.camera.constants.MediaTypes
+import androidx.exifinterface.media.ExifInterface
+import com.zhongjh.albumcamerarecorder.constants.MediaTypes
 import com.zhongjh.common.utils.AppUtils.getAppName
-import com.zhongjh.common.utils.MediaStoreCompat
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -51,7 +49,7 @@ object MediaStoreUtils {
     fun displayToGallery(
         context: Context, file: File, @MediaTypes type: Int,
         duration: Long, width: Int, height: Int,
-        directory: String, mediaStoreCompat: MediaStoreCompat
+        directory: String
     ): Uri? {
         Log.d("displayToGallery", file.path)
         if (!file.exists()) {
@@ -59,12 +57,10 @@ object MediaStoreUtils {
         }
         var uri: Uri?
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            uri = displayToGalleryAndroidQ(
-                context, file, type, duration, width, height, directory, mediaStoreCompat
-            )
+            uri = displayToGalleryAndroidQ(context, file, type, duration, width, height, directory)
         } else {
             val photoPath = file.path
-            uri = mediaStoreCompat.getUri(photoPath)
+            uri = FileMediaUtil.getUri(context, photoPath)
             // 添加到图库数据库
             val values = ContentValues()
             values.put(MediaStore.Images.Media.DATA, photoPath)
@@ -88,12 +84,14 @@ object MediaStoreUtils {
                         MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values
                     )
                 }
+
                 MediaTypes.TYPE_PICTURE -> {
                     values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
                     uri = context.contentResolver.insert(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
                     )
                 }
+
                 MediaTypes.TYPE_AUDIO -> {
                     values.put(MediaStore.Audio.Media.MIME_TYPE, "video/aac")
                     // 计算时间
@@ -108,6 +106,7 @@ object MediaStoreUtils {
                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values
                     )
                 }
+
                 else -> {
                 }
             }
@@ -125,8 +124,7 @@ object MediaStoreUtils {
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun displayToGalleryAndroidQ(
         context: Context, file: File, @MediaTypes type: Int,
-        duration: Long, width: Int, height: Int,
-        directory: String, mediaStoreCompat: MediaStoreCompat
+        duration: Long, width: Int, height: Int, directory: String
     ): Uri? {
         // 插入file数据到相册
         val values = ContentValues()
@@ -144,7 +142,7 @@ object MediaStoreUtils {
                 // 计算时间
                 if (duration == 0L) {
                     val photoPath = file.path
-                    val uri = mediaStoreCompat.getUri(photoPath)
+                    val uri = FileMediaUtil.getUri(context, photoPath)
                     val mp = MediaPlayer.create(context, uri)
                     values.put("duration", mp.duration.toLong())
                     mp.release()
@@ -157,6 +155,7 @@ object MediaStoreUtils {
                 )
                 external = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
             }
+
             MediaTypes.TYPE_PICTURE -> {
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
                 values.put(
@@ -183,10 +182,9 @@ object MediaStoreUtils {
                     e.printStackTrace()
                 }
             }
-            MediaTypes.TYPE_AUDIO -> {
-            }
-            else -> {
-            }
+
+            MediaTypes.TYPE_AUDIO -> {}
+            else -> {}
         }
         val resolver = context.contentResolver
         if (external == null) {
@@ -225,4 +223,6 @@ object MediaStoreUtils {
             0L
         }
     }
+
+
 }

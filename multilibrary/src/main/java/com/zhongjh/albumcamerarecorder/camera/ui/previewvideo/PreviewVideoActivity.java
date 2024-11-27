@@ -1,7 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.previewvideo;
 
 
-import static com.zhongjh.albumcamerarecorder.camera.constants.MediaTypes.TYPE_VIDEO;
+import static com.zhongjh.albumcamerarecorder.constants.MediaTypes.TYPE_VIDEO;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
 import com.zhongjh.common.entity.LocalFile;
@@ -29,7 +30,6 @@ import com.zhongjh.common.listener.VideoEditListener;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.StatusBarUtils;
-import com.zhongjh.common.utils.StringUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -311,7 +311,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         if (mGlobalSpec.isAddAlbumByVideo()) {
             Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
                     mLocalFile.getWidth(), mLocalFile.getHeight(),
-                    mVideoMediaStoreCompat.getSaveStrategy().getDirectory(), mVideoMediaStoreCompat);
+                    FileMediaUtil.INSTANCE.getDir(""));
             // 加入相册后的最后是id，直接使用该id
             mLocalFile.setId(MediaStoreUtils.getId(uri));
         } else {

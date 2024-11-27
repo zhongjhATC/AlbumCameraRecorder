@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.constants;
+package com.zhongjh.albumcamerarecorder.constants;
 
 import androidx.annotation.IntDef;
 

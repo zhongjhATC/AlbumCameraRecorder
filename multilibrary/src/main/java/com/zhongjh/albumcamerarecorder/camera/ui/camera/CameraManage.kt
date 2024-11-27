@@ -2,13 +2,8 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.Point
-import android.hardware.camera2.CameraMetadata.FLASH_MODE_OFF
 import android.hardware.display.DisplayManager
-import android.os.Build
-import android.os.Environment
-import android.text.TextUtils
 import android.util.Log
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
@@ -20,10 +15,8 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.Builder
 import androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
 import androidx.camera.core.ImageCapture.Metadata
-import androidx.camera.core.ImageCapture.OnImageCapturedCallback
 import androidx.camera.core.ImageCapture.OutputFileOptions
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
@@ -35,24 +28,17 @@ import androidx.camera.view.video.OnVideoSavedCallback
 import androidx.camera.view.video.OutputFileResults
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.zhongjh.albumcamerarecorder.camera.constants.MediaTypes.TYPE_PICTURE
-import com.zhongjh.albumcamerarecorder.camera.constants.MediaTypes.TYPE_VIDEO
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEventListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXPreviewViewTouchListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment.ViewHolder
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView
-import com.zhongjh.albumcamerarecorder.constants.Constant.ALBUM_CAMERA_RECORDER
-import com.zhongjh.albumcamerarecorder.constants.Constant.JPEG
-import com.zhongjh.albumcamerarecorder.constants.Constant.MP4
+import com.zhongjh.albumcamerarecorder.constants.MediaTypes
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.utils.BitmapUtils.toBitmap
 import com.zhongjh.common.utils.DisplayMetricsUtils
-import java.io.File
 import java.lang.ref.WeakReference
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -63,7 +49,8 @@ import kotlin.math.min
 /**
  * 拍摄/录制 管理
  */
-class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCameraView: ICameraView) : OnCameraXOrientationEventListener.OnOrientationChangedListener {
+class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCameraView: ICameraView) :
+    OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
         /**
@@ -157,9 +144,9 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      * 拍照
      */
     fun takePictures() {
-        imageCapture?.let {
+        imageCapture?.let { imageCapture ->
             // 判断是否绑定了mImageCapture
-            if (!cameraProvider.isBound(it)) {
+            if (!cameraProvider.isBound(imageCapture)) {
                 bindCameraPreviewModeByImage()
             }
             // 设置图片模式
@@ -169,26 +156,16 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             val metadata = Metadata()
             metadata.isReversedHorizontal = isReversedHorizontal
             // 设置输出路径
-            val cameraFile: File? = if (isSaveExternal()) {
-                // 创建内部文件夹
-                createTempFile(false)
-            } else {
-                // 创建自定义路径下的文件夹
-                createOutFile(
-                    context,
-                    TYPE_PICTURE,
-                    cameraSpec.outPutCameraFileName,
-                    cameraSpec.imageFormat,
-                    cameraSpec.outPutCameraDir
+            val cameraFile = FileMediaUtil.createCacheFile(context, MediaTypes.TYPE_PICTURE)
+            cameraFile?.let {
+                val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
+                // 进行拍照
+                imageCapture.takePicture(
+                    fileOptions,
+                    mainExecutor,
+                    TakePictureCallback2(this@CameraManage, onCameraManageListener)
                 )
             }
-            var fileOptions = OutputFileOptions.Builder(cameraFile!!)
-                .setMetadata(metadata).build()
-
-            // 进行拍照
-//            it.takePicture(mainExecutor, TakePictureCallback(this@CameraManage, onCameraManageListener))
-
-            it.takePicture(fileOptions, mainExecutor, TakePictureCallback2(this@CameraManage, onCameraManageListener))
         }
     }
 
@@ -197,32 +174,32 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      */
     @SuppressLint("UnsafeOptInUsageError", "MissingPermission", "RestrictedApi")
     fun takeVideo() {
-        // 判断是否绑定了mVideoCapture
-        if (!cameraProvider.isBound(videoCapture)) {
-            bindCameraPreviewModeByVideo()
-        }
-        // 设置视频模式
-        useCameraCases = LifecycleCameraController.VIDEO_CAPTURE
-        // 设置输出路径
-        val cameraFile: File? = if (isSaveExternal()) {
-            // 创建内部文件夹
-            createTempFile(false)
-        } else {
-            // 创建自定义路径下的文件夹
-            createOutFile(
-                context,
-                TYPE_VIDEO,
-                cameraSpec.outPutCameraFileName,
-                cameraSpec.videoFormat,
-                cameraSpec.outPutCameraDir
-            )
-        }
-        cameraFile?.let {
-            val fileOptions = OutputFileOptions.Builder(cameraFile).build()
-            // TODO
-//            mVideoCapture.startRecording(fileOptions, mainExecutor, TakeVideoCallback(this@CameraManage, onCameraManageListener))
-//            mVideoCapture.startRecording(fileOptions,mainExecutor,TakeVideoCallback)
-        }
+//        // 判断是否绑定了mVideoCapture
+//        if (!cameraProvider.isBound(videoCapture)) {
+//            bindCameraPreviewModeByVideo()
+//        }
+//        // 设置视频模式
+//        useCameraCases = LifecycleCameraController.VIDEO_CAPTURE
+//        // 设置输出路径
+//        val cameraFile: File? = if (isSaveExternal()) {
+//            // 创建内部文件夹
+//            createTempFile(false)
+//        } else {
+//            // 创建自定义路径下的文件夹
+//            createOutFile(
+//                context,
+//                TYPE_VIDEO,
+//                cameraSpec.outPutCameraFileName,
+//                cameraSpec.videoFormat,
+//                cameraSpec.outPutCameraDir
+//            )
+//        }
+//        cameraFile?.let {
+//            val fileOptions = OutputFileOptions.Builder(cameraFile).build()
+//            // TODO
+////            mVideoCapture.startRecording(fileOptions, mainExecutor, TakeVideoCallback(this@CameraManage, onCameraManageListener))
+////            mVideoCapture.startRecording(fileOptions,mainExecutor,TakeVideoCallback)
+//        }
     }
 
     /**
@@ -230,17 +207,6 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      */
     fun setFlashMode(@ImageCapture.FlashMode flashMode: Int) {
         imageCapture?.flashMode = flashMode
-    }
-
-    /**
-     * 返回当前闪光灯模式
-     */
-    fun getFlashMode(): Int {
-        imageCapture?.let {
-            return it.flashMode
-        }.let {
-            return FLASH_MODE_OFF
-        }
     }
 
     /**
@@ -276,20 +242,20 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      */
     private fun initCameraPreviewMode() {
         // 如果有设置高清模式，则根据相应高清模式更改模式
-//        if (cameraSpec.enableImageHighDefinition) {
-        bindCameraPreviewModeByImage()
-//        } else if (cameraSpec.enableVideoHighDefinition) {
-//            bindCameraPreviewModeByVideo()
-//        } else {
-//            // 最后再判断具体什么模式
-//            if (cameraSpec.onlySupportImages()) {
-//                bindCameraPreviewModeByImage()
-//            } else if (cameraSpec.onlySupportVideos()) {
-//                bindCameraPreviewModeByVideo()
-//            } else {
-//                bindCameraPreviewModeImageAndVideo()
-//            }
-//        }
+        if (cameraSpec.enableImageHighDefinition) {
+            bindCameraPreviewModeByImage()
+        } else if (cameraSpec.enableVideoHighDefinition) {
+            bindCameraPreviewModeByVideo()
+        } else {
+            // 最后再判断具体什么模式
+            if (cameraSpec.onlySupportImages()) {
+                bindCameraPreviewModeByImage()
+            } else if (cameraSpec.onlySupportVideos()) {
+                bindCameraPreviewModeByVideo()
+            } else {
+                bindCameraPreviewModeImageAndVideo()
+            }
+        }
     }
 
     /**
@@ -298,7 +264,8 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     private fun bindCameraPreviewModeByImage() {
         try {
             // 获取适合的比例
-            val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(context), DisplayMetricsUtils.getScreenHeight(context))
+            val screenAspectRatio: Int =
+                aspectRatio(DisplayMetricsUtils.getScreenWidth(context), DisplayMetricsUtils.getScreenHeight(context))
             // 获取当前预览的角度
             val rotation: Int = viewHolder.previewView.display.rotation
             // 获取前后置摄像头
@@ -309,13 +276,20 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             // 初始化 ImageCapture
             initImageCapture(screenAspectRatio)
             // 初始化 ImageAnalysis
-            imageAnalyzer = ImageAnalysis.Builder().setTargetAspectRatio(screenAspectRatio).setTargetRotation(rotation).build()
+            imageAnalyzer =
+                ImageAnalysis.Builder().setTargetAspectRatio(screenAspectRatio).setTargetRotation(rotation).build()
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 绑定preview
             preview.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
             // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
-            val camera = cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, preview, imageCapture, imageAnalyzer)
+            val camera = cameraProvider.bindToLifecycle(
+                (context as LifecycleOwner),
+                cameraSelector,
+                preview,
+                imageCapture,
+                imageAnalyzer
+            )
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -343,7 +317,8 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
-            val camera = cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, preview, videoCapture)
+            val camera =
+                cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, preview, videoCapture)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -525,146 +500,6 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         viewHolder.previewView.setOnTouchListener(onCameraXPreviewViewTouchListener)
     }
 
-    /**
-     * 创建一个临时路径，主要是解决华为手机放弃拍照后会弹出相册图片被删除的提示
-     *
-     * @param isVideo
-     * @return
-     */
-    private fun createTempFile(isVideo: Boolean): File? {
-        val externalFilesDir: File? = context.getExternalFilesDir("")
-        externalFilesDir?.let {
-            val tempCameraFile = File(externalFilesDir.absolutePath, ".TempCamera")
-            if (!tempCameraFile.exists()) {
-                tempCameraFile.mkdirs()
-            }
-            val fileName: String = System.currentTimeMillis().toString() + if (isVideo) {
-                MP4
-            } else {
-                JPEG
-            }
-            return File(tempCameraFile.absolutePath, fileName)
-        }.let {
-            return null
-        }
-    }
-
-    /**
-     * 判断是否外部输出路径
-     */
-    private fun isSaveExternal(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && TextUtils.isEmpty(cameraSpec.outPutCameraDir)
-    }
-
-    /**
-     * 创建文件
-     *
-     * @param context            上下文
-     * @param fileType           文件类型：图片、视频
-     * @param fileName           文件名
-     * @param format             文件格式
-     * @param outCameraDirectory 输出目录
-     * @return 文件
-     */
-    private fun createOutFile(
-        context: Context,
-        fileType: Int,
-        fileName: String?,
-        format: String?,
-        outCameraDirectory: String?
-    ): File {
-        val applicationContext = context.applicationContext
-        var folderDir: File
-        outCameraDirectory?.let {
-            // 自定义存储路径
-            folderDir = File(outCameraDirectory)
-            folderDir.parentFile?.let {
-                if (it.exists()) {
-                    it.mkdirs()
-                }
-            }
-        }.let {
-            // 外部没有自定义拍照存储路径使用默认
-            val rootDir: File
-            // 判断SD卡是否正常挂载
-            if (TextUtils.equals(
-                    Environment.MEDIA_MOUNTED,
-                    Environment.getExternalStorageState()
-                )
-            ) {
-                rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-                folderDir =
-                    File(rootDir.absolutePath + File.separator + ALBUM_CAMERA_RECORDER + File.separator)
-            } else {
-                val rootDirFile = getRootDirFile(applicationContext, fileType)
-                rootDirFile?.let {
-                    folderDir = File(it.absolutePath + File.separator)
-                }.let {
-                    rootDir =
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-                    folderDir =
-                        File(rootDir.absolutePath + File.separator + ALBUM_CAMERA_RECORDER + File.separator)
-                }
-            }
-            if (!rootDir.exists()) {
-                rootDir.mkdirs()
-            }
-        }
-        if (!folderDir.exists()) {
-            folderDir.mkdirs()
-        }
-        return if (fileType == TYPE_VIDEO) {
-            // 如果视频没有自定义文件名字，则使用默认的文件名字
-            val newFileVideoName = fileName?.let {
-                fileName
-            }.let {
-                getCreateFileName("VID_") + MP4
-            }
-            File(folderDir, newFileVideoName)
-        } else {
-            // 如果图片没有自定义文件后缀格式，则使用默认的JPEG
-            val suffix = if (TextUtils.isEmpty(format)) {
-                JPEG
-            } else {
-                format
-            }
-            // 如果图片没有自定义文件名字，则使用默认的文件名字
-            val newFileImageName = fileName?.let {
-                fileName
-            }.let {
-                getCreateFileName("IMG_") + suffix
-            }
-            File(folderDir, newFileImageName)
-        }
-    }
-
-    /**
-     * 文件根目录
-     *
-     * @param context 上下文
-     * @param type 文件类型：图片、视频
-     * @return 文件根目录
-     */
-    private fun getRootDirFile(context: Context, type: Int): File? {
-        return if (type == TYPE_VIDEO) {
-            context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
-        } else {
-            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        }
-    }
-
-    private val sf = SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.US)
-
-    /**
-     * 根据时间戳创建文件名
-     *
-     * @param prefix 前缀名
-     * @return
-     */
-    fun getCreateFileName(prefix: String): String {
-        val millis = System.currentTimeMillis()
-        return prefix + sf.format(millis)
-    }
 
     /**
      * 拍照回调
@@ -674,10 +509,12 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     ) : ImageCapture.OnImageSavedCallback {
 
         private val mCameraManageReference: WeakReference<CameraManage> = WeakReference<CameraManage>(cameraManage)
-        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener> = WeakReference<OnCameraManageListener>(onCameraManageListener)
+        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener> =
+            WeakReference<OnCameraManageListener>(onCameraManageListener)
+
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
             val cameraManage: CameraManage? = mCameraManageReference.get()
-            var uri = outputFileResults.savedUri
+            val uri = outputFileResults.savedUri
             cameraManage?.stopCheckOrientation()
             val onCameraManageListenerReference: OnCameraManageListener? = mOnCameraManageListenerReference.get()
             onCameraManageListenerReference?.let {
@@ -703,7 +540,8 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     ) : OnVideoSavedCallback {
 
         private val mCameraManageReference: WeakReference<CameraManage> = WeakReference<CameraManage>(cameraManage)
-        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener> = WeakReference<OnCameraManageListener>(onCameraManageListener)
+        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener> =
+            WeakReference<OnCameraManageListener>(onCameraManageListener)
 
         @SuppressLint("UnsafeOptInUsageError")
         override fun onVideoSaved(outputFileResults: OutputFileResults) {

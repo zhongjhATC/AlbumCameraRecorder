@@ -1,5 +1,8 @@
 package com.zhongjh.common.utils
 
+import android.content.Context
+import android.os.Environment
+import android.text.TextUtils
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
@@ -11,6 +14,7 @@ import java.io.IOException
  * desc  : utils about string
  */
 object FileUtils {
+
     /**
      * Return the file by path.
      *
