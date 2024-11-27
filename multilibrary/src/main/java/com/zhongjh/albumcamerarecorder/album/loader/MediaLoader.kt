@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.math.max
 
-class MediaLoader(val application: Application) {
+class MediaLoader(private val application: Application) {
 
     companion object {
 
@@ -312,20 +312,13 @@ class MediaLoader(val application: Application) {
         media.id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
         media.bucketId = data.getLong(data.getColumnIndexOrThrow(BUCKET_ID))
         media.fileName = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
-        val bucketDisplayName = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME))
-        bucketDisplayName?.let {
-            media.parentFolderName = bucketDisplayName
-        } ?: let {
-            media.parentFolderName = ""
-        }
-        media.absolutePath =
-            data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
-        media.mimeType =
-            data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
+        media.parentFolderName = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME))
+        media.absolutePath = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
+        media.mimeType = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
         // 判断文件类型是否符合规范，不规范就只能取后缀名
         if (!isImageOrGif(media.mimeType) && !isVideo(media.mimeType)) {
             // 因为某些app保存文件时导致数据库的mimeType不符合规范，所以通过后缀名设置类型
-            val extension: String = media.mimeType.substring(media.mimeType.lastIndexOf(".") + 1)
+            val extension: String = media.mimeType!!.substring(media.mimeType!!.lastIndexOf(".") + 1)
             // 循环图片类型，判断后缀是否是.jpg之类的
             for (mimeTypeImage in MimeType.ofImage()) {
                 if (mimeTypeImage.extensions.contains(extension)) {
@@ -348,8 +341,9 @@ class MediaLoader(val application: Application) {
                 mimeType.toString()
             }
         }
+
         media.path = if (SdkVersionUtils.isQ) {
-            getRealPathUri(media.id, media.mimeType)
+            getRealPathUri(media.id, media.mimeType ?: "")
         } else {
             media.absolutePath
         }

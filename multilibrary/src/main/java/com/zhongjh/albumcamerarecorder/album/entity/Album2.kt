@@ -20,17 +20,17 @@ class Album2 {
     /**
      * 专辑的封面图path
      */
-    var firstImagePath: String = ""
+    var firstImagePath: String? = ""
 
     /**
      * 专辑的封面类型
      */
-    var firstMimeType: String = ""
+    var firstMimeType: String? = ""
 
     /**
      * 专辑名称
      */
-    var name: String = ""
+    var name: String? = ""
 
     /**
      * 当前专辑下总共多少个文件

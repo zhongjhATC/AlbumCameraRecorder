@@ -53,12 +53,12 @@ open class LocalMedia() : Parcelable, BaseMedia {
     /**
      * 初始的uri路径，未压缩、未编辑前的，即是原图
      */
-    var path: String = ""
+    var path: String? = ""
 
     /**
      * 初始的真实路径，未压缩、未编辑前的，即是原图
      */
-    var absolutePath: String = ""
+    var absolutePath: String? = ""
 
     /**
      * 视频的持续时间
@@ -88,7 +88,7 @@ open class LocalMedia() : Parcelable, BaseMedia {
     /**
      * 媒体资源类型
      */
-    var mimeType: String = ""
+    var mimeType: String? = ""
 
     /**
      * 图像或视频宽度
@@ -140,12 +140,12 @@ open class LocalMedia() : Parcelable, BaseMedia {
     /**
      * 文件名称
      */
-    var fileName: String = ""
+    var fileName: String? = ""
 
     /**
      * 父文件夹名称
      */
-    var parentFolderName: String = ""
+    var parentFolderName: String? = ""
 
     /**
      * 专辑ID
