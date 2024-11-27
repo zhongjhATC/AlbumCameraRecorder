@@ -48,7 +48,7 @@ object FileMediaUtil {
                 TYPE_AUDIO -> fileName += AAC
             }
             return File(tempCameraFile.absolutePath, fileName)
-        }.let {
+        } ?: let {
             return null
         }
     }
@@ -124,7 +124,7 @@ object FileMediaUtil {
                 TYPE_AUDIO -> fileName += AAC
             }
             return File(tempCameraFile.absolutePath, fileName)
-        }.let {
+        } ?: let {
             return null
         }
     }
@@ -186,7 +186,7 @@ object FileMediaUtil {
             if (folderDir?.parentFile?.exists() == false) {
                 folderDir?.parentFile?.mkdirs()
             }
-        }.let {
+        } ?: let {
             // 外部没有自定义拍照存储路径使用默认
             val rootDir: File?
             if (TextUtils.equals(Environment.MEDIA_MOUNTED, Environment.getExternalStorageState())) {

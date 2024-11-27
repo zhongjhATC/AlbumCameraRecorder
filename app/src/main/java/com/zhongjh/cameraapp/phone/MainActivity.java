@@ -261,7 +261,8 @@ public class MainActivity extends BaseActivity {
         // 用于记录日志
         mGlobalSetting.setOnLogListener(throwable -> {
             // 打印堆栈日志
-            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            Log.e(TAG, throwable.getMessage());
+            StackTraceElement[] stackTraceElements = throwable.getStackTrace();
             for (StackTraceElement stackTraceElement : stackTraceElements) {
                 Log.e(TAG, stackTraceElement.toString());
             }

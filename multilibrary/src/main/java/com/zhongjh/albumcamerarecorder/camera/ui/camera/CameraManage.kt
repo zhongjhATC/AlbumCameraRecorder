@@ -557,7 +557,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     private fun getTargetRotation(): Int {
         imageCapture?.let {
             return it.targetRotation
-        }.let {
+        } ?: let {
             return 0
         }
     }

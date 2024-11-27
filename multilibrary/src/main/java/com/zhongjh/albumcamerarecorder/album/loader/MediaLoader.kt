@@ -311,9 +311,13 @@ class MediaLoader(val application: Application) {
         val media = LocalMedia()
         media.id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
         media.bucketId = data.getLong(data.getColumnIndexOrThrow(BUCKET_ID))
-        media.fileName =
-            data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
-        media.parentFolderName = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME))
+        media.fileName = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
+        val bucketDisplayName = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME))
+        bucketDisplayName?.let {
+            media.parentFolderName = bucketDisplayName
+        } ?: let {
+            media.parentFolderName = ""
+        }
         media.absolutePath =
             data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
         media.mimeType =
