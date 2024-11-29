@@ -33,7 +33,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEvent
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXPreviewViewTouchListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment.ViewHolder
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView
-import com.zhongjh.albumcamerarecorder.constants.MediaTypes
+import com.zhongjh.albumcamerarecorder.constants.MediaType
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.common.enums.MimeType
@@ -156,7 +156,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             val metadata = Metadata()
             metadata.isReversedHorizontal = isReversedHorizontal
             // 设置输出路径
-            val cameraFile = FileMediaUtil.createCacheFile(context, MediaTypes.TYPE_PICTURE)
+            val cameraFile = FileMediaUtil.createCacheFile(context, MediaType.TYPE_PICTURE)
             cameraFile?.let {
                 val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
                 // 进行拍照

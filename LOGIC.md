@@ -7,6 +7,12 @@
 1.2 保存图片：压缩到LuBanCache文件夹 - 复制LuBanCache文件到设置目录下 - 加入相册 - 返回设置目录文件
 1.3 不保存图片，关闭窗口： 会保留中途操作过的Cache文件，所以如果有必要可以选择清楚缓存
 
+1.1:    拍照 - AlbumCameraRecorderCache 随机名字
+        提交 - AlbumCameraRecorderTemp 迁移
+        加入相册 - Picture 迁移
+        压缩 - AlbumCameraRecorderCompress 相册相片id_CMP
+        编辑 - AlbumCameraRecorderTemp - 加入相册 - 压缩
+
 相册界面：
 1. 相册选择图片
 1.1 相册选择图片并且在预览中编辑图片：

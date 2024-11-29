@@ -20,7 +20,9 @@ import java.io.File
  * 当用户勾选原图事件，albumSetting.setOnCheckedListener该事件会触发,赋值[isOriginal]
  * @author zhongjh
  * @date 2021/12/24
+ *
  */
+@Deprecated("作废，LocalMedia代替")
 open class LocalFile : Parcelable {
 
     /**

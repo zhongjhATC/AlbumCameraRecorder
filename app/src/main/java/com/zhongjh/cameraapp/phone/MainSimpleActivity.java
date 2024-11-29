@@ -174,8 +174,6 @@ public class MainSimpleActivity extends BaseActivity {
         }
 
         mGlobalSetting
-                // 设置路径和7.0保护路径等等
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格MaskProgressLayout的maxCount也改动 mBinding.dmlImageList.setMaxMediaCount();

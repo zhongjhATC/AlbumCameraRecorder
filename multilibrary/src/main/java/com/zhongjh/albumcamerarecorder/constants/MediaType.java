@@ -11,9 +11,9 @@ import java.lang.annotation.RetentionPolicy;
  * @author zhongjh
  * @date 2021/12/22
  */
-@IntDef({MediaTypes.TYPE_PICTURE, MediaTypes.TYPE_VIDEO, MediaTypes.TYPE_AUDIO})
+@IntDef({MediaType.TYPE_PICTURE, MediaType.TYPE_VIDEO, MediaType.TYPE_AUDIO})
 @Retention(RetentionPolicy.SOURCE)
-public @interface MediaTypes {
+public @interface MediaType {
 
     /**
      * 图片

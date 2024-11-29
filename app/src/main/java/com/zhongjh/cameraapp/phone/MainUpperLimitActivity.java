@@ -191,8 +191,6 @@ public class MainUpperLimitActivity extends BaseActivity {
                 limitModel.getMaxAudioSelectable());
 
         mGlobalSetting
-                // 设置路径和7.0保护路径等等
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 .maxSelectablePerMediaType(limitModel.getMaxSelectable(),

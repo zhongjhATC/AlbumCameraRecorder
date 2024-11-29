@@ -113,39 +113,20 @@ interface GlobalSettingApi {
     ): GlobalSetting
 
     /**
-     * 保存文件的位置[androidx.core.content.FileProvider].
+     * 设置压缩图片文件夹路径，如果不设置会有默认值
      *
-     * @param saveStrategy [SaveStrategy], 仅在启用捕获时需要
+     * @param compressImagePath 压缩图片文件夹路径
      * @return [GlobalSetting] this
      */
-    fun allStrategy(saveStrategy: SaveStrategy): GlobalSetting
+    fun compressImagePath(compressImagePath: String): GlobalSetting
 
     /**
-     * 保存图片文件的位置[androidx.core.content.FileProvider].
-     * 如果设置这个，有关图片的优先权比allStrategy高
+     * 设置压缩视频文件夹路径，如果不设置会有默认值
      *
-     * @param saveStrategy [SaveStrategy], 仅在启用捕获时需要
+     * @param compressVidePath 压缩视频文件夹路径
      * @return [GlobalSetting] this
      */
-    fun pictureStrategy(saveStrategy: SaveStrategy): GlobalSetting
-
-    /**
-     * 如果设置这个，有关视频的优先权比allStrategy高
-     * 为保存内部和外部视频文件的位置提供的捕获策略[androidx.core.content.FileProvider].
-     *
-     * @param saveStrategy [SaveStrategy], 仅在启用捕获时需要
-     * @return [GlobalSetting] this
-     */
-    fun videoStrategy(saveStrategy: SaveStrategy): GlobalSetting
-
-    /**
-     * 如果设置这个，有关音频的优先权比allStrategy高
-     * 为保存内部和外部音频文件的位置提供的捕获策略[androidx.core.content.FileProvider].
-     *
-     * @param saveStrategy [SaveStrategy], 仅在启用捕获时需要
-     * @return [GlobalSetting] this
-     */
-    fun audioStrategy(saveStrategy: SaveStrategy): GlobalSetting
+    fun compressVidePath(compressVidePath: String): GlobalSetting
 
     /**
      * 提供图像引擎。

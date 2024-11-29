@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder.album.ui;
 
-
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 import static com.zhongjh.albumcamerarecorder.model.SelectedData.COLLECTION_UNDEFINED;
@@ -31,7 +30,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -42,7 +40,6 @@ import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListene
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView;
 import com.zhongjh.albumcamerarecorder.album.widget.albumspinner.AlbumSpinner;
 import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMoreView;
@@ -60,10 +57,8 @@ import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.ColorFilterUtil;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
 import com.zhongjh.common.utils.DoubleUtils;
-import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
-import com.zhongjh.common.widget.IncapableDialog;
 
 import java.util.ArrayList;
 
@@ -93,14 +88,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * 公共配置
      */
     private final GlobalSpec mGlobalSpec = GlobalSpec.INSTANCE;
-    /**
-     * 图片配置
-     */
-    private MediaStoreCompat mPictureMediaStoreCompat;
-    /**
-     * 录像文件配置路径
-     */
-    private MediaStoreCompat mVideoMediaStoreCompat;
 
     /**
      * 相册配置
@@ -184,7 +171,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
 
         mViewHolder = new ViewHolder(view);
         initConfig();
-        mAlbumCompressFileTask = new AlbumCompressFileTask(requireActivity(), TAG, AlbumFragment.class, mGlobalSpec, mPictureMediaStoreCompat, mVideoMediaStoreCompat);
+        mAlbumCompressFileTask = new AlbumCompressFileTask(requireActivity(), TAG, AlbumFragment.class, mGlobalSpec);
         initView(savedInstanceState);
         initActivityResult();
         initListener();
@@ -208,32 +195,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * 初始化配置
      */
     private void initConfig() {
-        // 设置图片路径
-        if (mGlobalSpec.getPictureStrategy() != null) {
-            // 如果设置了视频的文件夹路径，就使用它的
-            mPictureMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getPictureStrategy());
-        } else {
-            // 否则使用全局的
-            if (mGlobalSpec.getSaveStrategy() == null) {
-                throw new RuntimeException("Don't forget to set SaveStrategy.");
-            } else {
-                mPictureMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getSaveStrategy());
-            }
-        }
-
-        // 设置视频路径
-        if (mGlobalSpec.getVideoStrategy() != null) {
-            // 如果设置了视频的文件夹路径，就使用它的
-            mVideoMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getVideoStrategy());
-        } else {
-            // 否则使用全局的
-            if (mGlobalSpec.getSaveStrategy() == null) {
-                throw new RuntimeException("Don't forget to set SaveStrategy.");
-            } else {
-                mVideoMediaStoreCompat = new MediaStoreCompat(this.mContext, mGlobalSpec.getSaveStrategy());
-            }
-        }
-
         mOriginalManage = new OriginalManage(this, mMainModel, mSelectedModel, mAlbumSpec);
     }
 
@@ -396,18 +357,20 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                                 setResultOk(localFiles);
                             }
                         } else {
-                            // 点击了返回
-                            mSelectedModel.getSelectedData().overwrite(selected, collectionType);
-                            if (result.getData().getBooleanExtra(PreviewFragment2.EXTRA_RESULT_IS_EDIT, false)) {
-                                mIsRefresh = true;
-                                // 重新读取数据源
-                                mMediaViewUtil.reloadPageMediaData();
-                            } else {
-                                // 刷新数据源
-                                mMediaViewUtil.refreshMediaGrid();
+                            if (selected != null) {
+                                // 点击了返回
+                                mSelectedModel.getSelectedData().overwrite(selected, collectionType);
+                                if (result.getData().getBooleanExtra(PreviewFragment2.EXTRA_RESULT_IS_EDIT, false)) {
+                                    mIsRefresh = true;
+                                    // 重新读取数据源
+                                    mMediaViewUtil.reloadPageMediaData();
+                                } else {
+                                    // 刷新数据源
+                                    mMediaViewUtil.refreshMediaGrid();
+                                }
+                                // 刷新底部
+                                updateBottomToolbar();
                             }
-                            // 刷新底部
-                            updateBottomToolbar();
                         }
                     }
                 });

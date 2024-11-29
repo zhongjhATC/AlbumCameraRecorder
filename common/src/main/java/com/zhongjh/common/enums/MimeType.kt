@@ -329,5 +329,50 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             )
         }
 
+        /**
+         * 根据后缀名获取类型名称
+         */
+        fun getMimeTypeName(suffix: String): String {
+            return if (JPEG.extensions.contains(suffix)) {
+                JPEG.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                PNG.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                GIF.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                BMP.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                XMSBMP.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                VNDBMP.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                WEBP.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                HEIC.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                AAC.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                MPEG.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                MP4.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                QUICKTIME.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                THREEGPP.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                THREEGPP2.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                MKV.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                WEBM.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                TS.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                AVI.mimeTypeName
+            } else {
+                JPEG.mimeTypeName
+            }
+        }
+
     }
 }

@@ -116,8 +116,6 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         mGlobalSetting.recorderSetting(recorderSetting);
 
         mGlobalSetting
-                // 设置路径和7.0保护路径等等
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 // 最大5张图片、最大3个视频、最大1个音频

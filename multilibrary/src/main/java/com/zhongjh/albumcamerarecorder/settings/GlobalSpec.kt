@@ -78,24 +78,14 @@ object GlobalSpec {
     var maxAudioSelectable: Int? = null
 
     /**
-     * 拍照\录像\存储的保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+     * 压缩图片路径
      */
-    var saveStrategy: SaveStrategy? = null
+    var compressImagePath: String? = null
 
     /**
-     * 图片保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+     * 压缩视频路径
      */
-    var pictureStrategy: SaveStrategy? = null
-
-    /**
-     * 视频保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
-     */
-    var videoStrategy: SaveStrategy? = null
-
-    /**
-     * 音频保存路径 参数1 true表示在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
-     */
-    var audioStrategy: SaveStrategy? = null
+    var compressVidePath: String? = null
 
     lateinit var imageEngine: ImageEngine
 
@@ -141,7 +131,7 @@ object GlobalSpec {
      * 日志接口
      * 虽然功能都捕获了相关异常，但是一般开发都是需要记录为何报错，可以让下次修复
      */
-    var onLogListener : OnLogListener? = null
+    var onLogListener: OnLogListener? = null
 
     /**
      * 视频压缩功能
@@ -171,10 +161,13 @@ object GlobalSpec {
         when (moduleTypes) {
             ModuleTypes.ALBUM ->
                 return AlbumSpec.mimeTypeSet ?: this.mimeTypeSet
+
             ModuleTypes.CAMERA ->
                 return CameraSpec.mimeTypeSet ?: this.mimeTypeSet
+
             ModuleTypes.RECORDER -> {
             }
+
             else -> {
             }
         }
@@ -212,10 +205,8 @@ object GlobalSpec {
         maxImageSelectable = null
         maxVideoSelectable = null
         maxAudioSelectable = null
-        saveStrategy = null
-        pictureStrategy = null
-        videoStrategy = null
-        audioStrategy = null
+        compressImagePath = null
+        compressVidePath = null
         hasInited = true
         imageEngine = GlideEngine()
         cutscenesEnabled = true

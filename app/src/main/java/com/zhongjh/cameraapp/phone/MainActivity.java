@@ -274,28 +274,6 @@ public class MainActivity extends BaseActivity {
             mGlobalSetting.videoCompress(new VideoCompressManager());
         }
 
-        // 自定义路径，如果其他子权限设置了路径，那么以子权限为准
-        if (!TextUtils.isEmpty(mBinding.etAllFile.getText().toString())) {
-            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-            mGlobalSetting.allStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAllFile.getText().toString()));
-        }
-        if (!TextUtils.isEmpty(mBinding.etPictureFile.getText().toString())) {
-            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-            mGlobalSetting.pictureStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etPictureFile.getText().toString()));
-        }
-        if (!TextUtils.isEmpty(mBinding.etAudioFile.getText().toString())) {
-            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-            mGlobalSetting.audioStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etAudioFile.getText().toString()));
-        }
-        if (!TextUtils.isEmpty(mBinding.etVideoFile.getText().toString())) {
-            // 设置路径和7.0保护路径等等，只影响录制拍照的路径，选择路径还是按照当前选择的路径
-            mGlobalSetting.videoStrategy(
-                    new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", mBinding.etVideoFile.getText().toString()));
-        }
-
         // 加载图片框架，具体注释看maxSelectablePerMediaType方法注释
         mGlobalSetting.imageEngine(new Glide4Engine())
                 .maxSelectablePerMediaType(

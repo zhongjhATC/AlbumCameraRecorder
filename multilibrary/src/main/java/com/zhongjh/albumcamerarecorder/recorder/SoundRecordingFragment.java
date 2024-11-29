@@ -30,9 +30,11 @@ import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.albumcamerarecorder.constants.MediaType;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayout;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.settings.RecordeSpec;
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
@@ -68,7 +70,6 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private GlobalSpec mGlobalSpec;
     private RecordeSpec mRecordSpec;
-    private MediaStoreCompat mAudioMediaStoreCompat;
 
     /**
      * 是否正在播放中
@@ -476,7 +477,7 @@ public class SoundRecordingFragment extends BaseFragment {
             initAudio();
             // 获取文件名称
             String newFileName = localMedia.getPath().substring(localMedia.getPath().lastIndexOf(File.separator));
-            File newFile = mAudioMediaStoreCompat.createFile(newFileName, 2, false);
+            File newFile = FileMediaUtil.INSTANCE.createCacheFile(mContext, MediaType.TYPE_AUDIO);
             Log.d(TAG, "newFile" + newFile.getAbsolutePath());
             FileUtil.copy(new File(localMedia.getPath()), newFile, null, (ioProgress, file) -> {
                 int progress = (int) (ioProgress * FULL);
@@ -515,18 +516,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void startRecording() {
         // 设置音频路径
-        if (mGlobalSpec.getAudioStrategy() != null) {
-            // 如果设置了音频的文件夹路径，就使用它的
-            mAudioMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getAudioStrategy());
-        } else {
-            // 否则使用全局的
-            if (mGlobalSpec.getSaveStrategy() == null) {
-                throw new RuntimeException("Don't forget to set SaveStrategy.");
-            } else {
-                mAudioMediaStoreCompat = new MediaStoreCompat(mContext, mGlobalSpec.getSaveStrategy());
-            }
-        }
-        mFile = mAudioMediaStoreCompat.createFile(2, true, "aac");
+        mFile = FileMediaUtil.INSTANCE.createCacheFile(mContext, MediaType.TYPE_AUDIO);
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);

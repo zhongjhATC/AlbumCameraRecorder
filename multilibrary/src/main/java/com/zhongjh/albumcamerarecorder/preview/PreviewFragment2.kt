@@ -32,6 +32,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
+import com.zhongjh.albumcamerarecorder.constants.MediaType
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.OriginalManage
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
@@ -41,13 +42,12 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams
 import com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.common.entity.IncapableCause
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
-import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
-import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.common.utils.ThreadUtils
@@ -154,44 +154,6 @@ class PreviewFragment2 : BaseFragment() {
     }
 
     /**
-     * 图片存储器
-     */
-    private val mPictureMediaStoreCompat by lazy {
-        // 设置图片路径
-        mGlobalSpec.pictureStrategy?.let {
-            // 如果设置了图片的文件夹路径，就使用它的
-            MediaStoreCompat(mContext, it)
-        } ?: let {
-            mGlobalSpec.saveStrategy?.let {
-                // 否则使用全局的
-                MediaStoreCompat(mContext, it)
-            } ?: let {
-                // 全局如果都没有，抛错
-                throw RuntimeException("Please set the GlobalSpec <saveStrategy> or <pictureStrategy> configuration.")
-            }
-        }
-    }
-
-    /**
-     * 录像文件配置路径
-     */
-    private val mVideoMediaStoreCompat by lazy {
-        // 设置视频路径
-        mGlobalSpec.videoStrategy?.let {
-            // 如果设置了图片的文件夹路径，就使用它的
-            MediaStoreCompat(mContext, it)
-        } ?: let {
-            mGlobalSpec.saveStrategy?.let {
-                // 否则使用全局的
-                MediaStoreCompat(mContext, it)
-            } ?: let {
-                // 全局如果都没有，抛错
-                throw RuntimeException("Please set the GlobalSpec <saveStrategy> or <videoStrategy> configuration.")
-            }
-        }
-    }
-
-    /**
      * 打开ImageEditActivity的回调
      */
     private lateinit var mImageEditActivityResult: ActivityResultLauncher<Intent>
@@ -239,9 +201,7 @@ class PreviewFragment2 : BaseFragment() {
             mContext,
             TAG,
             PreviewFragment2::class.java,
-            mGlobalSpec,
-            mPictureMediaStoreCompat,
-            mVideoMediaStoreCompat
+            mGlobalSpec
         )
     }
 
@@ -604,8 +564,8 @@ class PreviewFragment2 : BaseFragment() {
     private fun openImageEditActivity() {
         val item = mAdapter.getLocalMedia(mMainModel.previewPosition)
         item?.let {
-            val file = mPictureMediaStoreCompat.createFile(0, true, "jpg")
-            mEditImagePath = file.absoluteFile.toString()
+            val file = FileMediaUtil.createCacheFile(mContext, MediaType.TYPE_PICTURE)
+            mEditImagePath = file?.absoluteFile.toString()
             val intent = Intent()
             intent.setClass(requireActivity(), ImageEditActivity::class.java)
             intent.putExtra(
@@ -613,7 +573,7 @@ class PreviewFragment2 : BaseFragment() {
                 requireActivity().requestedOrientation
             )
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.path)
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file.absolutePath)
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file?.absolutePath)
             mImageEditActivityResult.launch(intent)
         }
     }

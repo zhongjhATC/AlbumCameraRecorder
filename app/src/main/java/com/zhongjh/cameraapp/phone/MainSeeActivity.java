@@ -258,14 +258,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 .albumSetting(albumSetting)
                 .cameraSetting(cameraSetting)
                 .recorderSetting(recorderSetting)
-                // 设置路径和7.0保护路径等等
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/test"))
-                // 如果设置这个，有关图片的优先权比allStrategy高
-                .pictureStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/picture"))
-                // 如果设置这个，有关音频的优先权比allStrategy高
-                .audioStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/audio"))
-                // 如果设置这个，有关视频的优先权比allStrategy高
-                .videoStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "AA/video"))
                 //  .imageEngine(new GlideEngine())  // for glide-V3     // for glide-V4
                 .imageEngine(new Glide4Engine());
     }

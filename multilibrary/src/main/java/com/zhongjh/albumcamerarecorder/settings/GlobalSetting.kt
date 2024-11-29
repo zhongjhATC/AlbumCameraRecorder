@@ -141,23 +141,13 @@ class GlobalSetting internal constructor(
         return this
     }
 
-    override fun allStrategy(saveStrategy: SaveStrategy): GlobalSetting {
-        mGlobalSpec.saveStrategy = saveStrategy
+    override fun compressImagePath(compressImagePath: String): GlobalSetting {
+        mGlobalSpec.compressImagePath = compressImagePath
         return this
     }
 
-    override fun pictureStrategy(saveStrategy: SaveStrategy): GlobalSetting {
-        mGlobalSpec.pictureStrategy = saveStrategy
-        return this
-    }
-
-    override fun videoStrategy(saveStrategy: SaveStrategy): GlobalSetting {
-        mGlobalSpec.videoStrategy = saveStrategy
-        return this
-    }
-
-    override fun audioStrategy(saveStrategy: SaveStrategy): GlobalSetting {
-        mGlobalSpec.audioStrategy = saveStrategy
+    override fun compressVidePath(compressVidePath: String): GlobalSetting {
+        mGlobalSpec.compressVidePath = compressVidePath
         return this
     }
 

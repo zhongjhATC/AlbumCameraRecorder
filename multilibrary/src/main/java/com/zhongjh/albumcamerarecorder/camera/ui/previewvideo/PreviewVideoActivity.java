@@ -1,7 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.previewvideo;
 
 
-import static com.zhongjh.albumcamerarecorder.constants.MediaTypes.TYPE_VIDEO;
+import static com.zhongjh.albumcamerarecorder.constants.MediaType.TYPE_VIDEO;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -60,11 +60,6 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 按钮事件运行中，因为该自定义控件如果通过setEnabled控制会导致动画不起效果，所以需要该变量控制按钮事件是否生效
      */
     boolean mIsRun;
-
-    /**
-     * 录像文件配置路径
-     */
-    private MediaStoreCompat mVideoMediaStoreCompat;
     /**
      * 拍摄配置
      */
@@ -147,19 +142,6 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 初始化数据
      */
     private void initData() {
-        // 设置视频路径
-        if (mGlobalSpec.getVideoStrategy() != null) {
-            // 如果设置了视频的文件夹路径，就使用它的
-            mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this, mGlobalSpec.getVideoStrategy());
-        } else {
-            // 否则使用全局的
-            if (mGlobalSpec.getSaveStrategy() == null) {
-                throw new RuntimeException("Don't forget to set SaveStrategy.");
-            } else {
-                mVideoMediaStoreCompat = new MediaStoreCompat(PreviewVideoActivity.this, mGlobalSpec.getSaveStrategy());
-            }
-        }
-
         if (mLocalFile.getPath() != null) {
             File file = new File(mLocalFile.getPath());
             Log.d(TAG, "exists:" + file.exists() + " length:" + file.length());
@@ -207,7 +189,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
             compress();
         } else {
             // 否则直接转移
-            moveVideoFile();
+            confirm(new File(mLocalFile.getPath()));
+            mIsRun = false;
+//            moveVideoFile();
         }
     }
 
@@ -217,12 +201,13 @@ public class PreviewVideoActivity extends AppCompatActivity {
     private void compress() {
         if (mLocalFile.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
             // 获取文件名称
-            String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
-            File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
+            File newFile = FileMediaUtil.INSTANCE.createCompressFile(getApplicationContext(), mLocalFile.getPath());
             mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
                 @Override
                 public void onFinish() {
-                    confirm(newFile);
+                    if (newFile != null) {
+                        confirm(newFile);
+                    }
                 }
 
                 @Override
@@ -240,65 +225,66 @@ public class PreviewVideoActivity extends AppCompatActivity {
                     mIsRun = false;
                 }
             });
-            if (mLocalFile.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
+            if (mLocalFile.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null && newFile != null) {
                 mGlobalSpec.getVideoCompressCoordinator().compressRxJava(PreviewVideoActivity.this.getClass(), mLocalFile.getPath(), newFile.getPath());
             }
         }
     }
 
-    /**
-     * 迁移视频文件，缓存文件迁移到配置目录
-     */
-    private void moveVideoFile() {
-        Log.d(TAG, "moveVideoFile");
-        // 执行等待动画
-        mBtnConfirm.setProgress(50);
-        // 开始迁移文件，将 缓存文件 拷贝到 配置目录
-        ThreadUtils.executeByIo(getMoveVideoFileTask());
-    }
+//    /**
+//     * 迁移视频文件，缓存文件迁移到配置目录
+//     */
+//    private void moveVideoFile() {
+//        Log.d(TAG, "moveVideoFile");
+//        // 执行等待动画
+//        mBtnConfirm.setProgress(50);
+//        // 开始迁移文件，将 缓存文件 拷贝到 配置目录
+//        ThreadUtils.executeByIo(getMoveVideoFileTask());
+//    }
 
-    /**
-     * 迁移视频的异步线程
-     */
-    private ThreadUtils.SimpleTask<File> getMoveVideoFileTask() {
-        mMoveVideoFileTask = new ThreadUtils.SimpleTask<File>() {
-            @Override
-            public File doInBackground() {
-                if (mLocalFile.getPath() == null) {
-                    return null;
-                }
-                // 获取文件名称
-                String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
-                File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-                FileUtil.move(new File(mLocalFile.getPath()), newFile);
-                return newFile;
-            }
-
-            @Override
-            public void onSuccess(File newFile) {
-                if (newFile.exists()) {
-                    mBtnConfirm.setProgress(100);
-                    confirm(newFile);
-                } else {
-                    mBtnConfirm.setProgress(0);
-                }
-                mIsRun = false;
-            }
-
-            @Override
-            public void onFail(Throwable t) {
-                super.onFail(t);
-                mIsRun = false;
-            }
-
-            @Override
-            public void onCancel() {
-                super.onCancel();
-                mIsRun = false;
-            }
-        };
-        return mMoveVideoFileTask;
-    }
+//    /**
+//     * 迁移视频的异步线程
+//     */
+//    private ThreadUtils.SimpleTask<File> getMoveVideoFileTask() {
+//        mMoveVideoFileTask = new ThreadUtils.SimpleTask<File>() {
+//            @Override
+//            public File doInBackground() {
+//                if (mLocalFile.getPath() == null) {
+//                    return null;
+//                }
+//                // 获取文件名称
+//                String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
+//                FileMediaUtil.INSTANCE.createCacheFile()
+//                File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
+//                FileUtil.move(new File(mLocalFile.getPath()), newFile);
+//                return newFile;
+//            }
+//
+//            @Override
+//            public void onSuccess(File newFile) {
+//                if (newFile.exists()) {
+//                    mBtnConfirm.setProgress(100);
+//                    confirm(newFile);
+//                } else {
+//                    mBtnConfirm.setProgress(0);
+//                }
+//                mIsRun = false;
+//            }
+//
+//            @Override
+//            public void onFail(Throwable t) {
+//                super.onFail(t);
+//                mIsRun = false;
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                super.onCancel();
+//                mIsRun = false;
+//            }
+//        };
+//        return mMoveVideoFileTask;
+//    }
 
     /**
      * 确定该视频
@@ -319,7 +305,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
             mLocalFile.setId(System.currentTimeMillis());
         }
         mLocalFile.setPath(newFile.getPath());
-        mLocalFile.setUri(mVideoMediaStoreCompat.getUri(newFile.getPath()));
+        mLocalFile.setUri(FileMediaUtil.INSTANCE.getUri(getApplicationContext(), newFile.getPath()));
         mLocalFile.setSize(newFile.length());
         mLocalFile.setMimeType(MimeType.MP4.getMimeTypeName());
         intent.putExtra(LOCAL_FILE, mLocalFile);

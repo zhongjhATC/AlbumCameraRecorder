@@ -1,7 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter;
 
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.constants.MediaTypes.TYPE_PICTURE;
+import static com.zhongjh.albumcamerarecorder.constants.MediaType.TYPE_PICTURE;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_HEIGHT;
 import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
@@ -27,10 +27,8 @@ import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.BitmapUtils;
-import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.imageedit.ImageEditActivity;
 

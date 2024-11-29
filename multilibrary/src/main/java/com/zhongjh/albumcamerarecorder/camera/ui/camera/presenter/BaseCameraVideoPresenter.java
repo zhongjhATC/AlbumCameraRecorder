@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+import android.os.Build;
 import android.util.Log;
 import android.util.Log;
 import android.view.View;
@@ -17,10 +18,13 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraVideo;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.albumcamerarecorder.constants.MediaType;
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -49,10 +53,6 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
      * 从视频预览界面回来
      */
     ActivityResultLauncher<Intent> previewVideoActivityResult;
-    /**
-     * 录像文件配置路径
-     */
-    private MediaStoreCompat videoMediaStoreCompat;
 
     /**
      * 合并视频线程
@@ -96,18 +96,6 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
      */
     @Override
     public void initData() {
-        // 设置视频路径
-        if (baseCameraFragment.getGlobalSpec().getVideoStrategy() != null) {
-            // 如果设置了视频的文件夹路径，就使用它的
-            videoMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getVideoStrategy());
-        } else {
-            // 否则使用全局的
-            if (baseCameraFragment.getGlobalSpec().getSaveStrategy() == null) {
-                throw new RuntimeException("Don't forget to set SaveStrategy.");
-            } else {
-                videoMediaStoreCompat = new MediaStoreCompat(baseCameraFragment.getMyContext(), baseCameraFragment.getGlobalSpec().getSaveStrategy());
-            }
-        }
     }
 
     /**
@@ -170,13 +158,9 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
     public void recordVideo() {
         // 用于播放的视频file
         if (videoFile == null) {
-            videoFile = videoMediaStoreCompat.createFile(1, true, "mp4");
+            videoFile = FileMediaUtil.INSTANCE.createCacheFile(baseCameraFragment.getMyContext(), MediaType.TYPE_VIDEO);
         }
-        if (baseCameraFragment.getCameraSpec().getEnableVideoHighDefinition()) {
-            baseCameraFragment.getCameraManage().takeVideo();
-        } else {
-            baseCameraFragment.getCameraManage().takeVideo();
-        }
+        baseCameraFragment.getCameraManage().takeVideo();
     }
 
     /**
@@ -189,7 +173,7 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
         long mediaDuration = getMediaDuration(path);
         if (mediaDuration < 1000) {
             baseCameraFragment.setShortTip();
-            Log.d(TAG,"视频时间低于1秒");
+            Log.d(TAG, "视频时间低于1秒");
         }
         // 判断是否短时间结束
         if (!isShort && !isBreakOff() && mediaDuration >= 1000) {
@@ -208,7 +192,7 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
                 // 显示当前进度
                 baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
                 // 创建新的file
-                videoFile = videoMediaStoreCompat.createFile(1, true, "mp4");
+                videoFile = FileMediaUtil.INSTANCE.createCacheFile(baseCameraFragment.getMyContext(), MediaType.TYPE_VIDEO);
                 // 如果是在已经合成的情况下继续拍摄，那就重置状态
                 if (!baseCameraFragment.getPhotoVideoLayout().getProgressMode()) {
                     baseCameraFragment.getPhotoVideoLayout().resetConfirm();
@@ -251,37 +235,40 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
     @Override
     public void openPreviewVideoActivity() {
         if (isSectionRecord && baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
-            // 创建合并视频后的路径
-            newSectionVideoPath = videoMediaStoreCompat.createFile(1, true, "mp4").getPath();
+            File mp4File = FileMediaUtil.INSTANCE.createCacheFile(baseCameraFragment.getMyContext(), MediaType.TYPE_VIDEO);
+            if (mp4File != null) {
+                // 创建合并视频后的路径
+                newSectionVideoPath = mp4File.getPath();
 
-            // 显示loading
-            baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.VISIBLE);
-            // 开始进行合并线程
-            baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(50);
-            ThreadUtils.SimpleTask<Boolean> simpleTask = new ThreadUtils.SimpleTask<Boolean>() {
+                // 显示loading
+                baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.VISIBLE);
+                // 开始进行合并线程
+                baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(50);
+                ThreadUtils.SimpleTask<Boolean> simpleTask = new ThreadUtils.SimpleTask<Boolean>() {
 
-                @Override
-                public Boolean doInBackground() {
-                    Objects.requireNonNull(baseCameraFragment.getCameraSpec().getVideoMergeCoordinator()).merge(videoPaths, newSectionVideoPath);
-                    return true;
-                }
+                    @Override
+                    public Boolean doInBackground() {
+                        Objects.requireNonNull(baseCameraFragment.getCameraSpec().getVideoMergeCoordinator()).merge(videoPaths, newSectionVideoPath);
+                        return true;
+                    }
 
-                @Override
-                public void onSuccess(Boolean result) {
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
-                    PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
-                }
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
+                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
+                        PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
+                    }
 
-                @Override
-                public void onFail(Throwable t) {
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-                    super.onFail(t);
-                }
-            };
-            mMergeVideoTasks.add(simpleTask);
-            ThreadUtils.executeByIo(simpleTask);
+                    @Override
+                    public void onFail(Throwable t) {
+                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
+                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+                        super.onFail(t);
+                    }
+                };
+                mMergeVideoTasks.add(simpleTask);
+                ThreadUtils.executeByIo(simpleTask);
+            }
         }
     }
 
@@ -302,24 +289,29 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
      * @return 视频的时间
      */
     private long getMediaDuration(String filePath) {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             retriever.setDataSource(filePath);
             String metaData = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             long duration = 0L;
             if (metaData != null) {
                 duration = Long.parseLong(metaData);
             }
-            retriever.close();
             return duration;
         } catch (Exception exception) {
             exception.printStackTrace();
             return 0;
+        } finally {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    retriever.close();
+                } else {
+                    retriever.release();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-    }
-
-    public MediaStoreCompat getVideoMediaStoreCompat() {
-        return videoMediaStoreCompat;
     }
 
     public ArrayList<String> getVideoPaths() {
