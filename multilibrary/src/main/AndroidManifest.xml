@@ -13,10 +13,9 @@
 
     <application>
 
-
         <provider
             android:name="com.zhongjh.albumcamerarecorder.AlbumCameraRecorderFileProvider"
-            android:authorities="${applicationId}.luckProvider"
+            android:authorities="${applicationId}.zhongjhProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
