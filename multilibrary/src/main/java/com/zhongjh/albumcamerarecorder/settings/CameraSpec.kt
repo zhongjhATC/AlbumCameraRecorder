@@ -75,21 +75,6 @@ object CameraSpec {
     var keyCodeTakePhoto = 0
 
     /**
-     * 自定义拍照、录制的输出文件夹路径
-     */
-    var outPutCameraDir: String? = null
-
-    /**
-     * 输出文件的名称
-     */
-    var outPutCameraFileName: String? = null
-
-    /**
-     * 输出图片文件的后缀名
-     */
-    var imageFormat: String? = null
-
-    /**
      * 输出视频文件的后缀名
      */
     var videoFormat: String? = null
@@ -182,9 +167,6 @@ object CameraSpec {
         imageFlashAuto = R.drawable.ic_flash_auto
         flashMode = FLASH_MODE_OFF
         keyCodeTakePhoto = 0
-        outPutCameraDir = null
-        outPutCameraFileName = null
-        imageFormat = null
         videoFormat = null
         enableFlashMemoryModel = false
         // 最长录制时间

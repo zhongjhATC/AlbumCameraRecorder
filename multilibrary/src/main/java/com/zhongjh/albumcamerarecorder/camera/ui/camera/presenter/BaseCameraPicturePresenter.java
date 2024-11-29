@@ -7,6 +7,7 @@ import static com.zhongjh.imageedit.ImageEditActivity.EXTRA_WIDTH;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,6 +24,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraPicture;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
+import com.zhongjh.albumcamerarecorder.constants.DirType;
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils;
@@ -44,22 +46,18 @@ import java.util.List;
  * @author zhongjh
  * @date 2022/8/22
  */
-public class BaseCameraPicturePresenter
-        implements PhotoAdapterListener, ICameraPicture {
+public class BaseCameraPicturePresenter implements PhotoAdapterListener, ICameraPicture {
 
-    public BaseCameraPicturePresenter(
-            BaseCameraFragment<? extends CameraStateManagement,
-                    ? extends BaseCameraPicturePresenter,
-                    ? extends BaseCameraVideoPresenter> baseCameraFragment) {
+    public BaseCameraPicturePresenter(BaseCameraFragment<? extends CameraStateManagement, ? extends BaseCameraPicturePresenter, ? extends BaseCameraVideoPresenter> baseCameraFragment) {
         this.baseCameraFragment = baseCameraFragment;
     }
+
+    private static final String TAG = "CameraPicturePresenter";
 
     /**
      * cameraFragment
      */
-    protected BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> baseCameraFragment;
+    protected BaseCameraFragment<? extends CameraStateManagement, ? extends BaseCameraPicturePresenter, ? extends BaseCameraVideoPresenter> baseCameraFragment;
     /**
      * 从编辑图片界面回来
      */
@@ -120,21 +118,19 @@ public class BaseCameraPicturePresenter
     @Override
     public void initActivityResult() {
         // 从编辑图片界面回来
-        imageEditActivityResult = baseCameraFragment.registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(), result -> {
-                    boolean isReturn = baseCameraFragment.initActivityResult(result.getResultCode());
-                    if (isReturn) {
-                        return;
-                    }
-                    if (result.getResultCode() == RESULT_OK) {
-                        if (result.getData() == null) {
-                            return;
-                        }
-                        // 编辑图片界面
-                        refreshEditPhoto(result.getData().getIntExtra(EXTRA_WIDTH, 0),
-                                result.getData().getIntExtra(EXTRA_HEIGHT, 0));
-                    }
-                });
+        imageEditActivityResult = baseCameraFragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            boolean isReturn = baseCameraFragment.initActivityResult(result.getResultCode());
+            if (isReturn) {
+                return;
+            }
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() == null) {
+                    return;
+                }
+                // 编辑图片界面
+                refreshEditPhoto(result.getData().getIntExtra(EXTRA_WIDTH, 0), result.getData().getIntExtra(EXTRA_HEIGHT, 0));
+            }
+        });
     }
 
     /**
@@ -290,40 +286,39 @@ public class BaseCameraPicturePresenter
                 for (BitmapData item : bitmapDataList) {
                     BitmapUtils.INSTANCE.rotateImage(baseCameraFragment.getMyContext(), item.getPath());
                     File oldFile = new File(item.getPath());
-                    // 压缩图片
-                    File compressionFile;
-                    if (baseCameraFragment.getGlobalSpec().getOnImageCompressionListener() != null) {
-                        compressionFile = baseCameraFragment.getGlobalSpec().getOnImageCompressionListener().compressionFile(baseCameraFragment.getMyContext(), oldFile);
-                    } else {
-                        compressionFile = oldFile;
-                    }
-                    // 移动文件
-                    File newFile = FileMediaUtil.INSTANCE.getOutFile(baseCameraFragment.getMyContext(), baseCameraFragment.getCameraSpec(), TYPE_PICTURE);
-                    // new LocalMedia
-                    LocalMedia localMedia = new LocalMedia();
-                    // 先用临时id作为id
-                    localMedia.setId(item.getTemporaryId());
-                    localMedia.setPath(newFile.getAbsolutePath());
-                    localMedia.setSize(compressionFile.length());
-                    newFiles.add(localMedia);
-                    FileUtil.copy(compressionFile, newFile, null, (ioProgress, file) -> {
-                        if (ioProgress >= 1) {
-                            // 每次迁移完一个文件的进度
-                            int progress = 100 / bitmapDataList.size();
-                            ThreadUtils.runOnUiThread(() -> baseCameraFragment.setProgress(progress));
+                    Log.d(BaseCameraPicturePresenter.TAG, "1. 拍照文件：" + oldFile.getAbsolutePath());
+                    // 迁移到tempFile
+                    File tempFile = FileMediaUtil.INSTANCE.createFile(baseCameraFragment.getMyContext(), DirType.TEMP, oldFile.getName());
+                    boolean isMove = FileUtil.move(oldFile, tempFile);
+                    if (isMove) {
+                        Log.d(BaseCameraPicturePresenter.TAG, "2. Temp文件：" + tempFile.getAbsolutePath());
+                        // new LocalMedia
+                        LocalMedia localMedia = new LocalMedia();
+                        // 先用临时id作为id
+                        localMedia.setId(item.getTemporaryId());
+                        localMedia.setPath(tempFile.getAbsolutePath());
+                        localMedia.setSize(tempFile.length());
+                        // 加入相册
+                        if (baseCameraFragment.getGlobalSpec().isAddAlbumByCamera() && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                            // 加入图片到android系统库里面
+                            Uri uri = MediaStoreUtils.displayToGalleryAndroidQ(baseCameraFragment.getMyContext(), tempFile, TYPE_PICTURE, -1, localMedia.getWidth(), localMedia.getHeight());
+                            // 加入相册后的最后是id，直接使用该id
+                            localMedia.setId(MediaStoreUtils.getId(uri));
+                            Log.d(BaseCameraPicturePresenter.TAG, "3. 加入相册id：" + localMedia.getId());
                         }
-                    });
-                }
-                for (LocalMedia item : newFiles) {
-                    if (baseCameraFragment.getGlobalSpec().isAddAlbumByCamera()) {
-                        // 加入图片到android系统库里面
-                        Uri uri = MediaStoreUtils.displayToGallery(baseCameraFragment.getMyContext(), new File(item.getPath()), TYPE_PICTURE, -1, item.getWidth(), item.getHeight(),
-                                FileMediaUtil.INSTANCE.getDir(baseCameraFragment.getCameraSpec().getOutPutCameraDir()));
-                        // 加入相册后的最后是id，直接使用该id
-                        item.setId(MediaStoreUtils.getId(uri));
+                        localMedia.setMimeType(MimeType.JPEG.getMimeTypeName());
+                        localMedia.setPath(item.getPath());
+                        // 压缩图片
+                        File compressionFile;
+                        if (baseCameraFragment.getGlobalSpec().getOnImageCompressionListener() != null) {
+                            compressionFile = baseCameraFragment.getGlobalSpec().getOnImageCompressionListener().compressionFile(baseCameraFragment.getMyContext(), tempFile);
+                        } else {
+                            compressionFile = oldFile;
+                        }
+                        localMedia.setCompressPath(compressionFile.getAbsolutePath());
+                        Log.d(BaseCameraPicturePresenter.TAG, "4. 压缩图片：" + compressionFile.getAbsolutePath());
+                        newFiles.add(localMedia);
                     }
-                    item.setMimeType(MimeType.JPEG.getMimeTypeName());
-                    item.setPath(item.getPath());
                 }
                 // 执行完成
                 return newFiles;

@@ -158,27 +158,6 @@ interface CameraSettingApi {
     fun onKeyDownTakePhoto(keyCode: Int): CameraSetting
 
     /**
-     * 自定义拍照、录制的输出文件夹路径
-     *
-     * @param outPutCameraDir 输出文件夹路径
-     */
-    fun outPutCameraDir(outPutCameraDir: String): CameraSetting
-
-    /**
-     * 自定义拍照、录制文件名
-     *
-     * @param outPutCameraFileName 输出文件的名称
-     */
-    fun outPutCameraFileName(outPutCameraFileName: String): CameraSetting
-
-    /**
-     * 自定义图片的后缀名格式
-     *
-     * @param imageFormat 图片的后缀名格式
-     */
-    fun imageFormat(imageFormat: String): CameraSetting
-
-    /**
      * 自定义视频的后缀名格式
      *
      * @param videoFormat 视频的后缀名格式

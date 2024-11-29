@@ -27,6 +27,20 @@ object FileMediaUtil {
     private const val JPEG = ".jpeg"
     private const val MP4 = ".mp4"
     private const val AAC = ".aac"
+    private const val CAMERA = "Camera"
+
+    fun createFile(context: Context, @DirType dirType: String, fileName: String): File? {
+        val externalFilesDir: File? = context.getExternalFilesDir("")
+        externalFilesDir?.let {
+            val dirFile = File(externalFilesDir.absolutePath, dirType)
+            if (!dirFile.exists()) {
+                dirFile.mkdirs()
+            }
+            return File(dirFile.absolutePath + File.separator + fileName)
+        } ?: let {
+            return null
+        }
+    }
 
     /**
      * 创建一个缓存路径
@@ -99,23 +113,30 @@ object FileMediaUtil {
     }
 
     /**
+     * 服务于Camera
+     *
      * @param context 上下文
-     * @param cameraSpec 录制配置
+     * @param fileName 文件名称
      * @param type 文件类型
      * 获取输出路径
      */
-    fun getOutFile(context: Context, cameraSpec: CameraSpec, @MediaType type: Int): File? {
-        val isSaveExternal = isSaveExternal(cameraSpec.outPutCameraDir)
-        val outFile: File? = if (isSaveExternal) {
-            // 创建内部文件夹
-            createTempFile(context, type)
+    fun getOutFile(context: Context, fileName: String, @MediaType type: Int): File {
+        val rootDir: File?
+        val folderDir: File
+        if (TextUtils.equals(Environment.MEDIA_MOUNTED, Environment.getExternalStorageState())) {
+            rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+            folderDir = File((rootDir.absolutePath + File.separator + CAMERA) + File.separator)
         } else {
-            // 创建自定义路径下的文件夹
-            createOutFile(
-                context, type, cameraSpec.outPutCameraFileName, cameraSpec.imageFormat, cameraSpec.outPutCameraDir
-            )
+            rootDir = getRootDirFile(context, type)
+            folderDir = File(rootDir?.absolutePath + File.separator)
         }
-        return outFile
+        if (rootDir?.exists() != true) {
+            rootDir?.mkdirs()
+        }
+        if (!folderDir.exists()) {
+            folderDir.mkdirs()
+        }
+        return File(folderDir.absolutePath + fileName)
     }
 
     /**
@@ -132,13 +153,6 @@ object FileMediaUtil {
         return FileProvider.getUriForFile(
             context, "com.zhongjh.albumcamerarecorder.AlbumCameraRecorderFileProvider", File(path)
         )
-    }
-
-    /**
-     * 判断是否外部输出路径
-     */
-    private fun isSaveExternal(outPutCameraDirStr: String?): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && TextUtils.isEmpty(outPutCameraDirStr)
     }
 
     /**
@@ -184,84 +198,6 @@ object FileMediaUtil {
         } ?: let {
             return null
         }
-    }
-
-    /**
-     * 创建文件
-     *
-     * @param context            上下文
-     * @param type               文件类型：图片、视频、音频
-     * @param fileName           文件名
-     * @param format             文件格式
-     * @param outCameraDirectory 输出目录
-     * @return 文件
-     */
-    private fun createOutFile(
-        context: Context, @MediaType type: Int, fileName: String?, format: String?, outCameraDirectory: String?
-    ): File? {
-        val applicationContext: Context = context.applicationContext
-        val folderDir: File? = createFolderDir(applicationContext, outCameraDirectory, type)
-        if (folderDir?.exists() != true) {
-            folderDir?.mkdirs()
-        }
-        val isOutFileNameEmpty = TextUtils.isEmpty(fileName)
-        when (type) {
-            TYPE_VIDEO -> {
-                val newFileName = if (isOutFileNameEmpty) getCreateFileName(TYPE_VIDEO.toString()) + MP4 else fileName
-                return newFileName?.let { File(folderDir, it) }
-            }
-
-            TYPE_AUDIO -> {
-                val newFileName = if (isOutFileNameEmpty) getCreateFileName(TYPE_AUDIO.toString()) + AAC else fileName
-                return newFileName?.let { File(folderDir, it) }
-            }
-
-            else -> {
-                val suffix = if (TextUtils.isEmpty(format)) JPEG else format
-                val newFileName =
-                    if (isOutFileNameEmpty) getCreateFileName(TYPE_PICTURE.toString()) + suffix else fileName
-                return newFileName?.let { File(folderDir, it) }
-            }
-        }
-    }
-
-    /**
-     * 创建文件夹目录
-     * @return 文件夹目录 File
-     */
-    private fun createFolderDir(context: Context, outCameraDirectory: String?, @MediaType type: Int): File? {
-        var folderDir: File? = null
-        outCameraDirectory?.let {
-            // 自定义存储路径
-            folderDir = File(outCameraDirectory)
-            if (folderDir?.parentFile?.exists() == false) {
-                folderDir?.parentFile?.mkdirs()
-            }
-        } ?: let {
-            // 外部没有自定义拍照存储路径使用默认
-            val rootDir: File?
-            if (TextUtils.equals(Environment.MEDIA_MOUNTED, Environment.getExternalStorageState())) {
-                rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-                var folderStr = ""
-                when (type) {
-                    TYPE_PICTURE -> folderStr += TYPE_PICTURE.toString()
-                    TYPE_VIDEO -> folderStr += TYPE_VIDEO.toString()
-                    TYPE_AUDIO -> folderStr += TYPE_AUDIO.toString()
-                }
-                folderDir = File(rootDir.absolutePath + File.separator + folderStr + File.separator)
-            } else {
-                rootDir = getRootDirFile(context, type)
-                rootDir?.let {
-                    folderDir = File(rootDir.absolutePath + File.separator)
-                }
-            }
-            rootDir?.let {
-                if (!rootDir.exists()) {
-                    rootDir.mkdirs()
-                }
-            }
-        }
-        return folderDir
     }
 
     /**

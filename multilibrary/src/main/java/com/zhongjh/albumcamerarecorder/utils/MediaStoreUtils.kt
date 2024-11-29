@@ -33,6 +33,89 @@ import java.util.*
 object MediaStoreUtils {
 
     private val TAG = MediaStoreUtils::class.java.simpleName
+    const val DCIM_CAMERA: String = "DCIM/Camera"
+
+    /**
+     * 插入图片、视频到图库
+     * 兼容AndroidQ
+     */
+    @RequiresApi(Build.VERSION_CODES.Q) @JvmStatic
+    fun displayToGalleryAndroidQ(
+        context: Context, file: File, @MediaType type: Int,
+        duration: Long, width: Int, height: Int
+    ): Uri? {
+        // 插入file数据到相册
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, getAppName(context))
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, file.name)
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
+        values.put(MediaStore.Images.Media.ORIENTATION, 0)
+        values.put(MediaStore.Images.Media.SIZE, file.length())
+        values.put(MediaStore.Images.Media.WIDTH, width)
+        values.put(MediaStore.Images.Media.HEIGHT, height)
+        val suffix = file.name.substring(file.name.lastIndexOf("."))
+        var external: Uri? = null
+        when (type) {
+            MediaType.TYPE_VIDEO -> {
+                values.put(MediaStore.Video.Media.MIME_TYPE, MimeType.getMimeType(suffix))
+                // 计算时间
+                if (duration == 0L) {
+                    val photoPath = file.path
+                    val uri = FileMediaUtil.getUri(context, photoPath)
+                    val mp = MediaPlayer.create(context, uri)
+                    values.put("duration", mp.duration.toLong())
+                    mp.release()
+                } else {
+                    values.put("duration", duration)
+                }
+                values.put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+                external = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+            }
+
+            MediaType.TYPE_PICTURE -> {
+                values.put(MediaStore.Images.Media.MIME_TYPE, MimeType.getMimeType(suffix))
+                values.put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+                external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+
+                // 需要增加这个，不然AndroidQ识别不到TAG_DATETIME_ORIGINAL创建时间
+                try {
+                    val exif = ExifInterface(file.path)
+                    if (TextUtils.isEmpty(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))) {
+                        val simpleDateFormat =
+                            SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault())
+                        exif.setAttribute(
+                            ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(
+                                System.currentTimeMillis()
+                            )
+                        )
+                        exif.saveAttributes()
+                    }
+                } catch (e: IOException) {
+                    Log.d(TAG, e.message.toString())
+                    e.printStackTrace()
+                }
+            }
+
+            MediaType.TYPE_AUDIO -> {}
+            else -> {}
+        }
+        val resolver = context.contentResolver
+        external?.let {
+            val uri = resolver.insert(external, values)
+            values.clear()
+            uri?.let {
+                val out = resolver.openOutputStream(uri)
+                val fis = FileInputStream(file)
+                out?.let {
+                    FileUtils.copy(fis, out)
+                    fis.close()
+                    out.close()
+                }
+            }
+            return uri
+        }
+        return null
+    }
 
     /**
      * 插入图片、视频到图库
