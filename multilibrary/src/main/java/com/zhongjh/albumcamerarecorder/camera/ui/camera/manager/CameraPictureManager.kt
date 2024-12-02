@@ -24,6 +24,8 @@ import com.zhongjh.albumcamerarecorder.camera.util.LogUtil
 import com.zhongjh.albumcamerarecorder.constants.MediaType
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createCacheFile
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createFile
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.getOutFile
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.displayToGalleryAndroidQ
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.getId
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.imageMaxCount
@@ -353,20 +355,12 @@ open class CameraPictureManager(
             rotateImage(baseCameraFragment.myContext, item.path)
             val cacheFile = File(item.path)
             Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
-//            var isMove = false
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//                // 迁移到tempFile
-//                val tempFile = createFile(baseCameraFragment.myContext, DirType.TEMP, oldFile.name)
-//                isMove = FileUtil.move(oldFile, tempFile)
-//                Log.d(TAG, "2. Temp文件：" + tempFile.absolutePath)
-//            } else {
-//                // 直接迁移到相册文件夹
-//
-//            }
             // new LocalMedia
             val localMedia = LocalMedia()
             // 先用临时id作为id
             localMedia.id = item.temporaryId
+            // 根据版本兼容处理的最终文件
+            var newFile: File
             // AndroidQ才加入相册数据,AndroidQ以下在相册文件夹会自动认为是相册数据
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val mediaInfo = MediaUtils.getMediaInfo(
@@ -389,13 +383,23 @@ open class CameraPictureManager(
                     Log.d(TAG, "2. 加入相册id：" + localMedia.id + " uri:" + uri)
                     Log.d(TAG, "3. 真实路径：" + localMedia.path)
                 }
+                newFile = cacheFile
+            } else {
+                // 直接迁移到相册文件夹
+                val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
+                val isMove = FileUtil.move(cacheFile, cameraFile)
+                newFile = if (isMove) {
+                    cameraFile
+                } else {
+                    cacheFile
+                }
             }
             localMedia.mimeType = MimeType.JPEG.mimeTypeName
             // 压缩图片
             val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
-                baseCameraFragment.myContext, cacheFile
+                baseCameraFragment.myContext, newFile
             ) ?: let {
-                cacheFile
+                newFile
             }
             localMedia.compressPath = compressionFile.absolutePath
             localMedia.sandboxPath =

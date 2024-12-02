@@ -113,7 +113,7 @@ object FileMediaUtil {
             folderDir = File((rootDir.absolutePath + File.separator + CAMERA) + File.separator)
         } else {
             rootDir = getRootDirFile(context, type)
-            folderDir = File(rootDir?.absolutePath + File.separator)
+            folderDir = File(rootDir.absolutePath + File.separator)
         }
         if (rootDir?.exists() != true) {
             rootDir?.mkdirs()
