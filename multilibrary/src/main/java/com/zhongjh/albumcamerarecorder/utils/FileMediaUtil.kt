@@ -2,7 +2,6 @@ package com.zhongjh.albumcamerarecorder.utils
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
 import androidx.core.content.FileProvider
@@ -11,9 +10,7 @@ import com.zhongjh.albumcamerarecorder.constants.MediaType
 import com.zhongjh.albumcamerarecorder.constants.MediaType.TYPE_AUDIO
 import com.zhongjh.albumcamerarecorder.constants.MediaType.TYPE_PICTURE
 import com.zhongjh.albumcamerarecorder.constants.MediaType.TYPE_VIDEO
-import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.utils.DateUtils.getCreateFileName
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -29,17 +26,13 @@ object FileMediaUtil {
     private const val AAC = ".aac"
     private const val CAMERA = "Camera"
 
-    fun createFile(context: Context, @DirType dirType: String, fileName: String): File? {
+    fun createFile(context: Context, @DirType dirType: String, fileName: String): File {
         val externalFilesDir: File? = context.getExternalFilesDir("")
-        externalFilesDir?.let {
-            val dirFile = File(externalFilesDir.absolutePath, dirType)
-            if (!dirFile.exists()) {
-                dirFile.mkdirs()
-            }
-            return File(dirFile.absolutePath + File.separator + fileName)
-        } ?: let {
-            return null
+        val dirFile = File(externalFilesDir!!.absolutePath, dirType)
+        if (!dirFile.exists()) {
+            dirFile.mkdirs()
         }
+        return File(dirFile.absolutePath + File.separator + fileName)
     }
 
     /**
@@ -49,7 +42,7 @@ object FileMediaUtil {
      * @param type 文件类型
      * @return
      */
-    fun createCacheFile(context: Context, @MediaType type: Int): File? {
+    fun createCacheFile(context: Context, @MediaType type: Int): File {
         return createFile(context, type, DirType.CACHE, null)
     }
 
@@ -62,25 +55,21 @@ object FileMediaUtil {
      *
      * @return file
      */
-    fun createCompressFile(context: Context, path: String): File? {
+    fun createCompressFile(context: Context, path: String): File {
         val externalFilesDir: File? = context.getExternalFilesDir("")
-        externalFilesDir?.let {
-            val tempCameraFile = File(externalFilesDir.absolutePath, DirType.COMPRESS)
-            if (!tempCameraFile.exists()) {
-                tempCameraFile.mkdirs()
-            }
-            // 获取文件名称
-            var newFileName: String = path.substring(path.lastIndexOf(File.separator))
-            val newFileNames = newFileName.split(".").toTypedArray()
-            // 设置压缩后的照片名称，id_CMP
-            if (newFileNames.size > 1) {
-                // 设置后缀名
-                newFileName = newFileNames[0] + "_CMP" + "." + newFileNames[1]
-            }
-            return File(tempCameraFile.absolutePath, newFileName)
-        } ?: let {
-            return null
+        val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.COMPRESS)
+        if (!tempCameraFile.exists()) {
+            tempCameraFile.mkdirs()
         }
+        // 获取文件名称
+        var newFileName: String = path.substring(path.lastIndexOf(File.separator))
+        val newFileNames = newFileName.split(".").toTypedArray()
+        // 设置压缩后的照片名称，id_CMP
+        if (newFileNames.size > 1) {
+            // 设置后缀名
+            newFileName = newFileNames[0] + "_CMP" + "." + newFileNames[1]
+        }
+        return File(tempCameraFile.absolutePath, newFileName)
     }
 
     /**
@@ -92,24 +81,20 @@ object FileMediaUtil {
      *
      * @return file
      */
-    fun createCompressFile(context: Context, localMedia: LocalMedia): File? {
+    fun createCompressFile(context: Context, localMedia: LocalMedia): File {
         val externalFilesDir: File? = context.getExternalFilesDir("")
-        externalFilesDir?.let {
-            val tempCameraFile = File(externalFilesDir.absolutePath, DirType.COMPRESS)
-            if (!tempCameraFile.exists()) {
-                tempCameraFile.mkdirs()
-            }
-            val newFileNames = localMedia.absolutePath.split(".").toTypedArray()
-            // 设置压缩后的照片名称，id_CMP
-            var newFileName = localMedia.id.toString() + "_CMP"
-            if (newFileNames.size > 1) {
-                // 设置后缀名
-                newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
-            }
-            return File(tempCameraFile.absolutePath, newFileName)
-        } ?: let {
-            return null
+        val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.COMPRESS)
+        if (!tempCameraFile.exists()) {
+            tempCameraFile.mkdirs()
         }
+        val newFileNames = localMedia.absolutePath.split(".").toTypedArray()
+        // 设置压缩后的照片名称，id_CMP
+        var newFileName = localMedia.id.toString() + "_CMP"
+        if (newFileNames.size > 1) {
+            // 设置后缀名
+            newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
+        }
+        return File(tempCameraFile.absolutePath, newFileName)
     }
 
     /**
@@ -180,24 +165,20 @@ object FileMediaUtil {
         @MediaType mediaType: Int,
         @DirType dirType: String,
         suffix: String?
-    ): File? {
+    ): File {
         val externalFilesDir: File? = context.getExternalFilesDir("")
-        externalFilesDir?.let {
-            val dirFile = File(externalFilesDir.absolutePath, dirType)
-            if (!dirFile.exists()) {
-                dirFile.mkdirs()
-            }
-            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmssSSS", Locale.getDefault()).format(Date())
-            val fileName = when (mediaType) {
-                TYPE_PICTURE -> "IMAGE_" + timeStamp + (suffix ?: JPEG)
-                TYPE_VIDEO -> "VIDEO_" + timeStamp + (suffix ?: MP4)
-                TYPE_AUDIO -> "AUDIO_" + timeStamp + (suffix ?: AAC)
-                else -> throw RuntimeException("The type must be 2-0.")
-            }
-            return File(dirFile.absolutePath, fileName)
-        } ?: let {
-            return null
+        val dirFile = File(externalFilesDir!!.absolutePath, dirType)
+        if (!dirFile.exists()) {
+            dirFile.mkdirs()
         }
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmssSSS", Locale.getDefault()).format(Date())
+        val fileName = when (mediaType) {
+            TYPE_PICTURE -> "IMAGE_" + timeStamp + (suffix ?: JPEG)
+            TYPE_VIDEO -> "VIDEO_" + timeStamp + (suffix ?: MP4)
+            TYPE_AUDIO -> "AUDIO_" + timeStamp + (suffix ?: AAC)
+            else -> throw RuntimeException("The type must be 2-0.")
+        }
+        return File(dirFile.absolutePath, fileName)
     }
 
     /**
@@ -207,10 +188,10 @@ object FileMediaUtil {
      * @param type 文件类型：图片、视频、音频
      * @return 文件根目录
      */
-    private fun getRootDirFile(context: Context, type: Int): File? {
+    private fun getRootDirFile(context: Context, type: Int): File {
         return when (type) {
-            TYPE_PICTURE -> context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            else -> context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
+            TYPE_PICTURE -> context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+            else -> context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)!!
         }
     }
 

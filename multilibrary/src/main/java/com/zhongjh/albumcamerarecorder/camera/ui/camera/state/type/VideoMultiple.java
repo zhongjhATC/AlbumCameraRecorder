@@ -1,10 +1,10 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.circularprogressview.CircularProgressState;
 
 /**
@@ -17,12 +17,12 @@ public class VideoMultiple extends StateMode {
 
     /**
      * @param cameraFragment        主要是多个状态围绕着cameraLayout进行相关处理
-     * @param cameraStateManagement 可以让状态更改别的状态
+     * @param cameraStateManager 可以让状态更改别的状态
      */
-    public VideoMultiple(BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
-        super(cameraFragment, cameraStateManagement);
+    public VideoMultiple(BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
+        super(cameraFragment, cameraStateManager);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class VideoMultiple extends StateMode {
     public void pvLayoutCommit() {
         // 判断是否加载中,如果是《合成视频中》则取消《合成视频》,否则进行《合成视频》
         if (getCameraFragment().getPhotoVideoLayout().getViewHolder().btnConfirm.mState == CircularProgressState.STOP) {
-            getCameraFragment().getCameraVideoPresenter().openPreviewVideoActivity();
+            getCameraFragment().getCameraVideoManager().openPreviewVideoActivity();
         } else {
             stopProgress();
         }
@@ -56,7 +56,7 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void pvLayoutCancel() {
-        getCameraFragment().getCameraVideoPresenter().removeVideoMultiple();
+        getCameraFragment().getCameraVideoManager().removeVideoMultiple();
     }
 
     @Override

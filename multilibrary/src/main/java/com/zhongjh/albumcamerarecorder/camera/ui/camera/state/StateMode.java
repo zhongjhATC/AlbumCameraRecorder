@@ -1,8 +1,8 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.state;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
 
 /**
  * 状态模式
@@ -12,41 +12,41 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVide
  */
 public abstract class StateMode implements IState {
 
-    protected final String TAG = CameraStateManagement.class.getSimpleName();
+    protected final String TAG = CameraStateManager.class.getSimpleName();
 
-    CameraStateManagement cameraStateManagement;
-    BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraFragment;
+    CameraStateManager cameraStateManager;
+    BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraFragment;
 
-    public BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> getCameraFragment() {
+    public BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> getCameraFragment() {
         return cameraFragment;
     }
 
-    public void setCameraFragment(BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraLayout) {
+    public void setCameraFragment(BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraLayout) {
         this.cameraFragment = cameraLayout;
     }
 
-    public CameraStateManagement getCameraStateManagement() {
-        return cameraStateManagement;
+    public CameraStateManager getCameraStateManagement() {
+        return cameraStateManager;
     }
 
-    public void setCameraStateManagement(CameraStateManagement cameraStateManagement) {
-        this.cameraStateManagement = cameraStateManagement;
+    public void setCameraStateManagement(CameraStateManager cameraStateManager) {
+        this.cameraStateManager = cameraStateManager;
     }
 
     /**
-     * @param cameraStateManagement 可以让状态更改别的状态
+     * @param cameraStateManager 可以让状态更改别的状态
      * @param cameraFragment       主要是多个状态围绕着cameraLayout进行相关处理
      */
-    public StateMode(BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
+    public StateMode(BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
         this.cameraFragment = cameraFragment;
-        this.cameraStateManagement = cameraStateManagement;
+        this.cameraStateManager = cameraStateManager;
     }
 }

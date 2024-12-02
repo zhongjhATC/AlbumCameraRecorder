@@ -62,7 +62,11 @@ object MediaUtils {
                 retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
             val width: Int
             val height: Int
-            if (TextUtils.equals(ORIENTATION_ROTATE_90, orientation) || TextUtils.equals(ORIENTATION_ROTATE_270, orientation)) {
+            if (TextUtils.equals(ORIENTATION_ROTATE_90, orientation) || TextUtils.equals(
+                    ORIENTATION_ROTATE_270,
+                    orientation
+                )
+            ) {
                 height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
                     ?.toInt() ?: 0
                 width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
@@ -147,104 +151,96 @@ object MediaUtils {
     /**
      * 获取文件信息,视频大的话会耗时过大
      */
-    @ExperimentalCoroutinesApi
-    suspend fun getMediaInfo(context: Context, mimeType: String?, path: String): LocalMedia {
-        Log.d(TAG, "关闭流 FileUtils.close")
-        return withContext(Dispatchers.IO) {
-            suspendCancellableCoroutine {
-                val localMedia = LocalMedia()
-                localMedia.mimeType = mimeType.toString()
-                // 如果是图片
-                var inputStream: InputStream? = null
-                if (isImageOrGif(mimeType)) {
-                    // 实例化ExifInterface,作用获取图片的属性
-                    var exif: ExifInterface? = null
-                    if (isContent(path)) {
-                        inputStream = context.contentResolver.openInputStream(Uri.parse(path))
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && inputStream != null) {
-                            exif = ExifInterface(inputStream)
-                        }
-                    } else {
-                        exif = ExifInterface(path)
-                    }
-                    // 开始获取图片的相关属性
-                    exif?.apply {
-                        // 获取方向
-                        val orientation = this.getAttributeInt(
-                            ExifInterface.TAG_ORIENTATION,
-                            ExifInterface.ORIENTATION_NORMAL
-                        )
-                        // 获取宽高
-                        val width =
-                            this.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                        val height =
-                            this.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-
-                        // 判断如果是非正常角度的，图片属性取相反的宽高
-                        if (orientation == ExifInterface.ORIENTATION_ROTATE_90
-                            || orientation == ExifInterface.ORIENTATION_ROTATE_180
-                            || orientation == ExifInterface.ORIENTATION_ROTATE_270
-                            || orientation == ExifInterface.ORIENTATION_TRANSVERSE
-                        ) {
-                            localMedia.width = height
-                            localMedia.height = width
-                        } else {
-                            localMedia.width = width
-                            localMedia.height = height
-                        }
-                    }
-                    inputStream?.apply {
-                        FileUtils.close(this)
-                    }
-                } else if (isVideo(mimeType)) {
-                    // 实例化MediaMetadataRetriever,作用获取视频的属性
-                    val retriever = MediaMetadataRetriever()
-                    if (isContent(path)) {
-                        retriever.setDataSource(context, Uri.parse(path))
-                    } else {
-                        retriever.setDataSource(path)
-                    }
-                    // 获取视频的时长、角度
-                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        ?.toLong()?.let { duration ->
-                            localMedia.duration = duration
-                        }
-                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
-                        ?.toInt()?.let { orientation ->
-                            localMedia.orientation = orientation
-                        }
-
-                    // 判断如果是非正常角度的，视频属性取相反的宽高
-                    if (localMedia.orientation == 90 || localMedia.orientation == 270) {
-                        retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
-                        )?.toInt()?.let { width ->
-                            localMedia.height = width
-                        }
-                        retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
-                        )?.toInt()?.let { height ->
-                            localMedia.width = height
-                        }
-                    } else {
-                        retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
-                        )?.toInt()?.let { width ->
-                            localMedia.width = width
-                        }
-                        retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
-                        )?.toInt()?.let { height ->
-                            localMedia.height = height
-                        }
-                    }
-
+    fun getMediaInfo(context: Context, mimeType: String?, path: String): LocalMedia {
+        val localMedia = LocalMedia()
+        localMedia.mimeType = mimeType.toString()
+        // 如果是图片
+        var inputStream: InputStream? = null
+        if (isImageOrGif(mimeType)) {
+            // 实例化ExifInterface,作用获取图片的属性
+            var exif: ExifInterface? = null
+            if (isContent(path)) {
+                inputStream = context.contentResolver.openInputStream(Uri.parse(path))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && inputStream != null) {
+                    exif = ExifInterface(inputStream)
                 }
-                Log.d(TAG, "关闭流 FileUtils.close")
-                it.resume(localMedia) {
+            } else {
+                exif = ExifInterface(path)
+            }
+            // 开始获取图片的相关属性
+            exif?.apply {
+                // 获取方向
+                val orientation = this.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
+                // 获取宽高
+                val width =
+                    this.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                val height =
+                    this.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+
+                // 判断如果是非正常角度的，图片属性取相反的宽高
+                if (orientation == ExifInterface.ORIENTATION_ROTATE_90
+                    || orientation == ExifInterface.ORIENTATION_ROTATE_180
+                    || orientation == ExifInterface.ORIENTATION_ROTATE_270
+                    || orientation == ExifInterface.ORIENTATION_TRANSVERSE
+                ) {
+                    localMedia.width = height
+                    localMedia.height = width
+                } else {
+                    localMedia.width = width
+                    localMedia.height = height
                 }
             }
+            inputStream?.apply {
+                FileUtils.close(this)
+            }
+        } else if (isVideo(mimeType)) {
+            // 实例化MediaMetadataRetriever,作用获取视频的属性
+            val retriever = MediaMetadataRetriever()
+            if (isContent(path)) {
+                retriever.setDataSource(context, Uri.parse(path))
+            } else {
+                retriever.setDataSource(path)
+            }
+            // 获取视频的时长、角度
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                ?.toLong()?.let { duration ->
+                    localMedia.duration = duration
+                }
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+                ?.toInt()?.let { orientation ->
+                    localMedia.orientation = orientation
+                }
+
+            // 判断如果是非正常角度的，视频属性取相反的宽高
+            if (localMedia.orientation == 90 || localMedia.orientation == 270) {
+                retriever.extractMetadata(
+                    MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
+                )?.toInt()?.let { width ->
+                    localMedia.height = width
+                }
+                retriever.extractMetadata(
+                    MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
+                )?.toInt()?.let { height ->
+                    localMedia.width = height
+                }
+            } else {
+                retriever.extractMetadata(
+                    MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
+                )?.toInt()?.let { width ->
+                    localMedia.width = width
+                }
+                retriever.extractMetadata(
+                    MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
+                )?.toInt()?.let { height ->
+                    localMedia.height = height
+                }
+            }
+
         }
+        return localMedia
     }
 
 

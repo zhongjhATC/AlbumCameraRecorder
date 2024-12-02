@@ -12,12 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraManage;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
-import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.databinding.FragmentCameraSmallBinding;
 
 /**
@@ -32,12 +31,12 @@ import com.zhongjh.cameraapp.databinding.FragmentCameraSmallBinding;
  * @author zhongjh
  * @date 2022/8/12
  */
-public class CameraSmallFragment extends BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter> {
+public class CameraSmallFragment extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
 
     FragmentCameraSmallBinding mBinding;
-    BaseCameraPicturePresenter cameraPicturePresenter = new BaseCameraPicturePresenter(this);
-    BaseCameraVideoPresenter cameraVideoPresenter = new BaseCameraVideoPresenter(this);
-    CameraStateManagement cameraStateManagement = new CameraStateManagement(this);
+    CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
+    CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
+    CameraStateManager cameraStateManager = new CameraStateManager(this);
 
     public static CameraSmallFragment newInstance() {
         return new CameraSmallFragment();
@@ -129,19 +128,19 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManagemen
 
     @NonNull
     @Override
-    public CameraStateManagement getCameraStateManagement() {
-        return cameraStateManagement;
+    public CameraStateManager getCameraStateManager() {
+        return cameraStateManager;
     }
 
     @NonNull
     @Override
-    public BaseCameraPicturePresenter getCameraPicturePresenter() {
+    public CameraPictureManager getCameraPictureManager() {
         return cameraPicturePresenter;
     }
 
     @NonNull
     @Override
-    public BaseCameraVideoPresenter getCameraVideoPresenter() {
+    public CameraVideoManager getCameraVideoManager() {
         return cameraVideoPresenter;
     }
 

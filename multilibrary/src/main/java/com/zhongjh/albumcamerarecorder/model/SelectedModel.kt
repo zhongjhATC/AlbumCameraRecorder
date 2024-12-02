@@ -19,20 +19,15 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
     /**
      * 当前选择的数据操作文件类
      */
-    var selectedData: SelectedData
+    var selectedData: SelectedData = SelectedData(
+        application
+    )
 
     /**
      * 当前选择的数据更改
      */
     private val _selectedDataChange = MutableLiveData<LocalMedia>()
     val selectedDataChange: LiveData<LocalMedia> get() = _selectedDataChange
-
-    init {
-        selectedData =
-            SelectedData(
-                application
-            )
-    }
 
     /**
      * 选择的数据添加

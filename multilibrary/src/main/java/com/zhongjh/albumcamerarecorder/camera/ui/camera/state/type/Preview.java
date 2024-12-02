@@ -1,10 +1,10 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
 
 /**
  * 预览状态的相关处理，默认状态
@@ -16,12 +16,12 @@ public class Preview extends StateMode {
 
     /**
      * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
-     * @param cameraStateManagement 可以让状态更改别的状态
+     * @param cameraStateManager 可以让状态更改别的状态
      */
-    public Preview(BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
-        super(cameraFragment, cameraStateManagement);
+    public Preview(BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
+        super(cameraFragment, cameraStateManager);
     }
 
     @Override

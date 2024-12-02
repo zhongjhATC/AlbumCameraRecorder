@@ -5,10 +5,10 @@ import static android.view.View.INVISIBLE;
 import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
 
 /**
  * 单图完成状态的相关处理
@@ -20,12 +20,12 @@ public class PictureComplete extends StateMode {
 
     /**
      * @param cameraFragment        主要是多个状态围绕着CameraFragment进行相关处理
-     * @param cameraStateManagement 可以让状态更改别的状态
+     * @param cameraStateManager 可以让状态更改别的状态
      */
-    public PictureComplete(BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
-        super(cameraFragment, cameraStateManagement);
+    public PictureComplete(BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
+        super(cameraFragment, cameraStateManager);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class PictureComplete extends StateMode {
         getCameraFragment().getSinglePhotoView().setVisibility(INVISIBLE);
 
         // 删除图片
-        getCameraFragment().getCameraPicturePresenter().deletePhotoFile();
+        getCameraFragment().getCameraPictureManager().deletePhotoFile();
 
         getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
 
@@ -89,6 +89,6 @@ public class PictureComplete extends StateMode {
 
     @Override
     public void stopProgress() {
-        getCameraFragment().getCameraPicturePresenter().cancelMovePictureFileTask();
+        getCameraFragment().getCameraPictureManager().cancelMovePictureFileTask();
     }
 }

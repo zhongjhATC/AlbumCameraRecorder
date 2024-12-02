@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter;
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.manager;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.util.Log;
-import android.util.Log;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -15,12 +14,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraVideo;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.constants.MediaType;
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
-import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import java.io.File;
@@ -34,21 +32,21 @@ import java.util.Objects;
  * @author zhongjh
  * @date 2022/8/23
  */
-public class BaseCameraVideoPresenter implements ICameraVideo {
+public class CameraVideoManager implements ICameraVideo {
 
     private final static int PROGRESS_MAX = 100;
     private final static String TAG = "BaseCameraVideoPresenter";
 
-    public BaseCameraVideoPresenter(
-            BaseCameraFragment<? extends CameraStateManagement,
-                    ? extends BaseCameraPicturePresenter,
-                    ? extends BaseCameraVideoPresenter> baseCameraFragment) {
+    public CameraVideoManager(
+            BaseCameraFragment<? extends CameraStateManager,
+                    ? extends CameraPictureManager,
+                    ? extends CameraVideoManager> baseCameraFragment) {
         this.baseCameraFragment = baseCameraFragment;
     }
 
-    protected BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> baseCameraFragment;
+    protected BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> baseCameraFragment;
     /**
      * 从视频预览界面回来
      */
@@ -225,7 +223,7 @@ public class BaseCameraVideoPresenter implements ICameraVideo {
         baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
         baseCameraFragment.getPhotoVideoLayout().invalidateClickOrLongButton();
         if (videoPaths.size() == 0) {
-            baseCameraFragment.getCameraStateManagement().resetState();
+            baseCameraFragment.getCameraStateManager().resetState();
         }
     }
 

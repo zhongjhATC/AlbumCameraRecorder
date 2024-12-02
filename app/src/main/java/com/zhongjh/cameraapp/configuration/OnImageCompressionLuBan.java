@@ -2,6 +2,8 @@ package com.zhongjh.cameraapp.configuration;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +21,7 @@ import id.zelory.compressor.Compressor;
  */
 public class OnImageCompressionLuBan implements OnImageCompressionListener {
 
+    @NonNull
     @Override
     public File compressionFile(@NotNull Context context, @NotNull File file) throws IOException {
         // 这是luban压缩

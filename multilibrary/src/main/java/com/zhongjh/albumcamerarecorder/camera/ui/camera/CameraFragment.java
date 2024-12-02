@@ -13,9 +13,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.widget.FocusView;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
@@ -27,11 +27,11 @@ import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayo
  * @author zhongjh
  * @date 2022/8/12
  */
-public class CameraFragment extends BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter> {
+public class CameraFragment extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
 
-    BaseCameraPicturePresenter cameraPicturePresenter = new BaseCameraPicturePresenter(this);
-    BaseCameraVideoPresenter cameraVideoPresenter = new BaseCameraVideoPresenter(this);
-    CameraStateManagement cameraStateManagement = new CameraStateManagement(this);
+    CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
+    CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
+    CameraStateManager cameraStateManager = new CameraStateManager(this);
     ViewHolder mViewHolder;
     CameraManage cameraManage;
 
@@ -111,19 +111,19 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManagement, Ba
 
     @NonNull
     @Override
-    public CameraStateManagement getCameraStateManagement() {
-        return cameraStateManagement;
+    public CameraStateManager getCameraStateManager() {
+        return cameraStateManager;
     }
 
     @NonNull
     @Override
-    public BaseCameraPicturePresenter getCameraPicturePresenter() {
+    public CameraPictureManager getCameraPictureManager() {
         return cameraPicturePresenter;
     }
 
     @NonNull
     @Override
-    public BaseCameraVideoPresenter getCameraVideoPresenter() {
+    public CameraVideoManager getCameraVideoManager() {
         return cameraVideoPresenter;
     }
 

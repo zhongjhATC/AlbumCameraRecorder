@@ -3,9 +3,9 @@ package com.zhongjh.albumcamerarecorder.settings
 import androidx.camera.core.ImageCapture.FlashMode
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.CameraSettingApi
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
@@ -36,10 +36,10 @@ class CameraSetting : CameraSettingApi {
      * 如果设置则使用自定义的CameraFragment,否则使用默认的CameraFragment
      * 每次使用要重新赋值，因为会在每次关闭界面后删除该Fragment
      */
-    var baseCameraFragment: BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter>? =
+    var baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>? =
             null
 
-    override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter>): CameraSetting {
+    override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>): CameraSetting {
         this.baseCameraFragment = baseCameraFragment
         return this
     }

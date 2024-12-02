@@ -2,9 +2,9 @@ package com.zhongjh.albumcamerarecorder.settings.api
 
 import androidx.camera.core.ImageCapture
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting
 import com.zhongjh.common.coordinator.VideoMergeCoordinator
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener
@@ -24,7 +24,7 @@ interface CameraSettingApi {
      * @param baseCameraFragment CameraFragment的基类，必须继承它实现才可设置
      * @return [CameraSetting] for fluent API.
      */
-    fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManagement, BaseCameraPicturePresenter, BaseCameraVideoPresenter>): CameraSetting
+    fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>): CameraSetting
 
     /**
      * 支持的类型：图片，视频

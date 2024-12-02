@@ -565,7 +565,7 @@ class PreviewFragment2 : BaseFragment() {
         val item = mAdapter.getLocalMedia(mMainModel.previewPosition)
         item?.let {
             val file = FileMediaUtil.createCacheFile(mContext, MediaType.TYPE_PICTURE)
-            mEditImagePath = file?.absoluteFile.toString()
+            mEditImagePath = file.absoluteFile.toString()
             val intent = Intent()
             intent.setClass(requireActivity(), ImageEditActivity::class.java)
             intent.putExtra(
@@ -573,7 +573,7 @@ class PreviewFragment2 : BaseFragment() {
                 requireActivity().requestedOrientation
             )
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.path)
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file?.absolutePath)
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file.absolutePath)
             mImageEditActivityResult.launch(intent)
         }
     }
@@ -864,7 +864,6 @@ class PreviewFragment2 : BaseFragment() {
      * 获取LocalMedia的宽高
      * @param media 文件
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun getMediaRealSizeFromMedia(media: LocalMedia): IntArray {
         var realWidth = media.width
         var realHeight = media.height

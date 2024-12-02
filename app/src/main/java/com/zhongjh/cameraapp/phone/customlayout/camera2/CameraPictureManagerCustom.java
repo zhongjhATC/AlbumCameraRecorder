@@ -3,9 +3,9 @@ package com.zhongjh.cameraapp.phone.customlayout.camera2;
 import android.widget.Toast;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 
 /**
  * 主要演示 BaseCameraPicturePresenter
@@ -14,9 +14,9 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagem
  * @author zhongjh
  * @date 2022/8/25
  */
-public class CameraPicturePresenter extends BaseCameraPicturePresenter {
+public class CameraPictureManagerCustom extends CameraPictureManager {
 
-    public CameraPicturePresenter(BaseCameraFragment<? extends CameraStateManagement, ? extends BaseCameraPicturePresenter, ? extends BaseCameraVideoPresenter> baseCameraFragment) {
+    public CameraPictureManagerCustom(BaseCameraFragment<? extends CameraStateManager, ? extends CameraPictureManager, ? extends CameraVideoManager> baseCameraFragment) {
         super(baseCameraFragment);
     }
 

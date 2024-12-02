@@ -49,48 +49,44 @@ class AlbumCompressFileTask(
                 newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
             }
             val newFile = FileMediaUtil.createCompressFile(context, newFileName)
-            newFile?.let {
-                if (newFile.exists()) {
-                    val localFile: LocalMedia = if (item.isImage()) {
-                        LocalMedia(context, item, newFile, true)
-                    } else {
-                        LocalMedia(context, item, newFile, true)
-                    }
-                    newLocalFiles.add(localFile)
-                    Log.d(tag, "存在直接使用")
+            if (newFile.exists()) {
+                val localFile: LocalMedia = if (item.isImage()) {
+                    LocalMedia(context, item, newFile, true)
                 } else {
-                    if (item.isImage()) {
-                        // 处理是否压缩图片
-                        val compressionFile = handleImage(item.path)
-                        // 移动到新的文件夹
-                        FileUtil.copy(compressionFile, newFile)
-                        newLocalFiles.add(
-                            LocalMedia(context, item, newFile, true)
-                        )
-                        Log.d(tag, "不存在新建文件")
-                    } else if (item.isVideo()) {
-                        if (globalSpec.isCompressEnable) {
-                            // 压缩视频
-                            globalSpec.videoCompressCoordinator?.setVideoCompressListener(clsKey,
-                                object : VideoEditListener {
-                                    override fun onFinish() {
-                                        val localFile = LocalMedia(
-                                            context, item, newFile, true
-                                        )
-                                        newLocalFiles.add(localFile)
-                                        Log.d(tag, "不存在新建文件")
-                                    }
+                    LocalMedia(context, item, newFile, true)
+                }
+                newLocalFiles.add(localFile)
+                Log.d(tag, "存在直接使用")
+            } else {
+                if (item.isImage()) {
+                    // 处理是否压缩图片
+                    val compressionFile = handleImage(item.path)
+                    // 移动到新的文件夹
+                    FileUtil.copy(compressionFile, newFile)
+                    newLocalFiles.add(
+                        LocalMedia(context, item, newFile, true)
+                    )
+                    Log.d(tag, "不存在新建文件")
+                } else if (item.isVideo()) {
+                    if (globalSpec.isCompressEnable) {
+                        // 压缩视频
+                        globalSpec.videoCompressCoordinator?.setVideoCompressListener(clsKey,
+                            object : VideoEditListener {
+                                override fun onFinish() {
+                                    val localFile = LocalMedia(
+                                        context, item, newFile, true
+                                    )
+                                    newLocalFiles.add(localFile)
+                                    Log.d(tag, "不存在新建文件")
+                                }
 
-                                    override fun onProgress(progress: Int, progressTime: Long) {}
-                                    override fun onCancel() {}
-                                    override fun onError(message: String) {}
-                                })
-                            globalSpec.videoCompressCoordinator?.compressAsync(
-                                clsKey, item.absolutePath, newFile.path
-                            )
-                        } else {
-                        }
-                    } else {
+                                override fun onProgress(progress: Int, progressTime: Long) {}
+                                override fun onCancel() {}
+                                override fun onError(message: String) {}
+                            })
+                        globalSpec.videoCompressCoordinator?.compressAsync(
+                            clsKey, item.absolutePath, newFile.path
+                        )
                     }
                 }
             }

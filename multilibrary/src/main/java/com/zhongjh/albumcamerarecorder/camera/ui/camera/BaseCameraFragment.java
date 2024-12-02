@@ -17,7 +17,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,9 +43,8 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.IState;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
@@ -84,9 +82,9 @@ import java.util.Objects;
  * @date 2022/8/11
  */
 public abstract class BaseCameraFragment
-        <StateManagement extends CameraStateManagement,
-                CameraPicture extends BaseCameraPicturePresenter,
-                CameraVideo extends BaseCameraVideoPresenter>
+        <StateManager extends CameraStateManager,
+                PictureManager extends com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager,
+                VideoManager extends CameraVideoManager>
         extends BaseFragment implements ICameraView, ICameraFragment {
 
     private static final String TAG = BaseCameraFragment.class.getSimpleName();
@@ -148,7 +146,7 @@ public abstract class BaseCameraFragment
      * [VideoComplete] [VideoIn] [VideoMultiple] [VideoMultipleIn]
      */
     @NonNull
-    public abstract StateManagement getCameraStateManagement();
+    public abstract StateManager getCameraStateManager();
 
     /**
      * 设置[BaseCameraPicturePresenter]，专门处理有关图片逻辑
@@ -157,7 +155,7 @@ public abstract class BaseCameraFragment
      * @return BaseCameraPicturePresenter
      */
     @NonNull
-    public abstract CameraPicture getCameraPicturePresenter();
+    public abstract PictureManager getCameraPictureManager();
 
     /**
      * 设置[BaseCameraVideoPresenter]，专门处理有关视频逻辑
@@ -166,7 +164,7 @@ public abstract class BaseCameraFragment
      * @return BaseCameraVideoPresenter
      */
     @NonNull
-    public abstract CameraVideo getCameraVideoPresenter();
+    public abstract VideoManager getCameraVideoManager();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -197,7 +195,7 @@ public abstract class BaseCameraFragment
 
     @Override
     public boolean onBackPressed() {
-        Boolean isTrue = getCameraStateManagement().onBackPressed();
+        Boolean isTrue = getCameraStateManager().onBackPressed();
         if (isTrue != null) {
             return isTrue;
         } else {
@@ -217,7 +215,7 @@ public abstract class BaseCameraFragment
     @Override
     public boolean onKeyDown(int keyCode, @NotNull KeyEvent event) {
         if ((keyCode & cameraSpec.getKeyCodeTakePhoto()) > 0) {
-            getCameraPicturePresenter().takePhoto();
+            getCameraPictureManager().takePhoto();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -309,8 +307,8 @@ public abstract class BaseCameraFragment
         globalSpec = GlobalSpec.INSTANCE;
         cameraSpec = CameraSpec.INSTANCE;
 
-        getCameraPicturePresenter().initData();
-        getCameraVideoPresenter().initData();
+        getCameraPictureManager().initData();
+        getCameraVideoManager().initData();
 
         // 默认图片
         TypedArray ta = myContext.getTheme().obtainStyledAttributes(
@@ -323,7 +321,7 @@ public abstract class BaseCameraFragment
         flashGetCache();
 
         // 初始化适配器
-        getCameraPicturePresenter().initMultiplePhotoAdapter();
+        getCameraPictureManager().initMultiplePhotoAdapter();
     }
 
     /**
@@ -345,7 +343,7 @@ public abstract class BaseCameraFragment
         // 拍照监听
         initCameraViewListener();
         // 编辑图片事件
-        getCameraPicturePresenter().initPhotoEditListener();
+        getCameraPictureManager().initPhotoEditListener();
     }
 
     /**
@@ -356,7 +354,7 @@ public abstract class BaseCameraFragment
             getCloseView().setOnClickListener(new OnMoreClickListener() {
                 @Override
                 public void onListener(@NonNull View v) {
-                    getCameraVideoPresenter().setBreakOff(true);
+                    getCameraVideoManager().setBreakOff(true);
                     mainActivity.finish();
                 }
             });
@@ -405,7 +403,7 @@ public abstract class BaseCameraFragment
             @Override
             public void onClick() {
                 Log.d(TAG, "pvLayout onClick");
-                getCameraPicturePresenter().takePhoto();
+                getCameraPictureManager().takePhoto();
             }
 
             @Override
@@ -417,12 +415,12 @@ public abstract class BaseCameraFragment
             @Override
             public void onLongClick() {
                 Log.d(TAG, "pvLayout onLongClick ");
-                getCameraVideoPresenter().recordVideo();
+                getCameraVideoManager().recordVideo();
                 // 设置录制状态
-                if (getCameraVideoPresenter().isSectionRecord()) {
-                    getCameraStateManagement().setState(getCameraStateManagement().getVideoMultipleIn());
+                if (getCameraVideoManager().isSectionRecord()) {
+                    getCameraStateManager().setState(getCameraStateManager().getVideoMultipleIn());
                 } else {
-                    getCameraStateManagement().setState(getCameraStateManagement().getVideoIn());
+                    getCameraStateManager().setState(getCameraStateManager().getVideoIn());
                 }
                 // 开始录像
                 setMenuVisibility(View.INVISIBLE);
@@ -431,7 +429,7 @@ public abstract class BaseCameraFragment
             @Override
             public void onLongClickEnd(long time) {
                 Log.d(TAG, "pvLayout onLongClickEnd " + time);
-                getCameraVideoPresenter().setSectionRecordTime(time);
+                getCameraVideoManager().setSectionRecordTime(time);
                 // 录像结束
                 stopRecord(false);
             }
@@ -444,14 +442,14 @@ public abstract class BaseCameraFragment
             @Override
             public void onBanClickTips() {
                 // 判断如果是分段录制模式就提示
-                if (getCameraVideoPresenter().isSectionRecord()) {
+                if (getCameraVideoManager().isSectionRecord()) {
                     getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_working_video_click_later));
                 }
             }
 
             @Override
             public void onClickStopTips() {
-                if (getCameraVideoPresenter().isSectionRecord()) {
+                if (getCameraVideoManager().isSectionRecord()) {
                     getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_suspension));
                 } else {
                     getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_end));
@@ -473,14 +471,14 @@ public abstract class BaseCameraFragment
             @Override
             public void cancel() {
                 Log.d(TAG, "cancel " + getState().toString());
-                getCameraStateManagement().pvLayoutCancel();
+                getCameraStateManager().pvLayoutCancel();
             }
 
             @Override
             public void confirm() {
                 Log.d(TAG, "confirm " + getState().toString());
                 // 没有所需要请求的权限，就进行后面的逻辑
-                getCameraStateManagement().pvLayoutCommit();
+                getCameraStateManager().pvLayoutCommit();
             }
 
             @Override
@@ -490,7 +488,7 @@ public abstract class BaseCameraFragment
             @Override
             public void stopProgress() {
                 Log.d(TAG, "stopProgress " + getState().toString());
-                getCameraStateManagement().stopProgress();
+                getCameraStateManager().stopProgress();
                 // 重置按钮
                 getPhotoVideoLayout().resetConfirm();
             }
@@ -508,7 +506,7 @@ public abstract class BaseCameraFragment
      */
     private void initPvLayoutRecordListener() {
         getPhotoVideoLayout().setRecordListener(tag -> {
-            getCameraVideoPresenter().setSectionRecord("1".equals(tag));
+            getCameraVideoManager().setSectionRecord("1".equals(tag));
             getPhotoVideoLayout().setProgressMode(true);
         });
     }
@@ -523,7 +521,7 @@ public abstract class BaseCameraFragment
             public void onPictureSuccess(@NonNull String path) {
                 Log.d(TAG, "onPictureSuccess");
                 // 显示图片
-                getCameraPicturePresenter().addCaptureData(path);
+                getCameraPictureManager().addCaptureData(path);
                 // 恢复点击
                 getChildClickableLayout().setChildClickable(true);
             }
@@ -538,7 +536,7 @@ public abstract class BaseCameraFragment
             public void onRecordSuccess(@NonNull String path) {
                 Log.d(TAG, "onRecordSuccess");
                 // 处理视频文件,最后会解除《禁止点击》
-                getCameraVideoPresenter().onVideoTaken(path);
+                getCameraVideoManager().onVideoTaken(path);
             }
 
             @Override
@@ -619,7 +617,7 @@ public abstract class BaseCameraFragment
                         bitmapDataArrayList.add(bitmapData);
                     }
                     // 全部刷新
-                    getCameraPicturePresenter().refreshMultiPhoto(bitmapDataArrayList);
+                    getCameraPictureManager().refreshMultiPhoto(bitmapDataArrayList);
                 }
             }
         });
@@ -630,12 +628,12 @@ public abstract class BaseCameraFragment
                 if (Objects.requireNonNull(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE)).equals(true)
                         && Objects.requireNonNull(result.get(Manifest.permission.READ_EXTERNAL_STORAGE)).equals(true)) {
                     //权限全部获取到之后的动作
-                    getCameraStateManagement().pvLayoutCommit();
+                    getCameraStateManager().pvLayoutCommit();
                 }
             }
         });
-        getCameraVideoPresenter().initActivityResult();
-        getCameraPicturePresenter().initActivityResult();
+        getCameraVideoManager().initActivityResult();
+        getCameraPictureManager().initActivityResult();
     }
 
     /**
@@ -645,7 +643,7 @@ public abstract class BaseCameraFragment
      * @return 返回true是跳过，返回false则是继续
      */
     public boolean initActivityResult(int resultCode) {
-        return getCameraStateManagement().onActivityResult(resultCode);
+        return getCameraStateManager().onActivityResult(resultCode);
     }
 
     /**
@@ -656,8 +654,8 @@ public abstract class BaseCameraFragment
     protected void onDestroy(boolean isCommit) {
         try {
             LogUtil.i("CameraLayout destroy");
-            getCameraPicturePresenter().onDestroy(isCommit);
-            getCameraVideoPresenter().onDestroy(isCommit);
+            getCameraPictureManager().onDestroy(isCommit);
+            getCameraVideoManager().onDestroy(isCommit);
             getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
             getCameraManage().onDestroy();
             // 记忆模式
@@ -768,7 +766,7 @@ public abstract class BaseCameraFragment
         initPvLayoutButtonFeatures();
 
         // 设置空闲状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+        getCameraStateManager().setState(getCameraStateManager().getPreview());
 
         showBottomMenu();
     }
@@ -778,7 +776,7 @@ public abstract class BaseCameraFragment
      */
     private void longClickShort(final long time) {
         Log.d(TAG, "longClickShort " + time);
-        getCameraStateManagement().longClickShort(time);
+        getCameraStateManager().longClickShort(time);
         // 提示过短
         getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
         // 显示右上角菜单
@@ -849,7 +847,7 @@ public abstract class BaseCameraFragment
     public void movePictureFile() {
         showProgress();
         // 开始迁移文件
-        ThreadUtils.executeByIo(getCameraPicturePresenter().getMovePictureFileTask());
+        ThreadUtils.executeByIo(getCameraPictureManager().getMovePictureFileTask());
     }
 
     /**
@@ -872,7 +870,7 @@ public abstract class BaseCameraFragment
         getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
 
         // 设置当前模式是图片模式
-        getCameraStateManagement().setState(getCameraStateManagement().getPictureComplete());
+        getCameraStateManager().setState(getCameraStateManager().getPictureComplete());
 
         // 判断是否要编辑
         if (globalSpec.getImageEditEnabled()) {
@@ -913,7 +911,7 @@ public abstract class BaseCameraFragment
         setMenuVisibility(View.VISIBLE);
 
         // 设置当前模式是图片休闲并存模式
-        getCameraStateManagement().setState(getCameraStateManagement().getPictureMultiple());
+        getCameraStateManager().setState(getCameraStateManager().getPictureMultiple());
 
         // 禁用长按事件，即禁止录像
         getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
@@ -925,14 +923,14 @@ public abstract class BaseCameraFragment
      * @return 状态
      */
     public IState getState() {
-        return getCameraStateManagement().getState();
+        return getCameraStateManager().getState();
     }
 
     /**
      * 取消单图后的重置
      */
     public void cancelOnResetBySinglePicture() {
-        getCameraPicturePresenter().clearBitmapDataList();
+        getCameraPictureManager().clearBitmapDataList();
 
         // 根据不同状态处理相应的事件
         resetStateAll();
@@ -1144,7 +1142,7 @@ public abstract class BaseCameraFragment
      * 多视频分段录制中止提交
      */
     public void stopVideoMultiple() {
-        getCameraVideoPresenter().stopVideoMultiple();
+        getCameraVideoManager().stopVideoMultiple();
     }
 
     /**
@@ -1153,7 +1151,7 @@ public abstract class BaseCameraFragment
      * @param isShort 是否因为视频过短而停止
      */
     public void stopRecord(boolean isShort) {
-        getCameraStateManagement().stopRecord(isShort);
+        getCameraStateManager().stopRecord(isShort);
     }
 
     public int getFlashMode() {

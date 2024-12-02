@@ -1,10 +1,10 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
 
 /**
  * 正在录制视频中的状态
@@ -16,12 +16,12 @@ public class VideoIn extends StateMode {
 
     /**
      * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
-     * @param cameraStateManagement 可以让状态更改别的状态
+     * @param cameraStateManager 可以让状态更改别的状态
      */
-    public VideoIn(BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
-        super(cameraFragment, cameraStateManagement);
+    public VideoIn(BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
+        super(cameraFragment, cameraStateManager);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class VideoIn extends StateMode {
     @Override
     public Boolean onBackPressed() {
         // 如果是录制中则暂停视频
-        getCameraFragment().getCameraVideoPresenter().setBreakOff(true);
+        getCameraFragment().getCameraVideoManager().setBreakOff(true);
         getCameraFragment().getCameraManage().stopVideo();
         // 重置按钮
         getCameraFragment().getPhotoVideoLayout().reset();

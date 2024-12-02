@@ -78,7 +78,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     public static final String ARGUMENTS_MARGIN_BOTTOM = "arguments_margin_bottom";
 
     private Context mContext;
-    MainModel mMainModel;
+    private MainModel mMainModel;
     private SelectedModel mSelectedModel;
     /**
      * 从预览界面回来

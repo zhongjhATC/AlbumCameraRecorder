@@ -1,10 +1,10 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManagement;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
 
 /**
  * 多个图片状态，至少有一张图片情况
@@ -16,12 +16,12 @@ public class PictureMultiple extends StateMode {
 
     /**
      * @param cameraFragment        主要是多个状态围绕着cameraFragment进行相关处理
-     * @param cameraStateManagement 可以让状态更改别的状态
+     * @param cameraStateManager 可以让状态更改别的状态
      */
-    public PictureMultiple(BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraFragment, CameraStateManagement cameraStateManagement) {
-        super(cameraFragment, cameraStateManagement);
+    public PictureMultiple(BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
+        super(cameraFragment, cameraStateManager);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class PictureMultiple extends StateMode {
 
     @Override
     public void stopProgress() {
-        getCameraFragment().getCameraPicturePresenter().cancelMovePictureFileTask();
+        getCameraFragment().getCameraPictureManager().cancelMovePictureFileTask();
     }
 
 }

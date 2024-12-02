@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Point
 import android.hardware.display.DisplayManager
+import android.os.Build
 import android.util.Log
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
@@ -155,17 +156,15 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             val isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
             val metadata = Metadata()
             metadata.isReversedHorizontal = isReversedHorizontal
-            // 设置输出路径
+            // 设置输出路径,因为有可能多图的原因,所以先暂时全部放进cache文件夹里面
             val cameraFile = FileMediaUtil.createCacheFile(context, MediaType.TYPE_PICTURE)
-            cameraFile?.let {
-                val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
-                // 进行拍照
-                imageCapture.takePicture(
-                    fileOptions,
-                    mainExecutor,
-                    TakePictureCallback2(this@CameraManage, onCameraManageListener)
-                )
-            }
+            val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
+            // 进行拍照
+            imageCapture.takePicture(
+                fileOptions,
+                mainExecutor,
+                TakePictureCallback2(this@CameraManage, onCameraManageListener)
+            )
         }
     }
 
@@ -317,7 +316,8 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
-            val camera = cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, preview, videoCapture)
+            val camera =
+                cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, preview, videoCapture)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl

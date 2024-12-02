@@ -4,8 +4,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraPicturePresenter;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.presenter.BaseCameraVideoPresenter;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.PictureComplete;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.PictureMultiple;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.Preview;
@@ -24,13 +24,13 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoMultiple
  * @author zhongjh
  * @date 2021/11/25
  */
-public class CameraStateManagement implements IState {
+public class CameraStateManager implements IState {
 
-    private final String TAG = CameraStateManagement.class.getSimpleName();
+    private final String TAG = CameraStateManager.class.getSimpleName();
 
-    BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> mCameraFragment;
+    BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> mCameraFragment;
     /**
      * 当前状态
      */
@@ -64,9 +64,9 @@ public class CameraStateManagement implements IState {
      */
     IState videoMultipleIn;
 
-    public CameraStateManagement(BaseCameraFragment<? extends CameraStateManagement,
-            ? extends BaseCameraPicturePresenter,
-            ? extends BaseCameraVideoPresenter> cameraFragment) {
+    public CameraStateManager(BaseCameraFragment<? extends CameraStateManager,
+            ? extends CameraPictureManager,
+            ? extends CameraVideoManager> cameraFragment) {
         mCameraFragment = cameraFragment;
         // 初始化相关状态逻辑
         preview = new Preview(cameraFragment, this);
@@ -118,7 +118,7 @@ public class CameraStateManagement implements IState {
     @Override
     public void stopRecord(boolean isShort) {
         Log.d(TAG, "stopRecord");
-        mCameraFragment.getCameraVideoPresenter().setShort(isShort);
+        mCameraFragment.getCameraVideoManager().setShort(isShort);
         mCameraFragment.getCameraManage().stopVideo();
         // 显示菜单
         mCameraFragment.setMenuVisibility(View.VISIBLE);

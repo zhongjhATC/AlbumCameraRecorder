@@ -33,13 +33,14 @@ import java.util.*
 object MediaStoreUtils {
 
     private val TAG = MediaStoreUtils::class.java.simpleName
-    const val DCIM_CAMERA: String = "DCIM/Camera"
+    private const val DCIM_CAMERA: String = "DCIM/Camera"
 
     /**
      * 插入图片、视频到图库
      * 兼容AndroidQ
      */
-    @RequiresApi(Build.VERSION_CODES.Q) @JvmStatic
+    @RequiresApi(Build.VERSION_CODES.Q)
+    @JvmStatic
     fun displayToGalleryAndroidQ(
         context: Context, file: File, @MediaType type: Int,
         duration: Long, width: Int, height: Int
@@ -81,12 +82,9 @@ object MediaStoreUtils {
                 try {
                     val exif = ExifInterface(file.path)
                     if (TextUtils.isEmpty(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))) {
-                        val simpleDateFormat =
-                            SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault())
+                        val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault())
                         exif.setAttribute(
-                            ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(
-                                System.currentTimeMillis()
-                            )
+                            ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(System.currentTimeMillis())
                         )
                         exif.saveAttributes()
                     }
