@@ -430,8 +430,6 @@ open class LocalMedia() : Parcelable, BaseMedia {
             return compressPath
         } else if (editorPath != null) {
             return editorPath
-        } else if (sandboxPath != null) {
-            return sandboxPath
         }
         return path
     }

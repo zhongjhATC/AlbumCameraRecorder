@@ -135,9 +135,8 @@ object FileMediaUtil {
      * 获取uri
      */
     fun getUri(context: Context, path: String): Uri {
-        return FileProvider.getUriForFile(
-            context, "com.zhongjh.albumcamerarecorder.AlbumCameraRecorderFileProvider", File(path)
-        )
+        val authority = context.packageName + ".zhongjhProvider"
+        return FileProvider.getUriForFile(context, authority, File(path))
     }
 
     /**
