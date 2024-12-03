@@ -6,10 +6,10 @@ import android.os.Environment
 import android.text.TextUtils
 import androidx.core.content.FileProvider
 import com.zhongjh.albumcamerarecorder.constants.DirType
-import com.zhongjh.albumcamerarecorder.constants.MediaType
-import com.zhongjh.albumcamerarecorder.constants.MediaType.TYPE_AUDIO
-import com.zhongjh.albumcamerarecorder.constants.MediaType.TYPE_PICTURE
-import com.zhongjh.albumcamerarecorder.constants.MediaType.TYPE_VIDEO
+import com.zhongjh.common.enums.MediaType
+import com.zhongjh.common.enums.MediaType.TYPE_AUDIO
+import com.zhongjh.common.enums.MediaType.TYPE_PICTURE
+import com.zhongjh.common.enums.MediaType.TYPE_VIDEO
 import com.zhongjh.common.entity.LocalMedia
 import java.io.File
 import java.text.SimpleDateFormat

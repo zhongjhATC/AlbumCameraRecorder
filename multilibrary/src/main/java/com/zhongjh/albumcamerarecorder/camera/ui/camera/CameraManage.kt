@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Point
 import android.hardware.display.DisplayManager
-import android.os.Build
 import android.util.Log
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
@@ -34,7 +33,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEvent
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXPreviewViewTouchListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment.ViewHolder
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView
-import com.zhongjh.albumcamerarecorder.constants.MediaType
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.common.enums.MimeType

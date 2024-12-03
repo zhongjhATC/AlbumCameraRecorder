@@ -16,7 +16,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraVideo;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
-import com.zhongjh.albumcamerarecorder.constants.MediaType;
+import com.zhongjh.common.enums.MediaType;
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.common.utils.ThreadUtils;
 

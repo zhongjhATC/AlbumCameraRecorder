@@ -19,7 +19,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterList
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraPicture
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil
-import com.zhongjh.albumcamerarecorder.constants.MediaType
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.getOutFile
@@ -356,7 +356,7 @@ open class CameraPictureManager(
             var newFile: File
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // AndroidQ才加入相册数据
-                newFile = movePictureFileQ(localMedia, cacheFile)
+                newFile = movePictureFileQ(cacheFile)
             } else {
                 // 直接迁移到相册文件夹,刷新
                 val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
@@ -371,7 +371,6 @@ open class CameraPictureManager(
                 }
             }
 
-
             localMedia.mimeType = MimeType.JPEG.mimeTypeName
             // 压缩图片
             val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
@@ -385,7 +384,7 @@ open class CameraPictureManager(
             localMedia.size = compressionFile.length()
             Log.d(TAG, "4. 压缩图片：" + compressionFile.absolutePath)
             val mediaInfo = MediaUtils.getMediaInfo(
-                baseCameraFragment.myContext, localMedia.mimeType, compressionFile.absolutePath
+                baseCameraFragment.myContext, MediaType.TYPE_PICTURE, compressionFile.absolutePath
             )
             localMedia.width = mediaInfo.width
             localMedia.height = mediaInfo.height
@@ -400,9 +399,10 @@ open class CameraPictureManager(
      * 兼容Android Q以上版本,添加进相册
      *
      */
-    private fun movePictureFileQ(localMedia: LocalMedia, cacheFile: File): File {
+    private fun movePictureFileQ(cacheFile: File): File {
+        // 获取后缀名
         val mediaInfo = MediaUtils.getMediaInfo(
-            baseCameraFragment.myContext, localMedia.mimeType, cacheFile.path
+            baseCameraFragment.myContext, MediaType.TYPE_PICTURE, cacheFile.path
         )
         // 加入图片到android系统库里面
         val uri = displayToGalleryAndroidQ(

@@ -15,7 +15,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
-import com.zhongjh.albumcamerarecorder.constants.MediaType
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.AppUtils.getAppName

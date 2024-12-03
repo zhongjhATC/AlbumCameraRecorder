@@ -32,7 +32,7 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
-import com.zhongjh.albumcamerarecorder.constants.MediaType
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.OriginalManage
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
@@ -54,7 +54,6 @@ import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.imageedit.ImageEditActivity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -874,7 +873,7 @@ class PreviewFragment2 : BaseFragment() {
         if ((realWidth <= 0 || realHeight <= 0) || (realWidth > realHeight)) {
             withContext(Dispatchers.IO) {
                 media.absolutePath.let { absolutePath ->
-                    MediaUtils.getMediaInfo(requireContext(), media.mimeType, absolutePath).let {
+                    MediaUtils.getMediaInfo(requireContext(), MediaType.TYPE_VIDEO, absolutePath).let {
                         if (it.width > 0) {
                             realWidth = it.width
                         }
