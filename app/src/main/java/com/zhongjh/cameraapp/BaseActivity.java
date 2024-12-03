@@ -159,6 +159,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             Log.i(TAG, "onResult 文件名称: " + localMedia.getFileName());
             Log.i(TAG, "onResult 父文件夹名称: " + localMedia.getParentFolderName());
             Log.i(TAG, "onResult 专辑ID: " + localMedia.getBucketId());
+            Log.i(TAG, "onResult 相册ID: " + localMedia.getId());
             Log.i(TAG, "onResult 文件创建时间: " + localMedia.getDateAddedTime());
             Log.i(TAG, "onResult 是否选择了原图: " + localMedia.isOriginal());
             if (localMedia.isImageOrGif()) {

@@ -9,7 +9,6 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.albumcamerarecorder.R
@@ -24,7 +23,6 @@ import com.zhongjh.albumcamerarecorder.camera.util.LogUtil
 import com.zhongjh.albumcamerarecorder.constants.MediaType
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createCacheFile
-import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createFile
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.getOutFile
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.displayToGalleryAndroidQ
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.getId
@@ -389,6 +387,12 @@ open class CameraPictureManager(
                 val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
                 val isMove = FileUtil.move(cacheFile, cameraFile)
                 newFile = if (isMove) {
+                    // Android 9以下(包含) 使用通知方法刷新相册
+                    val uri = Uri.fromFile(cameraFile)
+                    baseCameraFragment.myContext.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
+                    localMedia.id = getId(uri)
+                    localMedia.path = uri.toString()
+                    localMedia.absolutePath = cameraFile.absolutePath
                     cameraFile
                 } else {
                     cacheFile

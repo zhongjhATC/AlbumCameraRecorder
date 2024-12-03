@@ -39,8 +39,7 @@ class MediaLoader(private val application: Application) {
         const val NOT_WEBP = " AND (${MediaStore.MediaColumns.MIME_TYPE} != 'image/webp')"
         const val NOT_BMP = " AND (${MediaStore.MediaColumns.MIME_TYPE} != 'image/bmp')"
         const val NOT_XMS_BMP = " AND (${MediaStore.MediaColumns.MIME_TYPE} != 'image/x-ms-bmp')"
-        const val NOT_VND_WAP_BMP =
-            " AND (${MediaStore.MediaColumns.MIME_TYPE} != 'image/vnd.wap.wbmp')"
+        const val NOT_VND_WAP_BMP = " AND (${MediaStore.MediaColumns.MIME_TYPE} != 'image/vnd.wap.wbmp')"
         const val NOT_HEIC = " AND (${MediaStore.MediaColumns.MIME_TYPE} != 'image/heic')"
 
         /**
@@ -116,8 +115,7 @@ class MediaLoader(private val application: Application) {
 
                     // 创建《所有》该专辑
                     val album = Album2()
-                    val bucketDisplayName =
-                        application.getString(R.string.z_multi_library_album_name_all);
+                    val bucketDisplayName = application.getString(R.string.z_multi_library_album_name_all);
                     album.name = bucketDisplayName
                     album.id = -1
                     album.count = totalCount.toInt()
@@ -173,11 +171,7 @@ class MediaLoader(private val application: Application) {
             if (SdkVersionUtils.isR) {
                 application.contentResolver.query(
                     QUERY_URI, PROJECTION, createQueryArgsBundle(
-                        getSelection(bucketId),
-                        selectionArgs,
-                        pageSize,
-                        (page - 1) * pageSize,
-                        getSortOrder()
+                        getSelection(bucketId), selectionArgs, pageSize, (page - 1) * pageSize, getSortOrder()
                     ), null
                 )?.use { cursor ->
                     if (cursor.count > 0) {
@@ -220,11 +214,7 @@ class MediaLoader(private val application: Application) {
      * @param orderBy 排序
      */
     private fun createQueryArgsBundle(
-        selection: String,
-        selectionArgs: Array<String>,
-        limitCount: Int,
-        offset: Int,
-        orderBy: String?
+        selection: String, selectionArgs: Array<String>, limitCount: Int, offset: Int, orderBy: String?
     ): Bundle {
         val queryArgs = Bundle()
         if (SdkVersionUtils.isO) {
@@ -350,8 +340,7 @@ class MediaLoader(private val application: Application) {
         media.orientation = data.getInt(data.getColumnIndexOrThrow(ORIENTATION))
         media.duration = data.getLong(data.getColumnIndexOrThrow(DURATION))
         media.size = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE))
-        media.dateAddedTime =
-            data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED))
+        media.dateAddedTime = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED))
         if (media.orientation == 90 || media.orientation == 270) {
             media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
             media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
@@ -372,11 +361,7 @@ class MediaLoader(private val application: Application) {
             AlbumSpec.videoMaxSecond
         }
         return String.format(
-            Locale.US,
-            "%d <%s $DURATION and $DURATION <= %d",
-            max(0, AlbumSpec.videoMinSecond),
-            "=",
-            maxValue
+            Locale.US, "%d <%s $DURATION and $DURATION <= %d", max(0, AlbumSpec.videoMinSecond), "=", maxValue
         )
     }
 
@@ -413,9 +398,9 @@ class MediaLoader(private val application: Application) {
             }
             mimeTypeList.forEachIndexed { i, mimeType ->
                 if (MimeType.ofImage().contains(mimeType)) {
-                    stringBuilder.append(if (i == 0) " AND (" else " OR ")
-                        .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-                        .append("'").append(if (i == mimeTypeList.size.minus(1)) ")" else "")
+                    stringBuilder.append(if (i == 0) " AND (" else " OR ").append(MediaStore.MediaColumns.MIME_TYPE)
+                        .append("='").append(mimeType).append("'")
+                        .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
                 }
             }
         }
@@ -452,9 +437,8 @@ class MediaLoader(private val application: Application) {
                 }
             }
             mimeTypeList.forEachIndexed { i, mimeType ->
-                stringBuilder.append(if (i == 0) " AND (" else " OR ")
-                    .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-                    .append("'").append(if (i == mimeTypeList.size.minus(1)) ")" else "")
+                stringBuilder.append(if (i == 0) " AND (" else " OR ").append(MediaStore.MediaColumns.MIME_TYPE)
+                    .append("='").append(mimeType).append("'").append(if (i == mimeTypeList.size.minus(1)) ")" else "")
             }
         }
         return stringBuilder.toString()
@@ -488,8 +472,7 @@ class MediaLoader(private val application: Application) {
      */
     private fun getFirstUri(cursor: Cursor): String {
         val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
-        val mimeType =
-            cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE))
+        val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE))
         return getRealPathUri(id, mimeType)
     }
 

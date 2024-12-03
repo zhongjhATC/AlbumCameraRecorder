@@ -110,7 +110,7 @@ object FileMediaUtil {
         val folderDir: File
         if (TextUtils.equals(Environment.MEDIA_MOUNTED, Environment.getExternalStorageState())) {
             rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            folderDir = File((rootDir.absolutePath + File.separator + CAMERA) + File.separator)
+            folderDir = File(rootDir.absolutePath + File.separator + CAMERA + File.separator)
         } else {
             rootDir = getRootDirFile(context, type)
             folderDir = File(rootDir.absolutePath + File.separator)
@@ -121,7 +121,7 @@ object FileMediaUtil {
         if (!folderDir.exists()) {
             folderDir.mkdirs()
         }
-        return File(folderDir.absolutePath + fileName)
+        return File(folderDir.absolutePath, fileName)
     }
 
     /**
