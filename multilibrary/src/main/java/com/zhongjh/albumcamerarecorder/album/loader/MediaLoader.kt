@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.album.loader
 import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
@@ -17,14 +18,13 @@ import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.isAudio
 import com.zhongjh.common.enums.MimeType.Companion.isImageOrGif
 import com.zhongjh.common.enums.MimeType.Companion.isVideo
-import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.SdkVersionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.math.max
 
-class MediaLoader(private val application: Application) {
+class MediaLoader(private val context: Context) {
 
     companion object {
 
@@ -75,7 +75,7 @@ class MediaLoader(private val application: Application) {
             val albumSelectionStr = getAlbumSelection()
             val sortOrderStr = getSortOrder()
             Log.d(TAG, "查询语句: $albumSelectionStr 排序语句: $sortOrderStr")
-            application.contentResolver.query(
+            context.contentResolver.query(
                 QUERY_URI, PROJECTION, albumSelectionStr, getSelectionArgs(), sortOrderStr
             )?.use { data ->
                 if (data.count > 0) {
@@ -115,7 +115,7 @@ class MediaLoader(private val application: Application) {
 
                     // 创建《所有》该专辑
                     val album = Album2()
-                    val bucketDisplayName = application.getString(R.string.z_multi_library_album_name_all);
+                    val bucketDisplayName = context.getString(R.string.z_multi_library_album_name_all);
                     album.name = bucketDisplayName
                     album.id = -1
                     album.count = totalCount.toInt()
@@ -169,7 +169,7 @@ class MediaLoader(private val application: Application) {
                 getSelectionArgs().plusElement(bucketId.toString())
             }
             if (SdkVersionUtils.isR) {
-                application.contentResolver.query(
+                context.contentResolver.query(
                     QUERY_URI, PROJECTION, createQueryArgsBundle(
                         getSelection(bucketId), selectionArgs, pageSize, (page - 1) * pageSize, getSortOrder()
                     ), null
@@ -184,7 +184,7 @@ class MediaLoader(private val application: Application) {
                     cursor.close()
                 }
             } else {
-                application.contentResolver.query(
+                context.contentResolver.query(
                     QUERY_URI,
                     PROJECTION,
                     getSelection(bucketId),
@@ -203,6 +203,63 @@ class MediaLoader(private val application: Application) {
             }
         }
         return mediaList
+    }
+
+    /**
+     * @return Cursor转换成实体类
+     */
+    fun parse(data: Cursor): LocalMedia {
+        val media = LocalMedia()
+        media.id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+        media.bucketId = data.getLong(data.getColumnIndexOrThrow(BUCKET_ID))
+        media.fileName = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
+        media.parentFolderName = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME))
+        media.absolutePath = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
+        media.mimeType = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
+        // 判断文件类型是否符合规范，不规范就只能取后缀名
+        if (!isImageOrGif(media.mimeType) && !isVideo(media.mimeType)) {
+            // 因为某些app保存文件时导致数据库的mimeType不符合规范，所以通过后缀名设置类型
+            val extension: String = media.mimeType!!.substring(media.mimeType!!.lastIndexOf(".") + 1)
+            // 循环图片类型，判断后缀是否是.jpg之类的
+            for (mimeTypeImage in MimeType.ofImage()) {
+                if (mimeTypeImage.extensions.contains(extension)) {
+                    media.mimeType = mimeTypeImage.mimeTypeName
+                }
+            }
+            // 循环视频类型，判断后缀是否是.mp4之类的
+            for (mimeTypeVideo in MimeType.ofVideo()) {
+                if (mimeTypeVideo.extensions.contains(extension)) {
+                    media.mimeType = mimeTypeVideo.mimeTypeName
+                }
+            }
+        }
+        // 图片没有具体到某个类型
+        if (MimeType.hasMimeTypeOfUnknown(media.mimeType)) {
+            val mimeType = MimeType.getMimeType(media.absolutePath)
+            media.mimeType = if (TextUtils.isEmpty(mimeType)) {
+                media.mimeType
+            } else {
+                mimeType.toString()
+            }
+        }
+
+        media.path = if (SdkVersionUtils.isQ) {
+            getRealPathUri(media.id, media.mimeType ?: "")
+        } else {
+            media.absolutePath
+        }
+        media.orientation = data.getInt(data.getColumnIndexOrThrow(ORIENTATION))
+        media.duration = data.getLong(data.getColumnIndexOrThrow(DURATION))
+        media.size = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE))
+        media.dateAddedTime = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED))
+        if (media.orientation == 90 || media.orientation == 270) {
+            media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
+            media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
+        } else {
+            media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
+            media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
+        }
+        return media
     }
 
     /**
@@ -294,62 +351,6 @@ class MediaLoader(private val application: Application) {
         return MediaStore.MediaColumns.DATE_MODIFIED + " DESC"
     }
 
-    /**
-     * @return Cursor转换成实体类
-     */
-    private fun parse(data: Cursor): LocalMedia {
-        val media = LocalMedia()
-        media.id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
-        media.bucketId = data.getLong(data.getColumnIndexOrThrow(BUCKET_ID))
-        media.fileName = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
-        media.parentFolderName = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME))
-        media.absolutePath = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
-        media.mimeType = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
-        // 判断文件类型是否符合规范，不规范就只能取后缀名
-        if (!isImageOrGif(media.mimeType) && !isVideo(media.mimeType)) {
-            // 因为某些app保存文件时导致数据库的mimeType不符合规范，所以通过后缀名设置类型
-            val extension: String = media.mimeType!!.substring(media.mimeType!!.lastIndexOf(".") + 1)
-            // 循环图片类型，判断后缀是否是.jpg之类的
-            for (mimeTypeImage in MimeType.ofImage()) {
-                if (mimeTypeImage.extensions.contains(extension)) {
-                    media.mimeType = mimeTypeImage.mimeTypeName
-                }
-            }
-            // 循环视频类型，判断后缀是否是.mp4之类的
-            for (mimeTypeVideo in MimeType.ofVideo()) {
-                if (mimeTypeVideo.extensions.contains(extension)) {
-                    media.mimeType = mimeTypeVideo.mimeTypeName
-                }
-            }
-        }
-        // 图片没有具体到某个类型
-        if (MimeType.hasMimeTypeOfUnknown(media.mimeType)) {
-            val mimeType = MimeType.getMimeType(media.absolutePath)
-            media.mimeType = if (TextUtils.isEmpty(mimeType)) {
-                media.mimeType
-            } else {
-                mimeType.toString()
-            }
-        }
-
-        media.path = if (SdkVersionUtils.isQ) {
-            getRealPathUri(media.id, media.mimeType ?: "")
-        } else {
-            media.absolutePath
-        }
-        media.orientation = data.getInt(data.getColumnIndexOrThrow(ORIENTATION))
-        media.duration = data.getLong(data.getColumnIndexOrThrow(DURATION))
-        media.size = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE))
-        media.dateAddedTime = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED))
-        if (media.orientation == 90 || media.orientation == 270) {
-            media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
-            media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
-        } else {
-            media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
-            media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
-        }
-        return media
-    }
 
     /**
      * @return 获取 duration 的 sql条件语句，只针对视频

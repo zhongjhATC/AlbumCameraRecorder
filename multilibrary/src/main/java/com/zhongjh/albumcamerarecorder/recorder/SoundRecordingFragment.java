@@ -29,7 +29,6 @@ import com.zhongjh.albumcamerarecorder.BaseFragment;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.constants.MediaType;
 import com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayout;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -38,13 +37,13 @@ import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import com.zhongjh.common.utils.FileUtils;
 
 /**
  * 录音
@@ -479,7 +478,7 @@ public class SoundRecordingFragment extends BaseFragment {
             String newFileName = localMedia.getPath().substring(localMedia.getPath().lastIndexOf(File.separator));
             File newFile = FileMediaUtil.INSTANCE.createCacheFile(mContext, MediaType.TYPE_AUDIO);
             Log.d(TAG, "newFile" + newFile.getAbsolutePath());
-            FileUtil.copy(new File(localMedia.getPath()), newFile, null, (ioProgress, file) -> {
+            FileUtils.copy(new File(localMedia.getPath()), newFile, null, (ioProgress, file) -> {
                 int progress = (int) (ioProgress * FULL);
                 ThreadUtils.runOnUiThread(() -> {
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);

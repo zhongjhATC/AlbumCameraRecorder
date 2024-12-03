@@ -16,7 +16,6 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraVideo;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.constants.MediaType;
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.common.utils.ThreadUtils;
@@ -25,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import com.zhongjh.common.utils.FileUtils;
 
 /**
  * 这是专门处理视频的有关逻辑
@@ -125,20 +125,20 @@ public class CameraVideoManager implements ICameraVideo {
         if (!isCommit) {
             if (videoFile != null) {
                 // 删除视频
-                FileUtil.deleteFile(videoFile);
+                FileUtils.deleteFile(videoFile);
             }
             // 删除多个视频
             for (String item : videoPaths) {
-                FileUtil.deleteFile(item);
+                FileUtils.deleteFile(item);
             }
             // 新合成视频删除
             if (newSectionVideoPath != null) {
-                FileUtil.deleteFile(newSectionVideoPath);
+                FileUtils.deleteFile(newSectionVideoPath);
             }
         } else {
             // 如果是提交的，删除合成前的视频
             for (String item : videoPaths) {
-                FileUtil.deleteFile(item);
+                FileUtils.deleteFile(item);
             }
         }
         if (baseCameraFragment.getCameraSpec() != null && baseCameraFragment.getCameraSpec().isMergeEnable()) {
@@ -197,7 +197,7 @@ public class CameraVideoManager implements ICameraVideo {
                 }
             }
         } else {
-            FileUtil.deleteFile(videoFile);
+            FileUtils.deleteFile(videoFile);
         }
         isShort = false;
         setBreakOff(false);
@@ -212,10 +212,10 @@ public class CameraVideoManager implements ICameraVideo {
         // 每次删除，后面都要重新合成,新合成的也删除
         baseCameraFragment.getPhotoVideoLayout().resetConfirm();
         if (newSectionVideoPath != null) {
-            FileUtil.deleteFile(newSectionVideoPath);
+            FileUtils.deleteFile(newSectionVideoPath);
         }
         // 删除最后一个视频和视频文件
-        FileUtil.deleteFile(videoPaths.get(videoPaths.size() - 1));
+        FileUtils.deleteFile(videoPaths.get(videoPaths.size() - 1));
         videoPaths.remove(videoPaths.size() - 1);
         videoTimes.remove(videoTimes.size() - 1);
 

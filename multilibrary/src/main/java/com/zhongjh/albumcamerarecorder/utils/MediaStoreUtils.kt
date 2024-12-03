@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.utils
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
@@ -13,7 +14,9 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
+import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.albumcamerarecorder.constants.MediaType
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.AppUtils.getAppName
 import java.io.File
@@ -21,6 +24,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 /**
  * 相册操作常用工具类
@@ -47,13 +51,13 @@ object MediaStoreUtils {
     ): Uri? {
         // 插入file数据到相册
         val values = ContentValues()
-        values.put(MediaStore.Images.Media.TITLE, getAppName(context))
-        values.put(MediaStore.Images.Media.DISPLAY_NAME, file.name)
-        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
-        values.put(MediaStore.Images.Media.ORIENTATION, 0)
-        values.put(MediaStore.Images.Media.SIZE, file.length())
-        values.put(MediaStore.Images.Media.WIDTH, width)
-        values.put(MediaStore.Images.Media.HEIGHT, height)
+        values.put(MediaStore.MediaColumns.TITLE, getAppName(context))
+        values.put(MediaStore.MediaColumns.DISPLAY_NAME, file.name)
+        values.put(MediaStore.MediaColumns.DATE_TAKEN, System.currentTimeMillis())
+        values.put(MediaStore.MediaColumns.ORIENTATION, 0)
+        values.put(MediaStore.MediaColumns.SIZE, file.length())
+        values.put(MediaStore.MediaColumns.WIDTH, width)
+        values.put(MediaStore.MediaColumns.HEIGHT, height)
         val suffix = file.name.substring(file.name.lastIndexOf("."))
         var external: Uri? = null
         when (type) {
@@ -75,7 +79,7 @@ object MediaStoreUtils {
 
             MediaType.TYPE_PICTURE -> {
                 values.put(MediaStore.Images.Media.MIME_TYPE, MimeType.getMimeType(suffix))
-                values.put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+                values.put(MediaStore.Images.Media.RELATIVE_PATH, DCIM_CAMERA)
                 external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
                 // 需要增加这个，不然AndroidQ识别不到TAG_DATETIME_ORIGINAL创建时间
@@ -306,6 +310,22 @@ object MediaStoreUtils {
         } catch (exception: Exception) {
             0L
         }
+    }
+
+    /**
+     * 根据uri获取相册数据
+     * @param context 上下文
+     * @param uri 文件路径
+     * @return localMedia 查询出的数据
+     */
+    fun getMediaDataByUri(context: Context, uri: Uri): LocalMedia {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor? = context.contentResolver.query(uri, projection, null, null, null)
+        if (cursor != null && cursor.moveToFirst()) {
+            val mediaLoader = MediaLoader(context)
+            return mediaLoader.parse(cursor)
+        }
+        return LocalMedia()
     }
 
 }

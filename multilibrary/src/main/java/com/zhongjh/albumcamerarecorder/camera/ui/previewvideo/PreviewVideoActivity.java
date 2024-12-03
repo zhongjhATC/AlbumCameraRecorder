@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
@@ -27,7 +26,6 @@ import com.zhongjh.common.entity.LocalFile;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.VideoEditListener;
-import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;

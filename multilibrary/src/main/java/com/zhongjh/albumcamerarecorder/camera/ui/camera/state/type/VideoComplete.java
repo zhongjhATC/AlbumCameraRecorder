@@ -7,7 +7,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManag
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.StateMode;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
+import com.zhongjh.common.utils.FileUtils;
 
 /**
  * 单视频完成状态的相关处理
@@ -30,7 +30,7 @@ public class VideoComplete extends StateMode {
     @Override
     public void resetState() {
         // 取消视频删除文件
-        FileUtil.deleteFile(getCameraFragment().getCameraVideoManager().getVideoFile());
+        FileUtils.deleteFile(getCameraFragment().getCameraVideoManager().getVideoFile());
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
         getCameraFragment().resetStateAll();

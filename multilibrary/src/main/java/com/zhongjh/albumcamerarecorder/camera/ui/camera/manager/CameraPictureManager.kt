@@ -18,21 +18,19 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapter
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraPicture
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil
 import com.zhongjh.albumcamerarecorder.constants.MediaType
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.getOutFile
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.displayToGalleryAndroidQ
-import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.getId
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.imageMaxCount
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
+import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.ThreadUtils
-import com.zhongjh.common.utils.UriUtils
 import com.zhongjh.imageedit.ImageEditActivity
 import java.io.File
 
@@ -60,7 +58,7 @@ open class CameraPictureManager(
     /**
      * 图片,单图或者多图都会加入该列表
      */
-    var bitmapDataList: MutableList<BitmapData> = ArrayList()
+    private var bitmapDataList: MutableList<BitmapData> = ArrayList()
 
     /**
      * 照片File,用于后面能随时删除,作用于单图
@@ -158,11 +156,11 @@ open class CameraPictureManager(
         if (!isCommit) {
             photoFile?.let {
                 // 删除图片
-                FileUtil.deleteFile(it)
+                FileUtils.deleteFile(it)
             }
             // 删除多个图片
             for (bitmapData in photoAdapter.listData) {
-                FileUtil.deleteFile(bitmapData.path)
+                FileUtils.deleteFile(bitmapData.path)
             }
         }
         movePictureFileTask?.cancel()
@@ -291,7 +289,7 @@ open class CameraPictureManager(
      */
     override fun deletePhotoFile() {
         if (photoFile != null) {
-            FileUtil.deleteFile(photoFile)
+            FileUtils.deleteFile(photoFile)
         }
     }
 
@@ -326,7 +324,7 @@ open class CameraPictureManager(
      */
     override fun onPhotoAdapterDelete(bitmapData: BitmapData, position: Int) {
         // 删除文件
-        FileUtil.deleteFile(bitmapData.path)
+        FileUtils.deleteFile(bitmapData.path)
 
         // 判断如果删除光图片的时候，母窗体启动滑动
         if (bitmapDataList.isEmpty()) {
@@ -353,51 +351,27 @@ open class CameraPictureManager(
             rotateImage(baseCameraFragment.myContext, item.path)
             val cacheFile = File(item.path)
             Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
-            // new LocalMedia
             val localMedia = LocalMedia()
-            // 先用临时id作为id
-            localMedia.id = item.temporaryId
             // 根据版本兼容处理的最终文件
             var newFile: File
-            // AndroidQ才加入相册数据,AndroidQ以下在相册文件夹会自动认为是相册数据
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val mediaInfo = MediaUtils.getMediaInfo(
-                    baseCameraFragment.myContext, localMedia.mimeType, localMedia.path
-                )
-                // 加入图片到android系统库里面
-                val uri = displayToGalleryAndroidQ(
-                    baseCameraFragment.myContext,
-                    cacheFile,
-                    MediaType.TYPE_PICTURE,
-                    -1,
-                    mediaInfo.width,
-                    mediaInfo.height
-                )
-                uri?.let {
-                    // 加入相册后的最后是id，直接使用该id
-                    localMedia.id = getId(uri)
-                    localMedia.path = uri.toString()
-                    localMedia.absolutePath = UriUtils.uriToFile(baseCameraFragment.myContext, uri).absolutePath
-                    Log.d(TAG, "2. 加入相册id：" + localMedia.id + " uri:" + uri)
-                    Log.d(TAG, "3. 真实路径：" + localMedia.path)
-                }
-                newFile = cacheFile
+                // AndroidQ才加入相册数据
+                newFile = movePictureFileQ(localMedia, cacheFile)
             } else {
-                // 直接迁移到相册文件夹
+                // 直接迁移到相册文件夹,刷新
                 val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
-                val isMove = FileUtil.move(cacheFile, cameraFile)
+                val isMove = FileUtils.move(cacheFile, cameraFile)
                 newFile = if (isMove) {
                     // Android 9以下(包含) 使用通知方法刷新相册
                     val uri = Uri.fromFile(cameraFile)
                     baseCameraFragment.myContext.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-                    localMedia.id = getId(uri)
-                    localMedia.path = uri.toString()
-                    localMedia.absolutePath = cameraFile.absolutePath
                     cameraFile
                 } else {
                     cacheFile
                 }
             }
+
+
             localMedia.mimeType = MimeType.JPEG.mimeTypeName
             // 压缩图片
             val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
@@ -420,6 +394,26 @@ open class CameraPictureManager(
         }
         // 执行完成
         return newFiles
+    }
+
+    /**
+     * 兼容Android Q以上版本,添加进相册
+     *
+     */
+    private fun movePictureFileQ(localMedia: LocalMedia, cacheFile: File): File {
+        val mediaInfo = MediaUtils.getMediaInfo(
+            baseCameraFragment.myContext, localMedia.mimeType, cacheFile.path
+        )
+        // 加入图片到android系统库里面
+        val uri = displayToGalleryAndroidQ(
+            baseCameraFragment.myContext,
+            cacheFile,
+            MediaType.TYPE_PICTURE,
+            -1,
+            mediaInfo.width,
+            mediaInfo.height
+        )
+        return cacheFile
     }
 
     companion object {

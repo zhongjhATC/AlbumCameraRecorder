@@ -2,11 +2,11 @@ package com.zhongjh.albumcamerarecorder.album.utils
 
 import android.content.Context
 import android.util.Log
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.VideoEditListener
+import com.zhongjh.common.utils.FileUtils
 import java.io.File
 import java.util.*
 
@@ -62,7 +62,7 @@ class AlbumCompressFileTask(
                     // 处理是否压缩图片
                     val compressionFile = handleImage(item.path)
                     // 移动到新的文件夹
-                    FileUtil.copy(compressionFile, newFile)
+                    FileUtils.copy(compressionFile, newFile)
                     newLocalFiles.add(
                         LocalMedia(context, item, newFile, true)
                     )
@@ -149,18 +149,5 @@ class AlbumCompressFileTask(
             newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
         }
         return newFileName
-    }
-
-    /**
-     * @return 获取后缀名
-     */
-    private fun getNameSuffix(path: String): String {
-        // 获取文件名称
-        val newFileName = path.substring(path.lastIndexOf(File.separator))
-        val newFileNames = newFileName.split(".").toTypedArray()
-        return if (newFileNames.size > 1) {
-            // 返回后缀名
-            newFileNames[newFileNames.size - 1]
-        } else ""
     }
 }

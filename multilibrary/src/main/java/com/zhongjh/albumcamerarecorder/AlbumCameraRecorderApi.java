@@ -2,10 +2,8 @@ package com.zhongjh.albumcamerarecorder;
 
 import android.content.Context;
 
-import com.zhongjh.albumcamerarecorder.camera.util.FileUtil;
-
 import java.io.File;
-
+import com.zhongjh.common.utils.FileUtils;
 /**
  * 开放的一些公共方法，主要是不依赖于GlobalSetting等设置
  * @author zhongjh
@@ -20,7 +18,7 @@ public class AlbumCameraRecorderApi {
      */
     public static String getFileSize(Context context) {
         File file = new File(context.getExternalCacheDir().getPath());
-        return FileUtil.getSize(file);
+        return FileUtils.getSize(file);
     }
 
     /**
@@ -28,7 +26,7 @@ public class AlbumCameraRecorderApi {
      * @param context 上下文
      */
     public static void deleteCacheDirFile(Context context) {
-        FileUtil.deleteDir(context.getExternalCacheDir());
+        FileUtils.deleteDir(context.getExternalCacheDir());
     }
 
 }
