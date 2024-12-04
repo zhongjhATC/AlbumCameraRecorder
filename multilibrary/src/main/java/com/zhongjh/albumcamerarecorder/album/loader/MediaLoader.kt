@@ -45,7 +45,7 @@ class MediaLoader(private val context: Context) {
         /**
          * 来自于多媒体的数据源标记
          */
-        private val QUERY_URI = MediaStore.Files.getContentUri("external")
+        val QUERY_URI: Uri = MediaStore.Files.getContentUri("external")
 
         /**
          * 查询列

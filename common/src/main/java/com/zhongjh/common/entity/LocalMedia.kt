@@ -91,12 +91,14 @@ open class LocalMedia() : Parcelable, BaseMedia {
     var mimeType: String? = ""
 
     /**
+     * 以AvailablePath为准
      * 图像或视频宽度
      * 如果出现0，开发人员需要额外处理
      */
     var width: Int = 0
 
     /**
+     * 以AvailablePath为准
      * 图像或视频宽度
      * 如果出现0，开发人员需要额外处理
      */
@@ -138,21 +140,25 @@ open class LocalMedia() : Parcelable, BaseMedia {
     var isOriginal: Boolean = false
 
     /**
+     * 以AbsolutePath为准
      * 文件名称
      */
     var fileName: String? = ""
 
     /**
+     * 以AbsolutePath为准
      * 父文件夹名称
      */
     var parentFolderName: String? = ""
 
     /**
+     * 以AbsolutePath为准
      * 专辑ID
      */
     var bucketId: Long = -1
 
     /**
+     * 以AbsolutePath为准
      * 文件创建时间
      */
     var dateAddedTime: Long = 0

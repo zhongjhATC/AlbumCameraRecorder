@@ -15,8 +15,9 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
-import com.zhongjh.common.enums.MediaType
+import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader.Companion.QUERY_URI
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.AppUtils.getAppName
 import java.io.File
@@ -62,7 +63,9 @@ object MediaStoreUtils {
         var external: Uri? = null
         when (type) {
             MediaType.TYPE_VIDEO -> {
+                external = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                 values.put(MediaStore.Video.Media.MIME_TYPE, MimeType.getMimeType(suffix))
+                values.put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
                 // 计算时间
                 if (duration == 0L) {
                     val photoPath = file.path
@@ -73,14 +76,12 @@ object MediaStoreUtils {
                 } else {
                     values.put("duration", duration)
                 }
-                values.put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
-                external = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
             }
 
             MediaType.TYPE_PICTURE -> {
+                external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 values.put(MediaStore.Images.Media.MIME_TYPE, MimeType.getMimeType(suffix))
                 values.put(MediaStore.Images.Media.RELATIVE_PATH, DCIM_CAMERA)
-                external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
                 // 需要增加这个，不然AndroidQ识别不到TAG_DATETIME_ORIGINAL创建时间
                 try {
@@ -88,7 +89,8 @@ object MediaStoreUtils {
                     if (TextUtils.isEmpty(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))) {
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault())
                         exif.setAttribute(
-                            ExifInterface.TAG_DATETIME_ORIGINAL, simpleDateFormat.format(System.currentTimeMillis())
+                            ExifInterface.TAG_DATETIME_ORIGINAL,
+                            simpleDateFormat.format(System.currentTimeMillis())
                         )
                         exif.saveAttributes()
                     }
@@ -97,26 +99,20 @@ object MediaStoreUtils {
                     e.printStackTrace()
                 }
             }
-
-            MediaType.TYPE_AUDIO -> {}
-            else -> {}
         }
         val resolver = context.contentResolver
-        external?.let {
-            val uri = resolver.insert(external, values)
-            values.clear()
-            uri?.let {
-                val out = resolver.openOutputStream(uri)
-                val fis = FileInputStream(file)
-                out?.let {
-                    FileUtils.copy(fis, out)
-                    fis.close()
-                    out.close()
-                }
+        val uri = resolver.insert(external!!, values)
+        values.clear()
+        uri?.let {
+            val out = resolver.openOutputStream(uri)
+            val fis = FileInputStream(file)
+            out?.let {
+                FileUtils.copy(fis, out)
+                fis.close()
+                out.close()
             }
-            return uri
         }
-        return null
+        return uri
     }
 
     /**
@@ -319,8 +315,14 @@ object MediaStoreUtils {
      * @return localMedia 查询出的数据
      */
     fun getMediaDataByUri(context: Context, uri: Uri): LocalMedia {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor: Cursor? = context.contentResolver.query(uri, projection, null, null, null)
+        val id = getId(uri)
+        val cursor: Cursor? = context.contentResolver.query(
+            QUERY_URI,
+            MediaLoader.PROJECTION,
+            MediaStore.Files.FileColumns._ID + "=?",
+            arrayOf(id.toString()),
+            null
+        )
         if (cursor != null && cursor.moveToFirst()) {
             val mediaLoader = MediaLoader(context)
             return mediaLoader.parse(cursor)

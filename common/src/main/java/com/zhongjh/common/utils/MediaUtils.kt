@@ -242,6 +242,9 @@ object MediaUtils {
                     }
                 }
             }
+
+            MediaType.TYPE_AUDIO -> {
+            }
         }
         return localMedia
     }

@@ -46,6 +46,24 @@ object FileMediaUtil {
         return createFile(context, type, DirType.CACHE, null)
     }
 
+
+    /**
+     * 根据参数文件名称，在temp文件夹创建文件
+     *
+     * @param context 上下文
+     * @param fileName 文件名称
+     *
+     * @return file
+     */
+    fun createTempFile(context: Context, fileName: String): File {
+        val externalFilesDir: File? = context.getExternalFilesDir("")
+        val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.COMPRESS)
+        if (!tempCameraFile.exists()) {
+            tempCameraFile.mkdirs()
+        }
+        return File(tempCameraFile.absolutePath, fileName)
+    }
+
     /**
      * 基于需要压缩的文件地址创建一个压缩路径
      * 命名规范：pathName_CMP.jpg
@@ -68,31 +86,6 @@ object FileMediaUtil {
         if (newFileNames.size > 1) {
             // 设置后缀名
             newFileName = newFileNames[0] + "_CMP" + "." + newFileNames[1]
-        }
-        return File(tempCameraFile.absolutePath, newFileName)
-    }
-
-    /**
-     * 基于相册的图片/视频，创建一个压缩路径
-     * 命名规范：id_CMP.jpg id_CMP.mp4
-     *
-     * @param context 上下文
-     * @param localMedia 文件实体
-     *
-     * @return file
-     */
-    fun createCompressFile(context: Context, localMedia: LocalMedia): File {
-        val externalFilesDir: File? = context.getExternalFilesDir("")
-        val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.COMPRESS)
-        if (!tempCameraFile.exists()) {
-            tempCameraFile.mkdirs()
-        }
-        val newFileNames = localMedia.absolutePath.split(".").toTypedArray()
-        // 设置压缩后的照片名称，id_CMP
-        var newFileName = localMedia.id.toString() + "_CMP"
-        if (newFileNames.size > 1) {
-            // 设置后缀名
-            newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
         }
         return File(tempCameraFile.absolutePath, newFileName)
     }

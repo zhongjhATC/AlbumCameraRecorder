@@ -110,7 +110,7 @@ object FileUtils {
      * @param dest The destination.
      * @return `true`: success<br></br>`false`: fail
      */
-    @JvmOverloads
+    @JvmOverloads @JvmStatic
     fun copy(
         context: Context,
         src: Uri?,
@@ -139,7 +139,7 @@ object FileUtils {
      * @param dest The destination.
      * @return `true`: success<br></br>`false`: fail
      */
-    @JvmOverloads
+    @JvmOverloads @JvmStatic
     fun move(
         src: File?,
         dest: File?,

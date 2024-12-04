@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.albumcamerarecorder.R
@@ -23,6 +24,7 @@ import com.zhongjh.common.enums.MediaType
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.getOutFile
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.displayToGalleryAndroidQ
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.imageMaxCount
 import com.zhongjh.common.entity.LocalMedia
@@ -351,44 +353,49 @@ open class CameraPictureManager(
             rotateImage(baseCameraFragment.myContext, item.path)
             val cacheFile = File(item.path)
             Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
-            val localMedia = LocalMedia()
+            var localMedia = LocalMedia()
             // 根据版本兼容处理的最终文件
             var newFile: File
+            var uri: Uri? = null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // AndroidQ才加入相册数据
-                newFile = movePictureFileQ(cacheFile)
+                uri = movePictureFileQ(cacheFile)
+                newFile = cacheFile
             } else {
                 // 直接迁移到相册文件夹,刷新
                 val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
                 val isMove = FileUtils.move(cacheFile, cameraFile)
                 newFile = if (isMove) {
                     // Android 9以下(包含) 使用通知方法刷新相册
-                    val uri = Uri.fromFile(cameraFile)
+                    uri = Uri.fromFile(cameraFile)
                     baseCameraFragment.myContext.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
                     cameraFile
                 } else {
                     cacheFile
                 }
             }
+            // 获取相册数据
+            uri?.let {
+                localMedia = MediaStoreUtils.getMediaDataByUri(baseCameraFragment.myContext, it)
+            }
 
-            localMedia.mimeType = MimeType.JPEG.mimeTypeName
             // 压缩图片
             val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
                 baseCameraFragment.myContext, newFile
             ) ?: let {
                 newFile
             }
+            Log.d(TAG, "4. 压缩图片：" + compressionFile.absolutePath)
             localMedia.compressPath = compressionFile.absolutePath
             localMedia.sandboxPath =
                 FileMediaUtil.getUri(baseCameraFragment.myContext, localMedia.compressPath.toString()).toString()
             localMedia.size = compressionFile.length()
-            Log.d(TAG, "4. 压缩图片：" + compressionFile.absolutePath)
             val mediaInfo = MediaUtils.getMediaInfo(
                 baseCameraFragment.myContext, MediaType.TYPE_PICTURE, compressionFile.absolutePath
             )
             localMedia.width = mediaInfo.width
             localMedia.height = mediaInfo.height
-            Log.d(TAG, "5. 补充属性：")
+            Log.d(TAG, "5. 补充属性")
             newFiles.add(localMedia)
         }
         // 执行完成
@@ -399,13 +406,14 @@ open class CameraPictureManager(
      * 兼容Android Q以上版本,添加进相册
      *
      */
-    private fun movePictureFileQ(cacheFile: File): File {
-        // 获取后缀名
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun movePictureFileQ(cacheFile: File): Uri? {
+        // 获取宽高
         val mediaInfo = MediaUtils.getMediaInfo(
             baseCameraFragment.myContext, MediaType.TYPE_PICTURE, cacheFile.path
         )
         // 加入图片到android系统库里面
-        val uri = displayToGalleryAndroidQ(
+        return displayToGalleryAndroidQ(
             baseCameraFragment.myContext,
             cacheFile,
             MediaType.TYPE_PICTURE,
@@ -413,7 +421,6 @@ open class CameraPictureManager(
             mediaInfo.width,
             mediaInfo.height
         )
-        return cacheFile
     }
 
     companion object {
