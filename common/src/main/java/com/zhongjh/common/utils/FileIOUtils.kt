@@ -1,6 +1,7 @@
 package com.zhongjh.common.utils
 
 import android.util.Log
+import com.zhongjh.common.listener.OnProgressUpdateListener
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -90,9 +91,5 @@ object FileIOUtils {
                 e.printStackTrace()
             }
         }
-    }
-
-    interface OnProgressUpdateListener {
-        fun onProgressUpdate(progress: Double, file: File?)
     }
 }

@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * 父类，包含下面几部分操作：
@@ -182,6 +186,15 @@ public abstract class BaseActivity extends AppCompatActivity {
                 localMedia.setDuration(mediaExtraInfo.getDuration());
             }
             Log.i(TAG, "onResult 宽高: " + localMedia.getWidth() + "x" + localMedia.getHeight());
+
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<String> future = executor.submit(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    return "";
+                }
+            });
         }
     }
 

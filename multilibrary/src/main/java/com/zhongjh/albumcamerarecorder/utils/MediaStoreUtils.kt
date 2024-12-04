@@ -309,6 +309,7 @@ object MediaStoreUtils {
     }
 
     /**
+     * AndroidQ包含及以上
      * 根据uri获取相册数据
      * @param context 上下文
      * @param uri 文件路径
@@ -329,5 +330,31 @@ object MediaStoreUtils {
         }
         return LocalMedia()
     }
+
+
+    /**
+     * AndroidQ包含及以上
+     * 根据uri获取相册数据
+     * @param context 上下文
+     * @param path 文件路径
+     * @return localMedia 查询出的数据
+     */
+    fun getMediaDataByPath(context: Context, path: String): LocalMedia {
+        Log.d(TAG, "path:$path")
+        val cursor: Cursor? = context.contentResolver.query(
+            QUERY_URI,
+            MediaLoader.PROJECTION,
+            MediaStore.Images.Media.DATA + "=?",
+            arrayOf(path),
+            null
+        )
+        Log.d(TAG, "cursor:${cursor?.columnNames?.size}" + " cursor.count:${cursor?.count}")
+        if (cursor != null && cursor.moveToFirst()) {
+            val mediaLoader = MediaLoader(context)
+            return mediaLoader.parse(cursor)
+        }
+        return LocalMedia()
+    }
+
 
 }

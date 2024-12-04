@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera.manager
 
 import android.app.Activity
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -20,7 +21,6 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter.PhotoAdapterList
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraPicture
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil
-import com.zhongjh.common.enums.MediaType
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.getOutFile
@@ -28,13 +28,21 @@ import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.displayToGalleryAndroidQ
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.imageMaxCount
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.imageedit.ImageEditActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
+import kotlin.coroutines.resume
+
 
 /**
  * 图片管理类
@@ -343,6 +351,14 @@ open class CameraPictureManager(
     /**
      * 迁移图片的线程方法
      *
+     *                 // AndroidQ才加入相册数据
+     *                 var uri = movePictureFileQ(cacheFile)
+     *                 newFile = cacheFile
+     *                 // 获取相册数据
+     *                 uri?.let {
+     *                     localMedia = MediaStoreUtils.getMediaDataByUri(baseCameraFragment.myContext, it)
+     *                 }
+     *
      * @return 迁移后的数据
      */
     private fun movePictureFileTaskInBackground(): ArrayList<LocalMedia> {
@@ -354,38 +370,26 @@ open class CameraPictureManager(
             val cacheFile = File(item.path)
             Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
             var localMedia = LocalMedia()
-            // 根据版本兼容处理的最终文件
-            var newFile: File
-            var uri: Uri? = null
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // AndroidQ才加入相册数据
-                uri = movePictureFileQ(cacheFile)
-                newFile = cacheFile
-            } else {
-                // 直接迁移到相册文件夹,刷新
-                val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
-                val isMove = FileUtils.move(cacheFile, cameraFile)
-                newFile = if (isMove) {
-                    // Android 9以下(包含) 使用通知方法刷新相册
-                    uri = Uri.fromFile(cameraFile)
-                    baseCameraFragment.myContext.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-                    cameraFile
-                } else {
-                    cacheFile
+            // 直接迁移到相册文件夹,刷新
+            val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
+            val isMove = FileUtils.move(cacheFile, cameraFile)
+            // 需要处理的最终文件
+            val newFile = if (isMove) {
+                runBlocking {
+                    localMedia = mediaScanFile(cameraFile.absolutePath)
+                    Log.d(TAG, "2. 获取相册数据：" + localMedia.id)
                 }
+                cameraFile
+            } else {
+                cacheFile
             }
-            // 获取相册数据
-            uri?.let {
-                localMedia = MediaStoreUtils.getMediaDataByUri(baseCameraFragment.myContext, it)
-            }
-
             // 压缩图片
             val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
                 baseCameraFragment.myContext, newFile
             ) ?: let {
                 newFile
             }
-            Log.d(TAG, "4. 压缩图片：" + compressionFile.absolutePath)
+            Log.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
             localMedia.compressPath = compressionFile.absolutePath
             localMedia.sandboxPath =
                 FileMediaUtil.getUri(baseCameraFragment.myContext, localMedia.compressPath.toString()).toString()
@@ -395,12 +399,25 @@ open class CameraPictureManager(
             )
             localMedia.width = mediaInfo.width
             localMedia.height = mediaInfo.height
-            Log.d(TAG, "5. 补充属性")
+            Log.d(TAG, "4. 补充属性")
             newFiles.add(localMedia)
         }
         // 执行完成
         return newFiles
     }
+
+    /**
+     * 扫描
+     */
+    private suspend fun mediaScanFile(path: String): LocalMedia = suspendCancellableCoroutine { ctn ->
+        MediaScannerConnection.scanFile(
+            baseCameraFragment.myContext, arrayOf(path), arrayOf("image/jpeg")
+        ) { path, _ ->
+            // 相册刷新完成后的回调
+            ctn.resume(MediaStoreUtils.getMediaDataByPath(baseCameraFragment.myContext, path))
+        }
+    }
+
 
     /**
      * 兼容Android Q以上版本,添加进相册
@@ -414,12 +431,7 @@ open class CameraPictureManager(
         )
         // 加入图片到android系统库里面
         return displayToGalleryAndroidQ(
-            baseCameraFragment.myContext,
-            cacheFile,
-            MediaType.TYPE_PICTURE,
-            -1,
-            mediaInfo.width,
-            mediaInfo.height
+            baseCameraFragment.myContext, cacheFile, MediaType.TYPE_PICTURE, -1, mediaInfo.width, mediaInfo.height
         )
     }
 

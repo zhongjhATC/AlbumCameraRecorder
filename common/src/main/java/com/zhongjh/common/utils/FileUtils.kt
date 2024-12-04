@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.text.TextUtils
+import com.zhongjh.common.listener.OnProgressUpdateListener
+import com.zhongjh.common.listener.OnReplaceListener
 import java.io.Closeable
 import java.io.File
 import java.io.FileInputStream
@@ -37,6 +39,7 @@ object FileUtils {
      * 用于关闭inputStream
      * @param c Closeable是属于inputStream的接口
      */
+    @JvmStatic
     fun close(c: Closeable?) {
         if (c is Closeable) {
             try {
@@ -79,12 +82,12 @@ object FileUtils {
      * @param dest The destination.
      * @return `true`: success<br></br>`false`: fail
      */
-    @JvmOverloads @JvmStatic
+    @JvmStatic
     fun copy(
         src: File?,
         dest: File,
         listener: OnReplaceListener? = null,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener? = null
+        onProgressUpdateListener: OnProgressUpdateListener? = null
     ): Boolean {
         if (src == null) {
             return false
@@ -110,13 +113,13 @@ object FileUtils {
      * @param dest The destination.
      * @return `true`: success<br></br>`false`: fail
      */
-    @JvmOverloads @JvmStatic
+    @JvmStatic
     fun copy(
         context: Context,
         src: Uri?,
         dest: File,
         listener: OnReplaceListener? = null,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener? = null
+        onProgressUpdateListener: OnProgressUpdateListener? = null
     ): Boolean {
         if (src == null) {
             return false
@@ -139,12 +142,12 @@ object FileUtils {
      * @param dest The destination.
      * @return `true`: success<br></br>`false`: fail
      */
-    @JvmOverloads @JvmStatic
+    @JvmStatic
     fun move(
         src: File?,
         dest: File?,
         listener: OnReplaceListener? = null,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener? = null
+        onProgressUpdateListener: OnProgressUpdateListener? = null
     ): Boolean {
         if (src == null) {
             return false
@@ -163,11 +166,12 @@ object FileUtils {
      * @param listener The replace listener.
      * @return `true`: success<br></br>`false`: fail
      */
+    @JvmStatic
     private fun copyDir(
         srcDir: File,
         destDir: File,
         listener: OnReplaceListener?,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener?
+        onProgressUpdateListener: OnProgressUpdateListener?
     ): Boolean {
         return copyOrMoveDir(srcDir, destDir, listener, onProgressUpdateListener, false)
     }
@@ -180,11 +184,12 @@ object FileUtils {
      * @param listener The replace listener.
      * @return `true`: success<br></br>`false`: fail
      */
+    @JvmStatic
     private fun copyFile(
         srcFile: File,
         destFile: File,
         listener: OnReplaceListener?,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener?
+        onProgressUpdateListener: OnProgressUpdateListener?
     ): Boolean {
         return copyOrMoveFile(srcFile, destFile, listener, onProgressUpdateListener, false)
     }
@@ -197,12 +202,13 @@ object FileUtils {
      * @param listener The replace listener.
      * @return `true`: success<br></br>`false`: fail
      */
+    @JvmStatic
     private fun copyFile(
         context: Context,
         srcFile: Uri,
         destFile: File,
         listener: OnReplaceListener?,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener?
+        onProgressUpdateListener: OnProgressUpdateListener?
     ): Boolean {
         return copyOrMoveFile(context, srcFile, destFile, listener, onProgressUpdateListener, false)
     }
@@ -215,11 +221,12 @@ object FileUtils {
      * @param listener The replace listener.
      * @return `true`: success<br></br>`false`: fail
      */
+    @JvmStatic
     fun moveDir(
         srcDir: File?,
         destDir: File?,
         listener: OnReplaceListener?,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener?
+        onProgressUpdateListener: OnProgressUpdateListener?
     ): Boolean {
         return copyOrMoveDir(srcDir, destDir, listener, onProgressUpdateListener, true)
     }
@@ -232,20 +239,22 @@ object FileUtils {
      * @param listener The replace listener.
      * @return `true`: success<br></br>`false`: fail
      */
+    @JvmStatic
     fun moveFile(
         srcFile: File?,
         destFile: File?,
         listener: OnReplaceListener?,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener?
+        onProgressUpdateListener: OnProgressUpdateListener?
     ): Boolean {
         return copyOrMoveFile(srcFile, destFile, listener, onProgressUpdateListener, true)
     }
 
+    @JvmStatic
     private fun copyOrMoveDir(
         srcDir: File?,
         destDir: File?,
         listener: OnReplaceListener?,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener?,
+        onProgressUpdateListener: OnProgressUpdateListener?,
         isMove: Boolean
     ): Boolean {
         if (srcDir == null || destDir == null) {
@@ -281,11 +290,12 @@ object FileUtils {
         return !isMove || deleteDir(srcDir)
     }
 
+    @JvmStatic
     private fun copyOrMoveFile(
         srcFile: File?,
         destFile: File?,
         listener: OnReplaceListener?,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener?,
+        onProgressUpdateListener: OnProgressUpdateListener?,
         isMove: Boolean
     ): Boolean {
         if (srcFile == null || destFile == null) {
@@ -322,12 +332,13 @@ object FileUtils {
         }
     }
 
+    @JvmStatic
     private fun copyOrMoveFile(
         context: Context,
         srcFile: Uri?,
         destFile: File?,
         listener: OnReplaceListener?,
-        onProgressUpdateListener: FileIOUtils.OnProgressUpdateListener?,
+        onProgressUpdateListener: OnProgressUpdateListener?,
         isMove: Boolean
     ): Boolean {
         if (srcFile == null || destFile == null) {
@@ -363,6 +374,7 @@ object FileUtils {
      * @param file The file.
      * @return `true`: exists or creates successfully<br></br>`false`: otherwise
      */
+    @JvmStatic
     fun createOrExistsDir(file: File?): Boolean {
         return file != null && (if (file.exists()) file.isDirectory else file.mkdirs())
     }
@@ -409,6 +421,7 @@ object FileUtils {
      * @param filePath The path of file.
      * @return `true`: exists or creates successfully<br></br>`false`: otherwise
      */
+    @JvmStatic
     fun createOrExistsFile(filePath: String): Boolean {
         return createOrExistsFile(getFileByPath(filePath))
     }
@@ -461,6 +474,7 @@ object FileUtils {
      * @param file The file.
      * @return the length of file
      */
+    @JvmStatic
     private fun getFileSize(file: File): String {
         val len = getFileLength(file)
         return if (len == -1L) "" else ConvertUtils.byte2FitMemorySize(len)
@@ -472,6 +486,7 @@ object FileUtils {
      * @param file The file.
      * @return the length of file
      */
+    @JvmStatic
     private fun getFileLength(file: File): Long {
         if (!isFile(file)) {
             return -1
@@ -485,6 +500,7 @@ object FileUtils {
      * @param dir The directory.
      * @return the size of directory
      */
+    @JvmStatic
     private fun getDirSize(dir: File): String {
         val len = getDirLength(dir)
         return if (len == -1L) "" else ConvertUtils.byte2FitMemorySize(len)
@@ -496,6 +512,7 @@ object FileUtils {
      * @param dir The directory.
      * @return the length of directory
      */
+    @JvmStatic
     private fun getDirLength(dir: File): Long {
         if (!isDir(dir)) {
             return 0
@@ -520,6 +537,7 @@ object FileUtils {
      * @param file The file.
      * @return `true`: yes<br></br>`false`: no
      */
+    @JvmStatic
     fun isDir(file: File?): Boolean {
         return file != null && file.exists() && file.isDirectory
     }
@@ -530,11 +548,10 @@ object FileUtils {
      * @param file The file.
      * @return `true`: yes<br></br>`false`: no
      */
+    @JvmStatic
     fun isFile(file: File?): Boolean {
         return file != null && file.exists() && file.isFile
     }
 
-    interface OnReplaceListener {
-        fun onReplace(srcFile: File?, destFile: File?): Boolean
-    }
+
 }

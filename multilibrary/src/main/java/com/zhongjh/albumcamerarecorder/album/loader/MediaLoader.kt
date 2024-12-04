@@ -1,6 +1,5 @@
 package com.zhongjh.albumcamerarecorder.album.loader
 
-import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
@@ -21,8 +20,10 @@ import com.zhongjh.common.enums.MimeType.Companion.isVideo
 import com.zhongjh.common.utils.SdkVersionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.util.*
 import kotlin.math.max
+
 
 class MediaLoader(private val context: Context) {
 
@@ -259,6 +260,7 @@ class MediaLoader(private val context: Context) {
             media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
             media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
         }
+        Log.d(TAG, "abspath:" + media.id)
         return media
     }
 

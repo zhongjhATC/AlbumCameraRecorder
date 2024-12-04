@@ -3,9 +3,13 @@ package com.zhongjh.cameraapp.configuration;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener;
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
+import com.zhongjh.common.listener.OnProgressUpdateListener;
+import com.zhongjh.common.listener.OnReplaceListener;
+import com.zhongjh.common.utils.FileIOUtils;
 import com.zhongjh.common.utils.FileUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +36,7 @@ public class OnImageCompressionLuBan implements OnImageCompressionListener {
         File compressFile = new Compressor(context).compressToFile(file);
         File newFile = FileMediaUtil.INSTANCE.createTempFile(context, file.getName());
         // 如果想移动到自己想存放的文件夹,则使用这个,否则直接返回compressFile即可
-        FileUtils.move(compressFile, newFile);
+        FileUtils.move(compressFile, newFile, null, null);
         return newFile;
     }
 
