@@ -475,14 +475,10 @@ public abstract class BaseCameraFragment
             }
 
             @Override
-            public void confirm() {
-                Log.d(TAG, "confirm " + getState().toString());
+            public void startProgress() {
+                Log.d(TAG, "startProgress " + getState().toString());
                 // 没有所需要请求的权限，就进行后面的逻辑
                 getCameraStateManager().pvLayoutCommit();
-            }
-
-            @Override
-            public void startProgress() {
             }
 
             @Override

@@ -65,11 +65,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
         void cancel();
 
         /**
-         * 确认
-         */
-        void confirm();
-
-        /**
          * 开始进度操作，目前只用于分段录制
          */
         void startProgress();
@@ -316,6 +311,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
             public void onStart() {
                 if (mOperateListener != null) {
                     mOperateListener.startProgress();
+                    startTipAlphaAnimation();
                 }
             }
 
@@ -340,10 +336,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
 
             @Override
             public void onClickByProgressMode() {
-                if (mOperateListener != null) {
-                    mOperateListener.confirm();
-                    startTipAlphaAnimation();
-                }
             }
         });
     }

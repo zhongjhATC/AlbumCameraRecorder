@@ -272,10 +272,6 @@ public class SoundRecordingFragment extends BaseFragment {
             }
 
             @Override
-            public void confirm() {
-            }
-
-            @Override
             public void startProgress() {
                 moveRecordFile();
             }

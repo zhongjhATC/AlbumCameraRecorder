@@ -34,10 +34,6 @@ import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.imageedit.ImageEditActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
@@ -279,15 +275,17 @@ open class CameraPictureManager(
     override fun getMovePictureFileTask(): ThreadUtils.SimpleTask<ArrayList<LocalMedia>> {
         movePictureFileTask = object : ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
             override fun doInBackground(): ArrayList<LocalMedia> {
+                Log.d(TAG, "doInBackground")
                 return movePictureFileTaskInBackground()
             }
 
             override fun onSuccess(newFiles: ArrayList<LocalMedia>) {
+                Log.d(TAG, "onSuccess")
                 baseCameraFragment.commitPictureSuccess(newFiles)
             }
 
             override fun onFail(t: Throwable) {
-                super.onFail(t)
+                Log.d(TAG, "onFail")
                 baseCameraFragment.commitFail(t)
             }
         }

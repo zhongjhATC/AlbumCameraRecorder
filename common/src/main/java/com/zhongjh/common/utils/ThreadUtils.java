@@ -1237,6 +1237,7 @@ public final class ThreadUtils {
                                 if (!isDone() && mTimeoutListener != null) {
                                     timeout();
                                     mTimeoutListener.onTimeout();
+                                    Log.d("CameraPictureManager", "timeout-onDone");
                                     onDone();
                                 }
                             }
@@ -1266,13 +1267,15 @@ public final class ThreadUtils {
                         @Override
                         public void run() {
                             onSuccess(result);
+                            Log.d("CameraPictureManager", "onSuccess-onDone");
                             onDone();
                         }
                     });
                 }
             } catch (InterruptedException ignore) {
                 state.compareAndSet(CANCELLED, INTERRUPTED);
-            } catch (final Throwable throwable) {
+            }
+            catch (final Throwable throwable) {
                 if (!state.compareAndSet(RUNNING, EXCEPTIONAL)) {
                     return;
                 }
@@ -1280,6 +1283,7 @@ public final class ThreadUtils {
                     @Override
                     public void run() {
                         onFail(throwable);
+                        Log.d("CameraPictureManager", "onFail-onDone");
                         onDone();
                     }
                 });
@@ -1307,6 +1311,7 @@ public final class ThreadUtils {
                 @Override
                 public void run() {
                     onCancel();
+                    Log.d("CameraPictureManager", "onCancel-onDone");
                     onDone();
                 }
             });
