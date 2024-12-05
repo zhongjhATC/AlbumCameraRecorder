@@ -9,7 +9,7 @@
 
 1.1:    拍照 - AlbumCameraRecorderCache 文件名字：IMAGE_yyyyMMdd_HHmmssSSS.jpg
         加入相册 - 迁移到Picture 文件名字：IMAGE_yyyyMMdd_HHmmssSSS.jpg
-        压缩 - AlbumCameraRecorderCompress 文件名字和路径：根据用户的压缩库来决定
+        压缩 - AlbumCameraRecorderCompress 文件名字和路径：根据用户的压缩库来决定，不一定是这个路径
         编辑 - AlbumCameraRecorderTemp - 加入相册 - 压缩
 
 相册界面：
