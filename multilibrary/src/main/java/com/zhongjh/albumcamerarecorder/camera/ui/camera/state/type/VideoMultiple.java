@@ -64,7 +64,7 @@ public class VideoMultiple extends StateMode {
     }
 
     @Override
-    public void stopRecord(boolean isShort) {
+    public void pauseRecord(boolean isShort) {
 
     }
 

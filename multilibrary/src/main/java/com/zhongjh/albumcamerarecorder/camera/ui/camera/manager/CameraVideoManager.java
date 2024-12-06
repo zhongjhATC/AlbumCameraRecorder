@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+
 import com.zhongjh.common.utils.FileUtils;
 
 /**
@@ -81,9 +82,9 @@ public class CameraVideoManager implements ICameraVideo {
      */
     private boolean isShort;
     /**
-     * 是否分段录制
+     * 是否分段录制,默认分段录制,改版后原生Api支持暂停\恢复录制
      */
-    private boolean isSectionRecord;
+    private boolean isSectionRecord = true;
     /**
      * 是否中断录像
      */
@@ -154,10 +155,6 @@ public class CameraVideoManager implements ICameraVideo {
      */
     @Override
     public void recordVideo() {
-        // 用于播放的视频file
-        if (videoFile == null) {
-            videoFile = FileMediaUtil.INSTANCE.createCacheFile(baseCameraFragment.getMyContext(), MediaType.TYPE_VIDEO);
-        }
         baseCameraFragment.getCameraManage().takeVideo();
     }
 
@@ -167,6 +164,7 @@ public class CameraVideoManager implements ICameraVideo {
     @SuppressLint("LongLogTag")
     @Override
     public void onVideoTaken(String path) {
+        videoFile = new File(path);
         // 判断文件是否超过1秒才属于合格的视频
         long mediaDuration = getMediaDuration(path);
         if (mediaDuration < 1000) {

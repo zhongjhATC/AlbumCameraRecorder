@@ -38,7 +38,7 @@ import java.util.*
 object MediaStoreUtils {
 
     private val TAG = MediaStoreUtils::class.java.simpleName
-    private const val DCIM_CAMERA: String = "DCIM/Camera"
+    const val DCIM_CAMERA: String = "DCIM/Camera"
 
     /**
      * 插入图片、视频到图库

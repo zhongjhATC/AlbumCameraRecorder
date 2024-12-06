@@ -40,6 +40,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.DCIM_CAMERA
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import com.zhongjh.common.utils.UriUtils
@@ -179,6 +180,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         ).format(System.currentTimeMillis()) + ".mp4"
         val contentValues = ContentValues().apply {
             put(MediaStore.Video.Media.DISPLAY_NAME, name)
+            put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
         }
         val mediaStoreOutput = MediaStoreOutputOptions.Builder(
             context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
@@ -187,22 +189,53 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             ContextCompat.getMainExecutor(context)
         ) { videoRecordEvent ->
             // 视频录制监控回调
-            if (videoRecordEvent is VideoRecordEvent.Finalize) {
-                val uri = videoRecordEvent.outputResults.outputUri
-                stopCheckOrientation()
-                onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(context, uri).absolutePath)
+            when (videoRecordEvent) {
+                is VideoRecordEvent.Finalize -> {
+                    // 完成录制
+                    Log.d(TAG, "error" + videoRecordEvent.error)
+                    val uri = videoRecordEvent.outputResults.outputUri
+                    stopCheckOrientation()
+                    onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(context, uri).absolutePath)
+                }
+
+                is VideoRecordEvent.Pause -> {
+                    // 暂停录制
+
+                }
+
+                is VideoRecordEvent.Resume -> {
+                    // 恢复录制
+                }
             }
-            //                    else if   (t is VideoRecordEvent.) {
-            //
-            //                    }
         }
+    }
+
+    /**
+     * 停止录制,生成文件
+     */
+    fun stopVideo() {
+        recording?.stop()
+    }
+
+    /**
+     * 恢复录制
+     */
+    fun resumeVideo() {
+        recording?.resume()
+    }
+
+    /**
+     * 暂停录制
+     */
+    fun pauseVideo() {
+        recording?.pause()
     }
 
     /**
      * 停止录制
      */
-    fun stopVideo() {
-        recording?.stop()
+    fun closeVideo() {
+        recording?.close()
     }
 
     /**

@@ -430,8 +430,8 @@ public abstract class BaseCameraFragment
             public void onLongClickEnd(long time) {
                 Log.d(TAG, "pvLayout onLongClickEnd " + time);
                 getCameraVideoManager().setSectionRecordTime(time);
-                // 录像结束
-                stopRecord(false);
+                // 录像暂停
+                pauseRecord(false);
             }
 
             @Override
@@ -778,7 +778,7 @@ public abstract class BaseCameraFragment
         // 显示右上角菜单
         setMenuVisibility(View.VISIBLE);
         // 停止录像
-        stopRecord(true);
+        pauseRecord(true);
     }
 
     /**
@@ -1142,12 +1142,12 @@ public abstract class BaseCameraFragment
     }
 
     /**
-     * 停止录像并且完成它，如果是因为视频过短则清除冗余数据
+     * 暂停录制
      *
      * @param isShort 是否因为视频过短而停止
      */
-    public void stopRecord(boolean isShort) {
-        getCameraStateManager().stopRecord(isShort);
+    public void pauseRecord(boolean isShort) {
+        getCameraStateManager().pauseRecord(isShort);
     }
 
     public int getFlashMode() {

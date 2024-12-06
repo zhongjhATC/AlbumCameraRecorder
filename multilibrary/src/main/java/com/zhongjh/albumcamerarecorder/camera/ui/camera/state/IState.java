@@ -47,11 +47,11 @@ public interface IState {
     void longClickShort(final long time);
 
     /**
-     * 停止录像并且完成它，如果是因为视频过短则清除冗余数据
+     * 暂停录制
      *
      * @param isShort 是否因为视频过短而停止
      */
-    void stopRecord(boolean isShort);
+    void pauseRecord(boolean isShort);
 
     /**
      * 中止提交

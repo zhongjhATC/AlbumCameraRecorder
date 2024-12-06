@@ -8,9 +8,12 @@
 1.3 不保存图片，关闭窗口： 会保留中途操作过的Cache文件，所以如果有必要可以选择清楚缓存
 
 1.1:    拍照 - AlbumCameraRecorderCache 文件名字：IMAGE_yyyyMMdd_HHmmssSSS.jpg
-        加入相册 - 迁移到Picture 文件名字：IMAGE_yyyyMMdd_HHmmssSSS.jpg
+        加入相册 - 迁移到DCIM/Camera 文件名字：IMAGE_yyyyMMdd_HHmmssSSS.jpg
         压缩 - AlbumCameraRecorderCompress 文件名字和路径：根据用户的压缩库来决定，不一定是这个路径
         编辑 - AlbumCameraRecorderTemp - 加入相册 - 压缩
+
+1.2:    录像 - 迁移到DCIM/Camera 文件名字：VIDEO_yyyyMMdd_HHmmssSSS.jpg
+        压缩 - AlbumCameraRecorderCompress 文件名字和路径：根据用户的压缩库来决定，不一定是这个路径
 
 相册界面：
 1. 相册选择图片

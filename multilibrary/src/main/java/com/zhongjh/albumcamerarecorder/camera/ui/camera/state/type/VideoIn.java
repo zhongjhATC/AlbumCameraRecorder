@@ -15,7 +15,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureMan
 public class VideoIn extends StateMode {
 
     /**
-     * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment     主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManager 可以让状态更改别的状态
      */
     public VideoIn(BaseCameraFragment<? extends CameraStateManager,
@@ -34,7 +34,7 @@ public class VideoIn extends StateMode {
     public Boolean onBackPressed() {
         // 如果是录制中则暂停视频
         getCameraFragment().getCameraVideoManager().setBreakOff(true);
-        getCameraFragment().getCameraManage().stopVideo();
+        getCameraFragment().getCameraManage().closeVideo();
         // 重置按钮
         getCameraFragment().getPhotoVideoLayout().reset();
         // 恢复预览状态
@@ -64,12 +64,13 @@ public class VideoIn extends StateMode {
     }
 
     @Override
-    public void stopRecord(boolean isShort) {
+    public void pauseRecord(boolean isShort) {
         if (isShort) {
             // 重置底部按钮
             getCameraFragment().getPhotoVideoLayout().reset();
             getCameraStateManagement().setState(getCameraStateManagement().getPreview());
         } else {
+            // 设置视频完成状态
             getCameraStateManagement().setState(getCameraStateManagement().getVideoComplete());
         }
     }
