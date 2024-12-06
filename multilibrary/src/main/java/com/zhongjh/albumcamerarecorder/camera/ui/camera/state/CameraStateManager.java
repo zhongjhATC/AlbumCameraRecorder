@@ -119,13 +119,13 @@ public class CameraStateManager implements IState {
     public void pauseRecord(boolean isShort) {
         Log.d(TAG, "stopRecord");
         mCameraFragment.getCameraVideoManager().setShort(isShort);
-        // 显示菜单
+        // 显示右上角菜单
         mCameraFragment.setMenuVisibility(View.VISIBLE);
         state.pauseRecord(isShort);
-//        if (!isShort) {
-//            // 暂停录制
-//            mCameraFragment.getCameraManage().pauseVideo();
-//        }
+        if (!isShort) {
+            // 暂停录制
+            mCameraFragment.getCameraManage().pauseVideo();
+        }
     }
 
     @Override

@@ -174,7 +174,7 @@ public class CameraVideoManager implements ICameraVideo {
         // 判断是否短时间结束
         if (!isShort && !isBreakOff() && mediaDuration >= 1000) {
             if (!isSectionRecord) {
-                //  如果录制结束，打开该视频。打开底部菜单
+                //  如果录制结束，打开该视频。
                 PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path);
             } else {
                 videoTimes.add(sectionRecordTime);
