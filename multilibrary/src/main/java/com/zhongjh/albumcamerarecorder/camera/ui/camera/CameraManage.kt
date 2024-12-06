@@ -1,9 +1,11 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Point
 import android.hardware.display.DisplayManager
+import android.provider.MediaStore
 import android.util.Log
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
@@ -22,11 +24,13 @@ import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.VideoCapture
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.MediaStoreOutputOptions
 import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.LifecycleCameraController
-import androidx.camera.view.video.OnVideoSavedCallback
-import androidx.camera.view.video.OutputFileResults
 import androidx.core.content.ContextCompat
+import androidx.core.util.Consumer
 import androidx.lifecycle.LifecycleOwner
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEventListener
@@ -38,7 +42,10 @@ import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
+import com.zhongjh.common.utils.UriUtils
 import java.lang.ref.WeakReference
+import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -47,7 +54,7 @@ import kotlin.math.min
 
 
 /**
- * 拍摄/录制 管理
+ * 专门处理camerax的类
  */
 class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCameraView: ICameraView) :
     OnCameraXOrientationEventListener.OnOrientationChangedListener {
@@ -73,14 +80,14 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     private var imageCapture: ImageCapture? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private lateinit var cameraProvider: ProcessCameraProvider
-    private lateinit var videoCapture: androidx.camera.video.VideoCapture<Recorder>
+    private var videoCapture: androidx.camera.video.VideoCapture<Recorder>? = null
+    private var recording: Recording? = null
 
     private val displayManager by lazy { context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
     private val displayListener by lazy { DisplayListener() }
     private val orientationEventListener by lazy {
         OnCameraXOrientationEventListener(
-            context,
-            this
+            context, this
         )
     }
     private lateinit var cameraInfo: CameraInfo
@@ -121,14 +128,11 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      */
     fun onDestroy() {
         displayManager.unregisterDisplayListener(displayListener)
+        recording?.close()
         stopCheckOrientation()
     }
 
     fun onClose() {
-
-    }
-
-    fun stopVideo() {
 
     }
 
@@ -160,9 +164,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
             // 进行拍照
             imageCapture.takePicture(
-                fileOptions,
-                mainExecutor,
-                TakePictureCallback2(this@CameraManage, onCameraManageListener)
+                fileOptions, mainExecutor, TakePictureCallback2(this@CameraManage, onCameraManageListener)
             )
         }
     }
@@ -170,34 +172,37 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     /**
      * 录制
      */
-    @SuppressLint("UnsafeOptInUsageError", "MissingPermission", "RestrictedApi")
+    @SuppressLint("MissingPermission")
     fun takeVideo() {
-//        // 判断是否绑定了mVideoCapture
-//        if (!cameraProvider.isBound(videoCapture)) {
-//            bindCameraPreviewModeByVideo()
-//        }
-//        // 设置视频模式
-//        useCameraCases = LifecycleCameraController.VIDEO_CAPTURE
-//        // 设置输出路径
-//        val cameraFile: File? = if (isSaveExternal()) {
-//            // 创建内部文件夹
-//            createTempFile(false)
-//        } else {
-//            // 创建自定义路径下的文件夹
-//            createOutFile(
-//                context,
-//                TYPE_VIDEO,
-//                cameraSpec.outPutCameraFileName,
-//                cameraSpec.videoFormat,
-//                cameraSpec.outPutCameraDir
-//            )
-//        }
-//        cameraFile?.let {
-//            val fileOptions = OutputFileOptions.Builder(cameraFile).build()
-//            // TODO
-////            mVideoCapture.startRecording(fileOptions, mainExecutor, TakeVideoCallback(this@CameraManage, onCameraManageListener))
-////            mVideoCapture.startRecording(fileOptions,mainExecutor,TakeVideoCallback)
-//        }
+        val name = "CameraX-recording-" + SimpleDateFormat(
+            "yyyyMMdd_HHmmssSSS", Locale.US
+        ).format(System.currentTimeMillis()) + ".mp4"
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Video.Media.DISPLAY_NAME, name)
+        }
+        val mediaStoreOutput = MediaStoreOutputOptions.Builder(
+            context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        ).setContentValues(contentValues).build()
+        recording = videoCapture?.output?.prepareRecording(context, mediaStoreOutput)?.withAudioEnabled()?.start(
+            ContextCompat.getMainExecutor(context)
+        ) { videoRecordEvent ->
+            // 视频录制监控回调
+            if (videoRecordEvent is VideoRecordEvent.Finalize) {
+                val uri = videoRecordEvent.outputResults.outputUri
+                stopCheckOrientation()
+                onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(context, uri).absolutePath)
+            }
+            //                    else if   (t is VideoRecordEvent.) {
+            //
+            //                    }
+        }
+    }
+
+    /**
+     * 停止录制
+     */
+    fun stopVideo() {
+        recording?.stop()
     }
 
     /**
@@ -269,8 +274,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             // 获取前后置摄像头
             val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
             // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
-            val preview = Preview.Builder().setTargetAspectRatio(screenAspectRatio)
-                .setTargetRotation(rotation).build()
+            val preview = Preview.Builder().setTargetAspectRatio(screenAspectRatio).setTargetRotation(rotation).build()
             // 初始化 ImageCapture
             initImageCapture(screenAspectRatio)
             // 初始化 ImageAnalysis
@@ -282,11 +286,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             preview.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
             // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
             val camera = cameraProvider.bindToLifecycle(
-                (context as LifecycleOwner),
-                cameraSelector,
-                preview,
-                imageCapture,
-                imageAnalyzer
+                (context as LifecycleOwner), cameraSelector, preview, imageCapture, imageAnalyzer
             )
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
@@ -333,8 +333,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         try {
             // 获取适合的比例
             val screenAspectRatio: Int = aspectRatio(
-                DisplayMetricsUtils.getScreenWidth(context),
-                DisplayMetricsUtils.getScreenHeight(context)
+                DisplayMetricsUtils.getScreenWidth(context), DisplayMetricsUtils.getScreenHeight(context)
             )
             // 获取当前预览的角度
             val rotation: Int = viewHolder.previewView.display.rotation
@@ -353,7 +352,9 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             imageCapture?.let {
                 useCase.addUseCase(it)
             }
-            useCase.addUseCase(videoCapture)
+            videoCapture?.let {
+                useCase.addUseCase(it)
+            }
             val useCaseGroup = useCase.build()
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
@@ -376,8 +377,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     private fun initImageCapture(screenAspectRatio: Int) {
         Log.d(TAG, "initImageCapture display.rotation:" + viewHolder.previewView.display.rotation)
         // 初始化 拍照类 imageCapture,设置 优先考虑延迟而不是图像质量、设置比例、设置角度
-        imageCapture = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
-            .setTargetAspectRatio(screenAspectRatio)
+        imageCapture = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY).setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(viewHolder.previewView.display.rotation).build()
     }
 
@@ -455,8 +455,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
 
             override fun click(x: Float, y: Float) {
                 // 控制对焦目标给xy坐标
-                val meteringPointFactory: MeteringPointFactory =
-                    viewHolder.previewView.meteringPointFactory
+                val meteringPointFactory: MeteringPointFactory = viewHolder.previewView.meteringPointFactory
                 val point = meteringPointFactory.createPoint(x, y)
                 val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
                     .setAutoCancelDuration(3, TimeUnit.SECONDS).build()
@@ -527,29 +526,6 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
                 ?.onError(exception.imageCaptureError, exception.message, exception.cause)
         }
 
-    }
-
-    /**
-     * 视频回调
-     */
-    @SuppressLint("UnsafeOptInUsageError")
-    private class TakeVideoCallback(
-        cameraManage: CameraManage, onCameraManageListener: OnCameraManageListener?
-    ) : OnVideoSavedCallback {
-
-        private val mCameraManageReference: WeakReference<CameraManage> = WeakReference<CameraManage>(cameraManage)
-        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener> =
-            WeakReference<OnCameraManageListener>(onCameraManageListener)
-
-        @SuppressLint("UnsafeOptInUsageError")
-        override fun onVideoSaved(outputFileResults: OutputFileResults) {
-            TODO("Not yet implemented")
-        }
-
-        @SuppressLint("UnsafeOptInUsageError")
-        override fun onError(videoCaptureError: Int, message: String, cause: Throwable?) {
-            TODO("Not yet implemented")
-        }
     }
 
     private fun getTargetRotation(): Int {

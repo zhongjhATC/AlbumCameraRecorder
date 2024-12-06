@@ -181,7 +181,7 @@ public class CameraVideoManager implements ICameraVideo {
             } else {
                 videoTimes.add(sectionRecordTime);
                 // 如果已经有录像缓存，那么就不执行这个动作了
-                if (videoPaths.size() <= 0) {
+                if (videoPaths.isEmpty()) {
                     baseCameraFragment.getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
                     baseCameraFragment.getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
                 }
@@ -222,7 +222,7 @@ public class CameraVideoManager implements ICameraVideo {
         // 显示当前进度
         baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
         baseCameraFragment.getPhotoVideoLayout().invalidateClickOrLongButton();
-        if (videoPaths.size() == 0) {
+        if (videoPaths.isEmpty()) {
             baseCameraFragment.getCameraStateManager().resetState();
         }
     }
@@ -234,39 +234,37 @@ public class CameraVideoManager implements ICameraVideo {
     public void openPreviewVideoActivity() {
         if (isSectionRecord && baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
             File mp4File = FileMediaUtil.INSTANCE.createCacheFile(baseCameraFragment.getMyContext(), MediaType.TYPE_VIDEO);
-            if (mp4File != null) {
-                // 创建合并视频后的路径
-                newSectionVideoPath = mp4File.getPath();
+            // 创建合并视频后的路径
+            newSectionVideoPath = mp4File.getPath();
 
-                // 显示loading
-                baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.VISIBLE);
-                // 开始进行合并线程
-                baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(50);
-                ThreadUtils.SimpleTask<Boolean> simpleTask = new ThreadUtils.SimpleTask<Boolean>() {
+            // 显示loading
+            baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.VISIBLE);
+            // 开始进行合并线程
+            baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(50);
+            ThreadUtils.SimpleTask<Boolean> simpleTask = new ThreadUtils.SimpleTask<Boolean>() {
 
-                    @Override
-                    public Boolean doInBackground() {
-                        Objects.requireNonNull(baseCameraFragment.getCameraSpec().getVideoMergeCoordinator()).merge(videoPaths, newSectionVideoPath);
-                        return true;
-                    }
+                @Override
+                public Boolean doInBackground() {
+                    Objects.requireNonNull(baseCameraFragment.getCameraSpec().getVideoMergeCoordinator()).merge(videoPaths, newSectionVideoPath);
+                    return true;
+                }
 
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
-                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
-                        PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
-                    }
+                @Override
+                public void onSuccess(Boolean result) {
+                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
+                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
+                    PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
+                }
 
-                    @Override
-                    public void onFail(Throwable t) {
-                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
-                        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-                        super.onFail(t);
-                    }
-                };
-                mMergeVideoTasks.add(simpleTask);
-                ThreadUtils.executeByIo(simpleTask);
-            }
+                @Override
+                public void onFail(Throwable t) {
+                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
+                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+                    super.onFail(t);
+                }
+            };
+            mMergeVideoTasks.add(simpleTask);
+            ThreadUtils.executeByIo(simpleTask);
         }
     }
 
@@ -297,7 +295,6 @@ public class CameraVideoManager implements ICameraVideo {
             }
             return duration;
         } catch (Exception exception) {
-            exception.printStackTrace();
             return 0;
         } finally {
             try {
@@ -306,8 +303,7 @@ public class CameraVideoManager implements ICameraVideo {
                 } else {
                     retriever.release();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
             }
         }
     }
