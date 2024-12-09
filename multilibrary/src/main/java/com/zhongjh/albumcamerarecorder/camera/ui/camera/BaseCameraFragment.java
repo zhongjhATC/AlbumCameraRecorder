@@ -202,7 +202,7 @@ public abstract class BaseCameraFragment
             // 与上次点击返回键时刻作差，第一次不能立即退出
             if ((System.currentTimeMillis() - mExitTime) > MILLISECOND) {
                 // 大于2000ms则认为是误操作，使用Toast进行提示
-                Toast.makeText(mainActivity.getApplicationContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getMyContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
                 // 并记录下本次点击“返回键”的时刻，以便下次进行判断
                 mExitTime = System.currentTimeMillis();
                 return true;

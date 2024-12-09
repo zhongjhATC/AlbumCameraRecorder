@@ -181,7 +181,7 @@ class PreviewFragment2 : BaseFragment() {
                 super.onFail(t)
                 // 结束loading
                 setControlTouchEnable(true)
-                Toast.makeText(requireActivity().applicationContext, t.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(mContext, t.message, Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancel() {

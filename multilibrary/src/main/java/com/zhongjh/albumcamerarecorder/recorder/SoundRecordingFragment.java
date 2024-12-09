@@ -113,7 +113,7 @@ public class SoundRecordingFragment extends BaseFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.mContext = context;
+        this.mContext = context.getApplicationContext();
     }
 
     @Override
@@ -153,7 +153,7 @@ public class SoundRecordingFragment extends BaseFragment {
             // 与上次点击返回键时刻作差
             if ((System.currentTimeMillis() - mExitTime) > AGAIN_TIME) {
                 // 大于2000ms则认为是误操作，使用Toast进行提示
-                Toast.makeText(requireActivity().getApplicationContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
                 // 并记录下本次点击“返回键”的时刻，以便下次进行判断
                 mExitTime = System.currentTimeMillis();
                 return true;

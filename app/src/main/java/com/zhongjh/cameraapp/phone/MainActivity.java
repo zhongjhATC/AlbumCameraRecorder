@@ -266,7 +266,7 @@ public class MainActivity extends BaseActivity {
             for (StackTraceElement stackTraceElement : stackTraceElements) {
                 Log.e(TAG, stackTraceElement.toString());
             }
-            Toast.makeText(MainActivity.this.getApplicationContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplication(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
         });
 
         // 是否压缩视频
