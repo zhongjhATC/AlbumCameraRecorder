@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                     is VideoRecordEvent.Finalize -> {
                         if (!recordEvent.hasError()) {
                             val msg = "Video capture succeeded: " + "${recordEvent.outputResults.outputUri}"
-                            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT)
+                            Toast.makeText(baseContext.applicationContext, msg, Toast.LENGTH_SHORT)
                                 .show()
                             Log.d(TAG, msg)
                         } else {
