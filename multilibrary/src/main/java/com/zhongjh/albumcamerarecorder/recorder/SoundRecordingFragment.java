@@ -215,7 +215,7 @@ public class SoundRecordingFragment extends BaseFragment {
             @Override
             public void onLongClickEnd(long time) {
                 mViewHolder.pvLayout.hideBtnClickOrLong();
-                mViewHolder.pvLayout.startShowLeftRightButtonsAnimator();
+                mViewHolder.pvLayout.startShowLeftRightButtonsAnimator(true);
                 Log.d(TAG, "onLongClickEnd");
                 // 录音结束
                 onRecord(false, false);

@@ -350,11 +350,15 @@ public abstract class BaseOperationLayout extends FrameLayout {
     /**
      * 点击长按结果后的动画
      * 显示左右两边的按钮
+     *
+     * @param showCancel 是否显示取消按钮
      */
-    public void startShowLeftRightButtonsAnimator() {
+    public void startShowLeftRightButtonsAnimator(boolean showCancel) {
         // 显示提交和取消按钮
         viewHolder.btnConfirm.setVisibility(VISIBLE);
-        viewHolder.btnCancel.setVisibility(VISIBLE);
+        if (showCancel) {
+            viewHolder.btnCancel.setVisibility(VISIBLE);
+        }
         // 动画未结束前不能让它们点击
         viewHolder.btnConfirm.setClickable(false);
         viewHolder.btnCancel.setClickable(false);

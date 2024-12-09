@@ -56,8 +56,8 @@ public class SoundRecordingLayout extends BaseOperationLayout {
     }
 
     @Override
-    public void startShowLeftRightButtonsAnimator() {
-        super.startShowLeftRightButtonsAnimator();
+    public void startShowLeftRightButtonsAnimator(boolean showCancel) {
+        super.startShowLeftRightButtonsAnimator(showCancel);
         // 显示播放的按钮
         ((ViewHolder) viewHolder).rlSoundRecording.setVisibility(VISIBLE);
         mState = STATE_RECORDER;

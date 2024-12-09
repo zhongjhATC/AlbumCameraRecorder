@@ -869,7 +869,7 @@ public abstract class BaseCameraFragment
         globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getPath());
         getCameraManage().onClose();
         getPhotoVideoLayout().startTipAlphaAnimation();
-        getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
+        getPhotoVideoLayout().startShowLeftRightButtonsAnimator(true);
 
         // 设置当前模式是图片模式
         getCameraStateManager().setState(getCameraStateManager().getPictureComplete());

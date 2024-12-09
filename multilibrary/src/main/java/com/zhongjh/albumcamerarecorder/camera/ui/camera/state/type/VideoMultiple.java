@@ -56,7 +56,6 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void pvLayoutCancel() {
-        getCameraFragment().getCameraVideoManager().removeVideoMultiple();
     }
 
     @Override

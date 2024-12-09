@@ -58,10 +58,6 @@ public class CameraVideoManager implements ICameraVideo {
      */
     private final ArrayList<ThreadUtils.SimpleTask<Boolean>> mMergeVideoTasks = new ArrayList<>();
     /**
-     * 处于分段录制模式下的视频的文件列表
-     */
-    private final ArrayList<String> videoPaths = new ArrayList<>();
-    /**
      * 处于分段录制模式下的视频的时间列表
      */
     private final ArrayList<Long> videoTimes = new ArrayList<>();
@@ -128,18 +124,9 @@ public class CameraVideoManager implements ICameraVideo {
                 // 删除视频
                 FileUtils.deleteFile(videoFile);
             }
-            // 删除多个视频
-            for (String item : videoPaths) {
-                FileUtils.deleteFile(item);
-            }
             // 新合成视频删除
             if (newSectionVideoPath != null) {
                 FileUtils.deleteFile(newSectionVideoPath);
-            }
-        } else {
-            // 如果是提交的，删除合成前的视频
-            for (String item : videoPaths) {
-                FileUtils.deleteFile(item);
             }
         }
         if (baseCameraFragment.getCameraSpec() != null && baseCameraFragment.getCameraSpec().isMergeEnable()) {
@@ -165,13 +152,13 @@ public class CameraVideoManager implements ICameraVideo {
      */
     @Override
     public void onRecordPause(long recordedDurationNanos) {
-        videoTimes.clear();
-        videoTimes.add(recordedDurationNanos / 1000000);
-        // 如果已经有录像缓存，那么就不执行这个动作了
-        if (videoPaths.isEmpty()) {
-            baseCameraFragment.getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
+        // 如果已经有录像正在录制中，那么就不执行这个动作了
+        if (videoTimes.isEmpty()) {
+            baseCameraFragment.getPhotoVideoLayout().startShowLeftRightButtonsAnimator(false);
             baseCameraFragment.getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
         }
+        videoTimes.clear();
+        videoTimes.add(recordedDurationNanos / 1000000);
         // 显示当前进度
         baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
         // 如果是在已经合成的情况下继续拍摄，那就重置状态
@@ -204,13 +191,6 @@ public class CameraVideoManager implements ICameraVideo {
                 PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path);
             } else {
                 videoTimes.add(sectionRecordTime);
-                // 如果已经有录像缓存，那么就不执行这个动作了
-                if (videoPaths.isEmpty()) {
-                    baseCameraFragment.getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
-                }
-                // 加入视频列表
-                videoPaths.add(path);
                 // 显示当前进度
                 baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
                 // 创建新的file
@@ -230,67 +210,13 @@ public class CameraVideoManager implements ICameraVideo {
     }
 
     /**
-     * 删除视频 - 多个模式
-     */
-    @Override
-    public void removeVideoMultiple() {
-        // 每次删除，后面都要重新合成,新合成的也删除
-        baseCameraFragment.getPhotoVideoLayout().resetConfirm();
-        if (newSectionVideoPath != null) {
-            FileUtils.deleteFile(newSectionVideoPath);
-        }
-        // 删除最后一个视频和视频文件
-        FileUtils.deleteFile(videoPaths.get(videoPaths.size() - 1));
-        videoPaths.remove(videoPaths.size() - 1);
-        videoTimes.remove(videoTimes.size() - 1);
-
-        // 显示当前进度
-        baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
-        baseCameraFragment.getPhotoVideoLayout().invalidateClickOrLongButton();
-        if (videoPaths.isEmpty()) {
-            baseCameraFragment.getCameraStateManager().resetState();
-        }
-    }
-
-    /**
      * 打开预览视频界面
      */
     @Override
     public void openPreviewVideoActivity() {
-        if (isSectionRecord && baseCameraFragment.getCameraSpec().getVideoMergeCoordinator() != null) {
-            File mp4File = FileMediaUtil.INSTANCE.createCacheFile(baseCameraFragment.getMyContext(), MediaType.TYPE_VIDEO);
-            // 创建合并视频后的路径
-            newSectionVideoPath = mp4File.getPath();
-
-            // 显示loading
-            baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.VISIBLE);
-            // 开始进行合并线程
-            baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(50);
-            ThreadUtils.SimpleTask<Boolean> simpleTask = new ThreadUtils.SimpleTask<Boolean>() {
-
-                @Override
-                public Boolean doInBackground() {
-                    Objects.requireNonNull(baseCameraFragment.getCameraSpec().getVideoMergeCoordinator()).merge(videoPaths, newSectionVideoPath);
-                    return true;
-                }
-
-                @Override
-                public void onSuccess(Boolean result) {
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
-                    PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
-                }
-
-                @Override
-                public void onFail(Throwable t) {
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
-                    baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-                    super.onFail(t);
-                }
-            };
-            mMergeVideoTasks.add(simpleTask);
-            ThreadUtils.executeByIo(simpleTask);
-        }
+        baseCameraFragment.getPhotoVideoLayout().getViewHolder().pbConfirm.setVisibility(View.GONE);
+        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(100);
+        PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, newSectionVideoPath);
     }
 
     /**
@@ -331,10 +257,6 @@ public class CameraVideoManager implements ICameraVideo {
             } catch (IOException ignored) {
             }
         }
-    }
-
-    public ArrayList<String> getVideoPaths() {
-        return videoPaths;
     }
 
     public ArrayList<Long> getVideoTimes() {

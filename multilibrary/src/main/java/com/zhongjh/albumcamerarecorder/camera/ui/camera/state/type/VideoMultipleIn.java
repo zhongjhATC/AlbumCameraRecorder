@@ -15,7 +15,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureMan
 public class VideoMultipleIn extends StateMode {
 
     /**
-     * @param cameraFragment          主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment     主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManager 可以让状态更改别的状态
      */
     public VideoMultipleIn(BaseCameraFragment<? extends CameraStateManager,
@@ -38,7 +38,7 @@ public class VideoMultipleIn extends StateMode {
         getCameraFragment().getPhotoVideoLayout().resetConfirm();
         getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
 
-        if (getCameraFragment().getCameraVideoManager().getVideoPaths().size() <= 0) {
+        if (getCameraFragment().getCameraVideoManager().getVideoTimes().isEmpty()) {
             // 如果没有视频节点则重置所有按钮
             getCameraFragment().getPhotoVideoLayout().reset();
             // 恢复预览状态
@@ -70,7 +70,7 @@ public class VideoMultipleIn extends StateMode {
     @Override
     public void longClickShort(long time) {
         getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
-        if (getCameraFragment().getCameraVideoManager().getVideoPaths().size() <= 0) {
+        if (getCameraFragment().getCameraVideoManager().getVideoTimes().isEmpty()) {
             // 母窗体显示底部
             getCameraFragment().getMainActivity().showHideTableLayout(true);
         }
@@ -80,7 +80,7 @@ public class VideoMultipleIn extends StateMode {
     public void pauseRecord(boolean isShort) {
         if (isShort) {
             // 如果没有视频数据
-            if (getCameraFragment().getCameraVideoManager().getVideoPaths().isEmpty()) {
+            if (getCameraFragment().getCameraVideoManager().getVideoTimes().isEmpty()) {
                 // 则重置底部按钮
                 getCameraFragment().getPhotoVideoLayout().reset();
                 // 恢复预览状态

@@ -40,11 +40,6 @@ public interface ICameraVideo {
     void onRecordSuccess(String path);
 
     /**
-     * 删除视频 - 多个模式
-     */
-    void removeVideoMultiple();
-
-    /**
      * 打开预览视频界面
      */
     void openPreviewVideoActivity();
