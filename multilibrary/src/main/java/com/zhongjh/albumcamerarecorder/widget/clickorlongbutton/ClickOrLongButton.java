@@ -116,10 +116,6 @@ public class ClickOrLongButton extends View {
      */
     private Long mCurrentSumTime = 0L;
     /**
-     * 最短录制时间限制
-     */
-    private int mMinDuration = 2000;
-    /**
      * 动画的预备时间
      */
     private int mMinDurationAnimation = 1500;
@@ -580,17 +576,8 @@ public class ClickOrLongButton extends View {
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null && step == STEP_ACTION_UP) {
-                    Log.d(TAG, "时间短的比较：" + mRecordedTime + " " + mMinDuration + " " + mRecordedTimeSection);
-                    if (mIsSectionMode && mRecordedTimeSection < mMinDuration) {
-                        // 如果处于分段录制并且录制时间过短
-                        mClickOrLongListener.onLongClickShort(mRecordedTimeSection);
-                    } else if (mRecordedTime < mMinDuration) {
-                        // 回调录制时间过短
-                        mClickOrLongListener.onLongClickShort(mRecordedTime);
-                    } else {
-                        // 回调录制结束
-                        mClickOrLongListener.onLongClickEnd(mRecordedTime);
-                    }
+                    // 回调录制结束
+                    mClickOrLongListener.onLongClickEnd(mRecordedTime);
                 }
                 setRecordState(RECORD_ENDED);
             } else if (recordState == RECORD_ENDED) {
@@ -719,17 +706,6 @@ public class ClickOrLongButton extends View {
      */
     public void setDuration(int duration) {
         timeLimitInMils = duration;
-    }
-
-    /**
-     * 最短录制时间
-     *
-     * @param duration 时间
-     */
-    public void setMinDuration(int duration) {
-        if (duration > mMinDuration) {
-            mMinDuration = duration;
-        }
     }
 
     /**

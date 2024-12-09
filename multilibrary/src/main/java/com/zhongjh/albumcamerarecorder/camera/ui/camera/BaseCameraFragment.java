@@ -295,8 +295,6 @@ public abstract class BaseCameraFragment
         }
         // 设置录制时间
         getPhotoVideoLayout().setDuration(cameraSpec.getMaxDuration());
-        // 最短录制时间
-        getPhotoVideoLayout().setMinDuration(cameraSpec.getMinDuration());
     }
 
     /**

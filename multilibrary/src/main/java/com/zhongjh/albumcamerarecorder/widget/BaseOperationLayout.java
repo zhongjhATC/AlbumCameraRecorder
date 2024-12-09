@@ -472,15 +472,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
     }
 
     /**
-     * 最短录制时间
-     *
-     * @param duration 时间毫秒
-     */
-    public void setMinDuration(int duration) {
-        viewHolder.btnClickOrLong.setMinDuration(duration);
-    }
-
-    /**
      * 长按准备时间
      * 长按达到duration时间后，才开启录制
      *
