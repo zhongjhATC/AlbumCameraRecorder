@@ -133,6 +133,14 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         stopCheckOrientation()
     }
 
+    /**
+     * App被遮挡
+     */
+    fun onPause() {
+        // 停止录制
+        recording?.stop()
+    }
+
     fun onClose() {
 
     }

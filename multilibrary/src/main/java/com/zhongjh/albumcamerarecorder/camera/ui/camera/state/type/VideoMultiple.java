@@ -16,7 +16,7 @@ import com.zhongjh.circularprogressview.CircularProgressState;
 public class VideoMultiple extends StateMode {
 
     /**
-     * @param cameraFragment        主要是多个状态围绕着cameraLayout进行相关处理
+     * @param cameraFragment     主要是多个状态围绕着cameraLayout进行相关处理
      * @param cameraStateManager 可以让状态更改别的状态
      */
     public VideoMultiple(BaseCameraFragment<? extends CameraStateManager,
@@ -46,10 +46,11 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void pvLayoutCommit() {
-        // 判断是否加载中,如果是《合成视频中》则取消《合成视频》,否则进行《合成视频》
-        if (getCameraFragment().getPhotoVideoLayout().getViewHolder().btnConfirm.mState == CircularProgressState.STOP) {
-            getCameraFragment().getCameraVideoManager().openPreviewVideoActivity();
+        if (getCameraFragment().getPhotoVideoLayout().getViewHolder().btnConfirm.mState == CircularProgressState.PLAY) {
+            // 完成录制
+            getCameraFragment().getCameraManage().stopVideo();
         } else {
+            // 中断操作
             stopProgress();
         }
     }

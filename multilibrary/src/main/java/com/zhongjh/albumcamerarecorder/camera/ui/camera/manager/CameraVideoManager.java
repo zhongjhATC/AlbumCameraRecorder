@@ -186,20 +186,8 @@ public class CameraVideoManager implements ICameraVideo {
         }
         // 判断是否短时间结束
         if (!isShort && !isBreakOff() && mediaDuration >= 1000) {
-            if (!isSectionRecord) {
-                //  如果录制结束，打开该视频。
-                PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path);
-            } else {
-                videoTimes.add(sectionRecordTime);
-                // 显示当前进度
-                baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
-                // 创建新的file
-                videoFile = FileMediaUtil.INSTANCE.createCacheFile(baseCameraFragment.getMyContext(), MediaType.TYPE_VIDEO);
-                // 如果是在已经合成的情况下继续拍摄，那就重置状态
-                if (!baseCameraFragment.getPhotoVideoLayout().getProgressMode()) {
-                    baseCameraFragment.getPhotoVideoLayout().resetConfirm();
-                }
-            }
+            //  如果录制结束，打开该视频。
+            PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path);
         } else {
             FileUtils.deleteFile(videoFile);
         }

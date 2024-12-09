@@ -240,6 +240,7 @@ public abstract class BaseCameraFragment
     @Override
     public void onPause() {
         super.onPause();
+        getCameraManage().onPause();
         LogUtil.i("CameraLayout onPause");
     }
 
