@@ -206,7 +206,7 @@ public class ClickOrLongButton extends View {
     /**
      * 是否分段录制的模式
      */
-    private boolean mIsSectionMode;
+    private boolean mIsSectionMode = true;
 
 
     private final TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
@@ -221,7 +221,7 @@ public class ClickOrLongButton extends View {
                     return;
                 }
             }
-            if (mIsSectionMode && mCurrentLocation.size() > 0) {
+            if (mIsSectionMode && !mCurrentLocation.isEmpty()) {
                 // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
                 mMinDurationAnimationCurrent = 0;
             }
@@ -281,7 +281,7 @@ public class ClickOrLongButton extends View {
             outMostWhiteCirclePaint.setColor(colorRoundBorder);
             percentInDegree = (360.0F * percent);
             if (mIsSectionMode) {
-                if (mCurrentLocation.size() > 0 || (timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
+                if (!mCurrentLocation.isEmpty() || (timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
                     mCurrentSumNumberDegrees = percentInDegree;
                 }
             }
@@ -766,6 +766,7 @@ public class ClickOrLongButton extends View {
             Log.d(TAG, "setCurrentTime mCurrentSumTime " + mCurrentSumTime);
             Log.d(TAG, "setCurrentTime mCurrentSumNumberDegrees " + mCurrentSumNumberDegrees);
         }
+        invalidate();
     }
 
     /**

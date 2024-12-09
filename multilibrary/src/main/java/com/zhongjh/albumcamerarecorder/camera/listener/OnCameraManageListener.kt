@@ -19,6 +19,13 @@ interface OnCameraManageListener {
     fun onRecordSuccess(path: String)
 
     /**
+     * 录像暂停
+     *
+     * @param recordedDurationNanos 当前视频持续时间：纳米单位
+     */
+    fun onRecordPause(recordedDurationNanos:Long)
+
+    /**
      * 使用相机出错拍照或者录像出错
      *
      * @param errorCode 错误码

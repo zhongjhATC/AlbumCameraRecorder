@@ -175,36 +175,39 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      */
     @SuppressLint("MissingPermission")
     fun takeVideo() {
-        val name = "CameraX-recording-" + SimpleDateFormat(
-            "yyyyMMdd_HHmmssSSS", Locale.US
-        ).format(System.currentTimeMillis()) + ".mp4"
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Video.Media.DISPLAY_NAME, name)
-            put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
-        }
-        val mediaStoreOutput = MediaStoreOutputOptions.Builder(
-            context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        ).setContentValues(contentValues).build()
-        recording = videoCapture?.output?.prepareRecording(context, mediaStoreOutput)?.withAudioEnabled()?.start(
-            ContextCompat.getMainExecutor(context)
-        ) { videoRecordEvent ->
-            // 视频录制监控回调
-            when (videoRecordEvent) {
-                is VideoRecordEvent.Finalize -> {
-                    // 完成录制
-                    Log.d(TAG, "error" + videoRecordEvent.error)
-                    val uri = videoRecordEvent.outputResults.outputUri
-                    stopCheckOrientation()
-                    onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(context, uri).absolutePath)
-                }
+        recording?.resume() ?: let {
+            val name = "CameraX-recording-" + SimpleDateFormat(
+                "yyyyMMdd_HHmmssSSS", Locale.US
+            ).format(System.currentTimeMillis()) + ".mp4"
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Video.Media.DISPLAY_NAME, name)
+                put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+            }
+            val mediaStoreOutput = MediaStoreOutputOptions.Builder(
+                context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+            ).setContentValues(contentValues).build()
+            recording = videoCapture?.output?.prepareRecording(context, mediaStoreOutput)?.withAudioEnabled()?.start(
+                ContextCompat.getMainExecutor(context)
+            ) { videoRecordEvent ->
+                // 视频录制监控回调
+                when (videoRecordEvent) {
+                    is VideoRecordEvent.Finalize -> {
+                        // 完成录制
+                        Log.d(TAG, "Finalize error " + videoRecordEvent.error)
+                        val uri = videoRecordEvent.outputResults.outputUri
+                        onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(context, uri).absolutePath)
+                    }
 
-                is VideoRecordEvent.Pause -> {
-                    // 暂停录制
+                    is VideoRecordEvent.Pause -> {
+                        // 暂停录制
+                        Log.d(TAG, "Pause")
+                        onCameraManageListener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
+                    }
 
-                }
-
-                is VideoRecordEvent.Resume -> {
-                    // 恢复录制
+                    is VideoRecordEvent.Resume -> {
+                        // 恢复录制
+                        Log.d(TAG, "Resume")
+                    }
                 }
             }
         }

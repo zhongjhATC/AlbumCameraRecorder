@@ -159,11 +159,37 @@ public class CameraVideoManager implements ICameraVideo {
     }
 
     /**
-     * 视频录制结束后
+     * 录像暂停
+     *
+     * @param recordedDurationNanos 当前视频持续时间：纳米单位
+     */
+    @Override
+    public void onRecordPause(long recordedDurationNanos) {
+        videoTimes.clear();
+        videoTimes.add(recordedDurationNanos / 1000000);
+        // 如果已经有录像缓存，那么就不执行这个动作了
+        if (videoPaths.isEmpty()) {
+            baseCameraFragment.getPhotoVideoLayout().startShowLeftRightButtonsAnimator();
+            baseCameraFragment.getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
+        }
+        // 显示当前进度
+        baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
+        // 如果是在已经合成的情况下继续拍摄，那就重置状态
+        if (!baseCameraFragment.getPhotoVideoLayout().getProgressMode()) {
+            baseCameraFragment.getPhotoVideoLayout().resetConfirm();
+        }
+        // 重置状态
+        isShort = false;
+        setBreakOff(false);
+        baseCameraFragment.getPhotoVideoLayout().setEnabled(true);
+    }
+
+    /**
+     * 视频录制成功
      */
     @SuppressLint("LongLogTag")
     @Override
-    public void onVideoTaken(String path) {
+    public void onRecordSuccess(String path) {
         videoFile = new File(path);
         // 判断文件是否超过1秒才属于合格的视频
         long mediaDuration = getMediaDuration(path);
@@ -197,6 +223,7 @@ public class CameraVideoManager implements ICameraVideo {
         } else {
             FileUtils.deleteFile(videoFile);
         }
+        // 重置状态
         isShort = false;
         setBreakOff(false);
         baseCameraFragment.getPhotoVideoLayout().setEnabled(true);

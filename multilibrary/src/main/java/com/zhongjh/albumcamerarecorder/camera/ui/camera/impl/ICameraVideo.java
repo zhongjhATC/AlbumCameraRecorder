@@ -26,11 +26,18 @@ public interface ICameraVideo {
     void recordVideo();
 
     /**
-     * 视频录制结束后
+     * 录像暂停
+     *
+     * @param recordedDurationNanos 当前视频持续时间：纳米单位
+     */
+    void onRecordPause(long recordedDurationNanos);
+
+    /**
+     * 视频录制成功
      *
      * @param path 视频录制结束后提供的路径
      */
-    void onVideoTaken(String path);
+    void onRecordSuccess(String path);
 
     /**
      * 删除视频 - 多个模式
