@@ -425,6 +425,8 @@ public abstract class BaseOperationLayout extends FrameLayout {
         if (viewHolder.btnClickOrLong != null) {
             viewHolder.btnClickOrLong.onDestroy();
         }
+        viewHolder.btnConfirm.onDestroy();
+        viewHolder.btnCancel.onDestroy();
     }
 
     // region 对外提供的api
