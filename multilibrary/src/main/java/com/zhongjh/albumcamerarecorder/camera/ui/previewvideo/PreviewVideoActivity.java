@@ -15,6 +15,7 @@ import android.widget.VideoView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -47,6 +48,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
     public static final String LOCAL_FILE = "LOCAL_FILE";
     static final String PATH = "PATH";
 
+    ConstraintLayout mCLMain;
     VideoView mVideoViewPreview;
     ImageView mImgClose;
     CircularProgressButton mBtnConfirm;
@@ -112,6 +114,12 @@ public class PreviewVideoActivity extends AppCompatActivity {
         if (mMoveVideoFileTask != null) {
             mMoveVideoFileTask.cancel();
         }
+        // 清除VideoView,防止内存泄漏
+        mVideoViewPreview.stopPlayback();
+        mVideoViewPreview.setOnCompletionListener(null);
+        mVideoViewPreview.setOnPreparedListener(null);
+        mCLMain.removeAllViews();
+        mVideoViewPreview = null;
         super.onDestroy();
     }
 
@@ -119,6 +127,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 初始化View
      */
     private void initView() {
+        mCLMain = findViewById(R.id.clMain);
         mVideoViewPreview = findViewById(R.id.vvPreview);
         mImgClose = findViewById(R.id.imgClose);
         mBtnConfirm = findViewById(R.id.btnConfirm);
