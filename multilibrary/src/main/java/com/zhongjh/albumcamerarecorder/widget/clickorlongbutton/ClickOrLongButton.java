@@ -108,10 +108,6 @@ public class ClickOrLongButton extends View {
      */
     private Float mCurrentSumNumberDegrees = 0F;
     /**
-     * 上一个录制的节点，以360度为单位
-     */
-    private Float mCurrentSumNumberDegreesOld = 0F;
-    /**
      * 当前录制的时间点
      */
     private Long mCurrentSumTime = 0L;
@@ -127,14 +123,6 @@ public class ClickOrLongButton extends View {
      * 记录当前录制的总共多长的时间秒
      */
     private long mRecordedTime;
-    /**
-     * 上一个记录当前录制的总共多长的时间秒
-     */
-    private long mRecordedTimeOld;
-    /**
-     * 分段录制：当前最新的一段录制时间
-     */
-    private long mRecordedTimeSection;
     private static final float PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1F;
     private int mBoundingBoxSize;
     private int mOutCircleWidth;
@@ -223,7 +211,6 @@ public class ClickOrLongButton extends View {
             }
             long timeLapse = System.currentTimeMillis() - btnPressTime;
             mRecordedTime = (timeLapse - mMinDurationAnimationCurrent);
-            mRecordedTimeSection = mRecordedTime;
             mRecordedTime = mRecordedTime + mCurrentSumTime;
             float percent = mRecordedTime / timeLimitInMils;
             Log.d(TAG, "mCurrentSumTime " + mCurrentSumTime);
@@ -232,8 +219,6 @@ public class ClickOrLongButton extends View {
                 boolean actionDown = mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH);
                 if (actionDown) {
                     mClickOrLongListener.actionDown();
-                    mCurrentSumNumberDegreesOld = mCurrentSumNumberDegrees;
-                    Log.d(TAG, "mCurrentSumNumberDegreesOld: " + mCurrentSumNumberDegreesOld);
                     mActionDown = true;
                 }
             }
@@ -262,9 +247,6 @@ public class ClickOrLongButton extends View {
                         if (!mActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONG_CLICK) {
                             // 如果禁止点击也不能触发该事件
                             mClickOrLongListener.actionDown();
-                            mCurrentSumNumberDegreesOld = mCurrentSumNumberDegrees;
-                            mRecordedTimeOld = mRecordedTime;
-                            Log.d(TAG, "mCurrentSumNumberDegreesOld: " + mCurrentSumNumberDegreesOld);
                             mActionDown = true;
                         }
                     }
@@ -600,24 +582,10 @@ public class ClickOrLongButton extends View {
      * 重置
      */
     public void reset() {
-        step = STEP_NOT_TOUCH;
-        mActionDown = false;
-        touchTimeHandler.clearMsg();
-        percentInDegree = 0.0F;
-        mRecordedTime = 0;
-        mRecordedTimeOld = 0;
-        mCurrentSumNumberDegreesOld = 0F;
-        centerCirclePaint.setColor(colorWhiteP60);
-        outMostWhiteCirclePaint.setColor(colorRoundBorder);
-        innerCircleRadiusToDraw = mInnerCircleRadius;
-        outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
-        translucentCircleRadius = 0;
-        processBarPaint.setStrokeWidth(mOutCircleWidth);
-        outProcessCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outMostWhiteCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outProcessIntervalCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
-        outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);
+        resetCommon();
+        mCurrentSumTime = 0L;
+        mCurrentLocation.clear();
+        mCurrentSumNumberDegrees = 0F;
         invalidate();
     }
 
@@ -625,6 +593,11 @@ public class ClickOrLongButton extends View {
      * 中断当前操作
      */
     public void breakOff() {
+        resetCommon();
+        invalidate();
+    }
+
+    private void resetCommon() {
         step = STEP_NOT_TOUCH;
         mActionDown = false;
         touchTimeHandler.clearMsg();
@@ -641,7 +614,6 @@ public class ClickOrLongButton extends View {
         outProcessIntervalCirclePaint.setStrokeWidth(mOutCircleWidth);
         outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
         outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);
-        invalidate();
     }
 
     public boolean isTouchable() {
@@ -781,8 +753,6 @@ public class ClickOrLongButton extends View {
      * 一般用于录制时出现异常
      */
     public void selectionRecordRollBack() {
-        mCurrentSumNumberDegrees = mCurrentSumNumberDegreesOld;
-        mRecordedTime = mRecordedTimeOld;
         invalidate();
     }
 

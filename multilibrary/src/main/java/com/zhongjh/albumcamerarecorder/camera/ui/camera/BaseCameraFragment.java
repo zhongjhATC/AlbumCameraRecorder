@@ -513,6 +513,12 @@ public abstract class BaseCameraFragment
         getCameraManage().setOnCameraManageListener(new OnCameraManageListener() {
 
             @Override
+            public void onActivityPause() {
+                // 重置View
+                getCameraStateManager().onActivityPause();
+            }
+
+            @Override
             public void onPictureSuccess(@NonNull String path) {
                 Log.d(TAG, "onPictureSuccess");
                 // 显示图片
@@ -546,44 +552,6 @@ public abstract class BaseCameraFragment
             }
 
         });
-//        .addCameraListener(new CameraListener() {
-//
-//            @Override
-//            public void onPictureTaken(@NonNull PictureResult result) {
-//
-//                super.onPictureTaken(result);
-//            }
-//
-//            @Override
-//            public void onVideoTaken(@NonNull VideoResult result) {
-//                Log.d(TAG, "onVideoTaken");
-//                super.onVideoTaken(result);
-//                getCameraVideoPresenter().onVideoTaken(result);
-//            }
-//
-//            @Override
-//            public void onVideoRecordingStart() {
-//                Log.d(TAG, "onVideoRecordingStart");
-//                super.onVideoRecordingStart();
-//                // 录制开始后，在没有结果之前，禁止第二次点击
-//                getPhotoVideoLayout().setEnabled(false);
-//            }
-//
-//            @Override
-//            public void onCameraError(@NonNull CameraException exception) {
-//                Log.d(TAG, "onCameraError");
-//                super.onCameraError(exception);
-//                if (getCameraVideoPresenter().isSectionRecord()) {
-//                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_recording_error_roll_back_previous_paragraph));
-//                    getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
-//                }
-//                if (!TextUtils.isEmpty(exception.getMessage())) {
-//                    Log.d(TAG, "onCameraError:" + exception.getMessage() + " " + exception.getReason());
-//                }
-//                getPhotoVideoLayout().setEnabled(true);
-//            }
-//
-//        });
     }
 
     /**

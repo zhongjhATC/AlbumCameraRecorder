@@ -30,7 +30,6 @@ import androidx.camera.video.Recording
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.content.ContextCompat
-import androidx.core.util.Consumer
 import androidx.lifecycle.LifecycleOwner
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEventListener
@@ -115,6 +114,11 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     private var displayId = -1
 
     /**
+     * 界面是否被覆盖了，如果是被覆盖的情况下，会结束录制，同时不会处理录制后打开视频文件的相关处理
+     */
+    private var isActivityPause = false
+
+    /**
      * ui初始化，必须是ui线程
      */
     fun init() {
@@ -138,7 +142,10 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      */
     fun onPause() {
         // 停止录制
-        recording?.stop()
+        isActivityPause = true
+        // Activity触发了Pause,通知视频录制重置View
+        onCameraManageListener?.onActivityPause()
+        stopVideo()
     }
 
     fun onClose() {
@@ -200,10 +207,13 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
                 // 视频录制监控回调
                 when (videoRecordEvent) {
                     is VideoRecordEvent.Finalize -> {
-                        // 完成录制
                         Log.d(TAG, "Finalize error " + videoRecordEvent.error)
-                        val uri = videoRecordEvent.outputResults.outputUri
-                        onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(context, uri).absolutePath)
+                        if (!isActivityPause) {
+                            // 完成录制
+                            val uri = videoRecordEvent.outputResults.outputUri
+                            onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(context, uri).absolutePath)
+                        }
+                        isActivityPause = false
                     }
 
                     is VideoRecordEvent.Pause -> {
@@ -226,6 +236,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      */
     fun stopVideo() {
         recording?.stop()
+        recording = null
     }
 
     /**

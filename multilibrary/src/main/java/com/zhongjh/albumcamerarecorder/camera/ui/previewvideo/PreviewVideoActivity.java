@@ -212,9 +212,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
             mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
                 @Override
                 public void onFinish() {
-                    if (newFile != null) {
-                        confirm(newFile);
-                    }
+                    confirm(newFile);
                 }
 
                 @Override

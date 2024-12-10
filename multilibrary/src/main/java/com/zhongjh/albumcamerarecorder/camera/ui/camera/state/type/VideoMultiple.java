@@ -34,6 +34,12 @@ public class VideoMultiple extends StateMode {
     }
 
     @Override
+    public void onActivityPause() {
+        getCameraFragment().getCameraVideoManager().getVideoTimes().clear();
+        resetState();
+    }
+
+    @Override
     public Boolean onBackPressed() {
         return null;
     }

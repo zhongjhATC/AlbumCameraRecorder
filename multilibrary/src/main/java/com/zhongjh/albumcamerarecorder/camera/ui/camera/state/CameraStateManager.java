@@ -87,6 +87,11 @@ public class CameraStateManager implements IState {
     }
 
     @Override
+    public void onActivityPause() {
+        state.onActivityPause();
+    }
+
+    @Override
     public Boolean onBackPressed() {
         Log.d(TAG, "onBackPressed");
         return state.onBackPressed();

@@ -30,6 +30,11 @@ public class Preview extends StateMode {
     }
 
     @Override
+    public void onActivityPause() {
+
+    }
+
+    @Override
     public Boolean onBackPressed() {
         // 如果是预览状态直接退出当前界面
         return false;

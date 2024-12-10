@@ -31,6 +31,15 @@ public class VideoMultipleIn extends StateMode {
     }
 
     @Override
+    public void onActivityPause() {
+        getCameraFragment().getCameraVideoManager().getVideoTimes().clear();
+        // 重置所有
+        getCameraFragment().resetStateAll();
+        // 恢复预览状态
+        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+    }
+
+    @Override
     public Boolean onBackPressed() {
         // 如果是录制中则暂停视频
         getCameraFragment().getCameraVideoManager().setBreakOff(true);

@@ -1,8 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.listener
 
-import android.graphics.Bitmap
-import androidx.camera.core.ImageCapture.FlashMode
-
 interface OnCameraManageListener {
     /**
      * 拍照成功返回
@@ -24,6 +21,11 @@ interface OnCameraManageListener {
      * @param recordedDurationNanos 当前视频持续时间：纳米单位
      */
     fun onRecordPause(recordedDurationNanos:Long)
+
+    /**
+     * Activity触发了Pause
+     */
+    fun onActivityPause()
 
     /**
      * 使用相机出错拍照或者录像出错

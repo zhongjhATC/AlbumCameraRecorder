@@ -16,6 +16,11 @@ public interface IState {
     void resetState();
 
     /**
+     * Activity触发了Pause
+     */
+    void onActivityPause();
+
+    /**
      * 设置CameraFragment的返回逻辑
      *
      * @return 可为null，如果是null则跳过返回逻辑，如果是有值，则执行下去

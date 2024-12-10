@@ -37,6 +37,11 @@ public class VideoComplete extends StateMode {
     }
 
     @Override
+    public void onActivityPause() {
+
+    }
+
+    @Override
     public Boolean onBackPressed() {
         return null;
     }
