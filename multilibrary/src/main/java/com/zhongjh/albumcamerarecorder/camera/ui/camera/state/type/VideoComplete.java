@@ -28,22 +28,8 @@ public class VideoComplete extends StateMode {
     }
 
     @Override
-    public void resetState() {
-        // 取消视频删除文件
-        FileUtils.deleteFile(getCameraFragment().getCameraVideoManager().getVideoFile());
-        // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
-        getCameraFragment().resetStateAll();
-    }
-
-    @Override
-    public void onActivityPause() {
-
-    }
-
-    @Override
-    public Boolean onBackPressed() {
-        return null;
+    public String getName() {
+        return "VideoComplete";
     }
 
     @Override
@@ -61,25 +47,5 @@ public class VideoComplete extends StateMode {
     public void pvLayoutCommit() {
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
-    }
-
-    @Override
-    public void pvLayoutCancel() {
-
-    }
-
-    @Override
-    public void longClickShort(long time) {
-
-    }
-
-    @Override
-    public void pauseRecord(boolean isShort) {
-
-    }
-
-    @Override
-    public void stopProgress() {
-
     }
 }

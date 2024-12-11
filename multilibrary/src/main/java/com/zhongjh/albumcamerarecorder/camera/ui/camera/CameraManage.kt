@@ -148,18 +148,6 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         stopVideo()
     }
 
-    fun onClose() {
-
-    }
-
-    fun isOpened(): Boolean {
-        return false
-    }
-
-    fun open() {
-
-    }
-
     /**
      * 拍照
      */
@@ -180,7 +168,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
             // 进行拍照
             imageCapture.takePicture(
-                fileOptions, mainExecutor, TakePictureCallback2(this@CameraManage, onCameraManageListener)
+                fileOptions, mainExecutor, TakePictureCallback(this@CameraManage, onCameraManageListener)
             )
         }
     }
@@ -552,11 +540,10 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         viewHolder.previewView.setOnTouchListener(onCameraXPreviewViewTouchListener)
     }
 
-
     /**
      * 拍照回调
      */
-    private class TakePictureCallback2(
+    private class TakePictureCallback(
         cameraManage: CameraManage, onCameraManageListener: OnCameraManageListener?
     ) : ImageCapture.OnImageSavedCallback {
 

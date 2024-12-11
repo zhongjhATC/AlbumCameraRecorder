@@ -49,4 +49,44 @@ public abstract class StateMode implements IState {
         this.cameraFragment = cameraFragment;
         this.cameraStateManager = cameraStateManager;
     }
+
+    @Override
+    public void onActivityPause() {
+
+    }
+
+    @Override
+    public Boolean onBackPressed() {
+        return null;
+    }
+
+    @Override
+    public boolean onActivityResult(int resultCode) {
+        return false;
+    }
+
+    @Override
+    public void pvLayoutCommit() {
+
+    }
+
+    @Override
+    public void pvLayoutCancel() {
+
+    }
+
+    @Override
+    public void longClickShort(long time) {
+
+    }
+
+    @Override
+    public void pauseRecord(boolean isShort) {
+
+    }
+
+    @Override
+    public void stopProgress() {
+
+    }
 }

@@ -25,14 +25,8 @@ public class VideoIn extends StateMode {
     }
 
     @Override
-    public void resetState() {
-        // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
-    }
-
-    @Override
-    public void onActivityPause() {
-
+    public String getName() {
+        return "VideoIn";
     }
 
     @Override
@@ -53,16 +47,6 @@ public class VideoIn extends StateMode {
     }
 
     @Override
-    public void pvLayoutCommit() {
-
-    }
-
-    @Override
-    public void pvLayoutCancel() {
-
-    }
-
-    @Override
     public void longClickShort(long time) {
         // 母窗体显示底部
         getCameraFragment().getMainActivity().showHideTableLayout(true);
@@ -78,10 +62,5 @@ public class VideoIn extends StateMode {
             // 设置视频完成状态
             getCameraStateManagement().setState(getCameraStateManagement().getVideoComplete());
         }
-    }
-
-    @Override
-    public void stopProgress() {
-
     }
 }

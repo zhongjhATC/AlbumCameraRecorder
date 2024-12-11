@@ -25,13 +25,8 @@ public class Preview extends StateMode {
     }
 
     @Override
-    public void resetState() {
-
-    }
-
-    @Override
-    public void onActivityPause() {
-
+    public String getName() {
+        return "Preview";
     }
 
     @Override
@@ -43,31 +38,5 @@ public class Preview extends StateMode {
     @Override
     public boolean onActivityResult(int resultCode) {
         return true;
-    }
-
-    @Override
-    public void pvLayoutCommit() {
-
-    }
-
-    @Override
-    public void pvLayoutCancel() {
-
-
-    }
-
-    @Override
-    public void longClickShort(long time) {
-
-    }
-
-    @Override
-    public void pauseRecord(boolean isShort) {
-
-    }
-
-    @Override
-    public void stopProgress() {
-
     }
 }

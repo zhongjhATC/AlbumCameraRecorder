@@ -471,6 +471,8 @@ public abstract class BaseCameraFragment
             public void cancel() {
                 Log.d(TAG, "cancel " + getState().toString());
                 getCameraStateManager().pvLayoutCancel();
+                // 取消线程
+                getCameraPictureManager().cancelMovePictureFileTask();
             }
 
             @Override
@@ -834,12 +836,8 @@ public abstract class BaseCameraFragment
         getSinglePhotoView().setZoomable(true);
         getSinglePhotoView().setVisibility(View.VISIBLE);
         globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getPath());
-        getCameraManage().onClose();
         getPhotoVideoLayout().startTipAlphaAnimation();
         getPhotoVideoLayout().startShowLeftRightButtonsAnimator(true);
-
-        // 设置当前模式是图片模式
-        getCameraStateManager().setState(getCameraStateManager().getPictureComplete());
 
         // 判断是否要编辑
         if (globalSpec.getImageEditEnabled()) {
@@ -851,6 +849,9 @@ public abstract class BaseCameraFragment
 
         // 隐藏拍照按钮
         getPhotoVideoLayout().getViewHolder().btnClickOrLong.setVisibility(View.INVISIBLE);
+
+        // 设置当前模式是图片模式
+        getCameraStateManager().setState(getCameraStateManager().getPictureComplete());
     }
 
     /**
@@ -879,11 +880,11 @@ public abstract class BaseCameraFragment
         // 显示右上角
         setMenuVisibility(View.VISIBLE);
 
-        // 设置当前模式是图片休闲并存模式
-        getCameraStateManager().setState(getCameraStateManager().getPictureMultiple());
-
         // 禁用长按事件，即禁止录像
         getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
+
+        // 设置当前模式是图片休闲并存模式
+        getCameraStateManager().setState(getCameraStateManager().getPictureMultiple());
     }
 
     /**

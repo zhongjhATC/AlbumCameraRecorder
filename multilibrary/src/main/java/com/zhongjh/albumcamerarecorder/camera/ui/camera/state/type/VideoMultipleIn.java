@@ -25,9 +25,8 @@ public class VideoMultipleIn extends StateMode {
     }
 
     @Override
-    public void resetState() {
-        // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+    public String getName() {
+        return "VideoMultipleIn";
     }
 
     @Override
@@ -67,16 +66,6 @@ public class VideoMultipleIn extends StateMode {
     }
 
     @Override
-    public void pvLayoutCommit() {
-
-    }
-
-    @Override
-    public void pvLayoutCancel() {
-
-    }
-
-    @Override
     public void longClickShort(long time) {
         getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
         if (getCameraFragment().getCameraVideoManager().getVideoTimes().isEmpty()) {
@@ -102,11 +91,6 @@ public class VideoMultipleIn extends StateMode {
             // 设置成多个视频状态
             getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
         }
-    }
-
-    @Override
-    public void stopProgress() {
-
     }
 
 }

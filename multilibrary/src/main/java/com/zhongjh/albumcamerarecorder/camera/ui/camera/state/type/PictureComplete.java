@@ -2,6 +2,7 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
 import static android.view.View.INVISIBLE;
 
+import android.util.Log;
 import android.view.View;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
@@ -18,6 +19,8 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureMan
  */
 public class PictureComplete extends StateMode {
 
+    private static final String TAG = PictureComplete.class.getSimpleName();
+
     /**
      * @param cameraFragment        主要是多个状态围绕着CameraFragment进行相关处理
      * @param cameraStateManager 可以让状态更改别的状态
@@ -29,71 +32,27 @@ public class PictureComplete extends StateMode {
     }
 
     @Override
-    public void resetState() {
-        // 重新启用cameraView
-        if (!getCameraFragment().getCameraManage().isOpened()) {
-            getCameraFragment().getCameraManage().open();
-        }
-
-        // 隐藏图片view
-        getCameraFragment().getSinglePhotoView().setVisibility(INVISIBLE);
-
-        // 删除图片
-        getCameraFragment().getCameraPictureManager().deletePhotoFile();
-
-        getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
-
-        getCameraFragment().getPhotoVideoLayout().reset();
-
-        // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
-    }
-
-    @Override
-    public void onActivityPause() {
-
-    }
-
-    @Override
-    public Boolean onBackPressed() {
-        return null;
-    }
-
-    @Override
-    public boolean onActivityResult(int resultCode) {
-        return false;
+    public String getName() {
+        return "PictureComplete";
     }
 
     @Override
     public void pvLayoutCommit() {
-        getCameraFragment().setUiEnableFalse();
         // 拍照完成,移动文件
         getCameraFragment().movePictureFile();
-
-        // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
 
     @Override
     public void pvLayoutCancel() {
+        Log.d(TAG,"pvLayoutCancel");
         getCameraFragment().cancelOnResetBySinglePicture();
-        getCameraFragment().getCameraManage().open();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
 
     @Override
-    public void longClickShort(long time) {
-
-    }
-
-    @Override
-    public void pauseRecord(boolean isShort) {
-
-    }
-
-    @Override
     public void stopProgress() {
+        Log.d(TAG,"stopProgress");
         getCameraFragment().getCameraPictureManager().cancelMovePictureFileTask();
     }
 }

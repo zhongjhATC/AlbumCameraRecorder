@@ -169,7 +169,7 @@ open class CameraPictureManager(
                 FileUtils.deleteFile(bitmapData.path)
             }
         }
-        movePictureFileTask?.cancel()
+        cancelMovePictureFileTask()
     }
 
     /**
@@ -282,6 +282,8 @@ open class CameraPictureManager(
             override fun onSuccess(newFiles: ArrayList<LocalMedia>) {
                 Log.d(TAG, "onSuccess")
                 baseCameraFragment.commitPictureSuccess(newFiles)
+                // 恢复预览状态
+                baseCameraFragment.cameraStateManager?.state = baseCameraFragment.cameraStateManager?.preview
             }
 
             override fun onFail(t: Throwable) {
@@ -361,6 +363,7 @@ open class CameraPictureManager(
      */
     private fun movePictureFileTaskInBackground(): ArrayList<LocalMedia> {
         // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
+        Thread.sleep(5000)
         val newFiles = ArrayList<LocalMedia>()
         // 将 缓存文件 拷贝到 配置目录
         for (item in bitmapDataList) {

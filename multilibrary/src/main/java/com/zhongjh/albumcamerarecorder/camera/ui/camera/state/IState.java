@@ -10,10 +10,9 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera.state;
 public interface IState {
 
     /**
-     * 结束所有当前活动，重置状态
-     * 一般指完成了当前活动，或者清除所有活动的时候调用
+     * 方便调试
      */
-    void resetState();
+    String getName();
 
     /**
      * Activity触发了Pause

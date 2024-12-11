@@ -81,48 +81,49 @@ public class CameraStateManager implements IState {
     }
 
     @Override
-    public void resetState() {
-        Log.d(TAG, "resetState");
-        state.resetState();
+    public String getName() {
+        return "CameraStateManager";
     }
 
     @Override
     public void onActivityPause() {
+        Log.d(TAG, "onActivityPause " + state.getName());
         state.onActivityPause();
     }
 
     @Override
     public Boolean onBackPressed() {
-        Log.d(TAG, "onBackPressed");
+        Log.d(TAG, "onBackPressed " + state.getName());
         return state.onBackPressed();
     }
 
     @Override
     public boolean onActivityResult(int resultCode) {
+        Log.d(TAG, "onActivityResult " + state.getName());
         return state.onActivityResult(resultCode);
     }
 
     @Override
     public void pvLayoutCommit() {
-        Log.d(TAG, "pvLayoutCommit");
+        Log.d(TAG, "pvLayoutCommit " + state.getName());
         state.pvLayoutCommit();
     }
 
     @Override
     public void pvLayoutCancel() {
-        Log.d(TAG, "pvLayoutCancel");
+        Log.d(TAG, "pvLayoutCancel " + state.getName());
         state.pvLayoutCancel();
     }
 
     @Override
     public void longClickShort(long time) {
-        Log.d(TAG, "longClickShort");
+        Log.d(TAG, "longClickShort " + state.getName());
         state.longClickShort(time);
     }
 
     @Override
     public void pauseRecord(boolean isShort) {
-        Log.d(TAG, "stopRecord");
+        Log.d(TAG, "stopRecord " + state.getName());
         mCameraFragment.getCameraVideoManager().setShort(isShort);
         // 显示右上角菜单
         mCameraFragment.setMenuVisibility(View.VISIBLE);
@@ -135,6 +136,7 @@ public class CameraStateManager implements IState {
 
     @Override
     public void stopProgress() {
+        Log.d(TAG, "stopProgress " + state.getName());
         state.stopProgress();
     }
 
@@ -142,7 +144,7 @@ public class CameraStateManager implements IState {
      * @return 当前状态
      */
     public IState getState() {
-        Log.d(TAG, "getState" + state.toString());
+        Log.d(TAG, "getState " + state.getName());
         return state;
     }
 
@@ -150,7 +152,7 @@ public class CameraStateManager implements IState {
      * 赋值当前状态
      */
     public void setState(IState state) {
-        Log.d(TAG, "setState" + state.toString());
+        Log.d(TAG, "setState " + state.getName());
         this.state = state;
     }
 

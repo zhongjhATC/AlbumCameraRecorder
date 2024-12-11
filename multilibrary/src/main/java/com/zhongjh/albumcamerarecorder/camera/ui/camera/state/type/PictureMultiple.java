@@ -25,23 +25,8 @@ public class PictureMultiple extends StateMode {
     }
 
     @Override
-    public void resetState() {
-
-    }
-
-    @Override
-    public void onActivityPause() {
-
-    }
-
-    @Override
-    public Boolean onBackPressed() {
-        return null;
-    }
-
-    @Override
-    public boolean onActivityResult(int resultCode) {
-        return false;
+    public String getName() {
+        return "PictureMultiple";
     }
 
     @Override
@@ -49,21 +34,6 @@ public class PictureMultiple extends StateMode {
         getCameraFragment().setUiEnableFalse();
         // 拍照完成,移动文件
         getCameraFragment().movePictureFile();
-    }
-
-    @Override
-    public void pvLayoutCancel() {
-
-    }
-
-    @Override
-    public void longClickShort(long time) {
-
-    }
-
-    @Override
-    public void pauseRecord(boolean isShort) {
-
     }
 
     @Override

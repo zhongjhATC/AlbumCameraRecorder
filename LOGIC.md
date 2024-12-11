@@ -26,3 +26,11 @@
     editorPath - 编辑路径
     compressPath - 压缩路径 - com.zhongjh.cameraapp/files/Pictures/AA/picture
 1.3 不选择图片，关闭窗口： 不产生任何Cache文件
+
+
+报错汇总：
+1. 长按到结束后，录制出现问题
+2. 打开视频界面后，顶部显示问题，去掉fit属性就正常
+3. 整理状态属性 - 
+4. 长按按钮后，动画会刷一下体验不太好
+5. 编辑报错

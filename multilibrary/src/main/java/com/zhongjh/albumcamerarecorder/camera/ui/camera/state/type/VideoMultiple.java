@@ -26,22 +26,17 @@ public class VideoMultiple extends StateMode {
     }
 
     @Override
-    public void resetState() {
-        // 重置所有
-        getCameraFragment().resetStateAll();
-        // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+    public String getName() {
+        return "VideoMultiple";
     }
 
     @Override
     public void onActivityPause() {
         getCameraFragment().getCameraVideoManager().getVideoTimes().clear();
-        resetState();
-    }
-
-    @Override
-    public Boolean onBackPressed() {
-        return null;
+        // 重置所有
+        getCameraFragment().resetStateAll();
+        // 恢复预览状态
+        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
     }
 
     @Override
@@ -59,19 +54,6 @@ public class VideoMultiple extends StateMode {
             // 中断操作
             stopProgress();
         }
-    }
-
-    @Override
-    public void pvLayoutCancel() {
-    }
-
-    @Override
-    public void longClickShort(long time) {
-    }
-
-    @Override
-    public void pauseRecord(boolean isShort) {
-
     }
 
     @Override
