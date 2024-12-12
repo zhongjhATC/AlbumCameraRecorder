@@ -22,7 +22,7 @@ public class PictureComplete extends StateMode {
     private static final String TAG = PictureComplete.class.getSimpleName();
 
     /**
-     * @param cameraFragment        主要是多个状态围绕着CameraFragment进行相关处理
+     * @param cameraFragment     主要是多个状态围绕着CameraFragment进行相关处理
      * @param cameraStateManager 可以让状态更改别的状态
      */
     public PictureComplete(BaseCameraFragment<? extends CameraStateManager,
@@ -38,13 +38,17 @@ public class PictureComplete extends StateMode {
 
     @Override
     public void pvLayoutCommit() {
+        getCameraFragment().setUiEnableFalse();
         // 拍照完成,移动文件
         getCameraFragment().movePictureFile();
     }
 
     @Override
     public void pvLayoutCancel() {
-        Log.d(TAG,"pvLayoutCancel");
+        // 取消线程
+        getCameraFragment().getCameraPictureManager().cancelMovePictureFileTask();
+        getCameraFragment().setUiEnableTrue();
+        // 取消单图后的重置
         getCameraFragment().cancelOnResetBySinglePicture();
         // 恢复预览状态
         getCameraStateManagement().setState(getCameraStateManagement().getPreview());
@@ -52,7 +56,8 @@ public class PictureComplete extends StateMode {
 
     @Override
     public void stopProgress() {
-        Log.d(TAG,"stopProgress");
+        // 取消线程
         getCameraFragment().getCameraPictureManager().cancelMovePictureFileTask();
+        getCameraFragment().setUiEnableTrue();
     }
 }

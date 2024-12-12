@@ -35,12 +35,17 @@ public interface IState {
     boolean onActivityResult(int resultCode);
 
     /**
-     * 提交核心事件
+     * 右边按钮：提交核心事件
      */
     void pvLayoutCommit();
 
     /**
-     * 取消核心事件
+     * 右边按钮：中止提交事件
+     */
+    void stopProgress();
+
+    /**
+     * 左边按钮：取消核心事件
      */
     void pvLayoutCancel();
 
@@ -56,10 +61,5 @@ public interface IState {
      * @param isShort 是否因为视频过短而停止
      */
     void pauseRecord(boolean isShort);
-
-    /**
-     * 中止提交
-     */
-    void stopProgress();
 
 }

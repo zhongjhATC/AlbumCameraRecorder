@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
+import android.util.Log;
+
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
@@ -38,6 +40,8 @@ public class PictureMultiple extends StateMode {
 
     @Override
     public void stopProgress() {
+        getCameraFragment().setUiEnableTrue();
+        // 取消线程
         getCameraFragment().getCameraPictureManager().cancelMovePictureFileTask();
     }
 

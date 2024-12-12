@@ -471,8 +471,6 @@ public abstract class BaseCameraFragment
             public void cancel() {
                 Log.d(TAG, "cancel " + getState().toString());
                 getCameraStateManager().pvLayoutCancel();
-                // 取消线程
-                getCameraPictureManager().cancelMovePictureFileTask();
             }
 
             @Override
@@ -608,7 +606,7 @@ public abstract class BaseCameraFragment
     }
 
     /**
-     * 返回true的时候即是纸条跳过了后面的ActivityResult事件
+     * 返回true的时候即是表示跳过了后面的ActivityResult事件
      *
      * @param resultCode Activity的返回码
      * @return 返回true是跳过，返回false则是继续
@@ -956,7 +954,6 @@ public abstract class BaseCameraFragment
         if (getSwitchView() != null) {
             getSwitchView().setEnabled(true);
         }
-        getPhotoVideoLayout().setConfirmEnable(true);
         getPhotoVideoLayout().setClickOrLongEnable(true);
         // 重置按钮进度
         getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
@@ -974,7 +971,6 @@ public abstract class BaseCameraFragment
         if (getSwitchView() != null) {
             getSwitchView().setEnabled(false);
         }
-        getPhotoVideoLayout().setConfirmEnable(false);
         getPhotoVideoLayout().setClickOrLongEnable(false);
     }
 
