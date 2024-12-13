@@ -138,6 +138,13 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     }
 
     /**
+     * App显示出来
+     */
+    fun onResume() {
+        isActivityPause = false
+    }
+
+    /**
      * App被遮挡
      */
     fun onPause() {
@@ -195,7 +202,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
                 // 视频录制监控回调
                 when (videoRecordEvent) {
                     is VideoRecordEvent.Finalize -> {
-                        Log.d(TAG, "Finalize error " + videoRecordEvent.error)
+                        Log.d(TAG, "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri)
                         if (!isActivityPause) {
                             // 完成录制
                             val uri = videoRecordEvent.outputResults.outputUri

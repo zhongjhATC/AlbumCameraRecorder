@@ -36,7 +36,7 @@ import com.zhongjh.common.utils.FileUtils;
 public class CameraVideoManager implements ICameraVideo {
 
     private final static int PROGRESS_MAX = 100;
-    private final static String TAG = "BaseCameraVideoPresenter";
+    private final static String TAG = "CameraVideoManager";
 
     public CameraVideoManager(
             BaseCameraFragment<? extends CameraStateManager,
@@ -177,6 +177,7 @@ public class CameraVideoManager implements ICameraVideo {
     @SuppressLint("LongLogTag")
     @Override
     public void onRecordSuccess(String path) {
+        Log.d(TAG, "onRecordSuccess: " + path);
         videoFile = new File(path);
         // 判断文件是否超过1秒才属于合格的视频
         long mediaDuration = getMediaDuration(path);

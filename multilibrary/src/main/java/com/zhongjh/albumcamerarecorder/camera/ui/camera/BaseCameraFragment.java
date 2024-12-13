@@ -228,6 +228,7 @@ public abstract class BaseCameraFragment
     @Override
     public void onResume() {
         super.onResume();
+        getCameraManage().onResume();
         LogUtil.i("CameraLayout onResume");
         // 清空进度，防止正在进度中突然按home键
         getPhotoVideoLayout().getViewHolder().btnClickOrLong.reset();

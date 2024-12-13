@@ -1,5 +1,7 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type;
 
+import android.util.Log;
+
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
@@ -49,9 +51,11 @@ public class VideoMultiple extends StateMode {
     public void pvLayoutCommit() {
         if (getCameraFragment().getPhotoVideoLayout().getViewHolder().btnConfirm.mState == CircularProgressState.PLAY) {
             // 完成录制
+            Log.d(TAG, "pvLayoutCommit完成录制");
             getCameraFragment().getCameraManage().stopVideo();
         } else {
             // 中断操作
+            Log.d(TAG, "pvLayoutCommit中断操作");
             stopProgress();
         }
     }

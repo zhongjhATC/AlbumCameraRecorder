@@ -491,7 +491,9 @@ public abstract class BaseOperationLayout extends FrameLayout {
         viewHolder.btnClickOrLong.resetState();
         // 隐藏第二层的view
         viewHolder.btnCancel.setVisibility(View.GONE);
+        viewHolder.btnCancel.reset();
         viewHolder.btnConfirm.setVisibility(View.GONE);
+        viewHolder.btnConfirm.reset();
         // 显示第一层的view
         viewHolder.btnClickOrLong.setVisibility(View.VISIBLE);
     }
