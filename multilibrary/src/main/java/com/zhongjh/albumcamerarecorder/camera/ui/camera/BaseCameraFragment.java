@@ -126,6 +126,7 @@ public abstract class BaseCameraFragment
      * 是否提交,如果不是提交则要删除冗余文件
      */
     private boolean isCommit = false;
+    private boolean isShowContinueTip = false;
     /**
      * 修饰多图控件的View数组
      */
@@ -277,13 +278,6 @@ public abstract class BaseCameraFragment
             layoutParams.height = layoutParams.height + statusBarHeight;
         }
 
-        // 如果启动视频编辑并且可录制数量>=0，便显示分段录制功能
-        if (SelectableUtils.getVideoMaxCount() <= 0 || !cameraSpec.isMergeEnable()) {
-            getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
-        } else {
-            getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
-        }
-
         // 处理图片、视频等需要进度显示
         getPhotoVideoLayout().getViewHolder().btnConfirm.setProgressMode(true);
 
@@ -416,11 +410,7 @@ public abstract class BaseCameraFragment
                 Log.d(TAG, "pvLayout onLongClick ");
                 getCameraVideoManager().recordVideo();
                 // 设置录制状态
-                if (getCameraVideoManager().isSectionRecord()) {
-                    getCameraStateManager().setState(getCameraStateManager().getVideoMultipleIn());
-                } else {
-                    getCameraStateManager().setState(getCameraStateManager().getVideoIn());
-                }
+                getCameraStateManager().setState(getCameraStateManager().getVideoMultipleIn());
                 // 开始录像
                 setMenuVisibility(View.INVISIBLE);
             }
@@ -763,6 +753,17 @@ public abstract class BaseCameraFragment
     }
 
     /**
+     * 长按继续录制
+     */
+    public void setShortTipLongRecording() {
+        if (!isShowContinueTip) {
+            // 长按继续录制
+            getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_long_press_to_continue_recording));
+            isShowContinueTip = true;
+        }
+    }
+
+    /**
      * 初始化中心按钮状态
      */
     protected void initPvLayoutButtonFeatures() {
@@ -911,13 +912,6 @@ public abstract class BaseCameraFragment
     public void resetStateAll() {
         // 重置右上角菜单
         setMenuVisibility(View.VISIBLE);
-
-        // 重置分段录制按钮 如果启动视频编辑并且可录制数量>=0，便显示分段录制功能
-        if (SelectableUtils.getVideoMaxCount() <= 0 || !cameraSpec.isMergeEnable()) {
-            getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
-        } else {
-            getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.VISIBLE);
-        }
 
         // 恢复底部
         showBottomMenu();

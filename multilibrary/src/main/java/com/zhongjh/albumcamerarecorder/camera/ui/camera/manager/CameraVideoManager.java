@@ -152,10 +152,10 @@ public class CameraVideoManager implements ICameraVideo {
      */
     @Override
     public void onRecordPause(long recordedDurationNanos) {
+        baseCameraFragment.setShortTipLongRecording();
         // 如果已经有录像正在录制中，那么就不执行这个动作了
         if (videoTimes.isEmpty()) {
             baseCameraFragment.getPhotoVideoLayout().startShowLeftRightButtonsAnimator(false);
-            baseCameraFragment.getPhotoVideoLayout().getViewHolder().tvSectionRecord.setVisibility(View.GONE);
         }
         videoTimes.clear();
         videoTimes.add(recordedDurationNanos / 1000000);

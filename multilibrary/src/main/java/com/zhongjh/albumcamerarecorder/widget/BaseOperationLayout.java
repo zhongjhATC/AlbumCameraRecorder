@@ -516,10 +516,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
         viewHolder.btnClickOrLong.setTouchable(enabled);
         viewHolder.btnConfirm.setEnabled(enabled);
         viewHolder.btnCancel.setEnabled(enabled);
-        // 录音控件是没拥有该控件的
-        if (viewHolder.tvSectionRecord != null) {
-            viewHolder.tvSectionRecord.setEnabled(enabled);
-        }
     }
 
     /**
@@ -588,7 +584,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
         public CircularProgress btnConfirm;
         public ClickOrLongButton btnClickOrLong;
         public TextView tvTip;
-        public TextView tvSectionRecord;
         public CircularProgressView pbConfirm;
 
         public ViewHolder(View rootView) {
@@ -597,7 +592,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
             this.btnConfirm = rootView.findViewById(R.id.btnConfirm);
             this.btnClickOrLong = rootView.findViewById(R.id.btnClickOrLong);
             this.tvTip = rootView.findViewById(R.id.tvTip);
-            this.tvSectionRecord = rootView.findViewById(R.id.tvSectionRecord);
             this.pbConfirm = rootView.findViewById(R.id.pbConfirm);
         }
 

@@ -9,8 +9,6 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManag
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.PictureComplete;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.PictureMultiple;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.Preview;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoComplete;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoIn;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoMultiple;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.type.VideoMultipleIn;
 
@@ -40,10 +38,6 @@ public class CameraStateManager implements IState {
      */
     IState preview;
     /**
-     * 视频完成状态
-     */
-    IState videoComplete;
-    /**
      * 图片完成状态
      */
     IState pictureComplete;
@@ -56,10 +50,6 @@ public class CameraStateManager implements IState {
      */
     IState videoMultiple;
     /**
-     * 正在录制视频中的状态
-     */
-    IState videoIn;
-    /**
      * 正在录制多个视频中的状态
      */
     IState videoMultipleIn;
@@ -70,11 +60,9 @@ public class CameraStateManager implements IState {
         mCameraFragment = cameraFragment;
         // 初始化相关状态逻辑
         preview = new Preview(cameraFragment, this);
-        videoComplete = new VideoComplete(cameraFragment, this);
         pictureComplete = new PictureComplete(cameraFragment, this);
         pictureMultiple = new PictureMultiple(cameraFragment, this);
         videoMultiple = new VideoMultiple(cameraFragment, this);
-        videoIn = new VideoIn(cameraFragment, this);
         videoMultipleIn = new VideoMultipleIn(cameraFragment, this);
         // 设置当前默认状态
         state = preview;
@@ -160,10 +148,6 @@ public class CameraStateManager implements IState {
         return preview;
     }
 
-    public IState getVideoComplete() {
-        return videoComplete;
-    }
-
     public IState getPictureComplete() {
         return pictureComplete;
     }
@@ -174,10 +158,6 @@ public class CameraStateManager implements IState {
 
     public IState getVideoMultiple() {
         return videoMultiple;
-    }
-
-    public IState getVideoIn() {
-        return videoIn;
     }
 
     public IState getVideoMultipleIn() {

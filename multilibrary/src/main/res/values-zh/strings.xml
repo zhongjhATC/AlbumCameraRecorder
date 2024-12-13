@@ -36,8 +36,6 @@
     <string name="z_multi_library_button_edit">编辑</string>
     <string name="z_multi_library_photo_grid_capture">拍一张</string>
     <string name="z_multi_library_empty_text">还没有图片或视频</string>
-    <string name="z_multi_library_section_to_record">分段录制</string>
-    <string name="z_multi_library_default_to_record">快拍录制</string>
 
 
     <string name="z_multi_library_error_over_count_default">您已经达到最大选择数量</string>
@@ -70,6 +68,7 @@
     <string name="z_multi_library_touch_your_end">轻触结束</string>
     <string name="z_multi_library_long_press_sound_recording">长按录音</string>
     <string name="z_multi_library_the_recording_time_is_too_short">录制时间过短</string>
+    <string name="z_long_press_to_continue_recording">支持继续录制</string>
     <string name="z_multi_library_video_can_only_exist_in_n">视频只可存在 %1$d 个</string>
     <string name="z_multi_library_watermark">水印</string>
 

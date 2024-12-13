@@ -69,6 +69,7 @@
     <string name="z_multi_library_touch_your_end">Touch your end</string>
     <string name="z_multi_library_long_press_sound_recording">Long press the tape</string>
     <string name="z_multi_library_the_recording_time_is_too_short">The recording time is too short</string>
+    <string name="z_long_press_to_continue_recording">Support to continue recording</string>
     <string name="z_multi_library_video_can_only_exist_in_n">Only %1$d video can exist</string>
     <string name="z_multi_library_watermark">watermark</string>
 
