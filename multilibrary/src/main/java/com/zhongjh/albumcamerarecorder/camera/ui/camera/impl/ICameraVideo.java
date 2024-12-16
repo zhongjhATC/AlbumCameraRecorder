@@ -15,10 +15,8 @@ public interface ICameraVideo {
 
     /**
      * 生命周期onDestroy
-     *
-     * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
      */
-    void onDestroy(boolean isCommit);
+    void onDestroy();
 
     /**
      * 录制视频
@@ -38,9 +36,4 @@ public interface ICameraVideo {
      * @param path 视频录制结束后提供的路径
      */
     void onRecordSuccess(String path);
-
-    /**
-     * 打开预览视频界面
-     */
-    void openPreviewVideoActivity();
 }

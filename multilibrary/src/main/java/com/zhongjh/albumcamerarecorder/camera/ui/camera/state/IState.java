@@ -27,7 +27,7 @@ public interface IState {
     Boolean onBackPressed();
 
     /**
-     * 返回true的时候即是纸条跳过了后面的ActivityResult事件
+     * 返回true的时候即是跳过了后面的ActivityResult事件
      *
      * @param resultCode Activity的返回码
      * @return 返回true是跳过，返回false则是继续
@@ -55,17 +55,8 @@ public interface IState {
     void pvLayoutCancel();
 
     /**
-     * 录像时间过短，目前是单视频和多视频才会使用这个功能
-     *
-     * @param time 多短的时间
-     */
-    void longClickShort(final long time);
-
-    /**
      * 暂停录制
-     *
-     * @param isShort 是否因为视频过短而停止
      */
-    void pauseRecord(boolean isShort);
+    void pauseRecord();
 
 }

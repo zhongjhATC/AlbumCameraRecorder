@@ -214,14 +214,6 @@ public abstract class BaseOperationLayout extends FrameLayout {
             }
 
             @Override
-            public void onLongClickShort(long time) {
-                if (mClickOrLongListener != null) {
-                    mClickOrLongListener.onLongClickShort(time);
-                }
-                startTipAlphaAnimation();
-            }
-
-            @Override
             public void onLongClick() {
                 if (mClickOrLongListener != null) {
                     mClickOrLongListener.onLongClick();

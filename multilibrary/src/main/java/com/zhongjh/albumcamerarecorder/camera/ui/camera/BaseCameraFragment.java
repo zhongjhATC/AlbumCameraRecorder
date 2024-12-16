@@ -115,10 +115,6 @@ public abstract class BaseCameraFragment
      */
     ActivityResultLauncher<String[]> mRequestPermissionActivityResult;
     /**
-     * 默认图片
-     */
-    private Drawable mPlaceholder;
-    /**
      * 声明一个long类型变量：用于存放上一点击“返回键”的时刻
      */
     private long mExitTime;
@@ -304,11 +300,6 @@ public abstract class BaseCameraFragment
         getCameraPictureManager().initData();
         getCameraVideoManager().initData();
 
-        // 默认图片
-        TypedArray ta = myContext.getTheme().obtainStyledAttributes(
-                new int[]{R.attr.album_thumbnail_placeholder});
-        mPlaceholder = ta.getDrawable(0);
-
         // 闪光灯修改默认模式
         flashMode = cameraSpec.getFlashMode();
         // 记忆模式
@@ -348,7 +339,6 @@ public abstract class BaseCameraFragment
             getCloseView().setOnClickListener(new OnMoreClickListener() {
                 @Override
                 public void onListener(@NonNull View v) {
-                    getCameraVideoManager().setBreakOff(true);
                     mainActivity.finish();
                 }
             });
@@ -402,12 +392,6 @@ public abstract class BaseCameraFragment
             }
 
             @Override
-            public void onLongClickShort(final long time) {
-                Log.d(TAG, "pvLayout onLongClickShort");
-                longClickShort(time);
-            }
-
-            @Override
             public void onLongClick() {
                 Log.d(TAG, "pvLayout onLongClick ");
                 getCameraVideoManager().recordVideo();
@@ -419,14 +403,14 @@ public abstract class BaseCameraFragment
 
             @Override
             public void onLongClickEnd(long time) {
-                Log.d(TAG, "pvLayout onLongClickEnd " + time);
-                getCameraVideoManager().setSectionRecordTime(time);
+                Log.d(TAG, "pvLayout onLongClickEnd ");
                 // 录像暂停
-                pauseRecord(false);
+                pauseRecord();
             }
 
             @Override
             public void onLongClickFinish() {
+                Log.d(TAG, "pvLayout onLongClickFinish ");
                 getState().onLongClickFinish();
             }
 
@@ -438,18 +422,12 @@ public abstract class BaseCameraFragment
             @Override
             public void onBanClickTips() {
                 // 判断如果是分段录制模式就提示
-                if (getCameraVideoManager().isSectionRecord()) {
-                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_working_video_click_later));
-                }
+                getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_working_video_click_later));
             }
 
             @Override
             public void onClickStopTips() {
-                if (getCameraVideoManager().isSectionRecord()) {
-                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_suspension));
-                } else {
-                    getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_end));
-                }
+                getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_suspension));
             }
         });
     }
@@ -498,7 +476,6 @@ public abstract class BaseCameraFragment
      */
     private void initPvLayoutRecordListener() {
         getPhotoVideoLayout().setRecordListener(tag -> {
-            getCameraVideoManager().setSectionRecord("1".equals(tag));
             getPhotoVideoLayout().setProgressMode(true);
         });
     }
@@ -621,7 +598,7 @@ public abstract class BaseCameraFragment
         try {
             LogUtil.i("CameraLayout destroy");
             getCameraPictureManager().onDestroy(isCommit);
-            getCameraVideoManager().onDestroy(isCommit);
+            getCameraVideoManager().onDestroy();
             getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
             getCameraManage().onDestroy();
             // 记忆模式
@@ -738,25 +715,13 @@ public abstract class BaseCameraFragment
     }
 
     /**
-     * 录制时间过短
-     */
-    private void longClickShort(final long time) {
-        Log.d(TAG, "longClickShort " + time);
-        getCameraStateManager().longClickShort(time);
-        // 提示过短
-        getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
-        // 显示右上角菜单
-        setMenuVisibility(View.VISIBLE);
-        // 停止录像
-        pauseRecord(true);
-    }
-
-    /**
      * 提示过短
      */
     public void setShortTip() {
         // 提示过短
         getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
+        // 显示右上角菜单
+        setMenuVisibility(View.VISIBLE);
     }
 
     /**
@@ -1106,19 +1071,10 @@ public abstract class BaseCameraFragment
     }
 
     /**
-     * 多视频分段录制中止提交
-     */
-    public void stopVideoMultiple() {
-        getCameraVideoManager().stopVideoMultiple();
-    }
-
-    /**
      * 暂停录制
-     *
-     * @param isShort 是否因为视频过短而停止
      */
-    public void pauseRecord(boolean isShort) {
-        getCameraStateManager().pauseRecord(isShort);
+    protected void pauseRecord() {
+        getCameraStateManager().pauseRecord();
     }
 
     public int getFlashMode() {

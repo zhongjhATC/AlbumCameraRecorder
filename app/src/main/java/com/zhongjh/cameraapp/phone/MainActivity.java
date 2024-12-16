@@ -350,11 +350,6 @@ public class MainActivity extends BaseActivity {
 
         }
 
-        if (mBinding.cbVideoMerge.isChecked()) {
-            // 启动这个即可开启视频分段录制合并功能
-            cameraSetting.videoMerge(new VideoMergeManager());
-        }
-
         // 是否启用闪光灯记忆模式
         cameraSetting.enableFlashMemoryModel(mBinding.cbFlashMemoryModel.isChecked());
 

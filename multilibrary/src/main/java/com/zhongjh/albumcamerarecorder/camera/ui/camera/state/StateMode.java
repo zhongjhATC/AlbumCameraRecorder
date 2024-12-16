@@ -76,12 +76,7 @@ public abstract class StateMode implements IState {
     }
 
     @Override
-    public void longClickShort(long time) {
-
-    }
-
-    @Override
-    public void pauseRecord(boolean isShort) {
+    public void pauseRecord() {
 
     }
 

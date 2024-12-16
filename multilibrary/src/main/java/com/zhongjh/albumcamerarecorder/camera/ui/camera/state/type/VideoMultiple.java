@@ -61,8 +61,8 @@ public class VideoMultiple extends StateMode {
     }
 
     @Override
-    public void stopProgress() {
-        getCameraFragment().stopVideoMultiple();
+    public void pauseRecord() {
+        getCameraFragment().getCameraManage().pauseVideo();
     }
 
     @Override

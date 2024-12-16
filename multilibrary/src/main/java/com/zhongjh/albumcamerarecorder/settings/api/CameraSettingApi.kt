@@ -94,14 +94,6 @@ interface CameraSettingApi {
     fun isClickRecord(isClickRecord: Boolean): CameraSetting
 
     /**
-     * 启动视频编辑功能，目前只有视频分段录制，后续会增加
-     *
-     * @param videoEditManager 视频编辑协调者
-     * @return [CameraSetting] for fluent API.
-     */
-    fun videoMerge(videoEditManager: VideoMergeCoordinator): CameraSetting
-
-    /**
      * 水印资源,可通过layout赋值水印，所处于的位置等等都可通过layout本身来处理
      *
      * @param watermarkResource 水印资源的layout id

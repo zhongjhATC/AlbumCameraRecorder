@@ -98,11 +98,6 @@ class CameraSetting : CameraSettingApi {
         return this
     }
 
-    override fun videoMerge(videoEditManager: VideoMergeCoordinator): CameraSetting {
-        mCameraSpec.videoMergeCoordinator = videoEditManager
-        return this
-    }
-
     override fun watermarkResource(watermarkResource: Int): CameraSetting {
         mCameraSpec.watermarkResource = watermarkResource
         return this

@@ -102,11 +102,6 @@ object CameraSpec {
     var readinessDuration = 1000
 
     /**
-     * 视频分段录制合并功能
-     */
-    var videoMergeCoordinator: VideoMergeCoordinator? = null
-
-    /**
      * 水印资源id
      */
     var watermarkResource = -1
@@ -129,12 +124,6 @@ object CameraSpec {
     fun onlySupportVideos(): Boolean {
         return ofVideo().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA))
     }
-
-    /**
-     * @return 是否开启了分段录制视频合并功能
-     */
-    val isMergeEnable: Boolean
-        get() = videoMergeCoordinator != null
 
     /**
      * 拍摄后操作图片的事件
@@ -173,7 +162,6 @@ object CameraSpec {
         maxDuration = 1000
         minDuration = 2000
         readinessDuration = 1000
-        videoMergeCoordinator = null
         watermarkResource = -1
     }
 

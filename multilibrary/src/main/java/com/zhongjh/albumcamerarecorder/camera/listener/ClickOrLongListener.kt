@@ -35,12 +35,6 @@ interface ClickOrLongListener {
     fun onLongClickFinish()
 
     /**
-     * 长按结束如果过短
-     * @param time 时间
-     */
-    fun onLongClickShort(time: Long)
-
-    /**
      * 长按中途出现异常
      */
     fun onLongClickError()

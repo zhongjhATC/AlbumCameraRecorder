@@ -40,8 +40,6 @@ public class VideoMultipleIn extends StateMode {
 
     @Override
     public Boolean onBackPressed() {
-        // 如果是录制中则暂停视频
-        getCameraFragment().getCameraVideoManager().setBreakOff(true);
         getCameraFragment().getCameraManage().closeVideo();
         getCameraFragment().getPhotoVideoLayout().resetConfirm();
         getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
@@ -66,31 +64,10 @@ public class VideoMultipleIn extends StateMode {
     }
 
     @Override
-    public void longClickShort(long time) {
-        getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.selectionRecordRollBack();
-        if (getCameraFragment().getCameraVideoManager().getVideoTimes().isEmpty()) {
-            // 母窗体显示底部
-            getCameraFragment().getMainActivity().showHideTableLayout(true);
-        }
-    }
-
-    @Override
-    public void pauseRecord(boolean isShort) {
-        if (isShort) {
-            // 如果没有视频数据
-            if (getCameraFragment().getCameraVideoManager().getVideoTimes().isEmpty()) {
-                // 则重置底部按钮
-                getCameraFragment().getPhotoVideoLayout().reset();
-                // 恢复预览状态
-                getCameraStateManagement().setState(getCameraStateManagement().getPreview());
-            } else {
-                // 设置成多个视频状态
-                getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
-            }
-        } else {
-            // 设置成多个视频状态
-            getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
-        }
+    public void pauseRecord() {
+        // 切回非录制中的状态
+        getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
+        getCameraFragment().getCameraManage().pauseVideo();
     }
 
     @Override
