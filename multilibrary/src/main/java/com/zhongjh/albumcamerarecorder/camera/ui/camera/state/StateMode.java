@@ -61,11 +61,6 @@ public abstract class StateMode implements IState {
     }
 
     @Override
-    public boolean onActivityResult(int resultCode) {
-        return false;
-    }
-
-    @Override
     public void pvLayoutCommit() {
 
     }

@@ -34,9 +34,4 @@ public class Preview extends StateMode {
         // 如果是预览状态直接退出当前界面
         return false;
     }
-
-    @Override
-    public boolean onActivityResult(int resultCode) {
-        return true;
-    }
 }

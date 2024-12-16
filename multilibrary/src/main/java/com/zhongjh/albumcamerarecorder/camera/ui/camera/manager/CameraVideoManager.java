@@ -57,10 +57,6 @@ public class CameraVideoManager implements ICameraVideo {
     public void initActivityResult() {
         // 从视频预览界面回来
         previewVideoActivityResult = baseCameraFragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            boolean isReturn = baseCameraFragment.initActivityResult(result.getResultCode());
-            if (isReturn) {
-                return;
-            }
             if (result.getResultCode() == RESULT_OK) {
                 if (result.getData() == null) {
                     return;

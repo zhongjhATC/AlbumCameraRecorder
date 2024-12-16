@@ -59,11 +59,6 @@ public class VideoMultipleIn extends StateMode {
     }
 
     @Override
-    public boolean onActivityResult(int resultCode) {
-        return true;
-    }
-
-    @Override
     public void pauseRecord() {
         // 切回非录制中的状态
         getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());

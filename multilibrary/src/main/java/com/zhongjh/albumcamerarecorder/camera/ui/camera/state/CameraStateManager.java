@@ -86,12 +86,6 @@ public class CameraStateManager implements IState {
     }
 
     @Override
-    public boolean onActivityResult(int resultCode) {
-        Log.d(TAG, "onActivityResult " + state.getName());
-        return state.onActivityResult(resultCode);
-    }
-
-    @Override
     public void pvLayoutCommit() {
         Log.d(TAG, "pvLayoutCommit " + state.getName());
         state.pvLayoutCommit();

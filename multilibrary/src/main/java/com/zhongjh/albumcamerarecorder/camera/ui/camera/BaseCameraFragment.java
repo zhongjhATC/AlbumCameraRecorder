@@ -534,10 +534,6 @@ public abstract class BaseCameraFragment
     private void initActivityResult() {
         // 在图廊预览界面点击了确定
         mAlbumPreviewActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            boolean isReturn = initActivityResult(result.getResultCode());
-            if (isReturn) {
-                return;
-            }
             if (result.getResultCode() == RESULT_OK) {
                 if (result.getData() == null) {
                     return;
@@ -577,16 +573,6 @@ public abstract class BaseCameraFragment
         });
         getCameraVideoManager().initActivityResult();
         getCameraPictureManager().initActivityResult();
-    }
-
-    /**
-     * 返回true的时候即是表示跳过了后面的ActivityResult事件
-     *
-     * @param resultCode Activity的返回码
-     * @return 返回true是跳过，返回false则是继续
-     */
-    public boolean initActivityResult(int resultCode) {
-        return getCameraStateManager().onActivityResult(resultCode);
     }
 
     /**

@@ -114,12 +114,6 @@ open class CameraPictureManager(
         // 从编辑图片界面回来
         imageEditActivityResult =
             baseCameraFragment.registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
-                val isReturn = baseCameraFragment.initActivityResult(
-                    result.resultCode
-                )
-                if (isReturn) {
-                    return@registerForActivityResult
-                }
                 if (result.resultCode == Activity.RESULT_OK) {
                     result.data?.let {
                         // 编辑图片界面

@@ -42,12 +42,6 @@ public class VideoMultiple extends StateMode {
     }
 
     @Override
-    public boolean onActivityResult(int resultCode) {
-        // 返回false处理视频
-        return false;
-    }
-
-    @Override
     public void pvLayoutCommit() {
         if (getCameraFragment().getPhotoVideoLayout().getViewHolder().btnConfirm.mState == CircularProgressState.PLAY) {
             // 完成录制

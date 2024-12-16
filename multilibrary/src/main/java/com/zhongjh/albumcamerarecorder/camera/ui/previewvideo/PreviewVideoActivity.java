@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -23,7 +24,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
 import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
-import com.zhongjh.common.entity.LocalFile;
+import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.VideoEditListener;
@@ -49,13 +50,14 @@ public class PreviewVideoActivity extends AppCompatActivity {
     static final String PATH = "PATH";
 
     ConstraintLayout mCLMain;
+    ConstraintLayout mClMenu;
     VideoView mVideoViewPreview;
     ImageView mImgClose;
     CircularProgressButton mBtnConfirm;
     /**
      * 该视频的相关参数
      */
-    LocalFile mLocalFile = new LocalFile();
+    LocalMedia mLocalMedia = new LocalMedia();
     /**
      * 按钮事件运行中，因为该自定义控件如果通过setEnabled控制会导致动画不起效果，所以需要该变量控制按钮事件是否生效
      */
@@ -76,11 +78,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * @param path     视频地址
      */
     public static void startActivity(Fragment fragment, ActivityResultLauncher<Intent> previewVideoActivityResult, String path) {
-        Intent intent = new Intent();
-        intent.putExtra(PATH, path);
-        intent.setClass(fragment.getContext(), PreviewVideoActivity.class);
-        previewVideoActivityResult.launch(intent);
         if (fragment.getActivity() != null) {
+            Intent intent = new Intent();
+            intent.putExtra(PATH, path);
+            intent.setClass(fragment.getActivity(), PreviewVideoActivity.class);
+            previewVideoActivityResult.launch(intent);
             fragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
         }
     }
@@ -89,10 +91,11 @@ public class PreviewVideoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setRequestedOrientation(GlobalSpec.INSTANCE.getOrientation());
         setTheme(mGlobalSpec.getThemeId());
+        // 兼容沉倾状态栏
         StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_video_zjh);
-        mLocalFile.setPath(getIntent().getStringExtra(PATH));
+        mLocalMedia.setPath(getIntent().getStringExtra(PATH));
         initView();
         initListener();
         initData();
@@ -128,10 +131,16 @@ public class PreviewVideoActivity extends AppCompatActivity {
      */
     private void initView() {
         mCLMain = findViewById(R.id.clMain);
+        mClMenu = findViewById(R.id.clMenu);
         mVideoViewPreview = findViewById(R.id.vvPreview);
         mImgClose = findViewById(R.id.imgClose);
         mBtnConfirm = findViewById(R.id.btnConfirm);
         mBtnConfirm.setIndeterminateProgressMode(true);
+        // 兼容沉倾状态栏
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(this.getApplicationContext());
+        mClMenu.setPadding(mClMenu.getPaddingLeft(), statusBarHeight, mClMenu.getPaddingRight(), mClMenu.getPaddingBottom());
+        ViewGroup.LayoutParams layoutParams = mClMenu.getLayoutParams();
+        layoutParams.height = layoutParams.height + statusBarHeight;
     }
 
     private void initListener() {
@@ -149,8 +158,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 初始化数据
      */
     private void initData() {
-        if (mLocalFile.getPath() != null) {
-            File file = new File(mLocalFile.getPath());
+        if (mLocalMedia.getPath() != null) {
+            File file = new File(mLocalMedia.getPath());
             Log.d(TAG, "exists:" + file.exists() + " length:" + file.length());
             playVideo(file);
         }
@@ -176,7 +185,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
         }
         mVideoViewPreview.setOnPreparedListener(mp -> {
             // 获取相关参数
-            mLocalFile.setDuration(mVideoViewPreview.getDuration());
+            mLocalMedia.setDuration(mVideoViewPreview.getDuration());
         });
         mVideoViewPreview.setOnCompletionListener(mediaPlayer -> {
             // 循环播放
@@ -196,7 +205,7 @@ public class PreviewVideoActivity extends AppCompatActivity {
             compress();
         } else {
             // 否则直接转移
-            confirm(new File(mLocalFile.getPath()));
+            confirm(new File(mLocalMedia.getPath()));
             mIsRun = false;
 //            moveVideoFile();
         }
@@ -206,9 +215,9 @@ public class PreviewVideoActivity extends AppCompatActivity {
      * 压缩视频
      */
     private void compress() {
-        if (mLocalFile.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
+        if (mLocalMedia.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
             // 获取文件名称
-            File newFile = FileMediaUtil.INSTANCE.createCompressFile(getApplicationContext(), mLocalFile.getPath());
+            File newFile = FileMediaUtil.INSTANCE.createCompressFile(getApplicationContext(), mLocalMedia.getPath());
             mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
                 @Override
                 public void onFinish() {
@@ -230,8 +239,8 @@ public class PreviewVideoActivity extends AppCompatActivity {
                     mIsRun = false;
                 }
             });
-            if (mLocalFile.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null && newFile != null) {
-                mGlobalSpec.getVideoCompressCoordinator().compressRxJava(PreviewVideoActivity.this.getClass(), mLocalFile.getPath(), newFile.getPath());
+            if (mLocalMedia.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
+                mGlobalSpec.getVideoCompressCoordinator().compressRxJava(PreviewVideoActivity.this.getClass(), mLocalMedia.getPath(), newFile.getPath());
             }
         }
     }
@@ -297,23 +306,21 @@ public class PreviewVideoActivity extends AppCompatActivity {
     private void confirm(File newFile) {
         Intent intent = new Intent();
         MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplicationContext(), newFile.getPath());
-        mLocalFile.setWidth(mediaExtraInfo.getWidth());
-        mLocalFile.setHeight(mediaExtraInfo.getHeight());
+        mLocalMedia.setWidth(mediaExtraInfo.getWidth());
+        mLocalMedia.setHeight(mediaExtraInfo.getHeight());
         if (mGlobalSpec.isAddAlbumByVideo()) {
-            Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalFile.getDuration(),
-                    mLocalFile.getWidth(), mLocalFile.getHeight(),
-                    FileMediaUtil.INSTANCE.getDir(""));
+            Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalMedia.getDuration(), mLocalMedia.getWidth(), mLocalMedia.getHeight(), FileMediaUtil.INSTANCE.getDir(""));
             // 加入相册后的最后是id，直接使用该id
-            mLocalFile.setId(MediaStoreUtils.getId(uri));
+            mLocalMedia.setId(MediaStoreUtils.getId(uri));
         } else {
             // 用当前时间代替id
-            mLocalFile.setId(System.currentTimeMillis());
+            mLocalMedia.setId(System.currentTimeMillis());
         }
-        mLocalFile.setPath(newFile.getPath());
-        mLocalFile.setUri(FileMediaUtil.INSTANCE.getUri(getApplicationContext(), newFile.getPath()));
-        mLocalFile.setSize(newFile.length());
-        mLocalFile.setMimeType(MimeType.MP4.getMimeTypeName());
-        intent.putExtra(LOCAL_FILE, mLocalFile);
+        mLocalMedia.setAbsolutePath(newFile.getPath());
+        mLocalMedia.setPath(FileMediaUtil.INSTANCE.getUri(getApplicationContext(), newFile.getPath()).toString());
+        mLocalMedia.setSize(newFile.length());
+        mLocalMedia.setMimeType(MimeType.MP4.getMimeTypeName());
+        intent.putExtra(LOCAL_FILE, mLocalMedia);
         setResult(RESULT_OK, intent);
         PreviewVideoActivity.this.finish();
     }
