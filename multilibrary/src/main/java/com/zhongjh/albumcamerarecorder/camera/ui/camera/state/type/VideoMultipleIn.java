@@ -93,4 +93,9 @@ public class VideoMultipleIn extends StateMode {
         }
     }
 
+    @Override
+    public void onLongClickFinish() {
+        getCameraFragment().getCameraManage().stopVideo();
+    }
+
 }

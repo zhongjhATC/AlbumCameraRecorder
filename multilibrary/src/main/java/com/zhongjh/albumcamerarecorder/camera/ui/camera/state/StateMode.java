@@ -89,4 +89,9 @@ public abstract class StateMode implements IState {
     public void stopProgress() {
 
     }
+
+    @Override
+    public void onLongClickFinish() {
+
+    }
 }

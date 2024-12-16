@@ -559,7 +559,11 @@ public class ClickOrLongButton extends View {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null && step == STEP_ACTION_UP) {
                     // 回调录制结束
-                    mClickOrLongListener.onLongClickEnd(mRecordedTime);
+                    if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
+                        mClickOrLongListener.onLongClickFinish();
+                    } else {
+                        mClickOrLongListener.onLongClickEnd(mRecordedTime);
+                    }
                 }
                 setRecordState(RECORD_ENDED);
             } else if (recordState == RECORD_ENDED) {

@@ -198,6 +198,7 @@ public abstract class BaseOperationLayout extends FrameLayout {
      */
     private void btnClickOrLongListener() {
         viewHolder.btnClickOrLong.setRecordingListener(new ClickOrLongListener() {
+
             @Override
             public void actionDown() {
                 if (mClickOrLongListener != null) {
@@ -234,6 +235,13 @@ public abstract class BaseOperationLayout extends FrameLayout {
                     mClickOrLongListener.onLongClickEnd(time);
                 }
                 startTipAlphaAnimation();
+            }
+
+            @Override
+            public void onLongClickFinish() {
+                if (mClickOrLongListener != null) {
+                    mClickOrLongListener.onLongClickFinish();
+                }
             }
 
             @Override

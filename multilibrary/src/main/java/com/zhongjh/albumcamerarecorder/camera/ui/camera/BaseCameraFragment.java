@@ -387,6 +387,7 @@ public abstract class BaseCameraFragment
      */
     private void initPvLayoutPhotoVideoListener() {
         getPhotoVideoLayout().setPhotoVideoListener(new ClickOrLongListener() {
+
             @Override
             public void actionDown() {
                 Log.d(TAG, "pvLayout actionDown");
@@ -422,6 +423,11 @@ public abstract class BaseCameraFragment
                 getCameraVideoManager().setSectionRecordTime(time);
                 // 录像暂停
                 pauseRecord(false);
+            }
+
+            @Override
+            public void onLongClickFinish() {
+                getState().onLongClickFinish();
             }
 
             @Override

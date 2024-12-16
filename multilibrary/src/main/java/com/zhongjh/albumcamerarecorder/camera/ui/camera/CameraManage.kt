@@ -202,7 +202,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
                 // 视频录制监控回调
                 when (videoRecordEvent) {
                     is VideoRecordEvent.Finalize -> {
-                        Log.d(TAG, "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri)
+                        Log.d(TAG, "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri + " isActivityPause:" + isActivityPause)
                         if (!isActivityPause) {
                             // 完成录制
                             val uri = videoRecordEvent.outputResults.outputUri

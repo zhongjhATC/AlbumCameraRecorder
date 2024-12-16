@@ -45,12 +45,18 @@ public interface IState {
     void stopProgress();
 
     /**
+     * 中间按钮：长按完毕
+     */
+    void onLongClickFinish();
+
+    /**
      * 左边按钮：取消核心事件
      */
     void pvLayoutCancel();
 
     /**
      * 录像时间过短，目前是单视频和多视频才会使用这个功能
+     *
      * @param time 多短的时间
      */
     void longClickShort(final long time);

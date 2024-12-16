@@ -181,6 +181,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void initPvLayoutPhotoVideoListener() {
         mViewHolder.pvLayout.setPhotoVideoListener(new ClickOrLongListener() {
+
             @Override
             public void actionDown() {
                 // 母窗体禁止滑动
@@ -218,6 +219,11 @@ public class SoundRecordingFragment extends BaseFragment {
                 // 录音结束
                 onRecord(false, false);
                 showRecordEndView();
+            }
+
+            @Override
+            public void onLongClickFinish() {
+
             }
 
             @Override

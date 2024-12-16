@@ -128,6 +128,12 @@ public class CameraStateManager implements IState {
         state.stopProgress();
     }
 
+    @Override
+    public void onLongClickFinish() {
+        Log.d(TAG, "doneProgress " + state.getName());
+        state.onLongClickFinish();
+    }
+
     /**
      * @return 当前状态
      */
