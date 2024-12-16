@@ -53,6 +53,7 @@ class GlobalSetting internal constructor(
         if (mGlobalSpec.cameraSetting != null) {
             mGlobalSpec.cameraSetting!!.onDestroy()
         }
+        mGlobalSpec.onLogListener = null
     }
 
     override fun albumSetting(albumSetting: AlbumSetting): GlobalSetting {
