@@ -68,8 +68,6 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.94X'
 	     // Supporting editing video use, currently only compression function, continue to add related functions, because the library uses ffmpeg, occupies a file size of 25M, according to the actual situation to choose whether to use
 	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.94X'
-	     // Because the library uses mp4parser, which takes up a file size of about 300kb, choose whether to use it according to the actual situation
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videomerge:1.1.94X'
 	}
 
 #### Step 3. gradle file to add configuration

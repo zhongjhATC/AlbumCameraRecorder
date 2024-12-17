@@ -42,7 +42,6 @@ import com.zhongjh.displaymedia.entity.DisplayMedia;
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
 import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
 import com.zhongjh.videoedit.VideoCompressManager;
-import com.zhongjh.videomerge.VideoMergeManager;
 
 import org.jetbrains.annotations.NotNull;
 
