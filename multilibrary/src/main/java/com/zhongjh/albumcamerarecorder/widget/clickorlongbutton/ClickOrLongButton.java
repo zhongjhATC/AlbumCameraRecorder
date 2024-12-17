@@ -162,10 +162,6 @@ public class ClickOrLongButton extends View {
      * 静止状态时的进度外圈
      */
     private Paint outProcessCirclePaint;
-    /**
-     * 静止状态时的进度外圈
-     */
-    private Paint outProcessIntervalCirclePaint;
     private Paint translucentPaint;
     private int translucentCircleRadius = 0;
     private float outMostCircleRadius;
@@ -187,10 +183,6 @@ public class ClickOrLongButton extends View {
      * 按钮可执行的功能状态（点击,长按,两者,按钮点击即是长按模式）
      */
     private int mButtonState;
-    /**
-     * 是否分段录制的模式
-     */
-    private boolean mIsSectionMode = true;
 
 
     private final TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
@@ -205,7 +197,7 @@ public class ClickOrLongButton extends View {
                     return;
                 }
             }
-            if (mIsSectionMode && !mCurrentLocation.isEmpty()) {
+            if (!mCurrentLocation.isEmpty()) {
                 // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
                 mMinDurationAnimationCurrent = 0;
             }
@@ -258,10 +250,8 @@ public class ClickOrLongButton extends View {
             centerCirclePaint.setColor(colorRecord);
             outMostWhiteCirclePaint.setColor(colorRoundBorder);
             percentInDegree = (360.0F * percent);
-            if (mIsSectionMode) {
-                if (!mCurrentLocation.isEmpty() || (timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
-                    mCurrentSumNumberDegrees = percentInDegree;
-                }
+            if (!mCurrentLocation.isEmpty() || (timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
+                mCurrentSumNumberDegrees = percentInDegree;
             }
 
             Log.d(TAG, "timeLapse:" + timeLapse);
@@ -275,7 +265,6 @@ public class ClickOrLongButton extends View {
                     float curOutCircleWidth = mOutCircleWidth + mOuterCircleWidthInc * calPercent;
                     processBarPaint.setStrokeWidth(curOutCircleWidth);
                     outProcessCirclePaint.setStrokeWidth(curOutCircleWidth);
-                    outProcessIntervalCirclePaint.setStrokeWidth(curOutCircleWidth);
                     outMostWhiteCirclePaint.setStrokeWidth(curOutCircleWidth);
                     outBlackCircleRadius = (outMostCircleRadius + outIncDis - curOutCircleWidth / 2.0F);
                     outMostBlackCircleRadius = (curOutCircleWidth / 2.0F + (outMostCircleRadius + outIncDis));
@@ -389,12 +378,6 @@ public class ClickOrLongButton extends View {
         outProcessCirclePaint.setAntiAlias(true);
         outProcessCirclePaint.setStrokeWidth(mOutCircleWidth);
         outProcessCirclePaint.setStyle(Style.STROKE);
-
-        outProcessIntervalCirclePaint = new Paint();
-        outProcessIntervalCirclePaint.setColor(colorInterval);
-        outProcessIntervalCirclePaint.setAntiAlias(true);
-        outProcessIntervalCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outProcessIntervalCirclePaint.setStyle(Style.STROKE);
     }
 
     /**
@@ -468,11 +451,6 @@ public class ClickOrLongButton extends View {
         Log.d(TAG, "onDraw percentInDegree" + percentInDegree);
         Log.d(TAG, "onDraw mCurrentSumNumberDegrees" + mCurrentSumNumberDegrees);
 
-        // 从这个顺序来看，即是从270为开始
-        for (Float item : mCurrentLocation) {
-            canvas.drawArc(outMostCircleRect, item, 3, false, outProcessIntervalCirclePaint);
-            Log.d(TAG, "canvas.drawArc " + item);
-        }
 
         canvas.drawCircle(centerX, centerY, outBlackCircleRadius, outBlackCirclePaint);
         canvas.drawCircle(centerX, centerY, outMostBlackCircleRadius, outMostBlackCirclePaint);
@@ -615,7 +593,6 @@ public class ClickOrLongButton extends View {
         processBarPaint.setStrokeWidth(mOutCircleWidth);
         outProcessCirclePaint.setStrokeWidth(mOutCircleWidth);
         outMostWhiteCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outProcessIntervalCirclePaint.setStrokeWidth(mOutCircleWidth);
         outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
         outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);
     }
@@ -719,13 +696,6 @@ public class ClickOrLongButton extends View {
             Log.d(TAG, "setCurrentTime mCurrentSumNumberDegrees " + mCurrentSumNumberDegrees);
         }
         invalidate();
-    }
-
-    /**
-     * 设置是否分段模式，分段录制的动画稍微不一样
-     */
-    public void setSectionMode(boolean isSectionMode) {
-        this.mIsSectionMode = isSectionMode;
     }
 
     /**

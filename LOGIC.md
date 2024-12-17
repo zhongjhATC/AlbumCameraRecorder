@@ -14,6 +14,7 @@
 
 1.2:    录像 - 迁移到DCIM/Camera 文件名字：VIDEO_yyyyMMdd_HHmmssSSS.jpg
         压缩 - AlbumCameraRecorderCompress 文件名字和路径：根据用户的压缩库来决定，不一定是这个路径
+        编辑 - AlbumCameraRecorderTemp - 加入相册 - 压缩
 
 相册界面：
 1. 相册选择图片
@@ -29,8 +30,6 @@
 
 
 报错汇总：
-3. 视频预览kotlin化，整个流程修改正常
-4. 整理状态属性 - 视频、多视频、录制中
 5. 长按按钮后，动画会刷一下体验不太好
 6. 编辑报错
 7. 视频代码看看为什么用不上 stopProgress
