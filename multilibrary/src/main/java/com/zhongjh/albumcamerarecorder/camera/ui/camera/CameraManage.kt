@@ -186,7 +186,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     @SuppressLint("MissingPermission")
     fun takeVideo() {
         recording?.resume() ?: let {
-            val name = "CameraX-recording-" + SimpleDateFormat(
+            val name = "VIDEO_" + SimpleDateFormat(
                 "yyyyMMdd_HHmmssSSS", Locale.US
             ).format(System.currentTimeMillis()) + ".mp4"
             val contentValues = ContentValues().apply {
