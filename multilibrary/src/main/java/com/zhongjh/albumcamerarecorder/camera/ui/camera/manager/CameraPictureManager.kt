@@ -29,6 +29,7 @@ import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.displayToGalleryAnd
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.imageMaxCount
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.common.utils.MediaUtils
@@ -403,31 +404,15 @@ open class CameraPictureManager(
 
     /**
      * 扫描
+     * 根据真实路径返回LocalMedia
      */
     private suspend fun mediaScanFile(path: String): LocalMedia = suspendCancellableCoroutine { ctn ->
         MediaScannerConnection.scanFile(
-            baseCameraFragment.myContext, arrayOf(path), arrayOf("image/jpeg")
+            baseCameraFragment.myContext, arrayOf(path), MimeType.ofImageArray()
         ) { path, _ ->
             // 相册刷新完成后的回调
             ctn.resume(MediaStoreUtils.getMediaDataByPath(baseCameraFragment.myContext, path))
         }
-    }
-
-
-    /**
-     * 兼容Android Q以上版本,添加进相册
-     *
-     */
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun movePictureFileQ(cacheFile: File): Uri? {
-        // 获取宽高
-        val mediaInfo = MediaUtils.getMediaInfo(
-            baseCameraFragment.myContext, MediaType.TYPE_PICTURE, cacheFile.path
-        )
-        // 加入图片到android系统库里面
-        return displayToGalleryAndroidQ(
-            baseCameraFragment.myContext, cacheFile, MediaType.TYPE_PICTURE, -1, mediaInfo.width, mediaInfo.height
-        )
     }
 
     companion object {

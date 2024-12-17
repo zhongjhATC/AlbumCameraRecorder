@@ -1,40 +1,30 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.previewvideo;
+package com.zhongjh.albumcamerarecorder.camera.ui.previewvideo
 
-
-import static com.zhongjh.common.enums.MediaType.TYPE_VIDEO;
-
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.MediaController;
-import android.widget.VideoView;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-
-import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
-import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils;
-import com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton;
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.entity.MediaExtraInfo;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.listener.VideoEditListener;
-import com.zhongjh.common.utils.MediaUtils;
-import com.zhongjh.common.utils.StatusBarUtils;
-import com.zhongjh.common.utils.ThreadUtils;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
+import android.content.Intent
+import android.media.MediaScannerConnection
+import android.net.Uri
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.MediaController
+import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.zhongjh.albumcamerarecorder.R
+import com.zhongjh.albumcamerarecorder.databinding.ActivityPreviewVideoZjhBinding
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
+import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.orientation
+import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createCompressFile
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.listener.VideoEditListener
+import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
+import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.io.File
+import kotlin.coroutines.resume
 
 
 /**
@@ -42,287 +32,228 @@ import java.io.File;
  *
  * @author zhongjh
  */
-public class PreviewVideoActivity extends AppCompatActivity {
+class PreviewVideoActivity : AppCompatActivity() {
 
-    private static final String TAG = PreviewVideoActivity.class.getSimpleName();
+    private val mActivityPreviewVideoZjhBinding by lazy {
+        ActivityPreviewVideoZjhBinding.inflate(layoutInflater)
+    }
 
-    public static final String LOCAL_FILE = "LOCAL_FILE";
-    static final String PATH = "PATH";
-
-    ConstraintLayout mCLMain;
-    ConstraintLayout mClMenu;
-    VideoView mVideoViewPreview;
-    ImageView mImgClose;
-    CircularProgressButton mBtnConfirm;
     /**
      * 该视频的相关参数
      */
-    LocalMedia mLocalMedia = new LocalMedia();
+    private var mLocalMedia: LocalMedia = LocalMedia()
+
     /**
      * 按钮事件运行中，因为该自定义控件如果通过setEnabled控制会导致动画不起效果，所以需要该变量控制按钮事件是否生效
      */
-    boolean mIsRun;
+    private var mIsRun: Boolean = false
+
     /**
      * 拍摄配置
      */
-    GlobalSpec mGlobalSpec = GlobalSpec.INSTANCE;
-    /**
-     * 迁移视频的异步线程
-     */
-    private ThreadUtils.SimpleTask<File> mMoveVideoFileTask;
+    private var mGlobalSpec: GlobalSpec = GlobalSpec
 
-    /**
-     * 打开activity
-     *
-     * @param fragment 打开者
-     * @param path     视频地址
-     */
-    public static void startActivity(Fragment fragment, ActivityResultLauncher<Intent> previewVideoActivityResult, String path) {
-        if (fragment.getActivity() != null) {
-            Intent intent = new Intent();
-            intent.putExtra(PATH, path);
-            intent.setClass(fragment.getActivity(), PreviewVideoActivity.class);
-            previewVideoActivityResult.launch(intent);
-            fragment.getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
-        }
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setRequestedOrientation(GlobalSpec.INSTANCE.getOrientation());
-        setTheme(mGlobalSpec.getThemeId());
+    override fun onCreate(savedInstanceState: Bundle?) {
+        requestedOrientation = orientation
+        setTheme(mGlobalSpec.themeId)
         // 兼容沉倾状态栏
-        StatusBarUtils.initStatusBar(PreviewVideoActivity.this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview_video_zjh);
-        mLocalMedia.setPath(getIntent().getStringExtra(PATH));
-        initView();
-        initListener();
-        initData();
-    }
-
-    @Override
-    public void finish() {
-        //关闭窗体动画显示
-        this.overridePendingTransition(0, R.anim.activity_close_zjh);
-        super.finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
-            mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(PreviewVideoActivity.this.getClass());
-            mGlobalSpec.setVideoCompressCoordinator(null);
+        initStatusBar(this@PreviewVideoActivity)
+        super.onCreate(savedInstanceState)
+        setContentView(mActivityPreviewVideoZjhBinding.root)
+        intent.getStringExtra(PATH)?.let {
+            mLocalMedia.absolutePath = it
+            initView()
+            initListener()
+            initData()
         }
-        if (mMoveVideoFileTask != null) {
-            mMoveVideoFileTask.cancel();
+    }
+
+    override fun finish() {
+        // 关闭窗体动画显示
+        this.overridePendingTransition(0, R.anim.activity_close_zjh)
+        super.finish()
+    }
+
+    override fun onDestroy() {
+        if (mGlobalSpec.isCompressEnable) {
+            mGlobalSpec.videoCompressCoordinator?.onCompressDestroy(this@PreviewVideoActivity.javaClass)
+            mGlobalSpec.videoCompressCoordinator = null
         }
         // 清除VideoView,防止内存泄漏
-        mVideoViewPreview.stopPlayback();
-        mVideoViewPreview.setOnCompletionListener(null);
-        mVideoViewPreview.setOnPreparedListener(null);
-        mCLMain.removeAllViews();
-        mVideoViewPreview = null;
-        super.onDestroy();
+        mActivityPreviewVideoZjhBinding.vvPreview.stopPlayback()
+        mActivityPreviewVideoZjhBinding.vvPreview.setOnCompletionListener(null)
+        mActivityPreviewVideoZjhBinding.vvPreview.setOnPreparedListener(null)
+        mActivityPreviewVideoZjhBinding.clMain.removeAllViews()
+        super.onDestroy()
     }
 
     /**
      * 初始化View
      */
-    private void initView() {
-        mCLMain = findViewById(R.id.clMain);
-        mClMenu = findViewById(R.id.clMenu);
-        mVideoViewPreview = findViewById(R.id.vvPreview);
-        mImgClose = findViewById(R.id.imgClose);
-        mBtnConfirm = findViewById(R.id.btnConfirm);
-        mBtnConfirm.setIndeterminateProgressMode(true);
+    private fun initView() {
+        mActivityPreviewVideoZjhBinding.btnConfirm.isIndeterminateProgressMode = true
         // 兼容沉倾状态栏
-        int statusBarHeight = StatusBarUtils.getStatusBarHeight(this.getApplicationContext());
-        mClMenu.setPadding(mClMenu.getPaddingLeft(), statusBarHeight, mClMenu.getPaddingRight(), mClMenu.getPaddingBottom());
-        ViewGroup.LayoutParams layoutParams = mClMenu.getLayoutParams();
-        layoutParams.height = layoutParams.height + statusBarHeight;
+        val statusBarHeight = getStatusBarHeight(this.applicationContext)
+        mActivityPreviewVideoZjhBinding.clMenu.setPadding(
+            mActivityPreviewVideoZjhBinding.clMenu.paddingLeft,
+            statusBarHeight,
+            mActivityPreviewVideoZjhBinding.clMenu.paddingRight,
+            mActivityPreviewVideoZjhBinding.clMenu.paddingBottom
+        )
+        val layoutParams = mActivityPreviewVideoZjhBinding.clMenu.layoutParams
+        layoutParams.height += statusBarHeight
     }
 
-    private void initListener() {
-        mBtnConfirm.setOnClickListener(v -> {
+    private fun initListener() {
+        mActivityPreviewVideoZjhBinding.btnConfirm.setOnClickListener {
             if (mIsRun) {
-                return;
+                return@setOnClickListener
             }
-            mIsRun = true;
-            confirm();
-        });
-        mImgClose.setOnClickListener(v -> PreviewVideoActivity.this.finish());
+            mIsRun = true
+            confirm()
+        }
+        mActivityPreviewVideoZjhBinding.imgClose.setOnClickListener { this@PreviewVideoActivity.finish() }
     }
 
     /**
      * 初始化数据
      */
-    private void initData() {
-        if (mLocalMedia.getPath() != null) {
-            File file = new File(mLocalMedia.getPath());
-            Log.d(TAG, "exists:" + file.exists() + " length:" + file.length());
-            playVideo(file);
-        }
+    private fun initData() {
+        val file = File(mLocalMedia.absolutePath)
+        Log.d(TAG, "exists:" + file.exists() + " length:" + file.length())
+        playVideo(file)
     }
 
     /**
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      */
-    private void playVideo(File file) {
-        mVideoViewPreview.pause();
+    private fun playVideo(file: File) {
+        mActivityPreviewVideoZjhBinding.vvPreview.pause()
         // mediaController 是底部控制条
-        MediaController mediaController = new MediaController(PreviewVideoActivity.this);
-        mediaController.setAnchorView(mVideoViewPreview);
-        mediaController.setMediaPlayer(mVideoViewPreview);
-        mediaController.setVisibility(View.GONE);
-        mVideoViewPreview.setMediaController(mediaController);
-        Uri uri = Uri.fromFile(file);
-        mVideoViewPreview.setVideoURI(uri);
+        val mediaController = MediaController(this@PreviewVideoActivity)
+        mediaController.setAnchorView(mActivityPreviewVideoZjhBinding.vvPreview)
+        mediaController.setMediaPlayer(mActivityPreviewVideoZjhBinding.vvPreview)
+        mediaController.visibility = View.GONE
+        mActivityPreviewVideoZjhBinding.vvPreview.setMediaController(mediaController)
+        val uri = Uri.fromFile(file)
+        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(uri)
         // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
-        mVideoViewPreview.setVisibility(View.VISIBLE);
-        if (!mVideoViewPreview.isPlaying()) {
-            mVideoViewPreview.start();
+        mActivityPreviewVideoZjhBinding.vvPreview.visibility = View.VISIBLE
+        if (!mActivityPreviewVideoZjhBinding.vvPreview.isPlaying) {
+            mActivityPreviewVideoZjhBinding.vvPreview.start()
         }
-        mVideoViewPreview.setOnPreparedListener(mp -> {
+        mActivityPreviewVideoZjhBinding.vvPreview.setOnPreparedListener {
             // 获取相关参数
-            mLocalMedia.setDuration(mVideoViewPreview.getDuration());
-        });
-        mVideoViewPreview.setOnCompletionListener(mediaPlayer -> {
+            mLocalMedia.duration = mActivityPreviewVideoZjhBinding.vvPreview.duration.toLong()
+        }
+        mActivityPreviewVideoZjhBinding.vvPreview.setOnCompletionListener {
             // 循环播放
-            if (!mVideoViewPreview.isPlaying()) {
-                mVideoViewPreview.start();
+            if (!mActivityPreviewVideoZjhBinding.vvPreview.isPlaying) {
+                mActivityPreviewVideoZjhBinding.vvPreview.start()
             }
-        });
+        }
     }
 
     /**
      * 提交
      */
-    private void confirm() {
+    private fun confirm() {
         // 判断是否开启了视频压缩功能
-        if (mGlobalSpec.isCompressEnable()) {
+        if (mGlobalSpec.isCompressEnable) {
             // 如果开启了直接压缩
-            compress();
+            compress()
         } else {
-            // 否则直接转移
-            confirm(new File(mLocalMedia.getPath()));
-            mIsRun = false;
-//            moveVideoFile();
+            // 否则直接提交
+            confirm(mLocalMedia.absolutePath, null)
+            mIsRun = false
         }
     }
 
     /**
      * 压缩视频
      */
-    private void compress() {
-        if (mLocalMedia.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
+    private fun compress() {
+        if (mGlobalSpec.videoCompressCoordinator != null) {
             // 获取文件名称
-            File newFile = FileMediaUtil.INSTANCE.createCompressFile(getApplicationContext(), mLocalMedia.getPath());
-            mGlobalSpec.getVideoCompressCoordinator().setVideoCompressListener(PreviewVideoActivity.this.getClass(), new VideoEditListener() {
-                @Override
-                public void onFinish() {
-                    confirm(newFile);
-                }
+            val newFile = createCompressFile(applicationContext, mLocalMedia.absolutePath)
+            // 压缩回调
+            mGlobalSpec.videoCompressCoordinator?.setVideoCompressListener(
+                this@PreviewVideoActivity.javaClass,
+                object : VideoEditListener {
+                    override fun onFinish() {
+                        confirm(mLocalMedia.absolutePath, newFile.absolutePath)
+                    }
 
-                @Override
-                public void onProgress(int progress, long progressTime) {
-                    mBtnConfirm.setProgress(progress);
-                }
+                    override fun onProgress(progress: Int, progressTime: Long) {
+                        mActivityPreviewVideoZjhBinding.btnConfirm.progress = progress
+                    }
 
-                @Override
-                public void onCancel() {
+                    override fun onCancel() {
+                    }
 
-                }
-
-                @Override
-                public void onError(@NotNull String message) {
-                    mIsRun = false;
-                }
-            });
-            if (mLocalMedia.getPath() != null && mGlobalSpec.getVideoCompressCoordinator() != null) {
-                mGlobalSpec.getVideoCompressCoordinator().compressRxJava(PreviewVideoActivity.this.getClass(), mLocalMedia.getPath(), newFile.getPath());
+                    override fun onError(message: String) {
+                        mIsRun = false
+                    }
+                })
+            // 执行压缩
+            if (mGlobalSpec.videoCompressCoordinator != null) {
+                mGlobalSpec.videoCompressCoordinator?.compressRxJava(
+                    this@PreviewVideoActivity.javaClass, mLocalMedia.absolutePath, newFile.path
+                )
             }
         }
     }
 
-//    /**
-//     * 迁移视频文件，缓存文件迁移到配置目录
-//     */
-//    private void moveVideoFile() {
-//        Log.d(TAG, "moveVideoFile");
-//        // 执行等待动画
-//        mBtnConfirm.setProgress(50);
-//        // 开始迁移文件，将 缓存文件 拷贝到 配置目录
-//        ThreadUtils.executeByIo(getMoveVideoFileTask());
-//    }
-
-//    /**
-//     * 迁移视频的异步线程
-//     */
-//    private ThreadUtils.SimpleTask<File> getMoveVideoFileTask() {
-//        mMoveVideoFileTask = new ThreadUtils.SimpleTask<File>() {
-//            @Override
-//            public File doInBackground() {
-//                if (mLocalFile.getPath() == null) {
-//                    return null;
-//                }
-//                // 获取文件名称
-//                String newFileName = mLocalFile.getPath().substring(mLocalFile.getPath().lastIndexOf(File.separator));
-//                FileMediaUtil.INSTANCE.createCacheFile()
-//                File newFile = mVideoMediaStoreCompat.createFile(newFileName, 1, false);
-//                FileUtil.move(new File(mLocalFile.getPath()), newFile);
-//                return newFile;
-//            }
-//
-//            @Override
-//            public void onSuccess(File newFile) {
-//                if (newFile.exists()) {
-//                    mBtnConfirm.setProgress(100);
-//                    confirm(newFile);
-//                } else {
-//                    mBtnConfirm.setProgress(0);
-//                }
-//                mIsRun = false;
-//            }
-//
-//            @Override
-//            public void onFail(Throwable t) {
-//                super.onFail(t);
-//                mIsRun = false;
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                super.onCancel();
-//                mIsRun = false;
-//            }
-//        };
-//        return mMoveVideoFileTask;
-//    }
-
     /**
      * 确定该视频
      */
-    private void confirm(File newFile) {
-        Intent intent = new Intent();
-        MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplicationContext(), newFile.getPath());
-        mLocalMedia.setWidth(mediaExtraInfo.getWidth());
-        mLocalMedia.setHeight(mediaExtraInfo.getHeight());
-        if (mGlobalSpec.isAddAlbumByVideo()) {
-            Uri uri = MediaStoreUtils.displayToGallery(getApplicationContext(), newFile, TYPE_VIDEO, mLocalMedia.getDuration(), mLocalMedia.getWidth(), mLocalMedia.getHeight(), FileMediaUtil.INSTANCE.getDir(""));
-            // 加入相册后的最后是id，直接使用该id
-            mLocalMedia.setId(MediaStoreUtils.getId(uri));
-        } else {
-            // 用当前时间代替id
-            mLocalMedia.setId(System.currentTimeMillis());
+    private fun confirm(absolutePath: String, compressPath: String?) {
+        val intent = Intent()
+        runBlocking {
+            mLocalMedia = mediaScanFile(absolutePath)
         }
-        mLocalMedia.setAbsolutePath(newFile.getPath());
-        mLocalMedia.setPath(FileMediaUtil.INSTANCE.getUri(getApplicationContext(), newFile.getPath()).toString());
-        mLocalMedia.setSize(newFile.length());
-        mLocalMedia.setMimeType(MimeType.MP4.getMimeTypeName());
-        intent.putExtra(LOCAL_FILE, mLocalMedia);
-        setResult(RESULT_OK, intent);
-        PreviewVideoActivity.this.finish();
+        mLocalMedia.compressPath = compressPath
+        intent.putExtra(LOCAL_FILE, mLocalMedia)
+        setResult(RESULT_OK, intent)
+        this@PreviewVideoActivity.finish()
     }
 
+    /**
+     * 扫描
+     * 根据真实路径返回LocalMedia
+     */
+    private suspend fun mediaScanFile(path: String): LocalMedia = suspendCancellableCoroutine { ctn ->
+        MediaScannerConnection.scanFile(
+            applicationContext, arrayOf(path), MimeType.ofVideoArray()
+        ) { path, _ ->
+            // 相册刷新完成后的回调
+            ctn.resume(MediaStoreUtils.getMediaDataByPath(applicationContext, path))
+        }
+    }
+
+    companion object {
+        private val TAG: String = PreviewVideoActivity::class.java.simpleName
+
+        const val LOCAL_FILE: String = "LOCAL_FILE"
+        const val PATH: String = "PATH"
+
+        /**
+         * 打开activity
+         *
+         * @param fragment 打开者
+         * @param path     视频地址
+         */
+        @JvmStatic
+        fun startActivity(
+            fragment: Fragment, previewVideoActivityResult: ActivityResultLauncher<Intent?>, path: String?
+        ) {
+            fragment.activity?.let {
+                val intent = Intent()
+                intent.putExtra(PATH, path)
+                intent.setClass(it, PreviewVideoActivity::class.java)
+                previewVideoActivityResult.launch(intent)
+                fragment.activity?.overridePendingTransition(R.anim.activity_open_zjh, 0)
+            }
+        }
+    }
 }

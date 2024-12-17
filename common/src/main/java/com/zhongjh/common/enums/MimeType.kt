@@ -332,6 +332,7 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
         /**
          * 根据后缀名获取类型名称
          */
+        @JvmStatic
         fun getMimeTypeName(suffix: String): String {
             return if (JPEG.extensions.contains(suffix)) {
                 JPEG.mimeTypeName
@@ -373,6 +374,36 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
                 JPEG.mimeTypeName
             }
         }
+
+        @JvmStatic
+        fun ofImageArray(): Array<String> {
+            return arrayOf(
+                JPEG.mimeTypeName,
+                PNG.mimeTypeName,
+                GIF.mimeTypeName,
+                BMP.mimeTypeName,
+                XMSBMP.mimeTypeName,
+                VNDBMP.mimeTypeName,
+                WEBP.mimeTypeName,
+                HEIC.mimeTypeName
+            )
+        }
+
+        @JvmStatic
+        fun ofVideoArray(): Array<String> {
+            return arrayOf(
+                MPEG.mimeTypeName,
+                MP4.mimeTypeName,
+                QUICKTIME.mimeTypeName,
+                THREEGPP.mimeTypeName,
+                THREEGPP2.mimeTypeName,
+                MKV.mimeTypeName,
+                WEBM.mimeTypeName,
+                TS.mimeTypeName,
+                AVI.mimeTypeName
+            )
+        }
+
 
     }
 }
