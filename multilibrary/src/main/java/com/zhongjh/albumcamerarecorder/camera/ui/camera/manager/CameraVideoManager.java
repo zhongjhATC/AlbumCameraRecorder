@@ -14,8 +14,6 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraVideo;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 
-import java.util.ArrayList;
-
 /**
  * 这是专门处理视频的有关逻辑
  *
@@ -41,9 +39,10 @@ public class CameraVideoManager implements ICameraVideo {
      */
     ActivityResultLauncher<Intent> previewVideoActivityResult;
     /**
-     * 处于分段录制模式下的视频的时间列表
+     * 当前录制视频的时间
      */
-    private final ArrayList<Long> videoTimes = new ArrayList<>();
+    private Long videoTime = 0L;
+
     /**
      * 初始化有关视频的配置数据
      */
@@ -90,18 +89,25 @@ public class CameraVideoManager implements ICameraVideo {
     public void onRecordPause(long recordedDurationNanos) {
         baseCameraFragment.setShortTipLongRecording();
         // 如果已经有录像正在录制中，那么就不执行这个动作了
-        if (videoTimes.isEmpty()) {
+        if (videoTime == 0) {
             baseCameraFragment.getPhotoVideoLayout().startShowLeftRightButtonsAnimator(false);
         }
-        videoTimes.clear();
-        videoTimes.add(recordedDurationNanos / 1000000);
+        videoTime = recordedDurationNanos / 1000000;
         // 显示当前进度
-        baseCameraFragment.getPhotoVideoLayout().setData(videoTimes);
+        baseCameraFragment.getPhotoVideoLayout().setData(videoTime);
         // 如果是在已经合成的情况下继续拍摄，那就重置状态
         if (!baseCameraFragment.getPhotoVideoLayout().getProgressMode()) {
             baseCameraFragment.getPhotoVideoLayout().resetConfirm();
         }
         baseCameraFragment.getPhotoVideoLayout().setEnabled(true);
+    }
+
+    /**
+     * 视频开始录制
+     */
+    @Override
+    public void onRecordStart() {
+        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnClickOrLong.setStartTicking(true);
     }
 
     /**
@@ -115,8 +121,11 @@ public class CameraVideoManager implements ICameraVideo {
         baseCameraFragment.getPhotoVideoLayout().setEnabled(true);
     }
 
-    public ArrayList<Long> getVideoTimes() {
-        return videoTimes;
+    public Long getVideoTime() {
+        return videoTime;
     }
 
+    public void setVideoTime(Long videoTime) {
+        this.videoTime = videoTime;
+    }
 }

@@ -108,7 +108,7 @@ public class ClickOrLongButton extends View {
      */
     private Float mCurrentSumNumberDegrees = 0F;
     /**
-     * 当前录制的时间点
+     * 当前录制的总共时间点
      */
     private Long mCurrentSumTime = 0L;
     /**
@@ -183,7 +183,10 @@ public class ClickOrLongButton extends View {
      * 按钮可执行的功能状态（点击,长按,两者,按钮点击即是长按模式）
      */
     private int mButtonState;
-
+    /**
+     * 是否允许动画,目前只针对视频录制,等视频通知我们开始，我们再开始动画
+     */
+    private boolean mIsStartTicking = true;
 
     private final TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
         @Override
@@ -228,7 +231,8 @@ public class ClickOrLongButton extends View {
     private void startAnimation(long timeLapse, float percent) {
         Log.d(TAG, "startAnimation timeLapse " + timeLapse);
         Log.d(TAG, "startAnimation mMinDurationAnimationCurrent " + mMinDurationAnimationCurrent);
-        if (timeLapse >= mMinDurationAnimationCurrent) {
+        // isStartTicking是由CameraManage的视频录制监控来决定是否继续动画
+        if (timeLapse >= mMinDurationAnimationCurrent && isStartTicking()) {
             synchronized (ClickOrLongButton.this) {
                 if (recordState == RECORD_NOT_STARTED) {
                     setRecordState(RECORD_STARTED);
@@ -250,8 +254,9 @@ public class ClickOrLongButton extends View {
             centerCirclePaint.setColor(colorRecord);
             outMostWhiteCirclePaint.setColor(colorRoundBorder);
             percentInDegree = (360.0F * percent);
-            if (!mCurrentLocation.isEmpty() || (timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
-                mCurrentSumNumberDegrees = percentInDegree;
+            if ((timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
+                Log.d(TAG, "setCurrentSumNumberDegrees(percentInDegree)");
+                setCurrentSumNumberDegrees(percentInDegree);
             }
 
             Log.d(TAG, "timeLapse:" + timeLapse);
@@ -272,7 +277,7 @@ public class ClickOrLongButton extends View {
                     translucentCircleRadius = (int) (outIncDis + outMostCircleRadius);
                     innerCircleRadiusToDraw = calPercent * innerCircleRadiusWhenRecord;
                 }
-                invalidate();
+                invalidateCustom();
             } else {
                 Log.d(TAG, "满足100" + (mRecordedTime / timeLimitInMils >= FULL_PROGRESS));
                 step++;
@@ -567,8 +572,7 @@ public class ClickOrLongButton extends View {
         resetCommon();
         mCurrentSumTime = 0L;
         mCurrentLocation.clear();
-        mCurrentSumNumberDegrees = 0F;
-        invalidate();
+        invalidateCustom();
     }
 
     /**
@@ -576,7 +580,7 @@ public class ClickOrLongButton extends View {
      */
     public void breakOff() {
         resetCommon();
-        invalidate();
+        invalidateCustom();
     }
 
     private void resetCommon() {
@@ -613,6 +617,14 @@ public class ClickOrLongButton extends View {
         this.touchable = touchable;
     }
 
+    public boolean isStartTicking() {
+        return mIsStartTicking;
+    }
+
+    public void setStartTicking(boolean isStartTicking) {
+        this.mIsStartTicking = isStartTicking;
+    }
+
     private void startTicking() {
         synchronized (ClickOrLongButton.this) {
             if (recordState != RECORD_NOT_STARTED) {
@@ -641,6 +653,12 @@ public class ClickOrLongButton extends View {
         return numberDegrees;
     }
 
+
+    private void invalidateCustom() {
+        invalidate();
+        Log.d(TAG, "invalidateCustom");
+    }
+
     /**
      * 按钮回调接口
      */
@@ -649,6 +667,13 @@ public class ClickOrLongButton extends View {
      * 判断是否已经调用过isActionDwon,结束后重置此值
      */
     private boolean mActionDown;
+
+    private void setCurrentSumNumberDegrees(Float value) {
+        if (value == 0) {
+            Log.d(TAG, "setCurrentSumNumberDegrees 0");
+        }
+        mCurrentSumNumberDegrees = value;
+    }
 
     // region 对外方法
 
@@ -676,25 +701,21 @@ public class ClickOrLongButton extends View {
     /**
      * 设置当前已录制的时间，用于分段录制
      */
-    public void setCurrentTime(ArrayList<Long> currentTimes) {
+    public void setCurrentTime(Long currentTime) {
         mCurrentLocation.clear();
-        mCurrentSumNumberDegrees = 0F;
-        mCurrentSumTime = 0L;
-        // 当前录制时间集
-        // 计算百分比红点
-        for (int i = 0; i < currentTimes.size(); i++) {
-            // 获取当前时间占比
-            float percent = currentTimes.get(i) / timeLimitInMils;
-            // 根据360度，以这个占比计算是具体多少度
-            float numberDegrees = percent * 360;
-            // 数据设置规范,适合当前圆形
-            mCurrentLocation.add(getNumberDegrees(numberDegrees));
-            mCurrentSumNumberDegrees = numberDegrees;
-            mCurrentSumTime = currentTimes.get(i);
-            mRecordedTime = currentTimes.get(i);
-            Log.d(TAG, "setCurrentTime mCurrentSumTime " + mCurrentSumTime);
-            Log.d(TAG, "setCurrentTime mCurrentSumNumberDegrees " + mCurrentSumNumberDegrees);
-        }
+        // 获取当前时间占比
+        float percent = currentTime / timeLimitInMils;
+        // 根据360度，以这个占比计算是具体多少度
+        float numberDegrees = percent * 360;
+        // 数据设置规范,适合当前圆形
+        mCurrentLocation.add(getNumberDegrees(numberDegrees));
+        Log.d(TAG, "setCurrentSumNumberDegrees(numberDegrees);");
+        setCurrentSumNumberDegrees(numberDegrees);
+        mCurrentSumTime = currentTime;
+        mRecordedTime = currentTime;
+        Log.d(TAG, "mCurrentSumTime2 " + mCurrentSumTime);
+        Log.d(TAG, "setCurrentTime mCurrentSumTime " + mCurrentSumTime);
+        Log.d(TAG, "setCurrentTime mCurrentSumNumberDegrees " + mCurrentSumNumberDegrees);
         invalidate();
     }
 
@@ -720,14 +741,6 @@ public class ClickOrLongButton extends View {
         if (buttonStateBoth == BUTTON_STATE_CLICK_AND_HOLD) {
             mMinDurationAnimationCurrent = 0;
         }
-    }
-
-    /**
-     * 分段录制回滚上一段
-     * 一般用于录制时出现异常
-     */
-    public void selectionRecordRollBack() {
-        invalidate();
     }
 
     /**

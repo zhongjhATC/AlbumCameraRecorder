@@ -31,6 +31,11 @@ public interface ICameraVideo {
     void onRecordPause(long recordedDurationNanos);
 
     /**
+     * 视频开始录制
+     */
+    void onRecordStart();
+
+    /**
      * 视频录制成功
      *
      * @param path 视频录制结束后提供的路径

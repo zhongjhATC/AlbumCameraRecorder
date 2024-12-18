@@ -23,6 +23,11 @@ interface OnCameraManageListener {
     fun onRecordPause(recordedDurationNanos:Long)
 
     /**
+     * 录像开始
+     */
+    fun onRecordStart()
+
+    /**
      * Activity触发了Pause
      */
     fun onActivityPause()

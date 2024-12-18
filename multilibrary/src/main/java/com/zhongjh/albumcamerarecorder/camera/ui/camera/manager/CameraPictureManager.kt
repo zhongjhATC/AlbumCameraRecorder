@@ -4,13 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.albumcamerarecorder.R
@@ -25,7 +23,6 @@ import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil.getOutFile
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils
-import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.displayToGalleryAndroidQ
 import com.zhongjh.albumcamerarecorder.utils.SelectableUtils.imageMaxCount
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
@@ -171,8 +168,8 @@ open class CameraPictureManager(
      * 拍照
      */
     override fun takePhoto() {
-        // 如果已经有分段视频，则不允许拍照了
-        if ((baseCameraFragment.cameraVideoManager?.videoTimes?.size ?: 0) <= 0) {
+        // 如果已经有视频，则不允许拍照了
+        if ((baseCameraFragment.cameraVideoManager?.videoTime ?: 0) <= 0) {
             // 判断数量
             if (photoAdapter.itemCount < imageMaxCount) {
                 // 设置不能点击，防止多次点击报错

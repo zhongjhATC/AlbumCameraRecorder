@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraManage;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;

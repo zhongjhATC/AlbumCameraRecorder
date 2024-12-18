@@ -539,10 +539,10 @@ public abstract class BaseOperationLayout extends FrameLayout {
     }
 
     /**
-     * 赋值时间长度，目前用于分段录制
+     * 赋值当前视频录制时间
      */
-    public void setData(ArrayList<Long> videoTimes) {
-        viewHolder.btnClickOrLong.setCurrentTime(videoTimes);
+    public void setData(Long videoTime) {
+        viewHolder.btnClickOrLong.setCurrentTime(videoTime);
     }
 
     /**

@@ -16,8 +16,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,6 +41,7 @@ import com.zhongjh.albumcamerarecorder.camera.listener.ClickOrLongListener;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.IState;
@@ -485,6 +484,11 @@ public abstract class BaseCameraFragment
      */
     private void initCameraViewListener() {
         getCameraManage().setOnCameraManageListener(new OnCameraManageListener() {
+
+            @Override
+            public void onRecordStart() {
+                getCameraVideoManager().onRecordStart();
+            }
 
             @Override
             public void onActivityPause() {

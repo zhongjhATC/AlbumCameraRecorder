@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.ImageViewTouch;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;

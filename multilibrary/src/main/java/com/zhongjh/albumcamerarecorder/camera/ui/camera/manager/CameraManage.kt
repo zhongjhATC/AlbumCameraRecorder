@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.camera
+package com.zhongjh.albumcamerarecorder.camera.ui.camera.manager
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
@@ -36,10 +36,11 @@ import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEvent
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXPreviewViewTouchListener
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.CameraFragment.ViewHolder
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView
-import com.zhongjh.common.enums.MediaType
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.DCIM_CAMERA
+import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import com.zhongjh.common.utils.UriUtils
@@ -201,8 +202,19 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             ) { videoRecordEvent ->
                 // 视频录制监控回调
                 when (videoRecordEvent) {
+                    is VideoRecordEvent.Status -> {
+                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
+                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
+                            Log.d(TAG, "mRecordedTime 开始" + videoRecordEvent.recordingStats.recordedDurationNanos)
+                            onCameraManageListener?.onRecordStart()
+                        }
+                    }
+
                     is VideoRecordEvent.Finalize -> {
-                        Log.d(TAG, "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri + " isActivityPause:" + isActivityPause)
+                        Log.d(
+                            TAG,
+                            "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri + " isActivityPause:" + isActivityPause
+                        )
                         if (!isActivityPause) {
                             // 完成录制
                             val uri = videoRecordEvent.outputResults.outputUri

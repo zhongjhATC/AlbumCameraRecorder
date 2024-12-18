@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
+import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
@@ -134,14 +135,14 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
         com.zhongjh.albumcamerarecorder.widget.ImageViewTouch imgPhoto;
         ImageView imgFlash;
         ImageView imgSwitch;
-        PhotoVideoLayout pvLayout;
+        public PhotoVideoLayout pvLayout;
         RecyclerView rlPhoto;
         View vLine1;
         View vLine2;
         ImageView imgClose;
         ConstraintLayout clMenu;
-        PreviewView previewView;
-        FocusView focusView;
+        public PreviewView previewView;
+        public FocusView focusView;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;
