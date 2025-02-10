@@ -268,7 +268,7 @@ public abstract class BaseCameraFragment
 
         // 兼容沉倾状态栏
         if (getTopView() != null) {
-            int statusBarHeight = StatusBarUtils.getStatusBarHeight(getMyContext());
+            int statusBarHeight = StatusBarUtils.getStatusBarHeight(requireActivity());
             getTopView().setPadding(0, statusBarHeight, 0, 0);
             ViewGroup.LayoutParams layoutParams = getTopView().getLayoutParams();
             layoutParams.height = layoutParams.height + statusBarHeight;

@@ -203,7 +203,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private void initView(Bundle savedInstanceState) {
         // 兼容沉倾状态栏
-        int statusBarHeight = StatusBarUtils.getStatusBarHeight(this.mContext);
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(requireActivity());
         mViewHolder.root.setPadding(mViewHolder.root.getPaddingLeft(), statusBarHeight,
                 mViewHolder.root.getPaddingRight(), mViewHolder.root.getPaddingBottom());
         // 修改颜色

@@ -93,7 +93,7 @@ class PreviewVideoActivity : AppCompatActivity() {
     private fun initView() {
         mActivityPreviewVideoZjhBinding.btnConfirm.isIndeterminateProgressMode = true
         // 兼容沉倾状态栏
-        val statusBarHeight = getStatusBarHeight(this.applicationContext)
+        val statusBarHeight = getStatusBarHeight(this)
         mActivityPreviewVideoZjhBinding.clMenu.setPadding(
             mActivityPreviewVideoZjhBinding.clMenu.paddingLeft,
             statusBarHeight,

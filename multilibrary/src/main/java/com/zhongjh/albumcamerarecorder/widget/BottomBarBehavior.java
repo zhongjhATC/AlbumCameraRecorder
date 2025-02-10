@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -26,7 +27,9 @@ public class BottomBarBehavior extends CoordinatorLayout.Behavior<ConstraintLayo
 
     public BottomBarBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
-        statusBarHeight = StatusBarUtils.getStatusBarHeight(context);
+        if (context instanceof Activity) {
+            statusBarHeight = StatusBarUtils.getStatusBarHeight((Activity)context);
+        }
     }
 
     @Override
