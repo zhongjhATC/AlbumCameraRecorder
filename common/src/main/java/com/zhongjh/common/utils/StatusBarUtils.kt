@@ -1,17 +1,12 @@
 package com.zhongjh.common.utils
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import android.view.View
-import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.FragmentActivity
 
 /**
  * 状态栏
