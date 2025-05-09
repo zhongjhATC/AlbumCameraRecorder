@@ -302,28 +302,9 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         for (localMedia in localMediaList) {
             val progressMedia = DisplayMedia(localMedia)
             progressMedia.isUploading = true
-            // 直接处理音频
+            // 处理音频
             if (progressMedia.isAudio()) {
                 progressMedia.videoMedia = VideoMedia()
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
-                mediaAudios.add(progressMedia)
                 mediaAudios.add(progressMedia)
             }
             // 处理图片
