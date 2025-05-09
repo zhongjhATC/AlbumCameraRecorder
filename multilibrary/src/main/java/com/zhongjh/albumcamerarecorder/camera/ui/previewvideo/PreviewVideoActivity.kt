@@ -9,6 +9,8 @@ import android.view.View
 import android.widget.MediaController
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.databinding.ActivityPreviewVideoZjhBinding
@@ -93,15 +95,18 @@ class PreviewVideoActivity : AppCompatActivity() {
     private fun initView() {
         mActivityPreviewVideoZjhBinding.btnConfirm.isIndeterminateProgressMode = true
         // 兼容沉倾状态栏
-        val statusBarHeight = getStatusBarHeight(this)
-        mActivityPreviewVideoZjhBinding.clMenu.setPadding(
-            mActivityPreviewVideoZjhBinding.clMenu.paddingLeft,
-            statusBarHeight,
-            mActivityPreviewVideoZjhBinding.clMenu.paddingRight,
-            mActivityPreviewVideoZjhBinding.clMenu.paddingBottom
-        )
-        val layoutParams = mActivityPreviewVideoZjhBinding.clMenu.layoutParams
-        layoutParams.height += statusBarHeight
+        ViewCompat.setOnApplyWindowInsetsListener(mActivityPreviewVideoZjhBinding.clMenu) { v, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.setPadding(
+                mActivityPreviewVideoZjhBinding.clMenu.paddingLeft,
+                statusBars.top,
+                mActivityPreviewVideoZjhBinding.clMenu.paddingRight,
+                mActivityPreviewVideoZjhBinding.clMenu.paddingBottom
+            )
+            val layoutParams = mActivityPreviewVideoZjhBinding.clMenu.layoutParams
+            layoutParams.height += statusBars.top
+            insets
+        }
     }
 
     private fun initListener() {
