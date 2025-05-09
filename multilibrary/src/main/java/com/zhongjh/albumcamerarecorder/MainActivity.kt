@@ -238,9 +238,9 @@ open class MainActivity : AppCompatActivity() {
                 mActivityMainZjhBinding.tableLayout.visibility = View.GONE
             } else {
                 mActivityMainZjhBinding.tableLayout.visibility = View.VISIBLE
-                // 禁滑viewPager
-                mActivityMainZjhBinding.viewPager.isUserInputEnabled = false
             }
+            // 禁滑viewPager 否则导致长按按钮出问题：长按+滑动放手后,无法结束录制
+            mActivityMainZjhBinding.viewPager.isUserInputEnabled = false
             mIsInit = true
         }
     }
