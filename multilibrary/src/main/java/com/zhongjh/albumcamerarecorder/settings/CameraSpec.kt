@@ -88,7 +88,7 @@ object CameraSpec {
     /**
      * 最长录制时间，单位为毫秒
      */
-    var maxDuration = 1000
+    var maxDuration = 10000
 
     /**
      * 最短录制时间限制，单位为毫秒，如果录制期间低于2000毫秒，均不算录制
@@ -159,7 +159,7 @@ object CameraSpec {
         videoFormat = null
         enableFlashMemoryModel = false
         // 最长录制时间
-        maxDuration = 1000
+        maxDuration = 10000
         minDuration = 2000
         readinessDuration = 1000
         watermarkResource = -1
