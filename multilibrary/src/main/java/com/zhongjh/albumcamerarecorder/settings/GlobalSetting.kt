@@ -121,23 +121,27 @@ class GlobalSetting internal constructor(
     }
 
     override fun alreadyCount(
+        maxSelectable: Int?,
+        maxImageSelectable: Int?,
+        maxVideoSelectable: Int?,
+        maxAudioSelectable: Int?,
         alreadyImageCount: Int,
         alreadyVideoCount: Int,
         alreadyAudioCount: Int
     ): GlobalSetting {
         // 计算
-        if (mGlobalSpec.maxSelectable != null) {
+        if (maxSelectable != null) {
             mGlobalSpec.maxSelectable =
-                mGlobalSpec.maxSelectable!! - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount)
+                maxSelectable - (alreadyImageCount + alreadyVideoCount + alreadyAudioCount)
         }
-        if (mGlobalSpec.maxImageSelectable != null) {
-            mGlobalSpec.maxImageSelectable = mGlobalSpec.maxImageSelectable!! - alreadyImageCount
+        if (maxImageSelectable != null) {
+            mGlobalSpec.maxImageSelectable = maxImageSelectable - alreadyImageCount
         }
-        if (mGlobalSpec.maxVideoSelectable != null) {
-            mGlobalSpec.maxVideoSelectable = mGlobalSpec.maxVideoSelectable!! - alreadyVideoCount
+        if (maxVideoSelectable != null) {
+            mGlobalSpec.maxVideoSelectable = maxVideoSelectable - alreadyVideoCount
         }
-        if (mGlobalSpec.maxAudioSelectable != null) {
-            mGlobalSpec.maxAudioSelectable = mGlobalSpec.maxAudioSelectable!! - alreadyAudioCount
+        if (maxAudioSelectable != null) {
+            mGlobalSpec.maxAudioSelectable = maxAudioSelectable - alreadyAudioCount
         }
         return this
     }

@@ -101,12 +101,20 @@ interface GlobalSettingApi {
     /**
      * 已经选择好的数量
      *
+     * @param maxSelectable      最大选择数量
+     * @param maxImageSelectable image的最大可选计数.
+     * @param maxVideoSelectable video的最大可选计数.
+     * @param maxAudioSelectable audio的最大可选计数.
      * @param alreadyImageCount 已选择的图片数量
      * @param alreadyVideoCount 已选择的视频数量
      * @param alreadyAudioCount 已选择的音频数量
      * @return [GlobalSetting] this
      */
     fun alreadyCount(
+        maxSelectable: Int?,
+        maxImageSelectable: Int?,
+        maxVideoSelectable: Int?,
+        maxAudioSelectable: Int?,
         alreadyImageCount: Int,
         alreadyVideoCount: Int,
         alreadyAudioCount: Int
