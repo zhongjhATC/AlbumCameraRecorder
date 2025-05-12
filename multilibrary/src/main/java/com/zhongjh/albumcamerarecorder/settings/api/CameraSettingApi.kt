@@ -27,7 +27,7 @@ interface CameraSettingApi {
     fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>): CameraSetting
 
     /**
-     * 支持的类型：图片，视频
+     * 支持的类型：图片，视频。只识别图片、视频类型，并不会具体到更细致的类型
      * 这个优先于 [com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting.choose]
      *
      * @param mimeTypes 类型
