@@ -271,8 +271,8 @@ class ImagesAndVideoAdapter(
      * 清空数据
      */
     fun clearAll() {
-        notifyItemRangeRemoved(0, list.size)
         list.clear()
+        notifyItemRangeRemoved(0, list.size)
     }
 
     /**

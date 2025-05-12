@@ -46,7 +46,7 @@ class AudioAdapter(
     /**
      * 是否允许操作(一般只用于展览作用)
      */
-    var isOperation = true
+    private var isOperation = true
 
     var callback: Callback? = null
 
@@ -79,6 +79,12 @@ class AudioAdapter(
          * 音频播放进度事件
          */
         fun onPlayProgress(position: Int, mediaPlayerCurrentPosition: Int)
+
+        /**
+         * 音频删除触发事件
+         * 主要是为了通知九宫格(显示图片视频)刷新数据
+         */
+        fun onRemoveRecorder()
     }
 
     /**
@@ -233,6 +239,7 @@ class AudioAdapter(
                     stopMediaPlayer()
                 }
             }
+            callback?.onRemoveRecorder()
         }
 
         // 播放按钮
@@ -447,6 +454,5 @@ class AudioAdapter(
         }
 
     }
-
 
 }

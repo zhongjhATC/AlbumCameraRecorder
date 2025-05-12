@@ -175,8 +175,13 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
                     it as AudioAdapter.AudioHolder
                     // 设置当前播放进度
                     it.seekBar.progress = mediaPlayerCurrentPosition
-                    it.tvCurrentProgress.text = mAudioAdapter.generateTime(mediaPlayerCurrentPosition.toLong()) + File.separator
+                    it.tvCurrentProgress.text =
+                        mAudioAdapter.generateTime(mediaPlayerCurrentPosition.toLong()) + File.separator
                 }
+            }
+
+            override fun onRemoveRecorder() {
+                mImagesAndVideoAdapter.notifyItemRangeChanged(0, mImagesAndVideoAdapter.getData().size - 1)
             }
 
         }
@@ -252,8 +257,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
     private fun initException(imageEngineStr: String?) {
         if (imageEngineStr == null) {
             // 必须定义image_engine属性，指定某个显示图片类
-            throw
-            NullPointerException("The image_engine attribute must be defined to specify a class for displaying images")
+            throw NullPointerException("The image_engine attribute must be defined to specify a class for displaying images")
         } else {
             // 完整类名
             val imageEngineClass: Class<*> = Class.forName(imageEngineStr)
@@ -316,11 +320,10 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
                 progressMediaVideos.add(progressMedia)
             }
         }
+        // 先加音频再加图片视频,该顺序不能打乱,因为最终是需要mImagesAndVideoAdapter来判断是否需要+号
+        mAudioAdapter.addAudioData(mediaAudios)
         mImagesAndVideoAdapter.addImageData(progressMediaImages)
         mImagesAndVideoAdapter.addVideoData(progressMediaVideos)
-        mAudioAdapter.addAudioData(mediaAudios)
-        // 检测添加多媒体上限
-        mImagesAndVideoAdapter.notifyItemRangeChanged(0, mImagesAndVideoAdapter.getData().size - 1)
         return
     }
 
