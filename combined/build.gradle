@@ -1,10 +1,10 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
 }
 
 android {
-    compileSdkVersion rootProject.ext.androidCompileSdkVersion
-    buildToolsVersion rootProject.ext.androidBuildToolsVersion
+    compileSdk rootProject.ext.androidCompileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -26,6 +26,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 }
 
 dependencies {
@@ -36,4 +39,5 @@ dependencies {
     api project(path: ':multilibrary')
     api project(path: ':displaymedia')
     api project(path: ':common')
+    implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
 }
