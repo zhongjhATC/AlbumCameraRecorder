@@ -1,5 +1,6 @@
 package com.zhongjh.displaymedia.apapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
@@ -270,9 +271,10 @@ class ImagesAndVideoAdapter(
     /**
      * 清空数据
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun clearAll() {
         list.clear()
-        notifyItemRangeRemoved(0, list.size)
+        notifyDataSetChanged()
     }
 
     /**
@@ -340,24 +342,21 @@ class ImagesAndVideoAdapter(
     /**
      * 赋值图片数据
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun setImageData(displayMedia: List<DisplayMedia>) {
         Log.d("$TAG Test", "setImageData")
         // 删除当前所有图片
         for (i in list.indices.reversed()) {
             if (list[i].isImageOrGif()) {
                 list.removeAt(i)
-                notifyItemRemoved(i)
             }
         }
         // 增加新的图片数据
-        val position = list.size - 1
         for (item in displayMedia) {
             item.displayMediaId = mId++
         }
         list.addAll(displayMedia)
-        notifyItemRangeInserted(position, displayMedia.size)
-        notifyItemRangeChanged(position, displayMedia.size)
-        isRemoveAdd()
+        notifyDataSetChanged()
     }
 
     /**
@@ -381,13 +380,13 @@ class ImagesAndVideoAdapter(
     /**
      * 赋值视频数据
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun setVideoData(displayMedia: List<DisplayMedia>) {
         Log.d("$TAG Test", "setVideoData")
         // 删除当前所有视频
         for (i in list.indices.reversed()) {
             if (list[i].isVideo()) {
                 list.removeAt(i)
-                notifyItemRemoved(i)
             }
         }
 
@@ -396,9 +395,7 @@ class ImagesAndVideoAdapter(
             item.displayMediaId = mId++
         }
         list.addAll(0, displayMedia)
-        notifyItemRangeInserted(0, displayMedia.size)
-        notifyItemRangeChanged(0, displayMedia.size)
-        isRemoveAdd()
+        notifyDataSetChanged()
     }
 
     /**

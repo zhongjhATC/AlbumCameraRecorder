@@ -188,6 +188,7 @@ class AudioAdapter(
      *
      * @param displayMediaList 数据集合
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun setAudioData(displayMediaList: List<DisplayMedia>) {
         Log.d("$TAG Test", "setAudioData")
         // 删除当前所有音频
@@ -197,8 +198,7 @@ class AudioAdapter(
             item.displayMediaId = mId++
         }
         list.addAll(displayMediaList)
-        notifyItemRangeInserted(0, list.size)
-        notifyItemRangeChanged(0, list.size)
+        notifyDataSetChanged()
     }
 
     /**
@@ -299,9 +299,10 @@ class AudioAdapter(
     /**
      * 清空数据
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun clearAll() {
-        notifyItemRangeRemoved(0, list.size)
         list.clear()
+        notifyDataSetChanged()
     }
 
     /**
