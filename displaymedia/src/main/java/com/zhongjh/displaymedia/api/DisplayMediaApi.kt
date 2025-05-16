@@ -37,7 +37,7 @@ interface DisplayMediaApi {
 
     /**
      *
-     * 添加[LocalMedia],根据自身类型进行相应的显示,同时,只能存在一个
+     * 添加[LocalMedia],根据自身类型进行相应的显示,同时,相同的数据只能存在一个
      * @param localMediaList 文件实体数据集
      */
     fun addLocalMediaListStartUploadSingle(localMediaList: List<LocalMedia>)
@@ -67,7 +67,7 @@ interface DisplayMediaApi {
      * 设置视频地址直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
      *
      * @param displayMedia 控件
-     * @param videoPath 视频地址列表
+     * @param videoPath 视频地址
      */
     fun setVideoCover(displayMedia: DisplayMedia, videoPath: String)
 

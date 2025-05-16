@@ -89,23 +89,23 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
             @Override
             public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
-//                boolean isOk = getPermissions(true);
-//                if (isOk) {
-//                    // 判断是否存在文件
-//                    String[] fileFullPath = getFileFullPath(url, 0);
-//                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
-//                    if (!isExists) {
-//                        // 调用方法
-//                        mAudioView = view;
-//                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
-//                    } else {
-//                        // 直接赋值
-//                        mBinding.dmlImageList.setAudioCover(view, fileFullPath[0] + File.separator + fileFullPath[1]);
-//                        mBinding.dmlImageList.onAudioClick(view);
-//                    }
-//                }
+                boolean isOk = getPermissions(true);
+                if (isOk) {
+                    // 判断是否存在文件
+                    String[] fileFullPath = getFileFullPath(url, 0);
+                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
+                    if (!isExists) {
+                        // 调用方法
+                        mAudioView = holder.itemView;
+                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
+                    } else {
+                        // 直接赋值
+                        mBinding.dmlImageList.setAudioCover(holder.itemView, fileFullPath[0] + File.separator + fileFullPath[1]);
+                        mBinding.dmlImageList.onAudioClick(holder.itemView);
+                    }
+                }
             }
-//
+
 //            @Override
 //            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.AudioHolder viewHolder) {
 //                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
@@ -179,7 +179,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
                     String[] fileFullPath = getFileFullPath(displayMedia.getUrl(), 1);
-                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
+                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
+                    boolean isExists = fileIsExists(path);
                     if (!isExists) {
                         // 调用方法
                         mVidePosition = position;
@@ -188,8 +189,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                         // 返回false是中断后面的操作，先让目前视频文件下载完
                         return false;
                     } else {
-                        // 直接赋值
-                        mBinding.dmlImageList.setVideoCover(displayMedia, fileFullPath[0] + File.separator + fileFullPath[1]);
+                        // 获取时间,直接赋值
+                        mBinding.dmlImageList.setVideoCover(displayMedia, path);
                         // 赋值本地播放地址后,返回true是可以继续播放的播放事件
                         return true;
                     }

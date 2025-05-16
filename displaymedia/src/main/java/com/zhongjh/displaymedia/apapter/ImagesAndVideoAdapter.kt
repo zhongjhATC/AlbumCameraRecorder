@@ -362,19 +362,30 @@ class ImagesAndVideoAdapter(
     /**
      * 添加视频数据
      *
-     * @param displayMedia 数据集合
+     * @param displayMediaList 数据集合
      */
-    fun addVideoData(displayMedia: List<DisplayMedia>) {
+    fun addVideoData(displayMediaList: List<DisplayMedia>) {
         Log.d("$TAG Test", "addVideoData")
         val position = getNeedAddPosition(MimeType.MP4.mimeTypeName)
-        for (item in displayMedia) {
+        for (item in displayMediaList) {
             item.displayMediaId = mId++
         }
-        list.addAll(position, displayMedia)
+        list.addAll(position, displayMediaList)
         // 刷新ui
-        notifyItemRangeInserted(position, displayMedia.size)
-        notifyItemRangeChanged(position, displayMedia.size)
+        notifyItemRangeInserted(position, displayMediaList.size)
+        notifyItemRangeChanged(position, displayMediaList.size)
         isRemoveAdd()
+    }
+
+    /**
+     * 更新图片/视频数据
+     */
+    fun updateItem(displayMedia: DisplayMedia) {
+        for (i in 0 until list.size) {
+            if (list[i].displayMediaId == displayMedia.displayMediaId) {
+                notifyItemChanged(i)
+            }
+        }
     }
 
     /**

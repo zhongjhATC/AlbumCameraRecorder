@@ -379,7 +379,15 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
     }
 
     override fun setVideoCover(displayMedia: DisplayMedia, videoPath: String) {
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(videoPath)
+        // ms,时长
+        val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+            ?: -1
+        mmr.release()
         displayMedia.path = videoPath
+        displayMedia.duration = duration
+        mImagesAndVideoAdapter.updateItem(displayMedia)
     }
 
     override fun setVideoUrls(videoUrls: List<String>) {
@@ -428,7 +436,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         progressMedia.duration = duration
         progressMedia.mimeType =
             mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()
-
+        mmr.release()
         // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
         view.visibility = View.VISIBLE
         isShowRemoveRecorder()
@@ -484,7 +492,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
     }
 
     override fun refreshPosition(position: Int) {
-        TODO("Not yet implemented")
+        mImagesAndVideoAdapter.notifyItemChanged(position)
     }
 
     override fun setOperation(isOperation: Boolean) {

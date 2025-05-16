@@ -241,6 +241,7 @@ object MediaUtils {
                         localMedia.height = height
                     }
                 }
+                retriever.release()
             }
 
             MediaType.TYPE_AUDIO -> {
