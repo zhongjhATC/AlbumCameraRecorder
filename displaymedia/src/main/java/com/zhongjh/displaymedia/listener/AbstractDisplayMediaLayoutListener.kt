@@ -22,6 +22,7 @@ open class AbstractDisplayMediaLayoutListener : DisplayMediaLayoutListener {
     }
 
     override fun onItemClick(view: View, displayMedia: DisplayMedia) {}
+
     override fun onItemStartUploading(
         displayMedia: DisplayMedia,
         viewHolder: ImagesAndVideoAdapter.PhotoViewHolder
@@ -29,7 +30,12 @@ open class AbstractDisplayMediaLayoutListener : DisplayMediaLayoutListener {
     }
 
     override fun onItemClose(displayMedia: DisplayMedia) {}
-    override fun onItemAudioStartDownload(audioHolder: AudioAdapter.AudioHolder, url: String) {
+
+    override fun onItemAudioStartDownload(
+        audioHolder: AudioAdapter.AudioHolder,
+        displayMedia: DisplayMedia,
+        url: String
+    ) {
     }
 
     override fun onItemVideoStartDownload(

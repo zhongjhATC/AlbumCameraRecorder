@@ -3,6 +3,7 @@ package com.zhongjh.displaymedia.api
 import android.net.Uri
 import android.view.View
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.displaymedia.apapter.AudioAdapter
 import com.zhongjh.displaymedia.entity.DisplayMedia
 import java.util.*
 
@@ -101,20 +102,12 @@ interface DisplayMediaApi {
     fun setAudioUrls(audioUrls: List<String>)
 
     /**
-     * 设置音频文件直接覆盖
+     * 设置音频文件直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
      *
      * @param displayMedia 实体
      * @param videoPath 文件路径
      */
     fun setAudioCover(displayMedia: DisplayMedia, videoPath: String)
-
-    /**
-     * 设置音频文件直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
-     *
-     * @param view 音频view
-     * @param file 文件路径
-     */
-    fun setAudioCover(view: View, file: String)
 
     /**
      * 重置所有即是清空数据
@@ -158,9 +151,9 @@ interface DisplayMediaApi {
     /**
      * 语音点击
      *
-     * @param view 点击的view
+     * @param holder 点击的AudioHolder
      */
-    fun onAudioClick(view: View)
+    fun onAudioClick(holder: AudioAdapter.AudioHolder)
 
     /**
      * 删除单个图片

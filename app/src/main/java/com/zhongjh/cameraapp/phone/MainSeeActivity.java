@@ -51,18 +51,13 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
 
     ActivityMainSeeBinding mBinding;
     /**
-     * 用于下载后记录的音频view
+     * 用于下载后记录的音频实体
      */
-    View mAudioView;
+    DisplayMedia mAudioDisplayMedia;
     /**
-     * 用于下载后记录的视频view
+     * 用于下载后记录的视频实体
      */
     DisplayMedia mVideoDisplayMedia;
-    /**
-     * 用于下载后记录的视频position
-     */
-    int mVidePosition;
-
     /**
      * 初始化下载
      */
@@ -88,20 +83,44 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia, int position) {
+                boolean isOk = getPermissions(true);
+                if (isOk) {
+                    String[] fileFullPath = getFileFullPath(displayMedia.getUrl(), 1);
+                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
+                    boolean isExists = fileIsExists(path);
+                    if (!isExists) {
+                        // 调用方法
+                        mVideoDisplayMedia = displayMedia;
+                        mDownloadHelper.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1]);
+                        // 返回false是中断后面的操作，先让目前视频文件下载完
+                        return false;
+                    } else {
+                        // 获取时间,直接赋值
+                        mBinding.dmlImageList.setVideoCover(displayMedia, path);
+                        // 赋值本地播放地址后,返回true是可以继续播放的播放事件
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NotNull DisplayMedia displayMedia, @NonNull String url) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
                     // 判断是否存在文件
                     String[] fileFullPath = getFileFullPath(url, 0);
-                    boolean isExists = fileIsExists(fileFullPath[0] + File.separator + fileFullPath[1]);
+                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
+                    boolean isExists = fileIsExists(path);
                     if (!isExists) {
                         // 调用方法
-                        mAudioView = holder.itemView;
+                        mAudioDisplayMedia = displayMedia;
                         mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
                     } else {
                         // 直接赋值
-                        mBinding.dmlImageList.setAudioCover(holder.itemView, fileFullPath[0] + File.separator + fileFullPath[1]);
-                        mBinding.dmlImageList.onAudioClick(holder.itemView);
+                        mBinding.dmlImageList.setAudioCover(displayMedia, path);
+                        mBinding.dmlImageList.onAudioClick(holder);
                     }
                 }
             }
@@ -172,30 +191,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                     myTask.cancel();
                     timers.remove(displayMedia);
                 }
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia, int position) {
-                boolean isOk = getPermissions(true);
-                if (isOk) {
-                    String[] fileFullPath = getFileFullPath(displayMedia.getUrl(), 1);
-                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
-                    boolean isExists = fileIsExists(path);
-                    if (!isExists) {
-                        // 调用方法
-                        mVidePosition = position;
-                        mVideoDisplayMedia = displayMedia;
-                        mDownloadHelper.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1]);
-                        // 返回false是中断后面的操作，先让目前视频文件下载完
-                        return false;
-                    } else {
-                        // 获取时间,直接赋值
-                        mBinding.dmlImageList.setVideoCover(displayMedia, path);
-                        // 赋值本地播放地址后,返回true是可以继续播放的播放事件
-                        return true;
-                    }
-                }
-                return false;
             }
 
         });
@@ -343,12 +338,10 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         String suffix = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
         switch (suffix) {
             case "mp3":
-                mBinding.dmlImageList.setAudioCover(mAudioView, file.getPath());
+                mBinding.dmlImageList.setAudioCover(mAudioDisplayMedia, file.getPath());
                 break;
             case "mp4":
                 mBinding.dmlImageList.setVideoCover(mVideoDisplayMedia, file.getPath());
-                // 刷新
-                mBinding.dmlImageList.refreshPosition(mVidePosition);
                 break;
             default:
                 break;
@@ -359,6 +352,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     @Override
     public void onFail(Throwable throwable) {
         progressDialog.hide();
+        Log.e("MainSeeActivity", "onFail", throwable);
         Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 

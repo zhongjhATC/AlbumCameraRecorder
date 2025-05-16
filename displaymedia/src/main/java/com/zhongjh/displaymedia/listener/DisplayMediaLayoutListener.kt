@@ -60,7 +60,7 @@ interface DisplayMediaLayoutListener {
      * @param audioHolder 点击的view
      * @param url  网址
      */
-    fun onItemAudioStartDownload(audioHolder: AudioAdapter.AudioHolder, url: String)
+    fun onItemAudioStartDownload(audioHolder: AudioAdapter.AudioHolder, displayMedia: DisplayMedia, url: String)
 
     /**
      * 开始下载视频

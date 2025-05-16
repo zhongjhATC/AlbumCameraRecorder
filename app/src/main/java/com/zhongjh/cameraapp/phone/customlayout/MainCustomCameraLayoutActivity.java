@@ -67,13 +67,13 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull DisplayMedia displayMedia, int position) {
-                return false;
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder audioHolder, @NonNull DisplayMedia displayMedia, @NonNull String url) {
+
             }
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NonNull String url) {
-
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull DisplayMedia displayMedia, int position) {
+                return false;
             }
 
             @Override

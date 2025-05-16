@@ -8,6 +8,7 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import androidx.annotation.NonNull
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -91,6 +92,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         set(value) {
             field = value
             mImagesAndVideoAdapter.listener = value
+            mAudioAdapter.listener = value
         }
 
     constructor(context: Context) : this(context, null)
@@ -420,30 +422,18 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
     }
 
     override fun setAudioCover(displayMedia: DisplayMedia, videoPath: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setAudioCover(view: View, file: String) {
         val mmr = MediaMetadataRetriever()
-        mmr.setDataSource(file)
+        mmr.setDataSource(videoPath)
 
         // ms,时长
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
             ?: -1
-        val progressMedia = DisplayMedia(MimeType.AAC.mimeTypeName)
-        progressMedia.absolutePath = file
-        progressMedia.path = mMediaStoreCompat.getUri(file).toString()
-        progressMedia.duration = duration
-        progressMedia.mimeType =
-            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()
+        displayMedia.absolutePath = videoPath
+        displayMedia.path = mMediaStoreCompat.getUri(videoPath).toString()
+        displayMedia.duration = duration
+        displayMedia.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()
         mmr.release()
-        // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
-        view.visibility = View.VISIBLE
-        isShowRemoveRecorder()
-//        val recordingItem = RecordingItem()
-//        recordingItem.path = file
-//        recordingItem.duration = duration
-//        (view as AudioView).setData(recordingItem, audioProgressColor)
+        mAudioAdapter.updateItem(displayMedia)
     }
 
     override fun reset() {
@@ -475,8 +465,8 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         return mAudioAdapter.list
     }
 
-    override fun onAudioClick(view: View) {
-//        (view as AudioView).mViewHolder.imgPlay.performClick()
+    override fun onAudioClick(holder: AudioAdapter.AudioHolder) {
+        holder.imgPlay.performClick()
     }
 
     fun getPhotoViewHolder(position: Int): ImagesAndVideoAdapter.PhotoViewHolder? {
@@ -550,16 +540,6 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
             mImagesAndVideoAdapter.photoAdapterEntity.maxMediaCount =
                 maxImageSelectable!! + maxVideoSelectable!! + maxAudioSelectable!!
         }
-    }
-
-    /**
-     * 设置是否显示删除音频按钮
-     */
-    private fun isShowRemoveRecorder() {
-//        for (i in 0 until mViewHolder.llContent.childCount) {
-//            val item = mViewHolder.llContent.getChildAt(i) as PlayProgressView
-//            item.isShowRemoveRecorder()
-//        }
     }
 
     /**

@@ -20,6 +20,7 @@ import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.displaymedia.R
 import com.zhongjh.displaymedia.entity.DisplayMedia
 import com.zhongjh.displaymedia.entity.DisplayMedia.CREATOR.FULL_PERCENT
+import com.zhongjh.displaymedia.entity.VideoMedia
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener
 import java.io.File
 import java.io.IOException
@@ -96,10 +97,7 @@ class AudioAdapter(
         val position = list.indexOf(displayMedia)
         mPlayTask = object : SimpleTask<Boolean>() {
             override fun doInBackground(): Boolean {
-                if (mIsChanging) {
-                    return false
-                }
-                return true
+                return !mIsChanging
             }
 
             @SuppressLint("SetTextI18n")
@@ -202,6 +200,17 @@ class AudioAdapter(
     }
 
     /**
+     * 更新音频数据
+     */
+    fun updateItem(displayMedia: DisplayMedia) {
+        for (i in 0 until list.size) {
+            if (list[i].displayMediaId == displayMedia.displayMediaId) {
+                notifyItemChanged(i)
+            }
+        }
+    }
+
+    /**
      * 销毁播放器
      */
     fun onDestroy() {
@@ -250,7 +259,7 @@ class AudioAdapter(
             } else {
                 // 调用下载
                 displayMedia.url?.let {
-                    listener?.onItemAudioStartDownload(holder, it)
+                    listener?.onItemAudioStartDownload(holder, displayMedia, it)
                 }
             }
         }
@@ -310,6 +319,9 @@ class AudioAdapter(
      */
     @SuppressLint("SetTextI18n")
     private fun onPlay(holder: AudioHolder, displayMedia: DisplayMedia) {
+        if (null == displayMedia.videoMedia) {
+            displayMedia.videoMedia = VideoMedia()
+        }
         displayMedia.videoMedia?.let {
             if (it.isPlaying) {
                 // 如果当前正在播放  停止播放 更改控制栏播放状态
@@ -361,14 +373,13 @@ class AudioAdapter(
                         e.printStackTrace()
                     }
                 }
-                mMediaPlayer.start()
+                try {
+                    mMediaPlayer.start()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
                 // 定时器 更新进度
-                ThreadUtils.executeBySingleAtFixRate(
-                    getPlayTask(displayMedia),
-                    1L,
-                    1,
-                    TimeUnit.SECONDS
-                )
+                ThreadUtils.executeBySingleAtFixRate(getPlayTask(displayMedia), 1L, 1, TimeUnit.SECONDS)
             }
             it.isPlaying = !it.isPlaying
             it.isCompletion = false
