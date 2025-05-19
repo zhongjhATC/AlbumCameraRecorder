@@ -11,8 +11,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageButton
 import android.widget.ImageView.ScaleType
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -32,7 +35,6 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
-import com.zhongjh.common.enums.MediaType
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.OriginalManage
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
@@ -45,6 +47,7 @@ import com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.common.entity.IncapableCause
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
@@ -182,6 +185,9 @@ class PreviewFragment2 : BaseFragment() {
                 // 结束loading
                 setControlTouchEnable(true)
                 Toast.makeText(mContext, t.message, Toast.LENGTH_SHORT).show()
+                t.message?.let {
+                    Log.e(TAG, it)
+                }
             }
 
             override fun onCancel() {

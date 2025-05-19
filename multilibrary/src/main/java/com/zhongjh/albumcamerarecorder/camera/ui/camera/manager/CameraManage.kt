@@ -605,7 +605,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         override fun onDisplayRemoved(displayId: Int) {}
         override fun onDisplayChanged(displayId: Int) {
             Log.d(TAG, "onDisplayChanged:$displayId and " + this@CameraManage.displayId)
-            if (displayId == this@CameraManage.displayId) {
+            if (displayId == this@CameraManage.displayId && null != viewHolder.previewView.display) {
                 imageCapture?.targetRotation = viewHolder.previewView.display.rotation
                 imageAnalyzer?.targetRotation = viewHolder.previewView.display.rotation
             }

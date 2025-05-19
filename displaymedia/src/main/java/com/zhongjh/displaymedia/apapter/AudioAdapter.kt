@@ -367,7 +367,7 @@ class AudioAdapter(
                 // 判断如果是结束了就是重新播放，否则就是继续播放
                 if (it.isCompletion) {
                     try {
-                        mMediaPlayer.setDataSource(displayMedia.path)
+                        mMediaPlayer.setDataSource(displayMedia.absolutePath)
                         mMediaPlayer.prepare()
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -379,7 +379,7 @@ class AudioAdapter(
                     e.printStackTrace()
                 }
                 // 定时器 更新进度
-                ThreadUtils.executeBySingleAtFixRate(getPlayTask(displayMedia), 1L, 1, TimeUnit.SECONDS)
+                ThreadUtils.executeBySingleAtFixRate(getPlayTask(displayMedia), 0L, 1, TimeUnit.SECONDS)
             }
             it.isPlaying = !it.isPlaying
             it.isCompletion = false
@@ -391,7 +391,7 @@ class AudioAdapter(
      */
     internal inner class MySeekBar(holder: AudioHolder) : SeekBar.OnSeekBarChangeListener {
 
-        var holder: AudioHolder? = holder
+        private var holder: AudioHolder? = holder
 
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             // 当进度条变化时触发

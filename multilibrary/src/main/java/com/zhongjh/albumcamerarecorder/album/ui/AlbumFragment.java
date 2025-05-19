@@ -561,6 +561,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                 // 结束loading
                 setControlTouchEnable(true);
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, t.getMessage(), t);
             }
 
             @Override

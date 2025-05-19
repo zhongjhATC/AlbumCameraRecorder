@@ -48,7 +48,7 @@ class AlbumCompressFileTask(
                 // 设置后缀名
                 newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
             }
-            val newFile = FileMediaUtil.createCompressFile(context, newFileName)
+            val newFile = FileMediaUtil.createTempFile(context, newFileName)
             if (newFile.exists()) {
                 val localFile: LocalMedia = if (item.isImage()) {
                     LocalMedia(context, item, newFile, true)
@@ -60,7 +60,7 @@ class AlbumCompressFileTask(
             } else {
                 if (item.isImage()) {
                     // 处理是否压缩图片
-                    val compressionFile = handleImage(item.path)
+                    val compressionFile = handleImage(item.absolutePath)
                     // 移动到新的文件夹
                     FileUtils.copy(compressionFile, newFile)
                     newLocalFiles.add(
