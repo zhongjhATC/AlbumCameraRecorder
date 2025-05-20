@@ -168,25 +168,25 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         // 初始化音频的控件
         mViewHolder.rlAudio.layoutManager = LinearLayoutManager(context)
         mAudioAdapter = AudioAdapter(context, audioDeleteColor, audioProgressColor, audioPlayColor)
-        mAudioAdapter.callback = object : AudioAdapter.Callback {
-
-            @SuppressLint("SetTextI18n")
-            override fun onPlayProgress(position: Int, mediaPlayerCurrentPosition: Int) {
-                val playViewHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position)
-                playViewHolder?.let {
-                    it as AudioAdapter.AudioHolder
-                    // 设置当前播放进度
-                    it.seekBar.progress = mediaPlayerCurrentPosition
-                    it.tvCurrentProgress.text =
-                        mAudioAdapter.generateTime(mediaPlayerCurrentPosition.toLong()) + File.separator
-                }
-            }
-
-            override fun onRemoveRecorder() {
-                mImagesAndVideoAdapter.notifyItemRangeChanged(0, mImagesAndVideoAdapter.getData().size - 1)
-            }
-
-        }
+//        mAudioAdapter.callback = object : AudioAdapter.Callback {
+//
+//            @SuppressLint("SetTextI18n")
+//            override fun onPlayProgress(position: Int, mediaPlayerCurrentPosition: Int) {
+//                val playViewHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position)
+//                playViewHolder?.let {
+//                    it as AudioAdapter.AudioHolder
+//                    // 设置当前播放进度
+//                    it.seekBar.progress = mediaPlayerCurrentPosition
+//                    it.tvCurrentProgress.text =
+//                        mAudioAdapter.generateTime(mediaPlayerCurrentPosition.toLong()) + File.separator
+//                }
+//            }
+//
+//            override fun onRemoveRecorder() {
+//                mImagesAndVideoAdapter.notifyItemRangeChanged(0, mImagesAndVideoAdapter.getData().size - 1)
+//            }
+//
+//        }
         mViewHolder.rlAudio.adapter = mAudioAdapter
 
         // 初始化九宫格的控件
@@ -466,6 +466,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
     }
 
     override fun onAudioClick(holder: AudioAdapter.AudioHolder) {
+        mAudioAdapter.getItemId()
         holder.imgPlay.performClick()
     }
 

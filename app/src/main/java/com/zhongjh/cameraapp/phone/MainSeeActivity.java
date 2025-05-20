@@ -21,15 +21,15 @@ import com.zhongjh.cameraapp.R;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
-import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.displaymedia.apapter.AudioAdapter;
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
 import com.zhongjh.displaymedia.entity.DisplayMedia;
 import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
 import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
-import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
+import com.zhongjh.retrofitdownloadlib.http.DownloadInfo;
+import com.zhongjh.retrofitdownloadlib.http.DownloadProgressHandler;
+import com.zhongjh.retrofitdownloadlib.http.FileDownloader;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,23 +45,11 @@ import java.util.List;
  * @author zhongjh
  * @date 2019/2/21
  */
-public class MainSeeActivity extends BaseActivity implements DownloadListener {
+public class MainSeeActivity extends BaseActivity {
 
     private static final String TAG = MainSeeActivity.class.getSimpleName();
 
     ActivityMainSeeBinding mBinding;
-    /**
-     * 用于下载后记录的音频实体
-     */
-    DisplayMedia mAudioDisplayMedia;
-    /**
-     * 用于下载后记录的视频实体
-     */
-    DisplayMedia mVideoDisplayMedia;
-    /**
-     * 初始化下载
-     */
-    private final DownloadHelper mDownloadHelper = new DownloadHelper(this);
 
     ProgressDialog progressDialog;
 
@@ -90,9 +78,28 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                     String path = fileFullPath[0] + File.separator + fileFullPath[1];
                     boolean isExists = fileIsExists(path);
                     if (!isExists) {
-                        // 调用方法
-                        mVideoDisplayMedia = displayMedia;
-                        mDownloadHelper.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1]);
+                        // 下载
+                        progressDialog.show();
+                        FileDownloader.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
+
+                            @Override
+                            public void onProgress(DownloadInfo downloadInfo) {
+
+                            }
+
+                            @Override
+                            public void onCompleted(File file) {
+                                mBinding.dmlImageList.setVideoCover(displayMedia, file.getPath());
+                                progressDialog.hide();
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                progressDialog.hide();
+                                Log.e("MainSeeActivity", "onFail", throwable);
+                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         // 返回false是中断后面的操作，先让目前视频文件下载完
                         return false;
                     } else {
@@ -114,13 +121,32 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                     String path = fileFullPath[0] + File.separator + fileFullPath[1];
                     boolean isExists = fileIsExists(path);
                     if (!isExists) {
-                        // 调用方法
-                        mAudioDisplayMedia = displayMedia;
-                        mDownloadHelper.downloadFile(url, fileFullPath[0], fileFullPath[1]);
+                        // 下载
+                        progressDialog.show();
+                        FileDownloader.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
+
+                            @Override
+                            public void onProgress(DownloadInfo downloadInfo) {
+
+                            }
+
+                            @Override
+                            public void onCompleted(File file) {
+                                mBinding.dmlImageList.setAudioCover(displayMedia, file.getPath());
+                                progressDialog.hide();
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                progressDialog.hide();
+                                Log.e("MainSeeActivity", "onFail", throwable);
+                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     } else {
-                        // 直接赋值
+                        // 获取时间,直接赋值
                         mBinding.dmlImageList.setAudioCover(displayMedia, path);
-                        mBinding.dmlImageList.onAudioClick(holder);
+                        mBinding.dmlImageList.onAudioClick(displayMedia);
                     }
                 }
             }
@@ -231,16 +257,14 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 // 九宫格大小
                 .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
                 // 图片缩放比例
-                .thumbnailScale(0.85f)
-                .setOnSelectedListener(localFiles -> {
+                .thumbnailScale(0.85f).setOnSelectedListener(localFiles -> {
                     // 每次选择的事件
                     Log.d("onSelected", "onSelected: localFiles.size()=" + localFiles.size());
                 })
                 // 开启原图
                 .originalEnable(true)
                 // 最大原图size,仅当originalEnable为true的时候才有效
-                .maxOriginalSize(1)
-                .setOnCheckedListener(isChecked -> {
+                .maxOriginalSize(1).setOnCheckedListener(isChecked -> {
                     // 是否勾选了原图
                     Log.d("isChecked", "onCheck: isChecked=" + isChecked);
                 });
@@ -249,11 +273,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         RecorderSetting recorderSetting = new RecorderSetting();
 
         // 全局
-        mGlobalSetting = MultiMediaSetting.from(MainSeeActivity.this)
-                .choose(MimeType.ofAll())
-                .albumSetting(albumSetting)
-                .cameraSetting(cameraSetting)
-                .recorderSetting(recorderSetting)
+        mGlobalSetting = MultiMediaSetting.from(MainSeeActivity.this).choose(MimeType.ofAll()).albumSetting(albumSetting).cameraSetting(cameraSetting).recorderSetting(recorderSetting)
                 //  .imageEngine(new GlideEngine())  // for glide-V3     // for glide-V4
                 .imageEngine(new Glide4Engine());
     }
@@ -311,49 +331,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 最大10张图片或者最大1个视频
-        mGlobalSetting.maxSelectablePerMediaType(12,
-                        null,
-                        null,
-                        null,
-                        alreadyImageCount,
-                        alreadyVideoCount,
-                        alreadyAudioCount)
-                .forResult(REQUEST_CODE_CHOOSE);
-    }
-
-    @Override
-    public void onStartDownload() {
-        // 加载前
-        progressDialog.show();
-    }
-
-    @Override
-    public void onProgress(int i) {
-
-    }
-
-    @Override
-    public void onFinishDownload(File file) {
-        // 下载完成，判断后缀名进行相应的处理
-        String suffix = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
-        switch (suffix) {
-            case "mp3":
-                mBinding.dmlImageList.setAudioCover(mAudioDisplayMedia, file.getPath());
-                break;
-            case "mp4":
-                mBinding.dmlImageList.setVideoCover(mVideoDisplayMedia, file.getPath());
-                break;
-            default:
-                break;
-        }
-        progressDialog.hide();
-    }
-
-    @Override
-    public void onFail(Throwable throwable) {
-        progressDialog.hide();
-        Log.e("MainSeeActivity", "onFail", throwable);
-        Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        mGlobalSetting.maxSelectablePerMediaType(12, null, null, null, alreadyImageCount, alreadyVideoCount, alreadyAudioCount).forResult(REQUEST_CODE_CHOOSE);
     }
 
     /**

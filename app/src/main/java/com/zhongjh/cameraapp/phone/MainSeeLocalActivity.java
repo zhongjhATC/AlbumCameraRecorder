@@ -1,38 +1,9 @@
 package com.zhongjh.cameraapp.phone;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-
-import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
-import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
-import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.cameraapp.BaseActivity;
-import com.zhongjh.cameraapp.R;
-import com.zhongjh.cameraapp.configuration.GifSizeFilter;
-import com.zhongjh.cameraapp.configuration.Glide4Engine;
-import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
-import com.zhongjh.common.entity.SaveStrategy;
-import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-import com.zhongjh.retrofitdownloadlib.http.DownloadHelper;
-import com.zhongjh.retrofitdownloadlib.http.DownloadListener;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 这是用于设置加载数据的,演示本地的Demo
@@ -40,7 +11,7 @@ import java.util.List;
  * @author zhongjh
  * @date 2024/11/07
  */
-public class MainSeeLocalActivity extends BaseActivity implements DownloadListener {
+public class MainSeeLocalActivity extends BaseActivity {
     @Override
     protected DisplayMediaLayout getMaskProgressLayout() {
         return null;
@@ -48,26 +19,6 @@ public class MainSeeLocalActivity extends BaseActivity implements DownloadListen
 
     @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-
-    }
-
-    @Override
-    public void onStartDownload() {
-
-    }
-
-    @Override
-    public void onProgress(int progress) {
-
-    }
-
-    @Override
-    public void onFinishDownload(File file) {
-
-    }
-
-    @Override
-    public void onFail(Throwable ex) {
 
     }
 
