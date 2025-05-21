@@ -20,6 +20,7 @@ import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.ThreadUtils.runOnUiThread
 import com.zhongjh.displaymedia.R
 import com.zhongjh.displaymedia.apapter.AudioAdapter
+import com.zhongjh.displaymedia.apapter.AudioAdapter.Companion.SHOW_AUDIO_VIEW
 import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter
 import com.zhongjh.displaymedia.api.DisplayMediaApi
 import com.zhongjh.displaymedia.engine.ImageEngine
@@ -168,25 +169,25 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         // 初始化音频的控件
         mViewHolder.rlAudio.layoutManager = LinearLayoutManager(context)
         mAudioAdapter = AudioAdapter(context, audioDeleteColor, audioProgressColor, audioPlayColor)
-//        mAudioAdapter.callback = object : AudioAdapter.Callback {
-//
-//            @SuppressLint("SetTextI18n")
-//            override fun onPlayProgress(position: Int, mediaPlayerCurrentPosition: Int) {
-//                val playViewHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position)
-//                playViewHolder?.let {
-//                    it as AudioAdapter.AudioHolder
-//                    // 设置当前播放进度
-//                    it.seekBar.progress = mediaPlayerCurrentPosition
-//                    it.tvCurrentProgress.text =
-//                        mAudioAdapter.generateTime(mediaPlayerCurrentPosition.toLong()) + File.separator
-//                }
-//            }
-//
-//            override fun onRemoveRecorder() {
-//                mImagesAndVideoAdapter.notifyItemRangeChanged(0, mImagesAndVideoAdapter.getData().size - 1)
-//            }
-//
-//        }
+        mAudioAdapter.callback = object : AudioAdapter.Callback {
+
+            @SuppressLint("SetTextI18n")
+            override fun onPlayProgress(position: Int, mediaPlayerCurrentPosition: Int) {
+                val playViewHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position)
+                playViewHolder?.let {
+                    it as AudioAdapter.AudioHolder
+                    // 设置当前播放进度
+                    it.seekBar.progress = mediaPlayerCurrentPosition
+                    it.tvCurrentProgress.text =
+                        mAudioAdapter.generateTime(mediaPlayerCurrentPosition.toLong()) + File.separator
+                }
+            }
+
+            override fun onRemoveRecorder() {
+                mImagesAndVideoAdapter.notifyItemRangeChanged(0, mImagesAndVideoAdapter.getData().size - 1)
+            }
+
+        }
         mViewHolder.rlAudio.adapter = mAudioAdapter
 
         // 初始化九宫格的控件
@@ -433,7 +434,7 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         displayMedia.duration = duration
         displayMedia.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()
         mmr.release()
-        mAudioAdapter.updateItem(displayMedia)
+        mAudioAdapter.updateItem(displayMedia, SHOW_AUDIO_VIEW)
     }
 
     override fun reset() {
@@ -465,9 +466,9 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         return mAudioAdapter.list
     }
 
-    override fun onAudioClick(holder: AudioAdapter.AudioHolder) {
-        mAudioAdapter.getItemId()
-        holder.imgPlay.performClick()
+    override fun onAudioClick(position: Int) {
+        val viewHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position);
+        (viewHolder as AudioAdapter.AudioHolder).imgPlay.performClick()
     }
 
     fun getPhotoViewHolder(position: Int): ImagesAndVideoAdapter.PhotoViewHolder? {

@@ -59,11 +59,13 @@ interface DisplayMediaLayoutListener {
      *
      * @param audioHolder 点击的view
      * @param displayMedia 对象
+     * @param position 音频的索引
      * @param url  网址
      */
     fun onItemAudioStartDownload(
         audioHolder: AudioAdapter.AudioHolder,
         displayMedia: DisplayMedia,
+        position: Int,
         url: String
     )
 

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.annotation.Nullable
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import androidx.recyclerview.widget.RecyclerView
@@ -37,6 +38,7 @@ class AudioAdapter(
     companion object {
         val TAG: String = AudioAdapter::class.java.simpleName
         const val AUDIO_IS_PLAY = "AUDIO_IS_PLAY"
+        const val SHOW_AUDIO_VIEW = "SHOW_AUDIO_VIEW"
     }
 
     /**
@@ -161,6 +163,10 @@ class AudioAdapter(
                 AUDIO_IS_PLAY -> {
                     holder.imgPlay.setImageResource(R.drawable.ic_play_circle_outline_black_24dp_zhongjh)
                 }
+
+                SHOW_AUDIO_VIEW -> {
+                    showAudioView(holder, progressMedia)
+                }
             }
         }
     }
@@ -202,10 +208,10 @@ class AudioAdapter(
     /**
      * 更新音频数据
      */
-    fun updateItem(displayMedia: DisplayMedia) {
+    fun updateItem(displayMedia: DisplayMedia, payload: Any) {
         for (i in 0 until list.size) {
             if (list[i].displayMediaId == displayMedia.displayMediaId) {
-                notifyItemChanged(i)
+                notifyItemChanged(i, payload)
             }
         }
     }
@@ -259,7 +265,7 @@ class AudioAdapter(
             } else {
                 // 调用下载
                 displayMedia.url?.let {
-                    listener?.onItemAudioStartDownload(holder, displayMedia, it)
+                    listener?.onItemAudioStartDownload(holder, displayMedia, position, it)
                 }
             }
         }

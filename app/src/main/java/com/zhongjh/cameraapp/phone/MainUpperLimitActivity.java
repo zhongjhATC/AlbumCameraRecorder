@@ -70,7 +70,7 @@ public class MainUpperLimitActivity extends BaseActivity {
         mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder audioHolder, @NonNull DisplayMedia displayMedia, @NonNull String url) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder audioHolder, @NonNull DisplayMedia displayMedia, int position, @NonNull String url) {
 
             }
 

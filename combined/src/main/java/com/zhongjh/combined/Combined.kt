@@ -77,8 +77,13 @@ class Combined(
                 listener.onItemStartUploading(displayMedia, viewHolder)
             }
 
-            override fun onItemAudioStartDownload(audioHolder: AudioHolder, displayMedia: DisplayMedia, url: String) {
-                listener.onItemAudioStartDownload(audioHolder, displayMedia, url)
+            override fun onItemAudioStartDownload(
+                audioHolder: AudioHolder,
+                displayMedia: DisplayMedia,
+                position: Int,
+                url: String
+            ) {
+                listener.onItemAudioStartDownload(audioHolder, displayMedia, position, url)
             }
 
             override fun onAddDataSuccess(displayMedias: List<DisplayMedia>) {

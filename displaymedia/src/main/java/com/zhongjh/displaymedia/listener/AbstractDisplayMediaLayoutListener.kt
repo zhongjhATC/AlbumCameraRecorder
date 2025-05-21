@@ -30,10 +30,11 @@ open class AbstractDisplayMediaLayoutListener : DisplayMediaLayoutListener {
     }
 
     override fun onItemClose(displayMedia: DisplayMedia) {}
-
+    
     override fun onItemAudioStartDownload(
         audioHolder: AudioAdapter.AudioHolder,
         displayMedia: DisplayMedia,
+        position: Int,
         url: String
     ) {
     }

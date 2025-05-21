@@ -113,7 +113,7 @@ public class MainSeeActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NotNull DisplayMedia displayMedia, @NonNull String url) {
+            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NotNull DisplayMedia displayMedia, int position, @NonNull String url) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
                     // 判断是否存在文件
@@ -146,7 +146,7 @@ public class MainSeeActivity extends BaseActivity {
                     } else {
                         // 获取时间,直接赋值
                         mBinding.dmlImageList.setAudioCover(displayMedia, path);
-                        mBinding.dmlImageList.onAudioClick(displayMedia);
+                        mBinding.dmlImageList.onAudioClick(position);
                     }
                 }
             }
