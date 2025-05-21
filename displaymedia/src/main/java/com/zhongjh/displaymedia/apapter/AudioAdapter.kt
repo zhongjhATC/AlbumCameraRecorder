@@ -281,7 +281,14 @@ class AudioAdapter(
         // 当前时间
         holder.tvCurrentProgress.text = "00:00/"
         // 总计时间
-        holder.tvTotalProgress.text = generateTime(displayMedia.duration)
+        if (displayMedia.duration <= 0) {
+            holder.tvTotalProgress.text =
+                mContext.resources.getString(R.string.z_progress_click_download_to_open_the_audio)
+            holder.seekBar.isEnabled = false
+        } else {
+            holder.tvTotalProgress.text = generateTime(displayMedia.duration)
+            holder.seekBar.isEnabled = true
+        }
         // 设置进度条
         holder.seekBar.max = displayMedia.duration.toInt()
     }

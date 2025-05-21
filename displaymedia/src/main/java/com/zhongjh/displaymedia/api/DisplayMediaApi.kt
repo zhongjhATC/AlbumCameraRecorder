@@ -151,9 +151,9 @@ interface DisplayMediaApi {
     /**
      * 语音点击
      *
-     * @param position 点击的position
+     * @param holder 点击的holder
      */
-    fun onAudioClick(position: Int)
+    fun onAudioClick(holder: AudioAdapter.AudioHolder)
 
     /**
      * 删除单个图片

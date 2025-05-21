@@ -146,7 +146,7 @@ public class MainSeeActivity extends BaseActivity {
                     } else {
                         // 获取时间,直接赋值
                         mBinding.dmlImageList.setAudioCover(displayMedia, path);
-                        mBinding.dmlImageList.onAudioClick(position);
+                        mBinding.dmlImageList.onAudioClick(holder);
                     }
                 }
             }

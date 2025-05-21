@@ -466,9 +466,8 @@ class DisplayMediaLayout : FrameLayout, DisplayMediaApi {
         return mAudioAdapter.list
     }
 
-    override fun onAudioClick(position: Int) {
-        val viewHolder = mViewHolder.rlAudio.findViewHolderForAdapterPosition(position);
-        (viewHolder as AudioAdapter.AudioHolder).imgPlay.performClick()
+    override fun onAudioClick(holder: AudioAdapter.AudioHolder) {
+        holder.imgPlay.performClick()
     }
 
     fun getPhotoViewHolder(position: Int): ImagesAndVideoAdapter.PhotoViewHolder? {
