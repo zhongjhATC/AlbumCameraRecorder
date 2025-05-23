@@ -176,10 +176,8 @@ class GlobalSetting internal constructor(
         return this
     }
 
-    override fun isAddAlbum(byEdit: Boolean, byCamera: Boolean, byVideo: Boolean): GlobalSetting {
+    override fun isAddAlbum(byEdit: Boolean): GlobalSetting {
         mGlobalSpec.isAddAlbumByEdit = byEdit
-        mGlobalSpec.isAddAlbumByCamera = byCamera
-        mGlobalSpec.isAddAlbumByVideo = byVideo
         return this
     }
 

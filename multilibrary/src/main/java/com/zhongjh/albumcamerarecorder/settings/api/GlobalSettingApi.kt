@@ -178,12 +178,10 @@ interface GlobalSettingApi {
      * 设置图片是否加入相册功能，默认加入
      *
      * @param byEdit 图片编辑后加入相册
-     * @param byCamera 拍照后加入相册
-     * @param byVideo 录像后加入相册
      *
      * @return [GlobalSetting] this
      */
-    fun isAddAlbum(byEdit: Boolean, byCamera: Boolean, byVideo: Boolean): GlobalSetting
+    fun isAddAlbum(byEdit: Boolean): GlobalSetting
 
     /**
      * 有关压缩操作的接口

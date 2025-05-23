@@ -17,7 +17,7 @@
     <string name="flash_off">閃光燈關閉</string>
     <string name="flash_on">閃光燈開啓</string>
     <string name="flash_auto">閃光燈自動</string>
-    <string name="start_the_animation">啓動動畫</string>
+    <string name="start_the_animation">啓動過場動畫，從下往上動畫</string>
     <string name="str_on_activity_result_tips">使用onActivityResult接受迴調數據</string>
     <string name="toggle_english">切換英文</string>
     <string name="take_pictures_and_add_them_to_the_album">拍照後加入相冊</string>

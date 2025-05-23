@@ -212,9 +212,7 @@ open class CameraPictureManager(
         }
 
         // 回调接口：添加图片后剩下的相关数据
-        baseCameraFragment.cameraSpec.onCaptureListener?.add(
-            this.bitmapDataList, bitmapDataList.size - 1
-        )
+        baseCameraFragment.cameraSpec.onCaptureListener?.add(this.bitmapDataList, bitmapDataList.size - 1)
     }
 
     /**

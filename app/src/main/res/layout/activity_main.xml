@@ -122,7 +122,7 @@
                         android:id="@+id/cbIsActivityResult"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
+                        android:checked="false"
                         android:text="true" />
 
                 </LinearLayout>
@@ -139,44 +139,6 @@
 
                     <CheckBox
                         android:id="@+id/cbIsCutscenes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="true" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/take_pictures_and_add_them_to_the_album" />
-
-                    <CheckBox
-                        android:id="@+id/cbIsAddAlbumByCamera"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="true" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/record_and_add_to_album" />
-
-                    <CheckBox
-                        android:id="@+id/cbIsAddAlbumByVideo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
