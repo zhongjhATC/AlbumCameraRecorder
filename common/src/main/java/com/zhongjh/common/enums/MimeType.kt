@@ -79,6 +79,16 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
     ),
 
     // ============== 音频 ==============
+    AUDIO_MPEG(
+        "audio/mpeg", ArraySet(
+            listOf(
+                "mpeg"
+            )
+        )
+    ),
+
+
+    // ============== 视频 ==============
     AAC(
         "video/aac", ArraySet(
             listOf(
@@ -86,8 +96,6 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             )
         )
     ),
-
-    // ============== 视频 ==============
     MPEG(
         "video/mpeg", ArraySet(
             listOf(
@@ -352,6 +360,8 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
                 HEIC.mimeTypeName
             } else if (PNG.extensions.contains(suffix)) {
                 AAC.mimeTypeName
+            } else if (PNG.extensions.contains(suffix)) {
+                AUDIO_MPEG.mimeTypeName
             } else if (PNG.extensions.contains(suffix)) {
                 MPEG.mimeTypeName
             } else if (PNG.extensions.contains(suffix)) {

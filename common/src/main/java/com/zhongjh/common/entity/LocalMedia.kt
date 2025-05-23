@@ -394,21 +394,21 @@ open class LocalMedia() : Parcelable, BaseMedia {
      * 包含gif
      */
     fun isImageOrGif(): Boolean {
-        return mimeType == MimeType.JPEG.toString() || mimeType == MimeType.PNG.toString() || mimeType == MimeType.GIF.toString() || mimeType == MimeType.BMP.toString() || mimeType == MimeType.WEBP.toString()
+        return mimeType.toString().startsWith("image")
     }
 
     /**
      * 是否音频
      */
     fun isAudio(): Boolean {
-        return mimeType == MimeType.AAC.toString()
+        return mimeType.toString().startsWith("audio")
     }
 
     /**
      * 是否视频
      */
     override fun isVideo(): Boolean {
-        return mimeType == MimeType.MPEG.toString() || mimeType == MimeType.MP4.toString() || mimeType == MimeType.QUICKTIME.toString() || mimeType == MimeType.THREEGPP.toString() || mimeType == MimeType.THREEGPP2.toString() || mimeType == MimeType.MKV.toString() || mimeType == MimeType.WEBM.toString() || mimeType == MimeType.TS.toString() || mimeType == MimeType.AVI.toString()
+        return mimeType.toString().startsWith("video")
     }
 
     /**

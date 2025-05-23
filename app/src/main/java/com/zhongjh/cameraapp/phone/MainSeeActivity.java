@@ -67,6 +67,7 @@ public class MainSeeActivity extends BaseActivity {
         mBinding = ActivityMainSeeBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         progressDialog = new ProgressDialog(MainSeeActivity.this);
+        progressDialog.setTitle("下载中");
         mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
 
             @Override

@@ -351,7 +351,7 @@ class GridView : FrameLayout, GridViewApi {
     override fun setAudioUrls(audioUrls: List<String>, isNotifyDataSetChanged: Boolean) {
         val gridMedia: ArrayList<GridMedia> = ArrayList()
         for (item in audioUrls) {
-            val progressMedia = GridMedia(MimeType.AAC.mimeTypeName)
+            val progressMedia = GridMedia(MimeType.AUDIO_MPEG.mimeTypeName)
             progressMedia.url = item
             gridMedia.add(progressMedia)
         }
