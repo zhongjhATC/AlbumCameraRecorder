@@ -86,9 +86,6 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             )
         )
     ),
-
-
-    // ============== 视频 ==============
     AAC(
         "video/aac", ArraySet(
             listOf(
@@ -96,6 +93,8 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             )
         )
     ),
+
+    // ============== 视频 ==============
     MPEG(
         "video/mpeg", ArraySet(
             listOf(
