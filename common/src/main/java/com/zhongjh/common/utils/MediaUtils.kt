@@ -199,6 +199,7 @@ object MediaUtils {
                     FileUtils.close(this)
                 }
             }
+
             MediaType.TYPE_VIDEO -> {
                 // 实例化MediaMetadataRetriever,作用获取视频的属性
                 val retriever = MediaMetadataRetriever()

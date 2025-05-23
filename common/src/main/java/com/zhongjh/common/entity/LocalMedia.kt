@@ -5,6 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.widget.ImageView
 import com.zhongjh.common.engine.ImageEngine
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.BitmapUtils
 import com.zhongjh.common.utils.MediaUtils
@@ -374,6 +375,19 @@ open class LocalMedia() : Parcelable, BaseMedia {
             return false
         }
         return true
+    }
+
+    /**
+     * 返回大类
+     */
+    fun getMediaType(): Int {
+        if (isVideo()) {
+            return MediaType.TYPE_VIDEO
+        }
+        if (isAudio()) {
+            return MediaType.TYPE_AUDIO
+        }
+        return MediaType.TYPE_PICTURE
     }
 
     /**

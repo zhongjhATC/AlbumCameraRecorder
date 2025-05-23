@@ -879,7 +879,7 @@ class PreviewFragment2 : BaseFragment() {
         if ((realWidth <= 0 || realHeight <= 0) || (realWidth > realHeight)) {
             withContext(Dispatchers.IO) {
                 media.absolutePath.let { absolutePath ->
-                    MediaUtils.getMediaInfo(requireContext(), MediaType.TYPE_VIDEO, absolutePath).let {
+                    MediaUtils.getMediaInfo(requireContext(), media.getMediaType(), absolutePath).let {
                         if (it.width > 0) {
                             realWidth = it.width
                         }
