@@ -15,12 +15,10 @@ import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;
-import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.displaymedia.apapter.AudioAdapter;
-import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
-import com.zhongjh.displaymedia.entity.DisplayMedia;
-import com.zhongjh.displaymedia.listener.AbstractDisplayMediaLayoutListener;
+import com.zhongjh.gridview.apapter.GridAdapter;
+import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.gridview.listener.AbstractGridViewListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +47,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     /**
      * 模拟上传进度
      */
-    protected HashMap<DisplayMedia, MyTask> timers = new HashMap<>();
+    protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
 
     /**
      * @param activity 要跳转的activity
@@ -69,7 +67,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<DisplayMedia, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         mBinding.dmlImageList.onDestroy();
@@ -129,25 +127,25 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 这里是将AlbumCameraRecorder和Mask控件合并，需要放在初始化最后，alreadyImageCount才能以最新生效
         mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
-                mGlobalSetting, mBinding.dmlImageList, new AbstractDisplayMediaLayoutListener() {
+                mGlobalSetting, mBinding.dmlImageList, new AbstractGridViewListener() {
 
             @Override
-            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
-                super.onItemStartUploading(displayMedia, viewHolder);
+            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull GridAdapter.PhotoViewHolder viewHolder) {
+                super.onItemStartUploading(gridMedia, viewHolder);
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia, viewHolder, null);
-                timers.put(displayMedia, timer);
+                MyTask timer = new MyTask(gridMedia, viewHolder);
+                timers.put(gridMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull DisplayMedia displayMedia) {
-                super.onItemClose(displayMedia);
+            public void onItemClose(@NotNull GridMedia gridMedia) {
+                super.onItemClose(gridMedia);
                 // 停止上传
-                MyTask myTask = timers.get(displayMedia);
+                MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(displayMedia);
+                    timers.remove(gridMedia);
                 }
             }
         });
@@ -157,14 +155,12 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        DisplayMedia multiMedia;
-        ImagesAndVideoAdapter.PhotoViewHolder viewHolder;
-        AudioAdapter.AudioHolder audioHolder;
+        GridMedia multiMedia;
+        GridAdapter.PhotoViewHolder viewHolder;
 
-        public MyTask(DisplayMedia multiMedia, ImagesAndVideoAdapter.PhotoViewHolder viewHolder, AudioAdapter.AudioHolder audioHolder) {
+        public MyTask(GridMedia multiMedia, GridAdapter.PhotoViewHolder viewHolder) {
             this.multiMedia = multiMedia;
             this.viewHolder = viewHolder;
-            this.audioHolder = audioHolder;
         }
 
         public void schedule() {

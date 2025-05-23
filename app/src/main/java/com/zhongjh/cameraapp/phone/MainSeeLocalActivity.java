@@ -1,9 +1,7 @@
 package com.zhongjh.cameraapp.phone;
 
 import com.zhongjh.cameraapp.BaseActivity;
-import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-
-import java.io.File;
+import com.zhongjh.gridview.widget.GridView;
 
 /**
  * 这是用于设置加载数据的,演示本地的Demo
@@ -13,7 +11,7 @@ import java.io.File;
  */
 public class MainSeeLocalActivity extends BaseActivity {
     @Override
-    protected DisplayMediaLayout getMaskProgressLayout() {
+    protected GridView getMaskProgressLayout() {
         return null;
     }
 

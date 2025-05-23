@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -34,13 +33,11 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.configuration.OnImageCompressionLuBan;
 import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.displaymedia.apapter.AudioAdapter;
-import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
-import com.zhongjh.displaymedia.entity.DisplayMedia;
-import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
-import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
+import com.zhongjh.gridview.apapter.GridAdapter;
+import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.gridview.listener.GridViewListener;
+import com.zhongjh.gridview.widget.GridView;
 import com.zhongjh.videoedit.VideoCompressManager;
 
 import org.jetbrains.annotations.NotNull;
@@ -83,9 +80,9 @@ public class MainActivity extends BaseActivity {
         // 提交进行上传
         mBinding.btnSubmitUpload.setOnClickListener(v -> {
             // 开始模拟上传 - 指所有
-            for (DisplayMedia displayMedia : mBinding.dmlImageList.getAllData()){
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
+            for (GridMedia gridMedia : mBinding.dmlImageList.getAllData()){
+                MyTask timer = new MyTask(gridMedia);
+                timers.put(gridMedia, timer);
                 timer.schedule();
             }
         });
@@ -98,31 +95,26 @@ public class MainActivity extends BaseActivity {
         mBinding.dmlImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
 
         // 以下为点击事件
-        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
+        mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
 
             @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder audioHolder, @NonNull DisplayMedia displayMedia, int position, @NonNull String url) {
-
-            }
-
-            @Override
-            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull DisplayMedia displayMedia, int position) {
+            public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
                 return false;
             }
 
             @Override
-            public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
+            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull DisplayMedia displayMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
+            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
+                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
 //                            mBinding.mplImageList.getImagesAndVideos(),
 //                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
@@ -130,20 +122,20 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemStartUploading(@NotNull DisplayMedia displayMedia, @NotNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
+            public void onItemStartUploading(@NotNull GridMedia gridMedia, @NotNull GridAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
+                MyTask timer = new MyTask(gridMedia);
+                timers.put(gridMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull DisplayMedia displayMedia) {
+            public void onItemClose(@NotNull GridMedia gridMedia) {
                 // 停止上传
-                MyTask myTask = timers.get(displayMedia);
+                MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(displayMedia);
+                    timers.remove(gridMedia);
                 }
             }
 
@@ -169,7 +161,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected DisplayMediaLayout getMaskProgressLayout() {
+    protected GridView getMaskProgressLayout() {
         return mBinding.dmlImageList;
     }
 

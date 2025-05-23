@@ -10,8 +10,8 @@ import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.utils.MediaUtils;
-import com.zhongjh.displaymedia.entity.DisplayMedia;
-import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
+import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.gridview.widget.GridView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,14 +43,14 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 权限申请自定义码
      */
     protected final int GET_PERMISSION_REQUEST = 100;
-    protected HashMap<DisplayMedia, MyTask> timers = new HashMap<>();
+    protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
 
     /**
      * 返回九宫格
      *
      * @return MaskProgressLayout
      */
-    protected abstract DisplayMediaLayout getMaskProgressLayout();
+    protected abstract GridView getMaskProgressLayout();
 
     /**
      * 是否浏览
@@ -110,7 +110,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // 停止所有的上传
-        for (Map.Entry<DisplayMedia, MyTask> entry : timers.entrySet()) {
+        for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
         getMaskProgressLayout().onDestroy();
@@ -202,10 +202,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        DisplayMedia displayMedia;
+        GridMedia gridMedia;
 
-        public MyTask(DisplayMedia displayMedia) {
-            this.displayMedia = displayMedia;
+        public MyTask(GridMedia gridMedia) {
+            this.gridMedia = gridMedia;
         }
 
         public void schedule() {
@@ -213,7 +213,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     percentage++;
-                    getMaskProgressLayout().setPercentage(displayMedia, percentage);
+                    getMaskProgressLayout().setPercentage(gridMedia, percentage);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();
                     }

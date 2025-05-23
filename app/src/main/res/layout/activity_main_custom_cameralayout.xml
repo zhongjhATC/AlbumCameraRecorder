@@ -48,7 +48,7 @@
 
             </RadioGroup>
 
-            <com.zhongjh.displaymedia.widget.DisplayMediaLayout
+            <com.zhongjh.gridview.widget.GridView
                 android:id="@+id/dmlImageList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

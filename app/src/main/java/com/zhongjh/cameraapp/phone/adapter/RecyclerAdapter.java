@@ -4,18 +4,12 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.cameraapp.R;
-import com.zhongjh.displaymedia.apapter.AudioAdapter;
-import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
-import com.zhongjh.displaymedia.entity.DisplayMedia;
-import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
-
-import org.jetbrains.annotations.NotNull;
+import com.zhongjh.gridview.widget.GridView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,13 +76,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.mplImageList.reset();
-        holder.mplImageList.setImageUrls(data.get(position).getImageUrls());
-        if (data.get(position).getAudioUrls().size() > 0) {
-            holder.mplImageList.setAudioUrls(data.get(position).getAudioUrls());
+        holder.mplImageList.setImageUrls(data.get(position).getImageUrls(), false);
+        if (!data.get(position).getAudioUrls().isEmpty()) {
+            holder.mplImageList.setAudioUrls(data.get(position).getAudioUrls(), false);
         }
-        if (data.get(position).getVideoUrls().size() > 0) {
-            holder.mplImageList.setVideoUrls(data.get(position).getVideoUrls());
+        if (!data.get(position).getVideoUrls().isEmpty()) {
+            holder.mplImageList.setVideoUrls(data.get(position).getVideoUrls(), false);
         }
+        holder.mplImageList.notifyDataSetChanged();
 //        holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
 //            @Override
 //            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
@@ -144,7 +139,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public DisplayMediaLayout mplImageList;
+        public GridView mplImageList;
 
         public ViewHolder(View view) {
             super(view);

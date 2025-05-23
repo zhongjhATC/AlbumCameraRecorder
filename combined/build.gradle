@@ -37,7 +37,7 @@ dependencies {
     implementation "androidx.documentfile:documentfile:$rootProject.ext.documentfileSdkVersion"
 
     api project(path: ':multilibrary')
-    api project(path: ':displaymedia')
+    api project(path: ':gridview')
     api project(path: ':common')
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
 }

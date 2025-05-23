@@ -23,12 +23,14 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.zhongjh.displaymedia.engine.ImageEngine;
+import com.zhongjh.cameraapp.R;
+import com.zhongjh.gridview.engine.ImageEngine;
 
 
 /**
- * 这是配合展示数据九宫格view使用的 com.zhongjh.displaymedia.widget.MaskProgressLayout
+ * 这是配合展示数据九宫格view使用的 com.zhongjh.gridview.widget.MaskProgressLayout
  * {@link ImageEngine} implementation using Glide.
  *
  * @author zhongjh
@@ -37,7 +39,7 @@ import com.zhongjh.displaymedia.engine.ImageEngine;
 public class Glide4EngineProgress implements ImageEngine {
 
     @Override
-    public void loadThumbnail(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, @NonNull String path) {
+    public void loadPath(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, @NonNull String path) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(path)
@@ -49,7 +51,7 @@ public class Glide4EngineProgress implements ImageEngine {
     }
 
     @Override
-    public void loadUrlThumbnail(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, @NonNull String url) {
+    public void loadUrl(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, @NonNull String url) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(url)
@@ -60,31 +62,26 @@ public class Glide4EngineProgress implements ImageEngine {
                 .into(imageView);
     }
 
+
     @Override
-    public void loadImage(@NonNull Context context, int resizeX, int resizeY, @NonNull ImageView imageView, @NonNull Uri uri) {
+    public void loadResourceId(@NonNull Context context, int resize, @NonNull Drawable placeholder, @NonNull ImageView imageView, int resourceId) {
         Glide.with(context)
-                .load(uri)
+                .asBitmap() // some .jpeg files are actually gif
+                .load(resourceId)
                 .apply(new RequestOptions()
-                        .override(resizeX, resizeY)
-                        .fitCenter())
+                        .override(resize, resize)
+                        .placeholder(placeholder)
+                        .centerCrop())
                 .into(imageView);
     }
 
     @Override
-    public void loadGifImage(@NonNull Context context, int resizeX, int resizeY, @NonNull ImageView imageView, @NonNull Uri uri) {
+    public void loadUri(@NonNull Context context, int resizeX, int resizeY, @NonNull ImageView imageView, @NonNull Uri uri) {
         Glide.with(context)
-                .asGif()
                 .load(uri)
                 .apply(new RequestOptions()
                         .override(resizeX, resizeY)
-                        .fitCenter())
+                        .centerCrop())
                 .into(imageView);
     }
-
-    @Override
-    public boolean supportAnimatedGif() {
-        return true;
-    }
-
-
 }

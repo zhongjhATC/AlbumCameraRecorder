@@ -22,11 +22,10 @@ import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.displaymedia.apapter.AudioAdapter;
-import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter;
-import com.zhongjh.displaymedia.entity.DisplayMedia;
-import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener;
-import com.zhongjh.displaymedia.widget.DisplayMediaLayout;
+import com.zhongjh.gridview.apapter.GridAdapter;
+import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.gridview.listener.GridViewListener;
+import com.zhongjh.gridview.widget.GridView;
 import com.zhongjh.retrofitdownloadlib.http.DownloadInfo;
 import com.zhongjh.retrofitdownloadlib.http.DownloadProgressHandler;
 import com.zhongjh.retrofitdownloadlib.http.FileDownloader;
@@ -68,19 +67,19 @@ public class MainSeeActivity extends BaseActivity {
         mBinding = ActivityMainSeeBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         progressDialog = new ProgressDialog(MainSeeActivity.this);
-        mBinding.dmlImageList.setDisplayMediaLayoutListener(new DisplayMediaLayoutListener() {
+        mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull DisplayMedia displayMedia, int position) {
+            public boolean onItemStartDownload(@NotNull View view, @NotNull GridMedia gridMedia, int position) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
-                    String[] fileFullPath = getFileFullPath(displayMedia.getUrl(), 1);
+                    String[] fileFullPath = getFileFullPath(gridMedia.getUrl(), 1);
                     String path = fileFullPath[0] + File.separator + fileFullPath[1];
                     boolean isExists = fileIsExists(path);
                     if (!isExists) {
                         // 下载
                         progressDialog.show();
-                        FileDownloader.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
+                        FileDownloader.downloadFile(gridMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
 
                             @Override
                             public void onProgress(DownloadInfo downloadInfo) {
@@ -89,7 +88,7 @@ public class MainSeeActivity extends BaseActivity {
 
                             @Override
                             public void onCompleted(File file) {
-                                mBinding.dmlImageList.setVideoCover(displayMedia, file.getPath());
+                                mBinding.dmlImageList.setDataCover(gridMedia, file.getPath());
                                 progressDialog.hide();
                             }
 
@@ -104,7 +103,7 @@ public class MainSeeActivity extends BaseActivity {
                         return false;
                     } else {
                         // 获取时间,直接赋值
-                        mBinding.dmlImageList.setVideoCover(displayMedia, path);
+                        mBinding.dmlImageList.setDataCover(gridMedia, path);
                         // 赋值本地播放地址后,返回true是可以继续播放的播放事件
                         return true;
                     }
@@ -112,44 +111,44 @@ public class MainSeeActivity extends BaseActivity {
                 return false;
             }
 
-            @Override
-            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NotNull DisplayMedia displayMedia, int position, @NonNull String url) {
-                boolean isOk = getPermissions(true);
-                if (isOk) {
-                    // 判断是否存在文件
-                    String[] fileFullPath = getFileFullPath(url, 0);
-                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
-                    boolean isExists = fileIsExists(path);
-                    if (!isExists) {
-                        // 下载
-                        progressDialog.show();
-                        FileDownloader.downloadFile(displayMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
-
-                            @Override
-                            public void onProgress(DownloadInfo downloadInfo) {
-
-                            }
-
-                            @Override
-                            public void onCompleted(File file) {
-                                mBinding.dmlImageList.setAudioCover(displayMedia, file.getPath());
-                                progressDialog.hide();
-                            }
-
-                            @Override
-                            public void onError(Throwable throwable) {
-                                progressDialog.hide();
-                                Log.e("MainSeeActivity", "onFail", throwable);
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    } else {
-                        // 获取时间,直接赋值
-                        mBinding.dmlImageList.setAudioCover(displayMedia, path);
-                        mBinding.dmlImageList.onAudioClick(holder);
-                    }
-                }
-            }
+//            @Override
+//            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NotNull GridMedia gridMedia, int position, @NonNull String url) {
+//                boolean isOk = getPermissions(true);
+//                if (isOk) {
+//                    // 判断是否存在文件
+//                    String[] fileFullPath = getFileFullPath(url, 0);
+//                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
+//                    boolean isExists = fileIsExists(path);
+//                    if (!isExists) {
+//                        // 下载
+//                        progressDialog.show();
+//                        FileDownloader.downloadFile(gridMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
+//
+//                            @Override
+//                            public void onProgress(DownloadInfo downloadInfo) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onCompleted(File file) {
+//                                mBinding.dmlImageList.setAudioCover(gridMedia, file.getPath());
+//                                progressDialog.hide();
+//                            }
+//
+//                            @Override
+//                            public void onError(Throwable throwable) {
+//                                progressDialog.hide();
+//                                Log.e("MainSeeActivity", "onFail", throwable);
+//                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                    } else {
+//                        // 获取时间,直接赋值
+//                        mBinding.dmlImageList.setAudioCover(gridMedia, path);
+//                        mBinding.dmlImageList.onAudioClick(holder);
+//                    }
+//                }
+//            }
 
 //            @Override
 //            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.AudioHolder viewHolder) {
@@ -160,11 +159,11 @@ public class MainSeeActivity extends BaseActivity {
 //            }
 
             @Override
-            public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
+            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
             }
 
             @Override
-            public void onItemAdd(@NotNull View view, @NotNull DisplayMedia displayMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+            public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
                 if (isOk) {
@@ -173,28 +172,28 @@ public class MainSeeActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
+            public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
-                Log.i(TAG, "onResult id:" + displayMedia.getId());
-                Log.i(TAG, "onResult url:" + displayMedia.getUrl());
-                Log.d(TAG, "onResult 绝对路径:" + displayMedia.getPath());
-                Log.d(TAG, "onResult Uri:" + displayMedia.getPath());
-                Log.d(TAG, "onResult 文件大小: " + displayMedia.getSize());
-                Log.d(TAG, "onResult 视频音频长度: " + displayMedia.getDuration());
-                if (displayMedia.isImageOrGif()) {
-                    if (displayMedia.isImage()) {
+                Log.i(TAG, "onResult id:" + gridMedia.getId());
+                Log.i(TAG, "onResult url:" + gridMedia.getUrl());
+                Log.d(TAG, "onResult 绝对路径:" + gridMedia.getPath());
+                Log.d(TAG, "onResult Uri:" + gridMedia.getPath());
+                Log.d(TAG, "onResult 文件大小: " + gridMedia.getSize());
+                Log.d(TAG, "onResult 视频音频长度: " + gridMedia.getDuration());
+                if (gridMedia.isImageOrGif()) {
+                    if (gridMedia.isImage()) {
                         Log.d(TAG, "onResult 图片类型");
-                    } else if (displayMedia.isImage()) {
+                    } else if (gridMedia.isImage()) {
                         Log.d(TAG, "onResult 图片类型");
                     }
-                } else if (displayMedia.isVideo()) {
+                } else if (gridMedia.isVideo()) {
                     Log.d(TAG, "onResult 视频类型");
-                } else if (displayMedia.isAudio()) {
+                } else if (gridMedia.isAudio()) {
                     Log.d(TAG, "onResult 音频类型");
                 }
-                Log.d(TAG, "onResult 具体类型:" + displayMedia.getMimeType());
-                Log.d(TAG, "onResult 宽高: " + displayMedia.getWidth() + "x" + displayMedia.getHeight());
-                if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
+                Log.d(TAG, "onResult 具体类型:" + gridMedia.getMimeType());
+                Log.d(TAG, "onResult 宽高: " + gridMedia.getWidth() + "x" + gridMedia.getHeight());
+                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
 //                    mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
 //                            mBinding.dmlImageList.getImagesAndVideos(),
 //                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
@@ -202,20 +201,20 @@ public class MainSeeActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
+            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull GridAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-                MyTask timer = new MyTask(displayMedia);
-                timers.put(displayMedia, timer);
+                MyTask timer = new MyTask(gridMedia);
+                timers.put(gridMedia, timer);
                 timer.schedule();
             }
 
             @Override
-            public void onItemClose(@NotNull DisplayMedia displayMedia) {
+            public void onItemClose(@NotNull GridMedia gridMedia) {
                 // 停止上传
-                MyTask myTask = timers.get(displayMedia);
+                MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {
                     myTask.cancel();
-                    timers.remove(displayMedia);
+                    timers.remove(gridMedia);
                 }
             }
 
@@ -288,13 +287,13 @@ public class MainSeeActivity extends BaseActivity {
         List<String> audioUrls = new ArrayList<>();
         audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
         audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        mBinding.dmlImageList.setAudioUrls(audioUrls);
+        mBinding.dmlImageList.setAudioUrls(audioUrls, false);
 
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
         videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
         videoUrls.add("https://www.w3school.com.cn/example/html5/mov_bbb.mp4");
-        mBinding.dmlImageList.setVideoUrls(videoUrls);
+        mBinding.dmlImageList.setVideoUrls(videoUrls, false);
 
         // 图片数据
         List<String> imageUrls = new ArrayList<>();
@@ -306,7 +305,10 @@ public class MainSeeActivity extends BaseActivity {
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        mBinding.dmlImageList.setImageUrls(imageUrls);
+        mBinding.dmlImageList.setImageUrls(imageUrls, false);
+
+        // 刷新
+        mBinding.dmlImageList.notifyDataSetChanged();
     }
 
     /**
@@ -318,7 +320,7 @@ public class MainSeeActivity extends BaseActivity {
     }
 
     @Override
-    protected DisplayMediaLayout getMaskProgressLayout() {
+    protected GridView getMaskProgressLayout() {
         return mBinding.dmlImageList;
     }
 

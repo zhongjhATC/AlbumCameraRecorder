@@ -1,7 +1,7 @@
 include ':combined'
 include ':videoedit'
 include ':imageedit'
-include ':app', ':multilibrary', ':displaymedia'
+include ':app', ':multilibrary', ':gridview'
 include ':common'
 include ':app2'
 include ':cameraxapp'

@@ -7,12 +7,11 @@ import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
-import com.zhongjh.displaymedia.apapter.AudioAdapter.AudioHolder
-import com.zhongjh.displaymedia.apapter.ImagesAndVideoAdapter
-import com.zhongjh.displaymedia.entity.DisplayMedia
-import com.zhongjh.displaymedia.listener.AbstractDisplayMediaLayoutListener
-import com.zhongjh.displaymedia.listener.DisplayMediaLayoutListener
-import com.zhongjh.displaymedia.widget.DisplayMediaLayout
+import com.zhongjh.gridview.apapter.GridAdapter
+import com.zhongjh.gridview.entity.GridMedia
+import com.zhongjh.gridview.listener.AbstractGridViewListener
+import com.zhongjh.gridview.listener.GridViewListener
+import com.zhongjh.gridview.widget.GridView
 
 /**
  * 协调多个控件之间代码，更加简化代码
@@ -30,8 +29,8 @@ class Combined(
     var activity: Activity,
     var requestCode: Int,
     globalSetting: GlobalSetting,
-    private var maskProgressLayout: DisplayMediaLayout,
-    listener: AbstractDisplayMediaLayoutListener
+    private var maskProgressLayout: GridView,
+    listener: AbstractGridViewListener
 ) {
 
     /**
@@ -66,32 +65,23 @@ class Combined(
         maxImageSelectable = GlobalSpec.maxImageSelectable
         maxVideoSelectable = GlobalSpec.maxVideoSelectable
         maxAudioSelectable = GlobalSpec.maxAudioSelectable
-        maskProgressLayout.displayMediaLayoutListener = object : DisplayMediaLayoutListener {
-            override fun onItemVideoStartDownload(view: View, displayMedia: DisplayMedia, position: Int): Boolean {
-                return listener.onItemVideoStartDownload(view, displayMedia, position)
+        maskProgressLayout.gridViewListener = object : GridViewListener {
+            override fun onItemStartDownload(view: View, gridMedia: GridMedia, position: Int): Boolean {
+                return listener.onItemStartDownload(view, gridMedia, position)
             }
 
             override fun onItemStartUploading(
-                displayMedia: DisplayMedia, viewHolder: ImagesAndVideoAdapter.PhotoViewHolder
+                gridMedia: GridMedia, viewHolder: GridAdapter.PhotoViewHolder
             ) {
-                listener.onItemStartUploading(displayMedia, viewHolder)
+                listener.onItemStartUploading(gridMedia, viewHolder)
             }
 
-            override fun onItemAudioStartDownload(
-                audioHolder: AudioHolder,
-                displayMedia: DisplayMedia,
-                position: Int,
-                url: String
-            ) {
-                listener.onItemAudioStartDownload(audioHolder, displayMedia, position, url)
-            }
-
-            override fun onAddDataSuccess(displayMedias: List<DisplayMedia>) {
+            override fun onAddDataSuccess(gridMedia: List<GridMedia>) {
             }
 
             override fun onItemAdd(
                 view: View,
-                displayMedia: DisplayMedia,
+                gridMedia: GridMedia,
                 alreadyImageCount: Int,
                 alreadyVideoCount: Int,
                 alreadyAudioCount: Int
@@ -102,22 +92,22 @@ class Combined(
                     alreadyImageCount, alreadyVideoCount, alreadyAudioCount
                 )
                 globalSetting.forResult(requestCode)
-                listener.onItemAdd(view, displayMedia, alreadyImageCount, alreadyVideoCount, alreadyAudioCount)
+                listener.onItemAdd(view, gridMedia, alreadyImageCount, alreadyVideoCount, alreadyAudioCount)
             }
 
-            override fun onItemClick(view: View, displayMedia: DisplayMedia) {
+            override fun onItemClick(view: View, gridMedia: GridMedia) {
                 // 点击详情
-                if (displayMedia.isImageOrGif() || displayMedia.isVideo()) {
+                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
                     // 预览
 //                    globalSetting.openPreviewData(activity, requestCode,
 //                            maskProgressLayout.getImagesAndVideos(),
 //                            maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
                 }
-                listener.onItemClick(view, displayMedia)
+                listener.onItemClick(view, gridMedia)
             }
 
-            override fun onItemClose(displayMedia: DisplayMedia) {
-                listener.onItemClose(displayMedia)
+            override fun onItemClose(gridMedia: GridMedia) {
+                listener.onItemClose(gridMedia)
             }
         }
     }
