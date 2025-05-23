@@ -333,7 +333,6 @@ class GridView : FrameLayout, GridViewApi {
         }
         // 增加新的图片数据
         mGridAdapter.setImageData(progressMedias, isNotifyDataSetChanged)
-        gridViewListener?.onAddDataSuccess(progressMedias)
     }
 
     override fun setVideoUrls(videoUrls: List<String>, isNotifyDataSetChanged: Boolean) {
@@ -345,7 +344,6 @@ class GridView : FrameLayout, GridViewApi {
             gridMedia.add(progressMedia)
         }
         mGridAdapter.setVideoData(gridMedia, isNotifyDataSetChanged)
-        gridViewListener?.onAddDataSuccess(gridMedia)
     }
 
     override fun setAudioUrls(audioUrls: List<String>, isNotifyDataSetChanged: Boolean) {
@@ -356,7 +354,6 @@ class GridView : FrameLayout, GridViewApi {
             gridMedia.add(progressMedia)
         }
         mGridAdapter.setAudioData(gridMedia, isNotifyDataSetChanged)
-        gridViewListener?.onAddDataSuccess(gridMedia)
     }
 
     override fun setImagePaths(imagePaths: List<String>) {

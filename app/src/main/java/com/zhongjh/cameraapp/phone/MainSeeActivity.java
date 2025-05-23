@@ -112,57 +112,6 @@ public class MainSeeActivity extends BaseActivity {
                 return false;
             }
 
-//            @Override
-//            public void onItemAudioStartDownload(@NonNull AudioAdapter.AudioHolder holder, @NotNull GridMedia gridMedia, int position, @NonNull String url) {
-//                boolean isOk = getPermissions(true);
-//                if (isOk) {
-//                    // 判断是否存在文件
-//                    String[] fileFullPath = getFileFullPath(url, 0);
-//                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
-//                    boolean isExists = fileIsExists(path);
-//                    if (!isExists) {
-//                        // 下载
-//                        progressDialog.show();
-//                        FileDownloader.downloadFile(gridMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
-//
-//                            @Override
-//                            public void onProgress(DownloadInfo downloadInfo) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onCompleted(File file) {
-//                                mBinding.dmlImageList.setAudioCover(gridMedia, file.getPath());
-//                                progressDialog.hide();
-//                            }
-//
-//                            @Override
-//                            public void onError(Throwable throwable) {
-//                                progressDialog.hide();
-//                                Log.e("MainSeeActivity", "onFail", throwable);
-//                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                    } else {
-//                        // 获取时间,直接赋值
-//                        mBinding.dmlImageList.setAudioCover(gridMedia, path);
-//                        mBinding.dmlImageList.onAudioClick(holder);
-//                    }
-//                }
-//            }
-
-//            @Override
-//            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.AudioHolder viewHolder) {
-//                // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
-//                MyTask timer = new MyTask(displayMedia);
-//                timers.put(displayMedia, timer);
-//                timer.schedule();
-//            }
-
-            @Override
-            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
-            }
-
             @Override
             public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加

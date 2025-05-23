@@ -69,10 +69,6 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             }
 
             @Override
-            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
-            }
-
-            @Override
             public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);

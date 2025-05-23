@@ -15,7 +15,7 @@ interface GridViewListener {
      * 点击➕号的事件
      *
      * @param view              当前itemView
-     * @param gridMedia    当前数据
+     * @param gridMedia         当前数据
      * @param alreadyImageCount 目前已经显示的几个图片数量
      * @param alreadyVideoCount 目前已经显示的几个视频数量
      * @param alreadyAudioCount 目前已经显示的几个音频数量
@@ -43,16 +43,12 @@ interface GridViewListener {
      */
     fun onItemClose(gridMedia: GridMedia)
 
-
     /**
      * 开始上传 - 指刚添加后的
      *
      * @param gridMedia 传递的多媒体
      */
-    fun onItemStartUploading(
-        gridMedia: GridMedia,
-        viewHolder: GridAdapter.PhotoViewHolder
-    )
+    fun onItemStartUploading(gridMedia: GridMedia, viewHolder: GridAdapter.PhotoViewHolder)
 
     /**
      * 开始下载视频/音频
@@ -64,9 +60,4 @@ interface GridViewListener {
      * @return 是否触发后面的事件
      */
     fun onItemStartDownload(view: View, gridMedia: GridMedia, position: Int): Boolean
-
-    /**
-     * 加载数据完毕
-     */
-    fun onAddDataSuccess(gridMedia: List<GridMedia>)
 }

@@ -38,6 +38,4 @@ open class AbstractGridViewListener : GridViewListener {
         TODO("Not yet implemented")
     }
 
-    override fun onAddDataSuccess(gridMedia: List<GridMedia>) {}
-
 }

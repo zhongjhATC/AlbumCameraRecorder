@@ -64,14 +64,6 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             }
 
             @Override
-            public void onAddDataSuccess(@NotNull List<GridMedia> gridMedia) {
-                //                // 如果需要其他参数的话，循环数据初始化相关数值，这个读取时间会较长，建议异步线程执行
-//                for (MultiMediaView item : multiMediaViews) {
-//                    item.initDataByPath();
-//                }
-            }
-
-            @Override
             public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 boolean isOk = getPermissions(false);
