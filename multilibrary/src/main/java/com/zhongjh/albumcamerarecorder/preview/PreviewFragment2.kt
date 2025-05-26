@@ -36,10 +36,12 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
+import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.OriginalManage
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
+import com.zhongjh.albumcamerarecorder.preview.constants.PreviewTypes
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
@@ -126,12 +128,11 @@ class PreviewFragment2 : BaseFragment() {
         const val COMPRESS_ENABLE = "compress_enable"
         const val IS_SELECTED_LISTENER = "is_selected_listener"
         const val IS_SELECTED_CHECK = "is_selected_check"
-        const val IS_EXTERNAL_USERS = "is_external_users"
 
         /**
-         * 是否来自相册
+         * 预览类型，表达从什么界面打开进来的
          */
-        const val IS_BY_ALBUM = "is_by_album"
+        const val PREVIEW_TYPE = "preview_type"
         const val EXTRA_ITEM = "extra_item"
     }
 
@@ -184,7 +185,7 @@ class PreviewFragment2 : BaseFragment() {
             }
 
             override fun onSuccess(result: ArrayList<LocalMedia>) {
-                setResultOk(true, result)
+                setResultOkExceptAlbum(result)
             }
 
             override fun onFail(t: Throwable) {
@@ -266,9 +267,9 @@ class PreviewFragment2 : BaseFragment() {
     private var mIsSelectedCheck = true
 
     /**
-     * 是否外部直接调用该预览窗口，如果是外部直接调用，那么可以启用回调接口，内部统一使用onActivityResult方式回调
+     * 预览界面类型，代表从什么界面打开
      */
-    private var mIsExternalUsers = false
+    private var mPreviewType = PreviewTypes.ALBUM
 
     /**
      * 是否首次共享动画，只有第一次打开的时候才触发共享动画
@@ -279,11 +280,6 @@ class PreviewFragment2 : BaseFragment() {
      * 是否启动共享动画
      */
     private var mIsSharedAnimation = false
-
-    /**
-     * 是否来自于相册打开
-     */
-    private var mIsByAlbum = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -371,11 +367,10 @@ class PreviewFragment2 : BaseFragment() {
                 mSelectedEnable = it.getBoolean(SELECTED_ENABLE, true)
                 mIsSelectedListener = it.getBoolean(IS_SELECTED_LISTENER, true)
                 mIsSelectedCheck = it.getBoolean(IS_SELECTED_CHECK, true)
-                mIsExternalUsers = it.getBoolean(IS_EXTERNAL_USERS, false)
+                mPreviewType = it.getInt(PREVIEW_TYPE, PreviewTypes.ALBUM)
                 mCompressEnable = it.getBoolean(COMPRESS_ENABLE, false)
                 mEditEnable = it.getBoolean(EDIT_ENABLE, true)
                 mIsSharedAnimation = it.getBoolean(IS_SHARED_ANIMATION, true)
-                mIsByAlbum = it.getBoolean(IS_BY_ALBUM, false)
                 it.getParcelableArrayList<LocalMedia>(STATE_SELECTION)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
                     mMainModel.localMedias.addAll(localMedias)
@@ -487,7 +482,7 @@ class PreviewFragment2 : BaseFragment() {
                 for (localMedia in localMediaArrayList) {
                     localMedia.isOriginal = mMainModel.getOriginalEnable()
                 }
-                setResultOkByIsCompress(true)
+                setResultOkByIsCompress()
             }
         })
         // 右上角选择事件
@@ -551,15 +546,14 @@ class PreviewFragment2 : BaseFragment() {
 
     /**
      * 关闭Activity回调相关数值
-     *
-     * @param apply 是否同意
      */
-    private fun setResultOkByIsCompress(apply: Boolean) {
-        if (apply) {
-            compressFile()
-        } else {
+    private fun setResultOkByIsCompress() {
+        if (mPreviewType == PreviewTypes.ALBUM) {
             // 直接返回
-            setResultOk(false, mSelectedModel.selectedData.localMedias)
+            setResultOk(mSelectedModel.selectedData.localMedias)
+        } else {
+            // 其他界面就要先压缩
+            compressFile()
         }
     }
 
@@ -605,7 +599,7 @@ class PreviewFragment2 : BaseFragment() {
         val localMedia = mAdapter.getLocalMedia(mViewPager2.currentItem)
         val editFile = mEditImagePath?.let { File(it) }
         // 如果是从相册界面直接打开的预览 并且 是编辑过的加入相册
-        if (mIsByAlbum && null != editFile && null != localMedia) {
+        if (mPreviewType == PreviewTypes.ALBUM && null != editFile && null != localMedia) {
             if (mGlobalSpec.isAddAlbumByEdit) {
                 MediaStoreUtils.displayToGallery(
                     mContext, editFile, TYPE_PICTURE,
@@ -617,31 +611,37 @@ class PreviewFragment2 : BaseFragment() {
 
     /**
      * 设置返回值
-     *
-     * @param apply 是否同意
      */
     @Synchronized
-    private fun setResultOk(apply: Boolean, localMedias: ArrayList<LocalMedia>) {
+    private fun setResultOk(localMedias: ArrayList<LocalMedia>) {
         Log.d(TAG, "setResultOk")
         refreshMultiMediaItem()
+        // 如果有回调事件则执行回调,否则执行Activity的回调
+        mGlobalSpec.onResultCallbackListener?.onResult(localMedias) ?: let {
+            val intent = Intent()
+            intent.putExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMedias)
+            requireActivity().setResult(RESULT_OK, intent)
+        }
+        requireActivity().finish()
+    }
+
+    /**
+     * 设置返回值
+     * 该方法只针对除了相册的类型
+     */
+    @Synchronized
+    private fun setResultOkExceptAlbum(localMedias: ArrayList<LocalMedia>) {
+        Log.d(TAG, "setResultOkExceptAlbum")
+        refreshMultiMediaItem()
         mGlobalSpec.onResultCallbackListener?.let {
-            if (mIsExternalUsers) {
-                it.onResultFromPreview(localMedias, apply)
-            }
+            it.onResultFromPreview(localMedias, true)
         } ?: let {
-            if (!mIsExternalUsers) {
-                val intent = Intent()
-                intent.putExtra(STATE_SELECTION, localMedias)
-                intent.putExtra(EXTRA_RESULT_APPLY, apply)
-                intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
-                intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.getOriginalEnable())
-                // 如果是外部使用并且不同意，则不执行RESULT_OK
-                if (mIsExternalUsers && !apply) {
-                    requireActivity().setResult(RESULT_CANCELED, intent)
-                } else {
-                    requireActivity().setResult(RESULT_OK, intent)
-                }
-            }
+            val intent = Intent()
+            intent.putExtra(STATE_SELECTION, localMedias)
+            intent.putExtra(EXTRA_RESULT_APPLY, true)
+            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
+            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.getOriginalEnable())
+            requireActivity().setResult(RESULT_OK, intent)
         }
         requireActivity().finish()
     }

@@ -14,6 +14,7 @@ import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.model.SelectedData.*
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2
+import com.zhongjh.albumcamerarecorder.preview.constants.PreviewTypes
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
@@ -227,7 +228,7 @@ class GlobalSetting internal constructor(
         intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false)
         intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true)
         intent.putExtra(PreviewFragment2.IS_SELECTED_CHECK, false)
-        intent.putExtra(PreviewFragment2.IS_EXTERNAL_USERS, true)
+        intent.putExtra(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.GRID)
         intent.putExtra(PreviewFragment2.EDIT_ENABLE, false)
         activity.startActivityForResult(intent, requestCode)
         if (GlobalSpec.cutscenesEnabled) {

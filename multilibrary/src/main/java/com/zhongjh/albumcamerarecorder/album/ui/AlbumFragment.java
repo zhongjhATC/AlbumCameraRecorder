@@ -5,6 +5,7 @@ import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SE
 import static com.zhongjh.albumcamerarecorder.model.SelectedData.COLLECTION_UNDEFINED;
 import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.preview.PreviewFragment2.IS_SHARED_ANIMATION;
+import static com.zhongjh.albumcamerarecorder.preview.PreviewFragment2.PREVIEW_TYPE;
 import static com.zhongjh.albumcamerarecorder.preview.PreviewFragment2.STATE_SELECTION;
 
 import android.content.Context;
@@ -48,6 +49,7 @@ import com.zhongjh.albumcamerarecorder.model.OriginalManage;
 import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
+import com.zhongjh.albumcamerarecorder.preview.constants.PreviewTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams;
@@ -255,6 +257,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                 Intent intent = new Intent(requireActivity(), PreviewActivity.class);
                 intent.putParcelableArrayListExtra(PreviewFragment2.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
                 intent.putExtra(PreviewFragment2.COMPRESS_ENABLE, true);
+                intent.putExtra(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.ALBUM);
                 intent.putExtra(IS_SHARED_ANIMATION, false);
                 mPreviewActivityResult.launch(intent);
                 if (mGlobalSpec.getCutscenesEnabled()) {
@@ -474,6 +477,14 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         }
     }
 
+    /**
+     * 点击事件
+     *
+     * @param album           相册集合
+     * @param imageView       图片View
+     * @param item            选项
+     * @param adapterPosition 索引
+     */
     @Override
     public void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition) {
         if (DoubleUtils.isFastDoubleClick()) {
@@ -491,7 +502,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         Fragment fragment = new PreviewFragment2();
         Bundle bundle = new Bundle();
         bundle.putBoolean(PreviewFragment2.COMPRESS_ENABLE, true);
-        bundle.putBoolean(PreviewFragment2.IS_BY_ALBUM, true);
+        bundle.putInt(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.ALBUM);
         fragment.setArguments(bundle);
 
         requireActivity().getSupportFragmentManager()
