@@ -491,6 +491,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         Fragment fragment = new PreviewFragment2();
         Bundle bundle = new Bundle();
         bundle.putBoolean(PreviewFragment2.COMPRESS_ENABLE, true);
+        bundle.putBoolean(PreviewFragment2.IS_BY_ALBUM, true);
         fragment.setArguments(bundle);
 
         requireActivity().getSupportFragmentManager()

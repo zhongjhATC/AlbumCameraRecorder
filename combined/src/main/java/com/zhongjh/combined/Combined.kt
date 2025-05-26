@@ -76,9 +76,6 @@ class Combined(
                 listener.onItemStartUploading(gridMedia, viewHolder)
             }
 
-            override fun onAddDataSuccess(gridMedia: List<GridMedia>) {
-            }
-
             override fun onItemAdd(
                 view: View,
                 gridMedia: GridMedia,

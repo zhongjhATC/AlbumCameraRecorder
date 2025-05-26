@@ -6,6 +6,7 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -45,9 +46,11 @@ import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewList
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams
 import com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
+import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils
 import com.zhongjh.common.entity.IncapableCause
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
+import com.zhongjh.common.enums.MediaType.TYPE_PICTURE
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
@@ -59,6 +62,7 @@ import com.zhongjh.imageedit.ImageEditActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 
 /**
@@ -124,7 +128,10 @@ class PreviewFragment2 : BaseFragment() {
         const val IS_SELECTED_CHECK = "is_selected_check"
         const val IS_EXTERNAL_USERS = "is_external_users"
 
-        const val EXTRA_ALBUM = "extra_album"
+        /**
+         * 是否来自相册
+         */
+        const val IS_BY_ALBUM = "is_by_album"
         const val EXTRA_ITEM = "extra_item"
     }
 
@@ -273,6 +280,11 @@ class PreviewFragment2 : BaseFragment() {
      */
     private var mIsSharedAnimation = false
 
+    /**
+     * 是否来自于相册打开
+     */
+    private var mIsByAlbum = false
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context.applicationContext
@@ -343,6 +355,7 @@ class PreviewFragment2 : BaseFragment() {
             if (result.resultCode == RESULT_OK) {
                 mIsEdit = true
                 refreshMultiMediaItem()
+                handleEditImages()
             }
         }
     }
@@ -353,7 +366,7 @@ class PreviewFragment2 : BaseFragment() {
     private fun initBundleValue(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
-            arguments?.let { it ->
+            arguments?.let {
                 mApplyEnable = it.getBoolean(APPLY_ENABLE, true)
                 mSelectedEnable = it.getBoolean(SELECTED_ENABLE, true)
                 mIsSelectedListener = it.getBoolean(IS_SELECTED_LISTENER, true)
@@ -362,6 +375,7 @@ class PreviewFragment2 : BaseFragment() {
                 mCompressEnable = it.getBoolean(COMPRESS_ENABLE, false)
                 mEditEnable = it.getBoolean(EDIT_ENABLE, true)
                 mIsSharedAnimation = it.getBoolean(IS_SHARED_ANIMATION, true)
+                mIsByAlbum = it.getBoolean(IS_BY_ALBUM, false)
                 it.getParcelableArrayList<LocalMedia>(STATE_SELECTION)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
                     mMainModel.localMedias.addAll(localMedias)
@@ -583,34 +597,20 @@ class PreviewFragment2 : BaseFragment() {
         }
     }
 
-        /**
-     * 判断是否编辑过的图片
-     * 如果编辑过，则拷贝到配置目录下并加入相册
-     *
-     * @param item       文件数据
-     * @param newFile    新移动的文件
-     * @param oldFile    目前的文件
-     * @param isCompress 是否压缩
+    /**
+     * 判断编辑的图片是否加入相册
      */
-    private void HandleEditImages(LocalFile item, File newFile, File oldFile, Boolean isCompress) {
-        // 迁移到新的文件夹(配置目录)
-        if (item.getOldPath() != null) {
-            // 如果编辑过就直接 移动 文件
-            FileUtil.move(oldFile, newFile);
-        } else {
-            // 如果没有编辑过就拷贝，因为有可能是源文件需要保留
-            FileUtil.copy(oldFile, newFile);
-        }
-        item.updateFile(getApplicationContext(), mPictureMediaStoreCompat, item, newFile, isCompress);
+    private fun handleEditImages() {
+        // 获取当前查看的multimedia
+        val localMedia = mAdapter.getLocalMedia(mViewPager2.currentItem)
+        val editFile = mEditImagePath?.let { File(it) }
         // 如果是从相册界面直接打开的预览 并且 是编辑过的加入相册
-        if (mIsByAlbum && item.getOldPath() != null) {
-            if (mGlobalSpec.isAddAlbumByEdit()) {
-                Uri uri = MediaStoreUtils.displayToGallery(this, newFile, TYPE_PICTURE,
-                        item.getDuration(), item.getWidth(), item.getHeight(),
-                        mPictureMediaStoreCompat.getSaveStrategy().getDirectory(), mPictureMediaStoreCompat);
-                item.setId(MediaStoreUtils.getId(uri));
-            } else {
-                item.setId(System.currentTimeMillis());
+        if (mIsByAlbum && null != editFile && null != localMedia) {
+            if (mGlobalSpec.isAddAlbumByEdit) {
+                MediaStoreUtils.displayToGallery(
+                    mContext, editFile, TYPE_PICTURE,
+                    localMedia.duration, localMedia.width, localMedia.height
+                )
             }
         }
     }

@@ -18,7 +18,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
 import java.util.*

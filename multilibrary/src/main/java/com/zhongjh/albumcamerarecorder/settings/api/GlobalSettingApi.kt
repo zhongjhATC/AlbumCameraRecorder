@@ -13,7 +13,6 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting.ScreenOrientation
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.entity.SaveStrategy
 import java.util.*
 
 /**

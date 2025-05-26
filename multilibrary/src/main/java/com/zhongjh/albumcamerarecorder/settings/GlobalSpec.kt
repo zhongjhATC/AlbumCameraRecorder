@@ -10,7 +10,6 @@ import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
-import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 
 /**
