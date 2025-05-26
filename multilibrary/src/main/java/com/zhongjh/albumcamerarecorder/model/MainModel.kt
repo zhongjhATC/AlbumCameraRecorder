@@ -83,9 +83,9 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     var currentSelection = 0
 
     /**
-     * 当前预览的图片的索引,默认第一个
+     * 当前预览的图片的索引,默认无
      */
-    var previewPosition = 0
+    var previewPosition = -1
 
     init {
         mediaLoader = MediaLoader(application)

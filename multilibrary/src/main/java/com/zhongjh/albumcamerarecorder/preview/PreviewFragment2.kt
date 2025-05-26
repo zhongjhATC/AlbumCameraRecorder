@@ -69,6 +69,10 @@ import java.io.File
 
 /**
  * 目标是可以不止该库自用，也可以别的app别的功能直接使用
+ *
+ * 主要区分在于Activity和Fragment使用
+ *
+ *
  * 预览窗口的基类支持以下功能：
  * 1. 决定是否共享动画
  * 2. 实例化ViewPager
