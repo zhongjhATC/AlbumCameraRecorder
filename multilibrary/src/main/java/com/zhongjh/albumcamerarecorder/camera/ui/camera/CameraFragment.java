@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.view.PreviewView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
@@ -49,6 +50,13 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
     public void initView(View view, Bundle savedInstanceState) {
         mViewHolder = new ViewHolder(view);
         cameraManage = new CameraManage(getMainActivity(), mViewHolder, this);
+
+        mViewHolder.previewView.getPreviewStreamState().observe(getMainActivity(), new Observer<PreviewView.StreamState>() {
+            @Override
+            public void onChanged(PreviewView.StreamState streamState) {
+
+            }
+        });
     }
 
     @NonNull

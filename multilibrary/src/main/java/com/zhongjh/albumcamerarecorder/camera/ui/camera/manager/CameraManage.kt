@@ -7,6 +7,7 @@ import android.graphics.Point
 import android.hardware.display.DisplayManager
 import android.provider.MediaStore
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraInfo
@@ -29,8 +30,10 @@ import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraManageListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXOrientationEventListener
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCameraXPreviewViewTouchListener
@@ -39,7 +42,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraView
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils.DCIM_CAMERA
-import com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
+import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
@@ -57,7 +60,7 @@ import kotlin.math.min
 /**
  * 专门处理camerax的类
  */
-class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCameraView: ICameraView) :
+class CameraManage(val appCompatActivity: AppCompatActivity, val viewHolder: ViewHolder, val iCameraView: ICameraView) :
     OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
@@ -84,11 +87,11 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     private var videoCapture: androidx.camera.video.VideoCapture<Recorder>? = null
     private var recording: Recording? = null
 
-    private val displayManager by lazy { context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
+    private val displayManager by lazy { appCompatActivity.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
     private val displayListener by lazy { DisplayListener() }
     private val orientationEventListener by lazy {
         OnCameraXOrientationEventListener(
-            context, this
+            appCompatActivity, this
         )
     }
     private lateinit var cameraInfo: CameraInfo
@@ -97,7 +100,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      * 摄像头控制器
      */
     private lateinit var cameraControl: CameraControl
-    private val mainExecutor: Executor by lazy { ContextCompat.getMainExecutor(context) }
+    private val mainExecutor: Executor by lazy { ContextCompat.getMainExecutor(appCompatActivity) }
 
     /**
      * 相机模式
@@ -120,6 +123,11 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
     private var isActivityPause = false
 
     /**
+     * 输出最后一帧的状态
+     */
+    private var lastStreamState: PreviewView.StreamState? = null
+
+    /**
      * ui初始化，必须是ui线程
      */
     fun init() {
@@ -127,6 +135,34 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         viewHolder.previewView.post { displayId = viewHolder.previewView.display.displayId }
         startCheckOrientation()
         startCamera()
+
+        // 选择数据改变
+        viewHolder.previewView.previewStreamState
+            .observe(appCompatActivity) { streamState ->
+                if (lastStreamState == null) {
+                    lastStreamState = streamState
+                }
+                when (streamState) {
+                    PreviewView.StreamState.IDLE -> {
+                        if (lastStreamState != streamState) {
+                            lastStreamState = streamState
+                            // 停止输出画面后仍会停留在最后一帧,设置黑色前景遮挡住最后一帧画面
+                            viewHolder.previewView.foreground =
+                                ContextCompat.getDrawable(appCompatActivity, android.R.color.background_dark)
+                        }
+                    }
+
+                    PreviewView.StreamState.STREAMING -> {
+                        if (lastStreamState != streamState) {
+                            lastStreamState = streamState
+                            // 开始输出画面后清空前景
+                            viewHolder.previewView.foreground = null
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
     }
 
     /**
@@ -142,6 +178,9 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      * App显示出来
      */
     fun onResume() {
+        // 重新启动预览
+        startCheckOrientation()
+        startCamera()
         isActivityPause = false
     }
 
@@ -149,6 +188,8 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      * App被遮挡
      */
     fun onPause() {
+        // 解除绑定,这样切换别的界面可以提高性能
+        cameraProvider.unbindAll()
         // 停止录制
         isActivityPause = true
         // Activity触发了Pause,通知视频录制重置View
@@ -172,7 +213,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             val metadata = Metadata()
             metadata.isReversedHorizontal = isReversedHorizontal
             // 设置输出路径,因为有可能多图的原因,所以先暂时全部放进cache文件夹里面
-            val cameraFile = FileMediaUtil.createCacheFile(context, MediaType.TYPE_PICTURE)
+            val cameraFile = FileMediaUtil.createCacheFile(appCompatActivity, MediaType.TYPE_PICTURE)
             val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
             // 进行拍照
             imageCapture.takePicture(
@@ -195,46 +236,52 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
                 put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
             }
             val mediaStoreOutput = MediaStoreOutputOptions.Builder(
-                context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                appCompatActivity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
             ).setContentValues(contentValues).build()
-            recording = videoCapture?.output?.prepareRecording(context, mediaStoreOutput)?.withAudioEnabled()?.start(
-                ContextCompat.getMainExecutor(context)
-            ) { videoRecordEvent ->
-                // 视频录制监控回调
-                when (videoRecordEvent) {
-                    is VideoRecordEvent.Status -> {
-                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
-                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
-                            Log.d(TAG, "mRecordedTime 开始" + videoRecordEvent.recordingStats.recordedDurationNanos)
-                            onCameraManageListener?.onRecordStart()
+            recording =
+                videoCapture?.output?.prepareRecording(appCompatActivity, mediaStoreOutput)?.withAudioEnabled()?.start(
+                    ContextCompat.getMainExecutor(appCompatActivity)
+                ) { videoRecordEvent ->
+                    // 视频录制监控回调
+                    when (videoRecordEvent) {
+                        is VideoRecordEvent.Status -> {
+                            // 录制时间大于0才代表真正开始,通知长按按钮开始动画
+                            if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
+                                Log.d(TAG, "mRecordedTime 开始" + videoRecordEvent.recordingStats.recordedDurationNanos)
+                                onCameraManageListener?.onRecordStart()
+                            }
                         }
-                    }
 
-                    is VideoRecordEvent.Finalize -> {
-                        Log.d(
-                            TAG,
-                            "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri + " isActivityPause:" + isActivityPause
-                        )
-                        if (!isActivityPause) {
-                            // 完成录制
-                            val uri = videoRecordEvent.outputResults.outputUri
-                            onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(context, uri).absolutePath)
+                        is VideoRecordEvent.Finalize -> {
+                            Log.d(
+                                TAG,
+                                "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri + " isActivityPause:" + isActivityPause
+                            )
+                            if (!isActivityPause) {
+                                // 完成录制
+                                val uri = videoRecordEvent.outputResults.outputUri
+                                onCameraManageListener?.onRecordSuccess(
+                                    UriUtils.uriToFile(
+                                        appCompatActivity,
+                                        uri
+                                    ).absolutePath
+                                )
+                            }
+                            isActivityPause = false
                         }
-                        isActivityPause = false
-                    }
 
-                    is VideoRecordEvent.Pause -> {
-                        // 暂停录制
-                        Log.d(TAG, "Pause")
-                        onCameraManageListener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
-                    }
+                        is VideoRecordEvent.Pause -> {
+                            // 暂停录制
+                            Log.d(TAG, "Pause")
+                            onCameraManageListener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
+                        }
 
-                    is VideoRecordEvent.Resume -> {
-                        // 恢复录制
-                        Log.d(TAG, "Resume")
+                        is VideoRecordEvent.Resume -> {
+                            // 恢复录制
+                            Log.d(TAG, "Resume")
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -290,7 +337,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      * 启动预览
      */
     private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(appCompatActivity)
         cameraProviderFuture.addListener({
             try {
                 // 在 Runnable 中,添加 ProcessCameraProvider.它用于将相机的生命周期绑定到应用进程中的 LifecycleOwner
@@ -330,7 +377,10 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         try {
             // 获取适合的比例
             val screenAspectRatio: Int =
-                aspectRatio(DisplayMetricsUtils.getScreenWidth(context), DisplayMetricsUtils.getScreenHeight(context))
+                aspectRatio(
+                    DisplayMetricsUtils.getScreenWidth(appCompatActivity),
+                    DisplayMetricsUtils.getScreenHeight(appCompatActivity)
+                )
             // 获取当前预览的角度
             val rotation: Int = viewHolder.previewView.display.rotation
             // 获取前后置摄像头
@@ -348,7 +398,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             preview.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
             // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
             val camera = cameraProvider.bindToLifecycle(
-                (context as LifecycleOwner), cameraSelector, preview, imageCapture, imageAnalyzer
+                (appCompatActivity as LifecycleOwner), cameraSelector, preview, imageCapture, imageAnalyzer
             )
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
@@ -378,7 +428,12 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             cameraProvider.unbindAll()
             // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
             val camera =
-                cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, preview, videoCapture)
+                cameraProvider.bindToLifecycle(
+                    (appCompatActivity as LifecycleOwner),
+                    cameraSelector,
+                    preview,
+                    videoCapture
+                )
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -395,7 +450,8 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
         try {
             // 获取适合的比例
             val screenAspectRatio: Int = aspectRatio(
-                DisplayMetricsUtils.getScreenWidth(context), DisplayMetricsUtils.getScreenHeight(context)
+                DisplayMetricsUtils.getScreenWidth(appCompatActivity),
+                DisplayMetricsUtils.getScreenHeight(appCompatActivity)
             )
             // 获取当前预览的角度
             val rotation: Int = viewHolder.previewView.display.rotation
@@ -421,7 +477,8 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 将 imageCapture 用例与现有 preview 和 videoCapture 用例绑定(注意：不要绑定 imageAnalyzer，因为不支持 preview + imageCapture + videoCapture + imageAnalysis 组合)
-            val camera = cameraProvider.bindToLifecycle((context as LifecycleOwner), cameraSelector, useCaseGroup)
+            val camera =
+                cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, useCaseGroup)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -503,7 +560,7 @@ class CameraManage(val context: Context, val viewHolder: ViewHolder, val iCamera
      */
     private fun initCameraPreviewListener() {
         val zoomState = cameraInfo.zoomState
-        val onCameraXPreviewViewTouchListener = OnCameraXPreviewViewTouchListener(context)
+        val onCameraXPreviewViewTouchListener = OnCameraXPreviewViewTouchListener(appCompatActivity)
         onCameraXPreviewViewTouchListener.setCustomTouchListener(object :
             OnCameraXPreviewViewTouchListener.CustomTouchListener {
 
