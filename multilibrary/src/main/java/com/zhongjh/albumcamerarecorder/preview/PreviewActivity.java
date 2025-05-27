@@ -50,6 +50,7 @@ public class PreviewActivity extends AppCompatActivity {
 
     /**
      * 处理参数
+     * 上一个Activity传递的参数传给fragment
      */
     private void handleExtra(Fragment fragment) {
         Bundle bundle = getIntent().getExtras();

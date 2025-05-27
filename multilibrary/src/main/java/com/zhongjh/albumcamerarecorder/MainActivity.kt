@@ -144,9 +144,7 @@ open class MainActivity : AppCompatActivity() {
     }
 
     @TargetApi(23)
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (!mIsShowDialog) {
             // 全部拒绝后就提示去到应用设置里面修改配置

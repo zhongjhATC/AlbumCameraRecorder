@@ -21,13 +21,7 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
  * 1. 容器可以添加任何View，目前添加的是viewPager2
  * 2. 还有个SharedAnimationWrapper，是用于模仿上个界面RecyclerView的item的位置、宽高作用域过渡
  */
-class SharedAnimationView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-) : FrameLayout(
-    context, attrs, defStyleAttr
-) {
+class SharedAnimationView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val tag: String = this@SharedAnimationView.javaClass.simpleName
 
@@ -39,7 +33,7 @@ class SharedAnimationView @JvmOverloads constructor(
     /**
      * 动画的时长
      */
-    private val animationDuration: Long = 250
+    private val animationDuration: Long = 200
     private var mOriginLeft = 0
     private var mOriginTop = 0
     private var mOriginHeight = 0
@@ -50,7 +44,7 @@ class SharedAnimationView @JvmOverloads constructor(
     /**
      * 屏幕高度，包含状态栏
      */
-    private val appInScreenHeight: Int
+    private val appInScreenHeight: Int = getRealScreenHeight(context)
     private var targetImageTop = 0
     private var targetImageWidth = 0
     private var targetImageHeight = 0
@@ -82,7 +76,6 @@ class SharedAnimationView @JvmOverloads constructor(
 
 
     init {
-        appInScreenHeight = getRealScreenHeight(context)
         getScreenSize()
         backgroundView = View(context)
         backgroundView.layoutParams =

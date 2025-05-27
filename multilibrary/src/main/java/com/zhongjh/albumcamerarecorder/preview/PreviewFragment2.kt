@@ -2,11 +2,9 @@ package com.zhongjh.albumcamerarecorder.preview
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -70,7 +68,8 @@ import java.io.File
 /**
  * 目标是可以不止该库自用，也可以别的app别的功能直接使用
  *
- * 主要区分在于Activity和Fragment使用
+ * Activity和Fragment的区别:
+ * Activity是一个全新的多媒体数据,而Fragment是一个来源于同一个Activity的多媒体数据
  *
  *
  * 预览窗口的基类支持以下功能：
@@ -84,7 +83,6 @@ import java.io.File
  */
 class PreviewFragment2 : BaseFragment() {
 
-
     companion object {
         const val TAG: String = "PreviewFragment"
 
@@ -92,11 +90,6 @@ class PreviewFragment2 : BaseFragment() {
          * 数据源的标记
          */
         const val STATE_SELECTION = "state_selection"
-
-        /**
-         * 是否开启共享动画
-         */
-        const val IS_SHARED_ANIMATION = "is_shared_animation"
 
         const val EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat"
 
@@ -112,7 +105,7 @@ class PreviewFragment2 : BaseFragment() {
         const val EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable"
 
         /**
-         * 设置是否启动确定功能
+         * 设置是否启动 '确定' 功能
          */
         const val APPLY_ENABLE = "apply_enable"
 
@@ -127,10 +120,13 @@ class PreviewFragment2 : BaseFragment() {
         const val EDIT_ENABLE = "edit_enable"
 
         /**
-         * 设置是否开启压缩
+         * 是否是否启动选择事件
          */
-        const val COMPRESS_ENABLE = "compress_enable"
         const val IS_SELECTED_LISTENER = "is_selected_listener"
+
+        /**
+         * 验证当前item是否满足可以被选中的条件
+         */
         const val IS_SELECTED_CHECK = "is_selected_check"
 
         /**
@@ -185,11 +181,12 @@ class PreviewFragment2 : BaseFragment() {
     private val mCompressFileTask: SimpleTask<ArrayList<LocalMedia>> by lazy {
         object : SimpleTask<ArrayList<LocalMedia>>() {
             override fun doInBackground(): ArrayList<LocalMedia> {
-                return mAlbumCompressFileTask.compressFileTaskDoInBackground(mSelectedModel.selectedData.localMedias)
+                val isOnlyCompressEditPicture = mPreviewType == PreviewTypes.GRID || mPreviewType == PreviewTypes.THIRD_PARTY
+                return mAlbumCompressFileTask.compressFileTaskDoInBackground(mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
             }
 
             override fun onSuccess(result: ArrayList<LocalMedia>) {
-                setResultOkExceptAlbum(result)
+                setResultOk(result)
             }
 
             override fun onFail(t: Throwable) {
@@ -251,11 +248,6 @@ class PreviewFragment2 : BaseFragment() {
     private var mEditEnable = true
 
     /**
-     * 设置是否开启压缩
-     */
-    private var mCompressEnable = false
-
-    /**
      * 是否编辑了图片
      */
     private var mIsEdit = false
@@ -273,17 +265,12 @@ class PreviewFragment2 : BaseFragment() {
     /**
      * 预览界面类型，代表从什么界面打开
      */
-    private var mPreviewType = PreviewTypes.ALBUM
+    private var mPreviewType = PreviewTypes.ALBUM_ACTIVITY
 
     /**
      * 是否首次共享动画，只有第一次打开的时候才触发共享动画
      */
     private var mFirstSharedAnimation = true
-
-    /**
-     * 是否启动共享动画
-     */
-    private var mIsSharedAnimation = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -340,7 +327,7 @@ class PreviewFragment2 : BaseFragment() {
      * 初始化样式
      */
     private fun initStyle(inflater: LayoutInflater, container: ViewGroup?): View {
-        val wrapper = ContextThemeWrapper(requireActivity(), mGlobalSpec.themeId)
+        val wrapper = ContextThemeWrapper(mContext, mGlobalSpec.themeId)
         val cloneInContext = inflater.cloneInContext(wrapper)
         return cloneInContext.inflate(R.layout.fragment_preview_zjh, container, false)
     }
@@ -367,14 +354,19 @@ class PreviewFragment2 : BaseFragment() {
         if (savedInstanceState == null) {
             // 初始化别的界面传递过来的数据
             arguments?.let {
+                // 设置是否启动 '确定' 功能
                 mApplyEnable = it.getBoolean(APPLY_ENABLE, true)
+                // 设置是否启动 '选择' 功能
                 mSelectedEnable = it.getBoolean(SELECTED_ENABLE, true)
+                // 设置是否启动 '选择事件' 功能
                 mIsSelectedListener = it.getBoolean(IS_SELECTED_LISTENER, true)
+                // 验证当前item是否满足可以被选中的条件
                 mIsSelectedCheck = it.getBoolean(IS_SELECTED_CHECK, true)
-                mPreviewType = it.getInt(PREVIEW_TYPE, PreviewTypes.ALBUM)
-                mCompressEnable = it.getBoolean(COMPRESS_ENABLE, false)
+                // 预览类型，表达从什么界面打开进来的
+                mPreviewType = it.getInt(PREVIEW_TYPE, PreviewTypes.ALBUM_ACTIVITY)
+                // 设置是否开启编辑功能
                 mEditEnable = it.getBoolean(EDIT_ENABLE, true)
-                mIsSharedAnimation = it.getBoolean(IS_SHARED_ANIMATION, true)
+                // 数据源
                 it.getParcelableArrayList<LocalMedia>(STATE_SELECTION)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
                     mMainModel.localMedias.addAll(localMedias)
@@ -393,38 +385,27 @@ class PreviewFragment2 : BaseFragment() {
         mViewPager2 = ViewPager2(requireContext())
         mViewHolder.sharedAnimationView.setContentView(mViewPager2)
         if (isSharedAnimation()) {
-            val alpha = if (mIsSavedInstanceState) 1F
-            else 0F
+            val alpha = if (mIsSavedInstanceState) 1F else 0F
             mViewHolder.sharedAnimationView.setBackgroundAlpha(alpha)
             mViewHolder.bottomToolbar.alpha = alpha
             mViewHolder.constraintLayout.alpha = alpha
         } else {
             mViewHolder.sharedAnimationView.setBackgroundAlpha(1.0F)
         }
-        mViewHolder.sharedAnimationView.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(), R.color.black
-            )
-        )
-        mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object :
-            OnSharedAnimationViewListener {
+        mViewHolder.sharedAnimationView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.black))
+        mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object : OnSharedAnimationViewListener {
             override fun onBeginBackMinAnim() {
                 // 开始 退出共享动画
                 this@PreviewFragment2.onSharedBeginBackMinAnim()
-
             }
 
             override fun onBeginBackMinMagicalFinish(isResetSize: Boolean) {
                 this@PreviewFragment2.onSharedBeginBackMinFinish(isResetSize)
             }
 
-            override fun onBeginSharedAnimComplete(
-                sharedAnimationView: SharedAnimationView, showImmediately: Boolean
-            ) {
+            override fun onBeginSharedAnimComplete(sharedAnimationView: SharedAnimationView, showImmediately: Boolean) {
                 // 开始共享动画完成后
-                this@PreviewFragment2.onSharedBeginAnimComplete(
-                    sharedAnimationView, showImmediately
-                )
+                this@PreviewFragment2.onSharedBeginAnimComplete(sharedAnimationView, showImmediately)
             }
 
             override fun onBackgroundAlpha(alpha: Float) {
@@ -552,7 +533,7 @@ class PreviewFragment2 : BaseFragment() {
      * 关闭Activity回调相关数值
      */
     private fun setResultOkByIsCompress() {
-        if (mPreviewType == PreviewTypes.ALBUM) {
+        if (mPreviewType == PreviewTypes.CAMERA) {
             // 直接返回
             setResultOk(mSelectedModel.selectedData.localMedias)
         } else {
@@ -603,13 +584,8 @@ class PreviewFragment2 : BaseFragment() {
         val localMedia = mAdapter.getLocalMedia(mViewPager2.currentItem)
         val editFile = mEditImagePath?.let { File(it) }
         // 如果是从相册界面直接打开的预览 并且 是编辑过的加入相册
-        if (mPreviewType == PreviewTypes.ALBUM && null != editFile && null != localMedia) {
-            if (mGlobalSpec.isAddAlbumByEdit) {
-                MediaStoreUtils.displayToGallery(
-                    mContext, editFile, TYPE_PICTURE,
-                    localMedia.duration, localMedia.width, localMedia.height
-                )
-            }
+        if ((mPreviewType == PreviewTypes.ALBUM_ACTIVITY || mPreviewType == PreviewTypes.ALBUM_FRAGMENT) && null != editFile && null != localMedia && mGlobalSpec.isAddAlbumByEdit) {
+            MediaStoreUtils.displayToGallery(mContext, editFile, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
         }
     }
 
@@ -620,35 +596,43 @@ class PreviewFragment2 : BaseFragment() {
     private fun setResultOk(localMedias: ArrayList<LocalMedia>) {
         Log.d(TAG, "setResultOk")
         refreshMultiMediaItem()
-        // 如果有回调事件则执行回调,否则执行Activity的回调
-        mGlobalSpec.onResultCallbackListener?.onResult(localMedias) ?: let {
-            val intent = Intent()
-            intent.putExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMedias)
-            requireActivity().setResult(RESULT_OK, intent)
+        when (mPreviewType) {
+            PreviewTypes.ALBUM_ACTIVITY,
+            PreviewTypes.ALBUM_FRAGMENT -> {
+                // 如果有回调事件则执行回调,否则执行Activity的回调
+                mGlobalSpec.onResultCallbackListener?.let { onResultCallbackListener ->
+                    onResultCallbackListener.onResult(localMedias)
+                    requireActivity().setResult(RESULT_OK)
+                } ?: let {
+                    val intent = Intent()
+                    intent.putExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMedias)
+                    requireActivity().setResult(RESULT_OK, intent)
+                }
+                requireActivity().finish()
+            }
         }
-        requireActivity().finish()
     }
 
-    /**
-     * 设置返回值
-     * 该方法只针对除了相册的类型
-     */
-    @Synchronized
-    private fun setResultOkExceptAlbum(localMedias: ArrayList<LocalMedia>) {
-        Log.d(TAG, "setResultOkExceptAlbum")
-        refreshMultiMediaItem()
-        mGlobalSpec.onResultCallbackListener?.let {
-            it.onResultFromPreview(localMedias, true)
-        } ?: let {
-            val intent = Intent()
-            intent.putExtra(STATE_SELECTION, localMedias)
-            intent.putExtra(EXTRA_RESULT_APPLY, true)
-            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
-            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.getOriginalEnable())
-            requireActivity().setResult(RESULT_OK, intent)
-        }
-        requireActivity().finish()
-    }
+//    /**
+//     * 设置返回值
+//     * 该方法只针对除了相册的类型
+//     */
+//    @Synchronized
+//    private fun setResultOkExceptAlbum(localMedias: ArrayList<LocalMedia>) {
+//        Log.d(TAG, "setResultOkExceptAlbum")
+//        refreshMultiMediaItem()
+//        mGlobalSpec.onResultCallbackListener?.let {
+//            it.onResultFromPreview(localMedias, true)
+//        } ?: let {
+//            val intent = Intent()
+//            intent.putExtra(STATE_SELECTION, localMedias)
+//            intent.putExtra(EXTRA_RESULT_APPLY, true)
+//            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
+//            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.getOriginalEnable())
+//            requireActivity().setResult(RESULT_OK, intent)
+//        }
+//        requireActivity().finish()
+//    }
 
     /**
      * 设置是否启用界面触摸，不可禁止中断、退出
@@ -772,7 +756,7 @@ class PreviewFragment2 : BaseFragment() {
      * 是否开启共享动画
      */
     private fun isSharedAnimation(): Boolean {
-        return mIsSharedAnimation
+        return mPreviewType == PreviewTypes.ALBUM_FRAGMENT
     }
 
     /**
@@ -967,7 +951,7 @@ class PreviewFragment2 : BaseFragment() {
      */
     private fun onViewPageSelected(position: Int) {
         mMainModel.previewPosition = position
-        if (mIsSharedAnimation) {
+        if (isSharedAnimation()) {
             if (mFirstSharedAnimation) {
                 startSharedAnimation(position)
                 mFirstSharedAnimation = false

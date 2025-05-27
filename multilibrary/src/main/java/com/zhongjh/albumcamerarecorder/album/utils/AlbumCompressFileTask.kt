@@ -26,15 +26,22 @@ class AlbumCompressFileTask(
     private val clsKey: Class<*>,
     private val globalSpec: GlobalSpec
 ) {
-    fun compressFileTaskDoInBackground(localFiles: ArrayList<LocalMedia>): ArrayList<LocalMedia> {
+
+    /**
+     * @param localFiles 数据源
+     * @param isOnlyCompressEditPicture 是否只压缩编辑的图片
+     */
+    fun compressFileTaskDoInBackground(
+        localFiles: ArrayList<LocalMedia>,
+        isOnlyCompressEditPicture: Boolean
+    ): ArrayList<LocalMedia> {
         // 将 缓存文件 拷贝到 配置目录
         val newLocalFiles = ArrayList<LocalMedia>()
         for (item in localFiles) {
             // 设置沙盒路径
             item.sandboxPath = FileMediaUtil.getUri(context, item.path).toString()
 
-            // 判断是否需要压缩
-            val isCompressItem = isCompress(item)
+            val isCompressItem = isCompress(item, isOnlyCompressEditPicture)
             if (isCompressItem != null) {
                 newLocalFiles.add(isCompressItem)
                 continue
@@ -116,19 +123,37 @@ class AlbumCompressFileTask(
     /**
      * 判断是否需要压缩
      *
+     * @param item 数据
+     * @param isOnlyCompressEditPicture 是否只压缩编辑的图片
+     *
      * @return 返回对象为null就需要压缩，否则不需要压缩
      */
-    private fun isCompress(item: LocalMedia): LocalMedia? {
+    private fun isCompress(item: LocalMedia, isOnlyCompressEditPicture: Boolean): LocalMedia? {
         // 判断是否需要压缩
         return if (item.isVideo() && globalSpec.videoCompressCoordinator == null) {
             item
         } else if (item.isGif()) {
             item
         } else if (item.isImage() && globalSpec.onImageCompressionListener == null) {
-            item
+            if (isOnlyCompressEditPicture) {
+                if (isOnlyCompressEditPicture(item)) {
+                    item
+                } else {
+                    null
+                }
+            } else {
+                item
+            }
         } else {
             null
         }
+    }
+
+    /**
+     * 编辑图片地址有值 同时 压缩地址没值，才需要进行压缩
+     */
+    private fun isOnlyCompressEditPicture(item: LocalMedia): Boolean {
+        return null != item.editorPath && null == item.compressPath
     }
 
     /**

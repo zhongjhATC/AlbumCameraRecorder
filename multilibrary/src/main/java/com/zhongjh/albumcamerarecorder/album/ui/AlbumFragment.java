@@ -2,11 +2,6 @@ package com.zhongjh.albumcamerarecorder.album.ui;
 
 import static android.app.Activity.RESULT_OK;
 import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
-import static com.zhongjh.albumcamerarecorder.model.SelectedData.COLLECTION_UNDEFINED;
-import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_COLLECTION_TYPE;
-import static com.zhongjh.albumcamerarecorder.preview.PreviewFragment2.IS_SHARED_ANIMATION;
-import static com.zhongjh.albumcamerarecorder.preview.PreviewFragment2.PREVIEW_TYPE;
-import static com.zhongjh.albumcamerarecorder.preview.PreviewFragment2.STATE_SELECTION;
 
 import android.content.Context;
 import android.content.Intent;
@@ -254,15 +249,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NonNull View v) {
-                Intent intent = new Intent(requireActivity(), PreviewActivity.class);
-                intent.putParcelableArrayListExtra(PreviewFragment2.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
-                intent.putExtra(PreviewFragment2.COMPRESS_ENABLE, true);
-                intent.putExtra(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.ALBUM);
-                intent.putExtra(IS_SHARED_ANIMATION, false);
-                mPreviewActivityResult.launch(intent);
-                if (mGlobalSpec.getCutscenesEnabled()) {
-                    requireActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
-                }
+                startPreviewActivity();
             }
         });
 
@@ -342,40 +329,11 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
                     if (result.getResultCode() != RESULT_OK) {
                         return;
                     }
-                    // 请求的预览界面
                     if (result.getData() != null) {
-                        // 获取选择的数据
-                        ArrayList<LocalMedia> selected;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                            selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION, LocalMedia.class);
-                        } else {
-                            selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION);
-                        }
-                        int collectionType = result.getData().getIntExtra(STATE_COLLECTION_TYPE, COLLECTION_UNDEFINED);
-                        // 如果在预览界面点击了确定
-                        if (result.getData().getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
-                            if (selected != null) {
-                                ArrayList<LocalMedia> localFiles = new ArrayList<>(selected);
-                                // 不用处理压缩，压缩处理已经在预览界面处理了
-                                setResultOk(localFiles);
-                            }
-                        } else {
-                            if (selected != null) {
-                                // 点击了返回
-                                mSelectedModel.getSelectedData().overwrite(selected, collectionType);
-                                if (result.getData().getBooleanExtra(PreviewFragment2.EXTRA_RESULT_IS_EDIT, false)) {
-                                    mIsRefresh = true;
-                                    // 重新读取数据源
-                                    mMediaViewUtil.reloadPageMediaData();
-                                } else {
-                                    // 刷新数据源
-                                    mMediaViewUtil.refreshMediaGrid();
-                                }
-                                // 刷新底部
-                                updateBottomToolbar();
-                            }
-                        }
+                        // 将PreviewActivity传递的数据继续传给上一个Activity
+                        requireActivity().setResult(RESULT_OK, result.getData());
                     }
+                    requireActivity().finish();
                 });
     }
 
@@ -443,7 +401,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mOriginalManage.updateOriginalState();
     }
 
-
     /**
      * 选择某个专辑的时候
      *
@@ -496,15 +453,32 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         currentPosition = adapterPosition;
         // 设置position
         mMainModel.setPreviewPosition(adapterPosition);
+        startPreviewFragment();
+    }
 
+    /**
+     * 打开tPreviewActivity
+     */
+    private void startPreviewActivity() {
+        Intent intent = new Intent(requireActivity(), PreviewActivity.class);
+        intent.putParcelableArrayListExtra(PreviewFragment2.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
+        intent.putExtra(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.ALBUM_ACTIVITY);
+        mPreviewActivityResult.launch(intent);
+        if (mGlobalSpec.getCutscenesEnabled()) {
+            requireActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
+        }
+    }
+
+    /**
+     * 打开PreviewFragment
+     */
+    private void startPreviewFragment() {
         // 隐藏底部控件
         ((MainActivity) requireActivity()).showHideTableLayoutAnimator(false);
         Fragment fragment = new PreviewFragment2();
         Bundle bundle = new Bundle();
-        bundle.putBoolean(PreviewFragment2.COMPRESS_ENABLE, true);
-        bundle.putInt(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.ALBUM);
+        bundle.putInt(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.ALBUM_FRAGMENT);
         fragment.setArguments(bundle);
-
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .add(android.R.id.content, fragment, PreviewFragment2.class.getSimpleName())
@@ -559,7 +533,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
 
             @Override
             public ArrayList<LocalMedia> doInBackground() {
-                return mAlbumCompressFileTask.compressFileTaskDoInBackground(localMediaArrayList);
+                return mAlbumCompressFileTask.compressFileTaskDoInBackground(localMediaArrayList, false);
             }
 
             @Override
