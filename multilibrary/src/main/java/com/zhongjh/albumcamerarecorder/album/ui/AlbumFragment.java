@@ -43,7 +43,7 @@ import com.zhongjh.albumcamerarecorder.model.MainModel;
 import com.zhongjh.albumcamerarecorder.model.OriginalManage;
 import com.zhongjh.albumcamerarecorder.model.SelectedModel;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.preview.constants.PreviewTypes;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
@@ -461,8 +461,8 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private void startPreviewActivity() {
         Intent intent = new Intent(requireActivity(), PreviewActivity.class);
-        intent.putParcelableArrayListExtra(PreviewFragment2.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
-        intent.putExtra(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.ALBUM_ACTIVITY);
+        intent.putParcelableArrayListExtra(PreviewFragment.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
+        intent.putExtra(PreviewFragment.PREVIEW_TYPE, PreviewTypes.ALBUM_ACTIVITY);
         mPreviewActivityResult.launch(intent);
         if (mGlobalSpec.getCutscenesEnabled()) {
             requireActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
@@ -475,14 +475,14 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     private void startPreviewFragment() {
         // 隐藏底部控件
         ((MainActivity) requireActivity()).showHideTableLayoutAnimator(false);
-        Fragment fragment = new PreviewFragment2();
+        Fragment fragment = new PreviewFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.ALBUM_FRAGMENT);
+        bundle.putInt(PreviewFragment.PREVIEW_TYPE, PreviewTypes.ALBUM_FRAGMENT);
         fragment.setArguments(bundle);
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .add(android.R.id.content, fragment, PreviewFragment2.class.getSimpleName())
-                .addToBackStack(PreviewFragment2.class.getSimpleName())
+                .add(android.R.id.content, fragment, PreviewFragment.class.getSimpleName())
+                .addToBackStack(PreviewFragment.class.getSimpleName())
                 .commitAllowingStateLoss();
     }
 

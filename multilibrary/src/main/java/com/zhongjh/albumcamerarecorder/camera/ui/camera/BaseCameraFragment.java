@@ -47,7 +47,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.IState;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
@@ -542,7 +542,7 @@ public abstract class BaseCameraFragment
                 if (result.getData() == null) {
                     return;
                 }
-                if (result.getData().getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
+                if (result.getData().getBooleanExtra(PreviewFragment.EXTRA_RESULT_APPLY, false)) {
                     // 获取选择的数据
                     ArrayList<LocalMedia> selected;
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {

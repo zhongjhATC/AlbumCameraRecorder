@@ -5,7 +5,7 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2;
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
@@ -83,7 +83,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (requestCode == REQUEST_CODE_CHOOSE) {
             // 如果是在九宫格点击的预览界面 点击了确定
-            if (data.getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
+            if (data.getBooleanExtra(PreviewFragment.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
                 ArrayList<LocalMedia> selected = MultiMediaSetting.obtainLocalMediaResult(data);
                 // 循环判断，如果不存在，则删除

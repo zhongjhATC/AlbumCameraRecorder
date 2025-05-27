@@ -3,7 +3,7 @@ package com.zhongjh.combined
 import android.app.Activity
 import android.content.Intent
 import android.view.View
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
@@ -118,7 +118,7 @@ class Combined(
     fun onActivityResult(requestCode: Int, data: Intent) {
         if (this.requestCode == requestCode) {
             // 如果是在预览界面点击了确定
-            if (data.getBooleanExtra(PreviewFragment2.EXTRA_RESULT_APPLY, false)) {
+            if (data.getBooleanExtra(PreviewFragment.EXTRA_RESULT_APPLY, false)) {
                 // 获取选择的数据
                 val selected = obtainLocalMediaResult(data) ?: return
                 // 循环判断，如果不存在，则删除

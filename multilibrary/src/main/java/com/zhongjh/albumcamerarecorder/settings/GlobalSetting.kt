@@ -13,7 +13,7 @@ import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.model.SelectedData.*
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment2
+import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
 import com.zhongjh.albumcamerarecorder.preview.constants.PreviewTypes
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
@@ -222,14 +222,14 @@ class GlobalSetting internal constructor(
         list: ArrayList<LocalMedia>, position: Int
     ) {
         val intent = Intent(activity, PreviewActivity::class.java)
-        intent.putExtra(PreviewFragment2.STATE_SELECTION, list)
-        intent.putExtra(PreviewFragment2.EXTRA_ITEM, list[position])
+        intent.putExtra(PreviewFragment.STATE_SELECTION, list)
+        intent.putExtra(PreviewFragment.EXTRA_ITEM, list[position])
         intent.putExtra(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
-        intent.putExtra(PreviewFragment2.EXTRA_RESULT_ORIGINAL_ENABLE, false)
-        intent.putExtra(PreviewFragment2.EXTRA_IS_ALLOW_REPEAT, true)
-        intent.putExtra(PreviewFragment2.IS_SELECTED_CHECK, false)
-        intent.putExtra(PreviewFragment2.PREVIEW_TYPE, PreviewTypes.GRID)
-        intent.putExtra(PreviewFragment2.EDIT_ENABLE, false)
+        intent.putExtra(PreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+        intent.putExtra(PreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)
+        intent.putExtra(PreviewFragment.IS_SELECTED_CHECK, false)
+        intent.putExtra(PreviewFragment.PREVIEW_TYPE, PreviewTypes.GRID)
+        intent.putExtra(PreviewFragment.EDIT_ENABLE, false)
         activity.startActivityForResult(intent, requestCode)
         if (GlobalSpec.cutscenesEnabled) {
             activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
