@@ -316,6 +316,14 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mSelectedModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> mMediaViewUtil.notifyItemByLocalMedia());
         // 原图选项改变
         mMainModel.getOriginalEnableObserve().observe(getViewLifecycleOwner(), value -> mViewHolder.original.setChecked(value));
+        // 预览界面的viewPage滑动时触发
+        mMainModel.getOnViewPageSelected().observe(getViewLifecycleOwner(), value -> {
+            // 滑动到viewPage的一样position
+            mViewHolder.recyclerview.scrollToPosition(value);
+            // 将当前列表的组件宽高数据添加到缓存
+            RecycleItemViewParams.add(mViewHolder.recyclerview, 0);
+            mMainModel.onScrollToPositionComplete(value);
+        });
     }
 
     /**
@@ -445,7 +453,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         if (DoubleUtils.isFastDoubleClick()) {
             return;
         }
-
+        // 将当前列表的组件宽高数据添加到缓存
         RecycleItemViewParams.add(mViewHolder.recyclerview, 0);
 
         currentPosition = adapterPosition;

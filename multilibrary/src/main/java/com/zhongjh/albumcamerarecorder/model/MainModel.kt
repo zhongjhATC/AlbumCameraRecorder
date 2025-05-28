@@ -8,12 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec.onCheckedListener
-import com.zhongjh.albumcamerarecorder.settings.AlbumSpec.originalMaxSize
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.widget.IncapableDialog
-import com.zhongjh.common.widget.IncapableDialog.Companion.newInstance
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /**
@@ -49,6 +45,18 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      */
     private val _localMediaPages = MutableLiveData<MutableList<LocalMedia>>()
     val localMediaPages: LiveData<MutableList<LocalMedia>> get() = _localMediaPages
+
+    /**
+     * 预览界面的viewPage滑动时触发
+     */
+    private val _onViewPageSelected = MutableLiveData<Int>()
+    val onViewPageSelected: LiveData<Int> get() = _onViewPageSelected
+
+    /**
+     * 相册界面的列表移动完成
+     */
+    private val _onScrollToPositionComplete = MutableLiveData<Int>()
+    val onScrollToPositionComplete: LiveData<Int> get() = _onScrollToPositionComplete
 
     /**
      * 是否原图
@@ -131,6 +139,22 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * 预览界面的viewPage滑动时触发
+     *
+     * @param position 当前滑动的position
+     */
+    fun onViewPageSelected(position: Int) {
+        this@MainModel._onViewPageSelected.postValue(position)
+    }
+
+    /**
+     * 相册界面的列表移动完成
+     */
+    fun onScrollToPositionComplete(position: Int) {
+        this@MainModel._onScrollToPositionComplete.postValue(position)
+    }
+
+    /**
      * 根据页码获取数据
      *
      * @param bucketId 专辑id
@@ -151,7 +175,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
 
 
     /**

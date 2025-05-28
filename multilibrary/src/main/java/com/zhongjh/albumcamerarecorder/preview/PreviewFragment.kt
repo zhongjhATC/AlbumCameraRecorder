@@ -45,6 +45,7 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams
+import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils
@@ -484,6 +485,10 @@ class PreviewFragment : BaseFragment() {
         mMainModel.getOriginalEnableObserve().observe(viewLifecycleOwner) { value: Boolean ->
             mViewHolder.original.setChecked(value)
         }
+        // 相册界面移动完成后触发
+        mMainModel.onScrollToPositionComplete.observe(viewLifecycleOwner) { value: Int ->
+            setSharedAnimationViewParams(value)
+        }
     }
 
     /**
@@ -915,7 +920,13 @@ class PreviewFragment : BaseFragment() {
                 startSharedAnimation(position)
                 mFirstSharedAnimation = false
             } else {
-                setSharedAnimationViewParams(position)
+                // 获取目前可见的view,如果不可见,则将RecyclerView移动到可见
+                if (position < RecycleItemViewParams.firstPosition || position > RecycleItemViewParams.lastPosition) {
+                    // 移动相册的位置,并且重新赋值RecycleItemViewParams
+                    mMainModel.onViewPageSelected(position)
+                } else {
+                    setSharedAnimationViewParams(position)
+                }
             }
         }
     }

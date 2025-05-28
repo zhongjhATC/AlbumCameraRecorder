@@ -14,6 +14,16 @@ object RecycleItemViewParams {
 
     private val viewParams: MutableList<ViewParams> = ArrayList()
 
+    /**
+     * 当前记录相册界面的可见第一个position
+     */
+    var firstPosition = 0
+
+    /**
+     * 当前记录相册界面可见最后一个position
+     */
+    var lastPosition = 0
+
     fun clear() {
         if (viewParams.size > 0) {
             viewParams.clear()
@@ -35,9 +45,11 @@ object RecycleItemViewParams {
             is RecyclerView -> {
                 viewGroup.childCount
             }
+
             is ListView -> {
                 viewGroup.childCount
             }
+
             else -> {
                 throw IllegalArgumentException(
                     viewGroup.javaClass.name
@@ -51,27 +63,25 @@ object RecycleItemViewParams {
             views.add(view)
         }
         // 获取第一个、最后一个的可视position，列表总数
-        val firstPos: Int
-        var lastPos: Int
         val totalCount: Int
         if (viewGroup is RecyclerView) {
             val layoutManager = viewGroup.layoutManager as GridLayoutManager? ?: return
             totalCount = layoutManager.itemCount
-            firstPos = layoutManager.findFirstVisibleItemPosition()
-            lastPos = layoutManager.findLastVisibleItemPosition()
+            firstPosition = layoutManager.findFirstVisibleItemPosition()
+            lastPosition = layoutManager.findLastVisibleItemPosition()
         } else {
             val listAdapter = (viewGroup as ListView).adapter ?: return
             totalCount = listAdapter.count
-            firstPos = viewGroup.firstVisiblePosition
-            lastPos = viewGroup.lastVisiblePosition
+            firstPosition = viewGroup.firstVisiblePosition
+            lastPosition = viewGroup.lastVisiblePosition
         }
-        lastPos =
-            if (lastPos > totalCount) {
+        lastPosition =
+            if (lastPosition > totalCount) {
                 totalCount - 1
             } else {
-                lastPos
+                lastPosition
             }
-        fillPlaceHolder(views, totalCount, firstPos, lastPos)
+        fillPlaceHolder(views, totalCount, firstPosition, lastPosition)
         viewParams.clear()
         // 添加宽高左右标点参数到 viewParams
         for (i in views.indices) {
@@ -82,7 +92,7 @@ object RecycleItemViewParams {
                 viewParam.top = 0
                 viewParam.width = 0
                 viewParam.height = 0
-                Log.d("RecycleItemViewParams","00")
+                Log.d("RecycleItemViewParams", "00")
             } else {
                 val location = IntArray(2)
                 view.getLocationOnScreen(location)
@@ -90,7 +100,7 @@ object RecycleItemViewParams {
                 viewParam.top = location[1] - statusBarHeight
                 viewParam.width = view.width
                 viewParam.height = view.height
-                Log.d("RecycleItemViewParams","left: ${viewParam.left} viewParam.top: ${viewParam.top} viewParam.width: ${viewParam.width} viewParam.height: ${viewParam.height}")
+                Log.d("RecycleItemViewParams", "left: ${viewParam.left} viewParam.top: ${viewParam.top} viewParam.width: ${viewParam.width} viewParam.height: ${viewParam.height}")
             }
             viewParams.add(viewParam)
         }
