@@ -42,9 +42,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.recyclerview.RecyclerLoadMor
 import com.zhongjh.albumcamerarecorder.model.MainModel;
 import com.zhongjh.albumcamerarecorder.model.OriginalManage;
 import com.zhongjh.albumcamerarecorder.model.SelectedModel;
-import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
-import com.zhongjh.albumcamerarecorder.preview.constants.PreviewTypes;
+import com.zhongjh.albumcamerarecorder.preview.start.PreviewStartManager;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams;
@@ -249,7 +247,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NonNull View v) {
-                startPreviewActivity();
+                PreviewStartManager.startPreviewActivityByAlbum(requireActivity(), mGlobalSpec.getCutscenesEnabled(), mPreviewActivityResult, mSelectedModel.getSelectedData().getLocalMedias());
             }
         });
 
@@ -453,37 +451,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         currentPosition = adapterPosition;
         // 设置position
         mMainModel.setPreviewPosition(adapterPosition);
-        startPreviewFragment();
-    }
-
-    /**
-     * 打开tPreviewActivity
-     */
-    private void startPreviewActivity() {
-        Intent intent = new Intent(requireActivity(), PreviewActivity.class);
-        intent.putParcelableArrayListExtra(PreviewFragment.STATE_SELECTION, mSelectedModel.getSelectedData().getLocalMedias());
-        intent.putExtra(PreviewFragment.PREVIEW_TYPE, PreviewTypes.ALBUM_ACTIVITY);
-        mPreviewActivityResult.launch(intent);
-        if (mGlobalSpec.getCutscenesEnabled()) {
-            requireActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
-        }
-    }
-
-    /**
-     * 打开PreviewFragment
-     */
-    private void startPreviewFragment() {
-        // 隐藏底部控件
-        ((MainActivity) requireActivity()).showHideTableLayoutAnimator(false);
-        Fragment fragment = new PreviewFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt(PreviewFragment.PREVIEW_TYPE, PreviewTypes.ALBUM_FRAGMENT);
-        fragment.setArguments(bundle);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .add(android.R.id.content, fragment, PreviewFragment.class.getSimpleName())
-                .addToBackStack(PreviewFragment.class.getSimpleName())
-                .commitAllowingStateLoss();
+        PreviewStartManager.startPreviewFragmentByAlbum((MainActivity) requireActivity());
     }
 
     /**

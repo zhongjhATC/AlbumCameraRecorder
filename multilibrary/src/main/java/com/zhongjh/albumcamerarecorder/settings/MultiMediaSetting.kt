@@ -19,11 +19,11 @@ import java.lang.ref.WeakReference
 class MultiMediaSetting private constructor(activity: Activity, fragment: Fragment? = null) {
 
     private val mContext: WeakReference<Activity> = WeakReference(activity)
-    private val mFragment: WeakReference<Fragment?>?
+    private val mFragment: WeakReference<Fragment?> = WeakReference(fragment)
 
     val activity: Activity? = mContext.get()
     val fragment: Fragment?
-        get() = mFragment?.get()
+        get() = mFragment.get()
 
     private constructor(fragment: Fragment) : this(fragment.requireActivity(), fragment)
 
@@ -88,9 +88,5 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
             }
             return arrayList
         }
-    }
-
-    init {
-        mFragment = WeakReference(fragment)
     }
 }

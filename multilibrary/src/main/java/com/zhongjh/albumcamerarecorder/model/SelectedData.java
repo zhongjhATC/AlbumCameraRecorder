@@ -31,7 +31,6 @@ public class SelectedData {
      * 数据源的标记
      */
     public static final String STATE_SELECTION = "state_selection";
-    public static final String STATE_COLLECTION_TYPE = "state_collection_type";
     /**
      * 空的数据类型
      */
@@ -132,7 +131,7 @@ public class SelectedData {
         LocalMedia localMedia = LocalMediaUtils.checkedLocalMediaOf(mLocalMedias, item);
         removed = mLocalMedias.remove(localMedia);
         if (removed) {
-            if (mLocalMedias.size() == 0) {
+            if (mLocalMedias.isEmpty()) {
                 // 如果删除后没有数据，设置当前类型为空
                 mCollectionType = COLLECTION_UNDEFINED;
             } else {
@@ -153,7 +152,7 @@ public class SelectedData {
      * @param collectionType 类型
      */
     public void overwrite(ArrayList<LocalMedia> items, int collectionType) {
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             mCollectionType = COLLECTION_UNDEFINED;
         } else {
             mCollectionType = collectionType;

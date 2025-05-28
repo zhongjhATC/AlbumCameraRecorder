@@ -39,7 +39,8 @@ import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.OriginalManage
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
-import com.zhongjh.albumcamerarecorder.preview.constants.PreviewTypes
+import com.zhongjh.albumcamerarecorder.preview.enum.PreviewType
+import com.zhongjh.albumcamerarecorder.preview.start.PreviewSetting
 import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
@@ -87,53 +88,9 @@ class PreviewFragment : BaseFragment() {
         const val TAG: String = "PreviewFragment"
 
         /**
-         * 数据源的标记
-         */
-        const val STATE_SELECTION = "state_selection"
-
-        const val EXTRA_IS_ALLOW_REPEAT = "extra_is_allow_repeat"
-
-        /**
          * 告诉接收数据的界面是直接 add 数据源
          */
         const val EXTRA_RESULT_APPLY = "extra_result_apply"
-        const val EXTRA_RESULT_IS_EDIT = "extra_result_is_edit"
-
-        /**
-         * 设置是否开启原图
-         */
-        const val EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable"
-
-        /**
-         * 设置是否启动 '确定' 功能
-         */
-        const val APPLY_ENABLE = "apply_enable"
-
-        /**
-         * 设置是否启动选择功能
-         */
-        const val SELECTED_ENABLE = "selected_enable"
-
-        /**
-         * 设置是否开启编辑功能
-         */
-        const val EDIT_ENABLE = "edit_enable"
-
-        /**
-         * 是否是否启动选择事件
-         */
-        const val IS_SELECTED_LISTENER = "is_selected_listener"
-
-        /**
-         * 验证当前item是否满足可以被选中的条件
-         */
-        const val IS_SELECTED_CHECK = "is_selected_check"
-
-        /**
-         * 预览类型，表达从什么界面打开进来的
-         */
-        const val PREVIEW_TYPE = "preview_type"
-        const val EXTRA_ITEM = "extra_item"
     }
 
     private lateinit var mContext: Context
@@ -181,7 +138,7 @@ class PreviewFragment : BaseFragment() {
     private val mCompressFileTask: SimpleTask<ArrayList<LocalMedia>> by lazy {
         object : SimpleTask<ArrayList<LocalMedia>>() {
             override fun doInBackground(): ArrayList<LocalMedia> {
-                val isOnlyCompressEditPicture = mPreviewType == PreviewTypes.GRID || mPreviewType == PreviewTypes.THIRD_PARTY
+                val isOnlyCompressEditPicture = mPreviewType == PreviewType.GRID || mPreviewType == PreviewType.THIRD_PARTY
                 return mAlbumCompressFileTask.compressFileTaskDoInBackground(mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
             }
 
@@ -248,14 +205,14 @@ class PreviewFragment : BaseFragment() {
     private var mEditEnable = true
 
     /**
+     * 设置是否开启原图
+     */
+    private var mOriginalEnable = true
+
+    /**
      * 是否编辑了图片
      */
     private var mIsEdit = false
-
-    /**
-     * 是否触发选择事件，目前除了相册功能没问题之外，别的触发都会闪退，原因是uri不是通过数据库而获得的
-     */
-    private var mIsSelectedListener = true
 
     /**
      * 设置右上角是否检测类型
@@ -265,7 +222,7 @@ class PreviewFragment : BaseFragment() {
     /**
      * 预览界面类型，代表从什么界面打开
      */
-    private var mPreviewType = PreviewTypes.ALBUM_ACTIVITY
+    private var mPreviewType = PreviewType.ALBUM_ACTIVITY
 
     /**
      * 是否首次共享动画，只有第一次打开的时候才触发共享动画
@@ -355,19 +312,19 @@ class PreviewFragment : BaseFragment() {
             // 初始化别的界面传递过来的数据
             arguments?.let {
                 // 设置是否启动 '确定' 功能
-                mApplyEnable = it.getBoolean(APPLY_ENABLE, true)
+                mApplyEnable = it.getBoolean(PreviewSetting.APPLY_ENABLE, true)
                 // 设置是否启动 '选择' 功能
-                mSelectedEnable = it.getBoolean(SELECTED_ENABLE, true)
-                // 设置是否启动 '选择事件' 功能
-                mIsSelectedListener = it.getBoolean(IS_SELECTED_LISTENER, true)
+                mSelectedEnable = it.getBoolean(PreviewSetting.SELECTED_ENABLE, true)
                 // 验证当前item是否满足可以被选中的条件
-                mIsSelectedCheck = it.getBoolean(IS_SELECTED_CHECK, true)
+                mIsSelectedCheck = it.getBoolean(PreviewSetting.IS_SELECTED_CHECK, true)
                 // 预览类型，表达从什么界面打开进来的
-                mPreviewType = it.getInt(PREVIEW_TYPE, PreviewTypes.ALBUM_ACTIVITY)
+                mPreviewType = it.getSerializable(PreviewSetting.PREVIEW_TYPE) as PreviewType
                 // 设置是否开启编辑功能
-                mEditEnable = it.getBoolean(EDIT_ENABLE, true)
+                mEditEnable = it.getBoolean(PreviewSetting.EDIT_ENABLE, true)
+                // 设置是否开启原图
+                mOriginalEnable = it.getBoolean(PreviewSetting.EXTRA_RESULT_ORIGINAL_ENABLE, true)
                 // 数据源
-                it.getParcelableArrayList<LocalMedia>(STATE_SELECTION)?.let { selection ->
+                it.getParcelableArrayList<LocalMedia>(PreviewSetting.STATE_SELECTION)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
                     mMainModel.localMedias.addAll(localMedias)
                     mSelectedModel.selectedData.addAll(localMedias)
@@ -500,7 +457,7 @@ class PreviewFragment : BaseFragment() {
             }
             updateApplyButton()
             mAlbumSpec.onSelectedListener?.let {
-                if (mIsSelectedListener) {
+                if (mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) {
                     // 触发选择的接口事件
                     it.onSelected(mSelectedModel.selectedData.localMedias)
                 }
@@ -533,7 +490,7 @@ class PreviewFragment : BaseFragment() {
      * 关闭Activity回调相关数值
      */
     private fun setResultOkByIsCompress() {
-        if (mPreviewType == PreviewTypes.CAMERA) {
+        if (mPreviewType == PreviewType.CAMERA) {
             // 直接返回
             setResultOk(mSelectedModel.selectedData.localMedias)
         } else {
@@ -584,7 +541,7 @@ class PreviewFragment : BaseFragment() {
         val localMedia = mAdapter.getLocalMedia(mViewPager2.currentItem)
         val editFile = mEditImagePath?.let { File(it) }
         // 如果是从相册界面直接打开的预览 并且 是编辑过的加入相册
-        if ((mPreviewType == PreviewTypes.ALBUM_ACTIVITY || mPreviewType == PreviewTypes.ALBUM_FRAGMENT) && null != editFile && null != localMedia && mGlobalSpec.isAddAlbumByEdit) {
+        if ((mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) && null != editFile && null != localMedia && mGlobalSpec.isAddAlbumByEdit) {
             MediaStoreUtils.displayToGallery(mContext, editFile, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
         }
     }
@@ -597,8 +554,8 @@ class PreviewFragment : BaseFragment() {
         Log.d(TAG, "setResultOk")
         refreshMultiMediaItem()
         when (mPreviewType) {
-            PreviewTypes.ALBUM_ACTIVITY,
-            PreviewTypes.ALBUM_FRAGMENT -> {
+            PreviewType.ALBUM_ACTIVITY,
+            PreviewType.ALBUM_FRAGMENT -> {
                 // 如果有回调事件则执行回调,否则执行Activity的回调
                 mGlobalSpec.onResultCallbackListener?.let { onResultCallbackListener ->
                     onResultCallbackListener.onResult(localMedias)
@@ -610,6 +567,10 @@ class PreviewFragment : BaseFragment() {
                 }
                 requireActivity().finish()
             }
+
+            PreviewType.CAMERA -> TODO()
+            PreviewType.GRID -> TODO()
+            PreviewType.THIRD_PARTY -> TODO()
         }
     }
 
@@ -756,7 +717,7 @@ class PreviewFragment : BaseFragment() {
      * 是否开启共享动画
      */
     private fun isSharedAnimation(): Boolean {
-        return mPreviewType == PreviewTypes.ALBUM_FRAGMENT
+        return mPreviewType == PreviewType.ALBUM_FRAGMENT
     }
 
     /**
@@ -889,9 +850,7 @@ class PreviewFragment : BaseFragment() {
     /**
      * 开始共享动画完成后
      */
-    private fun onSharedBeginAnimComplete(
-        sharedAnimationView: SharedAnimationView?, showImmediately: Boolean
-    ) {
+    private fun onSharedBeginAnimComplete(sharedAnimationView: SharedAnimationView?, showImmediately: Boolean) {
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
         val media = mMainModel.localMedias[mViewPager2.currentItem]
 //        val isResetSize = (media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0
@@ -979,7 +938,7 @@ class PreviewFragment : BaseFragment() {
             }
 
             // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
-            if (mAlbumSpec.originalEnable && !item.isVideo()) {
+            if (mAlbumSpec.originalEnable && !item.isVideo() && mOriginalEnable) {
                 // 显示
                 mViewHolder.groupOriginal.visibility = View.VISIBLE
                 updateOriginalState()

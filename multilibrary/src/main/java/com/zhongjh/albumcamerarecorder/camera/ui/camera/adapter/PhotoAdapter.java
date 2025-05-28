@@ -1,7 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter;
 
-import static com.zhongjh.albumcamerarecorder.model.SelectedData.COLLECTION_IMAGE;
-import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_COLLECTION_TYPE;
 import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 
 import android.app.Activity;
@@ -19,6 +17,7 @@ import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
+import com.zhongjh.albumcamerarecorder.preview.start.PreviewStartManager;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
@@ -97,29 +96,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
      * @param bitmapData 数据
      */
     private void onClickListener(BitmapData bitmapData) {
-        ArrayList<LocalMedia> items = new ArrayList<>();
-        for (BitmapData item : mListData) {
-            LocalMedia localMedia = new LocalMedia();
-            localMedia.setId(item.getTemporaryId());
-            localMedia.setAbsolutePath(item.getAbsolutePath());
-            localMedia.setPath(item.getPath());
-            localMedia.setMimeType(MimeType.JPEG.toString());
-            items.add(localMedia);
-        }
-
-        Intent intent = new Intent(mActivity, PreviewActivity.class);
-        // 获取目前点击的这个item
-        LocalMedia item = new LocalMedia();
-        item.setAbsolutePath(bitmapData.getAbsolutePath());
-        item.setPath(bitmapData.getPath());
-        item.setMimeType(MimeType.JPEG.toString());
-        intent.putExtra(STATE_SELECTION, items);
-        intent.putExtra(STATE_COLLECTION_TYPE, COLLECTION_IMAGE);
-        intent.putExtra(PreviewFragment.EXTRA_ITEM, item);
-        intent.putExtra(PreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-        intent.putExtra(PreviewFragment.EXTRA_IS_ALLOW_REPEAT, true);
-        intent.putExtra(PreviewFragment.IS_SELECTED_LISTENER, false);
-        intent.putExtra(PreviewFragment.IS_SELECTED_CHECK, false);
+        Intent intent = PreviewStartManager.INSTANCE.startPreviewActivityByCamera(mActivity, mListData, bitmapData);
         mPhotoAdapterListener.onPhotoAdapterClick(intent);
     }
 

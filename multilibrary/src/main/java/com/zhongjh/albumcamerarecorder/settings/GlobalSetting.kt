@@ -11,10 +11,10 @@ import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
-import com.zhongjh.albumcamerarecorder.model.SelectedData.*
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
-import com.zhongjh.albumcamerarecorder.preview.constants.PreviewTypes
+import com.zhongjh.albumcamerarecorder.preview.enum.PreviewType
+import com.zhongjh.albumcamerarecorder.preview.start.PreviewSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
@@ -217,19 +217,15 @@ class GlobalSetting internal constructor(
      * @param list        数据源
      * @param position    当前数据的索引
      */
-    override fun openPreviewData(
-        activity: Activity, requestCode: Int,
-        list: ArrayList<LocalMedia>, position: Int
-    ) {
+    override fun openPreviewData(activity: Activity, requestCode: Int, list: ArrayList<LocalMedia>, position: Int) {
         val intent = Intent(activity, PreviewActivity::class.java)
-        intent.putExtra(PreviewFragment.STATE_SELECTION, list)
-        intent.putExtra(PreviewFragment.EXTRA_ITEM, list[position])
-        intent.putExtra(STATE_COLLECTION_TYPE, COLLECTION_IMAGE)
-        intent.putExtra(PreviewFragment.EXTRA_RESULT_ORIGINAL_ENABLE, false)
-        intent.putExtra(PreviewFragment.EXTRA_IS_ALLOW_REPEAT, true)
-        intent.putExtra(PreviewFragment.IS_SELECTED_CHECK, false)
-        intent.putExtra(PreviewFragment.PREVIEW_TYPE, PreviewTypes.GRID)
-        intent.putExtra(PreviewFragment.EDIT_ENABLE, false)
+        PreviewSetting(PreviewType.GRID)
+            .setData(list)
+            .setCurrentItem(list[position])
+            .isOriginal(false)
+            .isSelectedCheck(false)
+            .isEdit(false)
+            .setIntent(intent)
         activity.startActivityForResult(intent, requestCode)
         if (GlobalSpec.cutscenesEnabled) {
             activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
