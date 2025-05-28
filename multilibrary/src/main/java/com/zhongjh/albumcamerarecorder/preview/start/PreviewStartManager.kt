@@ -52,7 +52,7 @@ object PreviewStartManager {
         fragment.arguments = bundle
         mainActivity.supportFragmentManager
             .beginTransaction()
-            .add(R.id.content, fragment, PreviewFragment::class.java.simpleName)
+            .add(android.R.id.content, fragment, PreviewFragment::class.java.simpleName)
             .addToBackStack(PreviewFragment::class.java.simpleName)
             .commitAllowingStateLoss()
     }

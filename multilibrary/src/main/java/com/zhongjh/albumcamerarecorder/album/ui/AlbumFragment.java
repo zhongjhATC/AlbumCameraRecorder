@@ -451,6 +451,7 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         currentPosition = adapterPosition;
         // 设置position
         mMainModel.setPreviewPosition(adapterPosition);
+
         PreviewStartManager.startPreviewFragmentByAlbum((MainActivity) requireActivity());
     }
 
