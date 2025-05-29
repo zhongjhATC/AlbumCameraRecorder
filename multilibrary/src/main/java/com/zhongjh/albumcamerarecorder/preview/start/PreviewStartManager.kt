@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.zhongjh.albumcamerarecorder.MainActivity
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData
-import com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
 import com.zhongjh.albumcamerarecorder.preview.enum.PreviewType
@@ -66,7 +65,7 @@ object PreviewStartManager {
             val localMedia = LocalMedia()
             localMedia.id = item.temporaryId
             localMedia.absolutePath = item.absolutePath
-            localMedia.path = item.path
+            localMedia.path = item.uri
             localMedia.mimeType = MimeType.JPEG.toString()
             items.add(localMedia)
         }
@@ -76,7 +75,7 @@ object PreviewStartManager {
         // 获取目前点击的这个item
         val item = LocalMedia()
         item.absolutePath = bitmapData.absolutePath
-        item.path = bitmapData.path
+        item.path = bitmapData.uri
         item.mimeType = MimeType.JPEG.toString()
 
         // 不支持原图、不支持选择时进行检查功能

@@ -796,7 +796,7 @@ public abstract class BaseCameraFragment
         // 这样可以重置
         getSinglePhotoView().setZoomable(true);
         getSinglePhotoView().setVisibility(View.VISIBLE);
-        globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getPath());
+        globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getAbsolutePath());
         getPhotoVideoLayout().startTipAlphaAnimation();
         getPhotoVideoLayout().startShowLeftRightButtonsAnimator(true);
 

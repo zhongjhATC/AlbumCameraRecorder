@@ -158,7 +158,7 @@ open class CameraPictureManager(
             }
             // 删除多个图片
             for (bitmapData in photoAdapter.listData) {
-                FileUtils.deleteFile(bitmapData.path)
+                FileUtils.deleteFile(bitmapData.absolutePath)
             }
         }
         cancelMovePictureFileTask()
@@ -189,7 +189,8 @@ open class CameraPictureManager(
     override fun addCaptureData(path: String) {
         // 初始化数据并且存储进file
         val file = File(path)
-        val bitmapData = BitmapData(System.currentTimeMillis(), file.path, file.path)
+        val uri = Uri.fromFile(file)
+        val bitmapData = BitmapData(System.currentTimeMillis(), uri.toString(), file.path)
         // 加速回收机制
         System.gc()
         // 判断是否多个图片
@@ -243,16 +244,17 @@ open class CameraPictureManager(
         // 用编辑后的图作为新的图片
         photoFile = photoEditFile
 
-        photoFile?.let {
+        photoFile?.let { photoFile ->
             // 重置mCaptureBitmaps
-            val bitmapData = BitmapData(bitmapDataList[0].temporaryId, it.path, it.path)
+            val uri = Uri.fromFile(File(photoFile.path)).toString()
+            val bitmapData = BitmapData(bitmapDataList[0].temporaryId, uri, photoFile.path)
             bitmapDataList.clear()
             bitmapDataList.add(bitmapData)
 
             // 这样可以重置大小
             baseCameraFragment.singlePhotoView.isZoomable = true
             baseCameraFragment.globalSpec.imageEngine.loadUriImage(
-                baseCameraFragment.myContext, baseCameraFragment.singlePhotoView, it.path
+                baseCameraFragment.myContext, baseCameraFragment.singlePhotoView, photoFile.path
             )
         }
     }
@@ -277,7 +279,12 @@ open class CameraPictureManager(
             }
 
             override fun onFail(t: Throwable) {
-                Log.d(TAG, "onFail")
+                // 打印堆栈日志
+                Log.e(TAG, "getMovePictureFileTask")
+                val stackTraceElements: Array<StackTraceElement> = t.stackTrace
+                for (stackTraceElement in stackTraceElements) {
+                    Log.e(TAG, stackTraceElement.toString())
+                }
                 baseCameraFragment.commitFail(t)
             }
         }
@@ -324,7 +331,7 @@ open class CameraPictureManager(
      */
     override fun onPhotoAdapterDelete(bitmapData: BitmapData, position: Int) {
         // 删除文件
-        FileUtils.deleteFile(bitmapData.path)
+        FileUtils.deleteFile(bitmapData.absolutePath)
 
         // 判断如果删除光图片的时候，母窗体启动滑动
         if (bitmapDataList.isEmpty()) {
@@ -356,8 +363,8 @@ open class CameraPictureManager(
         val newFiles = ArrayList<LocalMedia>()
         // 将 缓存文件 拷贝到 配置目录
         for (item in bitmapDataList) {
-            rotateImage(baseCameraFragment.myContext, item.path)
-            val cacheFile = File(item.path)
+            rotateImage(baseCameraFragment.myContext, item.absolutePath)
+            val cacheFile = File(item.absolutePath)
             Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
             var localMedia = LocalMedia()
             // 直接迁移到相册文件夹,刷新

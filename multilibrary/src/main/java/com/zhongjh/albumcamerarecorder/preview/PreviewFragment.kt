@@ -524,7 +524,7 @@ class PreviewFragment : BaseFragment() {
     private fun openImageEditActivity() {
         val item = mAdapter.getLocalMedia(mMainModel.previewPosition)
         item?.let {
-            val file = FileMediaUtil.createCacheFile(mContext, MediaType.TYPE_PICTURE)
+            val file = FileMediaUtil.createCacheFile(mContext, TYPE_PICTURE)
             mEditImagePath = file.absoluteFile.toString()
             val intent = Intent()
             intent.setClass(requireActivity(), ImageEditActivity::class.java)
