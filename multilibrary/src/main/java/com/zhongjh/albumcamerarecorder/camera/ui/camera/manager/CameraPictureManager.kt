@@ -187,6 +187,7 @@ open class CameraPictureManager(
      * @param path 文件路径
      */
     override fun addCaptureData(path: String) {
+        rotateImage(baseCameraFragment.myContext, path)
         // 初始化数据并且存储进file
         val file = File(path)
         val uri = Uri.fromFile(file)
@@ -363,7 +364,6 @@ open class CameraPictureManager(
         val newFiles = ArrayList<LocalMedia>()
         // 将 缓存文件 拷贝到 配置目录
         for (item in bitmapDataList) {
-            rotateImage(baseCameraFragment.myContext, item.absolutePath)
             val cacheFile = File(item.absolutePath)
             Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
             var localMedia = LocalMedia()

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.zhongjh.common.utils.BitmapUtils;
 import com.zhongjh.imageedit.core.ImageMode;
 import com.zhongjh.imageedit.core.ImageText;
 import com.zhongjh.imageedit.core.file.BaseImageDecoder;
