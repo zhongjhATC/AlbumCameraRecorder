@@ -27,6 +27,8 @@ import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
@@ -124,6 +126,22 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * 当前点击item的索引
      */
     int currentPosition;
+
+    /**
+     * 预览界面滑动后的索引
+     */
+    int smoothScrollPosition;
+
+    /**
+     * 判断scroll是否是用户主动拖拽
+     */
+    private boolean isRecyclerViewUserDragging;
+
+    /**
+     * 判断scroll是否处于滑动中
+     */
+    private boolean isRecyclerViewScrolling;
+
 
     /**
      * @param marginBottom 底部间距
@@ -232,6 +250,42 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * 初始化事件
      */
     private void initListener() {
+        // 滑动回调事件主要是处理共享动画的参数设置
+        mViewHolder.recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        // 如果不是人为滑动 并且 不是滑动中状态
+                        if (!isRecyclerViewUserDragging && !isRecyclerViewScrolling) {
+                            // 设置滑动中状态
+                            isRecyclerViewScrolling = true;
+                        }
+                        break;
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        // 如果是用户主动滑动recyclerview，则不触发位置计算
+                        isRecyclerViewUserDragging = true;
+                        break;
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        // 如果不是人为滑动 并且 是滑动中状态变成停止状态
+                        if (!isRecyclerViewUserDragging && isRecyclerViewScrolling) {
+                            isRecyclerViewScrolling = false;
+                            // 将当前列表的组件宽高数据添加到缓存
+                            RecycleItemViewParams.add(mViewHolder.recyclerview, 0);
+                            mMainModel.onScrollToPositionComplete(smoothScrollPosition);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+
         // 关闭事件
         mViewHolder.imgClose.setOnClickListener(v -> requireActivity().finish());
 
@@ -318,11 +372,10 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
         mMainModel.getOriginalEnableObserve().observe(getViewLifecycleOwner(), value -> mViewHolder.original.setChecked(value));
         // 预览界面的viewPage滑动时触发
         mMainModel.getOnViewPageSelected().observe(getViewLifecycleOwner(), value -> {
+            smoothScrollPosition = value;
             // 滑动到viewPage的一样position
-            mViewHolder.recyclerview.scrollToPosition(value);
-            // 将当前列表的组件宽高数据添加到缓存
-            RecycleItemViewParams.add(mViewHolder.recyclerview, 0);
-            mMainModel.onScrollToPositionComplete(value);
+            isRecyclerViewUserDragging = false;
+            mViewHolder.recyclerview.smoothScrollToPosition(smoothScrollPosition);
         });
     }
 
