@@ -126,11 +126,11 @@ open class CameraPictureManager(
     }
 
     /**
-     * 编辑图片事件
+     * 编辑单个图片事件
      */
     override fun initPhotoEditListener() {
         baseCameraFragment.photoVideoLayout.viewHolder.rlEdit.setOnClickListener { view: View ->
-            val uri = view.tag as Uri
+            val uri = Uri.parse(view.tag.toString()).toString()
             photoEditFile = createCacheFile(baseCameraFragment.myContext, MediaType.TYPE_PICTURE)
             val intent = Intent()
             intent.setClass(baseCameraFragment.myContext, ImageEditActivity::class.java)
@@ -204,7 +204,7 @@ open class CameraPictureManager(
         } else {
             bitmapDataList.add(bitmapData)
             photoFile = file
-            baseCameraFragment.showSinglePicture(bitmapData, file, file.path)
+            baseCameraFragment.showSinglePicture(bitmapData, file, uri.toString())
         }
 
         if (bitmapDataList.isNotEmpty()) {
@@ -243,6 +243,8 @@ open class CameraPictureManager(
 
         // 用编辑后的图作为新的图片
         photoFile = photoEditFile
+        // 重新赋值编辑后的图、新标签
+        baseCameraFragment.photoVideoLayout.viewHolder.rlEdit.tag = Uri.fromFile(photoFile).toString()
 
         photoFile?.let { photoFile ->
             // 重置mCaptureBitmaps

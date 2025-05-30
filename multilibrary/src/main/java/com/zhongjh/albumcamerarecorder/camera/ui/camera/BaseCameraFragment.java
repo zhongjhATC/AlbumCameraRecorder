@@ -790,10 +790,10 @@ public abstract class BaseCameraFragment
      *
      * @param bitmapData 显示单图数据源
      * @param file       显示单图的文件
-     * @param path       显示单图的path
+     * @param uri       显示单图的uri
      */
     @Override
-    public void showSinglePicture(BitmapData bitmapData, File file, String path) {
+    public void showSinglePicture(BitmapData bitmapData, File file, String uri) {
         // 拍照  隐藏 闪光灯、右上角的切换摄像头
         setMenuVisibility(View.INVISIBLE);
         // 这样可以重置
@@ -806,7 +806,7 @@ public abstract class BaseCameraFragment
         // 判断是否要编辑
         if (globalSpec.getImageEditEnabled()) {
             getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.VISIBLE);
-            getPhotoVideoLayout().getViewHolder().rlEdit.setTag(path);
+            getPhotoVideoLayout().getViewHolder().rlEdit.setTag(uri);
         } else {
             getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.INVISIBLE);
         }

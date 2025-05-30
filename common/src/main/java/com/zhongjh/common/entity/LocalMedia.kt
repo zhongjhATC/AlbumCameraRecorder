@@ -445,11 +445,11 @@ open class LocalMedia() : Parcelable, BaseMedia {
      *
      * @return 是必定可用的地址
      */
-    fun getAvailablePath(): String? {
+    fun getAvailablePath(): String {
         if (compressPath != null) {
-            return compressPath
+            return compressPath as String
         } else if (editorPath != null) {
-            return editorPath
+            return editorPath as String
         }
         return path
     }

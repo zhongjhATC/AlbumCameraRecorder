@@ -1,10 +1,13 @@
 package com.zhongjh.cameraapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
@@ -13,6 +16,10 @@ import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.gridview.entity.GridMedia;
 import com.zhongjh.gridview.widget.GridView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +153,29 @@ public abstract class BaseActivity extends AppCompatActivity {
             Log.d(TAG, "onResult getPath:" + localMedia.getPath());
             // 初始的真实路径，未压缩、未编辑前的，即是原图
             Log.d(TAG, "onResult getAbsolutePath:" + localMedia.getAbsolutePath());
+            // 如果有不存在的文件,抛出错误
+            if (null == localMedia.getCompressPath() || !new File(localMedia.getCompressPath()).exists()) {
+                Toast.makeText(this, "CompressPath不存在", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, localMedia.getCompressPath() + " CompressPath不存在");
+            }
+            if (null == localMedia.getEditorPath() || !new File(localMedia.getEditorPath()).exists()) {
+                Toast.makeText(this, "EditorPath不存在", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, localMedia.getEditorPath() + " EditorPath不存在");
+            }
+            if (null == localMedia.getSandboxPath() || !isUri(localMedia.getSandboxPath())) {
+                Toast.makeText(this, "SandboxPath不存在", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, localMedia.getSandboxPath() + " SandboxPath不存在");
+            }
+            if (!isUri(localMedia.getPath())) {
+                Toast.makeText(this, "Path不存在", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, localMedia.getPath() + " Path不存在");
+            }
+            if (!new File(localMedia.getAbsolutePath()).exists()) {
+                Toast.makeText(this, "AbsolutePath不存在", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, localMedia.getAbsolutePath() + " AbsolutePath不存在");
+            }
+
+
             Log.i(TAG, "onResult 视频音频长度: " + localMedia.getDuration());
             Log.i(TAG, "onResult 角度: " + localMedia.getOrientation());
             Log.i(TAG, "onResult 是否选中: " + localMedia.isChecked());
@@ -223,6 +253,28 @@ public abstract class BaseActivity extends AppCompatActivity {
 //                        multiMedia.setPercentage(100);
                 }
             }, 1000, 100);
+        }
+    }
+
+    private boolean isUri(String uri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(Uri.parse(uri));
+            if (inputStream != null) {
+                // 文件存在
+                Log.d(TAG, "文件存在");
+                inputStream.close();
+                return true;
+            } else {
+                // 文件不存在
+                Log.d(TAG, "文件不存在");
+                return false;
+            }
+        } catch (FileNotFoundException e) {
+            // 文件不存在
+            Log.d(TAG, "文件不存在");
+            return false;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
