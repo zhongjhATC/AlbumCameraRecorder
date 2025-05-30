@@ -39,7 +39,10 @@ class AlbumCompressFileTask(
         val newLocalFiles = ArrayList<LocalMedia>()
         for (item in localFiles) {
             // 设置沙盒路径
-            item.sandboxPath = FileMediaUtil.getUri(context, item.path).toString()
+            item.sandboxPath = FileMediaUtil.getUri(context, item.absolutePath).toString()
+
+            // 如果有编辑的图片,则压缩编辑的图片,否则压缩原图
+            val absolutePath = item.editorPath ?: item.absolutePath
 
             val isCompressItem = isCompress(item, isOnlyCompressEditPicture)
             if (isCompressItem != null) {
@@ -67,7 +70,7 @@ class AlbumCompressFileTask(
             } else {
                 if (item.isImage()) {
                     // 处理是否压缩图片
-                    val compressionFile = handleImage(item.absolutePath)
+                    val compressionFile = handleImage(absolutePath)
                     // 移动到新的文件夹
                     FileUtils.copy(compressionFile, newFile)
                     newLocalFiles.add(
@@ -91,9 +94,7 @@ class AlbumCompressFileTask(
                                 override fun onCancel() {}
                                 override fun onError(message: String) {}
                             })
-                        globalSpec.videoCompressCoordinator?.compressAsync(
-                            clsKey, item.absolutePath, newFile.path
-                        )
+                        globalSpec.videoCompressCoordinator?.compressAsync(clsKey, absolutePath, newFile.path)
                     }
                 }
             }

@@ -42,7 +42,7 @@ open class LocalMedia() : Parcelable, BaseMedia {
     var compressPath: String? = null
 
     /**
-     * 如果该图片裁剪或者编辑过，那么该属性会有值。
+     * 如果该图片(只针对相册的图片)裁剪或者编辑过，那么该属性会有值。
      */
     var editorPath: String? = null
 
