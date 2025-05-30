@@ -1,8 +1,7 @@
-package com.zhongjh.gridview.entity
+package com.zhongjh.common.entity
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.zhongjh.common.entity.LocalMedia
 
 /**
  * 多媒体实体类,主要用于展示和显示进度

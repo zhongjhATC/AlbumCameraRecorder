@@ -1,4 +1,4 @@
-package com.zhongjh.gridview.entity
+package com.zhongjh.common.entity
 
 import android.os.Parcel
 import android.os.Parcelable

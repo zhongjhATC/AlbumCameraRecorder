@@ -1,6 +1,7 @@
 package com.zhongjh.albumcamerarecorder.preview.start
 
 import com.zhongjh.albumcamerarecorder.preview.enum.PreviewType
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 
 /**
@@ -16,7 +17,7 @@ object PreviewSpec {
     /**
      * 数据源
      */
-    var data: ArrayList<LocalMedia>? = null
+    var localMediaArrayList: ArrayList<LocalMedia>? = null
 
     /**
      * 当前选择的数据索引
@@ -55,7 +56,7 @@ object PreviewSpec {
      */
     private fun reset() {
         previewType = PreviewType.ALBUM_ACTIVITY
-        data = null
+        localMediaArrayList = null
         currentPosition = 0
         isOriginal = true
         isSelectedCheck = true

@@ -17,7 +17,7 @@ import com.zhongjh.cameraapp.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.listener.AbstractGridViewListener;
 
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +70,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
-        mBinding.dmlImageList.onDestroy();
+        mBinding.gridView.onDestroy();
 
         if (mGlobalSetting != null) {
             mGlobalSetting.onDestroy();
@@ -127,7 +127,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 这里是将AlbumCameraRecorder和Mask控件合并，需要放在初始化最后，alreadyImageCount才能以最新生效
         mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
-                mGlobalSetting, mBinding.dmlImageList, new AbstractGridViewListener() {
+                mGlobalSetting, mBinding.gridView, new AbstractGridViewListener() {
 
             @Override
             public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull GridAdapter.PhotoViewHolder viewHolder) {
@@ -168,7 +168,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     percentage++;
-                    mBinding.dmlImageList.setPercentage(multiMedia, percentage);
+                    mBinding.gridView.setPercentage(multiMedia, percentage);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();
                     }

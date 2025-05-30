@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.zhongjh.albumcamerarecorder.preview.enum.PreviewType
 import com.zhongjh.albumcamerarecorder.preview.start.api.PreviewApi
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 
 /**
@@ -25,12 +26,6 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
          * 当前索引
          */
         const val CURRENT_POSITION = "current_position"
-
-        /**
-         * 告诉接收数据的界面是直接 add 数据源
-         */
-        const val EXTRA_RESULT_APPLY = "extra_result_apply"
-        const val EXTRA_RESULT_IS_EDIT = "extra_result_is_edit"
 
         /**
          * 设置是否开启原图
@@ -72,8 +67,8 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
         previewSpec.previewType = previewType
     }
 
-    override fun setData(localMediaArrayList: ArrayList<LocalMedia>): PreviewSetting {
-        previewSpec.data = localMediaArrayList
+    override fun setLocalMediaArrayList(localMediaArrayList: ArrayList<LocalMedia>): PreviewSetting {
+        previewSpec.localMediaArrayList = localMediaArrayList
         return this
     }
 
@@ -104,7 +99,7 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
 
     override fun setIntent(intent: Intent) {
         intent.putExtra(PREVIEW_TYPE, previewSpec.previewType)
-        intent.putParcelableArrayListExtra(PREVIEW_DATA, previewSpec.data)
+        intent.putParcelableArrayListExtra(PREVIEW_DATA, previewSpec.localMediaArrayList)
         intent.putExtra(CURRENT_POSITION, previewSpec.currentPosition)
         intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, previewSpec.isOriginal)
         intent.putExtra(IS_SELECTED_CHECK, previewSpec.isSelectedCheck)
@@ -114,7 +109,7 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
 
     override fun setBundle(bundle: Bundle) {
         bundle.putSerializable(PREVIEW_TYPE, previewSpec.previewType)
-        bundle.putParcelableArrayList(PREVIEW_DATA, previewSpec.data)
+        bundle.putParcelableArrayList(PREVIEW_DATA, previewSpec.localMediaArrayList)
         bundle.putInt(CURRENT_POSITION, previewSpec.currentPosition)
         bundle.putBoolean(EXTRA_RESULT_ORIGINAL_ENABLE, previewSpec.isOriginal)
         bundle.putBoolean(IS_SELECTED_CHECK, previewSpec.isSelectedCheck)

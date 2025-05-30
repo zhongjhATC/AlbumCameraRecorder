@@ -23,13 +23,11 @@ import com.zhongjh.cameraapp.phone.customlayout.camera3.CameraFragment3;
 import com.zhongjh.cameraapp.phone.customlayout.camera4.CameraSmallFragment;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * 可以自己完完全全自定义录制的布局、逻辑
@@ -61,7 +59,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         setContentView(mBinding.getRoot());
 
         // 以下为点击事件
-        mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
+        mBinding.gridView.setGridViewListener(new GridViewListener() {
 
             @Override
             public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
@@ -124,7 +122,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
 
     @Override
     protected GridView getMaskProgressLayout() {
-        return mBinding.dmlImageList;
+        return mBinding.gridView;
     }
 
     @Override

@@ -7,13 +7,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.utils.MediaUtils;
-import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.widget.GridView;
 
 import java.io.File;
@@ -94,10 +93,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                 // 获取选择的数据
                 ArrayList<LocalMedia> selected = MultiMediaSetting.obtainLocalMediaResult(data);
                 // 循环判断，如果不存在，则删除
-                for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
+                for (int i = getMaskProgressLayout().getAllData().size() - 1; i >= 0; i--) {
                     int k = 0;
                     for (LocalMedia multiMedia : selected) {
-                        if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(multiMedia)) {
+                        if (!getMaskProgressLayout().getAllData().get(i).equals(multiMedia)) {
                             k++;
                         }
                     }

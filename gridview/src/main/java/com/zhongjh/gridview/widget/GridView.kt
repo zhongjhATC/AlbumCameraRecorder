@@ -21,10 +21,10 @@ import com.zhongjh.gridview.R
 import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.api.GridViewApi
 import com.zhongjh.gridview.engine.ImageEngine
-import com.zhongjh.gridview.entity.GridMedia
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.gridview.entity.Masking
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
-import com.zhongjh.gridview.entity.VideoMedia
+import com.zhongjh.common.entity.VideoMedia
 import com.zhongjh.gridview.listener.GridViewListener
 import java.util.*
 
@@ -241,7 +241,7 @@ class GridView : FrameLayout, GridViewApi {
         multiMedia.progress = percentage
         // 找出图片视频音频的 viewHolder 赋值
         runOnUiThread {
-            val position = getImagesAndVideos().indexOf(multiMedia)
+            val position = getAllData().indexOf(multiMedia)
             val photoViewHolder = mViewHolder.rlGrid.findViewHolderForAdapterPosition(position)
             photoViewHolder?.let {
                 it as GridAdapter.PhotoViewHolder
@@ -389,10 +389,6 @@ class GridView : FrameLayout, GridViewApi {
     }
 
     override fun getAllData(): ArrayList<GridMedia> {
-        return mGridAdapter.getData()
-    }
-
-    override fun getImagesAndVideos(): ArrayList<GridMedia> {
         return mGridAdapter.getData()
     }
 

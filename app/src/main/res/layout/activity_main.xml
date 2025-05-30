@@ -12,7 +12,7 @@
             android:orientation="vertical">
 
             <com.zhongjh.gridview.widget.GridView
-                android:id="@+id/dmlImageList"
+                android:id="@+id/gridView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:audioDeleteColor="@color/blue_primary"

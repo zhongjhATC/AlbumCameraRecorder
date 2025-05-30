@@ -19,7 +19,7 @@ import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.gridview.R
 import com.zhongjh.gridview.engine.ImageEngine
-import com.zhongjh.gridview.entity.GridMedia
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
 import com.zhongjh.gridview.listener.GridViewListener
 import com.zhongjh.gridview.provider.RoundViewOutlineProvider

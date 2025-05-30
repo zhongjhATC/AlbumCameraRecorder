@@ -19,13 +19,11 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSimpleBinding;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * 简单版
@@ -56,10 +54,10 @@ public class MainSimpleActivity extends BaseActivity {
         mBinding = ActivityMainSimpleBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        mBinding.dmlImageList.setMaxMediaCount(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE);
+        mBinding.gridView.setMaxMediaCount(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE);
 
         // 以下为点击事件
-        mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
+        mBinding.gridView.setGridViewListener(new GridViewListener() {
 
             @Override
             public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
@@ -116,7 +114,7 @@ public class MainSimpleActivity extends BaseActivity {
 
     @Override
     protected GridView getMaskProgressLayout() {
-        return mBinding.dmlImageList;
+        return mBinding.gridView;
     }
 
     @Override

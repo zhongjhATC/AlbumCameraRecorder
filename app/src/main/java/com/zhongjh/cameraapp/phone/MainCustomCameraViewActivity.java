@@ -19,13 +19,11 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameraviewBinding;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * 自定义CameraView
@@ -56,7 +54,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         setContentView(mBinding.getRoot());
 
         // 以下为点击事件
-        mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
+        mBinding.gridView.setGridViewListener(new GridViewListener() {
 
             @Override
             public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
@@ -119,7 +117,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
 
     @Override
     protected GridView getMaskProgressLayout() {
-        return mBinding.dmlImageList;
+        return mBinding.gridView;
     }
 
     @Override

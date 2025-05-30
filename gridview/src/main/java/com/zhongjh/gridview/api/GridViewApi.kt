@@ -2,7 +2,7 @@ package com.zhongjh.gridview.api
 
 import android.net.Uri
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.gridview.entity.GridMedia
+import com.zhongjh.common.entity.GridMedia
 import java.util.*
 
 /**
@@ -117,13 +117,6 @@ interface GridViewApi {
      * @return 返回当前包含url的图片、视频数据
      */
     fun getAllData(): ArrayList<GridMedia>
-
-    /**
-     * 获取图片、视频数据 - GridMedia实体
-     *
-     * @return 返回当前包含url的图片、视频数据
-     */
-    fun getImagesAndVideos(): ArrayList<GridMedia>
 
     /**
      * 获取图片数据

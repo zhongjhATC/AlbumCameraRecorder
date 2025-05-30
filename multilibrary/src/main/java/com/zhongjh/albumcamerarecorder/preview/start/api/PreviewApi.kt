@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.preview.start.api
 import android.content.Intent
 import android.os.Bundle
 import com.zhongjh.albumcamerarecorder.preview.start.PreviewSetting
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 
 /**
@@ -16,7 +17,7 @@ interface PreviewApi {
      * @param localMediaArrayList 数据源
      * @return [PreviewSetting] this
      */
-    fun setData(localMediaArrayList: ArrayList<LocalMedia>): PreviewSetting
+    fun setLocalMediaArrayList(localMediaArrayList: ArrayList<LocalMedia>): PreviewSetting
 
     /**
      * 当前选择的索引

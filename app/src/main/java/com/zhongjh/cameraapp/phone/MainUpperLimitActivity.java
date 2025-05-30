@@ -21,13 +21,12 @@ import com.zhongjh.cameraapp.databinding.ActivityMainUpperLimitBinding;
 import com.zhongjh.cameraapp.model.LimitModel;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,7 +64,7 @@ public class MainUpperLimitActivity extends BaseActivity {
         mBinding.tvMessage.append("5. 如果其中一个例如图片为null，那么图片可选择无限，但是受限于总上限。");
 
         // 以下为点击事件
-        mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
+        mBinding.gridView.setGridViewListener(new GridViewListener() {
 
             @Override
             public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
@@ -113,7 +112,7 @@ public class MainUpperLimitActivity extends BaseActivity {
 
         // 清空重置
         mBinding.btnReset.setOnClickListener(v -> {
-            mBinding.dmlImageList.reset();
+            mBinding.gridView.reset();
             // 停止所有的上传
             for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
                 entry.getValue().cancel();
@@ -132,7 +131,7 @@ public class MainUpperLimitActivity extends BaseActivity {
 
     @Override
     protected GridView getMaskProgressLayout() {
-        return mBinding.dmlImageList;
+        return mBinding.gridView;
     }
 
     @Override
@@ -170,7 +169,7 @@ public class MainUpperLimitActivity extends BaseActivity {
 
         // 最大5张图片、最大3个视频、最大1个音频
         LimitModel limitModel = getLimitModel();
-        mBinding.dmlImageList.setMaxMediaCount(limitModel.getMaxSelectable(),
+        mBinding.gridView.setMaxMediaCount(limitModel.getMaxSelectable(),
                 limitModel.getMaxImageSelectable(),
                 limitModel.getMaxVideoSelectable(),
                 limitModel.getMaxAudioSelectable());

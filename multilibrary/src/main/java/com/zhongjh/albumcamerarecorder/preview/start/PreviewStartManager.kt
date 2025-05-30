@@ -28,7 +28,7 @@ object PreviewStartManager {
         val intent = Intent(activity, PreviewActivity::class.java)
         // 支持所有功能
         PreviewSetting(PreviewType.ALBUM_ACTIVITY)
-            .setData(localMedias)
+            .setLocalMediaArrayList(localMedias)
             .setIntent(intent)
         previewActivityResult.launch(intent)
         if (cutscenesEnabled) {
@@ -74,7 +74,7 @@ object PreviewStartManager {
 
         // 不支持原图、不支持选择时进行检查功能
         PreviewSetting(PreviewType.CAMERA)
-            .setData(items)
+            .setLocalMediaArrayList(items)
             .setCurrentPosition(position)
             .isOriginal(false)
             .isSelectedCheck(false)

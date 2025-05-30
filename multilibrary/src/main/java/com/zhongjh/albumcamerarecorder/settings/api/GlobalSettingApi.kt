@@ -12,6 +12,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting.ScreenOrientation
 import com.zhongjh.albumcamerarecorder.settings.RecorderSetting
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 import java.util.*
 
@@ -231,7 +232,7 @@ interface GlobalSettingApi {
      */
     fun openPreviewData(
         activity: Activity, requestCode: Int,
-        list: ArrayList<LocalMedia>, position: Int
+        list: ArrayList<GridMedia>, position: Int
     )
 
     /**

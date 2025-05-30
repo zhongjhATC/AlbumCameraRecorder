@@ -35,7 +35,7 @@ import com.zhongjh.cameraapp.databinding.ActivityMainBinding;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
 import com.zhongjh.videoedit.VideoCompressManager;
@@ -80,7 +80,7 @@ public class MainActivity extends BaseActivity {
         // 提交进行上传
         mBinding.btnSubmitUpload.setOnClickListener(v -> {
             // 开始模拟上传 - 指所有
-            for (GridMedia gridMedia : mBinding.dmlImageList.getAllData()){
+            for (GridMedia gridMedia : mBinding.gridView.getAllData()) {
                 MyTask timer = new MyTask(gridMedia);
                 timers.put(gridMedia, timer);
                 timer.schedule();
@@ -92,10 +92,10 @@ public class MainActivity extends BaseActivity {
         mBinding.llFlashMode.setOnClickListener(v -> showFlashPopupMenu());
 
         // 设置九宫格的最大呈现数据
-        mBinding.dmlImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
+        mBinding.gridView.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
 
         // 以下为点击事件
-        mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
+        mBinding.gridView.setGridViewListener(new GridViewListener() {
 
             @Override
             public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
@@ -110,11 +110,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
-//                    mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
-                }
+                mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
             }
 
             @Override
@@ -158,7 +154,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected GridView getMaskProgressLayout() {
-        return mBinding.dmlImageList;
+        return mBinding.gridView;
     }
 
     /**
@@ -174,7 +170,7 @@ public class MainActivity extends BaseActivity {
         }
 
         // 刷新九宫格的最大呈现数据
-        mBinding.dmlImageList.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
+        mBinding.gridView.setMaxMediaCount(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount());
 
         // 拍摄有关设置
         CameraSetting cameraSetting = initCameraSetting();
@@ -262,15 +258,7 @@ public class MainActivity extends BaseActivity {
         }
 
         // 加载图片框架，具体注释看maxSelectablePerMediaType方法注释
-        mGlobalSetting.imageEngine(new Glide4Engine())
-                .maxSelectablePerMediaType(
-                        getMaxCount(),
-                        getImageCount(),
-                        getVideoCount(),
-                        getAudioCount(),
-                        alreadyImageCount,
-                        alreadyVideoCount,
-                        alreadyAudioCount);
+        mGlobalSetting.imageEngine(new Glide4Engine()).maxSelectablePerMediaType(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount(), alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
         if (mBinding.cbIsActivityResult.isChecked()) {
             mGlobalSetting.forResult(REQUEST_CODE_CHOOSE);
         } else {
@@ -292,10 +280,10 @@ public class MainActivity extends BaseActivity {
                 if (apply) {
                     printProperty(result);
                     // 倒数循环判断，如果不存在，则删除
-                    for (int i = getMaskProgressLayout().getImagesAndVideos().size() - 1; i >= 0; i--) {
+                    for (int i = getMaskProgressLayout().getAllData().size() - 1; i >= 0; i--) {
                         int k = 0;
                         for (LocalMedia localMedia : result) {
-                            if (!getMaskProgressLayout().getImagesAndVideos().get(i).equals(localMedia)) {
+                            if (!getMaskProgressLayout().getAllData().get(i).equals(localMedia)) {
                                 k++;
                             }
                         }
@@ -398,8 +386,7 @@ public class MainActivity extends BaseActivity {
                 // 九宫格大小 ,建议这样使用getResources().getDimensionPixelSize(R.dimen.grid_expected_size)
                 .gridExpectedSize(dip2px(Integer.parseInt(mBinding.etGridExpectedSize.getText().toString())))
                 // 图片缩放比例
-                .thumbnailScale(0.85f)
-                .setOnSelectedListener(localFiles -> {
+                .thumbnailScale(0.85f).setOnSelectedListener(localFiles -> {
                     // 每次选择的事件
                     Log.d("onSelected", "onSelected: localFiles.size()=" + localFiles.size());
                 })
@@ -408,8 +395,7 @@ public class MainActivity extends BaseActivity {
                 // 是否启动相册列表滑动隐藏顶部和底部控件，上滑隐藏、下滑显示
                 .slidingHiddenEnable(mBinding.cbSlideHideEnable.isChecked())
                 // 最大原图size,仅当originalEnable为true的时候才有效
-                .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString()))
-                .setOnCheckedListener(isChecked -> {
+                .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString())).setOnCheckedListener(isChecked -> {
                     // 是否勾选了原图
                     Log.d("isChecked", "onCheck: isChecked=" + isChecked);
                 });
@@ -463,33 +449,27 @@ public class MainActivity extends BaseActivity {
      */
     private boolean check() {
         if (getMaxCount() == null && getImageCount() == null) {
-            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxImageSelectable 必须是0或者0以上数值", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() == null && getVideoCount() == null) {
-            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxVideoSelectable 必须是0或者0以上数值", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() == null && getAudioCount() == null) {
-            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "maxSelectablePerMediaType 方法中如果 maxSelectable 为null，那么 maxAudioSelectable 必须是0或者0以上数值", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() != null && getImageCount() != null && getImageCount() > getMaxCount()) {
-            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxImageSelectable 大",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxImageSelectable 大", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() != null && getVideoCount() != null && getVideoCount() > getMaxCount()) {
-            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxVideoSelectable 大",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxVideoSelectable 大", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (getMaxCount() != null && getAudioCount() != null && getAudioCount() > getMaxCount()) {
-            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxAudioSelectable 大",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "maxSelectable 必须比 maxAudioSelectable 大", Toast.LENGTH_SHORT).show();
             return false;
         }
 

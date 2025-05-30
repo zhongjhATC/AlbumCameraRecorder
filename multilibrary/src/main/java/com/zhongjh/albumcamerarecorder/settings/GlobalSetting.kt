@@ -17,6 +17,7 @@ import com.zhongjh.albumcamerarecorder.preview.start.PreviewSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
 import com.zhongjh.albumcamerarecorder.settings.api.GlobalSettingApi
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
@@ -216,10 +217,18 @@ class GlobalSetting internal constructor(
      * @param list        数据源
      * @param position    当前数据的索引
      */
-    override fun openPreviewData(activity: Activity, requestCode: Int, list: ArrayList<LocalMedia>, position: Int) {
+    override fun openPreviewData(activity: Activity, requestCode: Int, list: ArrayList<GridMedia>, position: Int) {
         val intent = Intent(activity, PreviewActivity::class.java)
+
+        // 深度拷贝
+        val localMedias = ArrayList<LocalMedia>()
+        for (i in list.indices) {
+            val localMedia = LocalMedia(list[i])
+            localMedias.add(localMedia)
+        }
+
         PreviewSetting(PreviewType.GRID)
-            .setData(list)
+            .setLocalMediaArrayList(localMedias)
             .setCurrentPosition(position)
             .isOriginal(false)
             .isSelectedCheck(false)

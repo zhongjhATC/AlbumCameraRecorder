@@ -8,7 +8,7 @@ import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
 import com.zhongjh.gridview.apapter.GridAdapter
-import com.zhongjh.gridview.entity.GridMedia
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.gridview.listener.AbstractGridViewListener
 import com.zhongjh.gridview.listener.GridViewListener
 import com.zhongjh.gridview.widget.GridView
@@ -122,10 +122,10 @@ class Combined(
                 // 获取选择的数据
                 val selected = obtainLocalMediaResult(data) ?: return
                 // 循环判断，如果不存在，则删除
-                for (i in maskProgressLayout.getImagesAndVideos().indices.reversed()) {
+                for (i in maskProgressLayout.getAllData().indices.reversed()) {
                     var k = 0
                     for (localMedia in selected) {
-                        if (maskProgressLayout.getImagesAndVideos()[i] != localMedia) {
+                        if (maskProgressLayout.getAllData()[i] != localMedia) {
                             k++
                         }
                     }

@@ -23,7 +23,7 @@ import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainSeeBinding;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.gridview.entity.GridMedia;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
 import com.zhongjh.retrofitdownloadlib.http.DownloadInfo;
@@ -68,7 +68,7 @@ public class MainSeeActivity extends BaseActivity {
         setContentView(mBinding.getRoot());
         progressDialog = new ProgressDialog(MainSeeActivity.this);
         progressDialog.setTitle("下载中");
-        mBinding.dmlImageList.setGridViewListener(new GridViewListener() {
+        mBinding.gridView.setGridViewListener(new GridViewListener() {
 
             @Override
             public boolean onItemStartDownload(@NotNull View view, @NotNull GridMedia gridMedia, int position) {
@@ -89,7 +89,7 @@ public class MainSeeActivity extends BaseActivity {
 
                             @Override
                             public void onCompleted(File file) {
-                                mBinding.dmlImageList.setDataCover(gridMedia, file.getPath());
+                                mBinding.gridView.setDataCover(gridMedia, file.getPath());
                                 progressDialog.hide();
                             }
 
@@ -104,7 +104,7 @@ public class MainSeeActivity extends BaseActivity {
                         return false;
                     } else {
                         // 获取时间,直接赋值
-                        mBinding.dmlImageList.setDataCover(gridMedia, path);
+                        mBinding.gridView.setDataCover(gridMedia, path);
                         // 赋值本地播放地址后,返回true是可以继续播放的播放事件
                         return true;
                     }
@@ -173,7 +173,7 @@ public class MainSeeActivity extends BaseActivity {
         initData();
         initListener();
         findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.dmlImageList.reset());
+        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.gridView.reset());
     }
 
     @Override
@@ -231,19 +231,19 @@ public class MainSeeActivity extends BaseActivity {
      * 初始化数据
      */
     private void initData() {
-        mBinding.dmlImageList.setOperation(true);
+        mBinding.gridView.setOperation(true);
 
         // 音频数据
         List<String> audioUrls = new ArrayList<>();
         audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
         audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        mBinding.dmlImageList.setAudioUrls(audioUrls, false);
+        mBinding.gridView.setAudioUrls(audioUrls, false);
 
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
         videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
         videoUrls.add("https://www.w3school.com.cn/example/html5/mov_bbb.mp4");
-        mBinding.dmlImageList.setVideoUrls(videoUrls, false);
+        mBinding.gridView.setVideoUrls(videoUrls, false);
 
         // 图片数据
         List<String> imageUrls = new ArrayList<>();
@@ -255,10 +255,10 @@ public class MainSeeActivity extends BaseActivity {
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        mBinding.dmlImageList.setImageUrls(imageUrls, false);
+        mBinding.gridView.setImageUrls(imageUrls, false);
 
         // 刷新
-        mBinding.dmlImageList.notifyDataSetChanged();
+        mBinding.gridView.notifyDataSetChanged();
     }
 
     /**
@@ -266,12 +266,12 @@ public class MainSeeActivity extends BaseActivity {
      */
     private void initListener() {
         findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.dmlImageList.reset());
+        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.gridView.reset());
     }
 
     @Override
     protected GridView getMaskProgressLayout() {
-        return mBinding.dmlImageList;
+        return mBinding.gridView;
     }
 
     /**

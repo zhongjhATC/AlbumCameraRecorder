@@ -143,7 +143,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
         public ViewHolder(View view) {
             super(view);
-            mplImageList = view.findViewById(R.id.dmlImageList);
+            mplImageList = view.findViewById(R.id.gridView);
         }
     }
 }

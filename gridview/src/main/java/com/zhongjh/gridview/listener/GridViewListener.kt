@@ -2,7 +2,7 @@ package com.zhongjh.gridview.listener
 
 import android.view.View
 import com.zhongjh.gridview.apapter.GridAdapter
-import com.zhongjh.gridview.entity.GridMedia
+import com.zhongjh.common.entity.GridMedia
 
 /**
  * MaskProgressLayout的有关事件
