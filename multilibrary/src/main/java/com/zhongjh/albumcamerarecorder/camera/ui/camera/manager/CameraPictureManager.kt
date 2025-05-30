@@ -50,7 +50,7 @@ open class CameraPictureManager(
     @JvmField protected var baseCameraFragment: BaseCameraFragment<out CameraStateManager?, out CameraPictureManager?, out CameraVideoManager?>
 ) : PhotoAdapterListener, ICameraPicture {
     /**
-     * 从编辑图片界面回来
+     * 单图：从编辑图片界面回来
      */
     private var imageEditActivityResult: ActivityResultLauncher<Intent>? = null
 
@@ -110,20 +110,19 @@ open class CameraPictureManager(
      */
     override fun initActivityResult() {
         // 从编辑图片界面回来
-        imageEditActivityResult =
-            baseCameraFragment.registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    result.data?.let {
-                        // 编辑图片界面
-                        refreshEditPhoto(
-                            it.getIntExtra(ImageEditActivity.EXTRA_WIDTH, 0),
-                            it.getIntExtra(ImageEditActivity.EXTRA_HEIGHT, 0)
-                        )
-                    } ?: let {
-                        return@registerForActivityResult
-                    }
+        imageEditActivityResult = baseCameraFragment.registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let {
+                    // 编辑图片界面
+                    refreshEditPhoto(
+                        it.getIntExtra(ImageEditActivity.EXTRA_WIDTH, 0),
+                        it.getIntExtra(ImageEditActivity.EXTRA_HEIGHT, 0)
+                    )
+                } ?: let {
+                    return@registerForActivityResult
                 }
             }
+        }
     }
 
     /**

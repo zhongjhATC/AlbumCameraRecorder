@@ -94,12 +94,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     }
 
     class PreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var videoPlayButton: View
-        var imageView: PhotoView
-
-        init {
-            videoPlayButton = itemView.findViewById(R.id.video_play_button)
-            imageView = itemView.findViewById(R.id.image_view)
-        }
+        var videoPlayButton: View = itemView.findViewById(R.id.video_play_button)
+        var imageView: PhotoView = itemView.findViewById(R.id.image_view)
     }
 }

@@ -19,9 +19,9 @@ object PreviewSpec {
     var data: ArrayList<LocalMedia>? = null
 
     /**
-     * 当前选择的数据
+     * 当前选择的数据索引
      */
-    var currentItem: LocalMedia? = null
+    var currentPosition: Int = 0
 
     /**
      * 设置是否开启原图
@@ -56,7 +56,7 @@ object PreviewSpec {
     private fun reset() {
         previewType = PreviewType.ALBUM_ACTIVITY
         data = null
-        currentItem = null
+        currentPosition = 0
         isOriginal = true
         isSelectedCheck = true
         isEdit = true

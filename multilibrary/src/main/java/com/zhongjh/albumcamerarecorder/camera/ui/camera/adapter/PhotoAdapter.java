@@ -67,10 +67,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         BitmapData bitmapData = mListData.get(position);
         mGlobalSpec.getImageEngine().loadUriImage(mActivity, holder.imgPhoto, bitmapData.getAbsolutePath());
         // 点击图片
+        int currentPosition = holder.getAbsoluteAdapterPosition();
         holder.itemView.setOnClickListener(new OnMoreClickListener() {
             @Override
             public void onListener(@NotNull View v) {
-                onClickListener(bitmapData);
+                onClickListener(currentPosition);
             }
         });
         holder.imgCancel.setOnClickListener(new OnMoreClickListener() {
@@ -93,10 +94,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     /**
      * 点击事件
      *
-     * @param bitmapData 数据
+     * @param position 索引
      */
-    private void onClickListener(BitmapData bitmapData) {
-        Intent intent = PreviewStartManager.INSTANCE.startPreviewActivityByCamera(mActivity, mListData, bitmapData);
+    private void onClickListener(int position) {
+        Intent intent = PreviewStartManager.INSTANCE.startPreviewActivityByCamera(mActivity, mListData, position);
         mPhotoAdapterListener.onPhotoAdapterClick(intent);
     }
 

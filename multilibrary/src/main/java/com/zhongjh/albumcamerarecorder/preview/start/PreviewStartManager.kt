@@ -59,7 +59,7 @@ object PreviewStartManager {
     /**
      * 拍摄界面打开tPreviewActivity
      */
-    fun startPreviewActivityByCamera(activity: Activity, bitmapDataArray: List<BitmapData>, bitmapData: BitmapData): Intent {
+    fun startPreviewActivityByCamera(activity: Activity, bitmapDataArray: List<BitmapData>, position: Int): Intent {
         val items = ArrayList<LocalMedia>()
         for (item in bitmapDataArray) {
             val localMedia = LocalMedia()
@@ -72,16 +72,10 @@ object PreviewStartManager {
 
         val intent = Intent(activity, PreviewActivity::class.java)
 
-        // 获取目前点击的这个item
-        val item = LocalMedia()
-        item.absolutePath = bitmapData.absolutePath
-        item.path = bitmapData.uri
-        item.mimeType = MimeType.JPEG.toString()
-
         // 不支持原图、不支持选择时进行检查功能
         PreviewSetting(PreviewType.CAMERA)
             .setData(items)
-            .setCurrentItem(item)
+            .setCurrentPosition(position)
             .isOriginal(false)
             .isSelectedCheck(false)
             .setIntent(intent)

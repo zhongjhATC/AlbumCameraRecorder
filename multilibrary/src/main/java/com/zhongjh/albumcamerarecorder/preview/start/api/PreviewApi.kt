@@ -19,11 +19,11 @@ interface PreviewApi {
     fun setData(localMediaArrayList: ArrayList<LocalMedia>): PreviewSetting
 
     /**
-     * 当前选择的数据
-     * @param localMedia 数据源
+     * 当前选择的索引
+     * @param currentPosition 当前选择的索引
      * @return [PreviewSetting] this
      */
-    fun setCurrentItem(localMedia: LocalMedia): PreviewSetting
+    fun setCurrentPosition(currentPosition: Int): PreviewSetting
 
     /**
      * 设置是否开启原图

@@ -16,6 +16,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,6 +58,7 @@ import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
+import com.zhongjh.common.utils.UriUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -542,26 +544,27 @@ public abstract class BaseCameraFragment
                 if (result.getData() == null) {
                     return;
                 }
-                if (result.getData().getBooleanExtra(PreviewFragment.EXTRA_RESULT_APPLY, false)) {
-                    // 获取选择的数据
-                    ArrayList<LocalMedia> selected;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                        selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION, LocalMedia.class);
-                    } else {
-                        selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION);
-                    }
-                    if (selected == null) {
-                        return;
-                    }
-                    // 重新赋值
-                    ArrayList<BitmapData> bitmapDataArrayList = new ArrayList<>();
-                    for (LocalMedia item : selected) {
-                        BitmapData bitmapData = new BitmapData(item.getId(), item.getPath(), item.getAbsolutePath());
-                        bitmapDataArrayList.add(bitmapData);
-                    }
-                    // 全部刷新
-                    getCameraPictureManager().refreshMultiPhoto(bitmapDataArrayList);
+                // 获取选择的数据
+                ArrayList<LocalMedia> selected;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION, LocalMedia.class);
+                } else {
+                    selected = result.getData().getParcelableArrayListExtra(STATE_SELECTION);
                 }
+                if (selected == null) {
+                    return;
+                }
+                // 重新赋值
+                ArrayList<BitmapData> bitmapDataArrayList = new ArrayList<>();
+                for (LocalMedia item : selected) {
+                    // 如果有编辑图片,则将该图片覆盖最新的拍照图片
+                    String path = null == item.getEditorPath() ? item.getAbsolutePath() : item.getEditorPath();
+                    String uri = Uri.fromFile(new File(path)).toString();
+                    BitmapData bitmapData = new BitmapData(item.getId(), uri, path);
+                    bitmapDataArrayList.add(bitmapData);
+                }
+                // 全部刷新
+                getCameraPictureManager().refreshMultiPhoto(bitmapDataArrayList);
             }
         });
         // 创建权限申请回调

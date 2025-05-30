@@ -12,7 +12,6 @@ import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
 import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
 import com.zhongjh.albumcamerarecorder.preview.enum.PreviewType
 import com.zhongjh.albumcamerarecorder.preview.start.PreviewSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.cleanInstance
@@ -221,7 +220,7 @@ class GlobalSetting internal constructor(
         val intent = Intent(activity, PreviewActivity::class.java)
         PreviewSetting(PreviewType.GRID)
             .setData(list)
-            .setCurrentItem(list[position])
+            .setCurrentPosition(position)
             .isOriginal(false)
             .isSelectedCheck(false)
             .isEdit(false)

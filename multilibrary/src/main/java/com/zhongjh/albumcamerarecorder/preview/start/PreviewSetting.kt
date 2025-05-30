@@ -19,7 +19,12 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
         /**
          * 数据源的标记
          */
-        const val STATE_SELECTION = "state_selection"
+        const val PREVIEW_DATA = "preview_data"
+
+        /**
+         * 当前索引
+         */
+        const val CURRENT_POSITION = "current_position"
 
         /**
          * 告诉接收数据的界面是直接 add 数据源
@@ -56,7 +61,6 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
          * 预览类型，表达从什么界面打开进来的
          */
         const val PREVIEW_TYPE = "preview_type"
-        const val EXTRA_ITEM = "extra_item"
     }
 
     /**
@@ -73,8 +77,8 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
         return this
     }
 
-    override fun setCurrentItem(localMedia: LocalMedia): PreviewSetting {
-        previewSpec.currentItem = localMedia
+    override fun setCurrentPosition(currentPosition: Int): PreviewSetting {
+        previewSpec.currentPosition = currentPosition
         return this
     }
 
@@ -100,8 +104,8 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
 
     override fun setIntent(intent: Intent) {
         intent.putExtra(PREVIEW_TYPE, previewSpec.previewType)
-        intent.putParcelableArrayListExtra(STATE_SELECTION, previewSpec.data)
-        intent.putExtra(EXTRA_ITEM, previewSpec.currentItem)
+        intent.putParcelableArrayListExtra(PREVIEW_DATA, previewSpec.data)
+        intent.putExtra(CURRENT_POSITION, previewSpec.currentPosition)
         intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, previewSpec.isOriginal)
         intent.putExtra(IS_SELECTED_CHECK, previewSpec.isSelectedCheck)
         intent.putExtra(EDIT_ENABLE, previewSpec.isEdit)
@@ -110,8 +114,8 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
 
     override fun setBundle(bundle: Bundle) {
         bundle.putSerializable(PREVIEW_TYPE, previewSpec.previewType)
-        bundle.putParcelableArrayList(STATE_SELECTION, previewSpec.data)
-        bundle.putParcelable(EXTRA_ITEM, previewSpec.currentItem)
+        bundle.putParcelableArrayList(PREVIEW_DATA, previewSpec.data)
+        bundle.putInt(CURRENT_POSITION, previewSpec.currentPosition)
         bundle.putBoolean(EXTRA_RESULT_ORIGINAL_ENABLE, previewSpec.isOriginal)
         bundle.putBoolean(IS_SELECTED_CHECK, previewSpec.isSelectedCheck)
         bundle.putBoolean(EDIT_ENABLE, previewSpec.isEdit)

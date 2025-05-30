@@ -37,6 +37,7 @@ import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.OriginalManage
+import com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION
 import com.zhongjh.albumcamerarecorder.model.SelectedModel
 import com.zhongjh.albumcamerarecorder.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.albumcamerarecorder.preview.enum.PreviewType
@@ -45,13 +46,11 @@ import com.zhongjh.albumcamerarecorder.settings.AlbumSpec
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.sharedanimation.OnSharedAnimationViewListener
 import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams
-import com.zhongjh.albumcamerarecorder.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
 import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil
 import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils
 import com.zhongjh.common.entity.IncapableCause
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MediaType.TYPE_PICTURE
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
@@ -325,10 +324,11 @@ class PreviewFragment : BaseFragment() {
                 // 设置是否开启原图
                 mOriginalEnable = it.getBoolean(PreviewSetting.EXTRA_RESULT_ORIGINAL_ENABLE, true)
                 // 数据源
-                it.getParcelableArrayList<LocalMedia>(PreviewSetting.STATE_SELECTION)?.let { selection ->
+                it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
                     mMainModel.localMedias.addAll(localMedias)
                     mSelectedModel.selectedData.addAll(localMedias)
+                    mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
                 }
             }
         } else {
@@ -573,7 +573,14 @@ class PreviewFragment : BaseFragment() {
                 requireActivity().finish()
             }
 
-            PreviewType.CAMERA -> TODO()
+            PreviewType.CAMERA -> {
+                val intent = Intent()
+                requireActivity().setResult(RESULT_OK, intent)
+                intent.putExtra(STATE_SELECTION, localMedias)
+                requireActivity().finish()
+
+            }
+
             PreviewType.GRID -> TODO()
             PreviewType.THIRD_PARTY -> TODO()
         }
