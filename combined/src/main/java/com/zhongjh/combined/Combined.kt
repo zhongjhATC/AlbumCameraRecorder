@@ -3,12 +3,18 @@ package com.zhongjh.combined
 import android.app.Activity
 import android.content.Intent
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AppCompatActivity
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
-import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.common.entity.GridMedia
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.listener.AbstractGridViewListener
 import com.zhongjh.gridview.listener.GridViewListener
 import com.zhongjh.gridview.widget.GridView
@@ -25,13 +31,53 @@ import com.zhongjh.gridview.widget.GridView
  * @author zhongjh
  * @date 2021/9/6
  */
-class Combined(
-    var activity: Activity,
-    var requestCode: Int,
+open class Combined(
+    var activity: AppCompatActivity,
     globalSetting: GlobalSetting,
     private var maskProgressLayout: GridView,
     listener: AbstractGridViewListener
 ) {
+
+    /**
+     * 九宫格的回调
+     */
+    protected var requestLauncherGrid: ActivityResultLauncher<Intent> = activity.registerForActivityResult(StartActivityForResult(),
+        ActivityResultCallback { result: ActivityResult ->
+            if (result.resultCode != Activity.RESULT_OK) {
+                return@ActivityResultCallback
+            }
+            result.data?.let { resultData ->
+                val selected = obtainLocalMediaResult(resultData)
+                // 循环判断，如果不存在，则删除
+                for (i in maskProgressLayout.getAllData().indices.reversed()) {
+                    var k = 0
+                    for (localMedia in selected) {
+                        if (!maskProgressLayout.getAllData()[i].equalsLocalMedia(localMedia)) {
+                            k++
+                        }
+                    }
+                    if (k == selected.size) {
+                        // 所有都不符合，则删除
+                        maskProgressLayout.removePosition(i)
+                    }
+                }
+            }
+
+        })
+
+    /**
+     * AlbumCameraRecorder的回调
+     */
+    protected var requestLauncherACR: ActivityResultLauncher<Intent> = activity.registerForActivityResult(StartActivityForResult(),
+        ActivityResultCallback { result: ActivityResult ->
+            if (result.resultCode != Activity.RESULT_OK) {
+                return@ActivityResultCallback
+            }
+            result.data?.let { resultData -> // 获取选择的数据
+                val data = obtainLocalMediaResult(resultData)
+                maskProgressLayout.addLocalFileStartUpload(data)
+            }
+        })
 
     /**
      * 最大选择数量，如果设置为null，那么能选择的总数量就是 maxImageSelectable+maxVideoSelectable+maxAudioSelectable 的总数.
@@ -88,55 +134,18 @@ class Combined(
                     maxSelectable, maxImageSelectable, maxVideoSelectable, maxAudioSelectable,
                     alreadyImageCount, alreadyVideoCount, alreadyAudioCount
                 )
-                globalSetting.forResult(requestCode)
+                globalSetting.forResult(requestLauncherACR)
                 listener.onItemAdd(view, gridMedia, alreadyImageCount, alreadyVideoCount, alreadyAudioCount)
             }
 
             override fun onItemClick(view: View, gridMedia: GridMedia) {
-                // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
-                    // 预览
-//                    globalSetting.openPreviewData(activity, requestCode,
-//                            maskProgressLayout.getImagesAndVideos(),
-//                            maskProgressLayout.getImagesAndVideos().indexOf(multiMediaView));
-                }
+                // 预览
+                globalSetting.openPreviewData(activity, requestLauncherGrid, maskProgressLayout.getAllData(), maskProgressLayout.getAllData().indexOf(gridMedia))
                 listener.onItemClick(view, gridMedia)
             }
 
             override fun onItemClose(gridMedia: GridMedia) {
                 listener.onItemClose(gridMedia)
-            }
-        }
-    }
-
-    /**
-     * 封装Activity的onActivityResult
-     *
-     * @param requestCode 请求码
-     * @param data        返回的数据
-     */
-    fun onActivityResult(requestCode: Int, data: Intent) {
-        if (this.requestCode == requestCode) {
-            // 如果是在预览界面点击了确定
-            if (data.getBooleanExtra(PreviewFragment.EXTRA_RESULT_APPLY, false)) {
-                // 获取选择的数据
-                val selected = obtainLocalMediaResult(data) ?: return
-                // 循环判断，如果不存在，则删除
-                for (i in maskProgressLayout.getAllData().indices.reversed()) {
-                    var k = 0
-                    for (localMedia in selected) {
-                        if (maskProgressLayout.getAllData()[i] != localMedia) {
-                            k++
-                        }
-                    }
-                    if (k == selected.size) {
-                        // 所有都不符合，则删除
-                        maskProgressLayout.removePosition(i)
-                    }
-                }
-            } else {
-                val result = obtainLocalMediaResult(data)
-                maskProgressLayout.addLocalFileStartUpload(result)
             }
         }
     }

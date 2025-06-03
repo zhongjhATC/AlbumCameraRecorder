@@ -20,7 +20,6 @@ import com.zhongjh.albumcamerarecorder.AlbumCameraRecorderApi;
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
 import com.zhongjh.albumcamerarecorder.camera.listener.OnCaptureListener;
-import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener;
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
@@ -110,7 +109,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                mGlobalSetting.openPreviewData(MainActivity.this, REQUEST_CODE_CHOOSE, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
+                mGlobalSetting.openPreviewData(MainActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
             }
 
             @Override
@@ -129,10 +128,6 @@ public class MainActivity extends BaseActivity {
                     myTask.cancel();
                     timers.remove(gridMedia);
                 }
-            }
-
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-
             }
 
         });
@@ -259,42 +254,9 @@ public class MainActivity extends BaseActivity {
 
         // 加载图片框架，具体注释看maxSelectablePerMediaType方法注释
         mGlobalSetting.imageEngine(new Glide4Engine()).maxSelectablePerMediaType(getMaxCount(), getImageCount(), getVideoCount(), getAudioCount(), alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
-        if (mBinding.cbIsActivityResult.isChecked()) {
-            mGlobalSetting.forResult(REQUEST_CODE_CHOOSE);
-        } else {
-            initForResult();
-        }
-    }
 
-    private void initForResult() {
-        mGlobalSetting.forResult(new OnResultCallbackListener() {
-
-            @Override
-            public void onResult(@NotNull List<? extends LocalMedia> result) {
-                printProperty(result);
-                getMaskProgressLayout().addLocalFileStartUpload(result);
-            }
-
-            @Override
-            public void onResultFromPreview(@NotNull List<? extends LocalMedia> result, boolean apply) {
-                if (apply) {
-                    printProperty(result);
-                    // 倒数循环判断，如果不存在，则删除
-                    for (int i = getMaskProgressLayout().getAllData().size() - 1; i >= 0; i--) {
-                        int k = 0;
-                        for (LocalMedia localMedia : result) {
-                            if (!getMaskProgressLayout().getAllData().get(i).equals(localMedia)) {
-                                k++;
-                            }
-                        }
-                        if (k == result.size()) {
-                            // 所有都不符合，则删除
-                            getMaskProgressLayout().removePosition(i);
-                        }
-                    }
-                }
-            }
-        });
+        // 启动
+        mGlobalSetting.forResult(requestLauncherACR);
     }
 
     /**

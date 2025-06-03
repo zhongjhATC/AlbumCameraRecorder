@@ -98,10 +98,6 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                 }
             }
 
-            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-
-            }
-
         });
 
 
@@ -174,7 +170,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                         alreadyImageCount,
                         alreadyVideoCount,
                         alreadyAudioCount)
-                .forResult(REQUEST_CODE_CHOOSE);
+                .forResult(requestLauncherACR);
     }
 
 //    /**

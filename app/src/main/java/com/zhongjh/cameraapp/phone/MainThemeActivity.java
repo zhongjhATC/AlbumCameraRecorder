@@ -158,7 +158,7 @@ public class MainThemeActivity extends BaseActivity {
                         alreadyImageCount,
                         alreadyVideoCount,
                         alreadyAudioCount)
-                .forResult(REQUEST_CODE_CHOOSE);
+                .forResult(requestLauncherACR);
     }
 
 }

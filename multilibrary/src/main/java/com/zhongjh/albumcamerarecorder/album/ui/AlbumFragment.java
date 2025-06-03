@@ -1,7 +1,8 @@
 package com.zhongjh.albumcamerarecorder.album.ui;
 
 import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
+
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 
 import android.content.Context;
 import android.content.Intent;
@@ -383,13 +384,13 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      * 初始化Activity的返回
      */
     private void initActivityResult() {
+        // 将PreviewActivity传递的数据继续传给上一个Activity
         mPreviewActivityResult = this.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
                     if (result.getResultCode() != RESULT_OK) {
                         return;
                     }
                     if (result.getData() != null) {
-                        // 将PreviewActivity传递的数据继续传给上一个Activity
                         requireActivity().setResult(RESULT_OK, result.getData());
                     }
                     requireActivity().finish();
@@ -597,14 +598,10 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
      */
     private void setResultOk(ArrayList<LocalMedia> localMediaArrayList) {
         Log.d(TAG, "setResultOk");
-        if (mGlobalSpec.getOnResultCallbackListener() == null) {
-            // 获取选择的图片的url集合
-            Intent result = new Intent();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMediaArrayList);
-            requireActivity().setResult(RESULT_OK, result);
-        } else {
-            mGlobalSpec.getOnResultCallbackListener().onResult(localMediaArrayList);
-        }
+        // 获取选择的图片的url集合
+        Intent result = new Intent();
+        result.putParcelableArrayListExtra(STATE_SELECTION, localMediaArrayList);
+        requireActivity().setResult(RESULT_OK, result);
         requireActivity().finish();
     }
 

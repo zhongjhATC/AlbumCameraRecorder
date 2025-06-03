@@ -2,9 +2,13 @@ package com.zhongjh.cameraapp;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
@@ -44,11 +48,48 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final String TAG = "BaseActivity";
     protected static final int REQUEST_CODE_CHOOSE = 236;
     private final static int PROGRESS_MAX = 100;
-
     /**
-     * 权限申请自定义码
+     * AlbumCameraRecorder的回调
      */
-    protected final int GET_PERMISSION_REQUEST = 100;
+    protected ActivityResultLauncher<Intent> requestLauncherACR = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK) {
+            return;
+        }
+        if (null == result.getData()) {
+            return;
+        }
+
+        List<LocalMedia> data = MultiMediaSetting.obtainLocalMediaResult(result.getData());
+        printProperty(data);
+        getMaskProgressLayout().addLocalFileStartUpload(data);
+    });
+    /**
+     * 九宫格的回调
+     */
+    protected ActivityResultLauncher<Intent> requestLauncherGrid = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK) {
+            return;
+        }
+        if (null == result.getData()) {
+            return;
+        }
+        // 获取选择的数据
+        ArrayList<LocalMedia> selected = MultiMediaSetting.obtainLocalMediaResult(result.getData());
+        // 循环判断，如果不存在，则删除
+        for (int i = getMaskProgressLayout().getAllData().size() - 1; i >= 0; i--) {
+            int k = 0;
+            for (LocalMedia multiMedia : selected) {
+                if (!getMaskProgressLayout().getAllData().get(i).equalsLocalMedia(multiMedia)) {
+                    k++;
+                }
+            }
+            if (k == selected.size()) {
+                // 所有都不符合，则删除
+                getMaskProgressLayout().removePosition(i);
+            }
+        }
+    });
+
     protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
 
     /**
@@ -62,6 +103,11 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 是否浏览
      */
     protected boolean isBrowse = false;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     /**
      * 公共的打开多媒体事件
@@ -79,38 +125,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected boolean getPermissions(boolean isBrowse) {
         return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-        if (requestCode == REQUEST_CODE_CHOOSE) {
-            // 如果是在九宫格点击的预览界面 点击了确定
-            if (data.getBooleanExtra(PreviewFragment.EXTRA_RESULT_APPLY, false)) {
-                // 获取选择的数据
-                ArrayList<LocalMedia> selected = MultiMediaSetting.obtainLocalMediaResult(data);
-                // 循环判断，如果不存在，则删除
-                for (int i = getMaskProgressLayout().getAllData().size() - 1; i >= 0; i--) {
-                    int k = 0;
-                    for (LocalMedia multiMedia : selected) {
-                        if (!getMaskProgressLayout().getAllData().get(i).equals(multiMedia)) {
-                            k++;
-                        }
-                    }
-                    if (k == selected.size()) {
-                        // 所有都不符合，则删除
-                        getMaskProgressLayout().removePosition(i);
-                    }
-                }
-            } else {
-                List<LocalMedia> result = MultiMediaSetting.obtainLocalMediaResult(data);
-                printProperty(result);
-                getMaskProgressLayout().addLocalFileStartUpload(result);
-            }
-        }
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.zhongjh.albumcamerarecorder.settings
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.common.engine.ImageEngine
@@ -8,7 +10,6 @@ import com.zhongjh.common.engine.impl.GlideEngine
 import com.zhongjh.albumcamerarecorder.constants.ModuleTypes
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
-import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.enums.MimeType
 
@@ -138,14 +139,9 @@ object GlobalSpec {
     var videoCompressCoordinator: VideoCompressCoordinator? = null
 
     /**
-     * 请求界面的Code
+     * 用于启动执行ActivityResultContract过程的先前准备好的调用的启动器
      */
-    var requestCode = 0
-
-    /**
-     * 回调监听
-     */
-    var onResultCallbackListener: OnResultCallbackListener? = null
+    var activityResultLauncher: ActivityResultLauncher<Intent>? = null
 
     fun needOrientationRestriction(): Boolean {
         return orientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
@@ -213,6 +209,6 @@ object GlobalSpec {
         imageEditEnabled = true
         onImageCompressionListener = null
         onLogListener = null
-        requestCode = 0
+        activityResultLauncher = null
     }
 }

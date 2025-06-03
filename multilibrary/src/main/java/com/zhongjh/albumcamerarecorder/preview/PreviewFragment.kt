@@ -34,7 +34,6 @@ import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask
 import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils
 import com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
-import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA
 import com.zhongjh.albumcamerarecorder.model.MainModel
 import com.zhongjh.albumcamerarecorder.model.OriginalManage
 import com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION
@@ -558,32 +557,10 @@ class PreviewFragment : BaseFragment() {
     private fun setResultOk(localMedias: ArrayList<LocalMedia>) {
         Log.d(TAG, "setResultOk")
         refreshMultiMediaItem()
-        when (mPreviewType) {
-            PreviewType.ALBUM_ACTIVITY,
-            PreviewType.ALBUM_FRAGMENT -> {
-                // 如果有回调事件则执行回调,否则执行Activity的回调
-                mGlobalSpec.onResultCallbackListener?.let { onResultCallbackListener ->
-                    onResultCallbackListener.onResult(localMedias)
-                    requireActivity().setResult(RESULT_OK)
-                } ?: let {
-                    val intent = Intent()
-                    intent.putExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMedias)
-                    requireActivity().setResult(RESULT_OK, intent)
-                }
-                requireActivity().finish()
-            }
-
-            PreviewType.CAMERA -> {
-                val intent = Intent()
-                requireActivity().setResult(RESULT_OK, intent)
-                intent.putExtra(STATE_SELECTION, localMedias)
-                requireActivity().finish()
-
-            }
-
-            PreviewType.GRID -> TODO()
-            PreviewType.THIRD_PARTY -> TODO()
-        }
+        val intent = Intent()
+        intent.putExtra(STATE_SELECTION, localMedias)
+        requireActivity().setResult(RESULT_OK, intent)
+        requireActivity().finish()
     }
 
 //    /**

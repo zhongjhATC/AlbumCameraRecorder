@@ -4,7 +4,6 @@ import static android.app.Activity.RESULT_OK;
 import static androidx.camera.core.ImageCapture.FLASH_MODE_AUTO;
 import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
 import static androidx.camera.core.ImageCapture.FLASH_MODE_ON;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
 import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
@@ -611,13 +610,9 @@ public abstract class BaseCameraFragment
     public void commitPictureSuccess(ArrayList<LocalMedia> newFiles) {
         Log.d(TAG, "mMovePictureFileTask onSuccess");
         isCommit = true;
-        if (globalSpec.getOnResultCallbackListener() == null) {
-            Intent result = new Intent();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, newFiles);
-            mainActivity.setResult(RESULT_OK, result);
-        } else {
-            globalSpec.getOnResultCallbackListener().onResult(newFiles);
-        }
+        Intent result = new Intent();
+        result.putParcelableArrayListExtra(STATE_SELECTION, newFiles);
+        mainActivity.setResult(RESULT_OK, result);
         mainActivity.finish();
     }
 
@@ -648,14 +643,10 @@ public abstract class BaseCameraFragment
         LocalMedia localMedia = intentPreviewVideo.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
         localMedias.add(localMedia);
         isCommit = true;
-        if (globalSpec.getOnResultCallbackListener() == null) {
-            // 获取视频路径
-            Intent intent = new Intent();
-            intent.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localMedias);
-            mainActivity.setResult(RESULT_OK, intent);
-        } else {
-            globalSpec.getOnResultCallbackListener().onResult(localMedias);
-        }
+        // 获取视频路径
+        Intent intent = new Intent();
+        intent.putParcelableArrayListExtra(STATE_SELECTION, localMedias);
+        mainActivity.setResult(RESULT_OK, intent);
         mainActivity.finish();
     }
 
@@ -790,7 +781,7 @@ public abstract class BaseCameraFragment
      *
      * @param bitmapData 显示单图数据源
      * @param file       显示单图的文件
-     * @param uri       显示单图的uri
+     * @param uri        显示单图的uri
      */
     @Override
     public void showSinglePicture(BitmapData bitmapData, File file, String uri) {

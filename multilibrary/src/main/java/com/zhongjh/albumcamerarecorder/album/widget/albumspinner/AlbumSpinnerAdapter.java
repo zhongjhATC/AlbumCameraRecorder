@@ -61,7 +61,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
         int checkedNum = album.getCheckedCount();
         holder.tvSign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
         holder.itemView.setSelected(isChecked);
-        GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext(),
+        GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext().getApplicationContext(),
                 holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size),
                 holder.placeholder,
                 holder.imgFirst, album.getFirstImagePath());

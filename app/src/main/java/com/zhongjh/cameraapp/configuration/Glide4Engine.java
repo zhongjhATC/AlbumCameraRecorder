@@ -107,19 +107,19 @@ public class Glide4Engine implements ImageEngine {
 
     @Override
     public void pauseRequests(@NonNull Context context) {
-        if (!ActivityUtils.INSTANCE.assertValidRequest(context)) {
+        if (!ActivityUtils.INSTANCE.assertValidRequest(context.getApplicationContext())) {
             return;
         }
-        Glide.with(context).pauseRequests();
+        Glide.with(context.getApplicationContext()).pauseRequests();
         Log.d("Glide4Engine", "pauseRequests");
     }
 
     @Override
     public void resumeRequests(@NonNull Context context) {
-        if (!ActivityUtils.INSTANCE.assertValidRequest(context)) {
+        if (!ActivityUtils.INSTANCE.assertValidRequest(context.getApplicationContext())) {
             return;
         }
-        Glide.with(context).resumeRequests();
+        Glide.with(context.getApplicationContext()).resumeRequests();
         Log.d("Glide4Engine", "resumeRequests");
     }
 }

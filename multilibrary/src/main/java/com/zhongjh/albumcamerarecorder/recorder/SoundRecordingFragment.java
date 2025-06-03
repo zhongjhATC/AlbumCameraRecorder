@@ -2,7 +2,7 @@ package com.zhongjh.albumcamerarecorder.recorder;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
-import static com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA;
+import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
 import static com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
 
 import android.content.Context;
@@ -43,6 +43,7 @@ import com.zhongjh.common.utils.ThreadUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import com.zhongjh.common.utils.FileUtils;
 
 /**
@@ -336,7 +337,7 @@ public class SoundRecordingFragment extends BaseFragment {
                     System.out.println("was not successful.");
                 }
             }
-            Log.d(TAG,"onRecord");
+            Log.d(TAG, "onRecord");
 
             // start RecordingService
             startRecording();
@@ -473,17 +474,11 @@ public class SoundRecordingFragment extends BaseFragment {
                     mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
                     localMedia.setPath(newFile.getPath());
                     if (progress >= FULL) {
-                        if (mGlobalSpec.getOnResultCallbackListener() == null) {
-                            Intent result = new Intent();
-                            ArrayList<LocalMedia> localFiles = new ArrayList<>();
-                            localFiles.add(localMedia);
-                            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, localFiles);
-                            requireActivity().setResult(RESULT_OK, result);
-                        } else {
-                            ArrayList<LocalMedia> localMediaArrayList = new ArrayList<>();
-                            localMediaArrayList.add(localMedia);
-                            mGlobalSpec.getOnResultCallbackListener().onResult(localMediaArrayList);
-                        }
+                        Intent result = new Intent();
+                        ArrayList<LocalMedia> localFiles = new ArrayList<>();
+                        localFiles.add(localMedia);
+                        result.putParcelableArrayListExtra(STATE_SELECTION, localFiles);
+                        requireActivity().setResult(RESULT_OK, result);
                         requireActivity().finish();
                     }
                 });

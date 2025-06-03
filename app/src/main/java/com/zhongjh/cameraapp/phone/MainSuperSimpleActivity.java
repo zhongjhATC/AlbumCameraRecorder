@@ -36,7 +36,6 @@ import java.util.TimerTask;
  */
 public class MainSuperSimpleActivity extends AppCompatActivity {
 
-    protected static final int REQUEST_CODE_CHOOSE = 236;
     private final static int PROGRESS_MAX = 100;
 
     ActivityMainSuperSimpleBinding mBinding;
@@ -78,15 +77,6 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-        mCombined.onActivityResult(requestCode, data);
-    }
-
 
     /**
      * 初始化
@@ -126,7 +116,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                         0);
 
         // 这里是将AlbumCameraRecorder和Mask控件合并，需要放在初始化最后，alreadyImageCount才能以最新生效
-        mCombined = new Combined(MainSuperSimpleActivity.this, REQUEST_CODE_CHOOSE,
+        mCombined = new Combined(MainSuperSimpleActivity.this,
                 mGlobalSetting, mBinding.gridView, new AbstractGridViewListener() {
 
             @Override

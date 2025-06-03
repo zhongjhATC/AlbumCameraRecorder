@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import androidx.fragment.app.Fragment
-import com.zhongjh.albumcamerarecorder.constants.Constant.EXTRA_RESULT_SELECTION_LOCAL_MEDIA
 import com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
@@ -79,9 +78,9 @@ class MultiMediaSetting private constructor(activity: Activity, fragment: Fragme
         fun obtainLocalMediaResult(data: Intent): ArrayList<LocalMedia> {
             // 获取选择的数据
             val arrayList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA, LocalMedia::class.java)
+                data.getParcelableArrayListExtra(STATE_SELECTION, LocalMedia::class.java)
             } else {
-                data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION_LOCAL_MEDIA)
+                data.getParcelableArrayListExtra(STATE_SELECTION)
             }
             if (arrayList == null) {
                 return ArrayList()

@@ -1,11 +1,12 @@
 package com.zhongjh.albumcamerarecorder.settings.api
 
 import android.app.Activity
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.StyleRes
 import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
-import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.settings.AlbumSetting
 import com.zhongjh.albumcamerarecorder.settings.CameraSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
@@ -211,36 +212,17 @@ interface GlobalSettingApi {
     /**
      * 开始进行多媒体操作并等待结果.
      *
-     * @param requestCode 请求活动或片段的标识.
+     * @param activityResultLauncher 用于启动执行ActivityResultContract过程的先前准备好的调用的启动器
      */
-    fun forResult(requestCode: Int)
+    fun forResult(activityResultLauncher: ActivityResultLauncher<Intent>)
 
     /**
-     * 开始进行多媒体操作并等待结果.
-     *
-     * @param listener 回调事件
-     */
-    fun forResult(listener: OnResultCallbackListener)
-
-    /**
-     * 调用打开图片、视频预览 - 主要用于配合九宫图
-     *
-     * @param activity    窗体
-     * @param requestCode 请求码
-     * @param list        数据源
-     * @param position    当前数据的索引
-     */
-    fun openPreviewData(
-        activity: Activity, requestCode: Int,
-        list: ArrayList<GridMedia>, position: Int
-    )
-
-    /**
-     * 调用打开图片预览 - 纯浏览不可操作
+     * 调用打开图片、视频预览
      *
      * @param activity 窗体
+     * @param activityResultLauncher 启动器
      * @param list     文件地址的数据源
      * @param position 当前数据的索引
      */
-    fun openPreviewPath(activity: Activity, list: ArrayList<String>, position: Int)
+    fun openPreviewData(activity: Activity, activityResultLauncher: ActivityResultLauncher<Intent>, list: ArrayList<GridMedia>, position: Int)
 }

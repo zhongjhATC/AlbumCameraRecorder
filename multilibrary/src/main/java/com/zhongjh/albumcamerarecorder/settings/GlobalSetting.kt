@@ -3,6 +3,7 @@ package com.zhongjh.albumcamerarecorder.settings
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.IntDef
 import androidx.annotation.StyleRes
 import com.zhongjh.albumcamerarecorder.MainActivity
@@ -10,7 +11,6 @@ import com.zhongjh.albumcamerarecorder.R
 import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener
 import com.zhongjh.albumcamerarecorder.listener.OnLogListener
-import com.zhongjh.albumcamerarecorder.listener.OnResultCallbackListener
 import com.zhongjh.albumcamerarecorder.preview.PreviewActivity
 import com.zhongjh.albumcamerarecorder.preview.enum.PreviewType
 import com.zhongjh.albumcamerarecorder.preview.start.PreviewSetting
@@ -46,7 +46,7 @@ class GlobalSetting internal constructor(
     annotation class ScreenOrientation
 
     override fun onDestroy() {
-        mGlobalSpec.onResultCallbackListener = null
+        mGlobalSpec.activityResultLauncher = null
         if (mGlobalSpec.albumSetting != null) {
             mGlobalSpec.albumSetting!!.onDestroy()
         }
@@ -196,28 +196,20 @@ class GlobalSetting internal constructor(
         return this
     }
 
-    override fun forResult(requestCode: Int) {
-        mGlobalSpec.requestCode = requestCode
-        // 回调监听设置null
-        mGlobalSpec.onResultCallbackListener = null
-        openMain(requestCode)
-    }
-
-    override fun forResult(listener: OnResultCallbackListener) {
-        // 绑定回调监听
-        mGlobalSpec.onResultCallbackListener = WeakReference(listener).get()
-        openMain(null)
+    override fun forResult(activityResultLauncher: ActivityResultLauncher<Intent>) {
+        mGlobalSpec.activityResultLauncher = activityResultLauncher
+        openMain(activityResultLauncher)
     }
 
     /**
      * 调用打开图片、视频预览 - 主要用于配合九宫图
      *
      * @param activity    窗体
-     * @param requestCode 请求码
+     * @param activityResultLauncher 请求器
      * @param list        数据源
      * @param position    当前数据的索引
      */
-    override fun openPreviewData(activity: Activity, requestCode: Int, list: ArrayList<GridMedia>, position: Int) {
+    override fun openPreviewData(activity: Activity, activityResultLauncher: ActivityResultLauncher<Intent>, list: ArrayList<GridMedia>, position: Int) {
         val intent = Intent(activity, PreviewActivity::class.java)
 
         // 深度拷贝
@@ -234,24 +226,13 @@ class GlobalSetting internal constructor(
             .isSelectedCheck(false)
             .isEdit(false)
             .setIntent(intent)
-        activity.startActivityForResult(intent, requestCode)
+        activityResultLauncher.launch(intent)
         if (GlobalSpec.cutscenesEnabled) {
             activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
         }
     }
 
-    /**
-     * 调用打开图片预览 - 纯浏览不可操作
-     *
-     * @param activity 窗体
-     * @param list     文件地址的数据源
-     * @param position 当前数据的索引
-     */
-    override fun openPreviewPath(activity: Activity, list: ArrayList<String>, position: Int) {
-//        openPreview(activity, list, position)
-    }
-
-    private fun openMain(requestCode: Int?) {
+    private fun openMain(activityResultLauncher: ActivityResultLauncher<Intent>) {
         val activity = multiMediaSetting.activity ?: return
         // 数量
         var numItems = 0
@@ -270,17 +251,9 @@ class GlobalSetting internal constructor(
         val intent = Intent(activity, MainActivity::class.java)
         val fragment = multiMediaSetting.fragment
         if (fragment != null) {
-            if (requestCode != null) {
-                fragment.startActivityForResult(intent, requestCode)
-            } else {
-                fragment.startActivity(intent)
-            }
+            activityResultLauncher.launch(intent)
         } else {
-            if (requestCode != null) {
-                activity.startActivityForResult(intent, requestCode)
-            } else {
-                activity.startActivity(intent)
-            }
+            activityResultLauncher.launch(intent)
             if (mGlobalSpec.cutscenesEnabled) {
                 activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
             }

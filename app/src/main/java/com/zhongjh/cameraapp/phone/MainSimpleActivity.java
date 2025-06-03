@@ -164,7 +164,7 @@ public class MainSimpleActivity extends BaseActivity {
                         alreadyImageCount,
                         alreadyVideoCount,
                         alreadyAudioCount)
-                .forResult(REQUEST_CODE_CHOOSE);
+                .forResult(requestLauncherACR);
     }
 
 }

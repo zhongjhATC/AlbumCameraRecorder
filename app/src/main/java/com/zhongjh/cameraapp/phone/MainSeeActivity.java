@@ -283,7 +283,7 @@ public class MainSeeActivity extends BaseActivity {
     @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 最大10张图片或者最大1个视频
-        mGlobalSetting.maxSelectablePerMediaType(12, null, null, null, alreadyImageCount, alreadyVideoCount, alreadyAudioCount).forResult(REQUEST_CODE_CHOOSE);
+        mGlobalSetting.maxSelectablePerMediaType(12, null, null, null, alreadyImageCount, alreadyVideoCount, alreadyAudioCount).forResult(requestLauncherACR);
     }
 
     /**
