@@ -167,23 +167,23 @@ public abstract class BaseActivity extends AppCompatActivity {
             Log.d(TAG, "onResult getAbsolutePath:" + localMedia.getAbsolutePath());
             // 如果有不存在的文件,抛出错误
             if (null == localMedia.getCompressPath() || !new File(localMedia.getCompressPath()).exists()) {
-                Toast.makeText(this, "CompressPath不存在", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "CompressPath不存在", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, localMedia.getCompressPath() + " CompressPath不存在");
             }
             if (null == localMedia.getEditorPath() || !new File(localMedia.getEditorPath()).exists()) {
-                Toast.makeText(this, "EditorPath不存在", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "EditorPath不存在", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, localMedia.getEditorPath() + " EditorPath不存在");
             }
             if (null == localMedia.getSandboxPath() || !isUri(localMedia.getSandboxPath())) {
-                Toast.makeText(this, "SandboxPath不存在", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "SandboxPath不存在", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, localMedia.getSandboxPath() + " SandboxPath不存在");
             }
             if (!isUri(localMedia.getPath())) {
-                Toast.makeText(this, "Path不存在", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Path不存在", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, localMedia.getPath() + " Path不存在");
             }
             if (!new File(localMedia.getAbsolutePath()).exists()) {
-                Toast.makeText(this, "AbsolutePath不存在", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "AbsolutePath不存在", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, localMedia.getAbsolutePath() + " AbsolutePath不存在");
             }
 
