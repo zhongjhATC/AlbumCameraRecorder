@@ -71,11 +71,7 @@ public class MainSimpleActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
-//                    mGlobalSetting.openPreviewData(MainSimpleActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.dmlImageList.getImagesAndVideos(),
-//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
-                }
+                mGlobalSetting.openPreviewData(MainSimpleActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
             }
 
             @Override

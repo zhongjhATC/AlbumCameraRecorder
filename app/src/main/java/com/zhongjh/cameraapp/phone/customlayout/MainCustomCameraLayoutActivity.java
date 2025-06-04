@@ -17,6 +17,7 @@ import com.zhongjh.cameraapp.BaseActivity;
 import com.zhongjh.cameraapp.configuration.GifSizeFilter;
 import com.zhongjh.cameraapp.configuration.Glide4Engine;
 import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameralayoutBinding;
+import com.zhongjh.cameraapp.phone.MainUpperLimitActivity;
 import com.zhongjh.cameraapp.phone.customlayout.camera1.CameraFragment1;
 import com.zhongjh.cameraapp.phone.customlayout.camera2.CameraFragment2;
 import com.zhongjh.cameraapp.phone.customlayout.camera3.CameraFragment3;
@@ -78,11 +79,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
-//                    mGlobalSetting.openPreviewData(MainCustomCameraLayoutActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
-                }
+                mGlobalSetting.openPreviewData(MainCustomCameraLayoutActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
             }
 
             @Override

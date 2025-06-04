@@ -78,11 +78,7 @@ public class MainUpperLimitActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
-//                    mGlobalSetting.openPreviewData(MainUpperLimitActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.dmlImageList.getImagesAndVideos(),
-//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
-                }
+                mGlobalSetting.openPreviewData(MainUpperLimitActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
             }
 
             @Override

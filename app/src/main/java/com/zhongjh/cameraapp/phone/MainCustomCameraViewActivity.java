@@ -73,11 +73,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
-//                    mGlobalSetting.openPreviewData(MainCustomCameraViewActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.mplImageList.getImagesAndVideos(),
-//                            mBinding.mplImageList.getImagesAndVideos().indexOf(multiMediaView));
-                }
+                mGlobalSetting.openPreviewData(MainCustomCameraViewActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
             }
 
             @Override
