@@ -47,7 +47,6 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.IState;
 import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.PackageManagerUtils;
@@ -57,7 +56,6 @@ import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.listener.OnMoreClickListener;
 import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
-import com.zhongjh.common.utils.UriUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -559,7 +557,7 @@ public abstract class BaseCameraFragment
                     // 如果有编辑图片,则将该图片覆盖最新的拍照图片
                     String path = null == item.getEditorPath() ? item.getAbsolutePath() : item.getEditorPath();
                     String uri = Uri.fromFile(new File(path)).toString();
-                    BitmapData bitmapData = new BitmapData(item.getId(), uri, path);
+                    BitmapData bitmapData = new BitmapData(item.getFileId(), uri, path);
                     bitmapDataArrayList.add(bitmapData);
                 }
                 // 全部刷新

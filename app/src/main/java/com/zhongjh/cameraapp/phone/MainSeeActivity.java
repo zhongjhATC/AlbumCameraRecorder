@@ -124,7 +124,7 @@ public class MainSeeActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
-                Log.i(TAG, "onResult id:" + gridMedia.getId());
+                Log.i(TAG, "onResult id:" + gridMedia.getFileId());
                 Log.i(TAG, "onResult url:" + gridMedia.getUrl());
                 Log.d(TAG, "onResult 绝对路径:" + gridMedia.getPath());
                 Log.d(TAG, "onResult Uri:" + gridMedia.getPath());

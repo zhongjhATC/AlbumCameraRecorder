@@ -268,7 +268,6 @@ class GridView : FrameLayout, GridViewApi {
             progressMedia.isUploading = true
             // 处理音频
             if (progressMedia.isAudio()) {
-                progressMedia.videoMedia = VideoMedia()
                 mediaAudios.add(progressMedia)
             }
             // 处理图片

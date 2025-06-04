@@ -321,7 +321,7 @@ class GridAdapter(
         Log.d("$TAG Test", "addData")
         val position: Int = getNeedAddPosition(mediaType)
         for (item in gridMedia) {
-            item.gridMediaId = mId++
+            item.id = mId++
         }
         list.addAll(position, gridMedia)
         // 刷新ui
@@ -347,7 +347,7 @@ class GridAdapter(
         }
         // 增加新的图片数据
         for (item in gridMedia) {
-            item.gridMediaId = mId++
+            item.id = mId++
         }
         list.addAll(gridMedia)
         if (isNotifyDataSetChanged) {
@@ -373,7 +373,7 @@ class GridAdapter(
 
         // 增加新的视频数据
         for (item in gridMedia) {
-            item.gridMediaId = mId++
+            item.id = mId++
         }
         list.addAll(0, gridMedia)
         if (isNotifyDataSetChanged) {
@@ -399,7 +399,7 @@ class GridAdapter(
 
         // 增加新的音频数据
         for (item in gridMedia) {
-            item.gridMediaId = mId++
+            item.id = mId++
         }
         // 在视频的最后一个位置添加音频
         list.addAll(getVideoLeastPosition(), gridMedia)
@@ -413,7 +413,7 @@ class GridAdapter(
      */
     fun updateItem(gridMedia: GridMedia) {
         for (i in 0 until list.size) {
-            if (list[i].gridMediaId == gridMedia.gridMediaId) {
+            if (list[i].id == gridMedia.id) {
                 notifyItemChanged(i)
             }
         }

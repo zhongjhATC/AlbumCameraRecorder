@@ -20,7 +20,6 @@ import com.zhongjh.common.enums.MimeType.Companion.isVideo
 import com.zhongjh.common.utils.SdkVersionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.util.*
 import kotlin.math.max
 
@@ -211,7 +210,7 @@ class MediaLoader(private val context: Context) {
      */
     fun parse(data: Cursor): LocalMedia {
         val media = LocalMedia()
-        media.id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+        media.fileId = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
         media.bucketId = data.getLong(data.getColumnIndexOrThrow(BUCKET_ID))
         media.fileName = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
         media.parentFolderName = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME))
@@ -245,7 +244,7 @@ class MediaLoader(private val context: Context) {
         }
 
         media.path = if (SdkVersionUtils.isQ) {
-            getRealPathUri(media.id, media.mimeType ?: "")
+            getRealPathUri(media.fileId, media.mimeType ?: "")
         } else {
             media.absolutePath
         }
@@ -260,7 +259,7 @@ class MediaLoader(private val context: Context) {
             media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
             media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
         }
-        Log.d(TAG, "abspath:" + media.id)
+        Log.d(TAG, "abspath:" + media.fileId)
         return media
     }
 

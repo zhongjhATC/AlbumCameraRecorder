@@ -375,7 +375,7 @@ open class CameraPictureManager(
             val newFile = if (isMove) {
                 runBlocking {
                     localMedia = mediaScanFile(cameraFile.absolutePath)
-                    Log.d(TAG, "2. 获取相册数据：" + localMedia.id)
+                    Log.d(TAG, "2. 获取相册数据：" + localMedia.fileId)
                 }
                 cameraFile
             } else {

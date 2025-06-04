@@ -19,7 +19,6 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.albumcamerarecorder.album.widget.CheckView
 import com.zhongjh.albumcamerarecorder.album.widget.SquareFrameLayout
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec.imageEngine
-import com.zhongjh.common.entity.MultiMedia
 
 /**
  * @author zhongjh
@@ -183,7 +182,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      * 设置图片或者gif图片
      */
     private fun setImage() {
-        mImageView.transitionName = mMedia.id.toString()
+        mImageView.transitionName = mMedia.fileId.toString()
         imageEngine.loadThumbnail(
             context, mPreBindInfo.mResize,
             mPreBindInfo.mPlaceholder, mImageView, mMedia.path

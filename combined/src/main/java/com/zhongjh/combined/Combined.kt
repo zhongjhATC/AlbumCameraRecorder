@@ -8,12 +8,10 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment
 import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
 import com.zhongjh.common.entity.GridMedia
-import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.listener.AbstractGridViewListener
 import com.zhongjh.gridview.listener.GridViewListener
@@ -46,8 +44,11 @@ open class Combined(
             if (result.resultCode != Activity.RESULT_OK) {
                 return@ActivityResultCallback
             }
+
             result.data?.let { resultData ->
+                // 获取选择的数据
                 val selected = obtainLocalMediaResult(resultData)
+
                 // 循环判断，如果不存在，则删除
                 for (i in maskProgressLayout.getAllData().indices.reversed()) {
                     var k = 0
@@ -62,7 +63,6 @@ open class Combined(
                     }
                 }
             }
-
         })
 
     /**

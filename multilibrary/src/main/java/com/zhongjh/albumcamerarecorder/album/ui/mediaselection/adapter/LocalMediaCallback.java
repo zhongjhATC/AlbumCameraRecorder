@@ -49,7 +49,7 @@ public class LocalMediaCallback extends DiffUtil.Callback {
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
         LocalMedia oldObject = oldData.get(oldItemPosition);
         LocalMedia newObject = newData.get(newItemPosition);
-        return oldObject.getId() == newObject.getId();
+        return oldObject.getFileId() == newObject.getFileId();
     }
 
     /**

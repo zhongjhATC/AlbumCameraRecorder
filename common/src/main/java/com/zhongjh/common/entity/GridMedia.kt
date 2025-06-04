@@ -12,11 +12,6 @@ import android.os.Parcelable
 class GridMedia : LocalMedia, Parcelable {
 
     /**
-     * 用于区分，因为九宫数据是允许选择重复的
-     */
-    var gridMediaId: Long = 0
-
-    /**
      * 在线网址
      */
     var url: String? = null
@@ -31,18 +26,12 @@ class GridMedia : LocalMedia, Parcelable {
      */
     var progress: Int = 0
 
-    /**
-     * 音频类
-     */
-    var videoMedia: VideoMedia? = null
-
     constructor() : super()
 
     constructor(parcel: Parcel) : super(parcel) {
         url = parcel.readString()
         isUploading = parcel.readByte() != 0.toByte()
         progress = parcel.readInt()
-        videoMedia = parcel.readParcelable(VideoMedia::class.java.classLoader)
     }
 
     constructor(localMedia: LocalMedia) : super(localMedia)
@@ -53,13 +42,9 @@ class GridMedia : LocalMedia, Parcelable {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         super.writeToParcel(parcel, flags)
-        parcel.writeLong(gridMediaId)
         parcel.writeString(url)
         parcel.writeByte(if (isUploading) 1 else 0)
         parcel.writeInt(progress)
-        videoMedia?.let {
-            parcel.writeParcelable(it, 0)
-        }
     }
 
     override fun describeContents(): Int {

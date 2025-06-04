@@ -63,7 +63,7 @@ object PreviewStartManager {
         val items = ArrayList<LocalMedia>()
         for (item in bitmapDataArray) {
             val localMedia = LocalMedia()
-            localMedia.id = item.temporaryId
+            localMedia.fileId = item.temporaryId
             localMedia.absolutePath = item.absolutePath
             localMedia.path = item.uri
             localMedia.mimeType = MimeType.JPEG.toString()

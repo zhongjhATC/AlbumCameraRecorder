@@ -32,9 +32,14 @@ import java.io.File
 open class LocalMedia() : Parcelable, BaseMedia {
 
     /**
-     * 文件id
+     * 当预览列表有一摸一样的数据时(包括fileId也一样),那么就需要用到这个字段用于区分了
      */
     var id: Long = 0
+
+    /**
+     * 文件id，一般用于相册
+     */
+    var fileId: Long = 0
 
     /**
      * 压缩后的路径，如果开启压缩配置后，最终原图或者将编辑后的图片进行压缩，然后赋值该属性
@@ -168,6 +173,7 @@ open class LocalMedia() : Parcelable, BaseMedia {
 
         override fun LocalMedia.write(parcel: Parcel, flags: Int) {
             parcel.writeLong(id)
+            parcel.writeLong(fileId)
             parcel.writeString(compressPath)
             parcel.writeString(editorPath)
             parcel.writeString(sandboxPath)
@@ -197,56 +203,6 @@ open class LocalMedia() : Parcelable, BaseMedia {
             return LocalMedia(parcel)
         }
 
-        /**
-         * 构造LocalMedia
-         *
-         * @param id               资源id
-         * @param path             资源路径
-         * @param absolutePath     资源真实路径
-         * @param fileName         文件名
-         * @param parentFolderName 文件所在相册目录名称
-         * @param duration         视频/音频时长
-         * @param orientation 角度
-         * @param mimeType         资源类型
-         * @param width            资源宽
-         * @param height           资源高
-         * @param size             资源大小
-         * @param bucketId         文件目录id
-         * @param dateAdded  资源添加时间
-         * @return
-         */
-        @JvmStatic
-        fun parseLocalMedia(
-            id: Long,
-            path: String,
-            absolutePath: String,
-            fileName: String,
-            parentFolderName: String,
-            duration: Long,
-            orientation: Int,
-            mimeType: String,
-            width: Int,
-            height: Int,
-            size: Long,
-            bucketId: Long,
-            dateAdded: Long
-        ): LocalMedia {
-            val localMedia = LocalMedia()
-            localMedia.id = id
-            localMedia.path = path
-            localMedia.absolutePath = absolutePath
-            localMedia.fileName = fileName
-            localMedia.parentFolderName = parentFolderName
-            localMedia.orientation = orientation
-            localMedia.duration = duration
-            localMedia.mimeType = mimeType
-            localMedia.width = width
-            localMedia.height = height
-            localMedia.size = size
-            localMedia.bucketId = bucketId
-            localMedia.dateAddedTime = dateAdded
-            return localMedia
-        }
     }
 
     /**
@@ -254,6 +210,7 @@ open class LocalMedia() : Parcelable, BaseMedia {
      */
     constructor(parcel: Parcel) : this() {
         id = parcel.readLong()
+        fileId = parcel.readLong()
         compressPath = parcel.readString()
         editorPath = parcel.readString()
         sandboxPath = parcel.readString()
@@ -306,6 +263,9 @@ open class LocalMedia() : Parcelable, BaseMedia {
      */
     fun equalsLocalMedia(localMedia: LocalMedia): Boolean {
         if (id != localMedia.id) {
+            return false
+        }
+        if (fileId != localMedia.fileId) {
             return false
         }
         if (compressPath != localMedia.compressPath) {
@@ -470,8 +430,7 @@ open class LocalMedia() : Parcelable, BaseMedia {
         compressPath = compressionFile.absolutePath
         size = compressionFile.length()
         if (isImageOrGif()) {
-            val imageWidthAndHeight: IntArray =
-                MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
+            val imageWidthAndHeight: IntArray = MediaUtils.getImageWidthAndHeight(compressionFile.absolutePath)
             width = imageWidthAndHeight[0]
             height = imageWidthAndHeight[1]
         } else if (isVideo()) {
@@ -493,6 +452,7 @@ open class LocalMedia() : Parcelable, BaseMedia {
      */
     private fun copyLocalMedia(localMedia: LocalMedia) {
         id = localMedia.id
+        fileId = localMedia.fileId
         compressPath = localMedia.compressPath
         editorPath = localMedia.editorPath
         sandboxPath = localMedia.sandboxPath

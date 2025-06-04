@@ -53,7 +53,7 @@ class AlbumCompressFileTask(
             // 开始压缩逻辑，获取真实路径
             val newFileNames = item.absolutePath.split(".").toTypedArray()
             // 设置压缩后的照片名称，id_CMP
-            var newFileName = item.id.toString() + "_CMP"
+            var newFileName = item.fileId.toString() + "_CMP"
             if (newFileNames.size > 1) {
                 // 设置后缀名
                 newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
@@ -169,7 +169,7 @@ class AlbumCompressFileTask(
         var newFileName = path.substring(path.lastIndexOf(File.separator))
         val newFileNames = newFileName.split(".").toTypedArray()
         // 设置压缩后的照片名称，id_CMP
-        newFileName = item.id.toString() + "_CMP"
+        newFileName = item.fileId.toString() + "_CMP"
         if (newFileNames.size > 1) {
             // 设置后缀名
             newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]

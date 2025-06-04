@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
@@ -153,7 +152,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void printProperty(List<? extends LocalMedia> result) {
         for (LocalMedia localMedia : result) {
             // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
-            Log.i(TAG, "onResult id:" + localMedia.getId());
+            Log.i(TAG, "onResult id:" + localMedia.getFileId());
             // 是必定可用的地址，如果对地址没有太苛刻的时候可以使用它，具体逻辑可以看该方法(比如支持压缩的话，该方法返回压缩路径)。
             Log.d(TAG, "onResult getAvailablePath:" + localMedia.getAvailablePath());
             // 压缩后的路径，如果开启压缩配置后，将最终原图或者编辑后的图片进行压缩，然后赋值该属性。
@@ -206,7 +205,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             Log.i(TAG, "onResult 文件名称: " + localMedia.getFileName());
             Log.i(TAG, "onResult 父文件夹名称: " + localMedia.getParentFolderName());
             Log.i(TAG, "onResult 专辑ID: " + localMedia.getBucketId());
-            Log.i(TAG, "onResult 相册ID: " + localMedia.getId());
+            Log.i(TAG, "onResult 相册ID: " + localMedia.getFileId());
             Log.i(TAG, "onResult 文件创建时间: " + localMedia.getDateAddedTime());
             Log.i(TAG, "onResult 是否选择了原图: " + localMedia.isOriginal());
             if (localMedia.isImageOrGif()) {

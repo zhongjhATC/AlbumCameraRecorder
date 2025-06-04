@@ -126,7 +126,7 @@ public class AlbumAdapter extends
     @Override
     public long getItemId(int position) {
         // 需要返回id，否则不会重复调用onBindViewHolder，因为设置了mAdapter.setHasStableIds(true)
-        return this.data.get(position).getId();
+        return this.data.get(position).getFileId();
     }
 
     @Override

@@ -494,7 +494,7 @@ class PreviewFragment : BaseFragment() {
      * 关闭Activity回调相关数值
      */
     private fun setResultOkByIsCompress() {
-        if (mPreviewType == PreviewType.CAMERA) {
+        if (mPreviewType == PreviewType.CAMERA || mPreviewType == PreviewType.GRID || mPreviewType == PreviewType.THIRD_PARTY) {
             // 直接返回
             setResultOk(mSelectedModel.selectedData.localMedias)
         } else {
