@@ -1,5 +1,6 @@
 package com.zhongjh.albumcamerarecorder.album.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -11,9 +12,9 @@ import androidx.viewpager.widget.ViewPager
  *
  * @author zhongjh
  */
-class PreviewViewPager(context: Context, attrs: AttributeSet?) : ViewPager(
-    context, attrs
-) {
+class PreviewViewPager(context: Context, attrs: AttributeSet?) : ViewPager(context, attrs) {
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
         try {
             return super.onTouchEvent(ev)

@@ -14,7 +14,6 @@ import androidx.appcompat.widget.AppCompatRadioButton;
 import com.zhongjh.imageedit.R;
 
 /**
- *
  * @author felix
  * @date 2017/12/1 下午2:50
  */
@@ -52,12 +51,16 @@ public class ImageColorRadio extends AppCompatRadioButton implements ValueAnimat
     }
 
     private void initialize(Context context, AttributeSet attrs) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ZIMGColorRadio);
-
-        mColor = a.getColor(R.styleable.ZIMGColorRadio_z_image_color, Color.WHITE);
-        mStrokeColor = a.getColor(R.styleable.ZIMGColorRadio_z_image_stroke_color, Color.WHITE);
-
-        a.recycle();
+        TypedArray imageColorRadio = null;
+        try {
+            imageColorRadio = context.obtainStyledAttributes(attrs, R.styleable.ImageColorRadio);
+            mColor = imageColorRadio.getColor(R.styleable.ImageColorRadio_z_image_color, Color.WHITE);
+            mStrokeColor = imageColorRadio.getColor(R.styleable.ImageColorRadio_z_image_stroke_color, Color.WHITE);
+        } finally {
+            if (null != imageColorRadio) {
+                imageColorRadio.recycle();
+            }
+        }
 
         setButtonDrawable(null);
 

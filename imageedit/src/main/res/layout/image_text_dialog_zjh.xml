@@ -50,7 +50,8 @@
         android:gravity="top"
         android:textColor="@color/z_image_color_primary"
         android:textSize="24sp"
-        tools:text="这里添加文字" />
+        tools:text="这里添加文字"
+        tools:ignore="LabelFor" />
 
     <include layout="@layout/image_color_layout_zjh" />
 

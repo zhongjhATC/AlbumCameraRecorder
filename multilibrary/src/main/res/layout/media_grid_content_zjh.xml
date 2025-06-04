@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@drawable/bg_video_duration_shadow"
-        android:drawableLeft="@drawable/ic_video"
+        android:drawableStart="@drawable/ic_video"
         android:drawablePadding="5dp"
         android:gravity="center_vertical"
         android:paddingLeft="5dp"

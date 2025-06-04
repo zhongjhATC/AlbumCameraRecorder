@@ -157,6 +157,7 @@ public class MainActivity extends BaseActivity {
      * @param alreadyAudioCount 已经存在显示的几个音频
      *                          打开窗体
      */
+    @SuppressLint("AppBundleLocaleChanges")
     @Override
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         if (!check()) {

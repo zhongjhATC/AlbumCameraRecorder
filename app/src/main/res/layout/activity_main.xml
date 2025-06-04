@@ -776,6 +776,26 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/minimum_recording_time_milliseconds" />
+
+                    <EditText
+                        android:id="@+id/etMinCameraDuration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:hint="@string/minimum_recording_time_milliseconds"
+                        android:text="1000" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="@string/press_and_hold_for_the_specified_time_to_start_recording" />
 
                     <EditText
@@ -783,14 +803,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
-                        android:text="1000" />
-
-                    <EditText
-                        android:id="@+id/etMinCameraDuration"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:text="1000" />
+                        android:hint="@string/press_and_hold_for_the_specified_time_to_start_recording" />
 
                 </LinearLayout>
 

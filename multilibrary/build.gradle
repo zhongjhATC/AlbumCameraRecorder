@@ -51,8 +51,8 @@ dependencies {
     // 支持kotlin
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
     // 生命周期
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     // 支持协程
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.ext.ktx_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.ext.ktx_coroutines_version"
@@ -67,7 +67,7 @@ dependencies {
     // 单张图片库
     api 'com.github.chrisbanes:PhotoView:2.3.0'
     // 图片
-    compileOnly 'com.github.bumptech.glide:glide:3.7.0'
+    compileOnly 'com.github.bumptech.glide:glide:4.16.0'
     compileOnly 'com.squareup.picasso:picasso:2.5.2'
 
     // 拍摄、录像核心类 放弃[https://github.com/natario1/CameraView]是因为某些最新系统的机器造成内存泄漏

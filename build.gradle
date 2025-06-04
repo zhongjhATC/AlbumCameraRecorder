@@ -43,10 +43,10 @@ ext {
     androidCompileSdkVersion = 33
     androidBuildToolsVersion = '33.0.0'
     recyclerviewSdkVersion = '1.2.1'
-    appcompatSdkVersion = '1.4.1'
+    appcompatSdkVersion = '1.6.1'
     constraintlayoutSdkVersion = '2.1.4'
     documentfileSdkVersion = '1.0.1'
-    androidMaterialSdkVersion = '1.5.0'
+    androidMaterialSdkVersion = '1.10.0'
     minSdkVersion = 21
     targetSdkVersion = 33
 
@@ -59,7 +59,7 @@ ext {
     butterknifeVersion = '8.4.0'
 
     // kotlin版本
-    ktx_version = '1.6.0'
+    ktx_version = '1.10.1'
     // kotlin协程版本
-    ktx_coroutines_version = '1.6.1'
+    ktx_coroutines_version = '1.7.3'
 }

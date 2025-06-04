@@ -18,6 +18,7 @@ object SdkVersionUtils {
      */
     @JvmStatic
     val isQ: Boolean
+        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
     /**
@@ -27,6 +28,7 @@ object SdkVersionUtils {
      */
     @JvmStatic
     val isR: Boolean
+        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
     /**
@@ -34,6 +36,7 @@ object SdkVersionUtils {
      */
     @JvmStatic
     val isO: Boolean
+        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.O)
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
 }
