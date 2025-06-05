@@ -28,14 +28,14 @@ import com.zhongjh.gridview.engine.ImageEngine
  */
 class PicassoEngine : ImageEngine {
     override fun loadPath(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, path: String) {
-        Picasso.with(context).load(path).placeholder(placeholder)
+        Picasso.get().load(path).placeholder(placeholder)
             .resize(resize, resize)
             .centerCrop()
             .into(imageView)
     }
 
     override fun loadUrl(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, url: String) {
-        Picasso.with(context).load(url).placeholder(placeholder)
+        Picasso.get().load(url).placeholder(placeholder)
             .resize(resize, resize)
             .centerCrop()
             .into(imageView)
@@ -48,14 +48,14 @@ class PicassoEngine : ImageEngine {
         imageView: ImageView,
         resourceId: Int
     ) {
-        Picasso.with(context).load(resourceId).placeholder(placeholder)
+        Picasso.get().load(resourceId).placeholder(placeholder)
             .resize(resize, resize)
             .centerCrop()
             .into(imageView)
     }
 
     override fun loadUri(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri) {
-        Picasso.with(context).load(uri).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
+        Picasso.get().load(uri).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
             .centerInside().into(imageView)
     }
 }

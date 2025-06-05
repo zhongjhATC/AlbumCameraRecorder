@@ -93,7 +93,7 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <com.zhongjh.cameraapp.phone.customlayout.camera4.PhotoVideoSmallLayout
+        <com.zhongjh.demo.phone.custom.camera4.PhotoVideoSmallLayout
             android:id="@+id/pvLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

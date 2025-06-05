@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="z_multi_library_album">album</string>
     <string name="z_multi_library_take_photos">take photos</string>
     <string name="z_multi_library_sound_recording">sound recording</string>
@@ -39,16 +39,28 @@
 
 
     <string name="z_multi_library_error_over_count_default">You have reached the maximum number of choices</string>
-    <string name="z_multi_library_error_over_count">You can select a maximum of %1$d file</string>
-    <string name="z_multi_library_error_over_count_video">You can select a maximum of %1$d video</string>
-    <string name="z_multi_library_error_over_count_image">You can select a maximum of %1$d picture</string>
+    <string name="z_multi_library_error_over_count" tools:ignore="PluralsCandidate">
+        <item quantity="one">You can select a maximum of %1$d file</item>
+        <item quantity="other">You can select a maximum of %1$d files</item>
+    </string>
+    <string name="z_multi_library_error_over_count_video">
+        <item quantity="one">You can select a maximum of %1$d video</item>
+        <item quantity="other">You can select a maximum of %1$d videos</item>
+    </string>
+    <string name="z_multi_library_error_over_count_image">
+        <item quantity="one">You can select a maximum of %1$d picture</item>
+        <item quantity="other">You can select a maximum of %1$d pictures</item>
+    </string>
     <string name="z_multi_library_error_under_quality">Image quality is too low</string>
     <string name="z_multi_library_error_over_quality">Image quality too high</string>
     <string name="z_multi_library_error_file_type">Unsupported file type</string>
     <string name="z_multi_library_error_type_conflict">You cannot select images and videos at the same time</string>
     <string name="z_multi_library_error_no_video_activity">There is no app that supports video preview</string>
     <string name="z_multi_library_error_over_original_size">"If the photo is larger than %1$d M and cannot be uploaded, the original image will be unchecked"</string>
-    <string name="z_multi_library_error_over_original_count">"If %1$d photos larger than %2$d M\ncannot be uploaded, the original picture will be unchecked"</string>
+    <string name="z_multi_library_error_over_original_count">
+        <item quantity="one">"If %1$d photo larger than %2$d M\ncannot be uploaded, the original picture will be unchecked"</item>
+        <item quantity="other">"If %1$d photos larger than %2$d M\ncannot be uploaded, the original picture will be unchecked"</item>
+    </string>
     <string name="z_multi_library_button_original">The original image</string>
     <string name="z_multi_library_button_sure_default">confirm</string>
     <string name="z_multi_library_button_sure">confirm(%1$d)</string>
@@ -69,7 +81,10 @@
     <string name="z_multi_library_long_press_sound_recording">Long press the tape</string>
     <string name="z_multi_library_the_recording_time_is_too_short">The recording time is too short</string>
     <string name="z_long_press_to_continue_recording">Support to continue recording</string>
-    <string name="z_multi_library_video_can_only_exist_in_n">Only %1$d video can exist</string>
+    <string name="z_multi_library_video_can_only_exist_in_n">
+        <item quantity="one">Only %1$d video can exist</item>
+        <item quantity="other">Only %1$d videos can exist</item>
+    </string>
     <string name="z_multi_library_watermark">watermark</string>
 
     <!-- region 录像 -->

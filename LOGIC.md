@@ -25,7 +25,7 @@
     absolutePath - 原图真实路径
     sandboxPath - 沙盒路径 改
     editorPath - 编辑路径
-    compressPath - 压缩路径 - com.zhongjh.cameraapp/files/Pictures/AA/picture
+    compressPath - 压缩路径 - com.zhongjh.demo/files/Pictures/AA/picture
 1.3 不选择图片，关闭窗口： 不产生任何Cache文件
 
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.zhongjh.cameraapp">
+    package="com.zhongjh.demo">
 
     <!-- 访问网络连接权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,15 +19,18 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+    <!-- Devices running Android 12L (API level 32) or lower  -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_IMAGES"
-        tools:ignore="SelectedPhotoAccess" />
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_VIDEO"
-        tools:ignore="SelectedPhotoAccess" />
+        android:maxSdkVersion="32" />
+
+    <!-- Devices running Android 13 (API level 33) or higher -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
+    <!-- To handle the reselection within the app on Android 14 (API level 34) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
     <!-- 视频权限 begin -->
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -38,7 +41,7 @@
     <!-- 视频权限 end -->
 
     <application
-        android:name=".MyApplication"
+        android:name="com.zhongjh.demo.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -47,7 +50,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".phone.MainListActivity"
+            android:name="com.zhongjh.demo.phone.MainListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -56,30 +59,30 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".phone.MainSimpleActivity" />
+        <activity android:name="com.zhongjh.demo.phone.MainSimpleActivity" />
 
-        <activity android:name=".phone.MainThemeActivity" />
+        <activity android:name="com.zhongjh.demo.phone.MainThemeActivity" />
 
         <activity
-            android:name=".phone.MainActivity"
+            android:name="com.zhongjh.demo.phone.MainActivity"
             android:configChanges="orientation|keyboardHidden|navigation" />
 
-        <activity android:name=".phone.MainSeeActivity" />
-        <activity android:name=".phone.MainSeeLocalActivity" />
+        <activity android:name="com.zhongjh.demo.phone.MainSeeActivity" />
+        <activity android:name="com.zhongjh.demo.phone.MainSeeLocalActivity" />
 
-        <activity android:name=".phone.MainUpperLimitActivity" />
+        <activity android:name="com.zhongjh.demo.phone.MainUpperLimitActivity" />
 
-        <activity android:name=".phone.RecyclerViewActivity" />
+        <activity android:name="com.zhongjh.demo.phone.RecyclerViewActivity" />
 
-        <activity android:name=".phone.MainCustomCameraViewActivity" />
+        <activity android:name="com.zhongjh.demo.phone.MainCustomCameraViewActivity" />
 
-        <activity android:name=".phone.MainSuperSimpleActivity" />
-        <activity android:name=".phone.ErrorActivity" />
-        <activity android:name=".phone.customlayout.MainCustomCameraLayoutActivity" />
+        <activity android:name="com.zhongjh.demo.phone.MainSuperSimpleActivity" />
+        <activity android:name="com.zhongjh.demo.phone.ErrorActivity" />
+        <activity android:name="com.zhongjh.demo.phone.custom.MainCustomCameraLayoutActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
+            android:authorities="${applicationId}.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

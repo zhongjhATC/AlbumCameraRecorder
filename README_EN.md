@@ -123,7 +123,7 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
                     Toast.makeText(MainSimpleActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
                 })
                 // Set paths and 7.0 protection paths, and so on
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.cameraapp.fileprovider", "aabb"))
+                .allStrategy(new SaveStrategy(true, "com.zhongjh.demo.fileProvider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 // Maximum 5 images or maximum 3 video
@@ -167,7 +167,7 @@ Note, however, that if configuration is supported, the configuration takes prece
 #### If you need to modify the camera shooting, recording parameters
 Because the inside of the camera from the [CameraView] (https://github.com/natario1/CameraView), so change resolution, closed when the tape recording and other functions can access to view more interfaces,So how do we get the CameraView from our library that we can use in our Demo instance
 
-#### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java) for details.
+#### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/demo/MainSeeActivity.java) for details.
 
 #### Related APIs, more APIs and support for continuous enrichment added
  - [Call the multimedia public configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).

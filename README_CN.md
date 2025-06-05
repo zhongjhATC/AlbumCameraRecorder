@@ -165,7 +165,7 @@
 #### 如果你需要修改相机的拍摄、录制的参数
 因为里面的相机来自于[CameraView](https://github.com/natario1/CameraView)，所以修改分辨率、录制时关闭录音等各种功能可以进入查看更多接口，那么如何通过我们这个库获取CameraView,可以在Demo实例中学习使用
 
-#### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/cameraapp/MainSeeActivity.java).
+#### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/demo/MainSeeActivity.java).
 
 #### 相关API,更多API和支持持续丰富加入
  - [调用多媒体的公共配置API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).
