@@ -24,7 +24,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="HardcodedText" />
+            tools:ignore="HardcodedText,UsingOnClickInXml" />
 
         <ImageButton
             android:id="@+id/ibtnDone"
@@ -38,7 +38,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="HardcodedText" />
+            tools:ignore="HardcodedText,UsingOnClickInXml" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -129,7 +129,8 @@
             android:background="@null"
             android:contentDescription="@string/z_image_undo"
             android:onClick="onClick"
-            android:src="@drawable/image_btn_undo" />
+            android:src="@drawable/image_btn_undo"
+            tools:ignore="UsingOnClickInXml" />
 
     </LinearLayout>
 
@@ -149,7 +150,8 @@
             android:button="@drawable/image_btn_doodle"
             android:gravity="center"
             android:onClick="onClick"
-            android:textColor="#FFF" />
+            android:textColor="#FFF"
+            tools:ignore="UsingOnClickInXml" />
 
         <Space
             android:layout_width="@dimen/z_image_mode_space"
@@ -164,7 +166,8 @@
             android:gravity="center"
             android:onClick="onClick"
             android:src="@drawable/image_btn_text"
-            android:textColor="#FFF" />
+            android:textColor="#FFF"
+            tools:ignore="UsingOnClickInXml" />
 
         <Space
             android:layout_width="@dimen/z_image_mode_space"
@@ -177,7 +180,8 @@
             android:button="@drawable/image_btn_mosaic"
             android:gravity="center"
             android:onClick="onClick"
-            android:textColor="#FFF" />
+            android:textColor="#FFF"
+            tools:ignore="UsingOnClickInXml" />
 
         <Space
             android:layout_width="@dimen/z_image_mode_space"
@@ -192,7 +196,8 @@
             android:gravity="center"
             android:onClick="onClick"
             android:src="@drawable/image_btn_clip"
-            android:textColor="#FFF" />
+            android:textColor="#FFF"
+            tools:ignore="UsingOnClickInXml" />
 
     </RadioGroup>
 

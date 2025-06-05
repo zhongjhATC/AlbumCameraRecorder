@@ -46,7 +46,8 @@ ext {
     appcompatSdkVersion = '1.6.1'
     constraintlayoutSdkVersion = '2.1.4'
     documentfileSdkVersion = '1.0.1'
-    androidMaterialSdkVersion = '1.10.0'
+    // 该库从1.5.0开始需要你在gradle文件中声明compile SDK version=31,如果升级至1.10.0m,那么compile SDK version至少需要34
+    androidMaterialSdkVersion = '1.5.0'
     minSdkVersion = 21
     targetSdkVersion = 33
 

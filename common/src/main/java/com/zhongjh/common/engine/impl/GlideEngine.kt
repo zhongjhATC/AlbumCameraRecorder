@@ -24,7 +24,6 @@ class GlideEngine : ImageEngine {
     ) {
         Glide.with(context)
             .load(path)
-            .asBitmap() // some .jpeg files are actually gif
             .placeholder(placeholder)
             .override(resize, resize)
             .centerCrop()
@@ -86,7 +85,6 @@ class GlideEngine : ImageEngine {
     ) {
         Glide.with(context)
             .load(uri)
-            .asGif()
             .override(resizeX, resizeY)
             .priority(Priority.HIGH)
             .into(imageView)

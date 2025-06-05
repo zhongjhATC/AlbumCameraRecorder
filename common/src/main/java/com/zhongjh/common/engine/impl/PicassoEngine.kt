@@ -20,7 +20,7 @@ class PicassoEngine : ImageEngine {
         imageView: ImageView,
         path: String
     ) {
-        Picasso.with(context).load(path).placeholder(placeholder)
+        Picasso.get().load(path).placeholder(placeholder)
             .resize(resize, resize)
             .centerCrop()
             .into(imageView)
@@ -33,7 +33,7 @@ class PicassoEngine : ImageEngine {
         imageView: ImageView,
         uri: Uri
     ) {
-        Picasso.with(context).load(uri).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
+        Picasso.get().load(uri).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
             .centerInside().into(imageView)
     }
 
@@ -44,17 +44,17 @@ class PicassoEngine : ImageEngine {
         imageView: ImageView,
         url: String
     ) {
-        Picasso.with(context).load(url).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
+        Picasso.get().load(url).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
             .centerInside().into(imageView)
     }
 
     override fun loadUriImage(context: Context, imageView: ImageView, path: String) {
-        Picasso.with(context).load(path).priority(Picasso.Priority.HIGH)
+        Picasso.get().load(path).priority(Picasso.Priority.HIGH)
             .centerInside().into(imageView)
     }
 
     override fun loadDrawableImage(context: Context, imageView: ImageView, resourceId: Int) {
-        Picasso.with(context).load(resourceId).priority(Picasso.Priority.HIGH)
+        Picasso.get().load(resourceId).priority(Picasso.Priority.HIGH)
             .centerInside().into(imageView)
     }
 

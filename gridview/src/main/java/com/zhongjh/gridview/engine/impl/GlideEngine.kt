@@ -31,7 +31,6 @@ class GlideEngine : ImageEngine {
     override fun loadPath(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, path: String) {
         Glide.with(context)
             .load(path)
-            .asBitmap() // some .jpeg files are actually gif
             .placeholder(placeholder)
             .override(resize, resize)
             .centerCrop()
@@ -41,7 +40,6 @@ class GlideEngine : ImageEngine {
     override fun loadUrl(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, url: String) {
         Glide.with(context)
             .load(url)
-            .asBitmap() // some .jpeg files are actually gif
             .placeholder(placeholder)
             .override(resize, resize)
             .centerCrop()
@@ -57,7 +55,6 @@ class GlideEngine : ImageEngine {
     ) {
         Glide.with(context)
             .load(resourceId)
-            .asBitmap() // some .jpeg files are actually gif
             .placeholder(placeholder)
             .override(resize, resize)
             .centerCrop()

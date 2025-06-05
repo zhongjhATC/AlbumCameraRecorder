@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
@@ -24,7 +25,8 @@
             android:background="@null"
             android:contentDescription="@string/z_image_rotate"
             android:onClick="onClick"
-            android:src="@drawable/image_btn_rotate" />
+            android:src="@drawable/image_btn_rotate"
+            tools:ignore="UsingOnClickInXml" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -43,7 +45,8 @@
                 android:background="@null"
                 android:contentDescription="@string/z_image_cancel"
                 android:onClick="onClick"
-                android:src="@drawable/image_btn_cancel" />
+                android:src="@drawable/image_btn_cancel"
+                tools:ignore="UsingOnClickInXml" />
 
             <TextView
                 android:id="@+id/tv_clip_reset"
@@ -55,7 +58,8 @@
                 android:onClick="onClick"
                 android:text="@string/z_image_reset"
                 android:textColor="@color/image_color_text_zjh"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:ignore="UsingOnClickInXml" />
 
             <ImageButton
                 android:id="@+id/ib_clip_done"
@@ -67,7 +71,8 @@
                 android:background="@null"
                 android:contentDescription="@string/z_image_done"
                 android:onClick="onClick"
-                android:src="@drawable/image_btn_ok" />
+                android:src="@drawable/image_btn_ok"
+                tools:ignore="UsingOnClickInXml" />
 
         </FrameLayout>
 

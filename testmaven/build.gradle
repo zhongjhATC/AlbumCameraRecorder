@@ -4,13 +4,13 @@ plugins {
 
 android {
     namespace 'com.zhongjh.testmaven'
-    compileSdk 32
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.zhongjh.testmaven"
         minSdk 21
         // noinspection ExpiredTargetSdkVersion
-        targetSdk 32
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
