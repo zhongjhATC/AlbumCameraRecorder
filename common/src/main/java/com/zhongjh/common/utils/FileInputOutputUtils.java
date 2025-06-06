@@ -17,6 +17,8 @@ import java.io.OutputStream;
  */
 public final class FileInputOutputUtils {
 
+    private static final String TAG = "FileInputOutputUtils";
+
     /**
      * Write file from input stream.
      *
@@ -67,20 +69,20 @@ public final class FileInputOutputUtils {
             }
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "writeFileFromInputStream" + e.getMessage());
             return false;
         } finally {
             try {
                 is.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "writeFileFromInputStream" + e.getMessage());
             }
             try {
                 if (os != null) {
                     os.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "writeFileFromInputStream" + e.getMessage());
             }
         }
     }

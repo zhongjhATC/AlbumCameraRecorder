@@ -98,7 +98,7 @@ public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "getBitmapBound" + e.getMessage());
                 }
             }
         }

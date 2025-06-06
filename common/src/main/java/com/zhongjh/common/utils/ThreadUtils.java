@@ -36,19 +36,21 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public final class ThreadUtils {
 
+    private static final String TAG = ThreadUtils.class.getSimpleName();
+
     private static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
     private static final Map<Integer, Map<Integer, ExecutorService>> TYPE_PRIORITY_POOLS = new HashMap<>();
 
     private static final Map<Task, ExecutorService> TASK_POOL_MAP = new ConcurrentHashMap<>();
 
-    private static final int   CPU_COUNT = Runtime.getRuntime().availableProcessors();
-    private static final Timer TIMER     = new Timer();
+    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+    private static final Timer TIMER = new Timer();
 
     private static final byte TYPE_SINGLE = -1;
     private static final byte TYPE_CACHED = -2;
-    private static final byte TYPE_IO     = -4;
-    private static final byte TYPE_CPU    = -8;
+    private static final byte TYPE_IO = -4;
+    private static final byte TYPE_CPU = -8;
 
     private static Executor sDeliver;
 
@@ -1123,11 +1125,11 @@ public final class ThreadUtils {
 
     static final class UtilsThreadFactory extends AtomicLong
             implements ThreadFactory {
-        private static final AtomicInteger POOL_NUMBER      = new AtomicInteger(1);
-        private static final long          serialVersionUID = -9209200509960368598L;
+        private static final AtomicInteger POOL_NUMBER = new AtomicInteger(1);
+        private static final long serialVersionUID = -9209200509960368598L;
         private final String namePrefix;
-        private final        int           priority;
-        private final        boolean       isDaemon;
+        private final int priority;
+        private final boolean isDaemon;
 
         UtilsThreadFactory(String prefix, int priority) {
             this(prefix, priority, false);
@@ -1181,13 +1183,13 @@ public final class ThreadUtils {
 
     public abstract static class Task<T> implements Runnable {
 
-        private static final int NEW         = 0;
-        private static final int RUNNING     = 1;
+        private static final int NEW = 0;
+        private static final int RUNNING = 1;
         private static final int EXCEPTIONAL = 2;
-        private static final int COMPLETING  = 3;
-        private static final int CANCELLED   = 4;
+        private static final int COMPLETING = 3;
+        private static final int CANCELLED = 4;
         private static final int INTERRUPTED = 5;
-        private static final int TIMEOUT     = 6;
+        private static final int TIMEOUT = 6;
 
         private final AtomicInteger state = new AtomicInteger(NEW);
 
@@ -1195,7 +1197,7 @@ public final class ThreadUtils {
         private volatile Thread runner;
 
         private Timer mTimer;
-        private long              mTimeoutMillis;
+        private long mTimeoutMillis;
         private OnTimeoutListener mTimeoutListener;
 
         private Executor deliver;
@@ -1274,8 +1276,7 @@ public final class ThreadUtils {
                 }
             } catch (InterruptedException ignore) {
                 state.compareAndSet(CANCELLED, INTERRUPTED);
-            }
-            catch (final Throwable throwable) {
+            } catch (final Throwable throwable) {
                 if (!state.compareAndSet(RUNNING, EXCEPTIONAL)) {
                     return;
                 }
@@ -1381,8 +1382,8 @@ public final class ThreadUtils {
     public static class SyncValue<T> {
 
         private CountDownLatch mLatch = new CountDownLatch(1);
-        private AtomicBoolean mFlag  = new AtomicBoolean();
-        private T              mValue;
+        private AtomicBoolean mFlag = new AtomicBoolean();
+        private T mValue;
 
         public void setValue(T value) {
             if (mFlag.compareAndSet(false, true)) {
@@ -1396,7 +1397,7 @@ public final class ThreadUtils {
                 try {
                     mLatch.await();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "getValue" + e.getMessage());
                 }
             }
             return mValue;
@@ -1407,7 +1408,7 @@ public final class ThreadUtils {
                 try {
                     mLatch.await(timeout, unit);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "getValue" + e.getMessage());
                     return defaultValue;
                 }
             }

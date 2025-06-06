@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.zhongjh.common.utils.BitmapUtils;
 import com.zhongjh.imageedit.core.ImageMode;
@@ -25,6 +26,8 @@ import java.io.IOException;
  * @date 2017/11/14 下午2:26
  */
 public class ImageEditActivity extends BaseImageEditActivity {
+
+    private static final String TAG = "ImageEditActivity";
 
     private static final int MAX_WIDTH = 1024;
 
@@ -131,13 +134,13 @@ public class ImageEditActivity extends BaseImageEditActivity {
                     fout = new FileOutputStream(path);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fout);
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "onDoneClick" + e.getMessage());
                 } finally {
                     if (fout != null) {
                         try {
                             fout.close();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "onDoneClick" + e.getMessage());
                         }
                     }
                 }

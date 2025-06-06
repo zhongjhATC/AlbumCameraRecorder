@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.TypedValue;
 
 import androidx.annotation.StyleRes;
@@ -38,11 +39,13 @@ public class AttrsUtils {
      * @return value
      */
     public static float getTypeValueSize(Context context, int attr) {
-        float textSize = 0;
         TypedValue typedValue = new TypedValue();
         int[] attribute = new int[]{attr};
         TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
-        textSize = array.getDimensionPixelSize(0, 0);
+        float textSize = array.getDimensionPixelSize(0, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
+        }
         array.recycle();
         return textSize;
     }
@@ -55,17 +58,14 @@ public class AttrsUtils {
      * @return value
      */
     public static int getTypeValueSizeForInt(Context context, int attr) {
-        int textSize = 0;
-        try {
-            TypedValue typedValue = new TypedValue();
-            int[] attribute = new int[]{attr};
-            TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
-            textSize = array.getDimensionPixelSize(0, 0);
-            array.recycle();
-            return textSize;
-        } catch (Exception e) {
-            e.printStackTrace();
+        TypedValue typedValue = new TypedValue();
+        int[] attribute = new int[]{attr};
+        TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
+        int textSize = array.getDimensionPixelSize(0, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
         }
+        array.recycle();
         return textSize;
     }
 
@@ -79,10 +79,12 @@ public class AttrsUtils {
      * @return 字体大小
      */
     public static int getTypeValueSizeForInt(Context context, @StyleRes int resId, int attr) {
-        int textSize;
         int[] attribute = new int[]{attr};
         TypedArray array = context.getTheme().obtainStyledAttributes(resId, attribute);
-        textSize = array.getDimensionPixelSize(0, 0);
+        int textSize = array.getDimensionPixelSize(0, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
+        }
         array.recycle();
         return textSize;
     }
@@ -95,16 +97,14 @@ public class AttrsUtils {
      * @return value
      */
     public static int getTypeValueColor(Context context, int attr) {
-        int color = 0;
-        try {
-            TypedValue typedValue = new TypedValue();
-            int[] attribute = new int[]{attr};
-            TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
-            color = array.getColor(0, 0);
-            array.recycle();
-        } catch (Exception e) {
-            e.printStackTrace();
+        TypedValue typedValue = new TypedValue();
+        int[] attribute = new int[]{attr};
+        TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
+        int color = array.getColor(0, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
         }
+        array.recycle();
         return color;
     }
 
@@ -118,10 +118,12 @@ public class AttrsUtils {
      * @return 颜色id
      */
     public static int getTypeValueColor(Context context, @StyleRes int resId, int attr) {
-        int color;
         int[] attribute = new int[]{attr};
         TypedArray array = context.getTheme().obtainStyledAttributes(resId, attribute);
-        color = array.getColor(0, 0);
+        int color = array.getColor(0, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
+        }
         array.recycle();
         return color;
     }
@@ -134,16 +136,14 @@ public class AttrsUtils {
      * @return value
      */
     public static ColorStateList getTypeValueColorStateList(Context context, int attr) {
-        ColorStateList colorStateList = null;
-        try {
-            TypedValue typedValue = new TypedValue();
-            int[] attribute = new int[]{attr};
-            TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
-            colorStateList = array.getColorStateList(0);
-            array.recycle();
-        } catch (Exception e) {
-            e.printStackTrace();
+        TypedValue typedValue = new TypedValue();
+        int[] attribute = new int[]{attr};
+        TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
+        ColorStateList colorStateList = array.getColorStateList(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
         }
+        array.recycle();
         return colorStateList;
     }
 
@@ -155,16 +155,14 @@ public class AttrsUtils {
      * @return value
      */
     public static boolean getTypeValueBoolean(Context context, int attr) {
-        boolean flag = false;
-        try {
-            TypedValue typedValue = new TypedValue();
-            int[] attribute = new int[]{attr};
-            TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
-            flag = array.getBoolean(0, false);
-            array.recycle();
-        } catch (Exception e) {
-            e.printStackTrace();
+        TypedValue typedValue = new TypedValue();
+        int[] attribute = new int[]{attr};
+        TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
+        boolean flag = array.getBoolean(0, false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
         }
+        array.recycle();
         return flag;
     }
 
@@ -176,16 +174,14 @@ public class AttrsUtils {
      * @return value
      */
     public static Drawable getTypeValueDrawable(Context context, int attr, int defaultResId) {
-        Drawable drawable = null;
-        try {
-            TypedValue typedValue = new TypedValue();
-            int[] attribute = new int[]{attr};
-            TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
-            drawable = array.getDrawable(0);
-            array.recycle();
-        } catch (Exception e) {
-            e.printStackTrace();
+        TypedValue typedValue = new TypedValue();
+        int[] attribute = new int[]{attr};
+        TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
+        Drawable drawable = array.getDrawable(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
         }
+        array.recycle();
         return drawable == null ? ContextCompat.getDrawable(context, defaultResId) : drawable;
     }
 
@@ -204,6 +200,9 @@ public class AttrsUtils {
         int[] attribute = new int[]{attr};
         TypedArray array = context.getTheme().obtainStyledAttributes(resId, attribute);
         drawable = array.getDrawable(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            array.close();
+        }
         array.recycle();
         return drawable == null ? ContextCompat.getDrawable(context, defaultResId) : drawable;
     }
@@ -215,18 +214,13 @@ public class AttrsUtils {
      * @return ColorStateList
      */
     public static ColorStateList getColorStateList(int[] colors) {
-        try {
-            if (colors.length == 2) {
-                int[][] states = new int[2][];
-                states[0] = new int[]{-android.R.attr.state_selected};
-                states[1] = new int[]{android.R.attr.state_selected};
-                return new ColorStateList(states, colors);
-            } else {
-                return ColorStateList.valueOf(colors[0]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (colors.length == 2) {
+            int[][] states = new int[2][];
+            states[0] = new int[]{-android.R.attr.state_selected};
+            states[1] = new int[]{android.R.attr.state_selected};
+            return new ColorStateList(states, colors);
+        } else {
+            return ColorStateList.valueOf(colors[0]);
         }
-        return null;
     }
 }

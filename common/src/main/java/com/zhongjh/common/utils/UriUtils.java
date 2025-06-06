@@ -402,14 +402,14 @@ public class UriUtils {
             FileInputOutputUtils.writeFileFromInputStream(file.getAbsolutePath(), is);
             return file;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "copyUri2Cache" + e.getMessage());
             return null;
         } finally {
             if (is != null) {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "copyUri2Cache" + e.getMessage());
                 }
             }
         }

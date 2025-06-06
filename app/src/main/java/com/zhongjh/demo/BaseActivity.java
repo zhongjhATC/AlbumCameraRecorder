@@ -259,10 +259,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();
                     }
-                    // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：
-//                        // 赋值完成
-//                        multiMedia.setUrl(url);
-//                        multiMedia.setPercentage(100);
+                    // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：multiMedia.setUrl(url);multiMedia.setPercentage(100);
                 }
             }, 1000, 100);
         }
