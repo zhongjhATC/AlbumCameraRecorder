@@ -65,10 +65,6 @@ public class SoundRecordingFragment extends BaseFragment {
     private final static int FULL = 100;
     private Context mContext;
 
-    /**
-     * 公共配置
-     */
-    private GlobalSpec mGlobalSpec;
     private RecordeSpec mRecordSpec;
 
     /**
@@ -126,7 +122,6 @@ public class SoundRecordingFragment extends BaseFragment {
         mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(true);
 
         // 初始化设置
-        mGlobalSpec = GlobalSpec.INSTANCE;
         mRecordSpec = RecordeSpec.INSTANCE;
         // 提示文本
         mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_sound_recording));

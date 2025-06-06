@@ -194,6 +194,7 @@ class PreviewVideoActivity : AppCompatActivity() {
                     }
 
                     override fun onCancel() {
+                        mIsRun = false
                     }
 
                     override fun onError(message: String) {

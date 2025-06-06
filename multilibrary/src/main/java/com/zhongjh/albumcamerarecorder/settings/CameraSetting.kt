@@ -28,7 +28,7 @@ class CameraSetting : CameraSettingApi {
      * 销毁事件
      */
     fun onDestroy() {
-
+        mCameraSpec.onCaptureListener = null
     }
 
     /**

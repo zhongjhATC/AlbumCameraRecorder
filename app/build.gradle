@@ -17,8 +17,7 @@ android {
         }
     }
 
-    compileSdkVersion rootProject.ext.androidCompileSdkVersion
-    buildToolsVersion rootProject.ext.androidBuildToolsVersion
+    compileSdk rootProject.ext.androidCompileSdkVersion
     defaultConfig {
         applicationId "com.zhongjh.demo"
         minSdkVersion rootProject.ext.minSdkVersion

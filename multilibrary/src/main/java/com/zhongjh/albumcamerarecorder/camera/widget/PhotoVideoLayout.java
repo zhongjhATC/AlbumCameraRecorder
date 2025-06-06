@@ -23,26 +23,6 @@ import com.zhongjh.albumcamerarecorder.widget.BaseOperationLayout;
  */
 public class PhotoVideoLayout extends BaseOperationLayout {
 
-    private RecordListener mRecordListener;
-
-    /**
-     * 操作按钮的Listener
-     */
-    public interface RecordListener {
-
-        /**
-         * 切换录制模式
-         *
-         * @param tag 0代表当前是快拍默认录制模式，1代表当前是分段录制模式
-         */
-        void sectionRecord(String tag);
-
-    }
-
-    public void setRecordListener(RecordListener recordListener) {
-        this.mRecordListener = recordListener;
-    }
-
     public ViewHolder getViewHolder() {
         return (ViewHolder) viewHolder;
     }

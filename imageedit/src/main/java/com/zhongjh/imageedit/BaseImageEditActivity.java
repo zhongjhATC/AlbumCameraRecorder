@@ -58,14 +58,9 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
             setContentView(R.layout.image_edit_activity_zjh);
             initViews();
             mImageViewCustom.setImageBitmap(bitmap);
-            onCreated();
         } else {
             finish();
         }
-    }
-
-    public void onCreated() {
-
     }
 
     private void initViews() {

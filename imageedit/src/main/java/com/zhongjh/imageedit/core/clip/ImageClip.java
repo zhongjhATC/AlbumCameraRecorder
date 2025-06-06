@@ -97,7 +97,7 @@ public interface ImageClip {
          */
         RIGHT_BOTTOM(10);
 
-        int v;
+        final int v;
 
         /**
          * LEFT: 0

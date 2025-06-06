@@ -611,11 +611,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     @Override
     public boolean onScaleBegin(ScaleGestureDetector detector) {
         Log.d(TAG, "onScaleBegin");
-        if (mPointerCount > 1) {
-            mImage.onScaleBegin();
-            return true;
-        }
-        return false;
+        return mPointerCount > 1;
     }
 
     @Override

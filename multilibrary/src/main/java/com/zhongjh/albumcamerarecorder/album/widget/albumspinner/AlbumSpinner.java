@@ -110,24 +110,20 @@ public class AlbumSpinner extends PopupWindow {
 
     @Override
     public void showAsDropDown(View anchor) {
-        try {
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
-                int[] location = new int[2];
-                anchor.getLocationInWindow(location);
-                showAtLocation(anchor, Gravity.NO_GRAVITY, 0, location[1] + anchor.getHeight());
-            } else {
-                super.showAsDropDown(anchor);
-            }
-            isDismiss = false;
-            ivArrowView.setImageDrawable(drawableUp);
-            AnimUtils.rotateArrow(ivArrowView, true);
-            rootViewBg.animate()
-                    .alpha(1)
-                    .setDuration(250)
-                    .setStartDelay(250).start();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+            int[] location = new int[2];
+            anchor.getLocationInWindow(location);
+            showAtLocation(anchor, Gravity.NO_GRAVITY, 0, location[1] + anchor.getHeight());
+        } else {
+            super.showAsDropDown(anchor);
         }
+        isDismiss = false;
+        ivArrowView.setImageDrawable(drawableUp);
+        AnimUtils.rotateArrow(ivArrowView, true);
+        rootViewBg.animate()
+                .alpha(1)
+                .setDuration(250)
+                .setStartDelay(250).start();
     }
 
     public void setOnAlbumItemClickListener(OnAlbumItemClickListener listener) {
@@ -154,13 +150,13 @@ public class AlbumSpinner extends PopupWindow {
      * 设置选中状态 - 红色圆点
      */
     public void updateFolderCheckStatus(List<Album2> result) {
-        try {
-            List<Album2> albums = adapter.getAlbums();
-            int size = albums.size();
-            int resultSize = result.size();
-            for (int i = 0; i < size; i++) {
-                Album2 album = albums.get(i);
-                album.setCheckedCount(0);
+        List<Album2> albums = adapter.getAlbums();
+        int size = albums.size();
+        int resultSize = result.size();
+        for (int i = 0; i < size; i++) {
+            Album2 album = albums.get(i);
+            album.setCheckedCount(0);
+            if (null != album.getName()) {
                 for (int j = 0; j < resultSize; j++) {
                     Album2 media = result.get(j);
                     if (album.getName().equals(media.getName())
@@ -170,10 +166,8 @@ public class AlbumSpinner extends PopupWindow {
                     }
                 }
             }
-            adapter.bindAlbums(albums);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        adapter.bindAlbums(albums);
     }
 
     /**

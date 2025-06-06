@@ -18,11 +18,6 @@ import java.util.ArrayList;
 public interface ICameraPicture {
 
     /**
-     * 初始化有关图片的配置数据
-     */
-    void initData();
-
-    /**
      * 初始化多图适配器
      */
     void initMultiplePhotoAdapter();

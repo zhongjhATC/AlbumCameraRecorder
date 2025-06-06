@@ -9,16 +9,6 @@ package com.zhongjh.albumcamerarecorder.camera.ui.camera.impl;
 public interface ICameraVideo {
 
     /**
-     * 初始化有关视频的配置数据
-     */
-    void initData();
-
-    /**
-     * 生命周期onDestroy
-     */
-    void onDestroy();
-
-    /**
      * 录制视频
      */
     void recordVideo();

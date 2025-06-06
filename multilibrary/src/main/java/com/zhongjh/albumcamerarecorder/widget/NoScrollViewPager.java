@@ -45,12 +45,4 @@ public class NoScrollViewPager extends ViewPager {
         return true;
     }
 
-    /**
-     * 设置是否能滑动
-     *
-     */
-    public void setScroll() {
-    }
-
-
 }

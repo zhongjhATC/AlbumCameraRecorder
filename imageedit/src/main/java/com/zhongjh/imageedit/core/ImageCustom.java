@@ -714,10 +714,6 @@ public class ImageCustom {
         mClipWin.setShowShade(true);
     }
 
-    public void onScaleBegin() {
-
-    }
-
     public ImageHoming onScroll(float scrollX, float scrollY, float dx, float dy) {
         Log.d(TAG, "onScroll");
         if (mMode == ImageMode.CLIP) {

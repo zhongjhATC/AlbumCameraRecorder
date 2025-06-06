@@ -39,16 +39,11 @@ public class AttrsUtils {
      */
     public static float getTypeValueSize(Context context, int attr) {
         float textSize = 0;
-        try {
-            TypedValue typedValue = new TypedValue();
-            int[] attribute = new int[]{attr};
-            TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
-            textSize = array.getDimensionPixelSize(0, 0);
-            array.recycle();
-            return textSize;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        TypedValue typedValue = new TypedValue();
+        int[] attribute = new int[]{attr};
+        TypedArray array = context.obtainStyledAttributes(typedValue.resourceId, attribute);
+        textSize = array.getDimensionPixelSize(0, 0);
+        array.recycle();
         return textSize;
     }
 
@@ -78,9 +73,9 @@ public class AttrsUtils {
      * 通过resId获取资源系列，再获取它里面的某个资源
      * attrs drawable
      *
-     * @param context      上下文
-     * @param resId        资源系列一套
-     * @param attr         需要获取资源的id
+     * @param context 上下文
+     * @param resId   资源系列一套
+     * @param attr    需要获取资源的id
      * @return 字体大小
      */
     public static int getTypeValueSizeForInt(Context context, @StyleRes int resId, int attr) {
@@ -117,9 +112,9 @@ public class AttrsUtils {
      * 通过resId获取资源系列，再获取它里面的某个资源
      * attrs drawable
      *
-     * @param context      上下文
-     * @param resId        资源系列一套
-     * @param attr         需要获取资源的id
+     * @param context 上下文
+     * @param resId   资源系列一套
+     * @param attr    需要获取资源的id
      * @return 颜色id
      */
     public static int getTypeValueColor(Context context, @StyleRes int resId, int attr) {

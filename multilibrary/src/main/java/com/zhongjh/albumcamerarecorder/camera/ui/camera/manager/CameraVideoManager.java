@@ -44,13 +44,6 @@ public class CameraVideoManager implements ICameraVideo {
     private Long videoTime = 0L;
 
     /**
-     * 初始化有关视频的配置数据
-     */
-    @Override
-    public void initData() {
-    }
-
-    /**
      * 初始化Activity的有关视频回调
      */
     public void initActivityResult() {
@@ -63,13 +56,6 @@ public class CameraVideoManager implements ICameraVideo {
                 baseCameraFragment.commitVideoSuccess(result.getData());
             }
         });
-    }
-
-    /**
-     * 生命周期onDestroy
-     */
-    @Override
-    public void onDestroy() {
     }
 
     /**

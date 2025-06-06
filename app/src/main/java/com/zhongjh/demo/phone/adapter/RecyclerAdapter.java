@@ -23,12 +23,10 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
     private static final int SIZE_20 = 20;
-    private final Activity mActivity;
     private final LayoutInflater mInflater;
     List<Data> data = new ArrayList<>();
 
     public RecyclerAdapter(Activity activity) {
-        this.mActivity = activity;
         this.mInflater = LayoutInflater.from(activity);
         initData();
     }

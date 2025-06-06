@@ -28,14 +28,12 @@ import androidx.constraintlayout.widget.Group;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.zhongjh.albumcamerarecorder.MainActivity;
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
-import com.zhongjh.albumcamerarecorder.album.listener.OnLoadPageMediaDataListener;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.albumcamerarecorder.album.ui.mediaselection.adapter.AlbumAdapter;
 import com.zhongjh.albumcamerarecorder.album.utils.AlbumCompressFileTask;
@@ -67,8 +65,7 @@ import java.util.ArrayList;
  * @author zhongjh
  * @date 2018/8/22
  */
-public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListener,
-        AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
+public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
 
     private final String TAG = AlbumFragment.this.getClass().getSimpleName();
 
@@ -198,11 +195,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
     public void onResume() {
         super.onResume();
         updateBottomToolbar();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     /**
@@ -620,11 +612,6 @@ public class AlbumFragment extends Fragment implements OnLoadPageMediaDataListen
             mViewHolder.buttonApply.setVisibility(View.VISIBLE);
             mViewHolder.buttonPreview.setEnabled(true);
         }
-    }
-
-    @Override
-    public void onLoadPageMediaDataComplete(ArrayList<LocalMedia> data, int currentPage, boolean isHasMore) {
-
     }
 
     public static class ViewHolder {

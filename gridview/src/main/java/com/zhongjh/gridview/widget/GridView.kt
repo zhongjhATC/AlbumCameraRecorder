@@ -499,29 +499,6 @@ class GridView : FrameLayout, GridViewApi {
     }
 
     /**
-     * 添加音频数据
-     *
-     * @param gridMedia 数据
-     */
-    private fun addAudioData(gridMedia: GridMedia) {
-//        this.audioList.add(displayMedia)
-//        val playProgressView = newPlayProgressView(displayMedia)
-//        // 显示音频的进度条
-//        this.displayMediaLayoutListener?.onItemAudioStartUploading(displayMedia, playProgressView)
-//        mViewHolder.llContent.addView(playProgressView)
-//        // 初始化播放控件
-//        val recordingItem = RecordingItem()
-//        recordingItem.path = displayMedia.path
-//        recordingItem.duration = displayMedia.duration
-//        playProgressView.setData(recordingItem, audioProgressColor)
-//        // 添加音频后重置所有当前播放中的音频
-//        for (i in 0 until mViewHolder.llContent.childCount) {
-//            val item = mViewHolder.llContent.getChildAt(i) as PlayProgressView
-//            item.reset()
-//        }
-    }
-
-    /**
      * 检测属性
      */
     private fun isAuthority() {

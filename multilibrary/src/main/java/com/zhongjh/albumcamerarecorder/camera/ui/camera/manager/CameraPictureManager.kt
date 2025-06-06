@@ -80,12 +80,6 @@ open class CameraPictureManager(
     private var movePictureFileTask: ThreadUtils.SimpleTask<ArrayList<LocalMedia>>? = null
 
     /**
-     * 初始化有关图片的配置数据
-     */
-    override fun initData() {
-    }
-
-    /**
      * 初始化多图适配器
      */
     override fun initMultiplePhotoAdapter() {

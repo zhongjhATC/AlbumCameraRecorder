@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.zhongjh.albumcamerarecorder.album.entity.Album2
 import com.zhongjh.albumcamerarecorder.album.loader.MediaLoader
 import com.zhongjh.common.entity.LocalMedia
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /**
@@ -26,7 +25,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 数据库操作文件类
      */
-    private var mediaLoader: MediaLoader
+    private var mediaLoader: MediaLoader = MediaLoader(application)
 
     /**
      * 输送失败信息
@@ -94,10 +93,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 当前预览的图片的索引,默认无
      */
     var previewPosition = -1
-
-    init {
-        mediaLoader = MediaLoader(application)
-    }
 
     /**
      * 重新获取数据
@@ -174,17 +169,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                 this@MainModel._onFail.postValue(ex)
             }
         }
-    }
-
-
-    /**
-     * 由于屏幕旋转导致的Activity重建，该方法不会被调用
-     *
-     *
-     * 只有ViewModel已经没有任何Activity与之有关联，系统则会调用该方法，你可以在此清理资源
-     */
-    override fun onCleared() {
-        super.onCleared()
     }
 
 }

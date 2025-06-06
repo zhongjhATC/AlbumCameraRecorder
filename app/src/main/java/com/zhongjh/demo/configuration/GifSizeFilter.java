@@ -15,12 +15,17 @@
  */
 package com.zhongjh.demo.configuration;
 
+
 import android.content.Context;
+import android.graphics.Point;
+import android.net.Uri;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
+import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.demo.R;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -51,13 +56,11 @@ public class GifSizeFilter extends BaseFilter {
         if (!needFiltering(item)) {
             return null;
         }
-        
-// TODO 这个重构代码需要恢复注释，修改实体MultiMedia 改成local
-//        Point size = PhotoMetadataUtils.getBitmapBound(context.getContentResolver(), item.getPath());
-//        if (size.x < mMinWidth || size.y < mMinHeight || item.getSize() > mMaxSize) {
-//            return new IncapableCause(IncapableCause.DIALOG, context.getString(R.string.error_gif, mMinWidth,
-//                    String.valueOf(PhotoMetadataUtils.getSizeInMb(mMaxSize))));
-//        }
+        Point size = PhotoMetadataUtils.getBitmapBound(context.getContentResolver(), Uri.parse(item.getPath()));
+        if (size.x < mMinWidth || size.y < mMinHeight || item.getSize() > mMaxSize) {
+            return new IncapableCause(IncapableCause.DIALOG, context.getString(R.string.error_gif, mMinWidth,
+                    String.valueOf(PhotoMetadataUtils.getSizeInMb(mMaxSize))));
+        }
         return null;
     }
 

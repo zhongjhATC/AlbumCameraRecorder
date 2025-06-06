@@ -40,11 +40,6 @@ public class ImageEditActivity extends BaseImageEditActivity {
     public static final String EXTRA_HEIGHT = "EXTRA_HEIGHT";
 
     @Override
-    public void onCreated() {
-
-    }
-
-    @Override
     public Bitmap getBitmap() {
         Intent intent = getIntent();
         if (intent == null) {

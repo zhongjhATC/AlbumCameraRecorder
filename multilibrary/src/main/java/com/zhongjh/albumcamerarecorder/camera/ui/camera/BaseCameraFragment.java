@@ -295,9 +295,6 @@ public abstract class BaseCameraFragment
         globalSpec = GlobalSpec.INSTANCE;
         cameraSpec = CameraSpec.INSTANCE;
 
-        getCameraPictureManager().initData();
-        getCameraVideoManager().initData();
-
         // 闪光灯修改默认模式
         flashMode = cameraSpec.getFlashMode();
         // 记忆模式
@@ -321,8 +318,6 @@ public abstract class BaseCameraFragment
         initPvLayoutPhotoVideoListener();
         // 左右确认和取消
         initPvLayoutOperateListener();
-        // 录制界面按钮事件监听，目前只有一个，点击分段录制
-        initPvLayoutRecordListener();
         // 拍照监听
         initCameraViewListener();
         // 编辑图片事件
@@ -470,15 +465,6 @@ public abstract class BaseCameraFragment
     }
 
     /**
-     * 录制界面按钮事件监听，目前只有一个，点击分段录制
-     */
-    private void initPvLayoutRecordListener() {
-        getPhotoVideoLayout().setRecordListener(tag -> {
-            getPhotoVideoLayout().setProgressMode(true);
-        });
-    }
-
-    /**
      * 拍照、录制监听
      */
     private void initCameraViewListener() {
@@ -525,7 +511,7 @@ public abstract class BaseCameraFragment
 
             @Override
             public void onError(int errorCode, @Nullable String message, @Nullable Throwable cause) {
-
+                Toast.makeText(getMyContext(), message, Toast.LENGTH_LONG).show();
             }
 
         });
@@ -588,7 +574,6 @@ public abstract class BaseCameraFragment
         try {
             LogUtil.i("CameraLayout destroy");
             getCameraPictureManager().onDestroy(isCommit);
-            getCameraVideoManager().onDestroy();
             getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
             getCameraManage().onDestroy();
             // 记忆模式
