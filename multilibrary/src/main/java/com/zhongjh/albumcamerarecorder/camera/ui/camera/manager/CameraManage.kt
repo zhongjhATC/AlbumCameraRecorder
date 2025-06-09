@@ -60,7 +60,7 @@ import kotlin.math.min
 /**
  * 专门处理camerax的类
  */
-class CameraManage(val appCompatActivity: AppCompatActivity, val viewHolder: ViewHolder, val iCameraView: ICameraView) :
+class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHolder: ViewHolder, val iCameraView: ICameraView) :
     OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
@@ -121,6 +121,11 @@ class CameraManage(val appCompatActivity: AppCompatActivity, val viewHolder: Vie
      * 界面是否被覆盖了，如果是被覆盖的情况下，会结束录制，同时不会处理录制后打开视频文件的相关处理
      */
     private var isActivityPause = false
+
+    /**
+     * 是否启动音频
+     */
+    var isAudio = false
 
     /**
      * 输出最后一帧的状态
@@ -238,50 +243,51 @@ class CameraManage(val appCompatActivity: AppCompatActivity, val viewHolder: Vie
             val mediaStoreOutput = MediaStoreOutputOptions.Builder(
                 appCompatActivity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
             ).setContentValues(contentValues).build()
-            recording =
-                videoCapture?.output?.prepareRecording(appCompatActivity, mediaStoreOutput)?.withAudioEnabled()?.start(
-                    ContextCompat.getMainExecutor(appCompatActivity)
-                ) { videoRecordEvent ->
-                    // 视频录制监控回调
-                    when (videoRecordEvent) {
-                        is VideoRecordEvent.Status -> {
-                            // 录制时间大于0才代表真正开始,通知长按按钮开始动画
-                            if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
-                                Log.d(TAG, "mRecordedTime 开始" + videoRecordEvent.recordingStats.recordedDurationNanos)
-                                onCameraManageListener?.onRecordStart()
-                            }
-                        }
-
-                        is VideoRecordEvent.Finalize -> {
-                            Log.d(
-                                TAG,
-                                "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri + " isActivityPause:" + isActivityPause
-                            )
-                            if (!isActivityPause) {
-                                // 完成录制
-                                val uri = videoRecordEvent.outputResults.outputUri
-                                onCameraManageListener?.onRecordSuccess(
-                                    UriUtils.uriToFile(
-                                        appCompatActivity,
-                                        uri
-                                    ).absolutePath
-                                )
-                            }
-                            isActivityPause = false
-                        }
-
-                        is VideoRecordEvent.Pause -> {
-                            // 暂停录制
-                            Log.d(TAG, "Pause")
-                            onCameraManageListener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
-                        }
-
-                        is VideoRecordEvent.Resume -> {
-                            // 恢复录制
-                            Log.d(TAG, "Resume")
+            val pendingRecording = videoCapture?.output?.prepareRecording(appCompatActivity, mediaStoreOutput)
+            if (isAudio) {
+                pendingRecording?.withAudioEnabled()
+            }
+            recording = pendingRecording?.start(ContextCompat.getMainExecutor(appCompatActivity)) { videoRecordEvent ->
+                // 视频录制监控回调
+                when (videoRecordEvent) {
+                    is VideoRecordEvent.Status -> {
+                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
+                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
+                            Log.d(TAG, "mRecordedTime 开始" + videoRecordEvent.recordingStats.recordedDurationNanos)
+                            onCameraManageListener?.onRecordStart()
                         }
                     }
+
+                    is VideoRecordEvent.Finalize -> {
+                        Log.d(
+                            TAG,
+                            "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri + " isActivityPause:" + isActivityPause
+                        )
+                        if (!isActivityPause) {
+                            // 完成录制
+                            val uri = videoRecordEvent.outputResults.outputUri
+                            onCameraManageListener?.onRecordSuccess(
+                                UriUtils.uriToFile(
+                                    appCompatActivity,
+                                    uri
+                                ).absolutePath
+                            )
+                        }
+                        isActivityPause = false
+                    }
+
+                    is VideoRecordEvent.Pause -> {
+                        // 暂停录制
+                        Log.d(TAG, "Pause")
+                        onCameraManageListener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
+                    }
+
+                    is VideoRecordEvent.Resume -> {
+                        // 恢复录制
+                        Log.d(TAG, "Resume")
+                    }
                 }
+            }
         }
     }
 
@@ -331,6 +337,13 @@ class CameraManage(val appCompatActivity: AppCompatActivity, val viewHolder: Vie
             CameraSelector.LENS_FACING_FRONT
         }
         initCameraPreviewMode()
+    }
+
+    /**
+     * 设置音频
+     */
+    fun setAudio() {
+
     }
 
     /**
