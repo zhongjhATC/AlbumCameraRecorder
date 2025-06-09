@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.demo.R;
+import com.zhongjh.gridview.apapter.GridAdapter;
+import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
 
 import java.util.ArrayList;
@@ -24,7 +27,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     private static final int SIZE_20 = 20;
     private final LayoutInflater mInflater;
-    List<Data> data = new ArrayList<>();
+    List<Data> datas = new ArrayList<>();
 
     public RecyclerAdapter(Activity activity) {
         this.mInflater = LayoutInflater.from(activity);
@@ -35,12 +38,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
      * 构造数据
      */
     private void initData() {
-        Data data1 = new Data();
-        List<String> imageUrls1 = new ArrayList<>();
-        imageUrls1.add("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg11.51tietu.net%2Fpic%2F2016-071418%2F20160714181543xyu10ukncwf221991.jpg&refer=http%3A%2F%2Fimg11.51tietu.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1631178701&t=bc3132a59d5252ef953c3204e0d96939");
-        imageUrls1.add("https://img1.baidu.com/it/u=3766151103,2483188409&fm=26&fmt=auto&gp=0.jpg");
-        data1.setImageUrls(imageUrls1);
-        data.add(data1);
+        Data dataImage = getData();
+        datas.add(dataImage);
 
         // 模拟20条
         for (int i = 0; i < SIZE_20; i++) {
@@ -58,8 +57,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             data.setImageUrls(imageUrls);
             data.setAudioUrls(audioUrls);
             data.setVideoUrls(videoUrls);
-            this.data.add(data);
+            this.datas.add(data);
         }
+    }
+
+    private @NonNull Data getData() {
+        Data dataImage = new Data();
+        List<String> imageUrls1 = new ArrayList<>();
+        imageUrls1.add("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg11.51tietu.net%2Fpic%2F2016-071418%2F20160714181543xyu10ukncwf221991.jpg&refer=http%3A%2F%2Fimg11.51tietu.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1631178701&t=bc3132a59d5252ef953c3204e0d96939");
+        imageUrls1.add("https://img1.baidu.com/it/u=3766151103,2483188409&fm=26&fmt=auto&gp=0.jpg");
+        dataImage.setImageUrls(imageUrls1);
+        return dataImage;
     }
 
     @NonNull
@@ -74,65 +82,45 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.mplImageList.reset();
-        holder.mplImageList.setImageUrls(data.get(position).getImageUrls(), false);
-        if (!data.get(position).getAudioUrls().isEmpty()) {
-            holder.mplImageList.setAudioUrls(data.get(position).getAudioUrls(), false);
+        holder.mplImageList.setImageUrls(datas.get(position).getImageUrls(), false);
+        if (!datas.get(position).getAudioUrls().isEmpty()) {
+            holder.mplImageList.setAudioUrls(datas.get(position).getAudioUrls(), false);
         }
-        if (!data.get(position).getVideoUrls().isEmpty()) {
-            holder.mplImageList.setVideoUrls(data.get(position).getVideoUrls(), false);
+        if (!datas.get(position).getVideoUrls().isEmpty()) {
+            holder.mplImageList.setVideoUrls(datas.get(position).getVideoUrls(), false);
         }
         holder.mplImageList.notifyDataSetChanged();
-//        holder.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
-//            @Override
-//            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
-//                return false;
-//            }
-//
-//            @Override
-//            public void onItemAudioStartUploading(@NonNull DisplayMedia displayMedia, @NonNull AudioAdapter.AudioHolder viewHolder) {
-//
-//            }
-//
-//            @Override
-//            public void onAddDataSuccess(@NotNull List<DisplayMedia> displayMedia) {
-//
-//            }
-//
-//            @Override
-//            public void onItemAdd(@NotNull View view, @NotNull DisplayMedia displayMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-//                Toast.makeText(mActivity.getApplicationContext(), "这边写跳转相册代码获取到的数据填充该RecyclerView即可", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onItemClick(@NotNull View view, @NotNull DisplayMedia displayMedia) {
-//
-//            }
-//
-//            @Override
-//            public void onItemStartUploading(@NonNull DisplayMedia displayMedia, @NonNull ImagesAndVideoAdapter.PhotoViewHolder viewHolder) {
-//
-//            }
-//
-//            @Override
-//            public void onItemClose(@NotNull DisplayMedia displayMedia) {
-//
-//            }
-//
-//            @Override
-//            public void onItemAudioStartDownload(@NotNull View view, @NotNull String url) {
-//
-//            }
-//
-//            @Override
-//            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-//                return false;
-//            }
-//        });
+        holder.mplImageList.setGridViewListener(new GridViewListener() {
+            @Override
+            public void onItemAdd(@NonNull View view, @NonNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
+
+            }
+
+            @Override
+            public void onItemClick(@NonNull View view, @NonNull GridMedia gridMedia) {
+
+            }
+
+            @Override
+            public void onItemClose(@NonNull GridMedia gridMedia) {
+
+            }
+
+            @Override
+            public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull GridAdapter.PhotoViewHolder viewHolder) {
+
+            }
+
+            @Override
+            public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
+                return false;
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return datas.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

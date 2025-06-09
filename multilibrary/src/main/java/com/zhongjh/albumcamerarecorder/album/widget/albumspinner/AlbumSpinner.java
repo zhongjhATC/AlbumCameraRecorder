@@ -89,12 +89,11 @@ public class AlbumSpinner extends PopupWindow {
     }
 
     public boolean isEmpty() {
-        return adapter.getAlbums().size() == 0;
+        return adapter.getAlbums().isEmpty();
     }
 
     public Album2 getAlbum(int position) {
-        return adapter.getAlbums().size() > 0
-                && position < adapter.getAlbums().size() ? adapter.getAlbums().get(position) : null;
+        return !adapter.getAlbums().isEmpty() && position < adapter.getAlbums().size() ? adapter.getAlbums().get(position) : null;
     }
 
     public void setArrowImageView(ImageView ivArrowView) {

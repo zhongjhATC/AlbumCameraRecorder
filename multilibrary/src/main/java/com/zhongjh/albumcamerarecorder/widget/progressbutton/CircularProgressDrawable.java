@@ -9,13 +9,15 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
+
 class CircularProgressDrawable extends Drawable {
 
     private float mSweepAngle;
-    private float mStartAngle;
-    private int mSize;
-    private int mStrokeWidth;
-    private int mStrokeColor;
+    private final float mStartAngle;
+    private final int mSize;
+    private final int mStrokeWidth;
+    private final int mStrokeColor;
 
     public CircularProgressDrawable(int size, int strokeWidth, int strokeColor) {
         mSize = size;
@@ -34,7 +36,7 @@ class CircularProgressDrawable extends Drawable {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         final Rect bounds = getBounds();
 
         if (mPath == null) {

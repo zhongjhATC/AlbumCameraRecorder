@@ -19,7 +19,7 @@ public class SortUtils {
      */
     public static void sortFolder(List<Album2> albums) {
         Collections.sort(albums, (lhs, rhs) -> {
-            if (lhs.getData().size() == 0 || rhs.getData().size() == 0) {
+            if (lhs.getData().isEmpty() || rhs.getData().isEmpty()) {
                 return 0;
             }
             int lSize = lhs.getCount();

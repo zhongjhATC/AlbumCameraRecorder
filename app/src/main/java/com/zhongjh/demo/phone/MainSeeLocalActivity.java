@@ -234,7 +234,7 @@ public class MainSeeLocalActivity extends BaseActivity {
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
         // 添加的这个本地地址自行修改,如果本地手机不存在该文件,app是不会添加的
-        videoUrls.add("/data/user/0/com.zhongjh.demo/cache/video_20190221105749_Android_31228.mp4");
+        videoUrls.add(getApplicationContext().getCacheDir().getPath() + "/video_20190221105749_Android_31228.mp4");
         mBinding.gridView.setVideoPaths(videoUrls);
 
         // 图片数据

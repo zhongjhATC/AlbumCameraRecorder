@@ -12,10 +12,11 @@ import java.util.Map;
  */
 public class SharedPreferencesUtil {
 
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
     /*
      * 保存手机里面的名字
-     */private SharedPreferences.Editor editor;
+     */
+    private final SharedPreferences.Editor editor;
 
     @SuppressLint("CommitPrefEdits")
     public SharedPreferencesUtil(Context context, String fileName) {

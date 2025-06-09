@@ -81,7 +81,7 @@ public class UriUtils {
             // 处理关键字的uri是否能直接使用file
             File file = uriToFilePathKeywords(context, uri, path);
             if (file != null && file.exists()) {
-                Log.d(TAG, uri.toString() + " -> " + path);
+                Log.d(TAG, uri + " -> " + path);
                 return file;
             }
         }
@@ -90,7 +90,7 @@ public class UriUtils {
             if (path != null) {
                 return new File(path);
             }
-            Log.d(TAG, uri.toString() + " parse failed. -> new File");
+            Log.d(TAG, uri + " parse failed. -> new File");
             return null;
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
                 && DocumentsContract.isDocumentUri(context, uri)) {
@@ -100,7 +100,7 @@ public class UriUtils {
             // Android 19以下直接查询数据库获取文件
             return getFileFromUri(context, uri, "uriToFile -> getFileFromUri");
         } else {
-            Log.d(TAG, uri.toString() + " parse failed. -> uriToFile");
+            Log.d(TAG, uri + " parse failed. -> uriToFile");
             return null;
         }
     }
@@ -171,7 +171,7 @@ public class UriUtils {
         } else if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
             return getFileFromUri(context, uri, "uriToFileAndroidKitkat - content");
         } else {
-            Log.d(TAG, uri.toString() + " parse failed. -> else null");
+            Log.d(TAG, uri + " parse failed. -> else null");
             return null;
         }
     }
@@ -231,7 +231,7 @@ public class UriUtils {
                     }
                 }
             } catch (Exception ex) {
-                Log.d(TAG, uri.toString() + " parse failed. " + ex.toString() + " -> uriToFileFromExternalStorageDocument - isExternalStorageDocument");
+                Log.d(TAG, uri.toString() + " parse failed. " + ex + " -> uriToFileFromExternalStorageDocument - isExternalStorageDocument");
             }
         }
         Log.d(TAG, uri.toString() + " parse failed. -> uriToFileFromExternalStorageDocument - isExternalStorageDocument");
@@ -362,7 +362,7 @@ public class UriUtils {
         final Cursor cursor = context.getContentResolver().query(
                 uri, new String[]{"_data"}, selection, selectionArgs, null);
         if (cursor == null) {
-            Log.d(TAG, uri.toString() + " parse failed(cursor is null). -> " + methodCode);
+            Log.d(TAG, uri + " parse failed(cursor is null). -> " + methodCode);
             return null;
         }
         try {
@@ -371,15 +371,15 @@ public class UriUtils {
                 if (columnIndex > -1) {
                     return new File(cursor.getString(columnIndex));
                 } else {
-                    Log.d(TAG, uri.toString() + " parse failed(columnIndex: " + columnIndex + " is wrong). -> " + methodCode);
+                    Log.d(TAG, uri + " parse failed(columnIndex: " + columnIndex + " is wrong). -> " + methodCode);
                     return null;
                 }
             } else {
-                Log.d(TAG, uri.toString() + " parse failed(moveToFirst return false). -> " + methodCode);
+                Log.d(TAG, uri + " parse failed(moveToFirst return false). -> " + methodCode);
                 return null;
             }
         } catch (Exception e) {
-            Log.d(TAG, uri.toString() + " parse failed. -> " + methodCode);
+            Log.d(TAG, uri + " parse failed. -> " + methodCode);
             return null;
         } finally {
             cursor.close();

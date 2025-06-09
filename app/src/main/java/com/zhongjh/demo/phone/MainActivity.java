@@ -60,6 +60,7 @@ public class MainActivity extends BaseActivity {
 
     @GlobalSetting.ScreenOrientation
     int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+
     int flashMode = ImageCapture.FLASH_MODE_OFF;
 
     /**

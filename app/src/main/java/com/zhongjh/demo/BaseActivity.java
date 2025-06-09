@@ -174,11 +174,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "EditorPath不存在", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, localMedia.getEditorPath() + " EditorPath不存在");
             }
-            if (null == localMedia.getSandboxPath() || !isUri(localMedia.getSandboxPath())) {
+            if (null == localMedia.getSandboxPath() || isNoUri(localMedia.getSandboxPath())) {
                 Toast.makeText(getApplicationContext(), "SandboxPath不存在", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, localMedia.getSandboxPath() + " SandboxPath不存在");
             }
-            if (!isUri(localMedia.getPath())) {
+            if (isNoUri(localMedia.getPath())) {
                 Toast.makeText(getApplicationContext(), "Path不存在", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, localMedia.getPath() + " Path不存在");
             }
@@ -256,32 +256,32 @@ public abstract class BaseActivity extends AppCompatActivity {
                 public void run() {
                     percentage++;
                     getMaskProgressLayout().setPercentage(gridMedia, percentage);
+                    // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：multiMedia.setUrl(url);multiMedia.setPercentage(100);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();
                     }
-                    // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：multiMedia.setUrl(url);multiMedia.setPercentage(100);
                 }
             }, 1000, 100);
         }
     }
 
-    private boolean isUri(String uri) {
+    private boolean isNoUri(String uri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(Uri.parse(uri));
             if (inputStream != null) {
                 // 文件存在
                 Log.d(TAG, "文件存在");
                 inputStream.close();
-                return true;
+                return false;
             } else {
                 // 文件不存在
                 Log.d(TAG, "文件不存在");
-                return false;
+                return true;
             }
         } catch (FileNotFoundException e) {
             // 文件不存在
             Log.d(TAG, "文件不存在");
-            return false;
+            return true;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

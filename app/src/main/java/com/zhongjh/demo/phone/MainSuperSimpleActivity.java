@@ -159,13 +159,11 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 public void run() {
                     percentage++;
                     mBinding.gridView.setPercentage(multiMedia, percentage);
+                    // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：multiMedia.setUrl(url);multiMedia.setPercentage(100);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();
                     }
-                    // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：
-//                        // 赋值完成
-//                        multiMedia.setUrl(url);
-//                        multiMedia.setPercentage(100);
+
                 }
             }, 1000, 100);
         }

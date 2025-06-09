@@ -896,7 +896,7 @@ public final class ThreadUtils {
      * @param tasks The tasks to cancel.
      */
     public static void cancel(final List<Task<?>> tasks) {
-        if (tasks != null && tasks.size() != 0) {
+        if (tasks != null && !tasks.isEmpty()) {
             for (Task<?> task : tasks) {
                 if (task == null) {
                     continue;
@@ -1047,7 +1047,7 @@ public final class ThreadUtils {
 
         private final AtomicInteger mSubmittedCount = new AtomicInteger();
 
-        private LinkedBlockingQueue4Util mWorkQueue;
+        private final LinkedBlockingQueue4Util mWorkQueue;
 
         ThreadPoolExecutor4Util(int corePoolSize, int maximumPoolSize,
                                 long keepAliveTime, TimeUnit unit,
@@ -1156,12 +1156,7 @@ public final class ThreadUtils {
                 }
             };
             t.setDaemon(isDaemon);
-            t.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                @Override
-                public void uncaughtException(Thread t, Throwable e) {
-                    System.out.println(e);
-                }
-            });
+            t.setUncaughtExceptionHandler((t1, e) -> Log.e(TAG, "UtilsThreadFactory newThread" + e.getMessage()));
             t.setPriority(priority);
             return t;
         }
@@ -1381,8 +1376,8 @@ public final class ThreadUtils {
 
     public static class SyncValue<T> {
 
-        private CountDownLatch mLatch = new CountDownLatch(1);
-        private AtomicBoolean mFlag = new AtomicBoolean();
+        private final CountDownLatch mLatch = new CountDownLatch(1);
+        private final AtomicBoolean mFlag = new AtomicBoolean();
         private T mValue;
 
         public void setValue(T value) {

@@ -9,7 +9,6 @@ import android.view.View;
 import com.zhongjh.imageedit.view.BaseImageStickerView;
 
 /**
- *
  * @author felix
  * @date 2017/11/15 下午5:44
  */
@@ -35,6 +34,8 @@ public class ImageStickerAdjustHelper implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         float mCenterY;
+        float pointX;
+        float pointY;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
@@ -44,9 +45,9 @@ public class ImageStickerAdjustHelper implements View.OnTouchListener {
 
                 float mCenterX = mCenterY = 0;
 
-                float pointX = mView.getX() + x - mContainer.getPivotX();
+                pointX = mView.getX() + x - mContainer.getPivotX();
 
-                float pointY = mView.getY() + y - mContainer.getPivotY();
+                pointY = mView.getY() + y - mContainer.getPivotY();
 
                 Log.d(TAG, String.format("X=%f,Y=%f", pointX, pointY));
 

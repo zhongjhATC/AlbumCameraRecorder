@@ -615,7 +615,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
     }
 
     public static class ViewHolder {
-        public View rootView;
+        public final View rootView;
         public View selectedAlbum;
         public TextView tvAlbumTitle;
         public ImageView imgArrow;

@@ -508,10 +508,6 @@ public class SoundRecordingFragment extends BaseFragment {
             mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
             mViewHolder.chronometer.start();
             mStartingTimeMillis = System.currentTimeMillis();
-
-            //startTimer();
-            //startForeground(1, createNotification());
-
         } catch (IOException e) {
             Log.e(TAG, "prepare() failed");
         }

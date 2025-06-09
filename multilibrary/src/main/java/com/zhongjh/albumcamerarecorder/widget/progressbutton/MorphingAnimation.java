@@ -8,6 +8,8 @@ import android.animation.ValueAnimator;
 import android.graphics.drawable.GradientDrawable;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 class MorphingAnimation {
 
     public static final int DURATION_NORMAL = 400;
@@ -31,8 +33,8 @@ class MorphingAnimation {
 
     private float mPadding;
 
-    private TextView mView;
-    private StrokeGradientDrawable mDrawable;
+    private final TextView mView;
+    private final StrokeGradientDrawable mDrawable;
 
     public MorphingAnimation(TextView viewGroup, StrokeGradientDrawable drawable) {
         mView = viewGroup;
@@ -86,27 +88,24 @@ class MorphingAnimation {
     public void start() {
         ValueAnimator widthAnimation = ValueAnimator.ofInt(mFromWidth, mToWidth);
         final GradientDrawable gradientDrawable = mDrawable.getGradientDrawable();
-        widthAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                Integer value = (Integer) animation.getAnimatedValue();
-                int leftOffset;
-                int rightOffset;
-                int padding;
+        widthAnimation.addUpdateListener(animation -> {
+            Integer value = (Integer) animation.getAnimatedValue();
+            int leftOffset;
+            int rightOffset;
+            int padding;
 
-                if (mFromWidth > mToWidth) {
-                    leftOffset = (mFromWidth - value) / 2;
-                    rightOffset = mFromWidth - leftOffset;
-                    padding = (int) (mPadding * animation.getAnimatedFraction());
-                } else {
-                    leftOffset = (mToWidth - value) / 2;
-                    rightOffset = mToWidth - leftOffset;
-                    padding = (int) (mPadding - mPadding * animation.getAnimatedFraction());
-                }
-
-                gradientDrawable
-                        .setBounds(leftOffset + padding, padding, rightOffset - padding, mView.getHeight() - padding);
+            if (mFromWidth > mToWidth) {
+                leftOffset = (mFromWidth - value) / 2;
+                rightOffset = mFromWidth - leftOffset;
+                padding = (int) (mPadding * animation.getAnimatedFraction());
+            } else {
+                leftOffset = (mToWidth - value) / 2;
+                rightOffset = mToWidth - leftOffset;
+                padding = (int) (mPadding - mPadding * animation.getAnimatedFraction());
             }
+
+            gradientDrawable
+                    .setBounds(leftOffset + padding, padding, rightOffset - padding, mView.getHeight() - padding);
         });
 
         ObjectAnimator bgColorAnimation = ObjectAnimator.ofInt(gradientDrawable, "color", mFromColor, mToColor);
@@ -124,24 +123,24 @@ class MorphingAnimation {
         animatorSet.playTogether(widthAnimation, bgColorAnimation, strokeColorAnimation, cornerAnimation);
         animatorSet.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
+            public void onAnimationStart(@NonNull Animator animation) {
 
             }
 
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(@NonNull Animator animation) {
                 if (mListener != null) {
                     mListener.onAnimationEnd();
                 }
             }
 
             @Override
-            public void onAnimationCancel(Animator animation) {
+            public void onAnimationCancel(@NonNull Animator animation) {
 
             }
 
             @Override
-            public void onAnimationRepeat(Animator animation) {
+            public void onAnimationRepeat(@NonNull Animator animation) {
 
             }
         });

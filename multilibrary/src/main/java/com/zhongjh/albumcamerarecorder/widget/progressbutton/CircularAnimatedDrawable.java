@@ -16,6 +16,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import androidx.annotation.NonNull;
+
 class CircularAnimatedDrawable extends Drawable implements Animatable {
 
     private static final Interpolator ANGLE_INTERPOLATOR = new LinearInterpolator();
@@ -48,7 +50,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         float startAngle = mCurrentGlobalAngle - mCurrentGlobalAngleOffset;
         float sweepAngle = mCurrentSweepAngle;
         if (!mModeAppearing) {
@@ -83,7 +85,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    protected void onBoundsChange(Rect bounds) {
+    protected void onBoundsChange(@NonNull Rect bounds) {
         super.onBoundsChange(bounds);
         fBounds.left = bounds.left + mBorderWidth / 2f + .5f;
         fBounds.right = bounds.right - mBorderWidth / 2f - .5f;
@@ -91,7 +93,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         fBounds.bottom = bounds.bottom - mBorderWidth / 2f - .5f;
     }
 
-    private Property<CircularAnimatedDrawable, Float> mAngleProperty  =
+    private final Property<CircularAnimatedDrawable, Float> mAngleProperty  =
             new Property<CircularAnimatedDrawable, Float>(Float.class, "angle") {
         @Override
         public Float get(CircularAnimatedDrawable object) {
@@ -104,7 +106,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         }
     };
 
-    private Property<CircularAnimatedDrawable, Float> mSweepProperty
+    private final Property<CircularAnimatedDrawable, Float> mSweepProperty
             = new Property<CircularAnimatedDrawable, Float>(Float.class, "arc") {
         @Override
         public Float get(CircularAnimatedDrawable object) {
@@ -131,22 +133,22 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         mObjectAnimatorSweep.setRepeatCount(ValueAnimator.INFINITE);
         mObjectAnimatorSweep.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
+            public void onAnimationStart(@NonNull Animator animation) {
 
             }
 
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(@NonNull Animator animation) {
 
             }
 
             @Override
-            public void onAnimationCancel(Animator animation) {
+            public void onAnimationCancel(@NonNull Animator animation) {
 
             }
 
             @Override
-            public void onAnimationRepeat(Animator animation) {
+            public void onAnimationRepeat(@NonNull Animator animation) {
                 toggleAppearingMode();
             }
         });
