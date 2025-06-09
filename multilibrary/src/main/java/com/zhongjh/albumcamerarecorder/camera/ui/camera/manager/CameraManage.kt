@@ -340,13 +340,6 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
     }
 
     /**
-     * 设置音频
-     */
-    fun setAudio() {
-
-    }
-
-    /**
      * 启动预览
      */
     private fun startCamera() {

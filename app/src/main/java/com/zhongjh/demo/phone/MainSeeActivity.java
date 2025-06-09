@@ -126,7 +126,7 @@ public class MainSeeActivity extends BaseActivity {
                 // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
                 Log.i(TAG, "onResult id:" + gridMedia.getFileId());
                 Log.i(TAG, "onResult url:" + gridMedia.getUrl());
-                Log.d(TAG, "onResult 绝对路径:" + gridMedia.getPath());
+                Log.d(TAG, "onResult 绝对路径:" + gridMedia.getAbsolutePath());
                 Log.d(TAG, "onResult Uri:" + gridMedia.getPath());
                 Log.d(TAG, "onResult 文件大小: " + gridMedia.getSize());
                 Log.d(TAG, "onResult 视频音频长度: " + gridMedia.getDuration());
@@ -143,11 +143,8 @@ public class MainSeeActivity extends BaseActivity {
                 }
                 Log.d(TAG, "onResult 具体类型:" + gridMedia.getMimeType());
                 Log.d(TAG, "onResult 宽高: " + gridMedia.getWidth() + "x" + gridMedia.getHeight());
-                if (gridMedia.isImageOrGif() || gridMedia.isVideo()) {
-//                    mGlobalSetting.openPreviewData(MainSeeActivity.this, REQUEST_CODE_CHOOSE,
-//                            mBinding.dmlImageList.getImagesAndVideos(),
-//                            mBinding.dmlImageList.getImagesAndVideos().indexOf(multiMediaView));
-                }
+                // 点击详情
+                mGlobalSetting.openPreviewData(MainSeeActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
             }
 
             @Override
