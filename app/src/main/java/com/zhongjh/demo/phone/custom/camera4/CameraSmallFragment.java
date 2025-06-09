@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
@@ -17,6 +18,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManag
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
 import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
+import com.zhongjh.demo.R;
 import com.zhongjh.demo.databinding.FragmentCameraSmallBinding;
 
 /**
@@ -42,15 +44,10 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManager, 
         return new CameraSmallFragment();
     }
 
-//    @Override
-//    public View setContentView(LayoutInflater inflater, ViewGroup container) {
-//        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera_small, container, false);
-//        return mBinding.getRoot();
-//    }
-
     @Override
     public View setContentView(LayoutInflater inflater, ViewGroup container) {
-        return null;
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera_small, container, false);
+        return mBinding.getRoot();
     }
 
     @Override

@@ -1,11 +1,35 @@
 package com.zhongjh.demo.phone;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
+import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
+import com.zhongjh.common.entity.GridMedia;
+import com.zhongjh.common.entity.LocalMedia;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.demo.R;
+import com.zhongjh.demo.configuration.Glide4Engine;
 import com.zhongjh.demo.databinding.ActivityMainListBinding;
 import com.zhongjh.demo.phone.custom.MainCustomCameraLayoutActivity;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * list配置
@@ -16,6 +40,12 @@ import com.zhongjh.demo.phone.custom.MainCustomCameraLayoutActivity;
 public class MainListActivity extends AppCompatActivity {
 
     ActivityMainListBinding mBinding;
+
+    /**
+     * 独立预览的回调
+     */
+    protected ActivityResultLauncher<Intent> requestLauncherPreview = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,18 +67,26 @@ public class MainListActivity extends AppCompatActivity {
         // 默认有数据的
         mBinding.btnOpenSee.setOnClickListener(v -> MainSeeActivity.newInstance(MainListActivity.this));
 
-//        // 默认有数据的 - 本地
-//        mBinding.btnOpenSeeLocal.setOnClickListener(v -> MainSeeLocalActivity.newInstance(MainListActivity.this));
+        // 默认有数据的 - 本地
+        mBinding.btnOpenSeeLocal.setOnClickListener(v -> MainSeeLocalActivity.newInstance(MainListActivity.this));
 
         // 独立预览相片功能
         mBinding.btnPreview.setOnClickListener(v -> {
-//            GlobalSetting globalSetting = MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll());
-//            globalSetting.allStrategy(new SaveStrategy(true, "com.zhongjh.demo.fileProvider", "preview"));
-//            globalSetting.imageEngine(new Glide4Engine());
-//            ArrayList<Integer> list = new ArrayList<>();
-//            list.add(R.drawable.ic_camera_enhance_black_24dp);
-//            list.add(R.drawable.ic_play_arrow_white_24dp);
-//            globalSetting.openPreviewResourceId(MainListActivity.this, list, 0);
+            // 提前设置GlobalSetting的imageEngine,也可以在application设置
+            GlobalSetting globalSetting = MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll());
+            globalSetting.imageEngine(new Glide4Engine());
+            ArrayList<Integer> list = new ArrayList<>();
+            list.add(R.drawable.ic_failed);
+            list.add(R.drawable.ic_loading);
+            ArrayList<GridMedia> listNew = new ArrayList<>();
+            for (Integer id : list) {
+                copyFilesFromRaw(getApplicationContext(), id, id.toString(), getApplicationContext().getFilesDir().getAbsolutePath() + "/resource");
+                GridMedia gridMedia = new GridMedia();
+                gridMedia.setAbsolutePath(getApplicationContext().getFilesDir().getAbsolutePath() + "/resource/" + id);
+                gridMedia.setPath(Uri.fromFile(new File(gridMedia.getAbsolutePath())).toString());
+                listNew.add(gridMedia);
+            }
+            globalSetting.openPreviewData(MainListActivity.this, requestLauncherPreview, listNew, 0);
         });
 
         // 这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例
@@ -62,6 +100,32 @@ public class MainListActivity extends AppCompatActivity {
 
         // 自定义CameraLayout
         mBinding.btnCustomCameraLayout.setOnClickListener(v -> MainCustomCameraLayoutActivity.newInstance(MainListActivity.this));
+    }
+
+    // 路径分隔符
+    private static final String SEPARATOR = File.separator;
+
+    /**
+     * 复制res/raw中的文件到指定目录
+     *
+     * @param context     上下文
+     * @param id          资源ID
+     * @param fileName    文件名
+     * @param storagePath 目标文件夹的路径
+     */
+
+    public static void copyFilesFromRaw(Context context, int id, String fileName, String storagePath) {
+        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), id, context.getTheme());
+        if (drawable != null) {
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            File file = new File(storagePath, fileName);
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            } catch (IOException e) {
+                Log.e("MainListActivity", "copyFilesFromRaw" + e.getMessage());
+            }
+            bitmap.recycle();
+        }
     }
 
 }
