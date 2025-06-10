@@ -45,7 +45,7 @@ import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.IState;
-import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
+import com.zhongjh.albumcamerarecorder.camera.ui.preview.video.PreviewVideoActivity;
 import com.zhongjh.albumcamerarecorder.camera.util.LogUtil;
 import com.zhongjh.albumcamerarecorder.settings.CameraSpec;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;

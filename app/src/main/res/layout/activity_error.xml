@@ -37,7 +37,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:text="重启" />
+            android:text="@string/reboot" />
 
     </LinearLayout>
 

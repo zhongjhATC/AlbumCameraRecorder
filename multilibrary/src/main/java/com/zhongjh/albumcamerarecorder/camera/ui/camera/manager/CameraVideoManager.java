@@ -12,7 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.impl.ICameraVideo;
 import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.albumcamerarecorder.camera.ui.previewvideo.PreviewVideoActivity;
+import com.zhongjh.albumcamerarecorder.camera.ui.preview.video.PreviewVideoActivity;
 
 /**
  * 这是专门处理视频的有关逻辑

@@ -14,7 +14,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="这是单纯演示如何自定义CameraView的一些参数，当然如果没必要的话，最好是不要自定义" />
+                android:text="@string/this_is_a_demonstration_of_how_to_customize_some_parameters_of_camerax" />
 
             <com.zhongjh.gridview.widget.GridView
                 android:id="@+id/gridView"

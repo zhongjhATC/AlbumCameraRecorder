@@ -35,21 +35,24 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:screenOrientation="locked"
-            android:taskAffinity="" />
+            android:taskAffinity=""
+            tools:ignore="DiscouragedApi" />
         <activity
             android:name=".preview.PreviewActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="locked"
-            android:taskAffinity="" />
+            android:taskAffinity=""
+            tools:ignore="DiscouragedApi" />
         <activity
-            android:name=".camera.ui.previewvideo.PreviewVideoActivity"
+            android:name=".camera.ui.preview.video.PreviewVideoActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="locked"
-            android:taskAffinity="" />
+            android:taskAffinity=""
+            tools:ignore="DiscouragedApi" />
 
     </application>
 

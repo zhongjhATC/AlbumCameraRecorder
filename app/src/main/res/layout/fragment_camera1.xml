@@ -70,14 +70,14 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_below="@+id/clMenu"
-            android:text="我是自定义" />
+            android:text="@string/i_am_customized" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCustom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/rlPhoto"
-            android:text="我是自定义的点击我" />
+            android:text="@string/i_am_customized_click_me" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rlPhoto"

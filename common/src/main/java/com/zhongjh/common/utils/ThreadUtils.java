@@ -1,5 +1,6 @@
 package com.zhongjh.common.utils;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -951,6 +952,7 @@ public final class ThreadUtils {
         execute(pool, task, delay, period, unit);
     }
 
+    @SuppressLint("DiscouragedApi")
     private static <T> void execute(final ExecutorService pool, final Task<T> task,
                                     long delay, final long period, final TimeUnit unit) {
         synchronized (TASK_POOL_MAP) {

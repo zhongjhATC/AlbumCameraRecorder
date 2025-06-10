@@ -14,8 +14,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="这是演示自己如何自定义录制界面的布局、逻辑" />
-
+                android:text="@string/this_is_a_demonstration_of_how_to_customize_the_layout_and_logic_of_the_recording_interface" />
 
             <RadioGroup
                 android:layout_width="match_parent"
@@ -26,25 +25,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="单纯自己在布局添加东西简单修改逻辑" />
+                    android:text="@string/its_simple_to_just_add_things_to_the_layout_and_modify_the_logic_by_oneself" />
 
                 <RadioButton
                     android:id="@+id/radioButton2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="修改拍照时图片逻辑" />
+                    android:text="@string/modify_the_logic_of_pictures_when_taking_photos" />
 
                 <RadioButton
                     android:id="@+id/radioButton3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="动态水印" />
+                    android:text="@string/dynamic_watermark" />
 
                 <RadioButton
                     android:id="@+id/radioButton4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="如何自定义小型布局" />
+                    android:text="@string/how_to_customize_a_small_layout" />
 
             </RadioGroup>
 

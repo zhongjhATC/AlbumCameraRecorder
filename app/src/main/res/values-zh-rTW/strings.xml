@@ -85,5 +85,23 @@
     <string name="str_see_set_value">賦值</string>
     <string name="str_see_get_value">獲取值</string>
     <string name="str_see_reset_value">重置</string>
-
+    <string name="reboot">重啓</string>
+    <string name="this_is_a_demonstration_of_how_to_customize_the_layout_and_logic_of_the_recording_interface">這是演示自己如何自定義錄製界面的布局、邏輯。</string>
+    <string name="its_simple_to_just_add_things_to_the_layout_and_modify_the_logic_by_oneself">單純自己在布局添加東西簡單修改邏輯</string>
+    <string name="modify_the_logic_of_pictures_when_taking_photos">修改拍照時圖片邏輯</string>
+    <string name="dynamic_watermark">動態水印</string>
+    <string name="how_to_customize_a_small_layout">如何自定義小型布局</string>
+    <string name="this_is_a_demonstration_of_how_to_customize_some_parameters_of_camerax">這是演示如何自定義 CameraX 的一些參數</string>
+    <string name="clear">清空</string>
+    <string name="limit_1">總上限(null) 圖片上限(2) 視訊上限(1) 音訊上限(1)</string>
+    <string name="limit_2">總上限(20) 圖片上限(null) 視訊上限(null) 音訊上限(null)</string>
+    <string name="limit_3">總上限(5) 圖片上限(null) 視訊上限(1) 音訊上限(1)</string>
+    <string name="limit_4">總上限(5) 圖片上限(3) 視訊上限(null) 音訊上限(1)</string>
+    <string name="limit_5">總上限(5) 圖片上限(3) 視訊上限(1) 音訊上限(null)</string>
+    <string name="limit_6">總上限(5) 圖片上限(3) 視訊上限(null) 音訊上限(null)</string>
+    <string name="limit_7">總上限(5) 圖片上限(null) 視訊上限(2) 音訊上限(null) </string>
+    <string name="limit_8">總上限(5) 圖片上限(null) 視訊上限(null) 音訊上限(2)</string>
+    <string name="use_recyclerview_to_fill_this_control_currentlyit_only_demonstrates_the_fluency_of_the_example_and_the_demonstration_of_deleting_or_adding_data_for_data_update_is_not_written">使用 RecyclerView 填充該控制項，目前只是展示示例的流暢度，刪除或者添加數據更新數據這方面演示沒寫</string>
+    <string name="i_am_customized">我是自定義</string>
+    <string name="i_am_customized_click_me">我是自定義的點擊我</string>
 </resources>

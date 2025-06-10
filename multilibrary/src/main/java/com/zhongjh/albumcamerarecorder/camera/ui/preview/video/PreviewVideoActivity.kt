@@ -1,4 +1,4 @@
-package com.zhongjh.albumcamerarecorder.camera.ui.previewvideo
+package com.zhongjh.albumcamerarecorder.camera.ui.preview.video
 
 import android.content.Intent
 import android.media.MediaScannerConnection
@@ -21,7 +21,6 @@ import com.zhongjh.albumcamerarecorder.utils.MediaStoreUtils
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.listener.VideoEditListener
-import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine

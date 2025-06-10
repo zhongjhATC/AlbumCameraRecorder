@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -199,7 +200,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="true" />
+                        android:text="true"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -285,7 +287,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:text="10" />
+                    android:text="10"
+                    tools:ignore="HardcodedText" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -360,7 +363,8 @@
                         android:id="@+id/tvScreenOrientation"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="SCREEN_ORIENTATION_PORTRAIT" />
+                        android:text="SCREEN_ORIENTATION_PORTRAIT"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -764,7 +768,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
-                        android:text="3000" />
+                        android:text="3000"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -782,8 +787,8 @@
                         android:id="@+id/etMinCameraDuration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
                         android:hint="@string/minimum_recording_time_milliseconds"
+                        android:inputType="number"
                         android:text="1000" />
 
                 </LinearLayout>
@@ -802,8 +807,8 @@
                         android:id="@+id/etCameraReadinessDuration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:hint="@string/press_and_hold_for_the_specified_time_to_start_recording" />
+                        android:hint="@string/press_and_hold_for_the_specified_time_to_start_recording"
+                        android:inputType="number" />
 
                 </LinearLayout>
 

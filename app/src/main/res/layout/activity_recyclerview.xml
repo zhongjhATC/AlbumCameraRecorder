@@ -10,7 +10,7 @@
             android:id="@+id/tvTip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="使用RecyclerView填充该控件，目前只是展示示例的流畅度，删除或者添加数据更新数据这方面演示没写" />
+            android:text="@string/use_recyclerview_to_fill_this_control_currentlyit_only_demonstrates_the_fluency_of_the_example_and_the_demonstration_of_deleting_or_adding_data_for_data_update_is_not_written" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
