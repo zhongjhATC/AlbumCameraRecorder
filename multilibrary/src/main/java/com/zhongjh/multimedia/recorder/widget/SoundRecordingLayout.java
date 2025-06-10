@@ -75,9 +75,9 @@ public class SoundRecordingLayout extends BaseOperationLayout {
 
     public static class ViewHolder extends BaseOperationLayout.ViewHolder {
 
-        public ImageView ivRing;
-        public ImageView ivRecord;
-        public RelativeLayout rlSoundRecording;
+        public final ImageView ivRing;
+        public final ImageView ivRecord;
+        public final RelativeLayout rlSoundRecording;
 
         public ViewHolder(View rootView) {
             super(rootView);

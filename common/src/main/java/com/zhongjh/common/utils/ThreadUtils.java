@@ -1102,6 +1102,10 @@ public final class ThreadUtils {
             super();
         }
 
+        /**
+         *
+         * @noinspection SameParameterValue
+         */
         LinkedBlockingQueue4Util(boolean isAddSubThreadFirstThenAddQueue) {
             super();
             if (isAddSubThreadFirstThenAddQueue) {
@@ -1137,6 +1141,10 @@ public final class ThreadUtils {
             this(prefix, priority, false);
         }
 
+        /**
+         *
+         * @noinspection SameParameterValue
+         */
         UtilsThreadFactory(String prefix, int priority, boolean isDaemon) {
             namePrefix = prefix + "-pool-" +
                     POOL_NUMBER.getAndIncrement() +
@@ -1350,6 +1358,10 @@ public final class ThreadUtils {
             return this;
         }
 
+        /**
+         *
+         * @noinspection SameParameterValue
+         */
         private void setSchedule(boolean isSchedule) {
             this.isSchedule = isSchedule;
         }

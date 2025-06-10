@@ -1,7 +1,4 @@
 <resources>
     <string name="z_progress_library_delete_button">删除按钮</string>
-    <string name="z_progress_library_play_button">播放按钮</string>
-    <string name="z_progress_library_voice_upload">语音上传中</string>
     <string name="z_progress_on_the_cross">上传中</string>
-    <string name="z_progress_click_download_to_open_the_audio">点击下载打开音频</string>
 </resources>

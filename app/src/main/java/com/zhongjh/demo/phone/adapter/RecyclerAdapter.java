@@ -27,7 +27,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     private static final int SIZE_20 = 20;
     private final LayoutInflater mInflater;
-    List<Data> datas = new ArrayList<>();
+    final List<Data> datas = new ArrayList<>();
 
     public RecyclerAdapter(Activity activity) {
         this.mInflater = LayoutInflater.from(activity);
@@ -125,7 +125,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public GridView mplImageList;
+        public final GridView mplImageList;
 
         public ViewHolder(View view) {
             super(view);

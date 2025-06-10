@@ -28,7 +28,7 @@ public class CameraStateManager implements IState {
 
     private final String TAG = CameraStateManager.class.getSimpleName();
 
-    BaseCameraFragment<? extends CameraStateManager,
+    final BaseCameraFragment<? extends CameraStateManager,
             ? extends CameraPictureManager,
             ? extends CameraVideoManager> mCameraFragment;
     /**
@@ -38,23 +38,23 @@ public class CameraStateManager implements IState {
     /**
      * 预览状态
      */
-    IState preview;
+    final IState preview;
     /**
      * 图片完成状态
      */
-    IState pictureComplete;
+    final IState pictureComplete;
     /**
      * 多个图片状态，至少有一张图片情况
      */
-    IState pictureMultiple;
+    final IState pictureMultiple;
     /**
      * 多个视频状态，至少有一段视频情况
      */
-    IState videoMultiple;
+    final IState videoMultiple;
     /**
      * 正在录制多个视频中的状态
      */
-    IState videoMultipleIn;
+    final IState videoMultipleIn;
 
     public CameraStateManager(BaseCameraFragment<? extends CameraStateManager,
             ? extends CameraPictureManager,

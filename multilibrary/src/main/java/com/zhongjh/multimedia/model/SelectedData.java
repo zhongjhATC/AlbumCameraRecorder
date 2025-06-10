@@ -55,7 +55,7 @@ public class SelectedData {
     /**
      * 选择数据源
      */
-    ArrayList<LocalMedia> mLocalMedias = new ArrayList<>();
+    final ArrayList<LocalMedia> mLocalMedias = new ArrayList<>();
     /**
      * 当前选择的所有类型，列表如果包含了图片和视频，就会变成混合类型
      */

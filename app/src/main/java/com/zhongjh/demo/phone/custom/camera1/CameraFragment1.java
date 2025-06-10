@@ -37,9 +37,9 @@ import com.zhongjh.demo.databinding.FragmentCamera1Binding;
 public class CameraFragment1 extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
 
     FragmentCamera1Binding mBinding;
-    CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
-    CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
-    CameraStateManager cameraStateManager = new CameraStateManager(this);
+    final CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
+    final CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
+    final CameraStateManager cameraStateManager = new CameraStateManager(this);
 
     public static CameraFragment1 newInstance() {
         return new CameraFragment1();

@@ -53,7 +53,7 @@ public class PhotoVideoLayout extends BaseOperationLayout {
 
     public static class ViewHolder extends BaseOperationLayout.ViewHolder {
 
-        public RelativeLayout rlEdit;
+        public final RelativeLayout rlEdit;
 
         public ViewHolder(View rootView) {
             super(rootView);

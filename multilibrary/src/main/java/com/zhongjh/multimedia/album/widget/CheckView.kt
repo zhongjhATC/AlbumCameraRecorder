@@ -76,7 +76,7 @@ class CheckView : View {
         mStrokePaint.color = color
         mCheckDrawable = ResourcesCompat.getDrawable(
             context.resources,
-            R.drawable.ic_check_white_18dp, context.theme
+            R.drawable.ic_check_white_zhongjh, context.theme
         )
     }
 

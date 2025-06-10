@@ -36,6 +36,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import kotlin.Suppress;
+
 /**
  * 这是用于设置加载数据的
  * 因为这不是重点开发加上时间因素，目前不做在线播放音频和视频。
@@ -66,59 +68,53 @@ public class MainSeeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         mBinding = ActivityMainSeeBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+        // noinspection deprecation
         progressDialog = new ProgressDialog(MainSeeActivity.this);
         progressDialog.setTitle("下载中");
         mBinding.gridView.setGridViewListener(new GridViewListener() {
 
             @Override
             public boolean onItemStartDownload(@NotNull View view, @NotNull GridMedia gridMedia, int position) {
-                boolean isOk = getPermissions(true);
-                if (isOk) {
-                    String[] fileFullPath = getFileFullPath(gridMedia.getUrl(), 1);
-                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
-                    boolean isExists = fileIsExists(path);
-                    if (!isExists) {
-                        // 下载
-                        progressDialog.show();
-                        FileDownloader.downloadFile(gridMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
+                String[] fileFullPath = getFileFullPath(gridMedia.getUrl(), 1);
+                String path = fileFullPath[0] + File.separator + fileFullPath[1];
+                boolean isExists = fileIsExists(path);
+                if (!isExists) {
+                    // 下载
+                    progressDialog.show();
+                    FileDownloader.downloadFile(gridMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
 
-                            @Override
-                            public void onProgress(DownloadInfo downloadInfo) {
+                        @Override
+                        public void onProgress(DownloadInfo downloadInfo) {
 
-                            }
+                        }
 
-                            @Override
-                            public void onCompleted(File file) {
-                                mBinding.gridView.setDataCover(gridMedia, file.getPath());
-                                progressDialog.hide();
-                            }
+                        @Override
+                        public void onCompleted(File file) {
+                            mBinding.gridView.setDataCover(gridMedia, file.getPath());
+                            progressDialog.hide();
+                        }
 
-                            @Override
-                            public void onError(Throwable throwable) {
-                                progressDialog.hide();
-                                Log.e("MainSeeActivity", "onFail", throwable);
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        // 返回false是中断后面的操作，先让目前视频文件下载完
-                        return false;
-                    } else {
-                        // 获取时间,直接赋值
-                        mBinding.gridView.setDataCover(gridMedia, path);
-                        // 赋值本地播放地址后,返回true是可以继续播放的播放事件
-                        return true;
-                    }
+                        @Override
+                        public void onError(Throwable throwable) {
+                            progressDialog.hide();
+                            Log.e("MainSeeActivity", "onFail", throwable);
+                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    // 返回false是中断后面的操作，先让目前视频文件下载完
+                    return false;
+                } else {
+                    // 获取时间,直接赋值
+                    mBinding.gridView.setDataCover(gridMedia, path);
+                    // 赋值本地播放地址后,返回true是可以继续播放的播放事件
+                    return true;
                 }
-                return false;
             }
 
             @Override
             public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                boolean isOk = getPermissions(false);
-                if (isOk) {
-                    openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
-                }
+                openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
             @Override
@@ -288,6 +284,7 @@ public class MainSeeActivity extends BaseActivity {
      *
      * @param url  网址
      * @param type 0是mp3,1是mp4
+     * @noinspection SameParameterValue
      */
     private String[] getFileFullPath(String url, int type) {
         // 获取后缀名

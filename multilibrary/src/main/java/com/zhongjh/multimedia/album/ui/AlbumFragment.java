@@ -617,22 +617,22 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
 
     public static class ViewHolder {
         public final View rootView;
-        public View selectedAlbum;
-        public TextView tvAlbumTitle;
-        public ImageView imgArrow;
-        public Toolbar toolbar;
-        public TextView buttonPreview;
-        public CheckRadioView original;
-        public View originalLayout;
-        public Group groupOriginal;
-        public TextView buttonApply;
-        public ConstraintLayoutBehavior bottomToolbar;
-        public TextView emptyViewContent;
-        public FrameLayout emptyView;
-        public CoordinatorLayout root;
-        public ImageView imgClose;
-        public ProgressBar pbLoading;
-        public RecyclerLoadMoreView recyclerview;
+        public final View selectedAlbum;
+        public final TextView tvAlbumTitle;
+        public final ImageView imgArrow;
+        public final Toolbar toolbar;
+        public final TextView buttonPreview;
+        public final CheckRadioView original;
+        public final View originalLayout;
+        public final Group groupOriginal;
+        public final TextView buttonApply;
+        public final ConstraintLayoutBehavior bottomToolbar;
+        public final TextView emptyViewContent;
+        public final FrameLayout emptyView;
+        public final CoordinatorLayout root;
+        public final ImageView imgClose;
+        public final ProgressBar pbLoading;
+        public final RecyclerLoadMoreView recyclerview;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;

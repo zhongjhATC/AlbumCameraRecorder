@@ -36,9 +36,9 @@ import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
  */
 public class CameraFragment extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
 
-    CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
-    CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
-    CameraStateManager cameraStateManager = new CameraStateManager(this);
+    final CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
+    final CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
+    final CameraStateManager cameraStateManager = new CameraStateManager(this);
     ViewHolder mViewHolder;
     CameraManage cameraManage;
 
@@ -143,19 +143,19 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
 
     public static class ViewHolder {
 
-        View rootView;
-        ChildClickableRelativeLayout rlMain;
-        ImageViewTouch imgPhoto;
-        ImageView imgFlash;
-        ImageView imgSwitch;
-        public PhotoVideoLayout pvLayout;
-        RecyclerView rlPhoto;
-        View vLine1;
-        View vLine2;
-        ImageView imgClose;
-        ConstraintLayout clMenu;
-        public PreviewView previewView;
-        public FocusView focusView;
+        final View rootView;
+        final ChildClickableRelativeLayout rlMain;
+        final ImageViewTouch imgPhoto;
+        final ImageView imgFlash;
+        final ImageView imgSwitch;
+        public final PhotoVideoLayout pvLayout;
+        final RecyclerView rlPhoto;
+        final View vLine1;
+        final View vLine2;
+        final ImageView imgClose;
+        final ConstraintLayout clMenu;
+        public final PreviewView previewView;
+        public final FocusView focusView;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;

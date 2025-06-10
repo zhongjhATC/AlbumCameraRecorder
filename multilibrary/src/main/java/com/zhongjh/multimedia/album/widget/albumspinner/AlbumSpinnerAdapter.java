@@ -85,8 +85,9 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgFirst;
-        TextView tvName, tvSign;
+        final ImageView imgFirst;
+        final TextView tvName;
+        final TextView tvSign;
         /**
          * 默认图片
          */

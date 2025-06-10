@@ -332,6 +332,7 @@ object FileUtils {
         }
     }
 
+    @Suppress("SameParameterValue")
     @JvmStatic
     private fun copyOrMoveFile(
         context: Context,

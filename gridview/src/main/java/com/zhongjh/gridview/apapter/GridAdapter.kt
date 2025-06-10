@@ -549,6 +549,7 @@ class GridAdapter(
     /**
      * dp转px
      */
+    @Suppress("SameParameterValue")
     private fun dip2px(dp: Int): Int {
         val density: Float = mContext.resources.displayMetrics.density
         return (dp * density + 0.5).toInt()

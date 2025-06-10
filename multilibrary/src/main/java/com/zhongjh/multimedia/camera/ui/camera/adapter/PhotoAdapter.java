@@ -33,8 +33,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     private final String TAG = PhotoAdapter.class.getSimpleName();
 
-    Activity mActivity;
-    GlobalSpec mGlobalSpec;
+    final Activity mActivity;
+    final GlobalSpec mGlobalSpec;
     List<BitmapData> mListData;
 
     // region 回调监听事件
@@ -121,8 +121,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     public static class PhotoViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imgPhoto;
-        ImageView imgCancel;
+        final ImageView imgPhoto;
+        final ImageView imgCancel;
 
         PhotoViewHolder(View itemView) {
             super(itemView);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -48,10 +48,12 @@
         android:layout_weight="1"
         android:background="@null"
         android:gravity="top"
+        android:importantForAutofill="no"
+        android:inputType="text"
         android:textColor="@color/z_image_color_primary"
         android:textSize="24sp"
-        tools:text="这里添加文字"
-        tools:ignore="LabelFor" />
+        tools:ignore="LabelFor"
+        tools:text="这里添加文字" />
 
     <include layout="@layout/image_color_layout_zjh" />
 

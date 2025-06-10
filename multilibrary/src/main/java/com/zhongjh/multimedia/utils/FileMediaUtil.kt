@@ -43,7 +43,7 @@ object FileMediaUtil {
      * @return
      */
     fun createCacheFile(context: Context, @MediaType type: Int): File {
-        return createFile(context, type, DirType.CACHE, null)
+        return createFile(context, type, DirType.CACHE)
     }
 
 
@@ -139,8 +139,8 @@ object FileMediaUtil {
      * @param type 文件类型
      * @return
      */
-    private fun createTempFile(context: Context, @MediaType type: Int): File? {
-        return createFile(context, type, DirType.TEMP, null)
+    private fun createTempFile(context: Context, @MediaType type: Int): File {
+        return createFile(context, type, DirType.TEMP)
     }
 
     /**
@@ -155,8 +155,7 @@ object FileMediaUtil {
     private fun createFile(
         context: Context,
         @MediaType mediaType: Int,
-        @DirType dirType: String,
-        suffix: String?
+        @DirType dirType: String
     ): File {
         val externalFilesDir: File? = context.getExternalFilesDir("")
         val dirFile = File(externalFilesDir!!.absolutePath, dirType)
@@ -165,9 +164,9 @@ object FileMediaUtil {
         }
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmssSSS", Locale.getDefault()).format(Date())
         val fileName = when (mediaType) {
-            TYPE_PICTURE -> "IMAGE_" + timeStamp + (suffix ?: JPEG)
-            TYPE_VIDEO -> "VIDEO_" + timeStamp + (suffix ?: MP4)
-            TYPE_AUDIO -> "AUDIO_" + timeStamp + (suffix ?: AAC)
+            TYPE_PICTURE -> "IMAGE_$timeStamp$JPEG"
+            TYPE_VIDEO -> "VIDEO_$timeStamp$MP4"
+            TYPE_AUDIO -> "AUDIO_$timeStamp$AAC"
             else -> throw RuntimeException("The type must be 2-0.")
         }
         return File(dirFile.absolutePath, fileName)

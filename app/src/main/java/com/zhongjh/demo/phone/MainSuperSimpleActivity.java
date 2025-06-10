@@ -46,7 +46,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
     /**
      * 模拟上传进度
      */
-    protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
+    protected final HashMap<GridMedia, MyTask> timers = new HashMap<>();
 
     /**
      * @param activity 要跳转的activity
@@ -145,8 +145,8 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        GridMedia multiMedia;
-        GridAdapter.PhotoViewHolder viewHolder;
+        final GridMedia multiMedia;
+        final GridAdapter.PhotoViewHolder viewHolder;
 
         public MyTask(GridMedia multiMedia, GridAdapter.PhotoViewHolder viewHolder) {
             this.multiMedia = multiMedia;

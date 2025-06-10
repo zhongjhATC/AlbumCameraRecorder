@@ -581,12 +581,12 @@ public abstract class BaseOperationLayout extends FrameLayout {
     }
 
     public static class ViewHolder {
-        View rootView;
-        public CircularProgress btnCancel;
-        public CircularProgress btnConfirm;
-        public ClickOrLongButton btnClickOrLong;
-        public TextView tvTip;
-        public CircularProgressView pbConfirm;
+        final View rootView;
+        public final CircularProgress btnCancel;
+        public final CircularProgress btnConfirm;
+        public final ClickOrLongButton btnClickOrLong;
+        public final TextView tvTip;
+        public final CircularProgressView pbConfirm;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;

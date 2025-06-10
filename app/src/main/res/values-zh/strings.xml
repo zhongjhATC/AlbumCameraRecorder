@@ -17,10 +17,7 @@
     <string name="flash_on">闪光灯开启</string>
     <string name="flash_auto">闪光灯自动</string>
     <string name="start_the_animation">启动过场动画，从下往上动画</string>
-    <string name="str_on_activity_result_tips">使用onActivityResult接受回调数据</string>
     <string name="toggle_english">切换英文</string>
-    <string name="take_pictures_and_add_them_to_the_album">拍照后加入相册</string>
-    <string name="record_and_add_to_album">录像后加入相册</string>
     <string name="edit_the_picture_and_add_it_to_the_album">图片编辑后加入相册</string>
     <string name="support_for_editing_images">支持编辑图片</string>
     <string name="support_compression_images">支持压缩图片</string>
@@ -67,9 +64,6 @@
     <string name="instant_preview">直接预览</string>
     <string name="blue_style">蓝色样式</string>
     <string name="black_style">黑色样式</string>
-    <string name="green_style">绿色样式</string>
-    <string name="you_can_turn_it_back_on">你可以重新打开相关功能</string>
-    <string name="please_open_it_in_settings_permission_management">请到设置-权限管理中开启</string>
     <string name="download_failed">下载失败</string>
     <string name="at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment">最多可以设置几个视频：</string>
     <string name="album_configuration">相册配置</string>
@@ -81,7 +75,6 @@
     <string name="other_api">其他API</string>
     <string name="obtain_the_cache_file_size">获取缓存文件大小</string>
     <string name="clear_the_cache_file_size">清空缓存文件大小</string>
-    <string name="viewing_the_file_path">查看文件路径</string>
     <string name="str_see_set_value">赋值</string>
     <string name="str_see_get_value">获取值</string>
     <string name="str_see_reset_value">重置</string>

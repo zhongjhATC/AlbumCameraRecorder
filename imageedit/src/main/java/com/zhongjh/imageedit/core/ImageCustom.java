@@ -348,6 +348,7 @@ public class ImageCustom {
         return mFrame;
     }
 
+    /** @noinspection UnusedReturnValue*/
     public boolean onClipHoming() {
         Log.d(TAG, "onClipHoming");
         return mClipWin.homing();

@@ -62,50 +62,47 @@ public class MainSeeLocalActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_see);
+        // noinspection deprecation
         progressDialog = new ProgressDialog(MainSeeLocalActivity.this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_see);
         mBinding.gridView.setGridViewListener((new GridViewListener() {
 
             @Override
             public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
-                boolean isOk = getPermissions(true);
-                if (isOk) {
-                    String[] fileFullPath = getFileFullPath(gridMedia.getUrl(), 1);
-                    String path = fileFullPath[0] + File.separator + fileFullPath[1];
-                    boolean isExists = fileIsExists(path);
-                    if (!isExists) {
-                        // 下载
-                        progressDialog.show();
-                        FileDownloader.downloadFile(gridMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
+                String[] fileFullPath = getFileFullPath(gridMedia.getUrl(), 1);
+                String path = fileFullPath[0] + File.separator + fileFullPath[1];
+                boolean isExists = fileIsExists(path);
+                if (!isExists) {
+                    // 下载
+                    progressDialog.show();
+                    FileDownloader.downloadFile(gridMedia.getUrl(), fileFullPath[0], fileFullPath[1], new DownloadProgressHandler() {
 
-                            @Override
-                            public void onProgress(DownloadInfo downloadInfo) {
+                        @Override
+                        public void onProgress(DownloadInfo downloadInfo) {
 
-                            }
+                        }
 
-                            @Override
-                            public void onCompleted(File file) {
-                                mBinding.gridView.setDataCover(gridMedia, file.getPath());
-                                progressDialog.hide();
-                            }
+                        @Override
+                        public void onCompleted(File file) {
+                            mBinding.gridView.setDataCover(gridMedia, file.getPath());
+                            progressDialog.hide();
+                        }
 
-                            @Override
-                            public void onError(Throwable throwable) {
-                                progressDialog.hide();
-                                Log.e("MainSeeActivity", "onFail", throwable);
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        // 返回false是中断后面的操作，先让目前视频文件下载完
-                        return false;
-                    } else {
-                        // 获取时间,直接赋值
-                        mBinding.gridView.setDataCover(gridMedia, path);
-                        // 赋值本地播放地址后,返回true是可以继续播放的播放事件
-                        return true;
-                    }
+                        @Override
+                        public void onError(Throwable throwable) {
+                            progressDialog.hide();
+                            Log.e("MainSeeActivity", "onFail", throwable);
+                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    // 返回false是中断后面的操作，先让目前视频文件下载完
+                    return false;
+                } else {
+                    // 获取时间,直接赋值
+                    mBinding.gridView.setDataCover(gridMedia, path);
+                    // 赋值本地播放地址后,返回true是可以继续播放的播放事件
+                    return true;
                 }
-                return false;
             }
 
             @Override
@@ -156,10 +153,7 @@ public class MainSeeLocalActivity extends BaseActivity {
             @Override
             public void onItemAdd(@NonNull View view, @NonNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
-                boolean isOk = getPermissions(false);
-                if (isOk) {
-                    openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
-                }
+                openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
         }));
@@ -292,6 +286,7 @@ public class MainSeeLocalActivity extends BaseActivity {
      *
      * @param url  网址
      * @param type 0是mp3,1是mp4
+     * @noinspection SameParameterValue
      */
     private String[] getFileFullPath(String url, int type) {
         // 获取后缀名

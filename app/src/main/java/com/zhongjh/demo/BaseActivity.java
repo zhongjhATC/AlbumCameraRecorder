@@ -50,7 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * AlbumCameraRecorder的回调
      */
-    protected ActivityResultLauncher<Intent> requestLauncherACR = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    protected final ActivityResultLauncher<Intent> requestLauncherACR = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) {
             return;
         }
@@ -65,7 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 九宫格的回调
      */
-    protected ActivityResultLauncher<Intent> requestLauncherGrid = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    protected final ActivityResultLauncher<Intent> requestLauncherGrid = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) {
             return;
         }
@@ -89,7 +89,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     });
 
-    protected HashMap<GridMedia, MyTask> timers = new HashMap<>();
+    protected final HashMap<GridMedia, MyTask> timers = new HashMap<>();
 
     /**
      * 返回九宫格
@@ -116,15 +116,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param alreadyAudioCount 已经存在的视频
      */
     protected abstract void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount);
-
-    /**
-     * 获取权限
-     *
-     * @param isBrowse 是否浏览
-     */
-    protected boolean getPermissions(boolean isBrowse) {
-        return true;
-    }
 
     @Override
     protected void onDestroy() {
@@ -244,7 +235,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         // 百分比
         int percentage = 0;
-        GridMedia gridMedia;
+        final GridMedia gridMedia;
 
         public MyTask(GridMedia gridMedia) {
             this.gridMedia = gridMedia;

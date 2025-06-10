@@ -35,7 +35,7 @@ public class CameraVideoManager implements ICameraVideo {
         this.baseCameraFragment = baseCameraFragment;
     }
 
-    protected BaseCameraFragment<? extends CameraStateManager,
+    protected final BaseCameraFragment<? extends CameraStateManager,
             ? extends CameraPictureManager,
             ? extends CameraVideoManager> baseCameraFragment;
     /**

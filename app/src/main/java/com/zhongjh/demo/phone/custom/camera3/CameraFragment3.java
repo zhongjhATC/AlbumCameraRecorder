@@ -35,9 +35,9 @@ import com.zhongjh.demo.R;
 public class CameraFragment3 extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
 
     ViewHolder mViewHolder;
-    CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
-    CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
-    CameraStateManager cameraStateManager = new CameraStateManager(this);
+    final CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
+    final CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
+    final CameraStateManager cameraStateManager = new CameraStateManager(this);
 
     public static CameraFragment3 newInstance() {
         return new CameraFragment3();
@@ -132,18 +132,18 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManager, Came
 
     public static class ViewHolder {
 
-        View rootView;
-        ChildClickableRelativeLayout rlMain;
-        ImageViewTouch imgPhoto;
-        ImageView imgFlash;
-        ImageView imgSwitch;
-        PhotoVideoLayout pvLayout;
-        RecyclerView rlPhoto;
-        View vLine1;
-        View vLine2;
-        ImageView imgClose;
-        ConstraintLayout clMenu;
-        AppCompatButton btnCustom;
+        final View rootView;
+        final ChildClickableRelativeLayout rlMain;
+        final ImageViewTouch imgPhoto;
+        final ImageView imgFlash;
+        final ImageView imgSwitch;
+        final PhotoVideoLayout pvLayout;
+        final RecyclerView rlPhoto;
+        final View vLine1;
+        final View vLine2;
+        final ImageView imgClose;
+        final ConstraintLayout clMenu;
+        final AppCompatButton btnCustom;
 
         ViewHolder(View rootView) {
             this.rootView = rootView;

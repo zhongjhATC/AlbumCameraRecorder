@@ -44,7 +44,7 @@ public class MainListActivity extends AppCompatActivity {
     /**
      * 独立预览的回调
      */
-    protected ActivityResultLauncher<Intent> requestLauncherPreview = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    protected final ActivityResultLauncher<Intent> requestLauncherPreview = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
     });
 
     @Override

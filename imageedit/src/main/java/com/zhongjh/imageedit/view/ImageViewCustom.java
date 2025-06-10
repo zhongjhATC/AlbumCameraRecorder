@@ -34,7 +34,7 @@ import com.zhongjh.imageedit.core.sticker.ImageStickerPortrait;
 
 /**
  * 用于辅助编辑图片界面的显示图片控件
- *
+ * <p>
  * ImageView
  * clip外不加入path
  *
@@ -513,7 +513,8 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         Log.d(TAG, "onTouchPath");
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                return onPathBegin(event);
+                onPathBegin(event);
+                return true;
             case MotionEvent.ACTION_MOVE:
                 return onPathMove(event);
             case MotionEvent.ACTION_UP:
@@ -528,11 +529,10 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     /**
      * 钢笔初始化
      */
-    private boolean onPathBegin(MotionEvent event) {
+    private void onPathBegin(MotionEvent event) {
         Log.d(TAG, "onPathBegin");
         mPen.reset(event.getX(), event.getY());
         mPen.setIdentity(event.getPointerId(0));
-        return true;
     }
 
     /**

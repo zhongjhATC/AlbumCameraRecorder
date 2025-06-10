@@ -451,6 +451,7 @@ class GridView : FrameLayout, GridViewApi {
      * @param icClean     是否清除
      * @param isUploading 是否触发上传事件
      */
+    @Suppress("SameParameterValue")
     private fun addVideo(videoUris: List<Uri>, icClean: Boolean, isUploading: Boolean) {
         isAuthority()
         val progressMedias = ArrayList<GridMedia>()

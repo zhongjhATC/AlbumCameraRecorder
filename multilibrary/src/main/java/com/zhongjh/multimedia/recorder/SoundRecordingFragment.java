@@ -319,6 +319,7 @@ public class SoundRecordingFragment extends BaseFragment {
      *
      * @param start   录音开始或者停止
      * @param isShort 短时结束不算
+     * @noinspection SameParameterValue
      */
     private void onRecord(boolean start, boolean isShort) {
         if (start) {
@@ -586,9 +587,9 @@ public class SoundRecordingFragment extends BaseFragment {
     // endregion
 
     public static class ViewHolder {
-        View rootView;
-        public Chronometer chronometer;
-        public SoundRecordingLayout pvLayout;
+        final View rootView;
+        public final Chronometer chronometer;
+        public final SoundRecordingLayout pvLayout;
 
         public ViewHolder(View rootView) {
             this.rootView = rootView;
