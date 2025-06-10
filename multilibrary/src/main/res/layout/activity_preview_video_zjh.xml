@@ -40,7 +40,7 @@
             app:srcCompat="@drawable/ic_close_white_24dp"
             tools:ignore="ContentDescription" />
 
-        <com.zhongjh.albumcamerarecorder.widget.progressbutton.CircularProgressButton
+        <com.zhongjh.multimedia.widget.progressbutton.CircularProgressButton
             android:id="@+id/btnConfirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

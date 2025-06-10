@@ -2,10 +2,10 @@ package com.zhongjh.demo.phone.custom.camera2;
 
 import android.widget.Toast;
 
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 
 /**
  * 主要演示 BaseCameraPicturePresenter

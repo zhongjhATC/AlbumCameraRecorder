@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.zhongjh.albumcamerarecorder">
+    package="com.zhongjh.multimedia">
 
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -19,7 +19,7 @@
     <application>
 
         <provider
-            android:name="com.zhongjh.albumcamerarecorder.AlbumCameraRecorderFileProvider"
+            android:name="com.zhongjh.multimedia.AlbumCameraRecorderFileProvider"
             android:authorities="${applicationId}.zhongjhProvider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -29,7 +29,7 @@
         </provider>
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.zhongjh.multimedia.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:hardwareAccelerated="true"
@@ -38,7 +38,7 @@
             android:taskAffinity=""
             tools:ignore="DiscouragedApi" />
         <activity
-            android:name=".preview.PreviewActivity"
+            android:name="com.zhongjh.multimedia.preview.PreviewActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:launchMode="singleTop"

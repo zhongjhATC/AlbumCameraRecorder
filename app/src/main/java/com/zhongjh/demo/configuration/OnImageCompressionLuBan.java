@@ -4,8 +4,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.zhongjh.albumcamerarecorder.listener.OnImageCompressionListener;
-import com.zhongjh.albumcamerarecorder.utils.FileMediaUtil;
+import com.zhongjh.multimedia.listener.OnImageCompressionListener;
+import com.zhongjh.multimedia.utils.FileMediaUtil;
 import com.zhongjh.common.utils.FileUtils;
 
 import org.jetbrains.annotations.NotNull;

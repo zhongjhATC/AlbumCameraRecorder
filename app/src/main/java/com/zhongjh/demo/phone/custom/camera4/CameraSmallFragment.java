@@ -11,13 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraManage;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
-import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
+import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
+import com.zhongjh.multimedia.widget.ImageViewTouch;
+import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
 import com.zhongjh.demo.R;
 import com.zhongjh.demo.databinding.FragmentCameraSmallBinding;
 
@@ -95,7 +96,7 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManager, 
 
     @NonNull
     @Override
-    public com.zhongjh.albumcamerarecorder.widget.ImageViewTouch getSinglePhotoView() {
+    public ImageViewTouch getSinglePhotoView() {
         return mBinding.imgPhoto;
     }
 

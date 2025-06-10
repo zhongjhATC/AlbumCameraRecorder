@@ -78,7 +78,7 @@
         app:layout_constraintTop_toTopOf="@+id/btnClickOrLong" />
 
     <!-- 中间的操作按钮 -->
-    <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
+    <com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
         android:id="@+id/btnClickOrLong"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

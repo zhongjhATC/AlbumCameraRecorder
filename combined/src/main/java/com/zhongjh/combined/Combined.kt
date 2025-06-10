@@ -8,9 +8,9 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting
-import com.zhongjh.albumcamerarecorder.settings.GlobalSpec
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
+import com.zhongjh.multimedia.settings.GlobalSetting
+import com.zhongjh.multimedia.settings.GlobalSpec
+import com.zhongjh.multimedia.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.listener.AbstractGridViewListener

@@ -14,8 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
+import com.zhongjh.multimedia.settings.GlobalSetting;
+import com.zhongjh.multimedia.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;

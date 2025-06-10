@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/background_dark"
     android:paddingBottom="50dp"
-    tools:context="com.zhongjh.albumcamerarecorder.recorder.SoundRecordingFragment"
+    tools:context="com.zhongjh.multimedia.recorder.SoundRecordingFragment"
     tools:ignore="Overdraw">
 
     <Chronometer
@@ -26,7 +26,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
 
-    <com.zhongjh.albumcamerarecorder.recorder.widget.SoundRecordingLayout
+    <com.zhongjh.multimedia.recorder.widget.SoundRecordingLayout
         android:id="@+id/pvLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

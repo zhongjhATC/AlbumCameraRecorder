@@ -11,12 +11,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 
-import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
-import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
-import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+import com.zhongjh.multimedia.album.filter.BaseFilter;
+import com.zhongjh.multimedia.settings.AlbumSetting;
+import com.zhongjh.multimedia.settings.CameraSetting;
+import com.zhongjh.multimedia.settings.GlobalSetting;
+import com.zhongjh.multimedia.settings.MultiMediaSetting;
+import com.zhongjh.multimedia.settings.RecorderSetting;
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.demo.BaseActivity;

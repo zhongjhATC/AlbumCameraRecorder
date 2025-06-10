@@ -12,14 +12,15 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraManage;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraPictureManager;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.albumcamerarecorder.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
-import com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout;
-import com.zhongjh.albumcamerarecorder.widget.childclickable.IChildClickableLayout;
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
+import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
+import com.zhongjh.multimedia.widget.ImageViewTouch;
+import com.zhongjh.multimedia.widget.childclickable.ChildClickableRelativeLayout;
+import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
 import com.zhongjh.demo.R;
 
 /**
@@ -89,7 +90,7 @@ public class CameraFragment2 extends BaseCameraFragment<CameraStateManager, Came
 
     @NonNull
     @Override
-    public com.zhongjh.albumcamerarecorder.widget.ImageViewTouch getSinglePhotoView() {
+    public ImageViewTouch getSinglePhotoView() {
         return mViewHolder.imgPhoto;
     }
 
@@ -133,7 +134,7 @@ public class CameraFragment2 extends BaseCameraFragment<CameraStateManager, Came
 
         View rootView;
         ChildClickableRelativeLayout rlMain;
-        com.zhongjh.albumcamerarecorder.widget.ImageViewTouch imgPhoto;
+        ImageViewTouch imgPhoto;
         ImageView imgFlash;
         ImageView imgSwitch;
         PhotoVideoLayout pvLayout;

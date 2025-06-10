@@ -20,8 +20,8 @@ import android.content.Context;
 import android.graphics.Point;
 import android.net.Uri;
 
-import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
-import com.zhongjh.albumcamerarecorder.album.utils.PhotoMetadataUtils;
+import com.zhongjh.multimedia.album.filter.BaseFilter;
+import com.zhongjh.multimedia.album.utils.PhotoMetadataUtils;
 import com.zhongjh.common.entity.IncapableCause;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.enums.MimeType;

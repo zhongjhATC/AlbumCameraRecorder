@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.zhongjh.albumcamerarecorder.sharedanimation.SharedAnimationView
+    <com.zhongjh.multimedia.sharedanimation.SharedAnimationView
         android:id="@+id/sharedAnimationView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -31,7 +31,7 @@
             app:srcCompat="@drawable/ic_back"
             tools:ignore="HardcodedText" />
 
-        <com.zhongjh.albumcamerarecorder.album.widget.CheckView
+        <com.zhongjh.multimedia.album.widget.CheckView
             android:id="@+id/checkView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
             app:layout_constraintStart_toStartOf="@+id/original"
             tools:showIn="@layout/fragment_album_zjh" />
 
-        <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
+        <com.zhongjh.multimedia.album.widget.CheckRadioView
             android:id="@+id/original"
             android:layout_width="32dp"
             android:layout_height="32dp"

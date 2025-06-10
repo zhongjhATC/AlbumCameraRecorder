@@ -7,11 +7,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zhongjh.albumcamerarecorder.settings.AlbumSetting;
-import com.zhongjh.albumcamerarecorder.settings.CameraSetting;
-import com.zhongjh.albumcamerarecorder.settings.GlobalSetting;
-import com.zhongjh.albumcamerarecorder.settings.MultiMediaSetting;
-import com.zhongjh.albumcamerarecorder.settings.RecorderSetting;
+import com.zhongjh.multimedia.settings.AlbumSetting;
+import com.zhongjh.multimedia.settings.CameraSetting;
+import com.zhongjh.multimedia.settings.GlobalSetting;
+import com.zhongjh.multimedia.settings.MultiMediaSetting;
+import com.zhongjh.multimedia.settings.RecorderSetting;
 import com.zhongjh.demo.configuration.Glide4Engine;
 import com.zhongjh.demo.databinding.ActivityMainSuperSimpleBinding;
 import com.zhongjh.combined.Combined;

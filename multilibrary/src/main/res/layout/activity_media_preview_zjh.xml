@@ -30,7 +30,7 @@
             app:srcCompat="@drawable/ic_back"
             tools:ignore="HardcodedText" />
 
-        <com.zhongjh.albumcamerarecorder.album.widget.CheckView
+        <com.zhongjh.multimedia.album.widget.CheckView
             android:id="@+id/checkView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
                 tools:showIn="@layout/fragment_album_zjh"
                 tools:visibility="visible">
 
-                <com.zhongjh.albumcamerarecorder.album.widget.CheckRadioView
+                <com.zhongjh.multimedia.album.widget.CheckRadioView
                     android:id="@+id/original"
                     android:layout_width="16dp"
                     android:layout_height="16dp"

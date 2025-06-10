@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout
+    <com.zhongjh.multimedia.widget.childclickable.ChildClickableRelativeLayout
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/rlMain"
         android:layout_width="match_parent"
@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:paddingTop="1dp">
 
-        <com.zhongjh.albumcamerarecorder.widget.ImageViewTouch
+        <com.zhongjh.multimedia.widget.ImageViewTouch
             android:id="@+id/imgPhoto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -103,6 +103,6 @@
             android:contentDescription="底部功能按钮"
             tools:ignore="HardcodedText" />
 
-    </com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout>
+    </com.zhongjh.multimedia.widget.childclickable.ChildClickableRelativeLayout>
 
 </layout>

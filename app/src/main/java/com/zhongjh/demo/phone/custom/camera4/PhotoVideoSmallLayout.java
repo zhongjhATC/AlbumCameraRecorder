@@ -9,7 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.zhongjh.albumcamerarecorder.camera.widget.PhotoVideoLayout;
+import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.demo.R;
 
 /**
