@@ -1,7 +1,5 @@
 package com.zhongjh.albumcamerarecorder.camera.ui.camera.adapter;
 
-import static com.zhongjh.albumcamerarecorder.model.SelectedData.STATE_SELECTION;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
@@ -11,21 +9,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
 import com.zhongjh.albumcamerarecorder.camera.entity.BitmapData;
-import com.zhongjh.albumcamerarecorder.preview.PreviewActivity;
-import com.zhongjh.albumcamerarecorder.preview.PreviewFragment;
 import com.zhongjh.albumcamerarecorder.preview.start.PreviewStartManager;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.listener.OnMoreClickListener;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,8 +81,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     public void setListData(List<BitmapData> listData) {
+        List<BitmapData> oldData = this.mListData;
         this.mListData = listData;
-        notifyDataSetChanged();
+        // 计算新老数据集差异，将差异更新到Adapter
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new PhotoCallback(oldData, listData));
+        diffResult.dispatchUpdatesTo(this);
     }
 
     /**
@@ -121,7 +118,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         return mListData != null ? mListData.size() : 0;
     }
 
-    static class PhotoViewHolder extends RecyclerView.ViewHolder {
+    public static class PhotoViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imgPhoto;
         ImageView imgCancel;

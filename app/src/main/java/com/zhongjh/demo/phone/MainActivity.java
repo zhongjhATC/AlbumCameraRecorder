@@ -306,13 +306,13 @@ public class MainActivity extends BaseActivity {
         // 拍照时添加图片事件以及删除图片事件
         cameraSetting.setOnCaptureListener(new OnCaptureListener() {
             @Override
-            public void remove(@NonNull List<? extends BitmapData> captureData, int position) {
-                Log.d(TAG, "删除索引 " + position);
+            public void add(@NonNull List<BitmapData> captureDatas, int position) {
+                Log.d(TAG, "添加索引 " + position);
             }
 
             @Override
-            public void add(@NonNull List<? extends BitmapData> captureDatas, int position) {
-                Log.d(TAG, "添加索引 " + position);
+            public void remove(@NonNull List<BitmapData> captureData, int position) {
+                Log.d(TAG, "删除索引 " + position);
             }
         });
 

@@ -1,4 +1,6 @@
-package com.zhongjh.albumcamerarecorder.camera.entity;
+package com.zhongjh.albumcamerarecorder.camera.entity
+
+import com.zhongjh.albumcamerarecorder.album.entity.Album2
 
 
 /**
@@ -6,49 +8,36 @@ package com.zhongjh.albumcamerarecorder.camera.entity;
  *
  * @author zhongjh
  */
-public class BitmapData {
-
+class BitmapData(
     /**
      * 临时id
      */
-    private Long temporaryId;
+    var temporaryId: Long,
     /**
      * uri路径
      */
-    private String uri;
+    var uri: String,
     /**
      * 真实路径
      */
-    private String absolutePath;
+    var absolutePath: String
+) {
 
-    public BitmapData(Long temporaryId, String uri, String absolutePath) {
-        this.temporaryId = temporaryId;
-        this.uri = uri;
-        this.absolutePath = absolutePath;
-    }
+    /**
+     * 用于 DiffUtil.Callback 进行判断
+     */
+    fun equalsBitmapData(bitmapData: BitmapData): Boolean {
+        if (temporaryId != bitmapData.temporaryId) {
+            return false
+        }
 
-    public Long getTemporaryId() {
-        return temporaryId;
-    }
-
-    public void setTemporaryId(Long temporaryId) {
-        this.temporaryId = temporaryId;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public String getAbsolutePath() {
-        return absolutePath;
-    }
-
-    public void setAbsolutePath(String absolutePath) {
-        this.absolutePath = absolutePath;
+        if (uri != bitmapData.uri) {
+            return false
+        }
+        if (absolutePath != bitmapData.absolutePath) {
+            return false
+        }
+        return true
     }
 
 

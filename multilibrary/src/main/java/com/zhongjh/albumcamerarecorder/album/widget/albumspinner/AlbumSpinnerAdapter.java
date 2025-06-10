@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.albumcamerarecorder.R;
-import com.zhongjh.albumcamerarecorder.album.entity.Album;
 import com.zhongjh.albumcamerarecorder.album.entity.Album2;
 import com.zhongjh.albumcamerarecorder.settings.GlobalSpec;
 import com.zhongjh.albumcamerarecorder.utils.AttrsUtils;
@@ -47,8 +46,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_album_zjh, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_album_zjh, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -61,10 +59,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
         int checkedNum = album.getCheckedCount();
         holder.tvSign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
         holder.itemView.setSelected(isChecked);
-        GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext().getApplicationContext(),
-                holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size),
-                holder.placeholder,
-                holder.imgFirst, album.getFirstImagePath());
+        GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext().getApplicationContext(), holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size), holder.placeholder, holder.imgFirst, album.getFirstImagePath());
         Context context = holder.itemView.getContext();
         holder.tvName.setText(context.getString(R.string.z_multi_library_album_num, name, imageNum));
         holder.itemView.setOnClickListener(view -> {
@@ -86,7 +81,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
         return albums.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgFirst;
         TextView tvName, tvSign;
         /**
@@ -100,8 +95,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
             tvName = itemView.findViewById(R.id.tvName);
             tvSign = itemView.findViewById(R.id.tvSign);
 
-            TypedArray ta = itemView.getContext().getTheme().obtainStyledAttributes(
-                    new int[]{R.attr.album_thumbnail_placeholder});
+            TypedArray ta = itemView.getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.album_thumbnail_placeholder});
             placeholder = ta.getDrawable(0);
             ta.recycle();
 
@@ -110,25 +104,21 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
             itemView.getContext().getTheme().resolveAttribute(R.attr.album_listPopupWindowStyle, typedValue, true);
 
             // item背景
-            Drawable backgroundStyle = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId,
-                    R.attr.album_backgroundStyle, R.drawable.spinner_item_select_bg_white);
+            Drawable backgroundStyle = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId, R.attr.album_backgroundStyle, R.drawable.spinner_item_select_bg_white);
             itemView.setBackground(backgroundStyle);
 
             // 该专辑里面有图片被选择时
-            Drawable folderCheckedDotDrawable = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId,
-                    R.attr.album_checkDotStyle, R.drawable.ic_orange_oval);
+            Drawable folderCheckedDotDrawable = AttrsUtils.getTypeValueDrawable(itemView.getContext(), typedValue.resourceId, R.attr.album_checkDotStyle, R.drawable.ic_orange_oval);
             tvSign.setBackground(folderCheckedDotDrawable);
 
             // 专辑字体颜色
-            int folderTextColor = AttrsUtils.getTypeValueColor(itemView.getContext(), typedValue.resourceId,
-                    R.attr.album_textColor);
+            int folderTextColor = AttrsUtils.getTypeValueColor(itemView.getContext(), typedValue.resourceId, R.attr.album_textColor);
             if (folderTextColor != 0) {
                 tvName.setTextColor(folderTextColor);
             }
 
             // 专辑字体大小
-            int folderTextSize = AttrsUtils.getTypeValueSizeForInt(itemView.getContext(), typedValue.resourceId,
-                    R.attr.album_textSize);
+            int folderTextSize = AttrsUtils.getTypeValueSizeForInt(itemView.getContext(), typedValue.resourceId, R.attr.album_textSize);
             if (folderTextSize != 0) {
                 tvName.setTextSize(TypedValue.COMPLEX_UNIT_PX, folderTextSize);
             }

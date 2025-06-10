@@ -76,6 +76,9 @@ class Album2 {
         if (firstImagePath != album.firstImagePath) {
             return false
         }
+        if (firstMimeType != album.firstMimeType) {
+            return false
+        }
         if (name != album.name) {
             return false
         }
@@ -88,7 +91,7 @@ class Album2 {
         if (checkedCount != album.checkedCount) {
             return false
         }
-        if (firstMimeType != album.firstMimeType) {
+        if (type != album.type) {
             return false
         }
         return true

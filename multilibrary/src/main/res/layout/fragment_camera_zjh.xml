@@ -8,7 +8,8 @@
     android:animateLayoutChanges="true"
     android:background="@color/black_eighty_percent"
     android:orientation="vertical"
-    android:paddingTop="1dp">
+    android:paddingTop="1dp"
+    tools:ignore="Overdraw">
 
     <!-- 预览拍摄 -->
     <androidx.camera.view.PreviewView

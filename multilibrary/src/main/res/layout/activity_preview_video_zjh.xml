@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:ignore="Overdraw">
 
     <VideoView
         android:id="@+id/vvPreview"

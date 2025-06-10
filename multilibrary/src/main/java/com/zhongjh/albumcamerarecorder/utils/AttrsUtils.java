@@ -45,8 +45,9 @@ public class AttrsUtils {
         float textSize = array.getDimensionPixelSize(0, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return textSize;
     }
 
@@ -64,8 +65,9 @@ public class AttrsUtils {
         int textSize = array.getDimensionPixelSize(0, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return textSize;
     }
 
@@ -84,8 +86,9 @@ public class AttrsUtils {
         int textSize = array.getDimensionPixelSize(0, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return textSize;
     }
 
@@ -103,8 +106,9 @@ public class AttrsUtils {
         int color = array.getColor(0, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return color;
     }
 
@@ -123,8 +127,9 @@ public class AttrsUtils {
         int color = array.getColor(0, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return color;
     }
 
@@ -142,8 +147,9 @@ public class AttrsUtils {
         ColorStateList colorStateList = array.getColorStateList(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return colorStateList;
     }
 
@@ -161,8 +167,9 @@ public class AttrsUtils {
         boolean flag = array.getBoolean(0, false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return flag;
     }
 
@@ -180,8 +187,9 @@ public class AttrsUtils {
         Drawable drawable = array.getDrawable(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return drawable == null ? ContextCompat.getDrawable(context, defaultResId) : drawable;
     }
 
@@ -202,8 +210,9 @@ public class AttrsUtils {
         drawable = array.getDrawable(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             array.close();
+        } else {
+            array.recycle();
         }
-        array.recycle();
         return drawable == null ? ContextCompat.getDrawable(context, defaultResId) : drawable;
     }
 
