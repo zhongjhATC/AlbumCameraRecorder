@@ -30,9 +30,4 @@
 
     </style>
 
-    <style name="ZImageGalleryTheme" parent="Theme.AppCompat">
-        <item name="z_image_gallery_span_count">4</item>
-        <item name="z_image_gallery_select_shade">#90FFFFFF</item>
-    </style>
-
 </resources>

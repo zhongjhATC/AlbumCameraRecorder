@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">multimedia tool</string>
-    <string name="permission_request_denied">The appropriate permissions are required</string>
     <string name="error_gif">The length and width shall not be less than %1$dpx, and the size shall not exceed %2$sM</string>
-    <string name="error_original">The size is not more than %1$sM。</string>
     <string name="up_upload_is_customizable">Upupload is customizable</string>
     <string name="submit_upload">Submit Upload</string>
     <string name="global_configuration">Global configuration</string>
@@ -19,10 +17,7 @@
     <string name="flash_on">FLASH ON</string>
     <string name="flash_auto">FLASH AUTO</string>
     <string name="start_the_animation">Start the splash screen animation, which animates from bottom to top.</string>
-    <string name="str_on_activity_result_tips">Use onActivityResult to accept callback data</string>
     <string name="toggle_english">toggle english</string>
-    <string name="take_pictures_and_add_them_to_the_album">Take pictures and add them to the album</string>
-    <string name="record_and_add_to_album">Record and add to album</string>
     <string name="edit_the_picture_and_add_it_to_the_album">Edit the picture and add it to the album</string>
     <string name="support_for_editing_images">Support for editing images</string>
     <string name="support_compression_images">Support compression images</string>
@@ -69,9 +64,6 @@
     <string name="instant_preview">Instant preview</string>
     <string name="blue_style">Blue Style</string>
     <string name="black_style">Black Style</string>
-    <string name="green_style">Green Style</string>
-    <string name="you_can_turn_it_back_on">You can turn it back on</string>
-    <string name="please_open_it_in_settings_permission_management">Please open it in Settings - Permission Management</string>
     <string name="download_failed">Download failed</string>
     <string name="at_most_several_videos_can_be_set_multiple_videos_can_be_set_to_add_and_more_than_one_rendering_function_is_not_considered_for_the_moment">At most, several videos can be set  :</string>
     <string name="album_configuration">Photo album configuration</string>
@@ -83,7 +75,6 @@
     <string name="other_api">other api</string>
     <string name="obtain_the_cache_file_size">Obtain the cache file size </string>
     <string name="clear_the_cache_file_size">Clear the cache file size</string>
-    <string name="viewing_the_file_path">Viewing the File Path</string>
     <string name="str_see_set_value">set value</string>
     <string name="str_see_get_value">get value</string>
     <string name="str_see_reset_value">reset value</string>

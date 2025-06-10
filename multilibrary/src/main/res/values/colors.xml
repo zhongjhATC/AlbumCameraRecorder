@@ -2,7 +2,6 @@
 <resources>
 
     <color name="preview_bottom_toolbar_bg">#CC000000</color>
-    <color name="preview_bottom_size">#61FFFFFF</color>
 
     <color name="click_long_button_round_border">#ffffffff</color>
     <color name="click_long_button_inner_circle_in_operation">#ff32dac3</color>
@@ -16,16 +15,11 @@
 
 
     <color name="operation_background">#EEDCDCDC</color>
-    <color name="operation_background_end">#99ffffff</color>
     <color name="operation_background_pressed">#66000000</color>
-    <color name="operation_background_pressed_end">#cc000000</color>
-    <color name="operation_stroke">#ffffffff</color>
 
     <color name="sign_color_e0ff6100">#E0FF6100</color>
     <color name="text_color_4d">#4d4d4d</color>
     <color name="spinner_bottom_line_color">#80000000</color>
 
     <color name="ps_color_80">#80000000</color>
-    <color name="ps_color_00">#00000000</color>
-
 </resources>

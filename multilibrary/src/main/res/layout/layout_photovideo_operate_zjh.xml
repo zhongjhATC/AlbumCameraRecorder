@@ -100,7 +100,6 @@
             tools:ignore="HardcodedText" />
 
         <ImageView
-            android:id="@+id/iv_edit"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerInParent="true"

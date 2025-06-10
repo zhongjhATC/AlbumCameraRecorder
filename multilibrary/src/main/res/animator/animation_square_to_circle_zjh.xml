@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android">
-    <objectAnimator
-        android:propertyName="pathData"
-        android:valueFrom="@string/z_multi_library_path_square"
-        android:valueTo="@string/z_multi_library_path_circle"
-        android:valueType="pathType"/>
-</set>

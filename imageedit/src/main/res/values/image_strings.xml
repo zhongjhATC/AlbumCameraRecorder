@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="z_image_doodle">doodle</string>
-    <string name="z_image_text">text</string>
-    <string name="z_image_mosaic">mosaic</string>
-    <string name="z_image_clip">clip</string>
-    <string name="z_image_reset">reset</string>
-    <string name="z_image_done">done</string>
-    <string name="z_image_cancel">cancel</string>
-    <string name="z_image_rotate">rotate</string>
+    <string name="z_image_text">Text</string>
+    <string name="z_image_clip">Clip</string>
+    <string name="z_image_reset">Reset</string>
+    <string name="z_image_done">Done</string>
+    <string name="z_image_cancel">Cancel</string>
+    <string name="z_image_rotate">Rotate</string>
 
     <string name="z_image_mosaic_tip">Please smear blurry on the picture directly</string>
-    <string name="z_image_undo">undo</string>
-    <string name="z_image_all_photo">All photo</string>
-    <string name="z_image_original">original</string>
-    <string name="z_image_preview">preview</string>
+    <string name="z_image_undo">Undo</string>
 </resources>

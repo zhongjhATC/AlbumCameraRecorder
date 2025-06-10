@@ -3,7 +3,6 @@
     <string name="z_multi_library_take_photos">take photos</string>
     <string name="z_multi_library_sound_recording">sound recording</string>
     <string name="z_multi_library_setting">setting</string>
-    <string name="z_multi_library_close">close</string>
     <string name="z_multi_library_hint">hint</string>
     <string name="z_multi_library_ok">OK</string>
     <string name="z_multi_library_cancel">Cancel</string>
@@ -22,23 +21,16 @@
     <string name="z_multi_library_the_camera_limit_has_been_reached">The camera limit has been reached</string>
     <string name="z_one_of_these_three_albumSetting_camerasSetting_and_recordDerSetting_must_be_set">one of these three albumSetting, camerasSetting, and recordDerSetting must be set</string>
 
-    <string name="compression_failure">Compression failure</string>
-
     <!-- region 相册 -->
 
     <string name="z_multi_library_album_name_all">all</string>
 
     <string name="z_multi_library_button_preview">preview</string>
-    <string name="z_multi_library_button_apply_default">use</string>
-    <string name="z_multi_library_button_apply">use(%1$d)</string>
-    <string name="z_multi_library_button_back">back</string>
     <string name="z_multi_library_button_edit">edit</string>
-    <string name="z_multi_library_photo_grid_capture">Take a</string>
     <string name="z_multi_library_empty_text">No pictures or videos yet</string>
     <string name="z_multi_library_default_to_record">Fast recording</string>
 
 
-    <string name="z_multi_library_error_over_count_default">You have reached the maximum number of choices</string>
     <string name="z_multi_library_error_over_count" tools:ignore="PluralsCandidate">
         <item quantity="one">You can select a maximum of %1$d file</item>
         <item quantity="other">You can select a maximum of %1$d files</item>
@@ -51,11 +43,8 @@
         <item quantity="one">You can select a maximum of %1$d picture</item>
         <item quantity="other">You can select a maximum of %1$d pictures</item>
     </string>
-    <string name="z_multi_library_error_under_quality">Image quality is too low</string>
-    <string name="z_multi_library_error_over_quality">Image quality too high</string>
     <string name="z_multi_library_error_file_type">Unsupported file type</string>
     <string name="z_multi_library_error_type_conflict">You cannot select images and videos at the same time</string>
-    <string name="z_multi_library_error_no_video_activity">There is no app that supports video preview</string>
     <string name="z_multi_library_error_over_original_size">"If the photo is larger than %1$d M and cannot be uploaded, the original image will be unchecked"</string>
     <string name="z_multi_library_error_over_original_count" tools:ignore="PluralsCandidate">
         <item quantity="one">"If %1$d photo larger than %2$d M\ncannot be uploaded, the original picture will be unchecked"</item>
@@ -77,18 +66,11 @@
     <string name="z_multi_library_long_press_camera">Long press camera</string>
     <string name="z_multi_library_light_touch_camera">Touch your camera</string>
     <string name="z_multi_library_touch_your_suspension">Touch your suspension</string>
-    <string name="z_multi_library_touch_your_end">Touch your end</string>
     <string name="z_multi_library_long_press_sound_recording">Long press the tape</string>
     <string name="z_multi_library_the_recording_time_is_too_short">The recording time is too short</string>
     <string name="z_long_press_to_continue_recording">Support to continue recording</string>
-    <string name="z_multi_library_video_can_only_exist_in_n" tools:ignore="PluralsCandidate">
-        <item quantity="one">Only %1$d video can exist</item>
-        <item quantity="other">Only %1$d videos can exist</item>
-    </string>
-    <string name="z_multi_library_watermark">watermark</string>
 
     <!-- region 录像 -->
-    <string name="z_multi_library_path_square">M 35,43 v 34 A 8 8 0 0 0 43,85 h 34 A 8 8 0 0 0 85 77 v -34 A 8 8 0 0 0 77 35 h -34 A 8 8 0 0 0 35 43</string>
     <string name="z_multi_library_path_circle">M 0 60 v 0 A 60 60 0 0 0 60 120 h 0 A 60 60 0 0 0 120 60 v 0 A 60 60 0 0 0 60 0 h 0 A 60 60 0 0 0 0 60</string>
     <string name="z_multi_library_ic_baseline_done">M 3.4 13.4 L 9 19 L 21 7 L 19.6 5.6 L 9 16.2 L 9 16.2 L 4.8 12 L 3.4 13.4</string> <!-- 第一个和完成都是用该图 -->
     <string name="z_multi_library_ic_baseline_stop">M 6 6 L 6 18 L 18 18 L 18 6 L 14.898 6 L 11.878 6 L 8.939 6 L 6 6</string><!-- 暂停图片 -->
@@ -98,7 +80,6 @@
     <string name="z_multi_library_confirm">confirm</string>
 
     <string name="z_multi_library_working_video_click_later">Do not operate frequently</string>
-    <string name="z_multi_library_recording_error_roll_back_previous_paragraph">Recording error, roll back previous paragraph</string>
 
     <!-- endregion -->
 

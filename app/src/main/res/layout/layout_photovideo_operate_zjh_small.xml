@@ -24,7 +24,6 @@
 
     <!-- 右侧的分段录制 -->
     <TextView
-        android:id="@+id/tvSectionRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/z_multi_library_default_to_record"
@@ -116,7 +115,6 @@
             tools:ignore="HardcodedText" />
 
         <ImageView
-            android:id="@+id/iv_edit"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:contentDescription="内圈"

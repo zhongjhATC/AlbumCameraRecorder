@@ -947,7 +947,6 @@ class PreviewFragment : BaseFragment() {
                 mViewHolder.tvEdit.visibility = View.GONE
             }
         }
-
     }
 
     /**
