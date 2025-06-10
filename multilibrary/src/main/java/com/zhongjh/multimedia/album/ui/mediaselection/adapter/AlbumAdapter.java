@@ -35,7 +35,6 @@ public class AlbumAdapter extends
         MediaGrid.OnMediaGridClickListener {
 
     private final String TAG = AlbumAdapter.this.getClass().getSimpleName();
-    private static final int VIEW_TYPE_MEDIA = 0x01;
 
     private final SelectedModel mSelectedModel;
     private final Drawable mPlaceholder;
@@ -56,10 +55,6 @@ public class AlbumAdapter extends
         ta.recycle();
 
         mImageResize = imageResize;
-    }
-
-    public List<LocalMedia> getData() {
-        return data;
     }
 
     /**
@@ -290,6 +285,7 @@ public class AlbumAdapter extends
          * @param imageView       图片View
          * @param item            选项
          * @param adapterPosition 索引
+         * @noinspection unused
          */
         void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition);
     }

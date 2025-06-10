@@ -25,6 +25,7 @@ public final class FileInputOutputUtils {
      * @param filePath The path of file.
      * @param is       The input stream.
      * @return {@code true}: success<br>{@code false}: fail
+     * @noinspection UnusedReturnValue
      */
     public static boolean writeFileFromInputStream(final String filePath, final InputStream is) {
         return writeFileFromInputStream(FileUtils.getFileByPath(filePath), is, false, null);
