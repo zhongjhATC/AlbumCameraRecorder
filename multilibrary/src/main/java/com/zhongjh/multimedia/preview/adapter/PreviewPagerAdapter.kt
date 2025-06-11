@@ -10,7 +10,6 @@ import com.github.chrisbanes.photoview.PhotoView
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.preview.adapter.PreviewPagerAdapter.PreviewViewHolder
 import com.zhongjh.multimedia.settings.GlobalSpec.imageEngine
-import com.zhongjh.common.entity.BaseMedia
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.utils.BitmapUtils
 
@@ -23,7 +22,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     /**
      * 数据源
      */
-    private val items = ArrayList<BaseMedia>()
+    private val items = ArrayList<LocalMedia>()
 
     /**
      * view的缓存
@@ -63,11 +62,16 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
         if (item.isVideo()) {
             holder.videoPlayButton.visibility = View.VISIBLE
             holder.videoPlayButton.setOnClickListener { }
+            item.loadImage(mContext, imageEngine, holder.imageView)
+        } else if (item.isAudio()) {
+            holder.videoPlayButton.visibility = View.VISIBLE
+            holder.videoPlayButton.setOnClickListener { }
+            item.loadImage2(mContext, imageEngine, holder.imageView)
         } else {
             holder.videoPlayButton.visibility = View.GONE
+            item.loadImage(mContext, imageEngine, holder.imageView)
         }
 
-        item.loadImage(mContext, imageEngine, holder.imageView)
     }
 
     override fun getItemCount(): Int {
@@ -78,18 +82,18 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
         get() = items.size
 
     fun getLocalMedia(position: Int): LocalMedia? {
-        return if (size > 0 && position < size) items[position] as LocalMedia else null
+        return if (size > 0 && position < size) items[position] else null
     }
 
     fun getCurrentViewHolder(position: Int): PreviewViewHolder? {
         return mViewHolderCache[position]
     }
 
-    fun setLocalMedia(position: Int, localMedia: BaseMedia) {
+    fun setLocalMedia(position: Int, localMedia: LocalMedia) {
         items[position] = localMedia
     }
 
-    fun addAll(items: List<BaseMedia>) {
+    fun addAll(items: List<LocalMedia>) {
         this.items.addAll(items)
     }
 

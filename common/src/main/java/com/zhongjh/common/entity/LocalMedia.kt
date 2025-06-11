@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 import android.widget.ImageView
+import com.zhongjh.common.R
 import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
@@ -29,7 +30,7 @@ import java.io.File
  *
  */
 @Parcelize
-open class LocalMedia() : Parcelable, BaseMedia {
+open class LocalMedia() : Parcelable {
 
     /**
      * 当预览列表有一摸一样的数据时(包括fileId也一样),那么就需要用到这个字段用于区分了
@@ -381,19 +382,26 @@ open class LocalMedia() : Parcelable, BaseMedia {
     /**
      * 是否视频
      */
-    override fun isVideo(): Boolean {
+    fun isVideo(): Boolean {
         return mimeType == MimeType.MPEG.toString() || mimeType == MimeType.MP4.toString() || mimeType == MimeType.QUICKTIME.toString() || mimeType == MimeType.THREEGPP.toString() || mimeType == MimeType.THREEGPP2.toString() || mimeType == MimeType.MKV.toString() || mimeType == MimeType.WEBM.toString() || mimeType == MimeType.TS.toString() || mimeType == MimeType.AVI.toString()
     }
 
     /**
      * 加载图片
      */
-    override fun loadImage(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
+    fun loadImage(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
         val size = getRealSizeFromMedia(this)
         val mediaComputeSize = BitmapUtils.getComputeImageSize(size[0], size[1])
         val width = mediaComputeSize[0]
         val height = mediaComputeSize[1]
         imageEngine.loadUrlImage(context, width, height, imageView, editorPath ?: path)
+    }
+
+    /**
+     * 加载图片
+     */
+    fun loadImage2(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
+        imageEngine.loadDrawableImage(context,  imageView, R.drawable.baseline_audio_file_24)
     }
 
     /**
