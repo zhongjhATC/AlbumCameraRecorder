@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_dark"
-    android:paddingBottom="50dp"
     tools:context="com.zhongjh.multimedia.recorder.SoundRecordingFragment"
     tools:ignore="Overdraw">
 
@@ -31,8 +30,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
         android:background="#20000000"
         android:contentDescription="底部功能按钮"
+        android:paddingTop="16dp"
         tools:ignore="HardcodedText" />
 
 </RelativeLayout>

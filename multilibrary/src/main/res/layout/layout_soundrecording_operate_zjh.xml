@@ -12,6 +12,7 @@
         android:id="@+id/tvTip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,8 +49,11 @@
     <com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
         android:id="@+id/btnClickOrLong"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="20dp"
         android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTip" />
@@ -60,9 +64,10 @@
         android:layout_height="100dp"
         android:contentDescription="录音后显示的播放按钮"
         android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTip"
+        app:layout_constraintEnd_toEndOf="@+id/btnClickOrLong"
+        app:layout_constraintStart_toStartOf="@+id/btnClickOrLong"
+        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
         tools:ignore="HardcodedText">
 
         <ImageView
