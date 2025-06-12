@@ -21,7 +21,7 @@
         app:tl_indicator_margin_left="5dp"
         app:tl_indicator_margin_right="5dp"
         app:tl_indicator_color="?attr/colorPrimary"
-        app:tl_underline_color="@color/white"
+        app:tl_underline_color="?attr/bottomToolbar.bg"
         app:tl_underline_height="1dp"
         app:tl_textsize="14sp" />
 
