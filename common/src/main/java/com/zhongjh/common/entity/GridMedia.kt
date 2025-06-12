@@ -64,4 +64,14 @@ class GridMedia : LocalMedia, Parcelable {
         }
     }
 
+    /**
+     * 深度拷贝
+     */
+    fun copyGridMedia(gridMedia: GridMedia) {
+        super.copyLocalMedia(gridMedia)
+        url = gridMedia.url
+        isUploading = gridMedia.isUploading
+        progress = gridMedia.progress
+    }
+
 }

@@ -36,8 +36,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import kotlin.Suppress;
-
 /**
  * 这是用于设置加载数据的
  * 因为这不是重点开发加上时间因素，目前不做在线播放音频和视频。
@@ -90,7 +88,7 @@ public class MainSeeActivity extends BaseActivity {
 
                         @Override
                         public void onCompleted(File file) {
-                            mBinding.gridView.setDataCover(gridMedia, file.getPath());
+                            mBinding.gridView.setItemCover(gridMedia, file.getPath());
                             progressDialog.hide();
                         }
 
@@ -105,7 +103,7 @@ public class MainSeeActivity extends BaseActivity {
                     return false;
                 } else {
                     // 获取时间,直接赋值
-                    mBinding.gridView.setDataCover(gridMedia, path);
+                    mBinding.gridView.setItemCover(gridMedia, path);
                     // 赋值本地播放地址后,返回true是可以继续播放的播放事件
                     return true;
                 }
@@ -225,19 +223,6 @@ public class MainSeeActivity extends BaseActivity {
      */
     private void initData() {
         mBinding.gridView.setOperation(true);
-
-        // 音频数据
-        List<String> audioUrls = new ArrayList<>();
-        audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
-        mBinding.gridView.setAudioUrls(audioUrls, false);
-
-        // 视频数据
-        List<String> videoUrls = new ArrayList<>();
-        videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
-        videoUrls.add("https://www.w3school.com.cn/example/html5/mov_bbb.mp4");
-        mBinding.gridView.setVideoUrls(videoUrls, false);
-
         // 图片数据
         List<String> imageUrls = new ArrayList<>();
         imageUrls.add("https://img.huoyunji.com/photo_20190221105726_Android_15181?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
@@ -248,10 +233,15 @@ public class MainSeeActivity extends BaseActivity {
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
         imageUrls.add("https://img.huoyunji.com/photo_20190221105418_Android_47466?imageMogr2/auto-orient/thumbnail/!280x280r/gravity/Center/crop/280x280/format/jpg/interlace/1/blur/1x0/quality/90");
-        mBinding.gridView.setImageUrls(imageUrls, false);
-
-        // 刷新
-        mBinding.gridView.notifyDataSetChanged();
+        // 视频数据
+        List<String> videoUrls = new ArrayList<>();
+        videoUrls.add("https://img.huoyunji.com/video_20190221105749_Android_31228");
+        videoUrls.add("https://www.w3school.com.cn/example/html5/mov_bbb.mp4");
+        // 音频数据
+        List<String> audioUrls = new ArrayList<>();
+        audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
+        audioUrls.add("https://img.huoyunji.com/audio_20190221105823_Android_28360");
+        mBinding.gridView.setUrls(imageUrls, videoUrls, audioUrls);
     }
 
     /**

@@ -1,8 +1,11 @@
 package com.zhongjh.demo.phone;
 
+import static com.zhongjh.common.utils.MediaUtils.getVideoSize;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 
+import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.multimedia.album.filter.BaseFilter;
 import com.zhongjh.multimedia.settings.AlbumSetting;
 import com.zhongjh.multimedia.settings.CameraSetting;
@@ -71,7 +75,7 @@ public class MainSeeLocalActivity extends BaseActivity {
             public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
                 String[] fileFullPath = getFileFullPath(gridMedia.getUrl(), 1);
                 String path = fileFullPath[0] + File.separator + fileFullPath[1];
-                boolean isExists = fileIsExists(path);
+                boolean isExists = fileIsExists(new File(path));
                 if (!isExists) {
                     // 下载
                     progressDialog.show();
@@ -84,7 +88,7 @@ public class MainSeeLocalActivity extends BaseActivity {
 
                         @Override
                         public void onCompleted(File file) {
-                            mBinding.gridView.setDataCover(gridMedia, file.getPath());
+                            mBinding.gridView.setItemCover(gridMedia, file.getPath());
                             progressDialog.hide();
                         }
 
@@ -99,7 +103,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                     return false;
                 } else {
                     // 获取时间,直接赋值
-                    mBinding.gridView.setDataCover(gridMedia, path);
+                    mBinding.gridView.setItemCover(gridMedia, path);
                     // 赋值本地播放地址后,返回true是可以继续播放的播放事件
                     return true;
                 }
@@ -220,22 +224,60 @@ public class MainSeeLocalActivity extends BaseActivity {
     }
 
     /**
-     * 初始化数据
+     * 初始化数据 - 这些初始化数据建议加入异步
+     * 添加的这个本地地址自行修改,如果本地手机不存在该文件,app是不会添加的
      */
     private void initData() {
         mBinding.gridView.setOperation(true);
+        List<GridMedia> data = new ArrayList<>();
 
         // 视频数据
         List<String> videoUrls = new ArrayList<>();
-        // 添加的这个本地地址自行修改,如果本地手机不存在该文件,app是不会添加的
-        videoUrls.add(getApplicationContext().getCacheDir().getPath() + "/video_20190221105749_Android_31228.mp4");
-        mBinding.gridView.setVideoPaths(videoUrls);
+        videoUrls.add(getApplicationContext().getCacheDir().getPath() + "/a.mp4");
+        videoUrls.add(getApplicationContext().getCacheDir().getPath() + "/b.mp4");
+        for (String path : videoUrls) {
+            File file = new File(path);
+            boolean isExists = fileIsExists(file);
+            if (isExists) {
+                GridMedia gridMedia = new GridMedia(MimeType.MP4.getMimeTypeName());
+                gridMedia.setAbsolutePath(path);
+                MediaExtraInfo mediaExtraInfo = getVideoSize(getApplicationContext(), path);
+                gridMedia.setWidth(mediaExtraInfo.getWidth());
+                gridMedia.setHeight(mediaExtraInfo.getHeight());
+                gridMedia.setDuration(mediaExtraInfo.getDuration());
+                gridMedia.setMimeType(mediaExtraInfo.getMimeType());
+                gridMedia.setSize(file.length());
+                gridMedia.setPath(Uri.fromFile(file).toString());
+                gridMedia.setAbsolutePath(path);
+                gridMedia.setUploading(false);
+                data.add(gridMedia);
+            }
+        }
 
         // 图片数据
         List<String> imageUrls = new ArrayList<>();
-        imageUrls.add("/storage/emulated/0/Pictures/Screenshots/Screenshot_2024-11-08-14-23-45-88_3583b5560b9060cb28008c20a0fd6fa9.jpg");
-        imageUrls.add("/storage/emulated/0/Pictures/Tencent/Qidian_Images/-6121c1c5043c13f3.png");
-        mBinding.gridView.setImagePaths(imageUrls);
+        imageUrls.add("/storage/emulated/0/Pictures/Screenshots/c.jpg");
+        imageUrls.add("/storage/emulated/0/Pictures/Screenshots/d.jpg");
+        for (String path : imageUrls) {
+            File file = new File(path);
+            boolean isExists = fileIsExists(file);
+            if (isExists) {
+                GridMedia gridMedia = new GridMedia(MimeType.JPEG.getMimeTypeName());
+                gridMedia.setAbsolutePath(path);
+                MediaExtraInfo mediaExtraInfo = getVideoSize(getApplicationContext(), path);
+                gridMedia.setWidth(mediaExtraInfo.getWidth());
+                gridMedia.setHeight(mediaExtraInfo.getHeight());
+                gridMedia.setMimeType(mediaExtraInfo.getMimeType());
+                gridMedia.setSize(file.length());
+                gridMedia.setPath(Uri.fromFile(file).toString());
+                gridMedia.setAbsolutePath(path);
+                gridMedia.setUploading(false);
+                data.add(gridMedia);
+            }
+        }
+
+//        // 视频数据
+//        mBinding.gridView.setImagePaths(data);
     }
 
     /**
@@ -311,12 +353,11 @@ public class MainSeeLocalActivity extends BaseActivity {
     /**
      * 判断是否存在文件
      *
-     * @param strFile 文件路径
+     * @param file 文件
      */
-    public boolean fileIsExists(String strFile) {
+    public boolean fileIsExists(File file) {
         try {
-            File f = new File(strFile);
-            if (!f.exists()) {
+            if (!file.exists()) {
                 return false;
             }
 

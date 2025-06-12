@@ -82,10 +82,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     public void setListData(List<BitmapData> listData) {
-        List<BitmapData> oldData = this.mListData;
-        this.mListData = listData;
         // 计算新老数据集差异，将差异更新到Adapter
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new PhotoCallback(oldData, listData));
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new PhotoCallback(this.mListData, listData));
+        this.mListData = listData;
         diffResult.dispatchUpdatesTo(this);
     }
 

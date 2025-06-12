@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -22,9 +23,11 @@ import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.api.GridViewApi
 import com.zhongjh.gridview.engine.ImageEngine
 import com.zhongjh.common.entity.GridMedia
+import com.zhongjh.common.utils.MediaUtils.getVideoSize
 import com.zhongjh.gridview.entity.Masking
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
 import com.zhongjh.gridview.listener.GridViewListener
+import java.io.File
 import java.util.*
 
 
@@ -48,7 +51,7 @@ class GridView : FrameLayout, GridViewApi {
     /**
      * 一些样式的属性
      */
-    val photoAdapterEntity = PhotoAdapterEntity()
+    private val photoAdapterEntity = PhotoAdapterEntity()
 
     /**
      * 控件集合
@@ -148,7 +151,6 @@ class GridView : FrameLayout, GridViewApi {
         )
         photoAdapterEntity.deleteImage =
             maskProgressLayoutStyle.getDrawable(R.styleable.GridView_imageDeleteDrawable)
-        initAudioProperty(maskProgressLayoutStyle, colorPrimary)
         photoAdapterEntity.masking = initMaskLayerProperty(maskProgressLayoutStyle, colorPrimary)
         initException(imageEngineStr)
         if (drawable == null) {
@@ -170,27 +172,6 @@ class GridView : FrameLayout, GridViewApi {
 
         maskProgressLayoutStyle.recycle()
         typedArray.recycle()
-    }
-
-    /**
-     * 初始化音频属性
-     */
-    private fun initAudioProperty(maskProgressLayoutStyle: TypedArray, colorPrimary: Int) {
-        // 音频，删除按钮的颜色
-        audioDeleteColor = maskProgressLayoutStyle.getColor(
-            R.styleable.GridView_audioDeleteColor,
-            colorPrimary
-        )
-        // 音频 文件的进度条颜色
-        audioProgressColor = maskProgressLayoutStyle.getColor(
-            R.styleable.GridView_audioProgressColor,
-            colorPrimary
-        )
-        // 音频 播放按钮的颜色
-        audioPlayColor = maskProgressLayoutStyle.getColor(
-            R.styleable.GridView_audioPlayColor,
-            colorPrimary
-        )
     }
 
     /**
@@ -263,19 +244,19 @@ class GridView : FrameLayout, GridViewApi {
         // 新添加音频的
         val mediaAudios = ArrayList<GridMedia>()
         for (localMedia in localMediaList) {
-            val progressMedia = GridMedia(localMedia)
-            progressMedia.isUploading = true
+            val gridMedia = GridMedia(localMedia)
+            gridMedia.isUploading = true
             // 处理音频
-            if (progressMedia.isAudio()) {
-                mediaAudios.add(progressMedia)
+            if (gridMedia.isAudio()) {
+                mediaAudios.add(gridMedia)
             }
             // 处理图片
-            if (progressMedia.isImageOrGif()) {
-                mediaImages.add(progressMedia)
+            if (gridMedia.isImageOrGif()) {
+                mediaImages.add(gridMedia)
             }
             // 处理视频
-            if (progressMedia.isVideo()) {
-                mediaVideos.add(progressMedia)
+            if (gridMedia.isVideo()) {
+                mediaVideos.add(gridMedia)
             }
         }
         // 先加音频再加图片视频,该顺序不能打乱,因为最终是需要mImagesAndVideoAdapter来判断是否需要+号
@@ -290,47 +271,75 @@ class GridView : FrameLayout, GridViewApi {
         mGridAdapter.notifyDataSetChanged()
     }
 
-    override fun setImageUrls(imagesUrls: List<String>, isNotifyDataSetChanged: Boolean) {
+    override fun setUrls(imagesUrls: List<String>, videoUrls: List<String>, audioUrls: List<String>) {
         // 转换数据源
-        val progressMedias = ArrayList<GridMedia>()
+        val gridMediaImage = ArrayList<GridMedia>()
         for (string in imagesUrls) {
             val progressMedia = GridMedia(MimeType.JPEG.mimeTypeName)
             progressMedia.url = string
-            progressMedias.add(progressMedia)
+            gridMediaImage.add(progressMedia)
         }
-        // 增加新的图片数据
-        mGridAdapter.setImageData(progressMedias, isNotifyDataSetChanged)
-    }
-
-    override fun setVideoUrls(videoUrls: List<String>, isNotifyDataSetChanged: Boolean) {
-        val gridMedia = ArrayList<GridMedia>()
+        val gridMediaVideo = ArrayList<GridMedia>()
         for (i in videoUrls.indices) {
             val progressMedia = GridMedia(MimeType.MP4.mimeTypeName)
             progressMedia.isUploading = false
             progressMedia.url = videoUrls[i]
-            gridMedia.add(progressMedia)
+            gridMediaVideo.add(progressMedia)
         }
-        mGridAdapter.setVideoData(gridMedia, isNotifyDataSetChanged)
-    }
-
-    override fun setAudioUrls(audioUrls: List<String>, isNotifyDataSetChanged: Boolean) {
-        val gridMedia: ArrayList<GridMedia> = ArrayList()
+        val gridMediaAudio: ArrayList<GridMedia> = ArrayList()
         for (item in audioUrls) {
             val progressMedia = GridMedia(MimeType.AUDIO_MPEG.mimeTypeName)
             progressMedia.url = item
-            gridMedia.add(progressMedia)
+            gridMediaAudio.add(progressMedia)
         }
-        mGridAdapter.setAudioData(gridMedia, isNotifyDataSetChanged)
+        mGridAdapter.setData(gridMediaImage, gridMediaVideo, gridMediaAudio)
+
     }
 
-    override fun setImagePaths(imagePaths: List<String>) {
+    /**
+     * 赋值视频本地文件数据
+     */
+    override fun setVideoCover(gridMedia: GridMedia, videoPath: String) {
+        if (TextUtils.isEmpty(gridMedia.absolutePath)) {
+            val mediaExtraInfo = getVideoSize(context, videoPath)
+            gridMedia.width = mediaExtraInfo.width
+            gridMedia.height = mediaExtraInfo.height
+            gridMedia.duration = mediaExtraInfo.duration
+            gridMedia.mimeType = mediaExtraInfo.mimeType
+            gridMedia.size = File(videoPath).length()
+            gridMedia.path = mMediaStoreCompat.getUri(videoPath).toString()
+            gridMedia.absolutePath = videoPath
+        }
     }
 
-    override fun addVideoStartUpload(videoUris: List<Uri>) {
-        addVideo(videoUris, icClean = false, isUploading = true)
+    fun setData(gridMediaArrayList: List<GridMedia>) {
+        // 新添加图片的
+        val mediaImages = ArrayList<GridMedia>()
+        // 新添加视频的
+        val mediaVideos = ArrayList<GridMedia>()
+        // 新添加音频的
+        val mediaAudios = ArrayList<GridMedia>()
+        for (gridMedia in gridMediaArrayList) {
+            // 处理图片
+            if (gridMedia.isImageOrGif()) {
+                mediaImages.add(gridMedia)
+            }
+            // 处理视频
+            if (gridMedia.isVideo()) {
+                mediaVideos.add(gridMedia)
+            }
+            // 处理音频
+            if (gridMedia.isAudio()) {
+                mediaAudios.add(gridMedia)
+            }
+        }
+        mGridAdapter.setImageData(mediaImages)
+        mGridAdapter.setVideoData(mediaVideos)
+        mGridAdapter.setAudioData(mediaAudios)
+
     }
 
-    override fun setDataCover(gridMedia: GridMedia, path: String) {
+    override fun setItemCover(gridMedia: GridMedia, path: String) {
         val mmr = MediaMetadataRetriever()
         mmr.setDataSource(path)
         // ms,时长
@@ -344,8 +353,6 @@ class GridView : FrameLayout, GridViewApi {
         mGridAdapter.updateItem(gridMedia)
     }
 
-    override fun setVideoPaths(videoPaths: List<String>) {
-    }
 
     override fun addAudioStartUpload(filePath: String, length: Long) {
     }
@@ -371,14 +378,6 @@ class GridView : FrameLayout, GridViewApi {
         return mGridAdapter.getData(MediaType.TYPE_AUDIO)
     }
 
-    fun getPhotoViewHolder(position: Int): GridAdapter.PhotoViewHolder? {
-        val holder: RecyclerView.ViewHolder? = mViewHolder.rlGrid.findViewHolderForAdapterPosition(position)
-        holder?.let {
-            return holder as GridAdapter.PhotoViewHolder
-        }
-        return null
-    }
-
     override fun removePosition(position: Int) {
         mGridAdapter.removePosition(position)
     }
@@ -400,15 +399,6 @@ class GridView : FrameLayout, GridViewApi {
 
     override fun onDestroy() {
         mGridAdapter.listener = null
-//        for (i in 0 until mViewHolder.llContent.childCount) {
-//            val item = mViewHolder.llContent.getChildAt(i) as PlayProgressView
-//            item.mViewHolder.playView.onDestroy()
-//            item.mViewHolder.playView.listener = null
-//        }
-//        this.displayMediaLayoutListener = null
-//        if (mCreatePlayProgressViewTask != null) {
-//            ThreadUtils.cancel(mCreatePlayProgressViewTask)
-//        }
     }
 
     /**
@@ -441,30 +431,6 @@ class GridView : FrameLayout, GridViewApi {
         } else {
             mGridAdapter.photoAdapterEntity.maxMediaCount =
                 maxImageSelectable!! + maxVideoSelectable!! + maxAudioSelectable!!
-        }
-    }
-
-    /**
-     * 添加视频地址
-     *
-     * @param videoUris   视频列表
-     * @param icClean     是否清除
-     * @param isUploading 是否触发上传事件
-     */
-    @Suppress("SameParameterValue")
-    private fun addVideo(videoUris: List<Uri>, icClean: Boolean, isUploading: Boolean) {
-        isAuthority()
-        val progressMedias = ArrayList<GridMedia>()
-        for (i in videoUris.indices) {
-            val progressMedia = GridMedia(MimeType.MP4.mimeTypeName)
-            progressMedia.path = videoUris[i].toString()
-            progressMedia.isUploading = isUploading
-            progressMedias.add(progressMedia)
-        }
-        if (icClean) {
-            mGridAdapter.setVideoData(progressMedias, true)
-        } else {
-            mGridAdapter.addData(progressMedias, MediaType.TYPE_VIDEO)
         }
     }
 

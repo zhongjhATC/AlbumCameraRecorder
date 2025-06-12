@@ -11,15 +11,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sdsmdg.harjot.vectormaster.VectorMasterView
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.gridview.R
 import com.zhongjh.gridview.engine.ImageEngine
-import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
 import com.zhongjh.gridview.listener.GridViewListener
 import com.zhongjh.gridview.provider.RoundViewOutlineProvider
@@ -35,11 +36,7 @@ import com.zhongjh.gridview.widget.MaskProgressView
  * @param mContext            上下文
  * @param mGridLayoutManage 网格布局,用于动态计算，列数是外面动态设置的
  */
-class GridAdapter(
-    private val mContext: Context,
-    private val mGridLayoutManage: GridLayoutManager,
-    var photoAdapterEntity: PhotoAdapterEntity
-) : RecyclerView.Adapter<GridAdapter.PhotoViewHolder>() {
+class GridAdapter(private val mContext: Context, private val mGridLayoutManage: GridLayoutManager, var photoAdapterEntity: PhotoAdapterEntity) : RecyclerView.Adapter<GridAdapter.PhotoViewHolder>() {
 
     companion object {
         val TAG: String = GridAdapter::class.java.simpleName
@@ -331,81 +328,40 @@ class GridAdapter(
     }
 
     /**
-     * 赋值图片数据
-     *
-     * @param gridMedia 数据源
-     * @param isNotifyDataSetChanged 是否执行adapter.notifyDataSetChanged,如果分别set多个数据源,可以自己写何时notifyDataSetChanged
+     * 覆盖视频、音频、图片数据
+     * @param gridMediaImage 图片数据源
+     * @param gridMediaVideo 视频数据源
+     * @param gridMediaAudio 音频数据源
      */
-    @SuppressLint("NotifyDataSetChanged")
-    fun setImageData(gridMedia: List<GridMedia>, isNotifyDataSetChanged: Boolean) {
-        Log.d("$TAG Test", "setImageData")
-        // 删除当前所有图片
+    fun setData(gridMediaImage: List<GridMedia>?, gridMediaVideo: List<GridMedia>?, gridMediaAudio: List<GridMedia>?) {
+        // clone 旧数据
+        val oldData = ArrayList<GridMedia>()
         for (i in list.indices.reversed()) {
-            if (list[i].isImageOrGif()) {
-                list.removeAt(i)
-            }
+            val gridMedia = GridMedia()
+            gridMedia.copyGridMedia(list[i])
+            oldData.add(gridMedia)
         }
-        // 增加新的图片数据
-        for (item in gridMedia) {
-            item.id = mId++
+        // 根据不同数据源赋值
+        gridMediaImage?.let {
+            setImageData(gridMediaImage)
         }
-        list.addAll(gridMedia)
-        if (isNotifyDataSetChanged) {
-            notifyDataSetChanged()
+        gridMediaVideo?.let {
+            setVideoData(gridMediaVideo)
         }
+        gridMediaAudio?.let {
+            setAudioData(gridMediaAudio)
+        }
+        dispatchUpdatesTo(oldData)
     }
 
     /**
-     * 赋值视频数据
-     *
-     * @param gridMedia 数据源
-     * @param isNotifyDataSetChanged 是否执行adapter.notifyDataSetChanged,如果分别set多个数据源,可以自己写何时notifyDataSetChanged
+     * 代替notifyDataSetChanged
+     * @param oldData 旧数据
      */
-    @SuppressLint("NotifyDataSetChanged")
-    fun setVideoData(gridMedia: List<GridMedia>, isNotifyDataSetChanged: Boolean) {
-        Log.d("$TAG Test", "setVideoData")
-        // 删除当前所有视频
-        for (i in list.indices.reversed()) {
-            if (list[i].isVideo()) {
-                list.removeAt(i)
-            }
-        }
-
-        // 增加新的视频数据
-        for (item in gridMedia) {
-            item.id = mId++
-        }
-        list.addAll(0, gridMedia)
-        if (isNotifyDataSetChanged) {
-            notifyDataSetChanged()
-        }
-    }
-
-    /**
-     * 赋值音频数据
-     *
-     * @param gridMedia 数据源
-     * @param isNotifyDataSetChanged 是否执行adapter.notifyDataSetChanged,如果分别set多个数据源,可以自己写何时notifyDataSetChanged
-     */
-    @SuppressLint("NotifyDataSetChanged")
-    fun setAudioData(gridMedia: List<GridMedia>, isNotifyDataSetChanged: Boolean) {
-        Log.d("$TAG Test", "setAudioData")
-        // 删除当前所有音频
-        for (i in list.indices.reversed()) {
-            if (list[i].isAudio()) {
-                list.removeAt(i)
-            }
-        }
-
-        // 增加新的音频数据
-        for (item in gridMedia) {
-            item.id = mId++
-        }
-        // 在视频的最后一个位置添加音频
-        list.addAll(getVideoLeastPosition(), gridMedia)
-        if (isNotifyDataSetChanged) {
-            notifyDataSetChanged()
-        }
+    private fun dispatchUpdatesTo(oldData: List<GridMedia>) {
+        // 计算新老数据集差异，将差异更新到Adapter
+        val diffResult = DiffUtil.calculateDiff(GridCallback(oldData, list))
+        diffResult.dispatchUpdatesTo(this)
     }
 
     /**
@@ -431,6 +387,69 @@ class GridAdapter(
         list.remove(multiMediaView)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, list.size - position)
+    }
+
+    /**
+     * 赋值图片数据
+     *
+     * @param gridMedia 数据源
+     */
+    fun setImageData(gridMedia: List<GridMedia>) {
+        Log.d("$TAG Test", "setImageData")
+        // 删除当前所有图片
+        for (i in list.indices.reversed()) {
+            if (list[i].isImageOrGif()) {
+                list.removeAt(i)
+            }
+        }
+        // 增加新的图片数据
+        for (item in gridMedia) {
+            item.id = mId++
+        }
+        list.addAll(gridMedia)
+    }
+
+    /**
+     * 赋值视频数据
+     *
+     * @param gridMedia 数据源
+     */
+    fun setVideoData(gridMedia: List<GridMedia>) {
+        Log.d("$TAG Test", "setVideoData")
+        // 删除当前所有视频
+        for (i in list.indices.reversed()) {
+            if (list[i].isVideo()) {
+                list.removeAt(i)
+            }
+        }
+
+        // 增加新的视频数据
+        for (item in gridMedia) {
+            item.id = mId++
+        }
+        list.addAll(0, gridMedia)
+    }
+
+    /**
+     * 赋值音频数据
+     *
+     * @param gridMedia 数据源
+     */
+    fun setAudioData(gridMedia: List<GridMedia>) {
+        Log.d("$TAG Test", "setAudioData")
+        // 删除当前所有音频
+        for (i in list.indices.reversed()) {
+            if (list[i].isAudio()) {
+                list.removeAt(i)
+            }
+        }
+
+        // 增加新的音频数据
+        for (item in gridMedia) {
+            item.id = mId++
+        }
+        // 在视频的最后一个位置添加音频
+        list.addAll(getVideoLeastPosition(), gridMedia)
     }
 
     /**
@@ -572,13 +591,9 @@ class GridAdapter(
         ) {
             // 加载图片
             if (!TextUtils.isEmpty(gridMedia.getAvailablePath())) {
-                imageEngine.loadPath(
-                    context, height, placeholder, mpvImage, gridMedia.getAvailablePath()!!
-                )
+                imageEngine.loadPath(context, height, placeholder, mpvImage, gridMedia.getAvailablePath())
             } else if (!TextUtils.isEmpty(gridMedia.url)) {
-                imageEngine.loadUrl(
-                    context, height, placeholder, mpvImage, gridMedia.url!!
-                )
+                imageEngine.loadUrl(context, height, placeholder, mpvImage, gridMedia.url!!)
             }
         }
 

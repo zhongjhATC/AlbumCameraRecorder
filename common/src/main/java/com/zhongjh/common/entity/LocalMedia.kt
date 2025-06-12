@@ -458,7 +458,7 @@ open class LocalMedia() : Parcelable {
     /**
      * 深度拷贝
      */
-    private fun copyLocalMedia(localMedia: LocalMedia) {
+    protected fun copyLocalMedia(localMedia: LocalMedia) {
         id = localMedia.id
         fileId = localMedia.fileId
         compressPath = localMedia.compressPath

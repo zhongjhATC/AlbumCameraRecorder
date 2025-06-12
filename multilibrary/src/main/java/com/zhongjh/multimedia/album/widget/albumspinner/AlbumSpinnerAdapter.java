@@ -35,10 +35,9 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
     private List<Album2> albums = new ArrayList<>();
 
     public void bindAlbums(List<Album2> albums) {
-        List<Album2> oldAlbums = this.albums;
-        this.albums = albums;
         // 计算新老数据集差异，将差异更新到Adapter
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new AlbumCallback(oldAlbums, albums));
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new AlbumCallback(this.albums, albums));
+        this.albums = albums;
         diffResult.dispatchUpdatesTo(this);
     }
 

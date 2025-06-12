@@ -82,14 +82,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.mplImageList.reset();
-        holder.mplImageList.setImageUrls(datas.get(position).getImageUrls(), false);
-        if (!datas.get(position).getAudioUrls().isEmpty()) {
-            holder.mplImageList.setAudioUrls(datas.get(position).getAudioUrls(), false);
-        }
-        if (!datas.get(position).getVideoUrls().isEmpty()) {
-            holder.mplImageList.setVideoUrls(datas.get(position).getVideoUrls(), false);
-        }
-        holder.mplImageList.notifyDataSetChanged();
+        holder.mplImageList.setUrls(datas.get(position).getImageUrls(), datas.get(position).getVideoUrls(), datas.get(position).getAudioUrls());
         holder.mplImageList.setGridViewListener(new GridViewListener() {
             @Override
             public void onItemAdd(@NonNull View view, @NonNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
