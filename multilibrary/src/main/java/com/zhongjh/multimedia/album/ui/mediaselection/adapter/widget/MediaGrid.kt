@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -44,6 +45,11 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      * 文本的时长（类似指视频的时长）
      */
     private lateinit var mVideoDuration: TextView
+
+    /**
+     * 视频的时长图片
+     */
+    private lateinit var mImgVideo: ImageView
 
     /**
      * 值
@@ -83,7 +89,8 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
         mImageView = findViewById(R.id.media_thumbnail)
         mCheckView = findViewById(R.id.checkView)
         mGifTag = findViewById(R.id.gif)
-        mVideoDuration = findViewById(R.id.video_duration)
+        mVideoDuration = findViewById(R.id.tvVideoDuration)
+        mImgVideo = findViewById(R.id.imgVideo)
         mImageView.setOnClickListener(this)
         mCheckView.setOnClickListener(this)
         defaultColorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(Color.TRANSPARENT, BlendModeCompat.SRC_ATOP)!!
@@ -195,10 +202,12 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
     private fun setVideoDuration() {
         if (mMedia.isVideo()) {
             mVideoDuration.visibility = VISIBLE
+            mImgVideo.visibility = VISIBLE
             mVideoDuration.text =
                 DateUtils.formatElapsedTime(mMedia.duration / 1000)
         } else {
             mVideoDuration.visibility = GONE
+            mImgVideo.visibility = GONE
         }
     }
 

@@ -15,7 +15,9 @@
   -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@color/black"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <ImageView
         android:id="@+id/media_thumbnail"
@@ -27,37 +29,49 @@
         android:id="@+id/checkView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlHardcoded" />
 
     <ImageView
         android:id="@+id/gif"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:contentDescription="@string/z_multi_library_gif_label"
         android:src="@drawable/ic_gif"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/video_duration"
+        android:id="@+id/tvVideoDuration"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_height="28dp"
         android:background="@drawable/bg_video_duration_shadow"
-        android:drawableStart="@drawable/ic_video"
-        android:drawablePadding="5dp"
         android:gravity="center_vertical"
-        android:paddingStart="5dp"
+        android:paddingStart="26dp"
         android:paddingEnd="5dp"
+        android:paddingBottom="2dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="UseCompatTextViewDrawableXml"
         tools:text="12333222222222"
-        tools:visibility="visible"
-        tools:ignore="UseCompatTextViewDrawableXml" />
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/imgVideo"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="6dp"
+        android:contentDescription="@string/z_multi_library_gif_label"
+        android:src="@drawable/ic_video"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 </merge>
