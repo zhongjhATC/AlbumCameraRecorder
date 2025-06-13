@@ -90,42 +90,42 @@ class GridView : FrameLayout, GridViewApi {
         val colorPrimary = typedArray.getColor(0, defaultColor)
 
         // 获取自定义属性。
-        val maskProgressLayoutStyle =
+        val gridViewStyle =
             context.obtainStyledAttributes(attrs, R.styleable.GridView)
         // 是否允许操作
         photoAdapterEntity.isOperation =
-            maskProgressLayoutStyle.getBoolean(R.styleable.GridView_isOperation, true)
+            gridViewStyle.getBoolean(R.styleable.GridView_isOperation, true)
         // 一行多少列
-        val columnNumber = maskProgressLayoutStyle.getInteger(
+        val columnNumber = gridViewStyle.getInteger(
             R.styleable.GridView_columnNumber,
             COLUMN_NUMBER
         )
         // 获取默认图片
         var drawable =
-            maskProgressLayoutStyle.getDrawable(R.styleable.GridView_album_thumbnail_placeholder)
+            gridViewStyle.getDrawable(R.styleable.GridView_album_thumbnail_placeholder)
         // 获取添加图片
         photoAdapterEntity.addDrawable =
-            maskProgressLayoutStyle.getDrawable(R.styleable.GridView_imageAddDrawable)
+            gridViewStyle.getDrawable(R.styleable.GridView_imageAddDrawable)
         // 获取显示图片的类
         val imageEngineStr =
-            maskProgressLayoutStyle.getString(R.styleable.GridView_imageEngine)
+            gridViewStyle.getString(R.styleable.GridView_imageEngine)
         // provider的authorities,用于提供给外部的file
-        val authority = maskProgressLayoutStyle.getString(R.styleable.GridView_authority)
+        val authority = gridViewStyle.getString(R.styleable.GridView_authority)
         val saveStrategy = SaveStrategy(true, authority, "")
         mMediaStoreCompat = MediaStoreCompat(context, saveStrategy)
         // 获取最多显示多少个方框
         photoAdapterEntity.maxMediaCount =
-            maskProgressLayoutStyle.getInteger(
+            gridViewStyle.getInteger(
                 R.styleable.GridView_maxCount,
                 MAX_MEDIA_COUNT
             )
-        photoAdapterEntity.deleteColor = maskProgressLayoutStyle.getColor(
+        photoAdapterEntity.deleteColor = gridViewStyle.getColor(
             R.styleable.GridView_imageDeleteColor,
             colorPrimary
         )
         photoAdapterEntity.deleteImage =
-            maskProgressLayoutStyle.getDrawable(R.styleable.GridView_imageDeleteDrawable)
-        photoAdapterEntity.masking = initMaskLayerProperty(maskProgressLayoutStyle, colorPrimary)
+            gridViewStyle.getDrawable(R.styleable.GridView_imageDeleteDrawable)
+        photoAdapterEntity.masking = initMaskLayerProperty(gridViewStyle, colorPrimary)
         initException(imageEngineStr)
         if (drawable == null) {
             drawable = ContextCompat.getDrawable(context, R.color.z_thumbnail_placeholder)
@@ -144,7 +144,7 @@ class GridView : FrameLayout, GridViewApi {
         )
         mViewHolder.rlGrid.adapter = mGridAdapter
 
-        maskProgressLayoutStyle.recycle()
+        gridViewStyle.recycle()
         typedArray.recycle()
     }
 
@@ -152,25 +152,25 @@ class GridView : FrameLayout, GridViewApi {
      * 初始化遮罩层相关属性
      */
     private fun initMaskLayerProperty(
-        maskProgressLayoutStyle: TypedArray,
+        gridViewStyle: TypedArray,
         colorPrimary: Int
     ): Masking {
-        val maskingColor = maskProgressLayoutStyle.getColor(
+        val maskingColor = gridViewStyle.getColor(
             R.styleable.GridView_maskingColor,
             colorPrimary
         )
         val maskingTextSize =
-            maskProgressLayoutStyle.getInteger(
+            gridViewStyle.getInteger(
                 R.styleable.GridView_maskingTextSize,
                 MASKING_TEXT_SIZE
             )
 
-        val maskingTextColor = maskProgressLayoutStyle.getColor(
+        val maskingTextColor = gridViewStyle.getColor(
             R.styleable.GridView_maskingTextColor,
             ContextCompat.getColor(context, R.color.z_thumbnail_placeholder)
         )
         var maskingTextContent =
-            maskProgressLayoutStyle.getString(R.styleable.GridView_maskingTextContent)
+            gridViewStyle.getString(R.styleable.GridView_maskingTextContent)
         if (maskingTextContent == null) {
             maskingTextContent = ""
         }
@@ -333,14 +333,12 @@ class GridView : FrameLayout, GridViewApi {
     }
 
     override fun setOperation(isOperation: Boolean) {
-//        this.isOperation = isOperation
-//        mImagesAndVideoAdapter.photoAdapterEntity.isOperation = isOperation
-//        // 添加音频后重置所有当前播放中的音频
-//        for (i in 0 until mViewHolder.llContent.childCount) {
-//            val item = mViewHolder.llContent.getChildAt(i) as PlayProgressView
-//            item.isOperation = isOperation
-//        }
-//        isShowRemoveRecorder()
+        photoAdapterEntity.isOperation = isOperation
+        mGridAdapter.photoAdapterEntity.isOperation = isOperation
+    }
+
+    override fun isOperation(): Boolean {
+        return photoAdapterEntity.isOperation
     }
 
     override fun onDestroy() {

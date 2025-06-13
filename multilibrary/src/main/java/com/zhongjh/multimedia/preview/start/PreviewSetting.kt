@@ -33,7 +33,7 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
         const val EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable"
 
         /**
-         * 设置是否启动 '确定' 功能
+         * 设置是否启动 '确定' 功能（包括右上角的选择框）
          */
         const val APPLY_ENABLE = "apply_enable"
 

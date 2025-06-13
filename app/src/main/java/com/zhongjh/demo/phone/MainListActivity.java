@@ -87,7 +87,7 @@ public class MainListActivity extends AppCompatActivity {
                 gridMedia.setPath(Uri.fromFile(new File(gridMedia.getAbsolutePath())).toString());
                 listNew.add(gridMedia);
             }
-            globalSetting.openPreviewData(MainListActivity.this, requestLauncherPreview, listNew, 0);
+            globalSetting.openPreviewData(MainListActivity.this, requestLauncherPreview, listNew, 0, false);
         });
 
         // 这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例

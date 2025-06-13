@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -109,7 +110,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                mGlobalSetting.openPreviewData(MainActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
+                mGlobalSetting.openPreviewData(MainActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
 
             @Override
@@ -148,7 +149,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected GridView getMaskProgressLayout() {
+    protected GridView getGridView() {
         return mBinding.gridView;
     }
 

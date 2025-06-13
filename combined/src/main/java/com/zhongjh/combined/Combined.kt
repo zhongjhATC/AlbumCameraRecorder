@@ -21,9 +21,8 @@ import com.zhongjh.gridview.widget.GridView
  * 协调多个控件之间代码，更加简化代码
  *
  * @param activity           启动的activity
- * @param requestCode        请求打开AlbumCameraRecorder的Code
  * @param globalSetting      AlbumCameraRecorder
- * @param maskProgressLayout Mask控件
+ * @param gridView Mask控件
  * @param listener           事件
  *
  * @author zhongjh
@@ -32,7 +31,7 @@ import com.zhongjh.gridview.widget.GridView
 open class Combined(
     var activity: AppCompatActivity,
     globalSetting: GlobalSetting,
-    private var maskProgressLayout: GridView,
+    private var gridView: GridView,
     listener: AbstractGridViewListener
 ) {
 
@@ -50,16 +49,16 @@ open class Combined(
                 val selected = obtainLocalMediaResult(resultData)
 
                 // 循环判断，如果不存在，则删除
-                for (i in maskProgressLayout.getAllData().indices.reversed()) {
+                for (i in gridView.getAllData().indices.reversed()) {
                     var k = 0
                     for (localMedia in selected) {
-                        if (!maskProgressLayout.getAllData()[i].equalsLocalMedia(localMedia)) {
+                        if (!gridView.getAllData()[i].equalsLocalMedia(localMedia)) {
                             k++
                         }
                     }
                     if (k == selected.size) {
                         // 所有都不符合，则删除
-                        maskProgressLayout.removePosition(i)
+                        gridView.removePosition(i)
                     }
                 }
             }
@@ -75,7 +74,7 @@ open class Combined(
             }
             result.data?.let { resultData -> // 获取选择的数据
                 val data = obtainLocalMediaResult(resultData)
-                maskProgressLayout.addLocalFileStartUpload(data)
+                gridView.addLocalFileStartUpload(data)
             }
         })
 
@@ -111,7 +110,7 @@ open class Combined(
         maxImageSelectable = GlobalSpec.maxImageSelectable
         maxVideoSelectable = GlobalSpec.maxVideoSelectable
         maxAudioSelectable = GlobalSpec.maxAudioSelectable
-        maskProgressLayout.gridViewListener = object : GridViewListener {
+        gridView.gridViewListener = object : GridViewListener {
             override fun onItemStartDownload(view: View, gridMedia: GridMedia, position: Int): Boolean {
                 return listener.onItemStartDownload(view, gridMedia, position)
             }
@@ -140,7 +139,7 @@ open class Combined(
 
             override fun onItemClick(view: View, gridMedia: GridMedia) {
                 // 预览
-                globalSetting.openPreviewData(activity, requestLauncherGrid, maskProgressLayout.getAllData(), maskProgressLayout.getAllData().indexOf(gridMedia))
+                globalSetting.openPreviewData(activity, requestLauncherGrid, gridView.getAllData(), gridView.getAllData().indexOf(gridMedia), gridView.isOperation())
                 listener.onItemClick(view, gridMedia)
             }
 

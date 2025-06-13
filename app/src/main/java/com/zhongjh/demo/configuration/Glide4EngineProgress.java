@@ -29,7 +29,7 @@ import com.zhongjh.gridview.engine.ImageEngine;
 
 
 /**
- * 这是配合展示数据九宫格view使用的 com.zhongjh.gridview.widget.MaskProgressLayout
+ * 这是配合展示数据九宫格view使用的 com.zhongjh.gridview.widget.GridView
  * {@link ImageEngine} implementation using Glide.
  *
  * @author zhongjh

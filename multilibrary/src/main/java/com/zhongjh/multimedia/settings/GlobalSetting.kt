@@ -208,8 +208,9 @@ class GlobalSetting internal constructor(
      * @param activityResultLauncher 请求器
      * @param list        数据源
      * @param position    当前数据的索引
+     * @param isApply 是否有同意操作,支持删除数据源
      */
-    override fun openPreviewData(activity: Activity, activityResultLauncher: ActivityResultLauncher<Intent>, list: ArrayList<GridMedia>, position: Int) {
+    override fun openPreviewData(activity: Activity, activityResultLauncher: ActivityResultLauncher<Intent>, list: ArrayList<GridMedia>, position: Int, isApply: Boolean) {
         val intent = Intent(activity, PreviewActivity::class.java)
 
         // 深度拷贝
@@ -222,6 +223,7 @@ class GlobalSetting internal constructor(
         PreviewSetting(PreviewType.GRID)
             .setLocalMediaArrayList(localMedias)
             .setCurrentPosition(position)
+            .isApply(isApply)
             .isOriginal(false)
             .isSelectedCheck(false)
             .isEdit(false)

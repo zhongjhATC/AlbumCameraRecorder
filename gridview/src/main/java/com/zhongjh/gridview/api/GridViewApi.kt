@@ -110,6 +110,11 @@ interface GridViewApi {
     fun setOperation(isOperation: Boolean)
 
     /**
+     * @return 返回当前九宫格是否支持操作
+     */
+    fun isOperation(): Boolean
+
+    /**
      * 销毁所有相关正在执行的东西
      */
     fun onDestroy()

@@ -29,7 +29,7 @@ import java.util.TimerTask;
 
 /**
  * 这是一个超级简单代码就完成的示例
- * 主要优化了onActivityResult、setMaskProgressLayoutListener方面的代码
+ * 主要优化了onActivityResult、setGridViewListener方面的代码
  *
  * @author zhongjh
  * @date 2021/9/6

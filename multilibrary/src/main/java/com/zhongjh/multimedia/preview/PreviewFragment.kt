@@ -659,8 +659,10 @@ class PreviewFragment : BaseFragment() {
 
         // 判断是否启动操作
         if (!mApplyEnable) {
+            mViewHolder.checkView.visibility = View.GONE
             mViewHolder.buttonApply.visibility = View.GONE
         } else {
+            mViewHolder.checkView.visibility = View.VISIBLE
             mViewHolder.buttonApply.visibility = View.VISIBLE
         }
         setCheckViewEnable(mSelectedEnable)

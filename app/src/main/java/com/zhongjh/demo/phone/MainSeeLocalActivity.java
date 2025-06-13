@@ -155,7 +155,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 Log.d(TAG, "onResult 具体类型:" + gridMedia.getMimeType());
                 Log.d(TAG, "onResult 宽高: " + gridMedia.getWidth() + "x" + gridMedia.getHeight());
                 // 点击详情
-                mGlobalSetting.openPreviewData(MainSeeLocalActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
+                mGlobalSetting.openPreviewData(MainSeeLocalActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
 
             @Override
@@ -232,6 +232,8 @@ public class MainSeeLocalActivity extends BaseActivity {
      * 添加的这个本地地址自行修改,如果本地手机不存在该文件,app是不会添加的
      */
     private void initData() {
+        // 这是演示是否可操作九宫格控件
+        mBinding.gridView.setOperation(false);
         // 先把assets的文件拷贝到手机
         copyAssetsFileToInternalStorage(getApplicationContext(), "test_image.jpeg", "a.jpg", getApplicationContext().getCacheDir().getPath());
         copyAssetsFileToInternalStorage(getApplicationContext(), "test_image.jpeg", "b.jpg", getApplicationContext().getCacheDir().getPath());
@@ -240,7 +242,6 @@ public class MainSeeLocalActivity extends BaseActivity {
         copyAssetsFileToInternalStorage(getApplicationContext(), "test_audio.aac", "e.aac", getApplicationContext().getCacheDir().getPath());
         copyAssetsFileToInternalStorage(getApplicationContext(), "test_audio.aac", "f.aac", getApplicationContext().getCacheDir().getPath());
 
-        mBinding.gridView.setOperation(true);
         List<GridMedia> data = new ArrayList<>();
 
         // 图片数据
@@ -332,7 +333,7 @@ public class MainSeeLocalActivity extends BaseActivity {
     }
 
     @Override
-    protected GridView getMaskProgressLayout() {
+    protected GridView getGridView() {
         return mBinding.gridView;
     }
 

@@ -75,7 +75,7 @@ public class MainUpperLimitActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                mGlobalSetting.openPreviewData(MainUpperLimitActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
+                mGlobalSetting.openPreviewData(MainUpperLimitActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
 
             @Override
@@ -123,7 +123,7 @@ public class MainUpperLimitActivity extends BaseActivity {
     }
 
     @Override
-    protected GridView getMaskProgressLayout() {
+    protected GridView getGridView() {
         return mBinding.gridView;
     }
 

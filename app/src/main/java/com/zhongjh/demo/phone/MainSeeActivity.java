@@ -138,7 +138,7 @@ public class MainSeeActivity extends BaseActivity {
                 Log.d(TAG, "onResult 具体类型:" + gridMedia.getMimeType());
                 Log.d(TAG, "onResult 宽高: " + gridMedia.getWidth() + "x" + gridMedia.getHeight());
                 // 点击详情
-                mGlobalSetting.openPreviewData(MainSeeActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
+                mGlobalSetting.openPreviewData(MainSeeActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
 
             @Override
@@ -253,7 +253,7 @@ public class MainSeeActivity extends BaseActivity {
     }
 
     @Override
-    protected GridView getMaskProgressLayout() {
+    protected GridView getGridView() {
         return mBinding.gridView;
     }
 

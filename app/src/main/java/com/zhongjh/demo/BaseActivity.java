@@ -60,7 +60,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         List<LocalMedia> data = MultiMediaSetting.obtainLocalMediaResult(result.getData());
         printProperty(data);
-        getMaskProgressLayout().addLocalFileStartUpload(data);
+        getGridView().addLocalFileStartUpload(data);
     });
     /**
      * 九宫格的回调
@@ -75,16 +75,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         // 获取选择的数据
         ArrayList<LocalMedia> selected = MultiMediaSetting.obtainLocalMediaResult(result.getData());
         // 循环判断，如果不存在，则删除
-        for (int i = getMaskProgressLayout().getAllData().size() - 1; i >= 0; i--) {
+        for (int i = getGridView().getAllData().size() - 1; i >= 0; i--) {
             int k = 0;
             for (LocalMedia multiMedia : selected) {
-                if (!getMaskProgressLayout().getAllData().get(i).equalsLocalMedia(multiMedia)) {
+                if (!getGridView().getAllData().get(i).equalsLocalMedia(multiMedia)) {
                     k++;
                 }
             }
             if (k == selected.size()) {
                 // 所有都不符合，则删除
-                getMaskProgressLayout().removePosition(i);
+                getGridView().removePosition(i);
             }
         }
     });
@@ -94,9 +94,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 返回九宫格
      *
-     * @return MaskProgressLayout
+     * @return GridView
      */
-    protected abstract GridView getMaskProgressLayout();
+    protected abstract GridView getGridView();
 
     /**
      * 是否浏览
@@ -123,7 +123,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         for (Map.Entry<GridMedia, MyTask> entry : timers.entrySet()) {
             entry.getValue().cancel();
         }
-        getMaskProgressLayout().onDestroy();
+        getGridView().onDestroy();
         super.onDestroy();
     }
 
@@ -246,7 +246,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     percentage++;
-                    getMaskProgressLayout().setPercentage(gridMedia, percentage);
+                    getGridView().setPercentage(gridMedia, percentage);
                     // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：multiMedia.setUrl(url);multiMedia.setPercentage(100);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();

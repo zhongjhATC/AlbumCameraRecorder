@@ -223,6 +223,7 @@ interface GlobalSettingApi {
      * @param activityResultLauncher 启动器
      * @param list     文件地址的数据源
      * @param position 当前数据的索引
+     * @param isApply 是否有同意操作,支持删除数据源
      */
-    fun openPreviewData(activity: Activity, activityResultLauncher: ActivityResultLauncher<Intent>, list: ArrayList<GridMedia>, position: Int)
+    fun openPreviewData(activity: Activity, activityResultLauncher: ActivityResultLauncher<Intent>, list: ArrayList<GridMedia>, position: Int, isApply: Boolean)
 }

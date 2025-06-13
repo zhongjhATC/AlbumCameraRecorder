@@ -5,7 +5,7 @@ import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.common.entity.GridMedia
 
 /**
- * MaskProgressLayout的有关事件
+ * GridView的有关事件
  *
  * @author zhongjh
  * @date 2018/10/18

@@ -68,7 +68,7 @@ public class MainSimpleActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
-                mGlobalSetting.openPreviewData(MainSimpleActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia));
+                mGlobalSetting.openPreviewData(MainSimpleActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
 
             @Override
@@ -106,7 +106,7 @@ public class MainSimpleActivity extends BaseActivity {
     }
 
     @Override
-    protected GridView getMaskProgressLayout() {
+    protected GridView getGridView() {
         return mBinding.gridView;
     }
 
@@ -152,7 +152,7 @@ public class MainSimpleActivity extends BaseActivity {
         mGlobalSetting
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格MaskProgressLayout的maxCount也改动 mBinding.dmlImageList.setMaxMediaCount();
+                // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格GridView的maxCount也改动 mBinding.dmlImageList.setMaxMediaCount();
                 .maxSelectablePerMediaType(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE,
                         alreadyImageCount,
                         alreadyVideoCount,
