@@ -4,6 +4,7 @@ import static com.zhongjh.common.utils.MediaUtils.getVideoSize;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +37,9 @@ import com.zhongjh.retrofitdownloadlib.http.DownloadProgressHandler;
 import com.zhongjh.retrofitdownloadlib.http.FileDownloader;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,14 +232,43 @@ public class MainSeeLocalActivity extends BaseActivity {
      * 添加的这个本地地址自行修改,如果本地手机不存在该文件,app是不会添加的
      */
     private void initData() {
+        // 先把assets的文件拷贝到手机
+        copyAssetsFileToInternalStorage(getApplicationContext(), "test_image.jpeg", "a.jpg", getApplicationContext().getCacheDir().getPath());
+        copyAssetsFileToInternalStorage(getApplicationContext(), "test_image.jpeg", "b.jpg", getApplicationContext().getCacheDir().getPath());
+        copyAssetsFileToInternalStorage(getApplicationContext(), "test_video.mp4", "c.mp4", getApplicationContext().getCacheDir().getPath());
+        copyAssetsFileToInternalStorage(getApplicationContext(), "test_video.mp4", "d.mp4", getApplicationContext().getCacheDir().getPath());
+        copyAssetsFileToInternalStorage(getApplicationContext(), "test_audio.aac", "e.aac", getApplicationContext().getCacheDir().getPath());
+        copyAssetsFileToInternalStorage(getApplicationContext(), "test_audio.aac", "f.aac", getApplicationContext().getCacheDir().getPath());
+
         mBinding.gridView.setOperation(true);
         List<GridMedia> data = new ArrayList<>();
 
+        // 图片数据
+        List<String> imagePaths = new ArrayList<>();
+        imagePaths.add(getApplicationContext().getCacheDir().getPath() + "/a.jpg");
+        imagePaths.add(getApplicationContext().getCacheDir().getPath() + "/b.jpg");
+        for (String path : imagePaths) {
+            File file = new File(path);
+            boolean isExists = fileIsExists(file);
+            if (isExists) {
+                GridMedia gridMedia = new GridMedia(MimeType.JPEG.getMimeTypeName());
+                gridMedia.setAbsolutePath(path);
+                MediaExtraInfo mediaExtraInfo = getVideoSize(getApplicationContext(), path);
+                gridMedia.setWidth(mediaExtraInfo.getWidth());
+                gridMedia.setHeight(mediaExtraInfo.getHeight());
+                gridMedia.setSize(file.length());
+                gridMedia.setPath(Uri.fromFile(file).toString());
+                gridMedia.setAbsolutePath(path);
+                gridMedia.setUploading(false);
+                data.add(gridMedia);
+            }
+        }
+
         // 视频数据
-        List<String> videoUrls = new ArrayList<>();
-        videoUrls.add(getApplicationContext().getCacheDir().getPath() + "/a.mp4");
-        videoUrls.add(getApplicationContext().getCacheDir().getPath() + "/b.mp4");
-        for (String path : videoUrls) {
+        List<String> videoPaths = new ArrayList<>();
+        videoPaths.add(getApplicationContext().getCacheDir().getPath() + "/c.mp4");
+        videoPaths.add(getApplicationContext().getCacheDir().getPath() + "/d.mp4");
+        for (String path : videoPaths) {
             File file = new File(path);
             boolean isExists = fileIsExists(file);
             if (isExists) {
@@ -245,7 +278,6 @@ public class MainSeeLocalActivity extends BaseActivity {
                 gridMedia.setWidth(mediaExtraInfo.getWidth());
                 gridMedia.setHeight(mediaExtraInfo.getHeight());
                 gridMedia.setDuration(mediaExtraInfo.getDuration());
-                gridMedia.setMimeType(mediaExtraInfo.getMimeType());
                 gridMedia.setSize(file.length());
                 gridMedia.setPath(Uri.fromFile(file).toString());
                 gridMedia.setAbsolutePath(path);
@@ -254,20 +286,20 @@ public class MainSeeLocalActivity extends BaseActivity {
             }
         }
 
-        // 图片数据
-        List<String> imageUrls = new ArrayList<>();
-        imageUrls.add("/storage/emulated/0/Pictures/Screenshots/c.jpg");
-        imageUrls.add("/storage/emulated/0/Pictures/Screenshots/d.jpg");
-        for (String path : imageUrls) {
+        // 音频数据
+        List<String> audioPaths = new ArrayList<>();
+        audioPaths.add(getApplicationContext().getCacheDir().getPath() + "/e.aac");
+        audioPaths.add(getApplicationContext().getCacheDir().getPath() + "/f.aac");
+        for (String path : audioPaths) {
             File file = new File(path);
             boolean isExists = fileIsExists(file);
             if (isExists) {
-                GridMedia gridMedia = new GridMedia(MimeType.JPEG.getMimeTypeName());
+                GridMedia gridMedia = new GridMedia(MimeType.AAC.getMimeTypeName());
                 gridMedia.setAbsolutePath(path);
                 MediaExtraInfo mediaExtraInfo = getVideoSize(getApplicationContext(), path);
                 gridMedia.setWidth(mediaExtraInfo.getWidth());
                 gridMedia.setHeight(mediaExtraInfo.getHeight());
-                gridMedia.setMimeType(mediaExtraInfo.getMimeType());
+                gridMedia.setDuration(mediaExtraInfo.getDuration());
                 gridMedia.setSize(file.length());
                 gridMedia.setPath(Uri.fromFile(file).toString());
                 gridMedia.setAbsolutePath(path);
@@ -276,8 +308,8 @@ public class MainSeeLocalActivity extends BaseActivity {
             }
         }
 
-//        // 视频数据
-//        mBinding.gridView.setImagePaths(data);
+        // 添加数据
+        mBinding.gridView.setData(data);
     }
 
     /**
@@ -366,6 +398,32 @@ public class MainSeeLocalActivity extends BaseActivity {
         }
 
         return true;
+    }
+
+    public static void copyAssetsFileToInternalStorage(Context context, String fileName, String newFileName, String targetDir) {
+        try {
+            // 打开assets目录中的文件
+            InputStream inputStream = context.getAssets().open(fileName);
+            // 创建目标文件路径
+            File targetFile = new File(targetDir, newFileName);
+            if (!targetFile.getParentFile().exists()) {
+                targetFile.getParentFile().mkdirs(); // 创建目标目录
+            }
+            // 写入文件到目标路径
+            FileOutputStream outputStream = new FileOutputStream(targetFile);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            // 关闭流
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+            Log.i("CopyAssets", "文件复制成功: " + targetFile.getAbsolutePath());
+        } catch (IOException e) {
+            Log.e("CopyAssets", "文件复制失败: " + e.getMessage());
+        }
     }
 
 }

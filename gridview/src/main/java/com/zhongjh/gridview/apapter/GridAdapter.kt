@@ -394,7 +394,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      *
      * @param gridMedia 数据源
      */
-    fun setImageData(gridMedia: List<GridMedia>) {
+    private fun setImageData(gridMedia: List<GridMedia>) {
         Log.d("$TAG Test", "setImageData")
         // 删除当前所有图片
         for (i in list.indices.reversed()) {
@@ -414,7 +414,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      *
      * @param gridMedia 数据源
      */
-    fun setVideoData(gridMedia: List<GridMedia>) {
+    private fun setVideoData(gridMedia: List<GridMedia>) {
         Log.d("$TAG Test", "setVideoData")
         // 删除当前所有视频
         for (i in list.indices.reversed()) {
@@ -435,7 +435,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      *
      * @param gridMedia 数据源
      */
-    fun setAudioData(gridMedia: List<GridMedia>) {
+    private fun setAudioData(gridMedia: List<GridMedia>) {
         Log.d("$TAG Test", "setAudioData")
         // 删除当前所有音频
         for (i in list.indices.reversed()) {
@@ -531,7 +531,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
         if (list.size > 0) {
             for (i in list.size - 1 downTo 0) {
                 if (list[i].isVideo()) {
-                    return i
+                    return i + 1
                 }
             }
         }

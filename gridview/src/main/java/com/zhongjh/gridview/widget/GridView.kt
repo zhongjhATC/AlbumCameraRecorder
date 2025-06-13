@@ -1,17 +1,15 @@
 package com.zhongjh.gridview.widget
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
 import android.media.MediaMetadataRetriever
-import android.net.Uri
-import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MediaType
@@ -22,13 +20,9 @@ import com.zhongjh.gridview.R
 import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.api.GridViewApi
 import com.zhongjh.gridview.engine.ImageEngine
-import com.zhongjh.common.entity.GridMedia
-import com.zhongjh.common.utils.MediaUtils.getVideoSize
 import com.zhongjh.gridview.entity.Masking
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
 import com.zhongjh.gridview.listener.GridViewListener
-import java.io.File
-import java.util.*
 
 
 /**
@@ -62,26 +56,6 @@ class GridView : FrameLayout, GridViewApi {
      * 文件配置路径
      */
     private lateinit var mMediaStoreCompat: MediaStoreCompat
-
-    /**
-     * 是否允许操作
-     */
-    private var isOperation = true
-
-    /**
-     * 音频 文件的进度条颜色
-     */
-    private var audioProgressColor = 0
-
-    /**
-     * 音频 删除颜色
-     */
-    private var audioDeleteColor = 0
-
-    /**
-     * 音频 播放按钮的颜色
-     */
-    private var audioPlayColor = 0
 
     /**
      * 点击事件
@@ -266,11 +240,6 @@ class GridView : FrameLayout, GridViewApi {
         return
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    override fun notifyDataSetChanged() {
-        mGridAdapter.notifyDataSetChanged()
-    }
-
     override fun setUrls(imagesUrls: List<String>, videoUrls: List<String>, audioUrls: List<String>) {
         // 转换数据源
         val gridMediaImage = ArrayList<GridMedia>()
@@ -296,23 +265,7 @@ class GridView : FrameLayout, GridViewApi {
 
     }
 
-    /**
-     * 赋值视频本地文件数据
-     */
-    override fun setVideoCover(gridMedia: GridMedia, videoPath: String) {
-        if (TextUtils.isEmpty(gridMedia.absolutePath)) {
-            val mediaExtraInfo = getVideoSize(context, videoPath)
-            gridMedia.width = mediaExtraInfo.width
-            gridMedia.height = mediaExtraInfo.height
-            gridMedia.duration = mediaExtraInfo.duration
-            gridMedia.mimeType = mediaExtraInfo.mimeType
-            gridMedia.size = File(videoPath).length()
-            gridMedia.path = mMediaStoreCompat.getUri(videoPath).toString()
-            gridMedia.absolutePath = videoPath
-        }
-    }
-
-    fun setData(gridMediaArrayList: List<GridMedia>) {
+    override fun setData(gridMediaArrayList: List<GridMedia>) {
         // 新添加图片的
         val mediaImages = ArrayList<GridMedia>()
         // 新添加视频的
@@ -333,10 +286,7 @@ class GridView : FrameLayout, GridViewApi {
                 mediaAudios.add(gridMedia)
             }
         }
-        mGridAdapter.setImageData(mediaImages)
-        mGridAdapter.setVideoData(mediaVideos)
-        mGridAdapter.setAudioData(mediaAudios)
-
+        mGridAdapter.setData(mediaImages, mediaVideos, mediaAudios)
     }
 
     override fun setItemCover(gridMedia: GridMedia, path: String) {
@@ -351,10 +301,6 @@ class GridView : FrameLayout, GridViewApi {
         gridMedia.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()
         mmr.release()
         mGridAdapter.updateItem(gridMedia)
-    }
-
-
-    override fun addAudioStartUpload(filePath: String, length: Long) {
     }
 
     override fun reset() {
@@ -399,13 +345,6 @@ class GridView : FrameLayout, GridViewApi {
 
     override fun onDestroy() {
         mGridAdapter.listener = null
-    }
-
-    /**
-     * @return 最多显示多少个图片/视频/语音
-     */
-    fun getMaxMediaCount(): Int {
-        return mGridAdapter.photoAdapterEntity.maxMediaCount
     }
 
     /**

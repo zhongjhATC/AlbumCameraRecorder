@@ -29,18 +29,13 @@ interface GridViewApi {
     fun setAuthority(authority: String)
 
     /**
-     * 刷新所有数据源
-     */
-    fun notifyDataSetChanged()
-
-    /**
      * 添加[LocalMedia],根据自身类型进行相应的显示
      * @param localMediaList 文件实体数据集
      */
     fun addLocalFileStartUpload(localMediaList: List<LocalMedia>)
 
     /**
-     * 设置网址数据并且刷新
+     * 覆盖网址数据并且刷新
      *
      * @param imagesUrls 图片网址列表
      * @param videoUrls 视频网址列表
@@ -49,20 +44,19 @@ interface GridViewApi {
     fun setUrls(imagesUrls: List<String>, videoUrls: List<String>, audioUrls: List<String>)
 
     /**
+     * 覆盖数据并且刷新
+     *
+     * @param gridMediaArrayList 数据源
+     */
+    fun setData(gridMediaArrayList: List<GridMedia>)
+
+    /**
      * 设置视频、音频地址直接覆盖(一般用于下载视频、音频成功后，直接覆盖当前只有URL的视频)
      *
      * @param gridMedia 多媒体实体
      * @param path 本地地址
      */
     fun setItemCover(gridMedia: GridMedia, path: String)
-
-    /**
-     * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)
-     *
-     * @param filePath 音频文件地址
-     * @param length   音频文件长度
-     */
-    fun addAudioStartUpload(filePath: String, length: Long)
 
     /**
      * 重置所有即是清空数据
@@ -97,9 +91,9 @@ interface GridViewApi {
     fun getAudios(): ArrayList<GridMedia>
 
     /**
-     * 删除单个图片
+     * 删除单个数据
      *
-     * @param position 图片的索引，该索引列表不包含视频等
+     * @param position 索引
      */
     fun removePosition(position: Int)
 
@@ -119,12 +113,4 @@ interface GridViewApi {
      * 销毁所有相关正在执行的东西
      */
     fun onDestroy()
-
-    /**
-     * 设置视频地址直接覆盖
-     *
-     * @param gridMedia 控件
-     * @param videoPath 视频地址列表
-     */
-    fun setVideoCover(gridMedia: GridMedia, videoPath: String)
 }

@@ -3,6 +3,7 @@ package com.zhongjh.demo.phone;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -115,17 +116,14 @@ public class MainListActivity extends AppCompatActivity {
      */
 
     public static void copyFilesFromRaw(Context context, int id, String fileName, String storagePath) {
-        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), id, context.getTheme());
-        if (drawable != null) {
-            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            File file = new File(storagePath, fileName);
-            try (FileOutputStream out = new FileOutputStream(file)) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            } catch (IOException e) {
-                Log.e("MainListActivity", "copyFilesFromRaw" + e.getMessage());
-            }
-            bitmap.recycle();
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), id);
+        File file = new File(storagePath, fileName);
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+        } catch (IOException e) {
+            Log.e("MainListActivity", "copyFilesFromRaw" + e.getMessage());
         }
+        bitmap.recycle();
     }
 
 }
