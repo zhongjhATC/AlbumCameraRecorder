@@ -80,16 +80,6 @@
         <activity android:name="com.zhongjh.demo.phone.ErrorActivity" />
         <activity android:name="com.zhongjh.demo.phone.custom.MainCustomCameraLayoutActivity" />
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths_public" />
-        </provider>
-
     </application>
 
 </manifest>

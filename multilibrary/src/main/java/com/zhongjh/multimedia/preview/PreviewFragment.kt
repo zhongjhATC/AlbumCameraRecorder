@@ -12,9 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView.ScaleType
+import android.widget.MediaController
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -93,6 +95,7 @@ class PreviewFragment : BaseFragment() {
     }
 
     private lateinit var mContext: Context
+    private lateinit var mMediaController: MediaController
     private lateinit var mViewHolder: ViewHolder
     private lateinit var mViewPager2: ViewPager2
     private lateinit var mAdapter: PreviewPagerAdapter
@@ -168,10 +171,7 @@ class PreviewFragment : BaseFragment() {
      */
     private val mAlbumCompressFileTask by lazy {
         AlbumCompressFileTask(
-            mContext,
-            TAG,
-            PreviewFragment::class.java,
-            mGlobalSpec
+            mContext, TAG, PreviewFragment::class.java, mGlobalSpec
         )
     }
 
@@ -251,6 +251,7 @@ class PreviewFragment : BaseFragment() {
         initStatusBar(requireActivity())
         // 初始化bundle的Value
         initBundleValue(savedInstanceState)
+        mMediaController = MediaController(activity)
         mViewHolder = ViewHolder(view)
         mViewHolder.checkView.setCountable(mAlbumSpec.countable)
         // 初始化共享动画view
@@ -385,10 +386,15 @@ class PreviewFragment : BaseFragment() {
         mViewPager2.adapter = mAdapter
 
         // adapter显示view时的触发事件
-        mAdapter.setOnFirstAttachedToWindowListener(object :
-            PreviewPagerAdapter.OnFirstAttachedToWindowListener {
+        mAdapter.setOnListener(object : PreviewPagerAdapter.OnListener {
             override fun onViewFirstAttachedToWindow(holder: PreviewPagerAdapter.PreviewViewHolder) {
                 this@PreviewFragment.onViewFirstAttachedToWindow(holder)
+            }
+
+            override fun onVideoPlay(videoView: VideoView) {
+                mMediaController.setAnchorView(videoView)
+                mMediaController.setMediaPlayer(videoView)
+                videoView.setMediaController(mMediaController)
             }
         })
 
@@ -528,8 +534,7 @@ class PreviewFragment : BaseFragment() {
             val intent = Intent()
             intent.setClass(requireActivity(), ImageEditActivity::class.java)
             intent.putExtra(
-                ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION,
-                requireActivity().requestedOrientation
+                ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, requireActivity().requestedOrientation
             )
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.path)
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file.absolutePath)
@@ -653,8 +658,7 @@ class PreviewFragment : BaseFragment() {
         } else {
             // 启用，显示数字
             mViewHolder.buttonApply.isEnabled = true
-            mViewHolder.buttonApply.text =
-                getString(R.string.z_multi_library_button_sure, mSelectedModel.selectedData.count())
+            mViewHolder.buttonApply.text = getString(R.string.z_multi_library_button_sure, mSelectedModel.selectedData.count())
         }
 
         // 判断是否启动操作
@@ -764,12 +768,7 @@ class PreviewFragment : BaseFragment() {
             } else {
                 // 将记录好的RecyclerView的位置大小，进行动画扩大到width,height
                 mViewHolder.sharedAnimationView.setViewParams(
-                    viewParams.left,
-                    viewParams.top,
-                    viewParams.width,
-                    viewParams.height,
-                    width,
-                    height
+                    viewParams.left, viewParams.top, viewParams.width, viewParams.height, width, height
                 )
                 mViewHolder.sharedAnimationView.start(false)
             }
@@ -794,12 +793,7 @@ class PreviewFragment : BaseFragment() {
                 mViewHolder.sharedAnimationView.setViewParams(0, 0, 0, 0, width, height)
             } else {
                 mViewHolder.sharedAnimationView.setViewParams(
-                    viewParams.left,
-                    viewParams.top,
-                    viewParams.width,
-                    viewParams.height,
-                    width,
-                    height
+                    viewParams.left, viewParams.top, viewParams.width, viewParams.height, width, height
                 )
             }
         }
@@ -874,8 +868,7 @@ class PreviewFragment : BaseFragment() {
      * 设置预览 view 跟相册的 view 一样的高度宽度
      */
     private fun onSharedBeginBackMinFinish(isResetSize: Boolean) {
-        val itemViewParams =
-            RecycleItemViewParams.getItemViewParams(mViewPager2.currentItem) ?: return
+        val itemViewParams = RecycleItemViewParams.getItemViewParams(mViewPager2.currentItem) ?: return
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
         val layoutParams = currentHolder.imageView.layoutParams
         layoutParams?.width = itemViewParams.width
@@ -989,9 +982,8 @@ class PreviewFragment : BaseFragment() {
         }
     }
 
-    class ViewHolder internal constructor(var rootView: View) {
-        var sharedAnimationView: SharedAnimationView =
-            rootView.findViewById(R.id.sharedAnimationView)
+    class ViewHolder internal constructor(private var rootView: View) {
+        var sharedAnimationView: SharedAnimationView = rootView.findViewById(R.id.sharedAnimationView)
         var iBtnBack: ImageButton = rootView.findViewById(R.id.ibtnBack)
         var tvEdit: TextView = rootView.findViewById(R.id.tvEdit)
         var groupOriginal: Group = rootView.findViewById(R.id.groupOriginal)

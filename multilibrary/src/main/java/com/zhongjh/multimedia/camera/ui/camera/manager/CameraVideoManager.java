@@ -30,8 +30,8 @@ public class CameraVideoManager implements ICameraVideo {
 
     public CameraVideoManager(
             BaseCameraFragment<? extends CameraStateManager,
-                                ? extends CameraPictureManager,
-                                ? extends CameraVideoManager> baseCameraFragment) {
+                    ? extends CameraPictureManager,
+                    ? extends CameraVideoManager> baseCameraFragment) {
         this.baseCameraFragment = baseCameraFragment;
     }
 
@@ -107,7 +107,7 @@ public class CameraVideoManager implements ICameraVideo {
     @Override
     public void onRecordSuccess(String path) {
         Log.d(TAG, "onRecordSuccess: " + path);
-        PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path);
+        PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path, true);
         baseCameraFragment.getPhotoVideoLayout().setEnabled(true);
     }
 

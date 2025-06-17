@@ -8,7 +8,8 @@ import androidx.collection.ArraySet
 import com.zhongjh.common.utils.BasePhotoMetadataUtils
 import java.io.File
 import java.net.URLConnection
-import java.util.*
+import java.util.EnumSet
+import java.util.Locale
 
 /**
  *
@@ -268,6 +269,19 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             } else {
                 uri.startsWith("content://")
             }
+        }
+
+        /**
+         * is Network
+         *
+         * @param path path
+         * @return 判断path是否http类型
+         */
+        fun isHasHttp(path: String): Boolean {
+            if (TextUtils.isEmpty(path)) {
+                return false
+            }
+            return path.startsWith("http") || path.startsWith("https")
         }
 
         /**

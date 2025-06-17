@@ -20,7 +20,8 @@ class MediaStoreCompat(private val context: Context, var saveStrategy: SaveStrat
 
     fun getUri(path: String): Uri {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(context, saveStrategy.authority!!, File(path))
+            val authority = context.packageName + ".zhongjhProvider"
+            FileProvider.getUriForFile(context, authority, File(path))
         } else {
             Uri.fromFile(File(path))
         }

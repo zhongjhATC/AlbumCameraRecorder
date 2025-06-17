@@ -29,7 +29,7 @@ import kotlin.coroutines.resume
 
 
 /**
- * 一个预览合成分段录制的视频
+ * 一个预览视频
  *
  * @author zhongjh
  */
@@ -92,7 +92,11 @@ class PreviewVideoActivity : AppCompatActivity() {
      * 初始化View
      */
     private fun initView() {
-        mActivityPreviewVideoZjhBinding.btnConfirm.isIndeterminateProgressMode = true
+        if (intent.getBooleanExtra(IS_COMPRESS, false)) {
+            mActivityPreviewVideoZjhBinding.btnConfirm.isIndeterminateProgressMode = true
+        } else {
+            mActivityPreviewVideoZjhBinding.btnConfirm.visibility = View.GONE
+        }
         // 兼容沉倾状态栏
         ViewCompat.setOnApplyWindowInsetsListener(mActivityPreviewVideoZjhBinding.clMenu) { v, insets ->
             val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -137,7 +141,6 @@ class PreviewVideoActivity : AppCompatActivity() {
         val mediaController = MediaController(this@PreviewVideoActivity)
         mediaController.setAnchorView(mActivityPreviewVideoZjhBinding.vvPreview)
         mediaController.setMediaPlayer(mActivityPreviewVideoZjhBinding.vvPreview)
-        mediaController.visibility = View.GONE
         mActivityPreviewVideoZjhBinding.vvPreview.setMediaController(mediaController)
         val uri = Uri.fromFile(file)
         mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(uri)
@@ -241,20 +244,21 @@ class PreviewVideoActivity : AppCompatActivity() {
 
         const val LOCAL_FILE: String = "LOCAL_FILE"
         const val PATH: String = "PATH"
+        const val IS_COMPRESS: String = "isCompress"
 
         /**
          * 打开activity
          *
          * @param fragment 打开者
          * @param path     视频地址
+         * @param isCompress 是否需要压缩
          */
         @JvmStatic
-        fun startActivity(
-            fragment: Fragment, previewVideoActivityResult: ActivityResultLauncher<Intent?>, path: String?
-        ) {
+        fun startActivity(fragment: Fragment, previewVideoActivityResult: ActivityResultLauncher<Intent>, path: String, isCompress: Boolean) {
             fragment.activity?.let {
                 val intent = Intent()
                 intent.putExtra(PATH, path)
+                intent.putExtra(IS_COMPRESS, isCompress)
                 intent.setClass(it, PreviewVideoActivity::class.java)
                 previewVideoActivityResult.launch(intent)
                 fragment.activity?.overridePendingTransition(R.anim.activity_open_zjh, 0)

@@ -211,9 +211,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @param position 索引
      * @param payloads   用于标识 刷新布局里面的那个具体控件
      */
-    override fun onBindViewHolder(
-        holder: PhotoViewHolder, position: Int, payloads: MutableList<Any>
-    ) {
+    override fun onBindViewHolder(holder: PhotoViewHolder, position: Int, payloads: MutableList<Any>) {
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)
             return

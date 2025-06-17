@@ -12,16 +12,6 @@ import androidx.annotation.ChecksSdkIntAtLeast
 object SdkVersionUtils {
 
     /**
-     * 判断是否是Android Q版本
-     *
-     * @return 是否是Android Q版本
-     */
-    @JvmStatic
-    val isQ: Boolean
-        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
-        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-
-    /**
      * 判断是否是Android R版本
      *
      * @return 是否是Android R版本
@@ -32,11 +22,29 @@ object SdkVersionUtils {
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
     /**
+     * 判断是否是Android Q版本
+     *
+     * @return 是否是Android Q版本
+     */
+    @JvmStatic
+    val isQ: Boolean
+        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
+        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+    /**
      * 判断是否是Android O版本
      */
     @JvmStatic
     val isO: Boolean
         @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.O)
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+
+    /**
+     * 判断是否是Android N版本
+     */
+    fun isN(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+    }
+
 
 }
