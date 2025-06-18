@@ -250,43 +250,34 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
                 pendingRecording?.withAudioEnabled()
             }
             recording = pendingRecording?.start(ContextCompat.getMainExecutor(appCompatActivity)) { videoRecordEvent ->
+                Log.d(TAG, "videoRecordEvent: $videoRecordEvent ${videoRecordEvent.recordingStats.recordedDurationNanos}")
                 // 视频录制监控回调
                 when (videoRecordEvent) {
+                    is VideoRecordEvent.Start -> {
+                        onCameraManageListener?.onRecordStart()
+                    }
                     is VideoRecordEvent.Status -> {
-                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
-                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
-                            Log.d(TAG, "mRecordedTime 开始" + videoRecordEvent.recordingStats.recordedDurationNanos)
-                            onCameraManageListener?.onRecordStart()
-                        }
+//                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
+//                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
+//                        }
                     }
 
                     is VideoRecordEvent.Finalize -> {
-                        Log.d(
-                            TAG,
-                            "Finalize  " + videoRecordEvent.error + " " + videoRecordEvent.outputResults.outputUri + " isActivityPause:" + isActivityPause
-                        )
                         if (!isActivityPause) {
                             // 完成录制
                             val uri = videoRecordEvent.outputResults.outputUri
-                            onCameraManageListener?.onRecordSuccess(
-                                UriUtils.uriToFile(
-                                    appCompatActivity,
-                                    uri
-                                ).absolutePath
-                            )
+                            onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(appCompatActivity, uri).absolutePath)
                         }
                         isActivityPause = false
                     }
 
                     is VideoRecordEvent.Pause -> {
                         // 暂停录制
-                        Log.d(TAG, "Pause")
                         onCameraManageListener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
                     }
 
                     is VideoRecordEvent.Resume -> {
                         // 恢复录制
-                        Log.d(TAG, "Resume")
                     }
                 }
             }
