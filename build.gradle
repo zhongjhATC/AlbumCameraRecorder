@@ -68,7 +68,7 @@ ext {
     butterknifeVersion = '8.4.0'
 
     // kotlin版本
-    ktx_version = '1.6.0'
+    ktx_version = '1.13.0'
     // kotlin协程版本
     ktx_coroutines_version = '1.6.1'
 }
