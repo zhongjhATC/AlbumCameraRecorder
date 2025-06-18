@@ -37,9 +37,6 @@ class OnCameraXPreviewViewTouchListener(context: Context) : View.OnTouchListener
      */
     private val onGestureListener: GestureDetector.SimpleOnGestureListener = object : GestureDetector.SimpleOnGestureListener() {
         override fun onLongPress(e: MotionEvent) {}
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-            return true
-        }
 
         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
             mCustomTouchListener?.click(e.x, e.y)

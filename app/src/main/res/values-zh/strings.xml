@@ -72,8 +72,6 @@
     <string name="recyclerView_version">recyclerView版本</string>
     <string name="custom_cameraView">自定义相机</string>
     <string name="custom_cameraLayout">自定义相机布局和逻辑</string>
-    <string name="grid_configuration">九宫格配置</string>
-    <string name="grid_operation">可操作</string>
     <string name="other_api">其他API</string>
     <string name="obtain_the_cache_file_size">获取缓存文件大小</string>
     <string name="clear_the_cache_file_size">清空缓存文件大小</string>

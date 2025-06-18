@@ -36,7 +36,7 @@ class CameraSetting : CameraSettingApi {
      * 每次使用要重新赋值，因为会在每次关闭界面后删除该Fragment
      */
     var baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>? =
-            null
+        null
 
     override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>): CameraSetting {
         this.baseCameraFragment = baseCameraFragment
@@ -48,10 +48,7 @@ class CameraSetting : CameraSettingApi {
     }
 
     override fun mimeTypeSet(mimeTypes: Set<MimeType>): CameraSetting {
-        // 如果设置了高清模式，则优先以高清模式为准
-        if (!mCameraSpec.enableImageHighDefinition && !mCameraSpec.enableVideoHighDefinition) {
-            mCameraSpec.mimeTypeSet = mimeTypes
-        }
+        mCameraSpec.mimeTypeSet = mimeTypes
         return this
     }
 
@@ -61,25 +58,6 @@ class CameraSetting : CameraSettingApi {
 
     override fun videoBitRate(videoBitRate: Int): CameraSetting {
         TODO("Not yet implemented")
-    }
-
-    override fun enableImageHighDefinition(enable: Boolean): CameraSetting {
-        mCameraSpec.enableImageHighDefinition = enable
-        // 如果启用图片高清，就禁用录制视频
-        if (enable) {
-            mCameraSpec.mimeTypeSet = ofImage()
-        }
-        return this
-    }
-
-    override fun enableVideoHighDefinition(enable: Boolean): CameraSetting {
-        mCameraSpec.enableVideoHighDefinition = enable
-        // 如果启用视频高清，就禁用拍摄图片,并且单击就能录制
-        if (enable) {
-            mCameraSpec.mimeTypeSet = ofVideo()
-            mCameraSpec.isClickRecord = true
-        }
-        return this
     }
 
     override fun duration(duration: Int): CameraSetting {
@@ -121,7 +99,7 @@ class CameraSetting : CameraSettingApi {
         mCameraSpec.imageFlashAuto = imageFlashAuto
         return this
     }
-    
+
     override fun flashMode(@FlashMode flashMode: Int): CameraSetting {
         mCameraSpec.flashMode = flashMode
         return this

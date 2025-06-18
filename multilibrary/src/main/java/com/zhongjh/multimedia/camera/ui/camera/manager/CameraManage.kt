@@ -23,17 +23,24 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
-import androidx.camera.core.VideoCapture
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.MediaStoreOutputOptions
+import androidx.camera.video.Quality
+import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
+import com.zhongjh.common.enums.MediaType
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.utils.DisplayMetricsUtils
+import com.zhongjh.common.utils.UriUtils
 import com.zhongjh.multimedia.camera.listener.OnCameraManageListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXOrientationEventListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXPreviewViewTouchListener
@@ -42,11 +49,6 @@ import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraView
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MediaType
-import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.utils.DisplayMetricsUtils
-import com.zhongjh.common.utils.UriUtils
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -81,10 +83,10 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
      * 拍摄配置
      */
     private val cameraSpec by lazy { CameraSpec }
+    private lateinit var cameraProvider: ProcessCameraProvider
     private var imageCapture: ImageCapture? = null
     private var imageAnalyzer: ImageAnalysis? = null
-    private lateinit var cameraProvider: ProcessCameraProvider
-    private var videoCapture: androidx.camera.video.VideoCapture<Recorder>? = null
+    private var videoCapture: VideoCapture<Recorder>? = null
     private var recording: Recording? = null
 
     private val displayManager by lazy { appCompatActivity.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
@@ -359,20 +361,15 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
      * 绑定相机预览模式
      */
     private fun initCameraPreviewMode() {
-        // 如果有设置高清模式，则根据相应高清模式更改模式
-        if (cameraSpec.enableImageHighDefinition) {
+        if (cameraSpec.onlySupportImages()) {
+            // 只支持拍照
             bindCameraPreviewModeByImage()
-        } else if (cameraSpec.enableVideoHighDefinition) {
+        } else if (cameraSpec.onlySupportVideos()) {
+            // 只支持录制
             bindCameraPreviewModeByVideo()
         } else {
-            // 最后再判断具体什么模式
-            if (cameraSpec.onlySupportImages()) {
-                bindCameraPreviewModeByImage()
-            } else if (cameraSpec.onlySupportVideos()) {
-                bindCameraPreviewModeByVideo()
-            } else {
-                bindCameraPreviewModeImageAndVideo()
-            }
+            // 拍照+录制
+            bindCameraPreviewModeImageAndVideo()
         }
     }
 
@@ -382,30 +379,21 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
     private fun bindCameraPreviewModeByImage() {
         try {
             // 获取适合的比例
-            val screenAspectRatio: Int =
-                aspectRatio(
-                    DisplayMetricsUtils.getScreenWidth(appCompatActivity),
-                    DisplayMetricsUtils.getScreenHeight(appCompatActivity)
-                )
-            // 获取当前预览的角度
-            val rotation: Int = viewHolder.previewView.display.rotation
+            val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(appCompatActivity), DisplayMetricsUtils.getScreenHeight(appCompatActivity))
             // 获取前后置摄像头
             val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
             // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
-            val preview = Preview.Builder().setTargetAspectRatio(screenAspectRatio).setTargetRotation(rotation).build()
+            val preview = initPreview(screenAspectRatio)
             // 初始化 ImageCapture
             initImageCapture(screenAspectRatio)
             // 初始化 ImageAnalysis
-            imageAnalyzer =
-                ImageAnalysis.Builder().setTargetAspectRatio(screenAspectRatio).setTargetRotation(rotation).build()
+            initImageAnalyzer(screenAspectRatio)
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 绑定preview
             preview.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
             // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
-            val camera = cameraProvider.bindToLifecycle(
-                (appCompatActivity as LifecycleOwner), cameraSelector, preview, imageCapture, imageAnalyzer
-            )
+            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, preview, imageCapture, imageAnalyzer)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -420,26 +408,18 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
      */
     private fun bindCameraPreviewModeByVideo() {
         try {
-            // 获取当前预览的角度
-            val rotation: Int = viewHolder.previewView.display.rotation
+            // 获取适合的比例
+            val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(appCompatActivity), DisplayMetricsUtils.getScreenHeight(appCompatActivity))
             // 获取前后置摄像头
             val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
             // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
-            val preview = Preview.Builder().setTargetRotation(rotation).build().also {
-                it.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
-            }
+            val preview = initPreview(screenAspectRatio)
             // 初始化 VideoCapture
-            initVideoCapture()
+            initVideoCapture(screenAspectRatio)
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
-            val camera =
-                cameraProvider.bindToLifecycle(
-                    (appCompatActivity as LifecycleOwner),
-                    cameraSelector,
-                    preview,
-                    videoCapture
-                )
+            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, preview, videoCapture)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -455,22 +435,15 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
     private fun bindCameraPreviewModeImageAndVideo() {
         try {
             // 获取适合的比例
-            val screenAspectRatio: Int = aspectRatio(
-                DisplayMetricsUtils.getScreenWidth(appCompatActivity),
-                DisplayMetricsUtils.getScreenHeight(appCompatActivity)
-            )
-            // 获取当前预览的角度
-            val rotation: Int = viewHolder.previewView.display.rotation
+            val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(appCompatActivity), DisplayMetricsUtils.getScreenHeight(appCompatActivity))
             // 获取前后置摄像头
             val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
             // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
-            val preview = Preview.Builder().setTargetRotation(rotation).build().also {
-                it.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
-            }
+            val preview = initPreview(screenAspectRatio)
             // 初始化 ImageCapture
             initImageCapture(screenAspectRatio)
             // 初始化 VideoCapture
-            initVideoCapture()
+            initVideoCapture(screenAspectRatio)
             val useCase = UseCaseGroup.Builder()
             useCase.addUseCase(preview)
             imageCapture?.let {
@@ -483,8 +456,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 将 imageCapture 用例与现有 preview 和 videoCapture 用例绑定(注意：不要绑定 imageAnalyzer，因为不支持 preview + imageCapture + videoCapture + imageAnalysis 组合)
-            val camera =
-                cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, useCaseGroup)
+            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, useCaseGroup)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -495,32 +467,76 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
     }
 
     /**
+     * 初始化Preview
+     *
+     * @param screenAspectRatio 计算后适合的比例
+     */
+    private fun initPreview(screenAspectRatio: Int): Preview {
+        return Preview.Builder().setResolutionSelector(
+            ResolutionSelector.Builder()
+                .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                .build()
+        )
+            .setTargetRotation(viewHolder.previewView.display.rotation)
+            .build().also {
+                it.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
+            }
+    }
+
+    /**
      * 初始化ImageCapture
+     * 设置分辨率： .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE))
      *
      * @param screenAspectRatio 计算后适合的比例
      */
     private fun initImageCapture(screenAspectRatio: Int) {
-        Log.d(TAG, "initImageCapture display.rotation:" + viewHolder.previewView.display.rotation)
         // 初始化 拍照类 imageCapture,设置 优先考虑延迟而不是图像质量、设置比例、设置角度
-        imageCapture = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY).setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(viewHolder.previewView.display.rotation).build()
+        imageCapture = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setResolutionSelector(
+                ResolutionSelector.Builder()
+                    .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                    .build()
+            )
+            .setTargetRotation(viewHolder.previewView.display.rotation)
+            .build()
+    }
+
+    /**
+     * 初始化ImageAnalyzer
+     *
+     * @param screenAspectRatio 计算后适合的比例
+     */
+    private fun initImageAnalyzer(screenAspectRatio: Int) {
+        // 初始化 拍照类 imageCapture,设置 优先考虑延迟而不是图像质量、设置比例、设置角度
+        imageAnalyzer = ImageAnalysis.Builder()
+            .setResolutionSelector(
+                ResolutionSelector.Builder()
+                    .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                    .build()
+            )
+            .setTargetRotation(viewHolder.previewView.display.rotation)
+            .build()
     }
 
     /**
      * 初始化VideoCapture
+     * @param screenAspectRatio 计算后适合的比例
      */
     @SuppressLint("RestrictedApi")
-    private fun initVideoCapture() {
-        val videoBuilder = VideoCapture.Builder()
-        videoBuilder.setTargetRotation(viewHolder.previewView.display.rotation)
+    private fun initVideoCapture(screenAspectRatio: Int) {
         // 设置相关属性
-        if (cameraSpec.videoFrameRate > 0) {
-            videoBuilder.setVideoFrameRate(cameraSpec.videoFrameRate)
-        }
-        if (cameraSpec.videoBitRate > 0) {
-            videoBuilder.setBitRate(cameraSpec.videoBitRate)
-        }
-        videoCapture = androidx.camera.video.VideoCapture.withOutput(Recorder.Builder().build())
+        val qualitySelector = QualitySelector.from(Quality.HD)
+        val recorder = Recorder.Builder()
+            .setQualitySelector(qualitySelector)
+            .build()
+        videoCapture = VideoCapture.Builder<Recorder>(recorder)
+            .setResolutionSelector(
+                ResolutionSelector.Builder()
+                    .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                    .build()
+            )
+            .setTargetRotation(viewHolder.previewView.display.rotation)
+            .build()
     }
 
     /**

@@ -51,24 +51,6 @@ interface CameraSettingApi {
     fun videoBitRate(videoBitRate: Int): CameraSetting
 
     /**
-     * 是否开启图片高清拍摄
-     * 注意开启该模式后，录制界面不能同时存在拍摄图片功能和录制视频功能
-     *
-     * @param enable whether to enable
-     * @return [CameraSetting] for fluent API.
-     */
-    fun enableImageHighDefinition(enable: Boolean): CameraSetting
-
-    /**
-     * 是否开启视频高清录制
-     * 注意开启该模式后，录制界面不能同时存在拍摄图片功能和录制视频功能
-     *
-     * @param enable whether to enable
-     * @return [CameraSetting] for fluent API.
-     */
-    fun enableVideoHighDefinition(enable: Boolean): CameraSetting
-
-    /**
      * 最长录制时间,默认10秒
      *
      * @param duration 最长录制时间,单位为秒

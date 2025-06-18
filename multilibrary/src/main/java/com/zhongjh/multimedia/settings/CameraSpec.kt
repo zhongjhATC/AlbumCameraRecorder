@@ -1,10 +1,11 @@
 package com.zhongjh.multimedia.settings
 
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.listener.OnCaptureListener
 import com.zhongjh.multimedia.constants.ModuleTypes
-import com.zhongjh.common.coordinator.VideoMergeCoordinator
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
@@ -22,26 +23,16 @@ object CameraSpec {
     var mimeTypeSet: Set<MimeType>? = null
 
     /**
-     * 设置每秒的录制帧数
+     * 设置拍照参数
+     * 只拍照 或者 拍照+录制模式生效
      */
-    var videoFrameRate = 0
-
+    var ImageCaptureBuilder:ImageCapture.Builder? = null
     /**
-     * 设置编码比特率
+     * 设置拍照分析参数
+     * 只拍照 模式生效
      */
-    var videoBitRate = 0
-
-    /**
-     * 是否开启图片高清拍摄
-     * 注意开启该模式后，录制界面不能同时存在拍摄图片功能和录制视频功能
-     */
-    var enableImageHighDefinition = false
-
-    /**
-     * 是否开启视频高清录制
-     * 注意开启该模式后，录制界面不能同时存在拍摄图片功能和录制视频功能
-     */
-    var enableVideoHighDefinition = false
+    var ImageAnalysisBuilder: ImageAnalysis.Builder? = null
+    var VideoCaptureBuilder: ImageAnalysis.Builder? = null
 
     /**
      * 切换前置/后置摄像头图标资源
@@ -144,8 +135,6 @@ object CameraSpec {
      */
     private fun reset() {
         mimeTypeSet = null
-        videoFrameRate = 0
-        videoBitRate = 0
         // 切换前置/后置摄像头图标资源
         imageSwitch = R.drawable.ic_camera_zjh
         // 闪光灯开启状态图标

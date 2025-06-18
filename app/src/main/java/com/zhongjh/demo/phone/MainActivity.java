@@ -298,12 +298,6 @@ public class MainActivity extends BaseActivity {
         // 开启点击即开启录制(失去点击拍照功能)
         cameraSetting.isClickRecord(mBinding.cbClickRecord.isChecked());
 
-        // 开启高清拍照(失去录像功能)
-        cameraSetting.enableImageHighDefinition(mBinding.cbPictureHD.isChecked());
-
-        // 开启高清录像(失去拍照功能)
-        cameraSetting.enableVideoHighDefinition(mBinding.cbVideoHD.isChecked());
-
         // 拍照时添加图片事件以及删除图片事件
         cameraSetting.setOnCaptureListener(new OnCaptureListener() {
             @Override

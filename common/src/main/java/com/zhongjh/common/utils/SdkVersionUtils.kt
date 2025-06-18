@@ -42,9 +42,10 @@ object SdkVersionUtils {
     /**
      * 判断是否是Android N版本
      */
-    fun isN(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-    }
+    @JvmStatic
+    val isN: Boolean
+        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.N)
+        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
 
 }
