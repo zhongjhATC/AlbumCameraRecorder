@@ -9,6 +9,7 @@ import com.zhongjh.multimedia.constants.ModuleTypes
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
+import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
 
 /**
  * @author zhongjh
@@ -26,7 +27,8 @@ object CameraSpec {
      * 设置拍照参数
      * 只拍照 或者 拍照+录制模式生效
      */
-    var ImageCaptureBuilder:ImageCapture.Builder? = null
+    var ImageCaptureBuilder: ImageCapture.Builder? = null
+
     /**
      * 设置拍照分析参数
      * 只拍照 模式生效
@@ -120,6 +122,8 @@ object CameraSpec {
      * 拍摄后操作图片的事件
      */
     var onCaptureListener: OnCaptureListener? = null
+
+    var onInitCameraManager: OnInitCameraManager? = null
 
     // endregion 属性
 

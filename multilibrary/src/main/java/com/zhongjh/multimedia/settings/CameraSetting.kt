@@ -11,6 +11,7 @@ import com.zhongjh.multimedia.settings.api.CameraSettingApi
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
+import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
 import java.lang.ref.WeakReference
 
 /**
@@ -28,6 +29,7 @@ class CameraSetting : CameraSettingApi {
      */
     fun onDestroy() {
         mCameraSpec.onCaptureListener = null
+        mCameraSpec.onInitCameraManager = null
     }
 
     /**
@@ -50,14 +52,6 @@ class CameraSetting : CameraSettingApi {
     override fun mimeTypeSet(mimeTypes: Set<MimeType>): CameraSetting {
         mCameraSpec.mimeTypeSet = mimeTypes
         return this
-    }
-
-    override fun videoFrameRate(videoFrameRate: Int): CameraSetting {
-        TODO("Not yet implemented")
-    }
-
-    override fun videoBitRate(videoBitRate: Int): CameraSetting {
-        TODO("Not yet implemented")
     }
 
     override fun duration(duration: Int): CameraSetting {
@@ -122,6 +116,11 @@ class CameraSetting : CameraSettingApi {
 
     override fun setOnCaptureListener(listener: OnCaptureListener): CameraSetting {
         mCameraSpec.onCaptureListener = WeakReference(listener).get()
+        return this
+    }
+
+    override fun setOnInitCameraManager(listener: OnInitCameraManager): CameraSetting {
+        mCameraSpec.onInitCameraManager = WeakReference(listener).get()
         return this
     }
 

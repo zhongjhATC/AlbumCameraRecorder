@@ -585,6 +585,7 @@ public abstract class BaseCameraFragment
             // 记忆模式
             flashSaveCache();
             cameraSpec.setOnCaptureListener(null);
+            cameraSpec.setOnInitCameraManager(null);
         } catch (NullPointerException ignored) {
 
         }

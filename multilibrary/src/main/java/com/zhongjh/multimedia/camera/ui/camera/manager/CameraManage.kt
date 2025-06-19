@@ -256,6 +256,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
                     is VideoRecordEvent.Start -> {
                         onCameraManageListener?.onRecordStart()
                     }
+
                     is VideoRecordEvent.Status -> {
 //                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
 //                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
@@ -463,15 +464,16 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
      * @param screenAspectRatio 计算后适合的比例
      */
     private fun initPreview(screenAspectRatio: Int): Preview {
-        return Preview.Builder().setResolutionSelector(
+        val previewBuilder = Preview.Builder().setResolutionSelector(
             ResolutionSelector.Builder()
                 .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                 .build()
         )
             .setTargetRotation(viewHolder.previewView.display.rotation)
-            .build().also {
-                it.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
-            }
+        cameraSpec.onInitCameraManager?.initPreview(previewBuilder, screenAspectRatio, viewHolder.previewView.display.rotation)
+        return previewBuilder.build().also {
+            it.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
+        }
     }
 
     /**
@@ -481,15 +483,16 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
      * @param screenAspectRatio 计算后适合的比例
      */
     private fun initImageCapture(screenAspectRatio: Int) {
-        // 初始化 拍照类 imageCapture,设置 优先考虑延迟而不是图像质量、设置比例、设置角度
-        imageCapture = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
+        // 初始化 拍照类 imageCapture
+        val imageBuilder = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
             .setResolutionSelector(
                 ResolutionSelector.Builder()
                     .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                     .build()
             )
             .setTargetRotation(viewHolder.previewView.display.rotation)
-            .build()
+        cameraSpec.onInitCameraManager?.initImageCapture(imageBuilder, screenAspectRatio, viewHolder.previewView.display.rotation)
+        imageCapture = imageBuilder.build()
     }
 
     /**
@@ -499,35 +502,32 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
      */
     private fun initImageAnalyzer(screenAspectRatio: Int) {
         // 初始化 拍照类 imageCapture,设置 优先考虑延迟而不是图像质量、设置比例、设置角度
-        imageAnalyzer = ImageAnalysis.Builder()
+        val imageAnalyzerBuilder = ImageAnalysis.Builder()
             .setResolutionSelector(
                 ResolutionSelector.Builder()
                     .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                     .build()
             )
             .setTargetRotation(viewHolder.previewView.display.rotation)
-            .build()
+        cameraSpec.onInitCameraManager?.initImageAnalyzer(imageAnalyzerBuilder, screenAspectRatio, viewHolder.previewView.display.rotation)
+        imageAnalyzer = imageAnalyzerBuilder.build()
     }
 
     /**
      * 初始化VideoCapture
      * @param screenAspectRatio 计算后适合的比例
      */
-    @SuppressLint("RestrictedApi")
     private fun initVideoCapture(screenAspectRatio: Int) {
         // 设置相关属性
-        val qualitySelector = QualitySelector.from(Quality.HD)
+        val qualitySelector = QualitySelector.from(Quality.HIGHEST)
         val recorder = Recorder.Builder()
             .setQualitySelector(qualitySelector)
-            .build()
-        videoCapture = VideoCapture.Builder<Recorder>(recorder)
-            .setResolutionSelector(
-                ResolutionSelector.Builder()
-                    .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                    .build()
-            )
+            .setAspectRatio(screenAspectRatio)
+        cameraSpec.onInitCameraManager?.initVideoRecorder(recorder, screenAspectRatio)
+        val videoCaptureBuilder = VideoCapture.Builder<Recorder>(recorder.build())
             .setTargetRotation(viewHolder.previewView.display.rotation)
-            .build()
+        cameraSpec.onInitCameraManager?.initVideoCapture(videoCaptureBuilder, viewHolder.previewView.display.rotation)
+        videoCapture = videoCaptureBuilder.build()
     }
 
     /**

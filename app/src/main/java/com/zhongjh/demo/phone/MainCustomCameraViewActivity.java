@@ -1,13 +1,29 @@
 package com.zhongjh.demo.phone;
 
+import static androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Size;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.camera.core.AspectRatio;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.Preview;
+import androidx.camera.core.resolutionselector.AspectRatioStrategy;
+import androidx.camera.core.resolutionselector.ResolutionSelector;
+import androidx.camera.core.resolutionselector.ResolutionStrategy;
+import androidx.camera.video.Quality;
+import androidx.camera.video.QualitySelector;
+import androidx.camera.video.Recorder;
+import androidx.camera.video.VideoCapture;
 
 import com.zhongjh.multimedia.album.filter.BaseFilter;
+import com.zhongjh.multimedia.camera.listener.OnInitCameraManager;
 import com.zhongjh.multimedia.settings.AlbumSetting;
 import com.zhongjh.multimedia.settings.CameraSetting;
 import com.zhongjh.multimedia.settings.GlobalSetting;
@@ -37,7 +53,6 @@ public class MainCustomCameraViewActivity extends BaseActivity {
     private final String TAG = MainCustomCameraViewActivity.this.getClass().getSimpleName();
 
     GlobalSetting mGlobalSetting;
-    CameraSetting cameraSetting;
 
     /**
      * @param activity 要跳转的activity
@@ -51,7 +66,6 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         mBinding = ActivityMainCustomCameraviewBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
-
         // 以下为点击事件
         mBinding.gridView.setGridViewListener(new GridViewListener() {
 
@@ -91,8 +105,6 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             }
 
         });
-
-
     }
 
     @Override
@@ -114,16 +126,52 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         CameraSetting cameraSetting = new CameraSetting();
         // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
-        // 自定义cameraView的宽高，更多设置参考 https://github.com/natario1/CameraView 源码
-//        cameraSetting.setOnCameraViewListener(cameraView -> {
-//            // 可以自定义cameraView预览时候的宽高,如果定义的不是高清拍照录制模式，那么出来的成品也是跟预览一样大小
-//            // 如果想做成比例方式也可以，那么计算屏幕宽度，高度这些就不用我说了吧？
-//            updateSize(cameraView);
-//
-//
-//            // 如果想跟系统相机一样拍摄范围更广，需要设置cameraSetting.enableImageHighDefinition(true)，同时要修改cameraPreview
-////             updateCameraPreview(cameraView);
-//        });
+        // 如果想自己自定义分辨率、比例等等,可参考camerax API
+        cameraSetting.setOnInitCameraManager(new OnInitCameraManager() {
+
+            @Override
+            public void initPreview(@NonNull Preview.Builder previewBuilder, int screenAspectRatio, int rotation) {
+                previewBuilder.setResolutionSelector(new ResolutionSelector.Builder()
+                        // 设置比例 4:3
+                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_4_3, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                        // 设置分辨率1920*1080
+                        .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                        .build());
+            }
+
+            @Override
+            public void initImageCapture(@NonNull ImageCapture.Builder imageBuilder, int screenAspectRatio, int rotation) {
+                imageBuilder.setResolutionSelector(new ResolutionSelector.Builder()
+                        // 设置比例 4:3
+                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_4_3, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                        // 设置分辨率1920*1080
+                        .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                        .build());
+            }
+
+            @Override
+            public void initImageAnalyzer(@NonNull ImageAnalysis.Builder imageAnalyzerBuilder, int screenAspectRatio, int rotation) {
+                imageAnalyzerBuilder.setResolutionSelector(new ResolutionSelector.Builder()
+                        // 设置比例 4:3
+                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_4_3, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                        // 设置分辨率1920*1080
+                        .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                        .build());
+            }
+
+            @Override
+            public void initVideoRecorder(@NonNull Recorder.Builder recorder, int screenAspectRatio) {
+                // 设置分辨率1920*1080,设置比例 4:3
+                QualitySelector qualitySelector = QualitySelector.from(Quality.FHD);
+                recorder.setQualitySelector(qualitySelector)
+                        .setAspectRatio(AspectRatio.RATIO_4_3);
+            }
+
+            @Override
+            public void initVideoCapture(@NonNull VideoCapture.Builder<Recorder> videoCaptureBuilder, int rotation) {
+                // videoCaptureBuilder.setTargetRotation(90);
+            }
+        });
 
         // 相册
         AlbumSetting albumSetting = new AlbumSetting(false)
@@ -164,15 +212,5 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                         alreadyAudioCount)
                 .forResult(requestLauncherACR);
     }
-
-//    /**
-//     * 修改宽高
-//     */
-//    private void updateSize(CameraView cameraView) {
-//        RelativeLayout.LayoutParams layoutParams =
-//                new RelativeLayout.LayoutParams(400, 100);
-//        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-//        cameraView.setLayoutParams(layoutParams);
-//    }
 
 }

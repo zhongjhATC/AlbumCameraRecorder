@@ -8,6 +8,7 @@ import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
 import com.zhongjh.multimedia.settings.CameraSetting
 import com.zhongjh.multimedia.camera.listener.OnCaptureListener
 import com.zhongjh.common.enums.MimeType
+import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
 
 /**
  * 有关拍摄界面的动态设置
@@ -33,22 +34,6 @@ interface CameraSettingApi {
      * @return [CameraSetting] for fluent API.
      */
     fun mimeTypeSet(mimeTypes: Set<MimeType>): CameraSetting
-
-    /**
-     * 设置每秒的录制帧数
-     *
-     * @param videoFrameRate 录制帧数
-     * @return [CameraSetting] for fluent API.
-     */
-    fun videoFrameRate(videoFrameRate: Int): CameraSetting
-
-    /**
-     * 设置编码比特率
-     *
-     * @param videoBitRate 编码比特率
-     * @return [CameraSetting] for fluent API.
-     */
-    fun videoBitRate(videoBitRate: Int): CameraSetting
 
     /**
      * 最长录制时间,默认10秒
@@ -149,10 +134,18 @@ interface CameraSettingApi {
 
     /**
      * 有关拍摄后添加、删除图片后触发的事件
-     * 基于之前有人需求拍照后获取当前拍照的方位，所以开放该接口
+     * 例如有需求拍照后获取当前拍照的方位，可以通过该接口设置
      *
      * @param listener [OnCaptureListener]
      * @return [CameraSetting] this
      */
     fun setOnCaptureListener(listener: OnCaptureListener): CameraSetting
+
+    /**
+     * 有关拍摄界面初始化时触发的事件
+     *
+     * @param listener [OnCaptureListener]
+     * @return [CameraSetting] this
+     */
+    fun setOnInitCameraManager(listener: OnInitCameraManager): CameraSetting
 }

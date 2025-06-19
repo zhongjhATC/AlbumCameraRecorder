@@ -47,12 +47,8 @@ class GlobalSetting internal constructor(
 
     override fun onDestroy() {
         mGlobalSpec.activityResultLauncher = null
-        if (mGlobalSpec.albumSetting != null) {
-            mGlobalSpec.albumSetting!!.onDestroy()
-        }
-        if (mGlobalSpec.cameraSetting != null) {
-            mGlobalSpec.cameraSetting!!.onDestroy()
-        }
+        mGlobalSpec.albumSetting?.onDestroy()
+        mGlobalSpec.cameraSetting?.onDestroy()
         mGlobalSpec.onLogListener = null
     }
 

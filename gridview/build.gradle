@@ -53,8 +53,8 @@ dependencies {
     compileOnly 'com.squareup.picasso:picasso:2.71828'
 
     // 条形进度条
-    implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
+    api 'com.daimajia.numberprogressbar:library:1.4@aar'
     // 处理svg图片的颜色
-    implementation 'com.github.harjot-oberai:VectorMaster:357124ddde'
+    api 'com.github.harjot-oberai:VectorMaster:357124ddde'
     compileOnly project(path: ':common')
 }
