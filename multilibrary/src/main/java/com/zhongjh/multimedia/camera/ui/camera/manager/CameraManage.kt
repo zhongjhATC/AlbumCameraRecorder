@@ -518,10 +518,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      */
     private fun initVideoCapture(screenAspectRatio: Int) {
         // 设置相关属性
-        val qualitySelector = QualitySelector.from(Quality.HIGHEST)
-        val recorder = Recorder.Builder()
-            .setQualitySelector(qualitySelector)
-            .setAspectRatio(screenAspectRatio)
+        val recorder = Recorder.Builder().setAspectRatio(screenAspectRatio)
         cameraSpec.onInitCameraManager?.initVideoRecorder(recorder, screenAspectRatio)
         val videoCaptureBuilder = VideoCapture.Builder<Recorder>(recorder.build())
             .setTargetRotation(previewView.display.rotation)

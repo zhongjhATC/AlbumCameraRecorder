@@ -170,9 +170,7 @@ class PreviewFragment : BaseFragment() {
      * 异步线程的逻辑，确定当前选择的文件列表，根据是否压缩配置决定重新返回新的文件列表
      */
     private val mAlbumCompressFileTask by lazy {
-        AlbumCompressFileTask(
-            mContext, TAG, PreviewFragment::class.java, mGlobalSpec
-        )
+        AlbumCompressFileTask(mContext, TAG, PreviewFragment::class.java, mGlobalSpec)
     }
 
     /**
@@ -233,9 +231,7 @@ class PreviewFragment : BaseFragment() {
         mContext = context.applicationContext
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // 获取样式
         return initStyle(inflater, container)
     }
