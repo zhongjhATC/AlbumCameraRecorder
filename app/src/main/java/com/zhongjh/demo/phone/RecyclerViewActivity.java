@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zhongjh.demo.R;
-import com.zhongjh.demo.databinding.ActivityMainUpperLimitBinding;
 import com.zhongjh.demo.databinding.ActivityRecyclerviewBinding;
 import com.zhongjh.demo.phone.adapter.RecyclerAdapter;
 

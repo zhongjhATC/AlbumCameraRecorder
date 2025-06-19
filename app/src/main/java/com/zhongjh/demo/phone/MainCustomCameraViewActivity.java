@@ -1,12 +1,8 @@
 package com.zhongjh.demo.phone;
 
-import static androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Size;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -50,7 +46,6 @@ import org.jetbrains.annotations.NotNull;
 public class MainCustomCameraViewActivity extends BaseActivity {
 
     ActivityMainCustomCameraviewBinding mBinding;
-    private final String TAG = MainCustomCameraViewActivity.this.getClass().getSimpleName();
 
     GlobalSetting mGlobalSetting;
 

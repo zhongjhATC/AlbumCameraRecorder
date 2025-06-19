@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import androidx.annotation.NonNull;
+
 
 /**
  * 用于处理长按按钮的事件
@@ -47,7 +49,7 @@ public class TouchTimeHandler  extends Handler {
     }
 
     @Override
-    public void handleMessage(Message paramMessage) {
+    public void handleMessage(@NonNull Message paramMessage) {
         if (task != null) {
             task.run();
         }

@@ -18,8 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.album.entity.Album2;
-import com.zhongjh.multimedia.utils.AttrsUtils;
 import com.zhongjh.common.utils.AnimUtils;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
 import com.zhongjh.multimedia.album.entity.Album2;

@@ -1,9 +1,7 @@
 package com.zhongjh.multimedia.camera.ui.camera.impl;
 
 import android.content.Intent;
-import android.net.Uri;
 
-import com.zhongjh.multimedia.camera.entity.BitmapData;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.multimedia.camera.entity.BitmapData;
 

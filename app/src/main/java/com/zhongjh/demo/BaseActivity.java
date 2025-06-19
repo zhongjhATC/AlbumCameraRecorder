@@ -222,12 +222,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<String> future = executor.submit(new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    return "";
-                }
-            });
+            Future<String> future = executor.submit(() -> "");
         }
     }
 

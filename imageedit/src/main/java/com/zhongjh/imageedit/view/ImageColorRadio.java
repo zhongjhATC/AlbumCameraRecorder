@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatRadioButton;
 
 import com.zhongjh.imageedit.R;
@@ -88,7 +89,7 @@ public class ImageColorRadio extends AppCompatRadioButton implements ValueAnimat
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
 
         float hw = getWidth() / 2f, hh = getHeight() / 2f;

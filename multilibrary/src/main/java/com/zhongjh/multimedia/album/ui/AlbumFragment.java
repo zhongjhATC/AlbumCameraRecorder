@@ -1,7 +1,6 @@
 package com.zhongjh.multimedia.album.ui;
 
 import static android.app.Activity.RESULT_OK;
-
 import static com.zhongjh.multimedia.model.SelectedData.STATE_SELECTION;
 
 import android.content.Context;
@@ -31,6 +30,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.zhongjh.common.entity.LocalMedia;
+import com.zhongjh.common.listener.OnMoreClickListener;
+import com.zhongjh.common.utils.ColorFilterUtil;
+import com.zhongjh.common.utils.DisplayMetricsUtils;
+import com.zhongjh.common.utils.DoubleUtils;
+import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.multimedia.MainActivity;
 import com.zhongjh.multimedia.R;
 import com.zhongjh.multimedia.album.entity.Album2;
@@ -48,14 +54,6 @@ import com.zhongjh.multimedia.settings.AlbumSpec;
 import com.zhongjh.multimedia.settings.GlobalSpec;
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams;
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior;
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.listener.OnMoreClickListener;
-import com.zhongjh.common.utils.ColorFilterUtil;
-import com.zhongjh.common.utils.DisplayMetricsUtils;
-import com.zhongjh.common.utils.DoubleUtils;
-import com.zhongjh.common.utils.StatusBarUtils;
-import com.zhongjh.common.utils.ThreadUtils;
-import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter;
 
 import java.util.ArrayList;
 

@@ -23,6 +23,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import com.zhongjh.imageedit.core.ImageCustom;
 import com.zhongjh.imageedit.core.ImageMode;
 import com.zhongjh.imageedit.core.ImagePen;
@@ -257,7 +259,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
      * 重新在IMGView画图
      */
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         Log.d(TAG, "onDraw");
         onDrawImages(canvas);
     }
@@ -592,7 +594,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     }
 
     @Override
-    public boolean onScale(ScaleGestureDetector detector) {
+    public boolean onScale(@NonNull ScaleGestureDetector detector) {
         Log.d(TAG, "onScale");
         if (mPointerCount > 1) {
             // 当图片本身大于20倍的时候并且缩放操作要放大的时候取消缩放。缩放大于20倍的时候，返回上一次的变形，防止裁剪因为高度不大于0而导致闪退
@@ -609,13 +611,13 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     }
 
     @Override
-    public boolean onScaleBegin(ScaleGestureDetector detector) {
+    public boolean onScaleBegin(@NonNull ScaleGestureDetector detector) {
         Log.d(TAG, "onScaleBegin");
         return mPointerCount > 1;
     }
 
     @Override
-    public void onScaleEnd(ScaleGestureDetector detector) {
+    public void onScaleEnd(@NonNull ScaleGestureDetector detector) {
         Log.d(TAG, "onScaleEnd");
         mImage.onScaleEnd();
     }
@@ -690,7 +692,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
      * 标记着动画的开始
      */
     @Override
-    public void onAnimationStart(Animator animation) {
+    public void onAnimationStart(@NonNull Animator animation) {
         Log.d(TAG, "onAnimationStart");
         mImage.onHomingStart();
     }
@@ -699,7 +701,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
      * 标记着动画的结束
      */
     @Override
-    public void onAnimationEnd(Animator animation) {
+    public void onAnimationEnd(@NonNull Animator animation) {
         Log.d(TAG, "onAnimationEnd");
         if (mImage.onHomingEnd(getScrollX(), getScrollY(), mHomingAnimator.isRotate())) {
             toApplyHoming(mImage.clip(getScrollX(), getScrollY()));
@@ -707,13 +709,13 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     }
 
     @Override
-    public void onAnimationCancel(Animator animation) {
+    public void onAnimationCancel(@NonNull Animator animation) {
         Log.d(TAG, "onAnimationCancel");
         mImage.onHomingCancel(mHomingAnimator.isRotate());
     }
 
     @Override
-    public void onAnimationRepeat(Animator animation) {
+    public void onAnimationRepeat(@NonNull Animator animation) {
         Log.d(TAG, "onAnimationRepeat");
         // empty implementation.
     }
@@ -733,17 +735,17 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     private class MoveAdapter extends GestureDetector.SimpleOnGestureListener {
 
         @Override
-        public boolean onDown(MotionEvent e) {
+        public boolean onDown(@NonNull MotionEvent e) {
             return true;
         }
 
         @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
             return ImageViewCustom.this.onScroll(distanceX, distanceY);
         }
 
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onFling(MotionEvent e1, @NonNull MotionEvent e2, float velocityX, float velocityY) {
             // TODO
             return super.onFling(e1, e2, velocityX, velocityY);
         }

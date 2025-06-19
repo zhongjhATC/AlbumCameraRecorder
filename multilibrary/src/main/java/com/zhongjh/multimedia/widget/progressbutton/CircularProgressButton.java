@@ -10,10 +10,10 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.StateSet;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -227,7 +227,7 @@ public class CircularProgressButton extends AppCompatButton {
         try {
             // 由Activity主题提供的样式：提交按钮的文字的文本
             TypedArray confirmTextValue = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_text_value});
-            if (confirmTextValue == null || confirmTextValue.length() <= 0) {
+            if (confirmTextValue.length() <= 0) {
                 mIdleText = attr.getString(R.styleable.CircularProgressButton_cpb_textIdle);
             } else {
                 mIdleText = confirmTextValue.getText(0).toString();
@@ -336,7 +336,7 @@ public class CircularProgressButton extends AppCompatButton {
     }
 
     @Override
-    protected boolean verifyDrawable(Drawable who) {
+    protected boolean verifyDrawable(@NonNull Drawable who) {
         return who == mAnimatedDrawable || super.verifyDrawable(who);
     }
 

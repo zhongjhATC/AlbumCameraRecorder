@@ -30,10 +30,11 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * <pre>
  *     author: Blankj
- *     blog  : http://blankj.com
+ *     blog  : <a href="http://blankj.com">...</a>
  *     time  : 2018/05/08
  *     desc  : utils about thread
  * </pre>
+ * @noinspection ALL
  */
 public final class ThreadUtils {
 
@@ -1260,23 +1261,15 @@ public final class ThreadUtils {
                     if (state.get() != RUNNING) {
                         return;
                     }
-                    getDeliver().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            onSuccess(result);
-                        }
-                    });
+                    getDeliver().execute(() -> onSuccess(result));
                 } else {
                     if (!state.compareAndSet(RUNNING, COMPLETING)) {
                         return;
                     }
-                    getDeliver().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            onSuccess(result);
-                            Log.d("CameraPictureManager", "onSuccess-onDone");
-                            onDone();
-                        }
+                    getDeliver().execute(() -> {
+                        onSuccess(result);
+                        Log.d("CameraPictureManager", "onSuccess-onDone");
+                        onDone();
                     });
                 }
             } catch (InterruptedException ignore) {
@@ -1285,13 +1278,10 @@ public final class ThreadUtils {
                 if (!state.compareAndSet(RUNNING, EXCEPTIONAL)) {
                     return;
                 }
-                getDeliver().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        onFail(throwable);
-                        Log.d("CameraPictureManager", "onFail-onDone");
-                        onDone();
-                    }
+                getDeliver().execute(() -> {
+                    onFail(throwable);
+                    Log.d("CameraPictureManager", "onFail-onDone");
+                    onDone();
                 });
             }
         }
@@ -1313,13 +1303,10 @@ public final class ThreadUtils {
                 }
             }
 
-            getDeliver().execute(new Runnable() {
-                @Override
-                public void run() {
-                    onCancel();
-                    Log.d("CameraPictureManager", "onCancel-onDone");
-                    onDone();
-                }
+            getDeliver().execute(() -> {
+                onCancel();
+                Log.d("CameraPictureManager", "onCancel-onDone");
+                onDone();
             });
         }
 
@@ -1427,12 +1414,7 @@ public final class ThreadUtils {
 
     private static Executor getGlobalDeliver() {
         if (sDeliver == null) {
-            sDeliver = new Executor() {
-                @Override
-                public void execute(@NonNull Runnable command) {
-                    runOnUiThread(command);
-                }
-            };
+            sDeliver = command -> runOnUiThread(command);
         }
         return sDeliver;
     }

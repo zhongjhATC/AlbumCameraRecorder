@@ -3,7 +3,6 @@ package com.zhongjh.multimedia.camera.ui.camera.adapter;
 import android.content.Intent;
 
 import com.zhongjh.multimedia.camera.entity.BitmapData;
-import com.zhongjh.multimedia.camera.entity.BitmapData;
 
 /**
  * 多图的AdapterListener

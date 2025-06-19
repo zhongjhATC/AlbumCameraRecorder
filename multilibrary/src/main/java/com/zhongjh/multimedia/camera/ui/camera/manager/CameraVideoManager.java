@@ -13,10 +13,6 @@ import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraVideo;
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
-import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraVideo;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
 
 /**
  * 这是专门处理视频的有关逻辑

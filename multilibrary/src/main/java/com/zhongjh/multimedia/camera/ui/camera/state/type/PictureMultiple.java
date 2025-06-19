@@ -1,12 +1,5 @@
 package com.zhongjh.multimedia.camera.ui.camera.state.type;
 
-import android.util.Log;
-
-import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.StateMode;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;

@@ -1,7 +1,6 @@
 package com.zhongjh.multimedia.album.listener;
 
 import com.zhongjh.multimedia.album.entity.Album2;
-import com.zhongjh.multimedia.album.entity.Album2;
 
 import java.util.List;
 

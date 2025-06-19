@@ -8,7 +8,7 @@ import android.opengl.EGLSurface;
 import android.opengl.GLES20;
 
 /**
- * Created by Oleksii Shliama [https://github.com/shliama] on 9/8/16.
+ * Created by Oleksii Shliama [<a href="https://github.com/shliama">...</a>] on 9/8/16.
  */
 public class EglUtils {
 

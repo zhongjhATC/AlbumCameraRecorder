@@ -10,9 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.widget.ImageViewTouch;
-import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
 

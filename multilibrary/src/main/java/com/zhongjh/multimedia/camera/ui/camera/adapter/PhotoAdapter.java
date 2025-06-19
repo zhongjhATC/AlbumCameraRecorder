@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.camera.entity.BitmapData;
 import com.zhongjh.multimedia.preview.start.PreviewStartManager;
 import com.zhongjh.multimedia.settings.GlobalSpec;
 import com.zhongjh.common.listener.OnMoreClickListener;

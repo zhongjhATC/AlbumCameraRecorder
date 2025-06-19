@@ -1,6 +1,5 @@
 package com.zhongjh.multimedia.camera.widget;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -9,8 +8,6 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.multimedia.R;
 import com.zhongjh.multimedia.widget.BaseOperationLayout;

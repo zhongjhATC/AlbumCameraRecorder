@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 /**
  * 一个类似三角形的向下控件
  *
@@ -56,7 +58,7 @@ public class DownView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
         mPath.moveTo(mStrokeWidth, mStrokeWidth / 2);
         mPath.lineTo(mCenterX, mCenterY - mStrokeWidth / 2);

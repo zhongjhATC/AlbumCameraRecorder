@@ -17,12 +17,8 @@ import com.zhongjh.multimedia.R;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.multimedia.camera.widget.FocusView;
-import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.widget.ImageViewTouch;
-import com.zhongjh.multimedia.widget.childclickable.ChildClickableRelativeLayout;
-import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.widget.childclickable.ChildClickableRelativeLayout;
@@ -56,11 +52,8 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
         mViewHolder = new ViewHolder(view);
         cameraManage = new CameraManage(getMainActivity(), mViewHolder, this);
 
-        mViewHolder.previewView.getPreviewStreamState().observe(getMainActivity(), new Observer<PreviewView.StreamState>() {
-            @Override
-            public void onChanged(PreviewView.StreamState streamState) {
+        mViewHolder.previewView.getPreviewStreamState().observe(getMainActivity(), streamState -> {
 
-            }
         });
     }
 

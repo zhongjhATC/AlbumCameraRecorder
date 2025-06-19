@@ -14,6 +14,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.zhongjh.imageedit.R;
 import com.zhongjh.imageedit.core.sticker.ImageSticker;
 import com.zhongjh.imageedit.core.sticker.ImageStickerAdjustHelper;
@@ -155,7 +157,7 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         if (isShowing()) {
             canvas.drawRect(ANCHOR_SIZE_HALF, ANCHOR_SIZE_HALF,
                     getWidth() - ANCHOR_SIZE_HALF,
@@ -216,7 +218,7 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
     }
 
     @Override
-    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+    protected boolean drawChild(@NonNull Canvas canvas, View child, long drawingTime) {
         return isShowing() && super.drawChild(canvas, child, drawingTime);
     }
 

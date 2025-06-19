@@ -6,8 +6,6 @@ import androidx.fragment.app.Fragment;
 
 import com.zhongjh.multimedia.listener.HandleFragmentInterface;
 import com.zhongjh.multimedia.utils.HandleBackUtil;
-import com.zhongjh.multimedia.listener.HandleFragmentInterface;
-import com.zhongjh.multimedia.utils.HandleBackUtil;
 
 import org.jetbrains.annotations.NotNull;
 

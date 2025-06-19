@@ -12,6 +12,7 @@ import androidx.camera.video.VideoCapture
  * @author zhongjh
  * @date 2018/10/11
  */
+@Suppress("EmptyMethod")
 interface OnInitCameraManager {
 
     /**

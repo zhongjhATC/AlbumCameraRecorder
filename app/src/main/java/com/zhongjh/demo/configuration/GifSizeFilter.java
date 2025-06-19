@@ -20,6 +20,8 @@ import android.content.Context;
 import android.graphics.Point;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import com.zhongjh.multimedia.album.filter.BaseFilter;
 import com.zhongjh.multimedia.album.utils.PhotoMetadataUtils;
 import com.zhongjh.common.entity.IncapableCause;
@@ -44,6 +46,7 @@ public class GifSizeFilter extends BaseFilter {
         mMaxSize = maxSizeInBytes;
     }
 
+    @NonNull
     @Override
     public Set<MimeType> constraintTypes() {
         return new HashSet<MimeType>() {{

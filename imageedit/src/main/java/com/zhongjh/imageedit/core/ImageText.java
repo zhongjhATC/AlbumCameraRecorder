@@ -2,6 +2,8 @@ package com.zhongjh.imageedit.core;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 /**
  *
  * @author felix
@@ -43,6 +45,7 @@ public class ImageText {
         return isEmpty() ? 0 : text.length();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "IMGText{" +

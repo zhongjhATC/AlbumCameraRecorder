@@ -5,7 +5,6 @@ import android.content.Context;
 import androidx.camera.core.ImageCapture;
 
 import com.zhongjh.multimedia.camera.util.SharedPreferencesUtil;
-import com.zhongjh.multimedia.camera.util.SharedPreferencesUtil;
 
 /**
  * 记忆模式下缓存闪光灯

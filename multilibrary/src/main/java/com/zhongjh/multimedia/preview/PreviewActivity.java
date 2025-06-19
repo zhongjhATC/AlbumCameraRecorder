@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment;
 
 import com.zhongjh.multimedia.R;
 import com.zhongjh.multimedia.settings.GlobalSpec;
-import com.zhongjh.multimedia.settings.GlobalSpec;
 
 /**
  * 一个容器，容纳PreviewFragment,一切都是为了过渡动画

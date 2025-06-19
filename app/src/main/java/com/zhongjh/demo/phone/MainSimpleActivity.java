@@ -54,7 +54,7 @@ public class MainSimpleActivity extends BaseActivity {
         mBinding = ActivityMainSimpleBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        mBinding.gridView.setMaxMediaCount(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE);
+        mBinding.gridView.setMaxMediaCount(null, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE);
 
         // 以下为点击事件
         mBinding.gridView.setGridViewListener(new GridViewListener() {
@@ -153,7 +153,7 @@ public class MainSimpleActivity extends BaseActivity {
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
                 // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格GridView的maxCount也改动 mBinding.dmlImageList.setMaxMediaCount();
-                .maxSelectablePerMediaType(MAX_SELECTABLE, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE,
+                .maxSelectablePerMediaType(null, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE,
                         alreadyImageCount,
                         alreadyVideoCount,
                         alreadyAudioCount)

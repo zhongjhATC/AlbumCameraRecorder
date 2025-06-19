@@ -315,9 +315,4 @@ public class MainSeeActivity extends BaseActivity {
         return true;
     }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
-
 }

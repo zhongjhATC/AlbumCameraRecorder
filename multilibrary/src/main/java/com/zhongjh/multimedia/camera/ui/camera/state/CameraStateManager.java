@@ -11,8 +11,6 @@ import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureMultiple;
 import com.zhongjh.multimedia.camera.ui.camera.state.type.Preview;
 import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultiple;
 import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultipleIn;
-import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultiple;
-import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultipleIn;
 
 /**
  * CameraLayout涉及到状态改变的事件都在这里

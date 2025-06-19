@@ -2,27 +2,15 @@ package com.zhongjh.multimedia.album.ui.mediaselection;
 
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.album.widget.recyclerview.listener.OnRecyclerViewScrollStateListener;
-import com.zhongjh.multimedia.listener.OnLogListener;
-import com.zhongjh.multimedia.model.SelectedModel;
-import com.zhongjh.multimedia.album.entity.Album2;
-import com.zhongjh.multimedia.album.widget.recyclerview.RecyclerLoadMoreView;
 import com.zhongjh.multimedia.settings.GlobalSpec;
 import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.multimedia.model.MainModel;
-import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter;
-import com.zhongjh.multimedia.album.utils.UiUtils;
-import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGridInset;
 import com.zhongjh.multimedia.settings.AlbumSpec;
 import com.zhongjh.multimedia.album.entity.Album2;
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter;

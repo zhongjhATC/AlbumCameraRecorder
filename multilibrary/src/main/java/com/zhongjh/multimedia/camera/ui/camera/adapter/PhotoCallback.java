@@ -3,7 +3,6 @@ package com.zhongjh.multimedia.camera.ui.camera.adapter;
 import androidx.recyclerview.widget.DiffUtil;
 
 import com.zhongjh.multimedia.camera.entity.BitmapData;
-import com.zhongjh.multimedia.camera.entity.BitmapData;
 
 import java.util.List;
 import java.util.Objects;

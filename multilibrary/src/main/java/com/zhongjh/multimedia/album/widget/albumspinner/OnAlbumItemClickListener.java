@@ -1,7 +1,6 @@
 package com.zhongjh.multimedia.album.widget.albumspinner;
 
 import com.zhongjh.multimedia.album.entity.Album2;
-import com.zhongjh.multimedia.album.entity.Album2;
 
 /**
  * 专辑目录事件

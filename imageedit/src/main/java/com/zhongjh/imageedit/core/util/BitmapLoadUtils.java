@@ -11,7 +11,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 
 /**
- * Created by Oleksii Shliama (https://github.com/shliama).
+ * Created by Oleksii Shliama (<a href="https://github.com/shliama">...</a>).
  */
 public class BitmapLoadUtils {
 

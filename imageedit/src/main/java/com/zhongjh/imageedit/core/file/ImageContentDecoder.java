@@ -1,6 +1,5 @@
 package com.zhongjh.imageedit.core.file;
 
-import android.content.ContentProvider;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

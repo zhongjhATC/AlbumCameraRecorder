@@ -18,9 +18,6 @@ import com.zhongjh.multimedia.R;
 import com.zhongjh.multimedia.album.entity.Album2;
 import com.zhongjh.multimedia.settings.GlobalSpec;
 import com.zhongjh.multimedia.utils.AttrsUtils;
-import com.zhongjh.multimedia.album.entity.Album2;
-import com.zhongjh.multimedia.settings.GlobalSpec;
-import com.zhongjh.multimedia.utils.AttrsUtils;
 
 import java.util.ArrayList;
 import java.util.List;

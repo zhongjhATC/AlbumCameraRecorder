@@ -1,5 +1,7 @@
 package com.zhongjh.imageedit.core.homing;
 
+import androidx.annotation.NonNull;
+
 /**
  * 用来处理放大-旋转的实体
  * @author felix
@@ -43,6 +45,7 @@ public class ImageHoming {
         return Float.compare(sHoming.rotate, eHoming.rotate) != 0;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "IMGHoming{" +

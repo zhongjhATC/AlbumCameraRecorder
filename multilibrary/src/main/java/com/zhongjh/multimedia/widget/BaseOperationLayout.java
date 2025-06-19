@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,8 +21,6 @@ import com.zhongjh.multimedia.camera.listener.ClickOrLongListener;
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton;
 import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.circularprogressview.CircularProgressListener;
-
-import java.util.ArrayList;
 
 /**
  * 集成开始功能按钮、确认按钮、取消按钮的布局

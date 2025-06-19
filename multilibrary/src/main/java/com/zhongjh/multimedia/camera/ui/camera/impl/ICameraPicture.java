@@ -1,8 +1,5 @@
 package com.zhongjh.multimedia.camera.ui.camera.impl;
 
-import android.graphics.Bitmap;
-
-import com.zhongjh.multimedia.camera.entity.BitmapData;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.multimedia.camera.entity.BitmapData;
