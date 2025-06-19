@@ -31,31 +31,31 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
+import com.zhongjh.common.entity.LocalMedia;
+import com.zhongjh.common.listener.OnMoreClickListener;
+import com.zhongjh.common.utils.StatusBarUtils;
+import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.multimedia.BaseFragment;
+import com.zhongjh.multimedia.MainActivity;
 import com.zhongjh.multimedia.R;
 import com.zhongjh.multimedia.camera.constants.FlashCacheUtils;
+import com.zhongjh.multimedia.camera.entity.BitmapData;
 import com.zhongjh.multimedia.camera.listener.ClickOrLongListener;
+import com.zhongjh.multimedia.camera.listener.OnCameraManageListener;
+import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraFragment;
+import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraView;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
+import com.zhongjh.multimedia.camera.ui.camera.state.IState;
 import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
 import com.zhongjh.multimedia.camera.util.LogUtil;
+import com.zhongjh.multimedia.model.SelectedData;
 import com.zhongjh.multimedia.settings.CameraSpec;
 import com.zhongjh.multimedia.settings.GlobalSpec;
 import com.zhongjh.multimedia.utils.PackageManagerUtils;
 import com.zhongjh.multimedia.utils.SelectableUtils;
 import com.zhongjh.multimedia.widget.BaseOperationLayout;
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.listener.OnMoreClickListener;
-import com.zhongjh.common.utils.StatusBarUtils;
-import com.zhongjh.common.utils.ThreadUtils;
-import com.zhongjh.multimedia.MainActivity;
-import com.zhongjh.multimedia.camera.entity.BitmapData;
-import com.zhongjh.multimedia.camera.listener.OnCameraManageListener;
-import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraView;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.IState;
-import com.zhongjh.multimedia.model.SelectedData;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -104,6 +104,7 @@ public abstract class BaseCameraFragment
      * 拍摄配置
      */
     private CameraSpec cameraSpec;
+    public CameraManage cameraManage;
     /**
      * 闪关灯状态 默认关闭
      */
@@ -126,12 +127,6 @@ public abstract class BaseCameraFragment
      */
     @Nullable
     private View[] multiplePhotoViews;
-
-    /**
-     * 拍摄类管理，处理拍摄照片、录制、水印
-     */
-    @NonNull
-    public abstract CameraManage getCameraManage();
 
     /**
      * 设置状态管理,处理不同状态下进行相关逻辑
@@ -173,6 +168,7 @@ public abstract class BaseCameraFragment
         View view = setContentView(inflater, container);
         view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
         initView(view, savedInstanceState);
+        cameraManage = new CameraManage(getMainActivity(), getPreviewView(), getFocusView());
         initData();
         setView();
         initListener();
@@ -222,7 +218,7 @@ public abstract class BaseCameraFragment
     @Override
     public void onResume() {
         super.onResume();
-        getCameraManage().onResume();
+        cameraManage.onResume();
         LogUtil.i("CameraLayout onResume");
         // 清空进度，防止正在进度中突然按home键
         getPhotoVideoLayout().getViewHolder().btnClickOrLong.reset();
@@ -236,7 +232,7 @@ public abstract class BaseCameraFragment
     @Override
     public void onPause() {
         super.onPause();
-        getCameraManage().onPause();
+        cameraManage.onPause();
         LogUtil.i("CameraLayout onPause");
     }
 
@@ -244,7 +240,7 @@ public abstract class BaseCameraFragment
     public void onDestroy() {
         onDestroy(isCommit);
         getPhotoVideoLayout().onDestroy();
-        getCameraManage().onDestroy();
+        cameraManage.onDestroy();
         super.onDestroy();
     }
 
@@ -253,16 +249,16 @@ public abstract class BaseCameraFragment
      */
     protected void setView() {
         multiplePhotoViews = getMultiplePhotoView();
-        getCameraManage().init();
+        cameraManage.init();
 
 //        // 水印资源 TODO
 //        if (cameraSpec.getWatermarkResource() != -1) {
-//            LayoutInflater.from(getContext()).inflate(cameraSpec.getWatermarkResource(), getCameraManage(), true);
+//            LayoutInflater.from(getContext()).inflate(cameraSpec.getWatermarkResource(), cameraManage, true);
 //        }
 
 //        // 回调cameraView可以自定义相关参数 TODO
 //        if (cameraSpec.getOnCameraViewListener() != null) {
-//            cameraSpec.getOnCameraViewListener().onInitListener(getCameraManage());
+//            cameraSpec.getOnCameraViewListener().onInitListener(cameraManage);
 //        }
 
         // 兼容沉倾状态栏
@@ -277,7 +273,7 @@ public abstract class BaseCameraFragment
         getPhotoVideoLayout().getViewHolder().btnConfirm.setProgressMode(true);
 
         // 初始化cameraView,判断是否开启录制视频，如果开启就开启录制声音x
-        getCameraManage().setAudio(SelectableUtils.videoValid());
+        cameraManage.setAudio(SelectableUtils.videoValid());
         if (getSwitchView() != null) {
             getSwitchView().setImageResource(cameraSpec.getImageSwitch());
         }
@@ -357,7 +353,7 @@ public abstract class BaseCameraFragment
      */
     private void initImgSwitchListener() {
         if (getSwitchView() != null) {
-            getSwitchView().setOnClickListener(v -> getCameraManage().toggleFacing());
+            getSwitchView().setOnClickListener(v -> cameraManage.toggleFacing());
         }
     }
 
@@ -466,7 +462,7 @@ public abstract class BaseCameraFragment
      * 拍照、录制监听
      */
     private void initCameraViewListener() {
-        getCameraManage().setOnCameraManageListener(new OnCameraManageListener() {
+        cameraManage.setOnCameraManageListener(new OnCameraManageListener() {
 
             @Override
             public void onRecordStart() {
@@ -573,7 +569,7 @@ public abstract class BaseCameraFragment
             LogUtil.i("CameraLayout destroy");
             getCameraPictureManager().onDestroy(isCommit);
             getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-            getCameraManage().onDestroy();
+            cameraManage.onDestroy();
             // 记忆模式
             flashSaveCache();
             cameraSpec.setOnCaptureListener(null);
@@ -947,7 +943,7 @@ public abstract class BaseCameraFragment
                 default:
                     break;
             }
-            getCameraManage().setFlashMode(flashMode);
+            cameraManage.setFlashMode(flashMode);
         }
     }
 

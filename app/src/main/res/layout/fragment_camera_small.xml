@@ -12,6 +12,20 @@
         android:orientation="vertical"
         android:paddingTop="1dp">
 
+        <!-- 预览拍摄 -->
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.zhongjh.multimedia.camera.widget.FocusView
+            android:id="@+id/focusView"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            app:focusFailed="@drawable/focus_failed"
+            app:focusIng="@drawable/focus_ing"
+            app:focusSuccess="@drawable/focus_success" />
+
         <com.zhongjh.multimedia.widget.ImageViewTouch
             android:id="@+id/imgPhoto"
             android:layout_width="match_parent"

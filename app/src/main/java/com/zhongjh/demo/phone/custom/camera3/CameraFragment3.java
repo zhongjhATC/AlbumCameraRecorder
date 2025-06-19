@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.camera.view.PreviewView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +18,7 @@ import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
+import com.zhongjh.multimedia.camera.widget.FocusView;
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.widget.ImageViewTouch;
 import com.zhongjh.multimedia.widget.childclickable.ChildClickableRelativeLayout;
@@ -67,8 +69,14 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManager, Came
 
     @NonNull
     @Override
-    public CameraManage getCameraManage() {
-        return null;
+    public PreviewView getPreviewView() {
+        return mViewHolder.previewView;
+    }
+
+    @NonNull
+    @Override
+    public FocusView getFocusView() {
+        return mViewHolder.focusView;
     }
 
     @Override
@@ -134,6 +142,8 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManager, Came
 
         final View rootView;
         final ChildClickableRelativeLayout rlMain;
+        final PreviewView previewView;
+        final FocusView focusView;
         final ImageViewTouch imgPhoto;
         final ImageView imgFlash;
         final ImageView imgSwitch;
@@ -148,6 +158,8 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManager, Came
         ViewHolder(View rootView) {
             this.rootView = rootView;
             this.rlMain = rootView.findViewById(R.id.rlMain);
+            this.previewView = rootView.findViewById(R.id.previewView);
+            this.focusView = rootView.findViewById(R.id.focusView);
             this.imgPhoto = rootView.findViewById(R.id.imgPhoto);
             this.imgFlash = rootView.findViewById(R.id.imgFlash);
             this.imgSwitch = rootView.findViewById(R.id.imgSwitch);

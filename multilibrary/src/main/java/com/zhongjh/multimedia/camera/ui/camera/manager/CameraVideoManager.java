@@ -63,7 +63,7 @@ public class CameraVideoManager implements ICameraVideo {
      */
     @Override
     public void recordVideo() {
-        baseCameraFragment.getCameraManage().takeVideo();
+        baseCameraFragment.cameraManage.takeVideo();
     }
 
     /**

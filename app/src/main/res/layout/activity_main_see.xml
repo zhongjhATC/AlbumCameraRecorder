@@ -12,7 +12,7 @@
             android:id="@+id/gridView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:album.thumbnail.placeholder="@drawable/ic_loading"
+            app:placeholder="@drawable/ic_loading"
             app:audioDeleteColor="@color/blue_primary"
             app:audioPlayColor="@color/blue_primary"
             app:audioProgressColor="@color/blue_primary"

@@ -149,14 +149,9 @@ object FileMediaUtil {
      * @param context 上下文
      * @param mediaType 文件类型
      * @param dirType 文件夹类型
-     * @param suffix 后缀名
      * @return
      */
-    private fun createFile(
-        context: Context,
-        @MediaType mediaType: Int,
-        @DirType dirType: String
-    ): File {
+    private fun createFile(context: Context,@MediaType mediaType: Int,@DirType dirType: String): File {
         val externalFilesDir: File? = context.getExternalFilesDir("")
         val dirFile = File(externalFilesDir!!.absolutePath, dirType)
         if (!dirFile.exists()) {

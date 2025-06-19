@@ -40,7 +40,7 @@ public class VideoMultipleIn extends StateMode {
 
     @Override
     public Boolean onBackPressed() {
-        getCameraFragment().getCameraManage().closeVideo();
+        getCameraFragment().cameraManage.closeVideo();
         getCameraFragment().getPhotoVideoLayout().resetConfirm();
 
         if (getCameraFragment().getCameraVideoManager().getVideoTime() == 0L) {
@@ -61,12 +61,12 @@ public class VideoMultipleIn extends StateMode {
     public void pauseRecord() {
         // 切回非录制中的状态
         getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
-        getCameraFragment().getCameraManage().pauseVideo();
+        getCameraFragment().cameraManage.pauseVideo();
     }
 
     @Override
     public void onLongClickFinish() {
-        getCameraFragment().getCameraManage().stopVideo();
+        getCameraFragment().cameraManage.stopVideo();
     }
 
 }

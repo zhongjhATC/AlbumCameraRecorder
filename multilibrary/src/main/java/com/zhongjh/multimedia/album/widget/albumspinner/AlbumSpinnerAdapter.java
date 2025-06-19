@@ -2,7 +2,10 @@ package com.zhongjh.multimedia.album.widget.albumspinner;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +61,8 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
         int checkedNum = album.getCheckedCount();
         holder.tvSign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
         holder.itemView.setSelected(isChecked);
-        GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext().getApplicationContext(), holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size), holder.placeholder, holder.imgFirst, album.getFirstImagePath());
+        GlobalSpec.INSTANCE.getImageEngine().loadThumbnail(holder.itemView.getContext().getApplicationContext(), holder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.z_media_grid_size),
+                holder.placeholder, holder.imgFirst, album.getFirstImagePath() == null ? "" : album.getFirstImagePath());
         Context context = holder.itemView.getContext();
         holder.tvName.setText(context.getString(R.string.z_multi_library_album_num, name, imageNum));
         holder.itemView.setOnClickListener(view -> {
@@ -87,7 +91,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
         /**
          * 默认图片
          */
-        private final Drawable placeholder;
+        private Drawable placeholder;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -97,7 +101,14 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
 
             TypedArray ta = itemView.getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.album_thumbnail_placeholder});
             placeholder = ta.getDrawable(0);
-            ta.recycle();
+            if (placeholder == null) {
+                placeholder = new ColorDrawable(Color.WHITE);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ta.close();
+            } else {
+                ta.recycle();
+            }
 
             // 获取下拉框的样式集合
             TypedValue typedValue = new TypedValue();

@@ -8,8 +8,10 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.camera.view.PreviewView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zhongjh.multimedia.camera.widget.FocusView;
 import com.zhongjh.multimedia.widget.ImageViewTouch;
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
@@ -56,6 +58,12 @@ public interface ICameraView {
      */
     @Nullable
     View getTopView();
+
+    @NonNull
+    PreviewView getPreviewView();
+
+    @NonNull
+    FocusView getFocusView();
 
     /**
      * 当想使用自带的多图显示控件，请设置它

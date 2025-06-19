@@ -9,8 +9,7 @@
         <item name="album.dropdown.title.color">@color/blue_album_dropdown_title_text</item>
         <item name="album.dropdown.count.color">@color/blue_album_dropdown_count_text</item>
         <item name="album.element.color">@android:color/white</item>
-        <item name="album.thumbnail.placeholder">@color/blue_album_dropdown_thumbnail_placeholder
-        </item>
+        <item name="album.thumbnail.placeholder">@color/blue_album_dropdown_thumbnail_placeholder</item>
         <item name="album.emptyView">@drawable/ic_empty_blue</item>
         <item name="album.emptyView.textColor">@color/blue_album_empty_view</item>
         <item name="album.listPopupWindowStyle">@style/Popup.Blue</item>

@@ -22,13 +22,7 @@ interface ImageEngine {
      * @param imageView   ImageView控件
      * @param path        加载图像的path,API 29版本以上的是uri
      */
-    fun loadThumbnail(
-        context: Context,
-        resize: Int,
-        placeholder: Drawable,
-        imageView: ImageView,
-        path: String
-    )
+    fun loadThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, path: String)
 
     /**
      * 加载静态图像资源

@@ -46,7 +46,7 @@ public class VideoMultiple extends StateMode {
         if (getCameraFragment().getPhotoVideoLayout().getViewHolder().btnConfirm.mState == CircularProgressState.PLAY) {
             // 完成录制
             Log.d(TAG, "pvLayoutCommit完成录制");
-            getCameraFragment().getCameraManage().stopVideo();
+            getCameraFragment().cameraManage.stopVideo();
         } else {
             // 中断操作
             Log.d(TAG, "pvLayoutCommit中断操作");
@@ -56,12 +56,12 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void pauseRecord() {
-        getCameraFragment().getCameraManage().pauseVideo();
+        getCameraFragment().cameraManage.pauseVideo();
     }
 
     @Override
     public void onLongClickFinish() {
-        getCameraFragment().getCameraManage().stopVideo();
+        getCameraFragment().cameraManage.stopVideo();
     }
 
 }

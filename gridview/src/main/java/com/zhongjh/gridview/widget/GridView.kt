@@ -102,7 +102,7 @@ class GridView : FrameLayout, GridViewApi {
         )
         // 获取默认图片
         var drawable =
-            gridViewStyle.getDrawable(R.styleable.GridView_album_thumbnail_placeholder)
+            gridViewStyle.getDrawable(R.styleable.GridView_placeholder)
         // 获取添加图片
         photoAdapterEntity.addDrawable =
             gridViewStyle.getDrawable(R.styleable.GridView_imageAddDrawable)

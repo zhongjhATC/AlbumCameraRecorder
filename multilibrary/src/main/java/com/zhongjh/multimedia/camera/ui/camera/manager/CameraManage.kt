@@ -44,8 +44,7 @@ import com.zhongjh.common.utils.UriUtils
 import com.zhongjh.multimedia.camera.listener.OnCameraManageListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXOrientationEventListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXPreviewViewTouchListener
-import com.zhongjh.multimedia.camera.ui.camera.CameraFragment.ViewHolder
-import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraView
+import com.zhongjh.multimedia.camera.widget.FocusView
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
@@ -62,7 +61,7 @@ import kotlin.math.min
 /**
  * 专门处理camerax的类
  */
-class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHolder: ViewHolder, val iCameraView: ICameraView) :
+class CameraManage(private val appCompatActivity: AppCompatActivity, val previewView : PreviewView, val focusView: FocusView) :
     OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
@@ -139,12 +138,12 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
      */
     fun init() {
         displayManager.registerDisplayListener(displayListener, null)
-        viewHolder.previewView.post { displayId = viewHolder.previewView.display.displayId }
+        previewView.post { displayId = previewView.display.displayId }
         startCheckOrientation()
         startCamera()
 
         // 选择数据改变
-        viewHolder.previewView.previewStreamState
+        previewView.previewStreamState
             .observe(appCompatActivity) { streamState ->
                 if (lastStreamState == null) {
                     lastStreamState = streamState
@@ -154,7 +153,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
                         if (lastStreamState != streamState) {
                             lastStreamState = streamState
                             // 停止输出画面后仍会停留在最后一帧,设置黑色前景遮挡住最后一帧画面
-                            viewHolder.previewView.foreground =
+                            previewView.foreground =
                                 ContextCompat.getDrawable(appCompatActivity, android.R.color.background_dark)
                         }
                     }
@@ -163,7 +162,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
                         if (lastStreamState != streamState) {
                             lastStreamState = streamState
                             // 开始输出画面后清空前景
-                            viewHolder.previewView.foreground = null
+                            previewView.foreground = null
                         }
                     }
 
@@ -383,7 +382,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 绑定preview
-            preview.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
+            preview.setSurfaceProvider(previewView.surfaceProvider)
             // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
             val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, preview, imageCapture, imageAnalyzer)
             onCameraManageListener?.bindSucceed()
@@ -469,10 +468,10 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
                 .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                 .build()
         )
-            .setTargetRotation(viewHolder.previewView.display.rotation)
-        cameraSpec.onInitCameraManager?.initPreview(previewBuilder, screenAspectRatio, viewHolder.previewView.display.rotation)
+            .setTargetRotation(previewView.display.rotation)
+        cameraSpec.onInitCameraManager?.initPreview(previewBuilder, screenAspectRatio, previewView.display.rotation)
         return previewBuilder.build().also {
-            it.setSurfaceProvider(viewHolder.previewView.surfaceProvider)
+            it.setSurfaceProvider(previewView.surfaceProvider)
         }
     }
 
@@ -490,8 +489,8 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
                     .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                     .build()
             )
-            .setTargetRotation(viewHolder.previewView.display.rotation)
-        cameraSpec.onInitCameraManager?.initImageCapture(imageBuilder, screenAspectRatio, viewHolder.previewView.display.rotation)
+            .setTargetRotation(previewView.display.rotation)
+        cameraSpec.onInitCameraManager?.initImageCapture(imageBuilder, screenAspectRatio, previewView.display.rotation)
         imageCapture = imageBuilder.build()
     }
 
@@ -508,8 +507,8 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
                     .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                     .build()
             )
-            .setTargetRotation(viewHolder.previewView.display.rotation)
-        cameraSpec.onInitCameraManager?.initImageAnalyzer(imageAnalyzerBuilder, screenAspectRatio, viewHolder.previewView.display.rotation)
+            .setTargetRotation(previewView.display.rotation)
+        cameraSpec.onInitCameraManager?.initImageAnalyzer(imageAnalyzerBuilder, screenAspectRatio, previewView.display.rotation)
         imageAnalyzer = imageAnalyzerBuilder.build()
     }
 
@@ -525,8 +524,8 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
             .setAspectRatio(screenAspectRatio)
         cameraSpec.onInitCameraManager?.initVideoRecorder(recorder, screenAspectRatio)
         val videoCaptureBuilder = VideoCapture.Builder<Recorder>(recorder.build())
-            .setTargetRotation(viewHolder.previewView.display.rotation)
-        cameraSpec.onInitCameraManager?.initVideoCapture(videoCaptureBuilder, viewHolder.previewView.display.rotation)
+            .setTargetRotation(previewView.display.rotation)
+        cameraSpec.onInitCameraManager?.initVideoCapture(videoCaptureBuilder, previewView.display.rotation)
         videoCapture = videoCaptureBuilder.build()
     }
 
@@ -587,23 +586,23 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
 
             override fun click(x: Float, y: Float) {
                 // 控制对焦目标给xy坐标
-                val meteringPointFactory: MeteringPointFactory = viewHolder.previewView.meteringPointFactory
+                val meteringPointFactory: MeteringPointFactory = previewView.meteringPointFactory
                 val point = meteringPointFactory.createPoint(x, y)
                 val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
                     .setAutoCancelDuration(3, TimeUnit.SECONDS).build()
                 if (cameraInfo.isFocusMeteringSupported(action)) {
                     cameraControl.cancelFocusAndMetering()
-                    viewHolder.focusView.setDisappear(false)
-                    viewHolder.focusView.startFocusIng((Point(x.toInt(), y.toInt())))
+                    focusView.setDisappear(false)
+                    focusView.startFocusIng((Point(x.toInt(), y.toInt())))
                     val future = cameraControl.startFocusAndMetering(action)
                     future.addListener({
                         try {
                             val result = future.get()
-                            viewHolder.focusView.setDisappear(true)
+                            focusView.setDisappear(true)
                             if (result.isFocusSuccessful) {
-                                viewHolder.focusView.changeFocusSuccess()
+                                focusView.changeFocusSuccess()
                             } else {
-                                viewHolder.focusView.changeFocusFailed()
+                                focusView.changeFocusFailed()
                             }
                         } catch (ignored: java.lang.Exception) {
                         }
@@ -626,7 +625,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
                 }
             }
         })
-        viewHolder.previewView.setOnTouchListener(onCameraXPreviewViewTouchListener)
+        previewView.setOnTouchListener(onCameraXPreviewViewTouchListener)
     }
 
     /**
@@ -675,9 +674,9 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val viewHol
         override fun onDisplayRemoved(displayId: Int) {}
         override fun onDisplayChanged(displayId: Int) {
             Log.d(TAG, "onDisplayChanged:$displayId and " + this@CameraManage.displayId)
-            if (displayId == this@CameraManage.displayId && null != viewHolder.previewView.display) {
-                imageCapture?.targetRotation = viewHolder.previewView.display.rotation
-                imageAnalyzer?.targetRotation = viewHolder.previewView.display.rotation
+            if (displayId == this@CameraManage.displayId && null != previewView.display) {
+                imageCapture?.targetRotation = previewView.display.rotation
+                imageAnalyzer?.targetRotation = previewView.display.rotation
             }
         }
     }

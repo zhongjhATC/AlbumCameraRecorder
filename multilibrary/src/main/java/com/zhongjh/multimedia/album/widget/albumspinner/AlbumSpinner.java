@@ -24,6 +24,7 @@ import com.zhongjh.multimedia.album.entity.Album2;
 import com.zhongjh.multimedia.utils.AttrsUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 专辑选项控件
@@ -176,7 +177,7 @@ public class AlbumSpinner extends PopupWindow {
         List<Album2> albums = adapter.getAlbums();
         for (Album2 album : albums) {
             for (Album2 select : selects) {
-                if (select.getName().equals(album.getName())) {
+                if (Objects.equals(select.getName(), album.getName())) {
                     album.setChecked(true);
                     break;
                 }

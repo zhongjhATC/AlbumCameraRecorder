@@ -8,7 +8,7 @@
         <attr name="columnNumber" format="integer" /><!-- 一行多少列 -->
         <attr name="columnSpace" format="integer" /><!-- 列与列之间多少间隔px单位,作废 -->
 
-        <attr name="album.thumbnail.placeholder" format="reference|color"/> <!-- 默认图片，颜色 -->
+        <attr name="placeholder" format="reference|color"/> <!-- 默认图片，颜色 -->
         <attr name="maxCount" format="integer" /> <!-- 只能显示多少个图片包括视频、语音 -->
         <attr name="imageEngine" format="string"/> <!-- 显示图片的类 -->
         <attr name="imageAddDrawable" format="reference"/> <!-- 显示添加的图片 -->

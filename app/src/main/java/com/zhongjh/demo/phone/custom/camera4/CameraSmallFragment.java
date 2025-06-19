@@ -8,14 +8,15 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.camera.view.PreviewView;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
+import com.zhongjh.multimedia.camera.widget.FocusView;
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.widget.ImageViewTouch;
 import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
@@ -77,6 +78,18 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManager, 
         return mBinding.clMenu;
     }
 
+    @NonNull
+    @Override
+    public PreviewView getPreviewView() {
+        return mBinding.previewView;
+    }
+
+    @NonNull
+    @Override
+    public FocusView getFocusView() {
+        return mBinding.focusView;
+    }
+
     @Override
     public RecyclerView getRecyclerViewPhoto() {
         return mBinding.rlPhoto;
@@ -116,12 +129,6 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManager, 
     @Override
     public ImageView getSwitchView() {
         return mBinding.imgSwitch;
-    }
-
-    @NonNull
-    @Override
-    public CameraManage getCameraManage() {
-        return null;
     }
 
     @NonNull

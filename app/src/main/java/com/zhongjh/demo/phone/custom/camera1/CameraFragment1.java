@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.camera.view.PreviewView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
@@ -16,7 +17,9 @@ import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
+import com.zhongjh.multimedia.camera.widget.FocusView;
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
+import com.zhongjh.multimedia.databinding.FragmentCameraZjhBinding;
 import com.zhongjh.multimedia.widget.ImageViewTouch;
 import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
 import com.zhongjh.demo.R;
@@ -47,7 +50,8 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManager, Came
 
     @Override
     public View setContentView(LayoutInflater inflater, ViewGroup container) {
-        return inflater.inflate(R.layout.fragment_camera1, container, false);
+        mBinding = FragmentCamera1Binding.inflate(inflater);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -90,8 +94,14 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManager, Came
 
     @NonNull
     @Override
-    public CameraManage getCameraManage() {
-        return null;
+    public PreviewView getPreviewView() {
+        return mBinding.previewView;
+    }
+
+    @NonNull
+    @Override
+    public FocusView getFocusView() {
+        return mBinding.focusView;
     }
 
     @Override
