@@ -102,7 +102,7 @@ public class CameraVideoManager implements ICameraVideo {
     @SuppressLint("LongLogTag")
     @Override
     public void onRecordSuccess(String path) {
-        Log.d(TAG, "onRecordSuccess: " + path);
+        baseCameraFragment.getPhotoVideoLayout().reset();
         PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path, true);
         baseCameraFragment.getPhotoVideoLayout().setEnabled(true);
     }

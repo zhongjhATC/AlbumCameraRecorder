@@ -484,8 +484,8 @@ public abstract class BaseOperationLayout extends FrameLayout {
      * 重置本身全部
      */
     public void reset() {
-        viewHolder.btnClickOrLong.reset();
         viewHolder.btnClickOrLong.resetState();
+        viewHolder.btnClickOrLong.reset();
         // 隐藏第二层的view
         viewHolder.btnCancel.setVisibility(View.GONE);
         viewHolder.btnCancel.reset();

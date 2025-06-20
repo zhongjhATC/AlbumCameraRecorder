@@ -8,9 +8,9 @@ import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Looper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -31,8 +31,6 @@ import java.util.ArrayList;
  * @author zhongjh
  */
 public class ClickOrLongButton extends View {
-
-    private static final String TAG = "ClickOrLongButton";
     /**
      * 按钮只能点击
      */
@@ -195,7 +193,6 @@ public class ClickOrLongButton extends View {
             // 判断如果是 点击即长按 模式的情况下，判断进度是否>=100
             if (mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
                 if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
-                    Log.d(TAG, "满足100" + (mRecordedTime / timeLimitInMils >= FULL_PROGRESS));
                     step++;
                     refreshView();
                     return;
@@ -209,8 +206,6 @@ public class ClickOrLongButton extends View {
             mRecordedTime = (timeLapse - mMinDurationAnimationCurrent);
             mRecordedTime = mRecordedTime + mCurrentSumTime;
             float percent = mRecordedTime / timeLimitInMils;
-            Log.d(TAG, "mCurrentSumTime " + mCurrentSumTime);
-            Log.d(TAG, "mRecordedTime " + mRecordedTime);
             if (!mActionDown && timeLapse >= 1) {
                 boolean actionDown = mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH);
                 if (actionDown) {
@@ -230,15 +225,12 @@ public class ClickOrLongButton extends View {
      * @param percent   当前百分比
      */
     private void startAnimation(long timeLapse, float percent) {
-        Log.d(TAG, "startAnimation timeLapse " + timeLapse);
-        Log.d(TAG, "startAnimation mMinDurationAnimationCurrent " + mMinDurationAnimationCurrent);
         // isStartTicking是由CameraManage的视频录制监控来决定是否继续动画
         if (timeLapse >= mMinDurationAnimationCurrent && isStartTicking()) {
             synchronized (ClickOrLongButton.this) {
                 if (recordState == RECORD_NOT_STARTED) {
                     setRecordState(RECORD_STARTED);
                     if (mClickOrLongListener != null) {
-                        Log.d(TAG, "timeLapse " + timeLapse);
                         mClickOrLongListener.onLongClick();
                         // 如果禁止点击，那么就轮到长按触发actionDown
                         if (!mActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONG_CLICK) {
@@ -256,14 +248,8 @@ public class ClickOrLongButton extends View {
             outMostWhiteCirclePaint.setColor(colorRoundBorder);
             percentInDegree = (360.0F * percent);
             if ((timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
-                Log.d(TAG, "setCurrentSumNumberDegrees(percentInDegree)");
                 setCurrentSumNumberDegrees(percentInDegree);
             }
-
-            Log.d(TAG, "timeLapse:" + timeLapse);
-            Log.d(TAG, "percent:" + percent);
-            Log.d(TAG, "percentInDegree:" + percentInDegree);
-
             if (percent <= FULL_PROGRESS) {
                 if (percent <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
                     float calPercent = percent / PROGRESS_LIM_TO_FINISH_STARTING_ANIM;
@@ -280,7 +266,6 @@ public class ClickOrLongButton extends View {
                 }
                 invalidateCustom();
             } else {
-                Log.d(TAG, "满足100" + (mRecordedTime / timeLimitInMils >= FULL_PROGRESS));
                 step++;
                 refreshView();
             }
@@ -347,12 +332,17 @@ public class ClickOrLongButton extends View {
         initCenterCircle();
         // 状态为两者都可以
         mButtonState = BUTTON_STATE_BOTH;
-
-        arrayRoundBorder.recycle();
-        arrayInnerCircleInOperation.recycle();
-        arrayInnerCircleNoOperation.recycle();
-        arrayClickOrLongButtonStyle.recycle();
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            arrayRoundBorder.close();
+            arrayInnerCircleInOperation.close();
+            arrayInnerCircleNoOperation.close();
+            arrayClickOrLongButtonStyle.close();
+        } else {
+            arrayRoundBorder.recycle();
+            arrayInnerCircleInOperation.recycle();
+            arrayInnerCircleNoOperation.recycle();
+            arrayClickOrLongButtonStyle.recycle();
+        }
     }
 
     /**
@@ -371,8 +361,6 @@ public class ClickOrLongButton extends View {
      * 初始化外圈样式
      */
     private void initOutCircle(TypedArray arrayInnerCircleNoOperationInterval, int defaultInnerCircleNoOperationColorInterval) {
-        int colorInterval = arrayInnerCircleNoOperationInterval.getColor(0, defaultInnerCircleNoOperationColorInterval);
-
         outMostWhiteCirclePaint = new Paint();
         outMostWhiteCirclePaint.setColor(colorRoundBorder);
         outMostWhiteCirclePaint.setAntiAlias(true);
@@ -454,8 +442,6 @@ public class ClickOrLongButton extends View {
 
         // 静止状态时的外圈进度
         canvas.drawArc(outMostCircleRect, startAngle270, mCurrentSumNumberDegrees, false, outProcessCirclePaint);
-        Log.d(TAG, "onDraw percentInDegree" + percentInDegree);
-        Log.d(TAG, "onDraw mCurrentSumNumberDegrees" + mCurrentSumNumberDegrees);
 
 
         canvas.drawCircle(centerX, centerY, outBlackCircleRadius, outBlackCirclePaint);
@@ -481,14 +467,12 @@ public class ClickOrLongButton extends View {
                         mClickOrLongListener.onBanClickTips();
                         return true;
                     }
-                    Log.d(TAG, "onTouchEvent: down");
                     step = STEP_ACTION_DOWN;
                     // 是否支持长按
                     boolean longClick = mClickOrLongListener != null
                             && (mButtonState == BUTTON_STATE_ONLY_LONG_CLICK ||
                             mButtonState == BUTTON_STATE_BOTH);
                     if (longClick) {
-                        Log.d(TAG, "onTouchEvent: startTicking");
                         startTicking();
                     }
                 }
@@ -514,7 +498,6 @@ public class ClickOrLongButton extends View {
                 } else {
                     // 其他模式
                     step++;
-                    Log.d(TAG, "onTouchEvent: up");
                     refreshView();
                 }
                 break;
@@ -522,7 +505,6 @@ public class ClickOrLongButton extends View {
                 if (mButtonState != BUTTON_STATE_CLICK_AND_HOLD) {
                     if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
                         step++;
-                        Log.d(TAG, "onTouchEvent: move");
                         refreshView();
                         return true;
                     }
@@ -538,7 +520,6 @@ public class ClickOrLongButton extends View {
      * 刷新view
      */
     public void refreshView() {
-        Log.d(TAG, "reset: " + recordState);
         synchronized (ClickOrLongButton.this) {
             if (recordState == RECORD_STARTED) {
                 if (mClickOrLongListener != null && step == STEP_ACTION_UP) {
@@ -571,6 +552,7 @@ public class ClickOrLongButton extends View {
      */
     public void reset() {
         resetCommon();
+        mCurrentSumNumberDegrees = 0F;
         mCurrentSumTime = 0L;
         mCurrentLocation.clear();
         invalidateCustom();
@@ -657,7 +639,6 @@ public class ClickOrLongButton extends View {
 
     private void invalidateCustom() {
         invalidate();
-        Log.d(TAG, "invalidateCustom");
     }
 
     /**
@@ -665,14 +646,11 @@ public class ClickOrLongButton extends View {
      */
     private ClickOrLongListener mClickOrLongListener;
     /**
-     * 判断是否已经调用过isActionDwon,结束后重置此值
+     * 判断是否已经调用过isActionDown,结束后重置此值
      */
     private boolean mActionDown;
 
     private void setCurrentSumNumberDegrees(Float value) {
-        if (value == 0) {
-            Log.d(TAG, "setCurrentSumNumberDegrees 0");
-        }
         mCurrentSumNumberDegrees = value;
     }
 
@@ -698,7 +676,6 @@ public class ClickOrLongButton extends View {
         mMinDurationAnimationCurrent = mMinDurationAnimation;
     }
 
-
     /**
      * 设置当前已录制的时间，用于分段录制
      */
@@ -710,13 +687,9 @@ public class ClickOrLongButton extends View {
         float numberDegrees = percent * 360;
         // 数据设置规范,适合当前圆形
         mCurrentLocation.add(getNumberDegrees(numberDegrees));
-        Log.d(TAG, "setCurrentSumNumberDegrees(numberDegrees);");
         setCurrentSumNumberDegrees(numberDegrees);
         mCurrentSumTime = currentTime;
         mRecordedTime = currentTime;
-        Log.d(TAG, "mCurrentSumTime2 " + mCurrentSumTime);
-        Log.d(TAG, "setCurrentTime mCurrentSumTime " + mCurrentSumTime);
-        Log.d(TAG, "setCurrentTime mCurrentSumNumberDegrees " + mCurrentSumNumberDegrees);
         invalidate();
     }
 
@@ -752,12 +725,10 @@ public class ClickOrLongButton extends View {
         setRecordState(RECORD_NOT_STARTED);
         // 预备时间也恢复到初始设置时的时间
         mMinDurationAnimationCurrent = mMinDurationAnimation;
-        Log.d(TAG, "resetState");
     }
 
     private void setRecordState(int recordState) {
         this.recordState = recordState;
-        Log.d(TAG, "setRecordState: " + recordState);
     }
 
     // endregion
