@@ -50,7 +50,7 @@ public class ImageEditActivity extends BaseImageEditActivity {
         String path = intent.getStringExtra(EXTRA_IMAGE_URI);
         Uri uri = Uri.parse(path);
 
-        if (uri == null) {
+        if (uri == null || uri.getScheme() == null) {
             return null;
         }
 

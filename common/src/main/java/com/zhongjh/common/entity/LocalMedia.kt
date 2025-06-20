@@ -245,9 +245,7 @@ open class LocalMedia() : Parcelable {
     /**
      * 赋值一个新的path，借由这个新的path，修改相关参数
      */
-    constructor(
-        context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean
-    ) : this() {
+    constructor(context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean) : this() {
         updateFile(context, localMedia, compressionFile, isCompress)
     }
 

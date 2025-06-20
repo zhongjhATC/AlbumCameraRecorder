@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * uri工具类
@@ -145,10 +146,10 @@ public class UriUtils {
             file = new File(context.getCacheDir().getAbsolutePath()
                     + path.replace(CACHE_PATH, "/"));
         } else if (path.startsWith(EXTERNAL_FILES_PATH)) {
-            file = new File(context.getExternalFilesDir(null).getAbsolutePath()
+            file = new File(Objects.requireNonNull(context.getExternalFilesDir(null)).getAbsolutePath()
                     + path.replace(EXTERNAL_FILES_PATH, "/"));
         } else if (path.startsWith(EXTERNAL_CACHE_PATH)) {
-            file = new File(context.getExternalCacheDir().getAbsolutePath()
+            file = new File(Objects.requireNonNull(context.getExternalCacheDir()).getAbsolutePath()
                     + path.replace(EXTERNAL_CACHE_PATH, "/"));
         }
         return file;
@@ -215,10 +216,13 @@ public class UriUtils {
                         if (!mounted) {
                             continue;
                         }
-
+                        Object isPrimaryB = isPrimary.invoke(storageVolumeElement);
+                        Object isEmulatedB = isEmulated.invoke(storageVolumeElement);
+                        if (isPrimaryB == null || isEmulatedB == null) {
+                            continue;
+                        }
                         // 判断sd卡是否主存储卡、是否系统虚拟，否则就不需要获取文件信息
-                        if ((boolean) isPrimary.invoke(storageVolumeElement)
-                                && (boolean) isEmulated.invoke(storageVolumeElement)) {
+                        if ((boolean) isPrimaryB && (boolean) isEmulatedB) {
                             continue;
                         }
 

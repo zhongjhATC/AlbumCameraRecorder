@@ -240,12 +240,15 @@ public class MainActivity extends BaseActivity {
         // 用于记录日志
         mGlobalSetting.setOnLogListener(throwable -> {
             // 打印堆栈日志
-            Log.e(TAG, throwable.getMessage());
-            StackTraceElement[] stackTraceElements = throwable.getStackTrace();
-            for (StackTraceElement stackTraceElement : stackTraceElements) {
-                Log.e(TAG, stackTraceElement.toString());
+            String message = throwable.getMessage();
+            if (message != null) {
+                Log.e(TAG, message);
+                StackTraceElement[] stackTraceElements = throwable.getStackTrace();
+                for (StackTraceElement stackTraceElement : stackTraceElements) {
+                    Log.e(TAG, stackTraceElement.toString());
+                }
+                Toast.makeText(getApplication(), message, Toast.LENGTH_SHORT).show();
             }
-            Toast.makeText(getApplication(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
         });
 
         // 是否压缩视频

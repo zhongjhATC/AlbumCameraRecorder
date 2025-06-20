@@ -401,13 +401,16 @@ public class MainSeeLocalActivity extends BaseActivity {
         return true;
     }
 
+    /**
+     * @noinspection ResultOfMethodCallIgnored
+     */
     public static void copyAssetsFileToInternalStorage(Context context, String fileName, String newFileName, String targetDir) {
         try {
             // 打开assets目录中的文件
             InputStream inputStream = context.getAssets().open(fileName);
             // 创建目标文件路径
             File targetFile = new File(targetDir, newFileName);
-            if (!targetFile.getParentFile().exists()) {
+            if (targetFile.getParentFile() != null && !targetFile.getParentFile().exists()) {
                 targetFile.getParentFile().mkdirs(); // 创建目标目录
             }
             // 写入文件到目标路径

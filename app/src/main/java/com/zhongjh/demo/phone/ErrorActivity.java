@@ -41,6 +41,10 @@ public class ErrorActivity extends AppCompatActivity {
         mBinding.tvError.setText(
                 "【errorDetails】\n" + errorDetails + "\n\n\n【stackTrace】\n" + stackTrace + "\n\n\n【activityLog】\n" + activityLog);
         mBinding.tvError.setTextColor(Color.BLUE);
-        mBinding.btnRestart.setOnClickListener(v -> CustomActivityOnCrash.restartApplication(ErrorActivity.this, config));
+        mBinding.btnRestart.setOnClickListener(v -> {
+            if (config != null) {
+                CustomActivityOnCrash.restartApplication(ErrorActivity.this, config);
+            }
+        });
     }
 }
