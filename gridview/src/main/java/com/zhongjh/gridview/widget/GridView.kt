@@ -85,7 +85,7 @@ class GridView : FrameLayout, GridViewApi {
         // 获取系统颜色
         val defaultColor = -0x1000000
         val attrsArray =
-            intArrayOf(R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent)
+            intArrayOf(androidx.appcompat.R.attr.colorPrimary, androidx.appcompat.R.attr.colorPrimaryDark, androidx.appcompat.R.attr.colorAccent)
         val typedArray = context.obtainStyledAttributes(attrsArray)
         val colorPrimary = typedArray.getColor(0, defaultColor)
 

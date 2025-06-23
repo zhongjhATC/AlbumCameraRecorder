@@ -11,6 +11,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        namespace "com.zhongjh.common"
         versionCode 1
         versionName "1.0"
 

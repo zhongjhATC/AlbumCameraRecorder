@@ -441,71 +441,52 @@ public class MainActivity extends BaseActivity {
         PopupMenu popupMenu = new PopupMenu(this, mBinding.llScreenOrientation);
         popupMenu.inflate(R.menu.menu_screenorientation);
         popupMenu.setOnMenuItemClickListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.actionUnspecified:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_UNSPECIFIED");
-                    break;
-                case R.id.actionLandscape:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_LANDSCAPE");
-                    break;
-                case R.id.actionPortrait:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_PORTRAIT");
-                    break;
-                case R.id.actionUser:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER");
-                    break;
-                case R.id.actionBehind:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_BEHIND;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_BEHIND");
-                    break;
-                case R.id.actionSensor:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_SENSOR");
-                    break;
-                case R.id.actionNosensor:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_NOSENSOR");
-                    break;
-                case R.id.actionSensorLandscape:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_SENSOR_LANDSCAPE");
-                    break;
-                case R.id.actionReverseLandscape:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_REVERSE_LANDSCAPE");
-                    break;
-                case R.id.actionReversePortrait:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_REVERSE_PORTRAIT");
-                    break;
-                case R.id.actionFullSensor:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_FULL_SENSOR");
-                    break;
-                case R.id.actionUserLandscape:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER_LANDSCAPE");
-                    break;
-                case R.id.actionUserPortrait:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER_PORTRAIT");
-                    break;
-                case R.id.actionFullUser:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_USER;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_FULL_USER");
-                    break;
-                case R.id.actionLocked:
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
-                    mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_LOCKED");
-                    break;
-                default:
-                    //do nothing
+            if (menuItem.getItemId() == R.id.actionUnspecified) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_UNSPECIFIED");
+            } else if (menuItem.getItemId() == R.id.actionLandscape) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_LANDSCAPE");
+            } else if (menuItem.getItemId() == R.id.actionPortrait) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_PORTRAIT");
+            } else if (menuItem.getItemId() == R.id.actionUser) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER");
+            } else if (menuItem.getItemId() == R.id.actionBehind) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_BEHIND;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_BEHIND");
+            } else if (menuItem.getItemId() == R.id.actionSensor) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_SENSOR");
+            } else if (menuItem.getItemId() == R.id.actionNosensor) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_NOSENSOR");
+            } else if (menuItem.getItemId() == R.id.actionSensorLandscape) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_SENSOR_LANDSCAPE");
+            } else if (menuItem.getItemId() == R.id.actionReverseLandscape) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_REVERSE_LANDSCAPE");
+            } else if (menuItem.getItemId() == R.id.actionReversePortrait) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_REVERSE_PORTRAIT");
+            } else if (menuItem.getItemId() == R.id.actionFullSensor) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_FULL_SENSOR");
+            } else if (menuItem.getItemId() == R.id.actionUserLandscape) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER_LANDSCAPE");
+            } else if (menuItem.getItemId() == R.id.actionUserPortrait) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_USER_PORTRAIT");
+            } else if (menuItem.getItemId() == R.id.actionFullUser) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_USER;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_FULL_USER");
+            } else if (menuItem.getItemId() == R.id.actionLocked) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
+                mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_LOCKED");
             }
-
             return false;
         });
         popupMenu.show();
@@ -519,23 +500,16 @@ public class MainActivity extends BaseActivity {
         PopupMenu popupMenu = new PopupMenu(this, mBinding.llFlashMode);
         popupMenu.inflate(R.menu.menu_flash);
         popupMenu.setOnMenuItemClickListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.actionFlashOff:
-                    flashMode = ImageCapture.FLASH_MODE_OFF;
-                    mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_off));
-                    break;
-                case R.id.actionFlashOn:
-                    flashMode = ImageCapture.FLASH_MODE_ON;
-                    mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_on));
-                    break;
-                case R.id.actionFlashAuto:
-                    flashMode = ImageCapture.FLASH_MODE_AUTO;
-                    mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_auto));
-                    break;
-                default:
-                    //do nothing
+            if (menuItem.getItemId() == R.id.actionFlashOff) {
+                flashMode = ImageCapture.FLASH_MODE_OFF;
+                mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_off));
+            } else if (menuItem.getItemId() == R.id.actionFlashOn) {
+                flashMode = ImageCapture.FLASH_MODE_ON;
+                mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_on));
+            } else if (menuItem.getItemId() == R.id.actionFlashAuto) {
+                flashMode = ImageCapture.FLASH_MODE_AUTO;
+                mBinding.tvFlashMode.setText(getResources().getString(R.string.flash_auto));
             }
-
             return false;
         });
         popupMenu.show();

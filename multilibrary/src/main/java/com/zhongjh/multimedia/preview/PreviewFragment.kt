@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -346,7 +347,7 @@ class PreviewFragment : BaseFragment() {
         } else {
             mViewHolder.sharedAnimationView.setBackgroundAlpha(1.0F)
         }
-        mViewHolder.sharedAnimationView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.black))
+        mViewHolder.sharedAnimationView.setBackgroundColor(Color.BLACK)
         mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object : OnSharedAnimationViewListener {
             override fun onBeginBackMinAnim() {
                 // 开始 退出共享动画

@@ -47,7 +47,7 @@ public class CameraFragment3 extends BaseCameraFragment<CameraStateManager, Came
 
     @Override
     public View setContentView(LayoutInflater inflater, ViewGroup container) {
-        return inflater.inflate(R.layout.fragment_camera_zjh, container, false);
+        return inflater.inflate(com.zhongjh.multimedia.R.layout.fragment_camera_zjh, container, false);
     }
 
     @Override

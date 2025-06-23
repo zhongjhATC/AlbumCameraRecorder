@@ -3,15 +3,23 @@ package com.zhongjh.multimedia.camera.ui.camera.manager
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Point
 import android.hardware.display.DisplayManager
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
+import android.util.Rational
+import android.util.Size
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
+import androidx.camera.core.CameraEffect.VIDEO_CAPTURE
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.DynamicRange
 import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -23,8 +31,11 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.camera.effects.OverlayEffect
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.MediaStoreOutputOptions
 import androidx.camera.video.Quality
@@ -59,9 +70,9 @@ import kotlin.math.min
 
 
 /**
- * 专门处理camerax的类
+ * 处理camerax的类
  */
-class CameraManage(private val appCompatActivity: AppCompatActivity, val previewView : PreviewView, val focusView: FocusView) :
+class CameraManage(private val appCompatActivity: AppCompatActivity, val previewView: PreviewView, val focusView: FocusView) :
     OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
@@ -86,6 +97,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     private var imageCapture: ImageCapture? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private var videoCapture: VideoCapture<Recorder>? = null
+    private var overlayEffect: OverlayEffect? = null
     private var recording: Recording? = null
 
     private val displayManager by lazy { appCompatActivity.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
@@ -210,7 +222,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
         imageCapture?.let { imageCapture ->
             // 判断是否绑定了mImageCapture
             if (!cameraProvider.isBound(imageCapture)) {
-                bindCameraPreviewModeByImage()
+                initCameraPreviewMode()
             }
             // 设置图片模式
             useCameraCases = LifecycleCameraController.IMAGE_CAPTURE
@@ -379,12 +391,29 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             initImageCapture(screenAspectRatio)
             // 初始化 ImageAnalysis
             initImageAnalyzer(screenAspectRatio)
+            // 初始化OverlayEffect
+            initOverlayEffect()
+            // 初始化ViewPort
+            val viewPort = initViewPort()
+            val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
+            // 所有功能添加组合
+            useCase.addUseCase(preview)
+            imageCapture?.let {
+                useCase.addUseCase(it)
+            }
+            imageAnalyzer?.let {
+                useCase.addUseCase(it)
+            }
+            overlayEffect?.let {
+                useCase.addEffect(it)
+            }
+            val useCaseGroup = useCase.build()
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 绑定preview
-            preview.setSurfaceProvider(previewView.surfaceProvider)
+            preview.surfaceProvider = previewView.surfaceProvider
             // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
-            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, preview, imageCapture, imageAnalyzer)
+            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, useCaseGroup)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -407,10 +436,24 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             val preview = initPreview(screenAspectRatio)
             // 初始化 VideoCapture
             initVideoCapture(screenAspectRatio)
+            // 初始化OverlayEffect
+            initOverlayEffect()
+            // 初始化ViewPort
+            val viewPort = initViewPort()
+            // 所有功能添加组合
+            val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
+            useCase.addUseCase(preview)
+            videoCapture?.let {
+                useCase.addUseCase(it)
+            }
+            overlayEffect?.let {
+                useCase.addEffect(it)
+            }
+            val useCaseGroup = useCase.build()
             // 确保没有任何内容绑定到 cameraProvider
             cameraProvider.unbindAll()
             // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
-            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, preview, videoCapture)
+            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, useCaseGroup)
             onCameraManageListener?.bindSucceed()
             cameraInfo = camera.cameraInfo
             cameraControl = camera.cameraControl
@@ -435,13 +478,21 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             initImageCapture(screenAspectRatio)
             // 初始化 VideoCapture
             initVideoCapture(screenAspectRatio)
-            val useCase = UseCaseGroup.Builder()
+            // 初始化OverlayEffect
+            initOverlayEffect()
+            // 初始化ViewPort
+            val viewPort = initViewPort()
+            // 所有功能添加组合
+            val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
             useCase.addUseCase(preview)
             imageCapture?.let {
                 useCase.addUseCase(it)
             }
             videoCapture?.let {
                 useCase.addUseCase(it)
+            }
+            overlayEffect?.let {
+                useCase.addEffect(it)
             }
             val useCaseGroup = useCase.build()
             // 确保没有任何内容绑定到 cameraProvider
@@ -463,15 +514,17 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * @param screenAspectRatio 计算后适合的比例
      */
     private fun initPreview(screenAspectRatio: Int): Preview {
-        val previewBuilder = Preview.Builder().setResolutionSelector(
-            ResolutionSelector.Builder()
-                .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                .build()
-        )
+        val previewBuilder = Preview.Builder()
+            .setResolutionSelector(
+                ResolutionSelector.Builder()
+                    .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                    .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE))
+                    .build()
+            )
             .setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initPreview(previewBuilder, screenAspectRatio, previewView.display.rotation)
         return previewBuilder.build().also {
-            it.setSurfaceProvider(previewView.surfaceProvider)
+            it.surfaceProvider = previewView.surfaceProvider
         }
     }
 
@@ -487,6 +540,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             .setResolutionSelector(
                 ResolutionSelector.Builder()
                     .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                    .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE))
                     .build()
             )
             .setTargetRotation(previewView.display.rotation)
@@ -505,6 +559,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             .setResolutionSelector(
                 ResolutionSelector.Builder()
                     .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                    .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE))
                     .build()
             )
             .setTargetRotation(previewView.display.rotation)
@@ -517,14 +572,103 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * @param screenAspectRatio 计算后适合的比例
      */
     private fun initVideoCapture(screenAspectRatio: Int) {
-        // 设置相关属性
-        val recorder = Recorder.Builder().setAspectRatio(screenAspectRatio)
+        // 设置分辨率1920*1080
+        val qualitySelector = QualitySelector.from(Quality.FHD)
+        val recorder = Recorder.Builder()
+            .setAspectRatio(screenAspectRatio)
+            .setQualitySelector(qualitySelector)
         cameraSpec.onInitCameraManager?.initVideoRecorder(recorder, screenAspectRatio)
         val videoCaptureBuilder = VideoCapture.Builder<Recorder>(recorder.build())
             .setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initVideoCapture(videoCaptureBuilder, previewView.display.rotation)
         videoCapture = videoCaptureBuilder.build()
     }
+
+    /**
+     * 初始化OverlayEffect 叠加效果,一般用于水印,实时画面
+     */
+    private fun initOverlayEffect() {
+        // 视频帧叠加效果
+        overlayEffect = OverlayEffect(VIDEO_CAPTURE, 0, Handler(Looper.getMainLooper())) {
+            Log.e(TAG, "overlayEffect error")
+        }.apply {
+            // 准备画笔的油漆 填充色
+            val textPaint = Paint().apply {
+                color = Color.WHITE
+                textSize = 80f
+                // 抗锯齿
+                isAntiAlias = true
+            }
+            // 描边
+            val strokePaint = Paint().apply {
+                color = Color.BLACK
+                textSize = 80f
+                isAntiAlias = true
+                // 描边样式
+                style = Paint.Style.STROKE
+                strokeWidth = 10f
+            }
+            // 清除setOnDrawListener的监听
+            clearOnDrawListener()
+            // 在每一帧上绘制水印
+            setOnDrawListener { frame ->
+//                // 保存当前 Canvas 状态
+//                frame.overlayCanvas.save()
+//                // 清除上一帧
+//                frame.overlayCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+//                // 应用传感器到缓冲区的转换矩阵
+//                frame.overlayCanvas.setMatrix(frame.sensorToBufferTransform)
+//                val currentZonedDateTime = ZonedDateTime.now()
+//                val text = "当前位置: 昆仑大道 | 当前车速: 100Km/h | ${
+//                    currentZonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+//                }"
+//                // 获取可绘制区域（整个画布的大小）
+//                val rect = frame.overlayCanvas.clipBounds
+//                // 计算文本宽度和高度
+//                val textBounds = Rect()
+//                textPaint.getTextBounds(text, 0, text.length, textBounds)
+//                val textWidth = textPaint.measureText(text)
+//                // 文本绘制坐标
+//                val x = rect.right - textWidth - 50f
+//                val y = rect.bottom - 50f
+//                // 添加文字路径
+//                val path = Path()
+//                textPaint.getTextPath(text, 0, text.length, x, y, path)
+//                // 绘制描边
+//                frame.overlayCanvas.drawPath(path, strokePaint)
+//                // 绘制填充
+//                frame.overlayCanvas.drawPath(path, textPaint)
+
+//                if (!::mask.isInitialized || !::bitmap.isInitialized) {
+//                    // Do not change the drawing if the frame doesn’t match the analysis
+//                    // result.
+//                    return@setOnDrawListener true
+//                }
+
+                // Clear the previously drawn frame.
+//                frame.overlayCanvas.drawColor(Color.GREEN)
+
+//                // Draw the bitmap and mask, positioning the overlay in the bottom right corner.
+//                val rect = Rect(2 * bitmap.width, 0, 3 * bitmap.width, bitmap.height)
+//                frame.overlayCanvas.drawBitmap(bitmap, null, rect, null)
+
+                frame.overlayCanvas.drawText("Hello", 300f, 300f, textPaint) // y=100为基线位置
+
+
+                true
+            }
+        }
+    }
+
+    /**
+     * 初始化 ViewPort，作用是让预览大小与拍摄的图像相同
+     */
+    private fun initViewPort(): ViewPort {
+        return ViewPort.Builder(
+            Rational(previewView.width, previewView.height), previewView.display.rotation
+        ).setScaleType(ViewPort.FILL_CENTER).build()
+    }
+
 
     /**
      * 通过计算来设置最合适的比例

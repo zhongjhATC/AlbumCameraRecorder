@@ -15,7 +15,8 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter" />
 
     <com.zhongjh.multimedia.camera.widget.FocusView
         android:id="@+id/focusView"

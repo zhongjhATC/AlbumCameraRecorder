@@ -12,18 +12,15 @@ import androidx.annotation.Nullable;
 import androidx.camera.view.PreviewView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zhongjh.demo.databinding.FragmentCamera1Binding;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.multimedia.camera.widget.FocusView;
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
-import com.zhongjh.multimedia.databinding.FragmentCameraZjhBinding;
 import com.zhongjh.multimedia.widget.ImageViewTouch;
 import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
-import com.zhongjh.demo.R;
-import com.zhongjh.demo.databinding.FragmentCamera1Binding;
 
 /**
  * 继承于BaseCameraFragment
@@ -57,17 +54,17 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManager, Came
     @Override
     public void initView(View view, Bundle savedInstanceState) {
         // 修改图片,两个调换过来，样式改变，功能不变
-        mBinding.pvLayout.getViewHolder().btnConfirm.setFunctionImage(R.drawable.ic_baseline_keyboard_arrow_left_24,
-                R.drawable.avd_done_to_stop, R.drawable.avd_stop_to_done);
-        mBinding.pvLayout.getViewHolder().btnCancel.setFunctionImage(R.drawable.ic_baseline_done,
-                R.drawable.avd_done_to_stop, R.drawable.avd_stop_to_done);
+        mBinding.pvLayout.getViewHolder().btnConfirm.setFunctionImage(com.zhongjh.multimedia.R.drawable.ic_baseline_keyboard_arrow_left_24,
+                com.zhongjh.multimedia.R.drawable.avd_done_to_stop, com.zhongjh.multimedia.R.drawable.avd_stop_to_done);
+        mBinding.pvLayout.getViewHolder().btnCancel.setFunctionImage(com.zhongjh.multimedia.R.drawable.ic_baseline_done,
+                com.zhongjh.multimedia.R.drawable.avd_done_to_stop, com.zhongjh.multimedia.R.drawable.avd_stop_to_done);
 
         // 修改副色调颜色
-        mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryVariantColor(R.color.cpb_blue);
+        mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryVariantColor(com.zhongjh.multimedia.R.color.cpb_blue);
 
         // 定制样式 .确认按钮,修改主色调
-        mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryColor(R.color.cpb_red);
-        mBinding.pvLayout.getViewHolder().btnCancel.setPrimaryColor(R.color.cpb_red);
+        mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryColor(com.zhongjh.multimedia.R.color.cpb_red);
+        mBinding.pvLayout.getViewHolder().btnCancel.setPrimaryColor(com.zhongjh.multimedia.R.color.cpb_red);
     }
 
     /**

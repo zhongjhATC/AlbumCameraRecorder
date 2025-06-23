@@ -1,8 +1,9 @@
 package com.zhongjh.multimedia.camera.util;
 
+import static com.github.chrisbanes.photoview.BuildConfig.DEBUG;
+
 import android.util.Log;
 
-import static com.zhongjh.multimedia.BuildConfig.DEBUG;
 
 
 /**

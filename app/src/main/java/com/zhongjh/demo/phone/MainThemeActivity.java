@@ -130,10 +130,10 @@ public class MainThemeActivity extends BaseActivity {
 
         // 样式选择
         if (mBinding.rbBlue.isChecked()) {
-            mGlobalSetting.theme(R.style.AppTheme_Blue);
+            mGlobalSetting.theme(com.zhongjh.multimedia.R.style.AppTheme_Blue);
         }
         if (mBinding.rbBlack.isChecked()) {
-            mGlobalSetting.theme(R.style.AppTheme_Dracula);
+            mGlobalSetting.theme(com.zhongjh.multimedia.R.style.AppTheme_Dracula);
         }
 
 
