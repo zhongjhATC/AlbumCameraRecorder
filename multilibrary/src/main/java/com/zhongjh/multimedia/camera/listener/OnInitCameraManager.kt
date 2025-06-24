@@ -3,8 +3,10 @@ package com.zhongjh.multimedia.camera.listener
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
+import androidx.camera.effects.OverlayEffect
 import androidx.camera.video.Recorder
 import androidx.camera.video.VideoCapture
+import androidx.camera.view.PreviewView
 
 /**
  * 初始化事件
@@ -59,4 +61,10 @@ interface OnInitCameraManager {
      * @param screenAspectRatio 计算当前手机得出的适合比例
      */
     fun initVideoRecorder(recorder: Recorder.Builder, screenAspectRatio: Int)
+
+    /**
+     * 自定义叠加效果,一般用于水印,实时画面
+     * @param previewView 预览view,用于获取宽高
+     */
+    fun initOverlayEffect(previewView: PreviewView): OverlayEffect?
 }

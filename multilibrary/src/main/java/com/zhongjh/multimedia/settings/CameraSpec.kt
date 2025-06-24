@@ -123,6 +123,9 @@ object CameraSpec {
      */
     var onCaptureListener: OnCaptureListener? = null
 
+    /**
+     * 初始化Camera的相关配置
+     */
     var onInitCameraManager: OnInitCameraManager? = null
 
     // endregion 属性

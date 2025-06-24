@@ -13,10 +13,12 @@ import androidx.camera.core.Preview;
 import androidx.camera.core.resolutionselector.AspectRatioStrategy;
 import androidx.camera.core.resolutionselector.ResolutionSelector;
 import androidx.camera.core.resolutionselector.ResolutionStrategy;
+import androidx.camera.effects.OverlayEffect;
 import androidx.camera.video.Quality;
 import androidx.camera.video.QualitySelector;
 import androidx.camera.video.Recorder;
 import androidx.camera.video.VideoCapture;
+import androidx.camera.view.PreviewView;
 
 import com.zhongjh.multimedia.album.filter.BaseFilter;
 import com.zhongjh.multimedia.camera.listener.OnInitCameraManager;
@@ -165,6 +167,11 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             @Override
             public void initVideoCapture(@NonNull VideoCapture.Builder<Recorder> videoCaptureBuilder, int rotation) {
                 // videoCaptureBuilder.setTargetRotation(90);
+            }
+
+            @Override
+            public OverlayEffect initOverlayEffect(@NonNull PreviewView previewView) {
+                return null;
             }
         });
 

@@ -41,7 +41,7 @@ interface CameraSettingApi {
      * @param duration 最长录制时间,单位为秒
      * @return [CameraSetting] for fluent API.
      */
-    fun duration(duration: Int): CameraSetting
+    fun maxDuration(duration: Int): CameraSetting
 
     /**
      * 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
@@ -50,6 +50,11 @@ interface CameraSettingApi {
      * @return [CameraSetting] for fluent API.
      */
     fun minDuration(minDuration: Int): CameraSetting
+
+    /**
+     * 长按准备时间，单位为毫秒，即是如果长按在1000毫秒内，都暂时不开启录制
+     */
+    fun readinessDuration(readinessDuration: Int): CameraSetting
 
     /**
      * 点击即录制（点击拍摄图片功能则失效）

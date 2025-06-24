@@ -283,9 +283,11 @@ public class MainActivity extends BaseActivity {
             cameraSetting.mimeTypeSet(mimeTypeCameras);
         }
         // 最长录制时间
-        cameraSetting.duration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));
-        // 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
+        cameraSetting.maxDuration(Integer.parseInt(mBinding.etCameraDuration.getText().toString()));
+        // 最短录制时间限制，单位为毫秒，如果录制期间低于2000毫秒，均不算录制。值不能低于2000，如果低于2000还是以2000为准
         cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()));
+        // 长按准备时间，单位为毫秒，即是如果长按在1000毫秒内，都暂时不开启录制
+        cameraSetting.readinessDuration(Integer.parseInt(mBinding.etCameraReadinessDuration.getText().toString()));
         // 是否启用水印
         if (mBinding.cbWatermark.isChecked()) {
 

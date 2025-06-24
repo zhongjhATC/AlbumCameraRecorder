@@ -9,8 +9,6 @@ import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.settings.CameraSpec.cleanInstance
 import com.zhongjh.multimedia.settings.api.CameraSettingApi
 import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.enums.MimeType.Companion.ofImage
-import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
 import java.lang.ref.WeakReference
 
@@ -54,13 +52,18 @@ class CameraSetting : CameraSettingApi {
         return this
     }
 
-    override fun duration(duration: Int): CameraSetting {
+    override fun maxDuration(duration: Int): CameraSetting {
         mCameraSpec.maxDuration = duration
         return this
     }
 
     override fun minDuration(minDuration: Int): CameraSetting {
         mCameraSpec.minDuration = minDuration
+        return this
+    }
+
+    override fun readinessDuration(readinessDuration: Int): CameraSetting {
+        mCameraSpec.readinessDuration = readinessDuration
         return this
     }
 

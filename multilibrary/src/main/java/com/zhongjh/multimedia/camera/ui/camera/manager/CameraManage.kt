@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Point
+import android.graphics.PorterDuff
 import android.hardware.display.DisplayManager
 import android.os.Handler
 import android.os.Looper
@@ -16,10 +18,11 @@ import android.util.Size
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
+import androidx.camera.core.CameraEffect.IMAGE_CAPTURE
+import androidx.camera.core.CameraEffect.PREVIEW
 import androidx.camera.core.CameraEffect.VIDEO_CAPTURE
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.DynamicRange
 import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -61,6 +64,9 @@ import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -589,72 +595,36 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      */
     private fun initOverlayEffect() {
         // 视频帧叠加效果
-        overlayEffect = OverlayEffect(VIDEO_CAPTURE, 0, Handler(Looper.getMainLooper())) {
+        overlayEffect = cameraSpec.onInitCameraManager?.initOverlayEffect(previewView)
+        overlayEffect?.let { return }
+        overlayEffect = OverlayEffect(PREVIEW or VIDEO_CAPTURE or IMAGE_CAPTURE, 0, Handler(Looper.getMainLooper())) {
             Log.e(TAG, "overlayEffect error")
         }.apply {
-            // 准备画笔的油漆 填充色
             val textPaint = Paint().apply {
                 color = Color.WHITE
-                textSize = 80f
+                textSize = 36f
                 // 抗锯齿
                 isAntiAlias = true
-            }
-            // 描边
-            val strokePaint = Paint().apply {
-                color = Color.BLACK
-                textSize = 80f
-                isAntiAlias = true
-                // 描边样式
-                style = Paint.Style.STROKE
-                strokeWidth = 10f
             }
             // 清除setOnDrawListener的监听
             clearOnDrawListener()
             // 在每一帧上绘制水印
             setOnDrawListener { frame ->
-//                // 保存当前 Canvas 状态
-//                frame.overlayCanvas.save()
-//                // 清除上一帧
-//                frame.overlayCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-//                // 应用传感器到缓冲区的转换矩阵
-//                frame.overlayCanvas.setMatrix(frame.sensorToBufferTransform)
-//                val currentZonedDateTime = ZonedDateTime.now()
-//                val text = "当前位置: 昆仑大道 | 当前车速: 100Km/h | ${
-//                    currentZonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-//                }"
-//                // 获取可绘制区域（整个画布的大小）
-//                val rect = frame.overlayCanvas.clipBounds
-//                // 计算文本宽度和高度
-//                val textBounds = Rect()
-//                textPaint.getTextBounds(text, 0, text.length, textBounds)
-//                val textWidth = textPaint.measureText(text)
-//                // 文本绘制坐标
-//                val x = rect.right - textWidth - 50f
-//                val y = rect.bottom - 50f
-//                // 添加文字路径
-//                val path = Path()
-//                textPaint.getTextPath(text, 0, text.length, x, y, path)
-//                // 绘制描边
-//                frame.overlayCanvas.drawPath(path, strokePaint)
-//                // 绘制填充
-//                frame.overlayCanvas.drawPath(path, textPaint)
-
-//                if (!::mask.isInitialized || !::bitmap.isInitialized) {
-//                    // Do not change the drawing if the frame doesn’t match the analysis
-//                    // result.
-//                    return@setOnDrawListener true
-//                }
-
-                // Clear the previously drawn frame.
-//                frame.overlayCanvas.drawColor(Color.GREEN)
-
-//                // Draw the bitmap and mask, positioning the overlay in the bottom right corner.
-//                val rect = Rect(2 * bitmap.width, 0, 3 * bitmap.width, bitmap.height)
-//                frame.overlayCanvas.drawBitmap(bitmap, null, rect, null)
-
-                frame.overlayCanvas.drawText("Hello", 300f, 300f, textPaint) // y=100为基线位置
-
-
+                // 同步previewView的宽高
+                val sensorToUi = previewView.sensorToViewTransform
+                if (sensorToUi != null) {
+                    val sensorToEffect = frame.sensorToBufferTransform
+                    val uiToSensor = Matrix()
+                    sensorToUi.invert(uiToSensor)
+                    uiToSensor.postConcat(sensorToEffect)
+                    // 获取画布并清除颜色，应用仿射变换
+                    val canvas = frame.overlayCanvas
+                    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                    canvas.setMatrix(uiToSensor)
+                    // 绘制文字
+                    val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                    canvas.drawText(dataFormat.format(Date()), previewView.width - 400f, previewView.height - 200F, textPaint)
+                }
                 true
             }
         }
@@ -668,7 +638,6 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             Rational(previewView.width, previewView.height), previewView.display.rotation
         ).setScaleType(ViewPort.FILL_CENTER).build()
     }
-
 
     /**
      * 通过计算来设置最合适的比例
