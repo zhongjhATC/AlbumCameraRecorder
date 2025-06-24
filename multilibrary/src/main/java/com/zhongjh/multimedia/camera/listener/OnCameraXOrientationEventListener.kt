@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
+import androidx.exifinterface.media.ExifInterface
 
 /**
  * 用于监控手机方向
@@ -15,6 +16,8 @@ class OnCameraXOrientationEventListener(context: Context, private val changedLis
     }
 
     private var mRotation = Surface.ROTATION_0
+
+
 
     override fun onOrientationChanged(orientation: Int) {
         if (orientation == ORIENTATION_UNKNOWN) {

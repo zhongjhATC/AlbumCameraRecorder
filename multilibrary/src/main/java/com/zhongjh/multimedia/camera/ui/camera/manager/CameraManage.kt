@@ -620,7 +620,11 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
                     // 获取画布并清除颜色，应用仿射变换
                     val canvas = frame.overlayCanvas
                     canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+//                    imageCapture?.let {
+//                    }
+
                     canvas.setMatrix(uiToSensor)
+                    canvas.rotate(180f)
                     // 绘制文字
                     val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                     canvas.drawText(dataFormat.format(Date()), previewView.width - 400f, previewView.height - 200F, textPaint)
@@ -752,7 +756,6 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
             val cameraManage: CameraManage? = mCameraManageReference.get()
             val uri = outputFileResults.savedUri
-            cameraManage?.stopCheckOrientation()
             val onCameraManageListenerReference: OnCameraManageListener? = mOnCameraManageListenerReference.get()
             onCameraManageListenerReference?.let {
                 val path: String = if (MimeType.isContent(uri.toString())) uri.toString() else uri?.path.toString()
@@ -787,6 +790,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             if (displayId == this@CameraManage.displayId && null != previewView.display) {
                 imageCapture?.targetRotation = previewView.display.rotation
                 imageAnalyzer?.targetRotation = previewView.display.rotation
+                videoCapture?.targetRotation = previewView.display.rotation
             }
         }
     }
@@ -798,6 +802,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
         Log.d(TAG, "rotation:$orientation")
         imageCapture?.targetRotation = orientation
         imageAnalyzer?.targetRotation = orientation
+        videoCapture?.targetRotation = orientation
     }
 
 }
