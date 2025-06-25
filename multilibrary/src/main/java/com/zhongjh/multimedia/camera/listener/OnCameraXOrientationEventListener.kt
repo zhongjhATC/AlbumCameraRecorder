@@ -4,12 +4,14 @@ import android.content.Context
 import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
-import androidx.exifinterface.media.ExifInterface
+import android.view.WindowManager
+import androidx.core.content.ContextCompat.getSystemService
+
 
 /**
  * 用于监控手机方向
  */
-class OnCameraXOrientationEventListener(context: Context, private val changedListener: OnOrientationChangedListener) : OrientationEventListener(context) {
+class OnCameraXOrientationEventListener(private val context: Context, private val changedListener: OnOrientationChangedListener) : OrientationEventListener(context) {
 
     companion object {
         const val TAG = "OrientationListener"
@@ -18,18 +20,18 @@ class OnCameraXOrientationEventListener(context: Context, private val changedLis
     private var mRotation = Surface.ROTATION_0
 
 
-
     override fun onOrientationChanged(orientation: Int) {
         if (orientation == ORIENTATION_UNKNOWN) {
             return
         }
+
+        // 获取屏幕旋转角度
         val currentRotation: Int = when (orientation) {
-            in 81..99 ->  Surface.ROTATION_270
-            in 171..189 -> Surface.ROTATION_180
-            in 261..279 ->  Surface.ROTATION_90
+            in 71..109 -> Surface.ROTATION_270
+            in 161..199 -> Surface.ROTATION_180
+            in 251..289 -> Surface.ROTATION_90
             else -> Surface.ROTATION_0
         }
-        Log.d(TAG, "rotation:$mRotation")
         if (mRotation != currentRotation) {
             mRotation = currentRotation
             changedListener.onOrientationChanged(mRotation)

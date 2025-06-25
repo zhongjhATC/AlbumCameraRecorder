@@ -15,6 +15,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.util.Rational
 import android.util.Size
+import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
@@ -64,8 +65,6 @@ import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executor
@@ -135,6 +134,13 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * 显示id
      */
     private var displayId = -1
+
+    /**
+     * 当前手机角度类型
+     * 在改变imageCapture或者videoCapture角度时,是不会改变previewView，所以全局需要一个变量存储当前角度
+     * 默认底部是0，以左边为底部是1，以右边为底部是3
+     */
+    private var targetRotation = Surface.ROTATION_0
 
     /**
      * 界面是否被覆盖了，如果是被覆盖的情况下，会结束录制，同时不会处理录制后打开视频文件的相关处理
@@ -593,6 +599,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     /**
      * 初始化OverlayEffect 叠加效果,一般用于水印,实时画面
      */
+    @SuppressLint("RestrictedApi")
     private fun initOverlayEffect() {
         // 视频帧叠加效果
         overlayEffect = cameraSpec.onInitCameraManager?.initOverlayEffect(previewView)
@@ -606,6 +613,11 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
                 // 抗锯齿
                 isAntiAlias = true
             }
+            // 左右底部间距高度
+            val marginHeight = 50F
+            // 文字宽度
+            val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val textWidth: Float = textPaint.measureText(dataFormat.format(Date())) + marginHeight
             // 清除setOnDrawListener的监听
             clearOnDrawListener()
             // 在每一帧上绘制水印
@@ -620,14 +632,27 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
                     // 获取画布并清除颜色，应用仿射变换
                     val canvas = frame.overlayCanvas
                     canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-//                    imageCapture?.let {
-//                    }
 
                     canvas.setMatrix(uiToSensor)
-                    canvas.rotate(180f)
                     // 绘制文字
-                    val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                    canvas.drawText(dataFormat.format(Date()), previewView.width - 400f, previewView.height - 200F, textPaint)
+                    when (targetRotation) {
+                        Surface.ROTATION_0 -> {
+                            // 底部绘制,以手机底部为标准xy正常计算
+                            canvas.drawText(dataFormat.format(Date()), previewView.width - textWidth, previewView.height - marginHeight, textPaint)
+                        }
+
+                        Surface.ROTATION_90 -> {
+                            // 以左边为底部,依然以手机底部为标准xy正常计算
+                            canvas.rotate(90F, marginHeight, previewView.height - textWidth)
+                            canvas.drawText(dataFormat.format(Date()), marginHeight, previewView.height - textWidth, textPaint)
+                        }
+
+                        Surface.ROTATION_270 -> {
+                            // 以右边为底部,依然以手机底部为标准xy正常计算
+                            canvas.rotate(-90F, previewView.width - marginHeight, textWidth)
+                            canvas.drawText(dataFormat.format(Date()), previewView.width - marginHeight, textWidth, textPaint)
+                        }
+                    }
                 }
                 true
             }
@@ -771,14 +796,6 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
 
     }
 
-    private fun getTargetRotation(): Int {
-        imageCapture?.let {
-            return it.targetRotation
-        } ?: let {
-            return 0
-        }
-    }
-
     /**
      * 使用显示器更改事件，更改图片拍摄器的旋转
      */
@@ -791,18 +808,22 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
                 imageCapture?.targetRotation = previewView.display.rotation
                 imageAnalyzer?.targetRotation = previewView.display.rotation
                 videoCapture?.targetRotation = previewView.display.rotation
+                targetRotation = previewView.display.rotation
             }
         }
     }
 
     /**
      * 监控手机角度事件触发
+     *
+     * @param orientation 默认底部是0，以左边为底部是1，以右边为底部是3
      */
     override fun onOrientationChanged(orientation: Int) {
         Log.d(TAG, "rotation:$orientation")
         imageCapture?.targetRotation = orientation
         imageAnalyzer?.targetRotation = orientation
         videoCapture?.targetRotation = orientation
+        targetRotation = orientation
     }
 
 }
