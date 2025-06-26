@@ -56,6 +56,7 @@ import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import com.zhongjh.common.utils.UriUtils
+import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.listener.OnCameraManageListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXOrientationEventListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXPreviewViewTouchListener
@@ -136,13 +137,6 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     private var displayId = -1
 
     /**
-     * 当前手机角度类型
-     * 在改变imageCapture或者videoCapture角度时,是不会改变previewView，所以全局需要一个变量存储当前角度
-     * 默认底部是0，以左边为底部是1，以右边为底部是3
-     */
-    private var targetRotation = Surface.ROTATION_0
-
-    /**
      * 界面是否被覆盖了，如果是被覆盖的情况下，会结束录制，同时不会处理录制后打开视频文件的相关处理
      */
     private var isActivityPause = false
@@ -162,7 +156,10 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      */
     fun init() {
         displayManager.registerDisplayListener(displayListener, null)
-        previewView.post { displayId = previewView.display.displayId }
+        previewView.post {
+            displayId = previewView.display.displayId
+            previewView.setTag(R.id.target_rotation, Surface.ROTATION_0)
+        }
         startCheckOrientation()
         startCamera()
 
@@ -177,8 +174,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
                         if (lastStreamState != streamState) {
                             lastStreamState = streamState
                             // 停止输出画面后仍会停留在最后一帧,设置黑色前景遮挡住最后一帧画面
-                            previewView.foreground =
-                                ContextCompat.getDrawable(appCompatActivity, android.R.color.background_dark)
+                            previewView.foreground = ContextCompat.getDrawable(appCompatActivity, android.R.color.background_dark)
                         }
                     }
 
@@ -603,58 +599,64 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     private fun initOverlayEffect() {
         // 视频帧叠加效果
         overlayEffect = cameraSpec.onInitCameraManager?.initOverlayEffect(previewView)
-        overlayEffect?.let { return }
-        overlayEffect = OverlayEffect(PREVIEW or VIDEO_CAPTURE or IMAGE_CAPTURE, 0, Handler(Looper.getMainLooper())) {
-            Log.e(TAG, "overlayEffect error")
-        }.apply {
-            val textPaint = Paint().apply {
-                color = Color.WHITE
-                textSize = 36f
-                // 抗锯齿
-                isAntiAlias = true
-            }
-            // 左右底部间距高度
-            val marginHeight = 50F
-            // 文字宽度
-            val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-            val textWidth: Float = textPaint.measureText(dataFormat.format(Date())) + marginHeight
-            // 清除setOnDrawListener的监听
-            clearOnDrawListener()
-            // 在每一帧上绘制水印
-            setOnDrawListener { frame ->
-                // 同步previewView的宽高
-                val sensorToUi = previewView.sensorToViewTransform
-                if (sensorToUi != null) {
-                    val sensorToEffect = frame.sensorToBufferTransform
-                    val uiToSensor = Matrix()
-                    sensorToUi.invert(uiToSensor)
-                    uiToSensor.postConcat(sensorToEffect)
-                    // 获取画布并清除颜色，应用仿射变换
-                    val canvas = frame.overlayCanvas
-                    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        // 如果有自定义的则直接return
+        if (overlayEffect != null) {
+            return
+        }
+        if (cameraSpec.onInitCameraManager?.isDefaultOverlayEffect() == true) {
+            overlayEffect = OverlayEffect(PREVIEW or VIDEO_CAPTURE or IMAGE_CAPTURE, 0, Handler(Looper.getMainLooper())) {
+                Log.e(TAG, "overlayEffect error")
+            }.apply {
+                val textPaint = Paint().apply {
+                    color = Color.WHITE
+                    textSize = 36f
+                    // 抗锯齿
+                    isAntiAlias = true
+                }
+                // 左右底部间距
+                val marginSize = 50F
+                // 文字宽度
+                val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                val textWidth: Float = textPaint.measureText(dataFormat.format(Date())) + marginSize
+                // 清除setOnDrawListener的监听
+                clearOnDrawListener()
+                // 在每一帧上绘制水印
+                setOnDrawListener { frame ->
+                    // 同步previewView的宽高
+                    val sensorToUi = previewView.sensorToViewTransform
+                    if (sensorToUi != null) {
+                        val sensorToEffect = frame.sensorToBufferTransform
+                        val uiToSensor = Matrix()
+                        sensorToUi.invert(uiToSensor)
+                        uiToSensor.postConcat(sensorToEffect)
+                        // 获取画布并清除颜色，应用仿射变换
+                        val canvas = frame.overlayCanvas
+                        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                        canvas.setMatrix(uiToSensor)
+                        // 绘制文字
 
-                    canvas.setMatrix(uiToSensor)
-                    // 绘制文字
-                    when (targetRotation) {
-                        Surface.ROTATION_0 -> {
-                            // 底部绘制,以手机底部为标准xy正常计算
-                            canvas.drawText(dataFormat.format(Date()), previewView.width - textWidth, previewView.height - marginHeight, textPaint)
-                        }
+                        previewView.setTag(R.id.target_rotation, previewView.display.rotation)
+                        when (previewView.getTag(R.id.target_rotation)) {
+                            Surface.ROTATION_0 -> {
+                                // 底部绘制,以手机底部为标准xy正常计算
+                                canvas.drawText(dataFormat.format(Date()), previewView.width - textWidth, previewView.height - marginSize, textPaint)
+                            }
 
-                        Surface.ROTATION_90 -> {
-                            // 以左边为底部,依然以手机底部为标准xy正常计算
-                            canvas.rotate(90F, marginHeight, previewView.height - textWidth)
-                            canvas.drawText(dataFormat.format(Date()), marginHeight, previewView.height - textWidth, textPaint)
-                        }
+                            Surface.ROTATION_90 -> {
+                                // 以左边为底部,依然以手机底部为标准xy正常计算
+                                canvas.rotate(90F, marginSize, previewView.height - textWidth)
+                                canvas.drawText(dataFormat.format(Date()), marginSize, previewView.height - textWidth, textPaint)
+                            }
 
-                        Surface.ROTATION_270 -> {
-                            // 以右边为底部,依然以手机底部为标准xy正常计算
-                            canvas.rotate(-90F, previewView.width - marginHeight, textWidth)
-                            canvas.drawText(dataFormat.format(Date()), previewView.width - marginHeight, textWidth, textPaint)
+                            Surface.ROTATION_270 -> {
+                                // 以右边为底部,依然以手机底部为标准xy正常计算
+                                canvas.rotate(-90F, previewView.width - marginSize, textWidth)
+                                canvas.drawText(dataFormat.format(Date()), previewView.width - marginSize, textWidth, textPaint)
+                            }
                         }
                     }
+                    true
                 }
-                true
             }
         }
     }
@@ -808,7 +810,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
                 imageCapture?.targetRotation = previewView.display.rotation
                 imageAnalyzer?.targetRotation = previewView.display.rotation
                 videoCapture?.targetRotation = previewView.display.rotation
-                targetRotation = previewView.display.rotation
+                previewView.setTag(R.id.target_rotation, previewView.display.rotation)
             }
         }
     }
@@ -823,7 +825,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
         imageCapture?.targetRotation = orientation
         imageAnalyzer?.targetRotation = orientation
         videoCapture?.targetRotation = orientation
-        targetRotation = orientation
+        previewView.setTag(R.id.target_rotation, orientation)
     }
 
 }

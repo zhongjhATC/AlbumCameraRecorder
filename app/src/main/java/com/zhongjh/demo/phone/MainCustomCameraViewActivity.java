@@ -170,6 +170,11 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             }
 
             @Override
+            public boolean isDefaultOverlayEffect() {
+                return true;
+            }
+
+            @Override
             public OverlayEffect initOverlayEffect(@NonNull PreviewView previewView) {
                 return null;
             }

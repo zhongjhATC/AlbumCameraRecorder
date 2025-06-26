@@ -3,5 +3,5 @@
     <!-- 用于区分tagId -->
     <!-- 用于记录TabLayout的translationY -->
     <item name="z_tab_layout_translation_y" type="id"/>
-
+    <item name="target_rotation" type="id"/>
 </resources>

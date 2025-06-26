@@ -1,45 +1,66 @@
 package com.zhongjh.demo.phone;
 
+import static androidx.camera.core.CameraEffect.IMAGE_CAPTURE;
+import static androidx.camera.core.CameraEffect.PREVIEW;
+import static androidx.camera.core.CameraEffect.VIDEO_CAPTURE;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.Preview;
+import androidx.camera.effects.OverlayEffect;
+import androidx.camera.video.Recorder;
+import androidx.camera.video.VideoCapture;
+import androidx.camera.view.PreviewView;
 
-import com.zhongjh.multimedia.AlbumCameraRecorderApi;
-import com.zhongjh.multimedia.album.filter.BaseFilter;
-import com.zhongjh.multimedia.camera.entity.BitmapData;
-import com.zhongjh.multimedia.camera.listener.OnCaptureListener;
-import com.zhongjh.multimedia.settings.AlbumSetting;
-import com.zhongjh.multimedia.settings.CameraSetting;
-import com.zhongjh.multimedia.settings.GlobalSetting;
-import com.zhongjh.multimedia.settings.MultiMediaSetting;
-import com.zhongjh.multimedia.settings.RecorderSetting;
+import com.zhongjh.common.entity.GridMedia;
+import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.demo.BaseActivity;
 import com.zhongjh.demo.R;
 import com.zhongjh.demo.configuration.GifSizeFilter;
 import com.zhongjh.demo.configuration.Glide4Engine;
 import com.zhongjh.demo.configuration.OnImageCompressionLuBan;
 import com.zhongjh.demo.databinding.ActivityMainBinding;
-import com.zhongjh.common.entity.GridMedia;
-import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.gridview.apapter.GridAdapter;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
+import com.zhongjh.multimedia.AlbumCameraRecorderApi;
+import com.zhongjh.multimedia.album.filter.BaseFilter;
+import com.zhongjh.multimedia.camera.entity.BitmapData;
+import com.zhongjh.multimedia.camera.listener.OnCaptureListener;
+import com.zhongjh.multimedia.camera.listener.OnInitCameraManager;
+import com.zhongjh.multimedia.settings.AlbumSetting;
+import com.zhongjh.multimedia.settings.CameraSetting;
+import com.zhongjh.multimedia.settings.GlobalSetting;
+import com.zhongjh.multimedia.settings.MultiMediaSetting;
+import com.zhongjh.multimedia.settings.RecorderSetting;
 import com.zhongjh.videoedit.VideoCompressManager;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -288,10 +309,43 @@ public class MainActivity extends BaseActivity {
         cameraSetting.minDuration(Integer.parseInt(mBinding.etMinCameraDuration.getText().toString()));
         // 长按准备时间，单位为毫秒，即是如果长按在1000毫秒内，都暂时不开启录制
         cameraSetting.readinessDuration(Integer.parseInt(mBinding.etCameraReadinessDuration.getText().toString()));
-        // 是否启用水印
-        if (mBinding.cbWatermark.isChecked()) {
+        cameraSetting.setOnInitCameraManager(new OnInitCameraManager() {
+            @Override
+            public void initPreview(@NonNull Preview.Builder previewBuilder, int screenAspectRatio, int rotation) {
 
-        }
+            }
+
+            @Override
+            public void initImageCapture(@NonNull ImageCapture.Builder imageBuilder, int screenAspectRatio, int rotation) {
+
+            }
+
+            @Override
+            public void initImageAnalyzer(@NonNull ImageAnalysis.Builder imageAnalyzerBuilder, int screenAspectRatio, int rotation) {
+
+            }
+
+            @Override
+            public void initVideoCapture(@NonNull VideoCapture.Builder<Recorder> videoCaptureBuilder, int rotation) {
+
+            }
+
+            @Override
+            public void initVideoRecorder(@NonNull Recorder.Builder recorder, int screenAspectRatio) {
+
+            }
+
+            @Override
+            public boolean isDefaultOverlayEffect() {
+                // 是否启用默认水印
+                return mBinding.cbDefaultWatermark.isChecked();
+            }
+
+            @Override
+            public OverlayEffect initOverlayEffect(@NonNull PreviewView previewView) {
+                return mBinding.cbCustomWatermark.isChecked() ? MainActivity.this.initOverlayEffect(previewView) : null;
+            }
+        });
 
         // 是否启用闪光灯记忆模式
         cameraSetting.enableFlashMemoryModel(mBinding.cbFlashMemoryModel.isChecked());
@@ -305,7 +359,7 @@ public class MainActivity extends BaseActivity {
         // 拍照时添加图片事件以及删除图片事件
         cameraSetting.setOnCaptureListener(new OnCaptureListener() {
             @Override
-            public void add(@NonNull List<BitmapData> captureDatas, int position) {
+            public void add(@NonNull List<BitmapData> captureData, int position) {
                 Log.d(TAG, "添加索引 " + position);
             }
 
@@ -516,4 +570,56 @@ public class MainActivity extends BaseActivity {
         });
         popupMenu.show();
     }
+
+    /**
+     * 自定义叠加效果
+     *
+     * @return OverlayEffect
+     */
+    private OverlayEffect initOverlayEffect(PreviewView previewView) {
+        OverlayEffect overlayEffect = new OverlayEffect(PREVIEW | VIDEO_CAPTURE | IMAGE_CAPTURE, 0, new Handler(Looper.getMainLooper()), throwable -> Log.e(TAG, "initOverlayEffect errorListener " + throwable.getMessage()));
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.RED);
+        textPaint.setTextSize(36F);
+        textPaint.setAntiAlias(true);
+        // 左右底部间距
+        float marginSize = 50F;
+        // 文字宽度
+        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        float textWidthSize = textPaint.measureText("自定义 - " + dataFormat.format(new Date())) + marginSize;
+        // 在每一帧绘制水印
+        overlayEffect.clearOnDrawListener();
+        overlayEffect.setOnDrawListener(frame -> {
+            Matrix sensorToUi = previewView.getSensorToViewTransform();
+            if (sensorToUi != null) {
+                Matrix sensorToEffect = frame.getSensorToBufferTransform();
+                Matrix uiToSensor = new Matrix();
+                sensorToUi.invert(uiToSensor);
+                uiToSensor.postConcat(sensorToEffect);
+                Canvas canvas = frame.getOverlayCanvas();
+                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                canvas.setMatrix(uiToSensor);
+                // 绘制文字
+                switch (Integer.parseInt(previewView.getTag(com.zhongjh.multimedia.R.id.target_rotation).toString())) {
+                    case Surface.ROTATION_0:
+                        // 底部绘制,以手机底部为标准xy正常计算
+                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), previewView.getWidth() - textWidthSize, previewView.getHeight() - marginSize, textPaint);
+                        break;
+                    case Surface.ROTATION_90:
+                        // 以左边为底部,依然以手机底部为标准xy正常计算
+                        canvas.rotate(90F, marginSize, previewView.getHeight() - textWidthSize);
+                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), marginSize, previewView.getHeight() - textWidthSize, textPaint);
+                        break;
+                    case Surface.ROTATION_270:
+                        // 以右边为底部,依然以手机底部为标准xy正常计算
+                        canvas.rotate(-90F, previewView.getWidth() - marginSize, textWidthSize);
+                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), previewView.getWidth() - marginSize, textWidthSize, textPaint);
+                        break;
+                }
+            }
+            return true;
+        });
+        return overlayEffect;
+    }
+
 }

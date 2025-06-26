@@ -63,6 +63,12 @@ interface OnInitCameraManager {
     fun initVideoRecorder(recorder: Recorder.Builder, screenAspectRatio: Int)
 
     /**
+     * 是否使用默认的叠加效果
+     * 如果initOverlayEffect返回不为null，则以自定义的水印为准
+     */
+    fun isDefaultOverlayEffect(): Boolean
+
+    /**
      * 自定义叠加效果,一般用于水印,实时画面
      * @param previewView 预览view,用于获取宽高
      */

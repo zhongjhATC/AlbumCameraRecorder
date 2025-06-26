@@ -9,7 +9,8 @@
     <string name="support_image">支持图片</string>
     <string name="support_gif">支持Gif</string>
     <string name="support_video">支持视频</string>
-    <string name="start_the_watermark">启动水印</string>
+    <string name="use_the_default_time_watermark">使用默认的时间水印</string>
+    <string name="custom_watermarks">自定义水印(会覆盖默认时间水印)</string>
     <string name="start_flash_memory_model">启动闪光灯记忆模式</string>
     <string name="volume_button_trigger_photo_taking">音量键触发拍照(可自定义key触发)</string>
     <string name="flash_settings">点击更改闪光灯默认的模式：</string>

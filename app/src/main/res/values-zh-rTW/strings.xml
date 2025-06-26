@@ -8,7 +8,8 @@
     <string name="support_image">支持圖片</string>
     <string name="support_gif">支持Gif</string>
     <string name="support_video">支持視頻</string>
-    <string name="start_the_watermark">啓動水印</string>
+    <string name="use_the_default_time_watermark">使用預設的時間浮水印</string>
+    <string name="custom_watermarks">自訂浮水印(會覆蓋預設時間浮浮水印)</string>
     <string name="start_flash_memory_model">啓動閃光燈記憶模式</string>
     <string name="volume_button_trigger_photo_taking">音量鍵觸髮拍照(可自定義key觸髮)</string>
     <string name="flash_settings">點擊更改閃光燈默認的模式：</string>

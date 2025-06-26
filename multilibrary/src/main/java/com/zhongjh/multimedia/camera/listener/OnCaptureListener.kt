@@ -21,8 +21,8 @@ interface OnCaptureListener {
     /**
      * 添加图片
      *
-     * @param captureDatas 图片数据
+     * @param captureData 图片数据
      * @param position 添加的索引
      */
-    fun add(captureDatas: List<BitmapData>, position: Int)
+    fun add(captureData: List<BitmapData>, position: Int)
 }
