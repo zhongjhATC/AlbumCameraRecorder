@@ -9,8 +9,13 @@
     <string name="support_image">支持图片</string>
     <string name="support_gif">支持Gif</string>
     <string name="support_video">支持视频</string>
-    <string name="use_the_default_time_watermark">使用默认的时间水印</string>
-    <string name="custom_watermarks">自定义水印(会覆盖默认时间水印)</string>
+    <string name="resolution_scale">分辨率、比例</string>
+    <string name="resolution_scale_default">默认设置最接近1920*1080的分辨率,比例取最接近</string>
+    <string name="resolution_scale_hd">自定义设置最高清分辨率,比例16:9</string>
+    <string name="use_the_default_time_watermark">1. 使用默认的时间水印</string>
+    <string name="custom_watermarks_all">2. 自定义水印(支持预览、视频、图片。会覆盖默认时间水印)</string>
+    <string name="custom_watermarks_video">3. 自定义水印(支持预览、视频。会覆盖默认时间水印。建议在修改高清录制才使用,其他情况使用上面的第1、2种水印方式即可)</string>
+    <string name="custom_hd_watermarks">4. 自定义图片水印(建议在修改高清录制才使用,其他情况使用上面的第1、2种水印方式即可)</string>
     <string name="start_flash_memory_model">启动闪光灯记忆模式</string>
     <string name="volume_button_trigger_photo_taking">音量键触发拍照(可自定义key触发)</string>
     <string name="flash_settings">点击更改闪光灯默认的模式：</string>

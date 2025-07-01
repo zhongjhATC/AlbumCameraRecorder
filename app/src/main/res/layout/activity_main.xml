@@ -677,6 +677,34 @@
                     android:layout_marginTop="10dp"
                     android:text="@string/click_to_start_recording_lose_the_click_to_take_photos_function" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/resolution_scale" />
+
+                <RadioGroup
+                    android:id="@+id/rbResolutionScale"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/rbDefaultResolutionScale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:text="@string/resolution_scale_default" />
+
+                    <RadioButton
+                        android:id="@+id/rbHDResolutionScale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/resolution_scale_hd" />
+
+                </RadioGroup>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -697,11 +725,43 @@
                     android:orientation="horizontal">
 
                     <CheckBox
-                        android:id="@+id/cbCustomWatermark"
+                        android:id="@+id/cbCustomWatermarkAll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="@string/custom_watermarks" />
+                        android:gravity="start"
+                        android:text="@string/custom_watermarks_all" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbCustomWatermarkVideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"
+                        android:enabled="false"
+                        android:gravity="start"
+                        android:text="@string/custom_watermarks_video" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbCustomWatermarkImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"
+                        android:enabled="false"
+                        android:gravity="start"
+                        android:text="@string/custom_hd_watermarks" />
 
                 </LinearLayout>
 

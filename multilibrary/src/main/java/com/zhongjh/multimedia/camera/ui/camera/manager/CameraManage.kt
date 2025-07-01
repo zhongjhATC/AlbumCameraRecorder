@@ -3,12 +3,16 @@ package com.zhongjh.multimedia.camera.ui.camera.manager
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PorterDuff
 import android.hardware.display.DisplayManager
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -64,6 +68,8 @@ import com.zhongjh.multimedia.camera.widget.FocusView
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
+import java.io.File
+import java.io.FileOutputStream
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -78,8 +84,7 @@ import kotlin.math.min
 /**
  * 处理camerax的类
  */
-class CameraManage(private val appCompatActivity: AppCompatActivity, val previewView: PreviewView, val focusView: FocusView) :
-    OnCameraXOrientationEventListener.OnOrientationChangedListener {
+class CameraManage(private val appCompatActivity: AppCompatActivity, val previewView: PreviewView, val focusView: FocusView) : OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
         /**
@@ -109,9 +114,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     private val displayManager by lazy { appCompatActivity.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
     private val displayListener by lazy { DisplayListener() }
     private val orientationEventListener by lazy {
-        OnCameraXOrientationEventListener(
-            appCompatActivity, this
-        )
+        OnCameraXOrientationEventListener(appCompatActivity, this)
     }
     private lateinit var cameraInfo: CameraInfo
 
@@ -161,34 +164,32 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             previewView.setTag(R.id.target_rotation, Surface.ROTATION_0)
         }
         startCheckOrientation()
-        startCamera()
 
         // 选择数据改变
-        previewView.previewStreamState
-            .observe(appCompatActivity) { streamState ->
-                if (lastStreamState == null) {
-                    lastStreamState = streamState
-                }
-                when (streamState) {
-                    PreviewView.StreamState.IDLE -> {
-                        if (lastStreamState != streamState) {
-                            lastStreamState = streamState
-                            // 停止输出画面后仍会停留在最后一帧,设置黑色前景遮挡住最后一帧画面
-                            previewView.foreground = ContextCompat.getDrawable(appCompatActivity, android.R.color.background_dark)
-                        }
-                    }
-
-                    PreviewView.StreamState.STREAMING -> {
-                        if (lastStreamState != streamState) {
-                            lastStreamState = streamState
-                            // 开始输出画面后清空前景
-                            previewView.foreground = null
-                        }
-                    }
-
-                    else -> {}
-                }
+        previewView.previewStreamState.observe(appCompatActivity) { streamState ->
+            if (lastStreamState == null) {
+                lastStreamState = streamState
             }
+            when (streamState) {
+                PreviewView.StreamState.IDLE -> {
+                    if (lastStreamState != streamState) {
+                        lastStreamState = streamState
+                        // 停止输出画面后仍会停留在最后一帧,设置黑色前景遮挡住最后一帧画面
+                        previewView.foreground = ContextCompat.getDrawable(appCompatActivity, android.R.color.background_dark)
+                    }
+                }
+
+                PreviewView.StreamState.STREAMING -> {
+                    if (lastStreamState != streamState) {
+                        lastStreamState = streamState
+                        // 开始输出画面后清空前景
+                        previewView.foreground = null
+                    }
+                }
+
+                else -> {}
+            }
+        }
     }
 
     /**
@@ -242,9 +243,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             val cameraFile = FileMediaUtil.createCacheFile(appCompatActivity, MediaType.TYPE_PICTURE)
             val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
             // 进行拍照
-            imageCapture.takePicture(
-                fileOptions, mainExecutor, TakePictureCallback(this@CameraManage, onCameraManageListener)
-            )
+            imageCapture.takePicture(fileOptions, mainExecutor, TakePictureCallback(onCameraManageListener))
         }
     }
 
@@ -522,14 +521,10 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * @param screenAspectRatio 计算后适合的比例
      */
     private fun initPreview(screenAspectRatio: Int): Preview {
-        val previewBuilder = Preview.Builder()
-            .setResolutionSelector(
-                ResolutionSelector.Builder()
-                    .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                    .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE))
-                    .build()
-            )
-            .setTargetRotation(previewView.display.rotation)
+        val previewBuilder = Preview.Builder().setResolutionSelector(
+            ResolutionSelector.Builder().setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE)).build()
+        ).setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initPreview(previewBuilder, screenAspectRatio, previewView.display.rotation)
         return previewBuilder.build().also {
             it.surfaceProvider = previewView.surfaceProvider
@@ -544,14 +539,10 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      */
     private fun initImageCapture(screenAspectRatio: Int) {
         // 初始化 拍照类 imageCapture
-        val imageBuilder = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
-            .setResolutionSelector(
-                ResolutionSelector.Builder()
-                    .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                    .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE))
-                    .build()
-            )
-            .setTargetRotation(previewView.display.rotation)
+        val imageBuilder = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY).setResolutionSelector(
+            ResolutionSelector.Builder().setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE)).build()
+        ).setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initImageCapture(imageBuilder, screenAspectRatio, previewView.display.rotation)
         imageCapture = imageBuilder.build()
     }
@@ -563,14 +554,10 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      */
     private fun initImageAnalyzer(screenAspectRatio: Int) {
         // 初始化 拍照类 imageCapture,设置 优先考虑延迟而不是图像质量、设置比例、设置角度
-        val imageAnalyzerBuilder = ImageAnalysis.Builder()
-            .setResolutionSelector(
-                ResolutionSelector.Builder()
-                    .setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                    .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE))
-                    .build()
-            )
-            .setTargetRotation(previewView.display.rotation)
+        val imageAnalyzerBuilder = ImageAnalysis.Builder().setResolutionSelector(
+            ResolutionSelector.Builder().setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE)).build()
+        ).setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initImageAnalyzer(imageAnalyzerBuilder, screenAspectRatio, previewView.display.rotation)
         imageAnalyzer = imageAnalyzerBuilder.build()
     }
@@ -582,12 +569,9 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     private fun initVideoCapture(screenAspectRatio: Int) {
         // 设置分辨率1920*1080
         val qualitySelector = QualitySelector.from(Quality.FHD)
-        val recorder = Recorder.Builder()
-            .setAspectRatio(screenAspectRatio)
-            .setQualitySelector(qualitySelector)
+        val recorder = Recorder.Builder().setAspectRatio(screenAspectRatio).setQualitySelector(qualitySelector)
         cameraSpec.onInitCameraManager?.initVideoRecorder(recorder, screenAspectRatio)
-        val videoCaptureBuilder = VideoCapture.Builder<Recorder>(recorder.build())
-            .setTargetRotation(previewView.display.rotation)
+        val videoCaptureBuilder = VideoCapture.Builder<Recorder>(recorder.build()).setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initVideoCapture(videoCaptureBuilder, previewView.display.rotation)
         videoCapture = videoCaptureBuilder.build()
     }
@@ -714,8 +698,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     private fun initCameraPreviewListener() {
         val zoomState = cameraInfo.zoomState
         val onCameraXPreviewViewTouchListener = OnCameraXPreviewViewTouchListener(appCompatActivity)
-        onCameraXPreviewViewTouchListener.setCustomTouchListener(object :
-            OnCameraXPreviewViewTouchListener.CustomTouchListener {
+        onCameraXPreviewViewTouchListener.setCustomTouchListener(object : OnCameraXPreviewViewTouchListener.CustomTouchListener {
 
             override fun zoom(delta: Float) {
                 // 进行缩放
@@ -729,8 +712,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
                 // 控制对焦目标给xy坐标
                 val meteringPointFactory: MeteringPointFactory = previewView.meteringPointFactory
                 val point = meteringPointFactory.createPoint(x, y)
-                val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
-                    .setAutoCancelDuration(3, TimeUnit.SECONDS).build()
+                val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).setAutoCancelDuration(3, TimeUnit.SECONDS).build()
                 if (cameraInfo.isFocusMeteringSupported(action)) {
                     cameraControl.cancelFocusAndMetering()
                     focusView.setDisappear(false)
@@ -772,16 +754,11 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     /**
      * 拍照回调
      */
-    private class TakePictureCallback(
-        cameraManage: CameraManage, onCameraManageListener: OnCameraManageListener?
-    ) : ImageCapture.OnImageSavedCallback {
+    private class TakePictureCallback(onCameraManageListener: OnCameraManageListener?) : ImageCapture.OnImageSavedCallback {
 
-        private val mCameraManageReference: WeakReference<CameraManage> = WeakReference<CameraManage>(cameraManage)
-        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener> =
-            WeakReference<OnCameraManageListener>(onCameraManageListener)
+        private val mOnCameraManageListenerReference: WeakReference<OnCameraManageListener> = WeakReference<OnCameraManageListener>(onCameraManageListener)
 
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-            val cameraManage: CameraManage? = mCameraManageReference.get()
             val uri = outputFileResults.savedUri
             val onCameraManageListenerReference: OnCameraManageListener? = mOnCameraManageListenerReference.get()
             onCameraManageListenerReference?.let {
@@ -792,8 +769,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
 
         override fun onError(exception: ImageCaptureException) {
             Log.d(TAG, "onError")
-            mOnCameraManageListenerReference.get()
-                ?.onError(exception.imageCaptureError, exception.message, exception.cause)
+            mOnCameraManageListenerReference.get()?.onError(exception.imageCaptureError, exception.message, exception.cause)
         }
 
     }

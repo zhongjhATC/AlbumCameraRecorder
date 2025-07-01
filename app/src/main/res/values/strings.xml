@@ -9,8 +9,13 @@
     <string name="support_image">Support image</string>
     <string name="support_gif">Support gif</string>
     <string name="support_video">Support video</string>
-    <string name="use_the_default_time_watermark">Use the default time watermark</string>
-    <string name="custom_watermarks">Custom watermark (overrides the default time watermark)</string>
+    <string name="resolution_scale">resolution、scale</string>
+    <string name="resolution_scale_default">The default setting is the closest to the resolution of 1920*1080, and the scale is the closest</string>
+    <string name="resolution_scale_hd">Customize the maximum HD resolution with a ratio of 16:9</string>
+    <string name="use_the_default_time_watermark">1. Use the default time watermark</string>
+    <string name="custom_watermarks_all">2. Custom watermark (preview, video, image supported.) will override the default time watermark)</string>
+    <string name="custom_watermarks_video">3. Custom watermark (support preview, video.) The default time watermark is overridden. It is recommended to use it only when modifying the high-definition recording, and in other cases, use the 1st and 2nd watermark methods above)</string>
+    <string name="custom_hd_watermarks">4. Custom image watermark (it is recommended to use it only when modifying the high-definition recording, otherwise you can use the above watermark method)</string>
     <string name="start_flash_memory_model">Enable flash memory mode</string>
     <string name="volume_button_trigger_photo_taking">Volume button trigger photo taking (customizable key trigger)</string>
     <string name="flash_settings">Click to change the default mode of the flash：</string>

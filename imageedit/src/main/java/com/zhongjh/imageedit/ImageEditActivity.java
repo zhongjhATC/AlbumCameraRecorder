@@ -74,10 +74,6 @@ public class ImageEditActivity extends BaseImageEditActivity {
         }
 
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 1;
-        options.inJustDecodeBounds = true;
-
-        decoder.decode(options);
         // 按照成倍的缩小
         int maxBitmapSize = BitmapLoadUtils.calculateMaxBitmapSize(getApplicationContext());
         options.inSampleSize = BitmapLoadUtils.calculateInSampleSize(options, maxBitmapSize, maxBitmapSize);
@@ -130,7 +126,7 @@ public class ImageEditActivity extends BaseImageEditActivity {
                 FileOutputStream fout = null;
                 try {
                     fout = new FileOutputStream(path);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fout);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
                 } catch (FileNotFoundException e) {
                     Log.e(TAG, "onDoneClick" + e.getMessage());
                 } finally {

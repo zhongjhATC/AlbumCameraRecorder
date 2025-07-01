@@ -1,8 +1,21 @@
 package com.zhongjh.demo.phone;
 
+import static androidx.camera.core.CameraEffect.IMAGE_CAPTURE;
+import static androidx.camera.core.CameraEffect.PREVIEW;
+import static androidx.camera.core.CameraEffect.VIDEO_CAPTURE;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.Surface;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -38,6 +51,10 @@ import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * 自定义CameraView
@@ -129,54 +146,63 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             @Override
             public void initPreview(@NonNull Preview.Builder previewBuilder, int screenAspectRatio, int rotation) {
                 previewBuilder.setResolutionSelector(new ResolutionSelector.Builder()
-                        // 设置比例 4:3
-                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_4_3, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                        // 设置分辨率1920*1080
+                        // 设置比例 16：9
+                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                        // 设置高分辨率
                         .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                         .build());
+                previewBuilder.setTargetRotation(rotation);
             }
 
             @Override
             public void initImageCapture(@NonNull ImageCapture.Builder imageBuilder, int screenAspectRatio, int rotation) {
                 imageBuilder.setResolutionSelector(new ResolutionSelector.Builder()
-                        // 设置比例 4:3
-                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_4_3, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                        // 设置分辨率1920*1080
+                        // 设置比例 16：9
+                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                        // 设置高分辨率
                         .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                         .build());
+                imageBuilder.setTargetRotation(rotation);
             }
 
             @Override
             public void initImageAnalyzer(@NonNull ImageAnalysis.Builder imageAnalyzerBuilder, int screenAspectRatio, int rotation) {
                 imageAnalyzerBuilder.setResolutionSelector(new ResolutionSelector.Builder()
-                        // 设置比例 4:3
-                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_4_3, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                        // 设置分辨率1920*1080
+                        // 设置比例 16：9
+                        .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                        // 设置高分辨率
                         .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                         .build());
+                imageAnalyzerBuilder.setTargetRotation(rotation);
             }
 
             @Override
             public void initVideoRecorder(@NonNull Recorder.Builder recorder, int screenAspectRatio) {
-                // 设置分辨率1920*1080,设置比例 4:3
-                QualitySelector qualitySelector = QualitySelector.from(Quality.FHD);
+                // 设置高分辨率,设置比例 16：9
+                QualitySelector qualitySelector = QualitySelector.from(Quality.HIGHEST);
                 recorder.setQualitySelector(qualitySelector)
-                        .setAspectRatio(AspectRatio.RATIO_4_3);
+                        .setAspectRatio(AspectRatio.RATIO_16_9);
             }
 
             @Override
             public void initVideoCapture(@NonNull VideoCapture.Builder<Recorder> videoCaptureBuilder, int rotation) {
-                // videoCaptureBuilder.setTargetRotation(90);
+                videoCaptureBuilder.setTargetRotation(rotation);
             }
 
             @Override
             public boolean isDefaultOverlayEffect() {
-                return true;
+                // 如果自定义高分辨率,请不要用默认水印,会影响性能,最好方式是自定义水印,分别是视频水印在这个方法initOverlayEffect处理、图片水印在这个方法处理
+                return false;
             }
 
             @Override
             public OverlayEffect initOverlayEffect(@NonNull PreviewView previewView) {
-                return null;
+                return MainCustomCameraViewActivity.this.initOverlayEffect(previewView);
+            }
+            
+            @Override
+            public void initWatermarkedImage(@NonNull String path) {
+
             }
         });
 
@@ -198,6 +224,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
 
         // 全局
         mGlobalSetting = MultiMediaSetting.from(MainCustomCameraViewActivity.this).choose(MimeType.ofAll());
+//        mGlobalSetting.defaultPosition(1);
 
         // 开启相册功能
         mGlobalSetting.albumSetting(albumSetting);
@@ -218,6 +245,58 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                         alreadyVideoCount,
                         alreadyAudioCount)
                 .forResult(requestLauncherACR);
+    }
+
+    /**
+     * 自定义叠加效果
+     * 由于分辨率改成高清,所以水印只支持
+     *
+     * @return OverlayEffect
+     */
+    private OverlayEffect initOverlayEffect(PreviewView previewView) {
+        OverlayEffect overlayEffect = new OverlayEffect(PREVIEW | VIDEO_CAPTURE, 0, new Handler(Looper.getMainLooper()), throwable -> Log.e("initOverlayEffect", "initOverlayEffect errorListener " + throwable.getMessage()));
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.RED);
+        textPaint.setTextSize(36F);
+        textPaint.setAntiAlias(true);
+        // 左右底部间距
+        float marginSize = 50F;
+        // 文字宽度
+        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        float textWidthSize = textPaint.measureText("自定义 - " + dataFormat.format(new Date())) + marginSize;
+        // 在每一帧绘制水印
+        overlayEffect.clearOnDrawListener();
+        overlayEffect.setOnDrawListener(frame -> {
+            Matrix sensorToUi = previewView.getSensorToViewTransform();
+            if (sensorToUi != null) {
+                Matrix sensorToEffect = frame.getSensorToBufferTransform();
+                Matrix uiToSensor = new Matrix();
+                sensorToUi.invert(uiToSensor);
+                uiToSensor.postConcat(sensorToEffect);
+                Canvas canvas = frame.getOverlayCanvas();
+                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                canvas.setMatrix(uiToSensor);
+                // 绘制文字
+                switch (Integer.parseInt(previewView.getTag(com.zhongjh.multimedia.R.id.target_rotation).toString())) {
+                    case Surface.ROTATION_0:
+                        // 底部绘制,以手机底部为标准xy正常计算
+                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), previewView.getWidth() - textWidthSize, previewView.getHeight() - marginSize, textPaint);
+                        break;
+                    case Surface.ROTATION_90:
+                        // 以左边为底部,依然以手机底部为标准xy正常计算
+                        canvas.rotate(90F, marginSize, previewView.getHeight() - textWidthSize);
+                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), marginSize, previewView.getHeight() - textWidthSize, textPaint);
+                        break;
+                    case Surface.ROTATION_270:
+                        // 以右边为底部,依然以手机底部为标准xy正常计算
+                        canvas.rotate(-90F, previewView.getWidth() - marginSize, textWidthSize);
+                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), previewView.getWidth() - marginSize, textWidthSize, textPaint);
+                        break;
+                }
+            }
+            return true;
+        });
+        return overlayEffect;
     }
 
 }

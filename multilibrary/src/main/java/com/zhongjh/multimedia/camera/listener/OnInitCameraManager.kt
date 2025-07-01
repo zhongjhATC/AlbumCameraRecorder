@@ -73,4 +73,10 @@ interface OnInitCameraManager {
      * @param previewView 预览view,用于获取宽高
      */
     fun initOverlayEffect(previewView: PreviewView): OverlayEffect?
+
+    /**
+     * 自定义图片水印效果,这个建议只有在自定义高分辨率拍照、预览的时候才设置
+     * @param path 源图路径
+     */
+    fun initWatermarkedImage(path: String)
 }

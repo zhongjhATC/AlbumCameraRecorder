@@ -478,6 +478,9 @@ public abstract class BaseCameraFragment
             @Override
             public void onPictureSuccess(@NonNull String path) {
                 Log.d(TAG, "onPictureSuccess");
+                if (cameraSpec.getOnInitCameraManager() != null) {
+                    cameraSpec.getOnInitCameraManager().initWatermarkedImage(path);
+                }
                 // 显示图片
                 getCameraPictureManager().addCaptureData(path);
                 // 恢复点击

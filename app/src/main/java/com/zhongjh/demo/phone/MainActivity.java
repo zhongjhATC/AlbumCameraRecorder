@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -22,14 +24,21 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.camera.core.AspectRatio;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.Preview;
+import androidx.camera.core.resolutionselector.AspectRatioStrategy;
+import androidx.camera.core.resolutionselector.ResolutionSelector;
+import androidx.camera.core.resolutionselector.ResolutionStrategy;
 import androidx.camera.effects.OverlayEffect;
+import androidx.camera.video.Quality;
+import androidx.camera.video.QualitySelector;
 import androidx.camera.video.Recorder;
 import androidx.camera.video.VideoCapture;
 import androidx.camera.view.PreviewView;
@@ -59,6 +68,9 @@ import com.zhongjh.videoedit.VideoCompressManager;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -158,6 +170,33 @@ public class MainActivity extends BaseActivity {
 
         // 删除文件缓存 文件目录：context.getExternalCacheDir()
         mBinding.btnDeleteFileCache.setOnClickListener(v -> AlbumCameraRecorderApi.deleteCacheDirFile(getApplication()));
+
+        // 当选择了默认分辨率、比例
+        mBinding.rbDefaultResolutionScale.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                mBinding.cbDefaultWatermark.setChecked(true);
+                mBinding.cbDefaultWatermark.setEnabled(true);
+                mBinding.cbCustomWatermarkAll.setEnabled(true);
+                mBinding.cbCustomWatermarkVideo.setChecked(false);
+                mBinding.cbCustomWatermarkVideo.setEnabled(false);
+                mBinding.cbCustomWatermarkImage.setChecked(false);
+                mBinding.cbCustomWatermarkImage.setEnabled(false);
+            }
+        });
+
+        // 当选择了自定义分辨率、比例
+        mBinding.rbHDResolutionScale.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                mBinding.cbDefaultWatermark.setChecked(false);
+                mBinding.cbCustomWatermarkAll.setChecked(false);
+                mBinding.cbDefaultWatermark.setEnabled(false);
+                mBinding.cbCustomWatermarkAll.setEnabled(false);
+                mBinding.cbCustomWatermarkVideo.setChecked(true);
+                mBinding.cbCustomWatermarkVideo.setEnabled(true);
+                mBinding.cbCustomWatermarkImage.setChecked(true);
+                mBinding.cbCustomWatermarkImage.setEnabled(true);
+            }
+        });
     }
 
     @Override
@@ -310,29 +349,61 @@ public class MainActivity extends BaseActivity {
         // 长按准备时间，单位为毫秒，即是如果长按在1000毫秒内，都暂时不开启录制
         cameraSetting.readinessDuration(Integer.parseInt(mBinding.etCameraReadinessDuration.getText().toString()));
         cameraSetting.setOnInitCameraManager(new OnInitCameraManager() {
+
             @Override
             public void initPreview(@NonNull Preview.Builder previewBuilder, int screenAspectRatio, int rotation) {
-
+                if (mBinding.rbHDResolutionScale.isChecked()) {
+                    previewBuilder.setResolutionSelector(new ResolutionSelector.Builder()
+                            // 设置比例 16：9
+                            .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                            // 设置高分辨率
+                            .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                            .build());
+                    previewBuilder.setTargetRotation(rotation);
+                }
             }
 
             @Override
             public void initImageCapture(@NonNull ImageCapture.Builder imageBuilder, int screenAspectRatio, int rotation) {
-
+                if (mBinding.rbHDResolutionScale.isChecked()) {
+                    imageBuilder.setResolutionSelector(new ResolutionSelector.Builder()
+                            // 设置比例 16：9
+                            .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                            // 设置高分辨率
+                            .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                            .build());
+                    imageBuilder.setTargetRotation(rotation);
+                }
             }
 
             @Override
             public void initImageAnalyzer(@NonNull ImageAnalysis.Builder imageAnalyzerBuilder, int screenAspectRatio, int rotation) {
-
-            }
-
-            @Override
-            public void initVideoCapture(@NonNull VideoCapture.Builder<Recorder> videoCaptureBuilder, int rotation) {
-
+                if (mBinding.rbHDResolutionScale.isChecked()) {
+                    imageAnalyzerBuilder.setResolutionSelector(new ResolutionSelector.Builder()
+                            // 设置比例 16：9
+                            .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                            // 设置高分辨率
+                            .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                            .build());
+                    imageAnalyzerBuilder.setTargetRotation(rotation);
+                }
             }
 
             @Override
             public void initVideoRecorder(@NonNull Recorder.Builder recorder, int screenAspectRatio) {
+                if (mBinding.rbHDResolutionScale.isChecked()) {
+                    // 设置高分辨率,设置比例 16：9
+                    QualitySelector qualitySelector = QualitySelector.from(Quality.HIGHEST);
+                    recorder.setQualitySelector(qualitySelector)
+                            .setAspectRatio(AspectRatio.RATIO_16_9);
+                }
+            }
 
+            @Override
+            public void initVideoCapture(@NonNull VideoCapture.Builder<Recorder> videoCaptureBuilder, int rotation) {
+                if (mBinding.rbHDResolutionScale.isChecked()) {
+                    videoCaptureBuilder.setTargetRotation(rotation);
+                }
             }
 
             @Override
@@ -343,7 +414,20 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public OverlayEffect initOverlayEffect(@NonNull PreviewView previewView) {
-                return mBinding.cbCustomWatermark.isChecked() ? MainActivity.this.initOverlayEffect(previewView) : null;
+                if (mBinding.cbCustomWatermarkAll.isChecked()) {
+                    return MainActivity.this.initOverlayEffect(previewView, PREVIEW | VIDEO_CAPTURE | IMAGE_CAPTURE);
+                } else if (mBinding.cbCustomWatermarkVideo.isChecked()) {
+                    return MainActivity.this.initOverlayEffect(previewView, PREVIEW | VIDEO_CAPTURE);
+                } else {
+                    return null;
+                }
+            }
+
+            @Override
+            public void initWatermarkedImage(@NonNull String path) {
+                if (mBinding.cbCustomWatermarkImage.isChecked()) {
+                    addWatermarkToImage(path);
+                }
             }
         });
 
@@ -574,10 +658,12 @@ public class MainActivity extends BaseActivity {
     /**
      * 自定义叠加效果
      *
+     * @param previewView 预览view
+     * @param targets     针对哪些模块进行水印设置
      * @return OverlayEffect
      */
-    private OverlayEffect initOverlayEffect(PreviewView previewView) {
-        OverlayEffect overlayEffect = new OverlayEffect(PREVIEW | VIDEO_CAPTURE | IMAGE_CAPTURE, 0, new Handler(Looper.getMainLooper()), throwable -> Log.e(TAG, "initOverlayEffect errorListener " + throwable.getMessage()));
+    private OverlayEffect initOverlayEffect(PreviewView previewView, int targets) {
+        OverlayEffect overlayEffect = new OverlayEffect(targets, 0, new Handler(Looper.getMainLooper()), throwable -> Log.e(TAG, "initOverlayEffect errorListener " + throwable.getMessage()));
         Paint textPaint = new Paint();
         textPaint.setColor(Color.RED);
         textPaint.setTextSize(36F);
@@ -620,6 +706,79 @@ public class MainActivity extends BaseActivity {
             return true;
         });
         return overlayEffect;
+    }
+
+    /**
+     * 添加水印
+     */
+    private void addWatermarkToImage(String path) {
+        File file = new File(path);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 1;
+        options.inJustDecodeBounds = false;
+        if (file.exists()) {
+            Bitmap sourceBitmap = BitmapFactory.decodeFile(path, options);
+            // 创建带水印的新 Bitmap
+            Bitmap watermarkedBitmap = addWatermark(sourceBitmap);
+            // 释放源图bitmap
+            sourceBitmap.recycle();
+            // 保存带水印的图像
+            saveWatermarkedImage(watermarkedBitmap, path);
+            // 释放带水印的新 Bitmap
+            watermarkedBitmap.recycle();
+        }
+    }
+
+    /**
+     * 创建带水印的新 Bitmap
+     *
+     * @param source 源图
+     * @return 新Bitmap
+     */
+    private Bitmap addWatermark(Bitmap source) {
+        int width = source.getWidth();
+        int height = source.getHeight();
+        Bitmap result = Bitmap.createBitmap(width, height, source.getConfig());
+        Canvas canvas = new Canvas(result);
+        canvas.drawBitmap(source, 0f, 0f, null);
+
+        // 设置水印画笔
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(36f);
+        paint.setAntiAlias(true);
+        paint.setShadowLayer(5f, 0f, 0f, Color.BLACK);
+
+        // 准备水印文本
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String watermarkText = "自定义 - " + dateFormat.format(new Date());
+        float textWidth = paint.measureText(watermarkText);
+
+        // 计算水印位置（底部居中）
+        float x = (width - textWidth) / 2;
+        // 底部边距
+        float y = height - 50F;
+
+        // 绘制水印
+        canvas.drawText(watermarkText, x, y, paint);
+        return result;
+    }
+
+    /**
+     * 保存带水印的图像
+     *
+     * @param bitmap 新的bitmap
+     * @param path   路径
+     */
+    private void saveWatermarkedImage(Bitmap bitmap, String path) {
+        FileOutputStream outputStream;
+        try {
+            outputStream = new FileOutputStream(path);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.close();
+        } catch (IOException e) {
+            Log.e(TAG, "saveWatermarkedImage IOException:" + e.getMessage());
+        }
     }
 
 }

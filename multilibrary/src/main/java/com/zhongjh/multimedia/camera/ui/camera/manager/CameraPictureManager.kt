@@ -128,9 +128,7 @@ open class CameraPictureManager(
             photoEditFile = createCacheFile(baseCameraFragment.myContext, MediaType.TYPE_PICTURE)
             val intent = Intent()
             intent.setClass(baseCameraFragment.myContext, ImageEditActivity::class.java)
-            intent.putExtra(
-                ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.mainActivity.requestedOrientation
-            )
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.mainActivity.requestedOrientation)
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri)
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, photoEditFile?.absolutePath)
             imageEditActivityResult?.launch(intent)
