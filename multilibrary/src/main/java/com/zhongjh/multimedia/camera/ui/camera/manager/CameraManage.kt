@@ -3,16 +3,12 @@ package com.zhongjh.multimedia.camera.ui.camera.manager
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PorterDuff
 import android.hardware.display.DisplayManager
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -68,8 +64,6 @@ import com.zhongjh.multimedia.camera.widget.FocusView
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
-import java.io.File
-import java.io.FileOutputStream
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Date

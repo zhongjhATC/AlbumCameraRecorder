@@ -863,7 +863,8 @@
                         android:hint="@string/press_and_hold_for_the_specified_time_to_start_recording"
                         android:importantForAutofill="no"
                         android:inputType="number"
-                        android:text="2000" />
+                        android:text="2000"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 

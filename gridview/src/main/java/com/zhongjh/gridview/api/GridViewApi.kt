@@ -1,9 +1,7 @@
 package com.zhongjh.gridview.api
 
-import android.net.Uri
-import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.GridMedia
-import java.util.*
+import com.zhongjh.common.entity.LocalMedia
 
 /**
  * 九宫格多媒体展示的相关api

@@ -5,12 +5,11 @@ import android.net.Uri
 import android.os.Environment
 import android.text.TextUtils
 import androidx.core.content.FileProvider
-import com.zhongjh.multimedia.constants.DirType
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MediaType.TYPE_AUDIO
 import com.zhongjh.common.enums.MediaType.TYPE_PICTURE
 import com.zhongjh.common.enums.MediaType.TYPE_VIDEO
-import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.multimedia.constants.DirType
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

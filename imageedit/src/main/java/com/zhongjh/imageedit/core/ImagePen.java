@@ -17,11 +17,11 @@ public class ImagePen {
 
     protected Path path;
 
-    private int color = Color.RED;
+    private int color;
 
-    private float width = BASE_MOSAIC_WIDTH;
+    private float width;
 
-    private ImageMode mode = ImageMode.DOODLE;
+    private ImageMode mode;
 
     /**
      * 画笔的宽度

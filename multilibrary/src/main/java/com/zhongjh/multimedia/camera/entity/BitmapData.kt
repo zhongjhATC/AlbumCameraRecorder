@@ -1,7 +1,5 @@
 package com.zhongjh.multimedia.camera.entity
 
-import com.zhongjh.multimedia.album.entity.Album2
-
 
 /**
  * 拍照制造出来的数据源

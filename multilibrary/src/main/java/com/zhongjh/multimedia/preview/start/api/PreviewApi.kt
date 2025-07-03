@@ -2,9 +2,8 @@ package com.zhongjh.multimedia.preview.start.api
 
 import android.content.Intent
 import android.os.Bundle
-import com.zhongjh.multimedia.preview.start.PreviewSetting
-import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.multimedia.preview.start.PreviewSetting
 
 /**
  * 因为打开预览界面的方式很多种，该类单独抽取出来做处理

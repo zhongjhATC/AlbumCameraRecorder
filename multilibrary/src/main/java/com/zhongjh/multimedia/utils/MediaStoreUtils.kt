@@ -7,24 +7,23 @@ import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.os.FileUtils
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
-import com.zhongjh.multimedia.album.loader.MediaLoader
-import com.zhongjh.multimedia.album.loader.MediaLoader.Companion.QUERY_URI
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.AppUtils.getAppName
+import com.zhongjh.multimedia.album.loader.MediaLoader
+import com.zhongjh.multimedia.album.loader.MediaLoader.Companion.QUERY_URI
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 
 /**

@@ -1,9 +1,7 @@
 package com.zhongjh.multimedia.album.entity
 
-import android.os.Parcelable
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
-import kotlinx.parcelize.Parcelize
 
 /**
  * 专辑

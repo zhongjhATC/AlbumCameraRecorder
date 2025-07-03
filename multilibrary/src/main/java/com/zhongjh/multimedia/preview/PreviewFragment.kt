@@ -24,12 +24,22 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.zhongjh.common.entity.IncapableCause
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MediaType.TYPE_PICTURE
+import com.zhongjh.common.listener.OnMoreClickListener
+import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
+import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
+import com.zhongjh.common.utils.MediaUtils
+import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
+import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.common.utils.ThreadUtils.SimpleTask
+import com.zhongjh.imageedit.ImageEditActivity
 import com.zhongjh.multimedia.BaseFragment
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
@@ -51,17 +61,6 @@ import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams
 import com.zhongjh.multimedia.sharedanimation.SharedAnimationView
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils
-import com.zhongjh.common.entity.IncapableCause
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MediaType.TYPE_PICTURE
-import com.zhongjh.common.listener.OnMoreClickListener
-import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
-import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
-import com.zhongjh.common.utils.MediaUtils
-import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
-import com.zhongjh.common.utils.ThreadUtils
-import com.zhongjh.common.utils.ThreadUtils.SimpleTask
-import com.zhongjh.imageedit.ImageEditActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -979,7 +978,7 @@ class PreviewFragment : BaseFragment() {
         }
     }
 
-    class ViewHolder internal constructor(private var rootView: View) {
+    class ViewHolder internal constructor(rootView: View) {
         var sharedAnimationView: SharedAnimationView = rootView.findViewById(R.id.sharedAnimationView)
         var iBtnBack: ImageButton = rootView.findViewById(R.id.ibtnBack)
         var tvEdit: TextView = rootView.findViewById(R.id.tvEdit)

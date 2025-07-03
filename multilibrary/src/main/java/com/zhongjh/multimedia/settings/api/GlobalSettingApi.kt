@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.StyleRes
+import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.engine.ImageEngine
+import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.multimedia.listener.OnImageCompressionListener
 import com.zhongjh.multimedia.listener.OnLogListener
 import com.zhongjh.multimedia.settings.AlbumSetting
@@ -12,10 +14,6 @@ import com.zhongjh.multimedia.settings.CameraSetting
 import com.zhongjh.multimedia.settings.GlobalSetting
 import com.zhongjh.multimedia.settings.GlobalSetting.ScreenOrientation
 import com.zhongjh.multimedia.settings.RecorderSetting
-import com.zhongjh.common.coordinator.VideoCompressCoordinator
-import com.zhongjh.common.entity.GridMedia
-import com.zhongjh.common.entity.LocalMedia
-import java.util.*
 
 /**
  * 用于构建媒体具体公共设置 API。

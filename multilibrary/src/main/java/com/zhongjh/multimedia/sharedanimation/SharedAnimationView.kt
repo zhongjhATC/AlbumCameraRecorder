@@ -4,13 +4,16 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
-import android.transition.*
+import android.transition.ChangeBounds
+import android.transition.ChangeImageTransform
+import android.transition.ChangeTransform
+import android.transition.TransitionManager
+import android.transition.TransitionSet
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
@@ -202,14 +205,14 @@ class SharedAnimationView @JvmOverloads constructor(context: Context, attrs: Att
             targetImageHeight = (targetImageWidth * (realHeight / realWidth.toFloat())).toInt()
             targetImageTop = (screenHeight - targetImageHeight) / 2
             targetEndLeft = 0
-            Log.d(tag, "图片偏横向 $targetImageWidth $targetImageHeight $targetImageTop $targetEndLeft")
+            Log.d(tag, "图片偏横向 $targetImageWidth $targetImageHeight $targetImageTop 0")
         } else {
             // 图片偏竖向
             targetImageHeight = screenHeight
             targetImageWidth = (targetImageHeight * (realWidth / realHeight.toFloat())).toInt()
             targetImageTop = 0
             targetEndLeft = (screenWidth - targetImageWidth) / 2
-            Log.d(tag, "图片偏竖向 $targetImageWidth $targetImageHeight $targetImageTop $targetEndLeft")
+            Log.d(tag, "图片偏竖向 $targetImageWidth $targetImageHeight 0 $targetEndLeft")
         }
         Log.d(tag, "sharedAnimationWrapper $mOriginWidth $mOriginHeight $mOriginLeft $mOriginTop")
         // 设置原始参数(RecyclerView的item的参数)

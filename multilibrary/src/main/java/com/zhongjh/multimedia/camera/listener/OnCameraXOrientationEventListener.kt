@@ -1,17 +1,14 @@
 package com.zhongjh.multimedia.camera.listener
 
 import android.content.Context
-import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
-import android.view.WindowManager
-import androidx.core.content.ContextCompat.getSystemService
 
 
 /**
  * 用于监控手机方向
  */
-class OnCameraXOrientationEventListener(private val context: Context, private val changedListener: OnOrientationChangedListener) : OrientationEventListener(context) {
+class OnCameraXOrientationEventListener(context: Context, private val changedListener: OnOrientationChangedListener) : OrientationEventListener(context) {
 
     companion object {
         const val TAG = "OrientationListener"

@@ -7,8 +7,8 @@ import android.widget.ImageView
 
 /**
  * 图片不同加载方式
- * Image loader interface. There are predefined [com.zhongjh.multimedia.album.engine.impl.GlideEngine]
- * and [com.zhongjh.multimedia.album.engine.impl.PicassoEngine].
+ * Image loader interface. There are predefined [com.zhongjh.common.engine.impl.GlideEngine]
+ * and [com.zhongjh.common.engine.impl.PicassoEngine].
  * @author zhongjh
  */
 interface ImageEngine {

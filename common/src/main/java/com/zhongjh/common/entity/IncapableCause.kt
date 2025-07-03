@@ -27,7 +27,7 @@ import com.zhongjh.common.widget.IncapableDialog
  */
 class IncapableCause {
 
-    @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+    @Retention(AnnotationRetention.SOURCE)
     @IntDef(TOAST, DIALOG, NONE)
     annotation class Form
 

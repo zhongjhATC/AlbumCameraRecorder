@@ -51,11 +51,11 @@ ext {
 
     androidCompileSdkVersion = 34
     recyclerviewSdkVersion = '1.3.0'
-    appcompatSdkVersion = '1.6.1'
+    appcompatSdkVersion = '1.7.0'
     constraintlayoutSdkVersion = '2.1.4'
     documentfileSdkVersion = '1.0.1'
     // 该库从1.5.0开始需要你在gradle文件中声明compile SDK version=31,如果升级至1.10.0m,那么compile SDK version至少需要34
-    androidMaterialSdkVersion = '1.5.0'
+    androidMaterialSdkVersion = '1.10.0'
     minSdkVersion = 21
     targetSdkVersion = 33
 
@@ -70,5 +70,5 @@ ext {
     // kotlin版本
     ktx_version = '1.13.0'
     // kotlin协程版本
-    ktx_coroutines_version = '1.6.1'
+    ktx_coroutines_version = '1.7.3'
 }

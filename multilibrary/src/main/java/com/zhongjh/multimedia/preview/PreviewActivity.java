@@ -2,6 +2,7 @@ package com.zhongjh.multimedia.preview;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -24,7 +25,12 @@ public class PreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_containerview_zjh);
         initFragment();
-
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                PreviewActivity.this.finish();
+            }
+        });
     }
 
     @Override
@@ -55,12 +61,6 @@ public class PreviewActivity extends AppCompatActivity {
     private void handleExtra(Fragment fragment) {
         Bundle bundle = getIntent().getExtras();
         fragment.setArguments(bundle);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        this.finish();
     }
 
 }

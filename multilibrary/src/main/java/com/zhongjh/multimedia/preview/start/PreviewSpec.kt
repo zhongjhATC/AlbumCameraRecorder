@@ -1,8 +1,7 @@
 package com.zhongjh.multimedia.preview.start
 
-import com.zhongjh.multimedia.preview.enum.PreviewType
-import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.multimedia.preview.enum.PreviewType
 
 /**
  * 预览界面的相关配置

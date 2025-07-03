@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
@@ -59,7 +60,11 @@ public class ImageColorRadio extends AppCompatRadioButton implements ValueAnimat
             mStrokeColor = imageColorRadio.getColor(R.styleable.ImageColorRadio_z_image_stroke_color, Color.WHITE);
         } finally {
             if (null != imageColorRadio) {
-                imageColorRadio.recycle();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    imageColorRadio.close();
+                } else {
+                    imageColorRadio.recycle();
+                }
             }
         }
 

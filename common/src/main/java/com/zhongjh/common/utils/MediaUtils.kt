@@ -6,20 +6,12 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
-import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.MediaExtraInfo
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.isContent
-import com.zhongjh.common.enums.MimeType.Companion.isImageOrGif
-import com.zhongjh.common.enums.MimeType.Companion.isVideo
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.io.InputStream
 
 /**

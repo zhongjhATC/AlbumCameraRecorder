@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -239,7 +240,9 @@ public class CircularProgressButton extends AppCompatButton {
             setTextColor(confirmTextColor.getColor(0, confirmTextColorDefault));
 
             // 由Activity主题提供的样式：提交按钮的背景 - 深颜色
-            ColorStateList confirmBackground = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_background_color}).getColorStateList(0);
+            TypedArray confirmBackgroundColor = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_background_color});
+            ColorStateList confirmBackground = confirmBackgroundColor.getColorStateList(0);
+
             ColorStateList confirmBackgroundDefault = ResourcesCompat.getColorStateList(getResources(), R.color.operation_background, mContext.getTheme());
 
             // 由Activity主题提供的样式：提交按钮的背景 - 浅颜色
@@ -272,6 +275,32 @@ public class CircularProgressButton extends AppCompatButton {
             mColorProgress = confirmBackgroundProgress.getColor(0, confirmBackgroundProgressDefault);
             // 进度时的周边线样式
             mColorIndicatorBackground = getNormalColor(mIdleColorState);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmTextValue.close();
+            } else {
+                confirmTextValue.recycle();
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmBackgroundColor.close();
+            } else {
+                confirmBackgroundColor.recycle();
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmBackgroundProgress.close();
+            } else {
+                confirmBackgroundProgress.recycle();
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmComplete.close();
+            } else {
+                confirmComplete.recycle();
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmError.close();
+            } else {
+                confirmError.recycle();
+            }
         } finally {
             attr.recycle();
         }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -215,7 +216,11 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
         Drawable navigationIcon = mViewHolder.toolbar.getNavigationIcon();
         TypedArray ta = requireActivity().getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
         int color = ta.getColor(0, 0);
-        ta.recycle();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ta.close();
+        } else {
+            ta.recycle();
+        }
         if (navigationIcon != null) {
             ColorFilterUtil.setColorFilterSrcIn(navigationIcon, color);
         }

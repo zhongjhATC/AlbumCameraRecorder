@@ -115,7 +115,7 @@ class MediaLoader(private val context: Context) {
 
                     // 创建《所有》该专辑
                     val album = Album2()
-                    val bucketDisplayName = context.getString(R.string.z_multi_library_album_name_all);
+                    val bucketDisplayName = context.getString(R.string.z_multi_library_album_name_all)
                     album.name = bucketDisplayName
                     album.id = -1
                     album.count = totalCount.toInt()

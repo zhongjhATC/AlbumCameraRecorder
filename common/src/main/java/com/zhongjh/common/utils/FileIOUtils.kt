@@ -16,7 +16,7 @@ import java.io.OutputStream
  * @date 2021/9/18
  */
 object FileIOUtils {
-    private const val sBufferSize = 524288
+    private const val size = 524288
 
     /**
      * Write file from input stream.
@@ -55,9 +55,9 @@ object FileIOUtils {
         }
         var os: OutputStream? = null
         try {
-            os = BufferedOutputStream(FileOutputStream(file, append), sBufferSize)
+            os = BufferedOutputStream(FileOutputStream(file, append), size)
             if (listener == null) {
-                val data = ByteArray(sBufferSize)
+                val data = ByteArray(size)
                 var len: Int
                 while ((`is`.read(data).also { len = it }) != -1) {
                     os.write(data, 0, len)
@@ -66,7 +66,7 @@ object FileIOUtils {
                 val totalSize = `is`.available().toDouble()
                 var curSize = 0
                 listener.onProgressUpdate(0.0, file)
-                val data = ByteArray(sBufferSize)
+                val data = ByteArray(size)
                 var len: Int
                 while ((`is`.read(data).also { len = it }) != -1) {
                     os.write(data, 0, len)

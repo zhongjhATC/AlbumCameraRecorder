@@ -10,13 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.zhongjh.multimedia.R
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.widget.CheckView
 import com.zhongjh.multimedia.album.widget.SquareFrameLayout
 import com.zhongjh.multimedia.settings.GlobalSpec.imageEngine

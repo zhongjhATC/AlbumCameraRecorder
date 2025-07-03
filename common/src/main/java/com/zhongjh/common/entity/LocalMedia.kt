@@ -1,4 +1,4 @@
-package com.zhongjh.common.entity;
+package com.zhongjh.common.entity
 
 import android.content.Context
 import android.os.Parcel
@@ -399,7 +399,7 @@ open class LocalMedia() : Parcelable {
      * 加载图片
      */
     fun loadImage2(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
-        imageEngine.loadDrawableImage(context,  imageView, R.drawable.baseline_audio_file_24)
+        imageEngine.loadDrawableImage(context, imageView, R.drawable.baseline_audio_file_24)
     }
 
     /**

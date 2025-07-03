@@ -2,8 +2,6 @@ package com.zhongjh.common.utils
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
-import android.text.TextUtils
 import com.zhongjh.common.listener.OnProgressUpdateListener
 import com.zhongjh.common.listener.OnReplaceListener
 import java.io.Closeable
@@ -70,16 +68,9 @@ object FileUtils {
     /**
      * Copy the directory or file.
      *
-     * @param src      The source.
-     * @param dest     The destination.
-     * @param listener The replace listener.
-     * @return `true`: success<br></br>`false`: fail
-     */
-    /**
-     * Copy the directory or file.
-     *
      * @param src  The source.
      * @param dest The destination.
+     * @param listener The replace listener.
      * @return `true`: success<br></br>`false`: fail
      */
     @JvmStatic
@@ -101,16 +92,9 @@ object FileUtils {
     /**
      * Copy the directory or file.
      *
-     * @param src      The source.
-     * @param dest     The destination.
-     * @param listener The replace listener.
-     * @return `true`: success<br></br>`false`: fail
-     */
-    /**
-     * Copy the directory or file.
-     *
      * @param src  The source.
      * @param dest The destination.
+     * @param listener The replace listener.
      * @return `true`: success<br></br>`false`: fail
      */
     @JvmStatic
@@ -130,16 +114,9 @@ object FileUtils {
     /**
      * Move the directory or file.
      *
-     * @param src      The source.
-     * @param dest     The destination.
-     * @param listener The replace listener.
-     * @return `true`: success<br></br>`false`: fail
-     */
-    /**
-     * Move the directory or file.
-     *
      * @param src  The source.
      * @param dest The destination.
+     * @param listener The replace listener.
      * @return `true`: success<br></br>`false`: fail
      */
     @JvmStatic

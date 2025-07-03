@@ -24,7 +24,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -82,6 +81,7 @@ import java.util.Set;
  *
  * @author zhongjh
  */
+@SuppressLint("WrongConstant")
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivityTEST";
