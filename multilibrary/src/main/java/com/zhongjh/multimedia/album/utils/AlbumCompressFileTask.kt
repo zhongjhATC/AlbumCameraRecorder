@@ -156,24 +156,4 @@ class AlbumCompressFileTask(
     private fun isOnlyCompressEditPicture(item: LocalMedia): Boolean {
         return null != item.editorPath && null == item.compressPath
     }
-
-    /**
-     * 返回迁移后的file的名称
-     *
-     * @param item 当前处理的LocalFile
-     * @param path 真实路径
-     * @return 返回迁移后的file的名称
-     */
-    private fun getNewFileName(item: LocalMedia, path: String): String {
-        // 移动文件,获取文件名称
-        var newFileName = path.substring(path.lastIndexOf(File.separator))
-        val newFileNames = newFileName.split(".").toTypedArray()
-        // 设置压缩后的照片名称，id_CMP
-        newFileName = item.fileId.toString() + "_CMP"
-        if (newFileNames.size > 1) {
-            // 设置后缀名
-            newFileName = newFileName + "." + newFileNames[newFileNames.size - 1]
-        }
-        return newFileName
-    }
 }

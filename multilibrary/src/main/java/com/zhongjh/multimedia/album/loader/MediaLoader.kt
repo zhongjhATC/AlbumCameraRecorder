@@ -170,9 +170,7 @@ class MediaLoader(private val context: Context) {
             }
             if (SdkVersionUtils.isR) {
                 context.contentResolver.query(
-                    QUERY_URI, PROJECTION, createQueryArgsBundle(
-                        getSelection(bucketId), selectionArgs, pageSize, (page - 1) * pageSize, getSortOrder()
-                    ), null
+                    QUERY_URI, PROJECTION, createQueryArgsBundle(getSelection(bucketId), selectionArgs, pageSize, (page - 1) * pageSize, getSortOrder()), null
                 )?.use { cursor ->
                     if (cursor.count > 0) {
                         while (cursor.moveToNext()) {
@@ -184,13 +182,7 @@ class MediaLoader(private val context: Context) {
                     cursor.close()
                 }
             } else {
-                context.contentResolver.query(
-                    QUERY_URI,
-                    PROJECTION,
-                    getSelection(bucketId),
-                    selectionArgs,
-                    getSortOrder() + " limit " + pageSize + " offset " + (page - 1) * pageSize
-                )?.use { cursor ->
+                context.contentResolver.query(QUERY_URI, PROJECTION, getSelection(bucketId), selectionArgs, getSortOrder() + " limit " + pageSize + " offset " + (page - 1) * pageSize)?.use { cursor ->
                     if (cursor.count > 0) {
                         while (cursor.moveToNext()) {
                             val media = parse(cursor)
