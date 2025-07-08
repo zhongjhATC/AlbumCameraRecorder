@@ -24,7 +24,7 @@
     <string name="flash_auto">FLASH AUTO</string>
     <string name="start_the_animation">Start the splash screen animation, which animates from bottom to top.</string>
     <string name="toggle_english">toggle english</string>
-    <string name="edit_the_picture_and_add_it_to_the_album">Edit the picture and add it to the album</string>
+    <string name="edit_the_picture_and_add_it_to_the_album">Edit the image on the preview screen and add it to the album</string>
     <string name="support_for_editing_images">Support for editing images</string>
     <string name="support_compression_images">Support compression images</string>
     <string name="support_compression_videos">Support compression videos</string>

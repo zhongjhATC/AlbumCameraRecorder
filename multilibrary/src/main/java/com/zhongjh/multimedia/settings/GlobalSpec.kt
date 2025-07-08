@@ -105,7 +105,7 @@ object GlobalSpec {
     var imageEditEnabled = false
 
     /**
-     * 设置图片编辑后是否加入相册功能，默认加入
+     * 预览界面的图片编辑后是否加入相册功能，默认加入
      */
     var isAddAlbumByEdit = true
 
