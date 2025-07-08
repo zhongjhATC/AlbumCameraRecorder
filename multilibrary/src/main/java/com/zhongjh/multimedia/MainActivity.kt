@@ -109,7 +109,7 @@ open class MainActivity : AppCompatActivity() {
         initStatusBar(this@MainActivity)
         super.onCreate(savedInstanceState)
         // 确认是否进行了配置
-        if (!mSpec.hasInited) {
+        if (!mSpec.hasInit) {
             setResult(RESULT_CANCELED)
             finish()
             return

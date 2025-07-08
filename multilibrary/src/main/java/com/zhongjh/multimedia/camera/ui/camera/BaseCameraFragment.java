@@ -754,7 +754,7 @@ public abstract class BaseCameraFragment
     public void movePictureFile() {
         showProgress();
         // 开始迁移文件
-        ThreadUtils.executeByIo(getCameraPictureManager().getMovePictureFileTask());
+        ThreadUtils.executeByIo(getCameraPictureManager().getMovePictureFileTask(cameraSpec.getSandboxDir()));
     }
 
     /**

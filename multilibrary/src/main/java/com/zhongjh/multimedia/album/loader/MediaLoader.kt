@@ -158,9 +158,7 @@ class MediaLoader(private val context: Context) {
      * @param page 页码
      * @param pageSize 页数
      */
-    suspend fun loadMediaMore(
-        bucketId: Long, page: Int, pageSize: Int
-    ): MutableList<LocalMedia> {
+    suspend fun loadMediaMore(bucketId: Long, page: Int, pageSize: Int): MutableList<LocalMedia> {
         val mediaList = mutableListOf<LocalMedia>()
         withContext(Dispatchers.IO) {
             val selectionArgs = if (bucketId == ALL_BUCKET_ID) {
@@ -273,9 +271,7 @@ class MediaLoader(private val context: Context) {
             queryArgs.putString(ContentResolver.QUERY_ARG_SQL_SORT_ORDER, orderBy)
         }
         if (SdkVersionUtils.isR) {
-            queryArgs.putString(
-                ContentResolver.QUERY_ARG_SQL_LIMIT, "$limitCount offset $offset"
-            )
+            queryArgs.putString(ContentResolver.QUERY_ARG_SQL_LIMIT, "$limitCount offset $offset")
         }
         return queryArgs
     }

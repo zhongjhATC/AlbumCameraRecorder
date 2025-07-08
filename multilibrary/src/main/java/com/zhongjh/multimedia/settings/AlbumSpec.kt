@@ -168,6 +168,7 @@ object AlbumSpec {
         videoMinSecond = 0
         filterMaxFileSize = 0L
         filterMinFileSize = 0L
+        sandboxDir = null
     }
 
     /**

@@ -44,7 +44,7 @@ object GlobalSpec {
     /**
      * 是否通过正规方式进来
      */
-    var hasInited = false
+    var hasInit = false
 
     /**
      * 默认从第几个开始
@@ -202,7 +202,7 @@ object GlobalSpec {
         maxAudioSelectable = null
         compressImagePath = null
         compressVidePath = null
-        hasInited = true
+        hasInit = true
         imageEngine = GlideEngine()
         cutscenesEnabled = true
         orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

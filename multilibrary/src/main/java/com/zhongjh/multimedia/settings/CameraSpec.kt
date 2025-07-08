@@ -24,19 +24,6 @@ object CameraSpec {
     var mimeTypeSet: Set<MimeType>? = null
 
     /**
-     * 设置拍照参数
-     * 只拍照 或者 拍照+录制模式生效
-     */
-    var ImageCaptureBuilder: ImageCapture.Builder? = null
-
-    /**
-     * 设置拍照分析参数
-     * 只拍照 模式生效
-     */
-    var ImageAnalysisBuilder: ImageAnalysis.Builder? = null
-    var VideoCaptureBuilder: ImageAnalysis.Builder? = null
-
-    /**
      * 切换前置/后置摄像头图标资源
      */
     var imageSwitch = R.drawable.ic_camera_zjh
@@ -119,6 +106,12 @@ object CameraSpec {
     }
 
     /**
+     * 操作指定目录
+     * 设置这个之后,所有拍照、录制等最终文件都在这个目录下
+     */
+    var sandboxDir: String? = "test"
+
+    /**
      * 拍摄后操作图片的事件
      */
     var onCaptureListener: OnCaptureListener? = null
@@ -159,6 +152,7 @@ object CameraSpec {
         minDuration = 2000
         readinessDuration = 1000
         watermarkResource = -1
+        sandboxDir = "test"
     }
 
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResult
@@ -32,6 +33,8 @@ import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.imageedit.ImageEditActivity
+import com.zhongjh.multimedia.constants.DirType
+import com.zhongjh.multimedia.utils.FileMediaUtil.createFile
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
@@ -255,14 +258,15 @@ open class CameraPictureManager(
 
     /**
      * 返回迁移图片的线程
+     * @param sandboxDir 自定义文件夹路径
      *
      * @return 迁移图片的线程
      */
-    override fun getMovePictureFileTask(): ThreadUtils.SimpleTask<ArrayList<LocalMedia>> {
+    override fun getMovePictureFileTask(sandboxDir: String?): ThreadUtils.SimpleTask<ArrayList<LocalMedia>> {
         movePictureFileTask = object : ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
             override fun doInBackground(): ArrayList<LocalMedia> {
                 Log.d(TAG, "doInBackground")
-                return movePictureFileTaskInBackground()
+                return movePictureFileTaskInBackground(sandboxDir)
             }
 
             override fun onSuccess(newFiles: ArrayList<LocalMedia>) {
@@ -352,7 +356,7 @@ open class CameraPictureManager(
      *
      * @return 迁移后的数据
      */
-    private fun movePictureFileTaskInBackground(): ArrayList<LocalMedia> {
+    private fun movePictureFileTaskInBackground(sandboxDir: String?): ArrayList<LocalMedia> {
         // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
         val newFiles = ArrayList<LocalMedia>()
         // 将 缓存文件 拷贝到 配置目录
@@ -381,8 +385,7 @@ open class CameraPictureManager(
             }
             Log.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
             localMedia.compressPath = compressionFile.absolutePath
-            localMedia.sandboxPath =
-                FileMediaUtil.getUri(baseCameraFragment.myContext, localMedia.compressPath.toString()).toString()
+            localMedia.sandboxPath = FileMediaUtil.getUri(baseCameraFragment.myContext, localMedia.compressPath.toString()).toString()
             localMedia.size = compressionFile.length()
             val mediaInfo = MediaUtils.getMediaInfo(
                 baseCameraFragment.myContext, MediaType.TYPE_PICTURE, compressionFile.absolutePath
@@ -401,9 +404,7 @@ open class CameraPictureManager(
      * 根据真实路径返回LocalMedia
      */
     private suspend fun mediaScanFile(path: String): LocalMedia = suspendCancellableCoroutine { ctn ->
-        MediaScannerConnection.scanFile(
-            baseCameraFragment.myContext, arrayOf(path), MimeType.ofImageArray()
-        ) { path, _ ->
+        MediaScannerConnection.scanFile(baseCameraFragment.myContext, arrayOf(path), MimeType.ofImageArray()) { path, _ ->
             // 相册刷新完成后的回调
             ctn.resume(MediaStoreUtils.getMediaDataByPath(baseCameraFragment.myContext, path))
         }

@@ -66,10 +66,11 @@ public interface ICameraPicture {
 
     /**
      * 返回迁移图片的线程
+     * @param sandboxDir 自定义文件夹路径
      *
      * @return 迁移图片的线程
      */
-    ThreadUtils.SimpleTask<ArrayList<LocalMedia>> getMovePictureFileTask();
+    ThreadUtils.SimpleTask<ArrayList<LocalMedia>> getMovePictureFileTask(String sandboxDir);
 
     /**
      * 删除临时图片

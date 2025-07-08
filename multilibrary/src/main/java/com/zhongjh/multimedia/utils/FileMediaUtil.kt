@@ -25,9 +25,9 @@ object FileMediaUtil {
     private const val AAC = ".aac"
     private const val CAMERA = "Camera"
 
-    fun createFile(context: Context, @DirType dirType: String, fileName: String): File {
+    fun createFile(context: Context, child: String, fileName: String): File {
         val externalFilesDir: File? = context.getExternalFilesDir("")
-        val dirFile = File(externalFilesDir!!.absolutePath, dirType)
+        val dirFile = File(externalFilesDir!!.absolutePath, child)
         if (!dirFile.exists()) {
             dirFile.mkdirs()
         }
@@ -90,7 +90,7 @@ object FileMediaUtil {
     }
 
     /**
-     * 服务于Camera
+     * 在Camera建立一样的文件
      *
      * @param context 上下文
      * @param fileName 文件名称
