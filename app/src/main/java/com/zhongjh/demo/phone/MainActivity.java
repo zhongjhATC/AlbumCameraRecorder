@@ -604,7 +604,7 @@ public class MainActivity extends BaseActivity {
             } else if (menuItem.getItemId() == R.id.actionSensor) {
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
                 mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_SENSOR");
-            } else if (menuItem.getItemId() == R.id.actionNosensor) {
+            } else if (menuItem.getItemId() == R.id.actionNoSensor) {
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
                 mBinding.tvScreenOrientation.setText("SCREEN_ORIENTATION_NOSENSOR");
             } else if (menuItem.getItemId() == R.id.actionSensorLandscape) {
