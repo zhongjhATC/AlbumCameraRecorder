@@ -47,8 +47,8 @@ public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
         mColorGroup.setOnCheckedChangeListener(this);
         mEditText = findViewById(R.id.et_text);
 
-        findViewById(R.id.ibtnBack).setOnClickListener(this);
-        findViewById(R.id.ibtnDone).setOnClickListener(this);
+        findViewById(R.id.iBtnBack).setOnClickListener(this);
+        findViewById(R.id.iBtnDone).setOnClickListener(this);
     }
 
     @Override
@@ -84,9 +84,9 @@ public class ImageTextEditDialog extends Dialog implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         int vid = v.getId();
-        if (vid == R.id.ibtnDone) {
+        if (vid == R.id.iBtnDone) {
             onDone();
-        } else if (vid == R.id.ibtnBack) {
+        } else if (vid == R.id.iBtnBack) {
             dismiss();
         }
     }

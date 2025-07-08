@@ -25,15 +25,6 @@ object FileMediaUtil {
     private const val AAC = ".aac"
     private const val CAMERA = "Camera"
 
-    fun createFile(context: Context, child: String, fileName: String): File {
-        val externalFilesDir: File? = context.getExternalFilesDir("")
-        val dirFile = File(externalFilesDir!!.absolutePath, child)
-        if (!dirFile.exists()) {
-            dirFile.mkdirs()
-        }
-        return File(dirFile.absolutePath + File.separator + fileName)
-    }
-
     /**
      * 创建一个缓存路径
      *
@@ -117,29 +108,11 @@ object FileMediaUtil {
     }
 
     /**
-     * 获取文件夹
-     */
-    fun getDir(outPutDir: String?): String {
-        return outPutDir ?: DirType.TEMP
-    }
-
-    /**
      * 获取uri
      */
     fun getUri(context: Context, path: String): Uri {
         val authority = context.packageName + ".zhongjhProvider"
         return FileProvider.getUriForFile(context, authority, File(path))
-    }
-
-    /**
-     * 创建一个临时路径
-     *
-     * @param context 上下文
-     * @param type 文件类型
-     * @return
-     */
-    private fun createTempFile(context: Context, @MediaType type: Int): File {
-        return createFile(context, type, DirType.TEMP)
     }
 
     /**

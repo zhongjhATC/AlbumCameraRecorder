@@ -31,19 +31,4 @@ object StringUtils {
         return true
     }
 
-    /**
-     * 根据文件路径获取后缀名
-     * @return 后缀名
-     */
-    @JvmStatic
-    fun getSuffixByPath(path: String): String {
-        // 获取文件名称
-        val newFileName = path.substring(path.lastIndexOf(File.separator))
-        val newFileNames = newFileName.split(".").toTypedArray()
-        return if (newFileNames.size > 1) {
-            // 返回后缀名
-            newFileNames[newFileNames.size - 1]
-        } else ""
-    }
-
 }

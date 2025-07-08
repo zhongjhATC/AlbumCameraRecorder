@@ -1,15 +1,13 @@
 package com.zhongjh.multimedia.settings
 
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
-import com.zhongjh.multimedia.R
-import com.zhongjh.multimedia.camera.listener.OnCaptureListener
-import com.zhongjh.multimedia.constants.ModuleTypes
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.camera.listener.OnCaptureListener
 import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
+import com.zhongjh.multimedia.constants.ModuleTypes
 
 /**
  * @author zhongjh
@@ -106,12 +104,6 @@ object CameraSpec {
     }
 
     /**
-     * 操作指定目录
-     * 设置这个之后,所有拍照、录制等最终文件都在这个目录下
-     */
-    var sandboxDir: String? = "test"
-
-    /**
      * 拍摄后操作图片的事件
      */
     var onCaptureListener: OnCaptureListener? = null
@@ -152,7 +144,6 @@ object CameraSpec {
         minDuration = 2000
         readinessDuration = 1000
         watermarkResource = -1
-        sandboxDir = "test"
     }
 
 }

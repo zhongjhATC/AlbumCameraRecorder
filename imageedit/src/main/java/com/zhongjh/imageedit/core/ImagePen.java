@@ -30,6 +30,7 @@ public class ImagePen {
 
     public static final float BASE_MOSAIC_WIDTH = 72f;
 
+    /** @noinspection unused*/
     public ImagePen() {
         this(new Path());
     }

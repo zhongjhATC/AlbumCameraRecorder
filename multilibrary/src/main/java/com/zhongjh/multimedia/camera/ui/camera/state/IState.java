@@ -16,6 +16,7 @@ public interface IState {
 
     /**
      * Activity触发了Pause
+     * @noinspection unused
      */
     void onActivityPause();
 
@@ -48,6 +49,7 @@ public interface IState {
 
     /**
      * 暂停录制
+     * @noinspection unused
      */
     void pauseRecord();
 

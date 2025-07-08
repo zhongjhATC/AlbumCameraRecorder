@@ -15,10 +15,6 @@ public class ImageUtils {
 
     private static final Matrix M = new Matrix();
 
-    private ImageUtils() {
-
-    }
-
     public static void center(RectF win, RectF frame) {
         frame.offset(win.centerX() - frame.centerX(), win.centerY() - frame.centerY());
     }

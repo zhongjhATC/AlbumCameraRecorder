@@ -5,14 +5,14 @@ import static com.github.chrisbanes.photoview.BuildConfig.DEBUG;
 import android.util.Log;
 
 
-
 /**
  * 日志工具
+ *
  * @author zhongjh
  */
 public class LogUtil {
 
-    private static final String DEFAULT_TAG = "ZhongJH";
+    private static final String DEFAULT_TAG = "zhongjh";
 
     public static void i(String tag, String msg) {
         if (DEBUG) {

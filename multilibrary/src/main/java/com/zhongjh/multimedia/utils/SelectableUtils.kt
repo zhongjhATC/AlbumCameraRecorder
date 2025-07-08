@@ -236,17 +236,6 @@ object SelectableUtils {
         get() = GlobalSpec.maxVideoSelectable ?: GlobalSpec.maxSelectable ?: 0
 
     /**
-     * 优先：如果 maxAudioSelectable 不为null就返回 maxAudioSelectable
-     * 次级：如果 maxSelectable 不为null则返回 maxSelectable
-     * 否则为0
-     * @return 返回最多能选择的音频数量
-     */
-    @JvmStatic
-    val audioMaxCount: Int
-        get() = GlobalSpec.maxAudioSelectable ?: GlobalSpec.maxSelectable ?: 0
-
-
-    /**
      * @return 返回图片/视频是否只剩下一个选择
      */
     @JvmStatic

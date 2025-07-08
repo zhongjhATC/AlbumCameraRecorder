@@ -23,7 +23,7 @@
         android:paddingEnd="8dp"
         android:paddingBottom="8dp"
         android:visibility="gone"
-        app:vector_src="@drawable/ic_twotone_highlight_off_24dp_zhongjh"
+        app:vector_src="@drawable/ic_highlight_off_24dp_zhongjh"
         tools:visibility="gone" />
 
     <ImageView
@@ -35,7 +35,7 @@
         android:paddingRight="8dp"
         android:paddingBottom="8dp"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_twotone_highlight_off_24dp_zhongjh"
+        app:srcCompat="@drawable/ic_highlight_off_24dp_zhongjh"
         tools:visibility="visible" />
 
     <ImageView

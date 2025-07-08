@@ -27,8 +27,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     private static final int SIZE_20 = 20;
     private final LayoutInflater mInflater;
-    final List<Data> datas = new ArrayList<>();
+    final List<Data> dataArrayList = new ArrayList<>();
 
+    /** @noinspection unused*/
     public RecyclerAdapter(Activity activity) {
         this.mInflater = LayoutInflater.from(activity);
         initData();
@@ -39,7 +40,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
      */
     private void initData() {
         Data dataImage = getData();
-        datas.add(dataImage);
+        dataArrayList.add(dataImage);
 
         // 模拟20条
         for (int i = 0; i < SIZE_20; i++) {
@@ -57,7 +58,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             data.setImageUrls(imageUrls);
             data.setAudioUrls(audioUrls);
             data.setVideoUrls(videoUrls);
-            this.datas.add(data);
+            this.dataArrayList.add(data);
         }
     }
 
@@ -82,7 +83,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.mplImageList.reset();
-        holder.mplImageList.setUrls(datas.get(position).getImageUrls(), datas.get(position).getVideoUrls(), datas.get(position).getAudioUrls());
+        holder.mplImageList.setUrls(dataArrayList.get(position).getImageUrls(), dataArrayList.get(position).getVideoUrls(), dataArrayList.get(position).getAudioUrls());
         holder.mplImageList.setGridViewListener(new GridViewListener() {
             @Override
             public void onItemAdd(@NonNull View view, @NonNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
@@ -113,13 +114,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return datas.size();
+        return dataArrayList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public final GridView mplImageList;
 
+        /** @noinspection unused*/
         public ViewHolder(View view) {
             super(view);
             mplImageList = view.findViewById(R.id.gridView);

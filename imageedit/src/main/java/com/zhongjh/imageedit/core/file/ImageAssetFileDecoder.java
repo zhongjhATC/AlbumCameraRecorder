@@ -18,11 +18,13 @@ public class ImageAssetFileDecoder extends BaseImageDecoder {
 
     private final Context mContext;
 
+    /** @noinspection unused*/
     public ImageAssetFileDecoder(Context context, Uri uri) {
         super(uri);
         mContext = context;
     }
 
+    /** @noinspection unused*/
     @Override
     public Bitmap decode(BitmapFactory.Options options) {
         Uri uri = getUri();

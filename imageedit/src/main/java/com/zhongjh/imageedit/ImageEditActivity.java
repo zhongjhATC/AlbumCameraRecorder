@@ -123,16 +123,16 @@ public class ImageEditActivity extends BaseImageEditActivity {
         if (!TextUtils.isEmpty(path)) {
             Bitmap bitmap = mImageViewCustom.saveBitmap();
             if (bitmap != null) {
-                FileOutputStream fout = null;
+                FileOutputStream fileOutputStream = null;
                 try {
-                    fout = new FileOutputStream(path);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+                    fileOutputStream = new FileOutputStream(path);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                 } catch (FileNotFoundException e) {
                     Log.e(TAG, "onDoneClick" + e.getMessage());
                 } finally {
-                    if (fout != null) {
+                    if (fileOutputStream != null) {
                         try {
-                            fout.close();
+                            fileOutputStream.close();
                         } catch (IOException e) {
                             Log.e(TAG, "onDoneClick" + e.getMessage());
                         }

@@ -105,22 +105,9 @@ object GlobalSpec {
     var imageEditEnabled = false
 
     /**
-     * 设置图片是否加入相册功能，默认加入
-     * 图片编辑后加入相册
+     * 设置图片编辑后是否加入相册功能，默认加入
      */
     var isAddAlbumByEdit = true
-
-    /**
-     * 设置图片是否加入相册功能，默认加入
-     * 拍照后加入相册
-     */
-    var isAddAlbumByCamera = true
-
-    /**
-     * 设置图片是否加入相册功能，默认加入
-     * 录像后加入相册
-     */
-    var isAddAlbumByVideo = true
 
     /**
      * 压缩图片接口

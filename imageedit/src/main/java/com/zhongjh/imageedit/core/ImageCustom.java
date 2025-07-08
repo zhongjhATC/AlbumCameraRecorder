@@ -416,7 +416,7 @@ public class ImageCustom {
     /**
      * addPath方法详解：
      * M.setTranslate(sx, sy);
-     * 矩阵平移到跟view的xy轴一样,注意，是getScrollX()和getScrolly()
+     * 矩阵平移到跟view的xy轴一样,注意，是getScrollX()和getScrollY()
      * <p>
      * M.postTranslate(-mFrame.left, -mFrame.top);
      * 如果按照getScrollX()直接绘制进手机屏幕上是会出格的，因为view能缩放到比手机屏幕还要大，那么就需要减掉mFrame的x和y，剩下的就是手机绘制的正确的点

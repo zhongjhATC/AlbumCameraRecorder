@@ -14,10 +14,6 @@ public class EglUtils {
 
     private static final String TAG = "EglUtils";
 
-    private EglUtils() {
-
-    }
-
     public static int getMaxTextureSize() {
         return getMaxTextureEgl14();
     }

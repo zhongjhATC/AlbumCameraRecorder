@@ -87,11 +87,6 @@ class PreviewFragment : BaseFragment() {
 
     companion object {
         const val TAG: String = "PreviewFragment"
-
-        /**
-         * 告诉接收数据的界面是直接 add 数据源
-         */
-        const val EXTRA_RESULT_APPLY = "extra_result_apply"
     }
 
     private lateinit var mContext: Context
@@ -980,7 +975,7 @@ class PreviewFragment : BaseFragment() {
 
     class ViewHolder internal constructor(rootView: View) {
         var sharedAnimationView: SharedAnimationView = rootView.findViewById(R.id.sharedAnimationView)
-        var iBtnBack: ImageButton = rootView.findViewById(R.id.ibtnBack)
+        var iBtnBack: ImageButton = rootView.findViewById(R.id.iBtnBack)
         var tvEdit: TextView = rootView.findViewById(R.id.tvEdit)
         var groupOriginal: Group = rootView.findViewById(R.id.groupOriginal)
         var original: CheckRadioView = rootView.findViewById(R.id.original)

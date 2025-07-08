@@ -33,8 +33,6 @@ import org.jetbrains.annotations.NotNull;
 public class MainSimpleActivity extends BaseActivity {
 
     ActivityMainSimpleBinding mBinding;
-    private final String TAG = MainSimpleActivity.this.getClass().getSimpleName();
-    private final Integer MAX_SELECTABLE = null;
     private final Integer MAX_IMAGE_SELECTABLE = 5;
     private final Integer MAX_VIDEO_SELECTABLE = 3;
     private final Integer MAX_AUDIO_SELECTABLE = 5;
@@ -59,18 +57,21 @@ public class MainSimpleActivity extends BaseActivity {
         // 以下为点击事件
         mBinding.gridView.setGridViewListener(new GridViewListener() {
 
+            /** @noinspection unused*/
             @Override
             public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
                 mGlobalSetting.openPreviewData(MainSimpleActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull GridAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
@@ -79,6 +80,7 @@ public class MainSimpleActivity extends BaseActivity {
                 timer.schedule();
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemClose(@NotNull GridMedia gridMedia) {
                 // 停止上传
@@ -89,6 +91,7 @@ public class MainSimpleActivity extends BaseActivity {
                 }
             }
 
+            /** @noinspection unused*/
             @Override
             public boolean onItemStartDownload(@NotNull View view, @NotNull GridMedia gridMedia, int position) {
                 return false;

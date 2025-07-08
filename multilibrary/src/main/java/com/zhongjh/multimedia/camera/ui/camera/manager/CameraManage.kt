@@ -306,13 +306,6 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     }
 
     /**
-     * 恢复录制
-     */
-    fun resumeVideo() {
-        recording?.resume()
-    }
-
-    /**
      * 暂停录制
      */
     fun pauseVideo() {

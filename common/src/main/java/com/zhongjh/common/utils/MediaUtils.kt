@@ -22,8 +22,6 @@ import java.io.InputStream
  */
 object MediaUtils {
 
-    private val TAG: String = this@MediaUtils.javaClass.simpleName
-
     /**
      * 90度
      */
@@ -72,35 +70,6 @@ object MediaUtils {
             }
             mediaExtraInfo.width = width
             mediaExtraInfo.height = height
-            mediaExtraInfo.duration =
-                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                    ?.toLong() ?: 0
-            mediaExtraInfo.mimeType =
-                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            retriever.release()
-        }
-        return mediaExtraInfo
-    }
-
-    /**
-     * 获取音频的时长
-     *
-     * @param context 上下文
-     * @param path    path
-     * @return 根据音频path获取相关参数
-     */
-    fun getAudioSize(context: Context, path: String): MediaExtraInfo {
-        val mediaExtraInfo = MediaExtraInfo()
-        val retriever = MediaMetadataRetriever()
-        try {
-            if (MimeType.isContent(path)) {
-                retriever.setDataSource(context, Uri.parse(path))
-            } else {
-                retriever.setDataSource(path)
-            }
             mediaExtraInfo.duration =
                 retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                     ?.toLong() ?: 0

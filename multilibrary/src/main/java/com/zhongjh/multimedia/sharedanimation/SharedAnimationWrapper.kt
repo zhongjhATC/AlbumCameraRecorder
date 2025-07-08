@@ -34,22 +34,10 @@ class SharedAnimationWrapper(private val viewWrapper: View) {
             params.topMargin = m
             viewWrapper.layoutParams = params
         }
-    var marginRight: Int
-        get() = params.rightMargin
-        set(mr) {
-            params.rightMargin = mr
-            viewWrapper.layoutParams = params
-        }
     var marginLeft: Int
         get() = params.leftMargin
         set(mr) {
             params.leftMargin = mr
-            viewWrapper.layoutParams = params
-        }
-    var marginBottom: Int
-        get() = params.bottomMargin
-        set(m) {
-            params.bottomMargin = m
             viewWrapper.layoutParams = params
         }
 

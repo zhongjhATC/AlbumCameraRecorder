@@ -1,7 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.android.peter.menudemo.MenuDemoActivity">
+    xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/actionUnspecified"
         android:orderInCategory="100"
@@ -39,7 +38,7 @@
         app:showAsAction="never"
         tools:ignore="HardcodedText" />
     <item
-        android:id="@+id/actionNosensor"
+        android:id="@+id/actionNoSensor"
         android:orderInCategory="100"
         android:title="NOSENSOR"
         app:showAsAction="never"

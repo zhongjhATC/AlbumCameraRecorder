@@ -18,11 +18,13 @@ public class ImageContentDecoder extends BaseImageDecoder {
 
     private final Context mContext;
 
+    /** @noinspection unused*/
     public ImageContentDecoder(Context context, Uri uri) {
         super(uri);
         mContext = context;
     }
 
+    /** @noinspection unused*/
     @Override
     public Bitmap decode(BitmapFactory.Options options) {
         try {

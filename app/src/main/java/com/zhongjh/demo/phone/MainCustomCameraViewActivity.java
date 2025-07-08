@@ -82,23 +82,27 @@ public class MainCustomCameraViewActivity extends BaseActivity {
         // 以下为点击事件
         mBinding.gridView.setGridViewListener(new GridViewListener() {
 
+            /** @noinspection unused*/
             @Override
             public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
                 return false;
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemAdd(@NotNull View view, @NotNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加
                 openMain(alreadyImageCount, alreadyVideoCount, alreadyAudioCount);
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情
                 mGlobalSetting.openPreviewData(MainCustomCameraViewActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull GridAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
@@ -107,6 +111,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
                 timer.schedule();
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemClose(@NotNull GridMedia gridMedia) {
                 // 停止上传

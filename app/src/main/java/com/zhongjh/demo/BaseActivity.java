@@ -213,10 +213,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 localMedia.setDuration(mediaExtraInfo.getDuration());
             }
             Log.i(TAG, "onResult 宽高: " + localMedia.getWidth() + "x" + localMedia.getHeight());
-
-
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<String> future = executor.submit(() -> "");
         }
     }
 

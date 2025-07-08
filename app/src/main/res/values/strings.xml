@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">multimedia tool</string>
     <string name="error_gif">The length and width shall not be less than %1$dpx, and the size shall not exceed %2$sM</string>
-    <string name="up_upload_is_customizable">Upupload is customizable</string>
+    <string name="up_upload_is_customizable">Upload is customizable</string>
     <string name="submit_upload">Submit Upload</string>
     <string name="global_configuration">Global configuration</string>
     <string name="global_function">Global function</string>
@@ -62,7 +62,7 @@
     <string name="super_simple_version">Super simple</string>
     <string name="configure_version">Configure version</string>
     <string name="style_version">Style version</string>
-    <string name="configure_upperlimit_version">This is flexible configuration can choose xx pictures,xx videos,xx audio usage</string>
+    <string name="configure_upper_limit_version">This is flexible configuration can choose xx pictures,xx videos,xx audio usage</string>
     <string name="open_the_default_data_set">Open the default data set</string>
     <string name="open_the_default_data_set_local">Open the default data set - local</string>
     <string name="instant_preview">Instant preview</string>
@@ -98,7 +98,7 @@
     <string name="limit_6">Total_limit(5) Image limit(3) Video limit(null) Audio limit(null)</string>
     <string name="limit_7">Total_limit(5) Image limit(null) Video limit(2) Audio limit(null) </string>
     <string name="limit_8">Total_limit(5) Image limit(null) Video limit(null) Audio limit(2)</string>
-    <string name="use_recyclerview_to_fill_this_control_currentlyit_only_demonstrates_the_fluency_of_the_example_and_the_demonstration_of_deleting_or_adding_data_for_data_update_is_not_written">Use RecyclerView to fill this control. Currently, it only demonstrates the fluency of the example, and the demonstration of deleting or adding data for data update is not written.</string>
+    <string name="use_recyclerview_to_fill_this_control_currently_it_only_demonstrates_the_fluency_of_the_example_and_the_demonstration_of_deleting_or_adding_data_for_data_update_is_not_written">Use RecyclerView to fill this control. Currently, it only demonstrates the fluency of the example, and the demonstration of deleting or adding data for data update is not written.</string>
     <string name="i_am_customized">I am customized.</string>
     <string name="i_am_customized_click_me">I am customized. Click me.</string>
 </resources>

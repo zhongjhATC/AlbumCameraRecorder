@@ -396,17 +396,6 @@ object FileUtils {
     /**
      * Create a file if it doesn't exist, otherwise do nothing.
      *
-     * @param filePath The path of file.
-     * @return `true`: exists or creates successfully<br></br>`false`: otherwise
-     */
-    @JvmStatic
-    fun createOrExistsFile(filePath: String): Boolean {
-        return createOrExistsFile(getFileByPath(filePath))
-    }
-
-    /**
-     * Create a file if it doesn't exist, otherwise do nothing.
-     *
      * @param file The file.
      * @return `true`: exists or creates successfully<br></br>`false`: otherwise
      */

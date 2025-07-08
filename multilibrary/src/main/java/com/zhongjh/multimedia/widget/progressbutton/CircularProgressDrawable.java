@@ -19,6 +19,7 @@ class CircularProgressDrawable extends Drawable {
     private final int mStrokeWidth;
     private final int mStrokeColor;
 
+    /** @noinspection unused*/
     public CircularProgressDrawable(int size, int strokeWidth, int strokeColor) {
         mSize = size;
         mStrokeWidth = strokeWidth;

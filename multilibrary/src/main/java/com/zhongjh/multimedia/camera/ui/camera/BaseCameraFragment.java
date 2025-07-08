@@ -324,6 +324,7 @@ public abstract class BaseCameraFragment
     private void initCameraLayoutCloseListener() {
         if (getCloseView() != null) {
             getCloseView().setOnClickListener(new OnMoreClickListener() {
+                /** @noinspection unused*/
                 @Override
                 public void onListener(@NonNull View v) {
                     mainActivity.finish();
@@ -423,12 +424,16 @@ public abstract class BaseCameraFragment
      * 左右两个按钮：确认和取消
      */
     private void initPvLayoutOperateListener() {
+        // noinspection unused
         getPhotoVideoLayout().setOperateListener(new BaseOperationLayout.OperateListener() {
+            /** @noinspection unused*/
             @Override
             public boolean beforeConfirm() {
-                return requestPermissions();
+                getCameraStateManager().pvLayoutCommit();
+                return true;
             }
 
+            /** @noinspection unused*/
             @Override
             public void cancel() {
                 Log.d(TAG, "cancel " + getState().toString());
@@ -462,6 +467,7 @@ public abstract class BaseCameraFragment
      * 拍照、录制监听
      */
     private void initCameraViewListener() {
+        // noinspection unused
         cameraManage.setOnCameraManageListener(new OnCameraManageListener() {
 
             @Override
@@ -506,6 +512,7 @@ public abstract class BaseCameraFragment
                 getCameraVideoManager().onRecordPause(recordedDurationNanos);
             }
 
+            /** @noinspection unused*/
             @Override
             public void onError(int errorCode, @Nullable String message, @Nullable Throwable cause) {
                 Toast.makeText(getMyContext(), message, Toast.LENGTH_LONG).show();
@@ -754,7 +761,7 @@ public abstract class BaseCameraFragment
     public void movePictureFile() {
         showProgress();
         // 开始迁移文件
-        ThreadUtils.executeByIo(getCameraPictureManager().getMovePictureFileTask(cameraSpec.getSandboxDir()));
+        ThreadUtils.executeByIo(getCameraPictureManager().getMovePictureFileTask());
     }
 
     /**
@@ -974,18 +981,16 @@ public abstract class BaseCameraFragment
      * 请求权限
      * return false则是请求权限
      * return true则是无权限请求继续下一步
+     *
+     * @noinspection unused
      */
     private boolean requestPermissions() {
         // 判断权限，权限通过才可以初始化相关
-        if (globalSpec.isAddAlbumByCamera()) {
-            ArrayList<String> needPermissions = getNeedPermissions();
-            if (!needPermissions.isEmpty()) {
-                // 请求权限
-                requestPermissionsDialog();
-                return false;
-            } else {
-                return true;
-            }
+        ArrayList<String> needPermissions = getNeedPermissions();
+        if (!needPermissions.isEmpty()) {
+            // 请求权限
+            requestPermissionsDialog();
+            return false;
         } else {
             return true;
         }

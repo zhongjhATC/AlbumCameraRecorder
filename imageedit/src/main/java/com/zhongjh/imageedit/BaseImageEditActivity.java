@@ -91,9 +91,9 @@ abstract class BaseImageEditActivity extends Activity implements View.OnClickLis
             onModeClick(ImageMode.CLIP);
         } else if (vid == R.id.btn_undo) {
             onUndoClick();
-        } else if (vid == R.id.ibtnDone) {
+        } else if (vid == R.id.iBtnDone) {
             onDoneClick();
-        } else if (vid == R.id.ibtnBack) {
+        } else if (vid == R.id.iBtnBack) {
             onCancelClick();
         } else if (vid == R.id.ib_clip_cancel) {
             onCancelClipClick();

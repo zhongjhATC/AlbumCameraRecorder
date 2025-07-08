@@ -45,8 +45,4 @@ class CheckRadioView : AppCompatImageView {
             setColorFilterSrcIn(drawable, mUnSelectUdColor)
         }
     }
-
-    fun setColor(color: Int) {
-        setColorFilterSrcIn(drawable, color)
-    }
 }

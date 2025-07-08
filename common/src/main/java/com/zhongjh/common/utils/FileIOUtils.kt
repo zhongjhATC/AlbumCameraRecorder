@@ -21,22 +21,6 @@ object FileIOUtils {
     /**
      * Write file from input stream.
      *
-     * @param filePath The path of file.
-     * @param is       The input stream.
-     * @return `true`: success<br></br>`false`: fail
-     */
-    fun writeFileFromIS(filePath: String, `is`: InputStream?): Boolean {
-        val file = FileUtils.getFileByPath(filePath)
-        file?.let {
-            return writeFileFromIS(it, `is`, false, null)
-        } ?: let {
-            return false
-        }
-    }
-
-    /**
-     * Write file from input stream.
-     *
      * @param file     The file.
      * @param is       The input stream.
      * @param append   True to append, false otherwise.

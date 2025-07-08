@@ -17,6 +17,7 @@ public class ImageHomingAnimator extends ValueAnimator {
 
     private ImageHomingEvaluator mEvaluator;
 
+    /** @noinspection unused*/
     public ImageHomingAnimator() {
         setInterpolator(new AccelerateDecelerateInterpolator());
     }

@@ -19,6 +19,7 @@ public class ImageFileDecoder extends BaseImageDecoder {
         super(uri);
     }
 
+    /** @noinspection unused*/
     @Override
     public Bitmap decode(BitmapFactory.Options options) {
         Uri uri = getUri();

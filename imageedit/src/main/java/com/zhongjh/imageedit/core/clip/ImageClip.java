@@ -109,6 +109,7 @@ public interface ImageClip {
 
         final static int[] PN = {1, -1};
 
+        /** @noinspection unused*/
         Anchor(int v) {
             this.v = v;
         }

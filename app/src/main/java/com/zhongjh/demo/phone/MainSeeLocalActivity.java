@@ -75,6 +75,7 @@ public class MainSeeLocalActivity extends BaseActivity {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_see);
         mBinding.gridView.setGridViewListener((new GridViewListener() {
 
+            /** @noinspection unused*/
             @Override
             public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
                 String[] fileFullPath = getFileFullPath(gridMedia.getUrl(), 1);
@@ -113,6 +114,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 }
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemStartUploading(@NonNull GridMedia gridMedia, @NonNull GridAdapter.PhotoViewHolder viewHolder) {
                 // 开始模拟上传 - 指刚添加后的。这里可以使用你自己的上传事件
@@ -121,6 +123,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 timer.schedule();
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemClose(@NonNull GridMedia gridMedia) {
                 // 停止上传
@@ -131,6 +134,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 }
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemClick(@NonNull View view, @NonNull GridMedia gridMedia) {
                 // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
@@ -158,6 +162,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 mGlobalSetting.openPreviewData(MainSeeLocalActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
 
+            /** @noinspection unused*/
             @Override
             public void onItemAdd(@NonNull View view, @NonNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 // 点击添加

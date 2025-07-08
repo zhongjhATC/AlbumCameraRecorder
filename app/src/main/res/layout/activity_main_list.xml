@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="@string/configure_upperlimit_version" />
+            android:text="@string/configure_upper_limit_version" />
 
         <Button
             android:id="@+id/btnRecyclerView"

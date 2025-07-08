@@ -43,11 +43,6 @@ class SharedAnimationView @JvmOverloads constructor(context: Context, attrs: Att
     private var mOriginWidth = 0
     private var screenWidth = 0
     private var screenHeight = 0
-
-    /**
-     * 屏幕高度，包含状态栏
-     */
-    private val appInScreenHeight: Int = getRealScreenHeight(context)
     private var targetImageTop = 0
     private var targetImageWidth = 0
     private var targetImageHeight = 0
@@ -74,8 +69,6 @@ class SharedAnimationView @JvmOverloads constructor(context: Context, attrs: Att
      * 封装View
      */
     private val sharedAnimationWrapper: SharedAnimationWrapper
-    private var startX = 0
-    private var startY = 0
 
 
     init {

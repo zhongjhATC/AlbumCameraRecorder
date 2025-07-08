@@ -25,6 +25,7 @@ import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
  *
  * @author zhongjh
  * @date 2022/8/12
+ * @noinspection unused
  */
 public class CameraFragment extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
 

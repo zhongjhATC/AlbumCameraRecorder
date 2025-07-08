@@ -30,8 +30,6 @@ import com.zhongjh.imageedit.core.sticker.ImageStickerMoveHelper;
 
 public abstract class BaseImageStickerView extends ViewGroup implements ImageSticker, View.OnClickListener {
 
-    private static final String TAG = "IMGStickerView";
-
     private View mContentView;
 
     private float mScale = 1f;
@@ -44,8 +42,6 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
 
     private ImageView mRemoveView, mAdjustView;
 
-    private final float mMaxScaleValue = MAX_SCALE_VALUE;
-
     private final Paint mPaint;
 
     private final Matrix mMatrix = new Matrix();
@@ -53,8 +49,6 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
     private final RectF mFrame = new RectF();
 
     private final Rect mTempFrame = new Rect();
-
-    private static final float MAX_SCALE_VALUE = 4f;
 
     private static final int ANCHOR_SIZE = 48;
 

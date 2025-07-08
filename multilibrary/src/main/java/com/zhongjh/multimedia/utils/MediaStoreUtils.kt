@@ -201,50 +201,6 @@ object MediaStoreUtils {
     }
 
     /**
-     * 根据uri获取里面的id
-     *
-     * @param uri uri
-     * @return id
-     */
-    @JvmStatic
-    fun getId(uri: Uri?): Long {
-        if (uri == null) {
-            return 0L
-        }
-        // 加入相册后的最后是id，直接使用该id
-        val uriPath = uri.path
-        return try {
-            uriPath!!.substring(uriPath.lastIndexOf("/") + 1).toLong()
-        } catch (exception: Exception) {
-            0L
-        }
-    }
-
-    /**
-     * AndroidQ包含及以上
-     * 根据uri获取相册数据
-     * @param context 上下文
-     * @param uri 文件路径
-     * @return localMedia 查询出的数据
-     */
-    fun getMediaDataByUri(context: Context, uri: Uri): LocalMedia {
-        val id = getId(uri)
-        val cursor: Cursor? = context.contentResolver.query(
-            QUERY_URI,
-            MediaLoader.PROJECTION,
-            MediaStore.Files.FileColumns._ID + "=?",
-            arrayOf(id.toString()),
-            null
-        )
-        if (cursor != null && cursor.moveToFirst()) {
-            val mediaLoader = MediaLoader(context)
-            return mediaLoader.parse(cursor)
-        }
-        return LocalMedia()
-    }
-
-
-    /**
      * AndroidQ包含及以上
      * 根据uri获取相册数据
      * @param context 上下文

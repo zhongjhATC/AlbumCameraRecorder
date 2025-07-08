@@ -21,8 +21,6 @@ import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
  */
 public class CameraVideoManager implements ICameraVideo {
 
-    private final static String TAG = "CameraVideoManager";
-
     public CameraVideoManager(
             BaseCameraFragment<? extends CameraStateManager,
                     ? extends CameraPictureManager,

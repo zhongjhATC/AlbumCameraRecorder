@@ -11,10 +11,6 @@ public class ImageHomingEvaluator implements TypeEvaluator<ImageHoming> {
 
     private ImageHoming homing;
 
-    public ImageHomingEvaluator() {
-
-    }
-
     @Override
     public ImageHoming evaluate(float fraction, ImageHoming startValue, ImageHoming endValue) {
         float x = startValue.x + fraction * (endValue.x - startValue.x);

@@ -37,6 +37,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     private final float mBorderWidth;
     private boolean mRunning;
 
+    /** @noinspection unused*/
     public CircularAnimatedDrawable(int color, float borderWidth) {
         mBorderWidth = borderWidth;
 

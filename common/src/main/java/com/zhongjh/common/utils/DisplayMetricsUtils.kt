@@ -17,30 +17,6 @@ import android.view.WindowManager
 object DisplayMetricsUtils {
 
     /**
-     * 获取屏幕分辨率 - 宽高
-     *
-     * @param context 上下文
-     * @return 宽 高，索引0为宽，索引1为高
-     */
-    @JvmStatic
-    fun getScreenWidthAndHeight(context: Context): IntArray {
-        val intArray = IntArray(2)
-        val windowManager = context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowMetrics = windowManager.currentWindowMetrics
-            val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-            intArray[0] = windowMetrics.bounds.width() - insets.left - insets.right
-            intArray[1] = windowMetrics.bounds.height() - insets.bottom - insets.top
-        } else {
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            intArray[0] = displayMetrics.widthPixels
-            intArray[1] = displayMetrics.heightPixels
-        }
-        return intArray
-    }
-
-    /**
      * 获取屏幕分辨率-宽
      *
      * @param context 上下文
@@ -101,42 +77,6 @@ object DisplayMetricsUtils {
     fun dip2px(dpValue: Float): Int {
         val scale = Resources.getSystem().displayMetrics.density
         return (dpValue * scale + 0.5f).toInt()
-    }
-
-    /**
-     * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
-     *
-     * @param pxValue 值
-     * @return 转换结果
-     */
-    @JvmStatic
-    fun px2dip(pxValue: Float): Int {
-        val scale = Resources.getSystem().displayMetrics.density
-        return (pxValue / scale + 0.5f).toInt()
-    }
-
-    /**
-     * sp转px
-     *
-     * @param spValue 值
-     * @return 转换结果
-     */
-    @JvmStatic
-    fun sp2px(spValue: Float): Int {
-        val fontScale = Resources.getSystem().displayMetrics.density
-        return (spValue * fontScale + 0.5f).toInt()
-    }
-
-    /**
-     * px转sp
-     *
-     * @param pxValue 值
-     * @return 转换结果
-     */
-    @JvmStatic
-    fun px2sp(pxValue: Float): Int {
-        val fontScale = Resources.getSystem().displayMetrics.density
-        return (pxValue / fontScale + 0.5f).toInt()
     }
 
 }

@@ -14,8 +14,6 @@ import com.zhongjh.common.entity.LocalMedia
  */
 class SelectedModel(application: Application) : AndroidViewModel(application) {
 
-    private val tag: String = this@SelectedModel.javaClass.simpleName
-
     /**
      * 当前选择的数据操作文件类
      */

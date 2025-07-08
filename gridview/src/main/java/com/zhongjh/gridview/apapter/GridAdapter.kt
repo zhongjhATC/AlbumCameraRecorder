@@ -259,17 +259,6 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
     /**
      * @return 获取所有数据源
      */
-    fun getDataByLocalMedia(): ArrayList<LocalMedia> {
-        val data = ArrayList<LocalMedia>()
-        for (multiMediaView in list) {
-            data.add(multiMediaView)
-        }
-        return data
-    }
-
-    /**
-     * @return 获取所有数据源
-     */
     fun getData(): ArrayList<GridMedia> {
         return list
     }

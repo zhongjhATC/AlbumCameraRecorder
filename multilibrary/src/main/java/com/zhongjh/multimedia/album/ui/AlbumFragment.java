@@ -64,6 +64,7 @@ import java.util.ArrayList;
  *
  * @author zhongjh
  * @date 2018/8/22
+ * @noinspection ALL
  */
 public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
 
@@ -556,8 +557,10 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      * @param localMediaArrayList 需要压缩的数据源
      */
     private ThreadUtils.SimpleTask<ArrayList<LocalMedia>> getCompressFileTask(ArrayList<LocalMedia> localMediaArrayList) {
+        // noinspection unused
         mCompressFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
 
+            /** @noinspection unused*/
             @Override
             public ArrayList<LocalMedia> doInBackground() {
                 return mAlbumCompressFileTask.compressFileTaskDoInBackground(localMediaArrayList, false);

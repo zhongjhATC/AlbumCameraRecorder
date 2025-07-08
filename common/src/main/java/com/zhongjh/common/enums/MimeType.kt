@@ -1,11 +1,8 @@
 package com.zhongjh.common.enums
 
-import android.content.ContentResolver
-import android.net.Uri
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import androidx.collection.ArraySet
-import com.zhongjh.common.utils.BasePhotoMetadataUtils
 import java.io.File
 import java.net.URLConnection
 import java.util.EnumSet
@@ -50,14 +47,14 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             )
         )
     ),
-    XMSBMP(
+    X_MS_BMP(
         "image/x-ms-bmp", ArraySet(
             listOf(
                 "x-ms-bmp"
             )
         )
     ),
-    VNDBMP(
+    VND_BMP(
         "image/vnd.wap.wbmp", ArraySet(
             listOf(
                 "vnd.wap.wbmp"
@@ -119,7 +116,7 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             )
         )
     ),
-    THREEGPP(
+    THREE_GPP(
         "video/3gpp", ArraySet(
             listOf(
                 "3gp",
@@ -127,7 +124,7 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             )
         )
     ),
-    THREEGPP2(
+    THREE_GPP2(
         "video/3gpp2", ArraySet(
             listOf(
                 "3g2",
@@ -168,38 +165,6 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
         return mimeTypeName
     }
 
-    fun checkType(resolver: ContentResolver, uri: Uri?): Boolean {
-        val map = MimeTypeMap.getSingleton()
-        if (uri == null) {
-            return false
-        }
-        // 获取类型
-        val type = map.getExtensionFromMimeType(resolver.getType(uri))
-        var path: String? = null
-        var pathParsed = false
-        for (extension in extensions) {
-            if (extension == type) {
-                // 如果有符合的类型，直接返回true
-                return true
-            }
-            if (!pathParsed) {
-                path = BasePhotoMetadataUtils.getPath(resolver, uri)
-                if (!TextUtils.isEmpty(path)) {
-                    if (path != null) {
-                        path = path.lowercase(Locale.US)
-                    }
-                }
-                pathParsed = true
-            }
-            // 判断字符串是否以指定类型后缀结尾
-            if (path != null && path.endsWith(extension)) {
-                return true
-            }
-        }
-        // 如果类型或者地址后缀都不一样则范围false
-        return false
-    }
-
     fun checkType(absolutePath: String): Boolean {
         for (extension in extensions) {
             // 判断字符串是否以指定类型后缀结尾
@@ -228,12 +193,12 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
 
         @JvmStatic
         fun ofImage(): Set<MimeType> {
-            return EnumSet.of(JPEG, PNG, GIF, BMP, XMSBMP, VNDBMP, WEBP, HEIC)
+            return EnumSet.of(JPEG, PNG, GIF, BMP, X_MS_BMP, VND_BMP, WEBP, HEIC)
         }
 
         @JvmStatic
         fun ofVideo(): Set<MimeType> {
-            return EnumSet.of(MPEG, MP4, QUICKTIME, THREEGPP, THREEGPP2, MKV, WEBM, TS, AVI)
+            return EnumSet.of(MPEG, MP4, QUICKTIME, THREE_GPP, THREE_GPP2, MKV, WEBM, TS, AVI)
         }
 
         @JvmStatic
@@ -302,102 +267,6 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
             return mimeType
         }
 
-        /**
-         * 获取图片的mimeType
-         *
-         * @param path
-         * @return
-         */
-        @JvmStatic
-        fun getImageMimeType(path: String?): String {
-            try {
-                path?.let {
-                    val file = File(path)
-                    val fileName = file.name
-                    val beginIndex = fileName.lastIndexOf(".")
-                    val temp = if (beginIndex == -1) "jpeg" else fileName.substring(beginIndex + 1)
-                    return "image/$temp"
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return JPEG.mimeTypeName
-            }
-            return JPEG.mimeTypeName
-        }
-
-        /**
-         * isGif
-         *
-         * @param mimeType
-         * @return
-         */
-        @JvmStatic
-        fun isGif(mimeType: String?): Boolean {
-            return mimeType != null && (mimeType == GIF.mimeTypeName || mimeType == "image/GIF")
-        }
-
-        /**
-         * isWebp
-         *
-         * @param mimeType
-         * @return
-         */
-        @JvmStatic
-        fun isWebp(mimeType: String?): Boolean {
-            return mimeType != null && mimeType.equals(
-                WEBP.mimeTypeName,
-                ignoreCase = true
-            )
-        }
-
-        /**
-         * 根据后缀名获取类型名称
-         */
-        @JvmStatic
-        fun getMimeTypeName(suffix: String): String {
-            return if (JPEG.extensions.contains(suffix)) {
-                JPEG.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                PNG.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                GIF.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                BMP.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                XMSBMP.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                VNDBMP.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                WEBP.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                HEIC.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                AAC.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                AUDIO_MPEG.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                MPEG.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                MP4.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                QUICKTIME.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                THREEGPP.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                THREEGPP2.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                MKV.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                WEBM.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                TS.mimeTypeName
-            } else if (PNG.extensions.contains(suffix)) {
-                AVI.mimeTypeName
-            } else {
-                JPEG.mimeTypeName
-            }
-        }
-
         @JvmStatic
         fun ofImageArray(): Array<String> {
             return arrayOf(
@@ -405,8 +274,8 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
                 PNG.mimeTypeName,
                 GIF.mimeTypeName,
                 BMP.mimeTypeName,
-                XMSBMP.mimeTypeName,
-                VNDBMP.mimeTypeName,
+                X_MS_BMP.mimeTypeName,
+                VND_BMP.mimeTypeName,
                 WEBP.mimeTypeName,
                 HEIC.mimeTypeName
             )
@@ -418,8 +287,8 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
                 MPEG.mimeTypeName,
                 MP4.mimeTypeName,
                 QUICKTIME.mimeTypeName,
-                THREEGPP.mimeTypeName,
-                THREEGPP2.mimeTypeName,
+                THREE_GPP.mimeTypeName,
+                THREE_GPP2.mimeTypeName,
                 MKV.mimeTypeName,
                 WEBM.mimeTypeName,
                 TS.mimeTypeName,

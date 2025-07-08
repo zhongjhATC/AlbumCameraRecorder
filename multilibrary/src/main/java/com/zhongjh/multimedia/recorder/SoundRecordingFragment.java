@@ -240,11 +240,13 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void initPvLayoutOperateListener() {
         mViewHolder.pvLayout.setOperateListener(new BaseOperationLayout.OperateListener() {
+            /** @noinspection unused*/
             @Override
             public boolean beforeConfirm() {
                 return true;
             }
 
+            /** @noinspection unused*/
             @Override
             public void cancel() {
                 // 母窗体启动滑动
@@ -255,16 +257,19 @@ public class SoundRecordingFragment extends BaseFragment {
                 mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
             }
 
+            /** @noinspection unused*/
             @Override
             public void startProgress() {
                 moveRecordFile();
             }
 
+            /** @noinspection unused*/
             @Override
             public void stopProgress() {
 
             }
 
+            /** @noinspection unused*/
             @Override
             public void doneProgress() {
 
@@ -456,6 +461,7 @@ public class SoundRecordingFragment extends BaseFragment {
             // 初始化保存好的音频文件
             initAudio();
             // 获取文件名称
+            //noinspection unused
             String newFileName = localMedia.getPath().substring(localMedia.getPath().lastIndexOf(File.separator));
             File newFile = FileMediaUtil.INSTANCE.createCacheFile(mContext, MediaType.TYPE_AUDIO);
             Log.d(TAG, "newFile" + newFile.getAbsolutePath());
@@ -477,6 +483,7 @@ public class SoundRecordingFragment extends BaseFragment {
             return null;
         }
 
+        /** @noinspection unused*/
         @Override
         public void onSuccess(Void result) {
 
@@ -525,6 +532,7 @@ public class SoundRecordingFragment extends BaseFragment {
      * 停止录音的异步线程
      *
      * @param isShort 短时结束不算
+     * @noinspection unused
      */
     private ThreadUtils.SimpleTask<Boolean> getStopRecordingTask(boolean isShort) {
         mStopRecordingTask = new ThreadUtils.SimpleTask<Boolean>() {

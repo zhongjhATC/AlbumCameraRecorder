@@ -136,23 +136,6 @@ class MediaLoader(private val context: Context) {
     }
 
     /**
-     * 获取 所有图片 的 第一页图片数据
-     * @param pageSize 图片数量
-     */
-    suspend fun loadMedia(pageSize: Int): MutableList<LocalMedia> {
-        return loadMediaMore(ALL_BUCKET_ID, 1, pageSize)
-    }
-
-    /**
-     * 获取 某个专辑 的 第一页图片数据
-     * @param bucketId 专辑id
-     * @param pageSize 页数
-     */
-    suspend fun loadMedia(bucketId: Long, pageSize: Int): MutableList<LocalMedia> {
-        return loadMediaMore(bucketId, 1, pageSize)
-    }
-
-    /**
      * 获取 某个专辑 的 某一 页图片数据
      * @param bucketId 专辑id
      * @param page 页码
@@ -249,7 +232,7 @@ class MediaLoader(private val context: Context) {
             media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
             media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
         }
-        Log.d(TAG, "abspath:" + media.fileId)
+        Log.d(TAG, "fileId:" + media.fileId)
         return media
     }
 
@@ -402,8 +385,8 @@ class MediaLoader(private val context: Context) {
             stringBuilder.append(NOT_WEBP)
         }
         if (!AlbumSpec.isSupportBmp && AlbumSpec.mimeTypeSet?.contains(MimeType.BMP) != true && AlbumSpec.mimeTypeSet?.contains(
-                MimeType.XMSBMP
-            ) != true && AlbumSpec.mimeTypeSet?.contains(MimeType.VNDBMP) != true
+                MimeType.X_MS_BMP
+            ) != true && AlbumSpec.mimeTypeSet?.contains(MimeType.VND_BMP) != true
         ) {
             stringBuilder.append(NOT_BMP).append(NOT_XMS_BMP).append(NOT_VND_WAP_BMP)
         }
@@ -452,38 +435,6 @@ class MediaLoader(private val context: Context) {
             MediaStore.Files.getContentUri("external")
         }
         return ContentUris.withAppendedId(contentUri, bucketId).toString()
-    }
-
-    /**
-     * 根据游标获取uri
-     *
-     * @param cursor 游标
-     * @return uri
-     */
-    private fun getFirstUri(cursor: Cursor): String {
-        val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
-        val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE))
-        return getRealPathUri(id, mimeType)
-    }
-
-    /**
-     * 根据游标获取mimeType
-     *
-     * @param cursor 游标
-     * @return mimeType
-     */
-    private fun getFirstCoverMimeType(cursor: Cursor): String? {
-        return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE))
-    }
-
-    /**
-     * 根据游标获取path
-     *
-     * @param cursor 游标
-     * @return url path
-     */
-    private fun getFirstUrl(cursor: Cursor): String? {
-        return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA))
     }
 
 }

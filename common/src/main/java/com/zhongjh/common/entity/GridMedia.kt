@@ -53,8 +53,6 @@ class GridMedia : LocalMedia, Parcelable {
 
     companion object CREATOR : Parcelable.Creator<GridMedia> {
 
-        const val FULL_PERCENT = 100
-
         override fun createFromParcel(parcel: Parcel): GridMedia {
             return GridMedia(parcel)
         }

@@ -48,11 +48,6 @@ class FocusView : AppCompatImageView {
         visibility = GONE
     }
 
-    fun destroy() {
-        mHandler.removeCallbacks(mRunnable, null)
-        visibility = GONE
-    }
-
     fun setDisappear(disappear: Boolean) {
         isDisappear = disappear
     }

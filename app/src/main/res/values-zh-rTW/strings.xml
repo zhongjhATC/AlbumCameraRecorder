@@ -60,7 +60,7 @@
     <string name="super_simple_version">超級簡單版</string>
     <string name="configure_version">配置版</string>
     <string name="style_version">樣式版</string>
-    <string name="configure_upperlimit_version">這是靈活配置能選擇xx張圖片,xx個視頻，xx個音頻的用法示例</string>
+    <string name="configure_upper_limit_version">這是靈活配置能選擇xx張圖片,xx個視頻，xx個音頻的用法示例</string>
     <string name="open_the_default_data_set">打開默認有數據的</string>
     <string name="open_the_default_data_set_local">打開默認有數據的 - 本地</string>
     <string name="instant_preview">直接預覽</string>
@@ -96,7 +96,7 @@
     <string name="limit_6">總上限(5) 圖片上限(3) 視訊上限(null) 音訊上限(null)</string>
     <string name="limit_7">總上限(5) 圖片上限(null) 視訊上限(2) 音訊上限(null) </string>
     <string name="limit_8">總上限(5) 圖片上限(null) 視訊上限(null) 音訊上限(2)</string>
-    <string name="use_recyclerview_to_fill_this_control_currentlyit_only_demonstrates_the_fluency_of_the_example_and_the_demonstration_of_deleting_or_adding_data_for_data_update_is_not_written">使用 RecyclerView 填充該控制項，目前只是展示示例的流暢度，刪除或者添加數據更新數據這方面演示沒寫</string>
+    <string name="use_recyclerview_to_fill_this_control_currently_it_only_demonstrates_the_fluency_of_the_example_and_the_demonstration_of_deleting_or_adding_data_for_data_update_is_not_written">使用 RecyclerView 填充該控制項，目前只是展示示例的流暢度，刪除或者添加數據更新數據這方面演示沒寫</string>
     <string name="i_am_customized">我是自定義</string>
     <string name="i_am_customized_click_me">我是自定義的點擊我</string>
 </resources>

@@ -51,20 +51,6 @@ class RecyclerLoadMoreView : RecyclerView {
     }
 
     /**
-     * 是否加载更多
-     */
-    fun isEnabledLoadMore(): Boolean {
-        return isEnabledLoadMore
-    }
-
-    /**
-     * 获取可视的第一个索引
-     */
-    fun getFirstVisiblePosition(): Int {
-        return mFirstVisiblePosition
-    }
-
-    /**
      * 加载更多事件
      */
     fun setOnRecyclerViewLoadMoreListener(listener: OnRecyclerViewLoadMoreListener?) {
@@ -76,13 +62,6 @@ class RecyclerLoadMoreView : RecyclerView {
      */
     fun setOnRecyclerViewScrollStateListener(listener: OnRecyclerViewScrollStateListener?) {
         onRecyclerViewScrollStateListener = listener
-    }
-
-    /**
-     * 滑动事件
-     */
-    fun setOnRecyclerViewScrollListener(listener: OnRecyclerViewScrollListener?) {
-        onRecyclerViewScrollListener = listener
     }
 
     /**

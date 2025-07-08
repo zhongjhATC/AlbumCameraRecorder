@@ -65,12 +65,14 @@ public interface ImageStickerPortrait {
         /**
          * 关闭
          * @param stickerView 标签的view
+         * @noinspection unused
          */
         <V extends View & ImageSticker> void onDismiss(V stickerView);
 
         /**
          * 显示
          * @param stickerView 标签的view
+         * @noinspection unused
          */
         <V extends View & ImageSticker> void onShowing(V stickerView);
 
