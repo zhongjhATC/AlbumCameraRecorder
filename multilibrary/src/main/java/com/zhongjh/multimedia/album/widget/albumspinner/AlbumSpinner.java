@@ -17,10 +17,10 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zhongjh.multimedia.R;
 import com.zhongjh.common.utils.AnimUtils;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
-import com.zhongjh.multimedia.album.entity.Album2;
+import com.zhongjh.multimedia.R;
+import com.zhongjh.multimedia.album.entity.Album;
 import com.zhongjh.multimedia.utils.AttrsUtils;
 
 import java.util.List;
@@ -79,13 +79,13 @@ public class AlbumSpinner extends PopupWindow {
         rootViewBg.setOnClickListener(v -> dismiss());
     }
 
-    public void bindFolder(List<Album2> albums) {
+    public void bindFolder(List<Album> albums) {
         adapter.bindAlbums(albums);
         ViewGroup.LayoutParams lp = mRecyclerView.getLayoutParams();
         lp.height = albums.size() > FOLDER_MAX_COUNT ? maxHeight : ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 
-    public List<Album2> getAlbums() {
+    public List<Album> getAlbums() {
         return adapter.getAlbums();
     }
 
@@ -93,7 +93,7 @@ public class AlbumSpinner extends PopupWindow {
         return adapter.getAlbums().isEmpty();
     }
 
-    public Album2 getAlbum(int position) {
+    public Album getAlbum(int position) {
         return !adapter.getAlbums().isEmpty() && position < adapter.getAlbums().size() ? adapter.getAlbums().get(position) : null;
     }
 
@@ -149,16 +149,16 @@ public class AlbumSpinner extends PopupWindow {
     /**
      * 设置选中状态 - 红色圆点
      */
-    public void updateFolderCheckStatus(List<Album2> result) {
-        List<Album2> albums = adapter.getAlbums();
+    public void updateFolderCheckStatus(List<Album> result) {
+        List<Album> albums = adapter.getAlbums();
         int size = albums.size();
         int resultSize = result.size();
         for (int i = 0; i < size; i++) {
-            Album2 album = albums.get(i);
+            Album album = albums.get(i);
             album.setCheckedCount(0);
             if (null != album.getName()) {
                 for (int j = 0; j < resultSize; j++) {
-                    Album2 media = result.get(j);
+                    Album media = result.get(j);
                     if (album.getName().equals(media.getName())
                             || -1 == album.getId()) {
                         album.setCheckedCount(1);
@@ -173,10 +173,10 @@ public class AlbumSpinner extends PopupWindow {
     /**
      * 设置选中状态
      */
-    public void updateCheckStatus(List<Album2> selects) {
-        List<Album2> albums = adapter.getAlbums();
-        for (Album2 album : albums) {
-            for (Album2 select : selects) {
+    public void updateCheckStatus(List<Album> selects) {
+        List<Album> albums = adapter.getAlbums();
+        for (Album album : albums) {
+            for (Album select : selects) {
                 if (Objects.equals(select.getName(), album.getName())) {
                     album.setChecked(true);
                     break;

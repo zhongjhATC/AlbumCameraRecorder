@@ -172,16 +172,14 @@ object AlbumSpec {
      * 仅显示图片 或者 视频可选为0个
      */
     fun onlyShowImages(): Boolean {
-        return (ofImage().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.ALBUM))
-                || GlobalSpec.maxVideoSelectable != null && GlobalSpec.maxVideoSelectable == 0)
+        return (ofImage().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.ALBUM)) || GlobalSpec.maxVideoSelectable != null && GlobalSpec.maxVideoSelectable == 0)
     }
 
     /**
      * 仅显示视频 或者 图片可选为0个
      */
     fun onlyShowVideos(): Boolean {
-        return (ofVideo().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.ALBUM))
-                || GlobalSpec.maxImageSelectable != null && GlobalSpec.maxImageSelectable == 0)
+        return (ofVideo().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.ALBUM)) || GlobalSpec.maxImageSelectable != null && GlobalSpec.maxImageSelectable == 0)
     }
 
 }

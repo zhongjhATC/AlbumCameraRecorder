@@ -9,7 +9,7 @@ import com.zhongjh.common.enums.MimeType
  * @author zhongjh
  * @date 2022/9/16
  */
-class Album2 {
+class Album {
     /**
      * id 专辑id
      */
@@ -67,7 +67,7 @@ class Album2 {
     /**
      * 用于 DiffUtil.Callback 进行判断
      */
-    fun equalsAlbum(album: Album2): Boolean {
+    fun equalsAlbum(album: Album): Boolean {
         if (id != album.id) {
             return false
         }

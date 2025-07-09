@@ -1,8 +1,6 @@
-package com.zhongjh.multimedia.album.listener;
+package com.zhongjh.multimedia.album.listener
 
-import com.zhongjh.multimedia.album.entity.Album2;
-
-import java.util.List;
+import com.zhongjh.multimedia.album.entity.Album
 
 /**
  * 返回数据的事件
@@ -10,19 +8,17 @@ import java.util.List;
  * @author zhongjh
  * @date 2022/9/9
  */
-public interface OnLoadAllAlbumListener {
-
+interface OnLoadAllAlbumListener {
     /**
      * 查询完成后会回调该事件
      *
      * @param data 查询后的数据源
      */
-    void onLoadAllAlbumComplete(List<Album2> data);
+    fun onLoadAllAlbumComplete(data: List<Album?>?)
 
     /**
      * 异常信息
      * @param t 异常
      */
-    void onFail(Throwable t);
-
+    fun onFail(t: Throwable?)
 }

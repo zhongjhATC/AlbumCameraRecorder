@@ -2,7 +2,7 @@ package com.zhongjh.multimedia.album.widget.albumspinner;
 
 import androidx.recyclerview.widget.DiffUtil;
 
-import com.zhongjh.multimedia.album.entity.Album2;
+import com.zhongjh.multimedia.album.entity.Album;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class AlbumCallback extends DiffUtil.Callback {
 
-    private final List<Album2> oldData;
-    private final List<Album2> newData;
+    private final List<Album> oldData;
+    private final List<Album> newData;
 
     /**
      * 新老数据集赋值
@@ -23,7 +23,7 @@ public class AlbumCallback extends DiffUtil.Callback {
      * @param oldData 旧数据
      * @param newData 新数据
      */
-    public AlbumCallback(List<Album2> oldData, List<Album2> newData) {
+    public AlbumCallback(List<Album> oldData, List<Album> newData) {
         this.oldData = oldData;
         this.newData = newData;
     }
@@ -46,8 +46,8 @@ public class AlbumCallback extends DiffUtil.Callback {
      */
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        Album2 oldAlbum = oldData.get(oldItemPosition);
-        Album2 newAlbum = newData.get(newItemPosition);
+        Album oldAlbum = oldData.get(oldItemPosition);
+        Album newAlbum = newData.get(newItemPosition);
         return oldAlbum.getId() == newAlbum.getId();
     }
 
@@ -60,8 +60,8 @@ public class AlbumCallback extends DiffUtil.Callback {
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
         // 默认内容是相同的，只要有一项不同，则返回false
-        Album2 oldAlbum = oldData.get(oldItemPosition);
-        Album2 newAlbum = newData.get(newItemPosition);
+        Album oldAlbum = oldData.get(oldItemPosition);
+        Album newAlbum = newData.get(newItemPosition);
         return oldAlbum.equalsAlbum(newAlbum);
     }
 }

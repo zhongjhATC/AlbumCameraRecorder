@@ -40,7 +40,7 @@ import com.zhongjh.common.utils.StatusBarUtils;
 import com.zhongjh.common.utils.ThreadUtils;
 import com.zhongjh.multimedia.MainActivity;
 import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.album.entity.Album2;
+import com.zhongjh.multimedia.album.entity.Album;
 import com.zhongjh.multimedia.album.ui.mediaselection.MediaViewUtil;
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter;
 import com.zhongjh.multimedia.album.utils.AlbumCompressFileTask;
@@ -348,8 +348,8 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
             // 更新专辑列表
             mAlbumSpinner.bindFolder(data);
             // 可能因为别的原因销毁当前界面，回到当前选择的位置
-            Album2 album = data.get(mMainModel.getCurrentSelection());
-            ArrayList<Album2> albumChecks = new ArrayList<>();
+            Album album = data.get(mMainModel.getCurrentSelection());
+            ArrayList<Album> albumChecks = new ArrayList<>();
             albumChecks.add(album);
             mAlbumSpinner.updateCheckStatus(albumChecks);
             String displayName = album.getName();
@@ -463,7 +463,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      *
      * @param album 专辑
      */
-    private void onAlbumSelected(Album2 album) {
+    private void onAlbumSelected(Album album) {
         if (album.isAll() && album.isEmpty()) {
             // 如果是选择全部并且没有数据的话，显示空的view
             mViewHolder.recyclerview.setVisibility(View.GONE);
@@ -500,7 +500,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      * @param adapterPosition 索引
      */
     @Override
-    public void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition) {
+    public void onMediaClick(Album album, ImageView imageView, LocalMedia item, int adapterPosition) {
         if (DoubleUtils.isFastDoubleClick()) {
             return;
         }

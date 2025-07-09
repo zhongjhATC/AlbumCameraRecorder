@@ -1,65 +1,56 @@
-package com.zhongjh.multimedia.album.ui.mediaselection.adapter;
+package com.zhongjh.multimedia.album.ui.mediaselection.adapter
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.album.entity.Album2;
-import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGrid;
-import com.zhongjh.multimedia.album.widget.CheckView;
-import com.zhongjh.multimedia.model.SelectedModel;
-import com.zhongjh.multimedia.settings.AlbumSpec;
-import com.zhongjh.common.entity.IncapableCause;
-import com.zhongjh.common.entity.LocalMedia;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.os.Build
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.zhongjh.common.entity.IncapableCause.Companion.handleCause
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGrid
+import com.zhongjh.multimedia.album.widget.CheckView
+import com.zhongjh.multimedia.model.SelectedModel
+import com.zhongjh.multimedia.settings.AlbumSpec
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 相册适配器
  *
  * @author zhongjh
  */
-public class AlbumAdapter extends
-        RecyclerView.Adapter<RecyclerView.ViewHolder> implements
-        MediaGrid.OnMediaGridClickListener {
+class AlbumAdapter(context: Context, private val lifecycleOwner: LifecycleOwner, private val mSelectedModel: SelectedModel, imageResize: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+    MediaGrid.OnMediaGridClickListener {
+    private val tag: String = this@AlbumAdapter.javaClass.simpleName
 
-    private final String TAG = AlbumAdapter.this.getClass().getSimpleName();
+    private val mPlaceholder: Drawable?
+    private val mAlbumSpec = AlbumSpec
+    private var data: MutableList<LocalMedia> = ArrayList()
+    private var mCheckStateListener: CheckStateListener? = null
+    private var mOnMediaClickListener: OnMediaClickListener? = null
+    private val mImageResize: Int
 
-    private final SelectedModel mSelectedModel;
-    private final Drawable mPlaceholder;
-    private final AlbumSpec mAlbumSpec;
-    private final List<LocalMedia> data = new ArrayList<>();
-    private CheckStateListener mCheckStateListener;
-    private OnMediaClickListener mOnMediaClickListener;
-    private final int mImageResize;
-
-    public AlbumAdapter(Context context, SelectedModel selectedModel, int imageResize) {
-        super();
-        mAlbumSpec = AlbumSpec.INSTANCE;
-        mSelectedModel = selectedModel;
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().getLocalMedias().size() + " AlbumMediaAdapter");
-
-        TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.item_placeholder});
-        mPlaceholder = ta.getDrawable(0);
+    init {
+        Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " AlbumMediaAdapter")
+        val ta = context.theme.obtainStyledAttributes(intArrayOf(R.attr.item_placeholder))
+        mPlaceholder = ta.getDrawable(0)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ta.close();
+            ta.close()
         } else {
-            ta.recycle();
+            ta.recycle()
         }
-
-        mImageResize = imageResize;
+        mImageResize = imageResize
     }
 
     /**
@@ -67,72 +58,59 @@ public class AlbumAdapter extends
      *
      * @param data 数据源
      */
-    @SuppressLint("NotifyDataSetChanged")
-    public void setData(List<LocalMedia> data) {
-        Log.d(TAG, "setData size:" + data.size());
-        this.data.clear();
-        this.data.addAll(data);
-        notifyDataSetChanged();
+    fun setData(data: MutableList<LocalMedia>) {
+        // 使用协程作用域启动后台任务
+        lifecycleOwner.lifecycleScope.launch {
+            // 在IO调度器上执行耗时操作（计算差异）
+            val diffResult = withContext(Dispatchers.IO) {
+                DiffUtil.calculateDiff(LocalMediaCallback(this@AlbumAdapter.data, data))
+            }
+            // 结果自动回到主线程，更新UI
+            this@AlbumAdapter.data = data
+            diffResult.dispatchUpdatesTo(this@AlbumAdapter)
+        }
     }
 
     /**
      * 添加数据
      *
-     * @param data 数据源
+     * @param positionStart 用于notifyItemInserted
      */
-    public void addData(List<LocalMedia> data) {
-        Log.d(TAG, "addData size:" + data.size());
-        int positionStart = this.data.size();
-        this.data.addAll(data);
-        notifyItemInserted(positionStart);
+    fun addData(positionStart: Int) {
+        notifyItemInserted(positionStart)
     }
 
-    @NonNull
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         // 相片的item
-        return new MediaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.media_grid_item_zjh, parent, false));
+        return MediaViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.media_grid_item_zjh, parent, false))
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().getLocalMedias().size() + " onBindViewHolder");
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " onBindViewHolder")
         // 相片的item
-        MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
+        val mediaViewHolder = holder as MediaViewHolder
 
-        LocalMedia item = this.data.get(position);
-        Log.d(TAG, "position: " + position);
+        val item = data[position]
+        Log.d(tag, "position: $position")
         if (position == 0) {
-            Log.d(TAG, "path: " + item.getPath());
+            Log.d(tag, "path: " + item.path)
         }
         // 传递相关的值
-        mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
-                mImageResize,
-                mPlaceholder,
-                mAlbumSpec.getCountable(),
-                holder
-        ));
+        mediaViewHolder.mMediaGrid.preBindMedia(MediaGrid.PreBindInfo(mImageResize, mPlaceholder!!, mAlbumSpec.countable, holder))
 
-        mediaViewHolder.mMediaGrid.bindMedia(item);
-        mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this);
-        setCheckStatus(item, mediaViewHolder.mMediaGrid);
+        mediaViewHolder.mMediaGrid.bindMedia(item)
+        mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this)
+        setCheckStatus(item, mediaViewHolder.mMediaGrid)
     }
 
-    @Override
-    public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
-        super.onViewAttachedToWindow(holder);
-    }
-
-    @Override
-    public long getItemId(int position) {
+    override fun getItemId(position: Int): Long {
         // 需要返回id，否则不会重复调用onBindViewHolder，因为设置了mAdapter.setHasStableIds(true)
-        return this.data.get(position).getFileId();
+        return data[position].fileId
     }
 
-    @Override
-    public int getItemCount() {
-        Log.d(TAG, "data.size(): " + data.size());
-        return this.data.size();
+    override fun getItemCount(): Int {
+        Log.d(tag, "data.size(): " + data.size)
+        return data.size
     }
 
     /**
@@ -141,80 +119,78 @@ public class AlbumAdapter extends
      * @param item      数据
      * @param mediaGrid holder
      */
-    private void setCheckStatus(LocalMedia item, MediaGrid mediaGrid) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().getLocalMedias().size() + " setCheckStatus");
+    private fun setCheckStatus(item: LocalMedia, mediaGrid: MediaGrid) {
+        Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " setCheckStatus")
         // 是否多选时,显示数字
-        if (mAlbumSpec.getCountable()) {
+        if (mAlbumSpec.countable) {
             // 显示数字
-            int checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item);
+            val checkedNum = mSelectedModel.selectedData.checkedNumOf(item)
             if (checkedNum > 0) {
                 // 设置启用,设置数量
-                mediaGrid.setCheckEnabled(true);
-                mediaGrid.setCheckedNum(checkedNum);
+                mediaGrid.setCheckEnabled(true)
+                mediaGrid.setCheckedNum(checkedNum)
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                if (mSelectedModel.getSelectedData().maxSelectableReached()) {
-                    mediaGrid.setCheckEnabled(false);
-                    mediaGrid.setCheckedNum(CheckView.UNCHECKED);
+                if (mSelectedModel.selectedData.maxSelectableReached()) {
+                    mediaGrid.setCheckEnabled(false)
+                    mediaGrid.setCheckedNum(CheckView.UNCHECKED)
                 } else {
-                    mediaGrid.setCheckEnabled(true);
-                    mediaGrid.setCheckedNum(checkedNum);
+                    mediaGrid.setCheckEnabled(true)
+                    mediaGrid.setCheckedNum(checkedNum)
                 }
             }
         } else {
             // 不显示数字
-            boolean selected = mSelectedModel.getSelectedData().isSelected(item);
+            val selected = mSelectedModel.selectedData.isSelected(item)
             // 如果被选中了，就设置选择
             if (selected) {
-                mediaGrid.setCheckEnabled(true);
-                mediaGrid.setChecked(true);
+                mediaGrid.setCheckEnabled(true)
+                mediaGrid.setChecked(true)
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                mediaGrid.setCheckEnabled(!mSelectedModel.getSelectedData().maxSelectableReached());
-                mediaGrid.setChecked(false);
+                mediaGrid.setCheckEnabled(!mSelectedModel.selectedData.maxSelectableReached())
+                mediaGrid.setChecked(false)
             }
         }
     }
 
-    @Override
-    public void onThumbnailClicked(@NonNull ImageView imageView, @NonNull LocalMedia item, @NonNull RecyclerView.ViewHolder holder) {
+    override fun onThumbnailClicked(imageView: ImageView, item: LocalMedia, holder: RecyclerView.ViewHolder) {
         if (mOnMediaClickListener != null) {
-            mOnMediaClickListener.onMediaClick(null, imageView, item, holder.getBindingAdapterPosition());
+            mOnMediaClickListener!!.onMediaClick(null, imageView, item, holder.bindingAdapterPosition)
         }
     }
 
-    @Override
-    public void onCheckViewClicked(@NonNull CheckView checkView, @NonNull LocalMedia item, @NonNull RecyclerView.ViewHolder holder) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().getLocalMedias().size() + " onCheckViewClicked");
+    override fun onCheckViewClicked(checkView: CheckView, item: LocalMedia, holder: RecyclerView.ViewHolder) {
+        Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " onCheckViewClicked")
         // 是否多选模式,显示数字
-        if (mAlbumSpec.getCountable()) {
+        if (mAlbumSpec.countable) {
             // 获取当前选择的第几个
-            int checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item);
+            val checkedNum = mSelectedModel.selectedData.checkedNumOf(item)
             if (checkedNum == CheckView.UNCHECKED) {
                 // 如果当前数据是未选状态
-                if (assertAddSelection(holder.itemView.getContext(), item)) {
+                if (assertAddSelection(holder.itemView.context, item)) {
                     // 添加选择了当前数据
-                    mSelectedModel.addSelectedData(item);
+                    mSelectedModel.addSelectedData(item)
                     // 刷新数据源
-                    notifyCheckStateChanged();
+                    notifyCheckStateChanged()
                 }
             } else {
                 // 删除当前选择
-                mSelectedModel.removeSelectedData(item);
+                mSelectedModel.removeSelectedData(item)
                 // 刷新数据
-                notifyCheckStateChanged();
+                notifyCheckStateChanged()
             }
         } else {
             // 不是多选模式
-            if (mSelectedModel.getSelectedData().isSelected(item)) {
+            if (mSelectedModel.selectedData.isSelected(item)) {
                 // 如果当前已经被选中，再次选择就是取消了
-                mSelectedModel.removeSelectedData(item);
+                mSelectedModel.removeSelectedData(item)
                 // 刷新数据源
-                notifyCheckStateChanged();
+                notifyCheckStateChanged()
             } else {
-                if (assertAddSelection(holder.itemView.getContext(), item)) {
-                    mSelectedModel.addSelectedData(item);
-                    notifyCheckStateChanged();
+                if (assertAddSelection(holder.itemView.context, item)) {
+                    mSelectedModel.addSelectedData(item)
+                    notifyCheckStateChanged()
                 }
             }
         }
@@ -224,10 +200,10 @@ public class AlbumAdapter extends
      * 刷新数据
      */
     @SuppressLint("NotifyDataSetChanged")
-    public void notifyCheckStateChanged() {
-        notifyDataSetChanged();
+    fun notifyCheckStateChanged() {
+        notifyDataSetChanged()
         if (mCheckStateListener != null) {
-            mCheckStateListener.onUpdate();
+            mCheckStateListener!!.onUpdate()
         }
     }
 
@@ -237,10 +213,10 @@ public class AlbumAdapter extends
      * @param context 上下文
      * @param item    数据源
      */
-    private boolean assertAddSelection(Context context, LocalMedia item) {
-        IncapableCause cause = mSelectedModel.getSelectedData().isAcceptable(item);
-        IncapableCause.handleCause(context, cause);
-        return cause == null;
+    private fun assertAddSelection(context: Context, item: LocalMedia): Boolean {
+        val cause = mSelectedModel.selectedData.isAcceptable(item)
+        handleCause(context, cause)
+        return cause == null
     }
 
     /**
@@ -248,15 +224,15 @@ public class AlbumAdapter extends
      *
      * @param listener 事件
      */
-    public void registerCheckStateListener(CheckStateListener listener) {
-        mCheckStateListener = listener;
+    fun registerCheckStateListener(listener: CheckStateListener?) {
+        mCheckStateListener = listener
     }
 
     /**
      * 注销选择事件
      */
-    public void unregisterCheckStateListener() {
-        mCheckStateListener = null;
+    fun unregisterCheckStateListener() {
+        mCheckStateListener = null
     }
 
     /**
@@ -264,25 +240,25 @@ public class AlbumAdapter extends
      *
      * @param listener 事件
      */
-    public void registerOnMediaClickListener(OnMediaClickListener listener) {
-        mOnMediaClickListener = listener;
+    fun registerOnMediaClickListener(listener: OnMediaClickListener?) {
+        mOnMediaClickListener = listener
     }
 
     /**
      * 注销图片点击事件
      */
-    public void unregisterOnMediaClickListener() {
-        mOnMediaClickListener = null;
+    fun unregisterOnMediaClickListener() {
+        mOnMediaClickListener = null
     }
 
-    public interface CheckStateListener {
+    interface CheckStateListener {
         /**
          * 选择选项后更新事件
          */
-        void onUpdate();
+        fun onUpdate()
     }
 
-    public interface OnMediaClickListener {
+    interface OnMediaClickListener {
         /**
          * 点击事件
          *
@@ -292,17 +268,10 @@ public class AlbumAdapter extends
          * @param adapterPosition 索引
          * @noinspection unused
          */
-        void onMediaClick(Album2 album, ImageView imageView, LocalMedia item, int adapterPosition);
+        fun onMediaClick(album: Album?, imageView: ImageView?, item: LocalMedia?, adapterPosition: Int)
     }
 
-    private static class MediaViewHolder extends RecyclerView.ViewHolder {
-
-        private final MediaGrid mMediaGrid;
-
-        MediaViewHolder(View itemView) {
-            super(itemView);
-            mMediaGrid = (MediaGrid) itemView;
-        }
+    private class MediaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val mMediaGrid: MediaGrid = itemView as MediaGrid
     }
-
 }

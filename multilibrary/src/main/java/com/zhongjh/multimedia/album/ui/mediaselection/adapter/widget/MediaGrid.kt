@@ -189,10 +189,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      */
     private fun setImage() {
         mImageView.transitionName = mMedia.fileId.toString()
-        imageEngine.loadThumbnail(
-            context, mPreBindInfo.mResize,
-            mPreBindInfo.mPlaceholder, mImageView, mMedia.path
-        )
+        imageEngine.loadThumbnail(context, mPreBindInfo.mResize, mPreBindInfo.mPlaceholder, mImageView, mMedia.absolutePath)
     }
 
     /**

@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.album.entity.Album2;
+import com.zhongjh.multimedia.album.entity.Album;
 import com.zhongjh.multimedia.settings.GlobalSpec;
 import com.zhongjh.multimedia.utils.AttrsUtils;
 
@@ -32,16 +32,16 @@ import java.util.List;
  */
 public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapter.ViewHolder> {
 
-    private List<Album2> albums = new ArrayList<>();
+    private List<Album> albums = new ArrayList<>();
 
-    public void bindAlbums(List<Album2> albums) {
+    public void bindAlbums(List<Album> albums) {
         // 计算新老数据集差异，将差异更新到Adapter
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new AlbumCallback(this.albums, albums));
         this.albums = albums;
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public List<Album2> getAlbums() {
+    public List<Album> getAlbums() {
         return albums;
     }
 
@@ -54,7 +54,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Album2 album = albums.get(position);
+        Album album = albums.get(position);
         String name = album.getName();
         long imageNum = album.getCount();
         boolean isChecked = album.isChecked();
@@ -69,7 +69,7 @@ public class AlbumSpinnerAdapter extends RecyclerView.Adapter<AlbumSpinnerAdapte
             if (onAlbumItemClickListener != null) {
                 int size = albums.size();
                 for (int i = 0; i < size; i++) {
-                    Album2 item = albums.get(i);
+                    Album item = albums.get(i);
                     item.setChecked(false);
                 }
                 album.setChecked(true);

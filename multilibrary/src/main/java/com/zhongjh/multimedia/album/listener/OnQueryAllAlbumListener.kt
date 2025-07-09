@@ -1,12 +1,9 @@
-package com.zhongjh.multimedia.album.listener;
-
-import java.util.List;
+package com.zhongjh.multimedia.album.listener
 
 /**
  * @author zhongjh
  * @date 2022-10-17
  */
-public interface OnQueryAllAlbumListener<T> {
-
-    void onComplete(List<T> result);
+interface OnQueryAllAlbumListener<T> {
+    fun onComplete(result: List<T>?)
 }

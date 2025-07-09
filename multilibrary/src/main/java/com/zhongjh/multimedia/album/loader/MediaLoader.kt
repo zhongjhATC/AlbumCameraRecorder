@@ -9,18 +9,18 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
-import com.zhongjh.multimedia.R
-import com.zhongjh.multimedia.album.entity.Album2
-import com.zhongjh.multimedia.settings.AlbumSpec
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.isAudio
 import com.zhongjh.common.enums.MimeType.Companion.isImageOrGif
 import com.zhongjh.common.enums.MimeType.Companion.isVideo
 import com.zhongjh.common.utils.SdkVersionUtils
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.settings.AlbumSpec
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Locale
 import kotlin.math.max
 
 
@@ -69,8 +69,8 @@ class MediaLoader(private val context: Context) {
     /**
      * 获取专辑数据
      */
-    suspend fun loadMediaAlbum(): MutableList<Album2> {
-        val albumList = mutableListOf<Album2>()
+    suspend fun loadMediaAlbum(): MutableList<Album> {
+        val albumList = mutableListOf<Album>()
         withContext(Dispatchers.IO) {
             val albumSelectionStr = getAlbumSelection()
             val sortOrderStr = getSortOrder()
@@ -96,7 +96,7 @@ class MediaLoader(private val context: Context) {
                         if (bucketSet.contains(media.bucketId)) {
                             continue
                         }
-                        val album = Album2()
+                        val album = Album()
                         album.id = media.bucketId
                         album.name = media.parentFolderName
                         album.firstImagePath = media.path
@@ -114,7 +114,7 @@ class MediaLoader(private val context: Context) {
                     }
 
                     // 创建《所有》该专辑
-                    val album = Album2()
+                    val album = Album()
                     val bucketDisplayName = context.getString(R.string.z_multi_library_album_name_all)
                     album.name = bucketDisplayName
                     album.id = -1
@@ -244,9 +244,7 @@ class MediaLoader(private val context: Context) {
      * @param offset 分页
      * @param orderBy 排序
      */
-    private fun createQueryArgsBundle(
-        selection: String, selectionArgs: Array<String>, limitCount: Int, offset: Int, orderBy: String?
-    ): Bundle {
+    private fun createQueryArgsBundle(selection: String, selectionArgs: Array<String>, limitCount: Int, offset: Int, orderBy: String?): Bundle {
         val queryArgs = Bundle()
         if (SdkVersionUtils.isO) {
             queryArgs.putString(ContentResolver.QUERY_ARG_SQL_SELECTION, selection)
@@ -310,8 +308,7 @@ class MediaLoader(private val context: Context) {
         } else {
             // 查询所有
             arrayOf(
-                MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(),
-                MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString()
+                MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(), MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString()
             )
         }
     }
@@ -348,11 +345,7 @@ class MediaLoader(private val context: Context) {
             AlbumSpec.filterMaxFileSize
         }
         return String.format(
-            Locale.US,
-            "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
-            max(0, AlbumSpec.filterMinFileSize),
-            "=",
-            maxS
+            Locale.US, "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d", max(0, AlbumSpec.filterMinFileSize), "=", maxS
         )
     }
 
@@ -371,8 +364,7 @@ class MediaLoader(private val context: Context) {
             }
             mimeTypeList.forEachIndexed { i, mimeType ->
                 if (MimeType.ofImage().contains(mimeType)) {
-                    stringBuilder.append(if (i == 0) " AND (" else " OR ").append(MediaStore.MediaColumns.MIME_TYPE)
-                        .append("='").append(mimeType).append("'")
+                    stringBuilder.append(if (i == 0) " AND (" else " OR ").append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType).append("'")
                         .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
                 }
             }
@@ -410,8 +402,8 @@ class MediaLoader(private val context: Context) {
                 }
             }
             mimeTypeList.forEachIndexed { i, mimeType ->
-                stringBuilder.append(if (i == 0) " AND (" else " OR ").append(MediaStore.MediaColumns.MIME_TYPE)
-                    .append("='").append(mimeType).append("'").append(if (i == mimeTypeList.size.minus(1)) ")" else "")
+                stringBuilder.append(if (i == 0) " AND (" else " OR ").append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType).append("'")
+                    .append(if (i == mimeTypeList.size.minus(1)) ")" else "")
             }
         }
         return stringBuilder.toString()

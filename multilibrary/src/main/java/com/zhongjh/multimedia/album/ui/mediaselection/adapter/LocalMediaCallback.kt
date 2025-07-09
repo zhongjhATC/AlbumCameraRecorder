@@ -1,41 +1,26 @@
-package com.zhongjh.multimedia.album.ui.mediaselection.adapter;
+package com.zhongjh.multimedia.album.ui.mediaselection.adapter
 
-import androidx.recyclerview.widget.DiffUtil;
-
-import com.zhongjh.common.entity.LocalMedia;
-
-import java.util.List;
+import androidx.recyclerview.widget.DiffUtil
+import com.zhongjh.common.entity.LocalMedia
 
 /**
  * 比较差异，更快的实例化数据
  *
+ * 新老数据集赋值
+ * @param oldData 旧数据
+ * @param newData 新数据
+ *
  * @author zhongjh
  * @date 2023/8/04
  */
-public class LocalMediaCallback extends DiffUtil.Callback {
+class LocalMediaCallback(private val oldData: List<LocalMedia>, private val newData: List<LocalMedia>) : DiffUtil.Callback() {
 
-    private final List<LocalMedia> oldData;
-    private final List<LocalMedia> newData;
-
-    /**
-     * 新老数据集赋值
-     *
-     * @param oldData 旧数据
-     * @param newData 新数据
-     */
-    public LocalMediaCallback(List<LocalMedia> oldData, List<LocalMedia> newData) {
-        this.oldData = oldData;
-        this.newData = newData;
+    override fun getOldListSize(): Int {
+        return oldData.size
     }
 
-    @Override
-    public int getOldListSize() {
-        return oldData == null ? 0 : oldData.size();
-    }
-
-    @Override
-    public int getNewListSize() {
-        return newData == null ? 0 : newData.size();
+    override fun getNewListSize(): Int {
+        return newData.size
     }
 
     /**
@@ -45,11 +30,10 @@ public class LocalMediaCallback extends DiffUtil.Callback {
      * @param newItemPosition 新的索引数据
      * @return 如果相同返回true, 否则返回false
      */
-    @Override
-    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        LocalMedia oldObject = oldData.get(oldItemPosition);
-        LocalMedia newObject = newData.get(newItemPosition);
-        return oldObject.getFileId() == newObject.getFileId();
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldObject = oldData[oldItemPosition]
+        val newObject = newData[newItemPosition]
+        return oldObject.fileId == newObject.fileId
     }
 
     /**
@@ -59,11 +43,10 @@ public class LocalMediaCallback extends DiffUtil.Callback {
      * @param newItemPosition 新的索引数据
      * @return 如果相同返回true, 否则返回false
      */
-    @Override
-    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         // 默认内容是相同的，只要有一项不同，则返回false
-        LocalMedia oldObject = oldData.get(oldItemPosition);
-        LocalMedia newObject = newData.get(newItemPosition);
-        return oldObject.equalsLocalMedia(newObject);
+        val oldObject = oldData[oldItemPosition]
+        val newObject = newData[newItemPosition]
+        return oldObject.equalsLocalMedia(newObject)
     }
 }

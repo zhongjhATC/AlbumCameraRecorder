@@ -23,9 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
  * 线
  * @author zhongjh
  */
-class MediaGridInset(
-    private val mSpanCount: Int, private val mSpacing: Int, private val mIncludeEdge: Boolean
-) : RecyclerView.ItemDecoration() {
+class MediaGridInset(private val mSpanCount: Int, private val mSpacing: Int, private val mIncludeEdge: Boolean) : RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
         outRect: Rect, view: View, parent: RecyclerView,

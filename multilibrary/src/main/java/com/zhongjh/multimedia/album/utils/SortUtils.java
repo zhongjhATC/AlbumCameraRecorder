@@ -1,6 +1,6 @@
 package com.zhongjh.multimedia.album.utils;
 
-import com.zhongjh.multimedia.album.entity.Album2;
+import com.zhongjh.multimedia.album.entity.Album;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +17,7 @@ public class SortUtils {
      *
      * @param albums 专辑列表源
      */
-    public static void sortFolder(List<Album2> albums) {
+    public static void sortFolder(List<Album> albums) {
         Collections.sort(albums, (lhs, rhs) -> {
             if (lhs.getData().isEmpty() || rhs.getData().isEmpty()) {
                 return 0;

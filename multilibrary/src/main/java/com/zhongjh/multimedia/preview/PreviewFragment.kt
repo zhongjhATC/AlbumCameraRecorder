@@ -173,8 +173,8 @@ class PreviewFragment : BaseFragment() {
      */
     private var mEditImagePath: String? = null
 
-    var screenWidth = 0
-    var screenHeight = 0
+    private var screenWidth = 0
+    private var screenHeight = 0
 
     /**
      * 是否从界面恢复回来的

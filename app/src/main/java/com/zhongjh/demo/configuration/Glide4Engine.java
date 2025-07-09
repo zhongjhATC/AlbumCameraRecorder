@@ -16,18 +16,24 @@
 package com.zhongjh.demo.configuration;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.zhongjh.common.engine.ImageEngine;
-import com.zhongjh.demo.R;
 import com.zhongjh.common.utils.ActivityUtils;
+import com.zhongjh.demo.R;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -48,6 +54,18 @@ public class Glide4Engine implements ImageEngine {
                         .override(resize, resize)
                         .placeholder(placeholder)
                         .centerCrop())
+                .listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
+                        Log.e("Glide", "图片加载失败: $imageUrl " + path, e);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(@NonNull Bitmap resource, @NonNull Object model, Target<Bitmap> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
                 .into(imageView);
     }
 
