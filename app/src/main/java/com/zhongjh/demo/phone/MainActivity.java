@@ -482,8 +482,6 @@ public class MainActivity extends BaseActivity {
         }
 
         albumSetting
-                // 如果选择的媒体只有图像或视频，是否只显示一种媒体类型
-                .showSingleMediaType(mBinding.cbShowSingleMediaTypeTrue.isChecked())
                 // 是否显示多选图片的数字
                 .countable(mBinding.cbCountableTrue.isChecked())
                 // 自定义过滤器

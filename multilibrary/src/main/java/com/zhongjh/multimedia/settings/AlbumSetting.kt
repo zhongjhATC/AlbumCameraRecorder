@@ -67,11 +67,6 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
-    override fun showSingleMediaType(showSingleMediaType: Boolean): AlbumSetting {
-        mAlbumSpec.showSingleMediaType = showSingleMediaType
-        return this
-    }
-
     override fun countable(countable: Boolean): AlbumSetting {
         mAlbumSpec.countable = countable
         return this

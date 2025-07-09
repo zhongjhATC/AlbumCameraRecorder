@@ -193,8 +193,6 @@ public class MainSeeActivity extends BaseActivity {
         AlbumSetting albumSetting = new AlbumSetting(true)
                 // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
-                // 仅仅显示一个多媒体类型
-                .showSingleMediaType(true)
                 // 是否显示多选图片的数字
                 .countable(true)
                 // 自定义过滤器

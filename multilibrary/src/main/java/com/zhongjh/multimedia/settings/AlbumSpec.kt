@@ -64,11 +64,6 @@ object AlbumSpec {
     var pageSize: Int = 60
 
     /**
-     * 仅仅显示一个多媒体类型
-     */
-    var showSingleMediaType = false
-
-    /**
      * 是否显示多选图片的数字
      */
     var countable = true
@@ -150,7 +145,6 @@ object AlbumSpec {
         isSupportBmp = true
         mediaTypeExclusive = false
         pageSize = 60
-        showSingleMediaType = false
         countable = true
         baseFilters = null
         spanCount = 3
@@ -178,8 +172,7 @@ object AlbumSpec {
      * 仅显示图片 或者 视频可选为0个
      */
     fun onlyShowImages(): Boolean {
-        return (showSingleMediaType &&
-                ofImage().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.ALBUM))
+        return (ofImage().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.ALBUM))
                 || GlobalSpec.maxVideoSelectable != null && GlobalSpec.maxVideoSelectable == 0)
     }
 
@@ -187,8 +180,7 @@ object AlbumSpec {
      * 仅显示视频 或者 图片可选为0个
      */
     fun onlyShowVideos(): Boolean {
-        return (showSingleMediaType &&
-                ofVideo().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.ALBUM))
+        return (ofVideo().containsAll(GlobalSpec.getMimeTypeSet(ModuleTypes.ALBUM))
                 || GlobalSpec.maxImageSelectable != null && GlobalSpec.maxImageSelectable == 0)
     }
 

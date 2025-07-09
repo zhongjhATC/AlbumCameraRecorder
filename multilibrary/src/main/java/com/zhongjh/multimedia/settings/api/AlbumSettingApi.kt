@@ -67,16 +67,6 @@ interface AlbumSettingApi {
     fun pageSize(pageSize: Int): AlbumSetting
 
     /**
-     * 如果选择的媒体仅为图像或视频，是否仅显示一种媒体类型。
-     *
-     * @param showSingleMediaType 是否只显示一种媒体类型，图像或视频。
-     * @return [AlbumSetting] this
-     * @see com.zhongjh.multimedia.settings.AlbumSpec.onlyShowImages
-     * @see com.zhongjh.multimedia.settings.AlbumSpec.onlyShowVideos
-     */
-    fun showSingleMediaType(showSingleMediaType: Boolean): AlbumSetting
-
-    /**
      * 用户选择媒体时显示自动增加的数字或复选标记。
      *
      * @param countable 如果是自动增加的数字，则为真；如果是复选标记，则为假。默认值为假。
