@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.album.entity.ReloadPageMediaData
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGridInset
 import com.zhongjh.multimedia.album.utils.UiUtils.spanCount
@@ -82,10 +83,10 @@ class MediaViewUtil(
         })
 
         // 监听到新的相册数据
-        mainModel.reloadPageMediaData.observe(fragment.viewLifecycleOwner) { mediaData: MutableList<LocalMedia> ->
+        mainModel.reloadPageMediaData.observe(fragment.viewLifecycleOwner) { reloadPageMediaData: ReloadPageMediaData ->
             // 如果没有数据，则关闭下拉加载
-            recyclerView.setEnabledLoadMore(mediaData.isNotEmpty())
-            mAdapter?.setData(mediaData)
+            recyclerView.setEnabledLoadMore(reloadPageMediaData.data.isNotEmpty())
+            mAdapter?.setData(reloadPageMediaData)
             recyclerView.scrollToPosition(0)
         }
 

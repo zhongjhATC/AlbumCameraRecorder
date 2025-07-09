@@ -141,9 +141,8 @@ class MediaLoader(private val context: Context) {
      * @param page 页码
      * @param pageSize 页数
      */
-    suspend fun loadMediaMore(bucketId: Long, page: Int, pageSize: Int): MutableList<LocalMedia> {
+    fun loadMediaMore(bucketId: Long, page: Int, pageSize: Int): MutableList<LocalMedia> {
         val mediaList = mutableListOf<LocalMedia>()
-        withContext(Dispatchers.IO) {
             val selectionArgs = if (bucketId == ALL_BUCKET_ID) {
                 getSelectionArgs()
             } else {
@@ -174,7 +173,6 @@ class MediaLoader(private val context: Context) {
                     cursor.close()
                 }
             }
-        }
         return mediaList
     }
 

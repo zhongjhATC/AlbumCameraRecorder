@@ -11,19 +11,17 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.IncapableCause.Companion.handleCause
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.album.entity.ReloadPageMediaData
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGrid
 import com.zhongjh.multimedia.album.widget.CheckView
 import com.zhongjh.multimedia.model.SelectedModel
 import com.zhongjh.multimedia.settings.AlbumSpec
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * 相册适配器
@@ -56,18 +54,14 @@ class AlbumAdapter(context: Context, private val lifecycleOwner: LifecycleOwner,
     /**
      * 重新赋值数据
      *
-     * @param data 数据源
+     * @param reloadPageMediaData 数据源和比较数据
      */
-    fun setData(data: MutableList<LocalMedia>) {
+    fun setData(reloadPageMediaData: ReloadPageMediaData) {
         // 使用协程作用域启动后台任务
         lifecycleOwner.lifecycleScope.launch {
-            // 在IO调度器上执行耗时操作（计算差异）
-            val diffResult = withContext(Dispatchers.IO) {
-                DiffUtil.calculateDiff(LocalMediaCallback(this@AlbumAdapter.data, data))
-            }
             // 结果自动回到主线程，更新UI
-            this@AlbumAdapter.data = data
-            diffResult.dispatchUpdatesTo(this@AlbumAdapter)
+            this@AlbumAdapter.data = reloadPageMediaData.data
+            reloadPageMediaData.diffResult.dispatchUpdatesTo(this@AlbumAdapter)
         }
     }
 

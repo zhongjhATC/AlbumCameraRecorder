@@ -5,10 +5,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.DiffUtil
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.album.entity.ReloadPageMediaData
 import com.zhongjh.multimedia.album.loader.MediaLoader
+import com.zhongjh.multimedia.album.ui.mediaselection.adapter.LocalMediaCallback
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
@@ -39,8 +44,8 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 重新获取数据事件,一般是选择专辑重新获取
      */
-    private val _reloadPageMediaData = MutableLiveData<MutableList<LocalMedia>>()
-    val reloadPageMediaData: LiveData<MutableList<LocalMedia>> get() = _reloadPageMediaData
+    private val _reloadPageMediaData = MutableLiveData<ReloadPageMediaData>()
+    val reloadPageMediaData: LiveData<ReloadPageMediaData> get() = _reloadPageMediaData
 
     /**
      * 添加数据事件,一般是下拉数据
@@ -106,13 +111,21 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
         viewModelScope.launch {
             try {
-                page = 1
-                val localMediaMutableList = mediaLoader.loadMediaMore(bucketId, page, pageSize)
-                // 添加进缓存数据
-                localMedias.clear()
-                localMedias.addAll(localMediaMutableList)
+                // 在IO调度器上执行耗时操作（计算差异）
+                val reloadPageMediaData = withContext(Dispatchers.IO) {
+                    page = 1
+                    val localMediaMutableList = mediaLoader.loadMediaMore(bucketId, page, pageSize)
+                    val diffResult = DiffUtil.calculateDiff(LocalMediaCallback(localMedias, localMediaMutableList))
+                    // 添加进缓存数据
+                    localMedias.clear()
+                    localMedias.addAll(localMediaMutableList)
+                    val reloadPageMediaData = ReloadPageMediaData()
+                    reloadPageMediaData.data = localMedias
+                    reloadPageMediaData.diffResult = diffResult
+                    reloadPageMediaData
+                }
                 // 通知UI有新的数据
-                this@MainModel._reloadPageMediaData.postValue(localMedias)
+                this@MainModel._reloadPageMediaData.postValue(reloadPageMediaData)
             } catch (ex: Exception) {
                 this@MainModel._onFail.postValue(ex)
             }
