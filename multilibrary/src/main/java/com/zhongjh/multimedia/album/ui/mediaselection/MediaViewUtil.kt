@@ -1,9 +1,10 @@
 package com.zhongjh.multimedia.album.ui.mediaselection
 
+import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.ImageView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.GridLayoutManager
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.R
@@ -33,8 +34,9 @@ import com.zhongjh.multimedia.settings.GlobalSpec.onLogListener
  * @date 2022/9/19
  */
 class MediaViewUtil(
-    private val activity: FragmentActivity, private val fragment: Fragment, private val mainModel: MainModel, private val selectedModel: SelectedModel,
-    private val recyclerView: RecyclerLoadMoreView, private var checkStateListener: AlbumAdapter.CheckStateListener?, private var onMediaClickListener: AlbumAdapter.OnMediaClickListener?
+    private val context: Context, private val owner: LifecycleOwner, private val mainModel: MainModel, private val selectedModel: SelectedModel,
+    private val recyclerView: RecyclerLoadMoreView, private val placeholder: Drawable?,
+    private var checkStateListener: AlbumAdapter.CheckStateListener?, private var onMediaClickListener: AlbumAdapter.OnMediaClickListener?
 ) : AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
 
     private var mAdapter: AlbumAdapter? = null
@@ -48,15 +50,15 @@ class MediaViewUtil(
     private fun init() {
         // 先设置recyclerView的布局
         val spanCount = if (mAlbumSpec.gridExpectedSize > 0) {
-            spanCount(activity, mAlbumSpec.gridExpectedSize)
+            spanCount(context, mAlbumSpec.gridExpectedSize)
         } else {
             mAlbumSpec.spanCount
         }
         // 删除动画
         recyclerView.itemAnimator = null
-        recyclerView.layoutManager = GridLayoutManager(activity, spanCount)
+        recyclerView.layoutManager = GridLayoutManager(context, spanCount)
         // 需要先设置布局获取确定的spanCount，才能设置adapter
-        mAdapter = AlbumAdapter(activity, activity, selectedModel, imageResize)
+        mAdapter = AlbumAdapter(context, owner, selectedModel, placeholder, imageResize)
         Log.d("onSaveInstanceState", " mAdapter")
         mAdapter?.registerCheckStateListener(this)
         mAdapter?.registerOnMediaClickListener(this)
@@ -64,7 +66,7 @@ class MediaViewUtil(
         recyclerView.setHasFixedSize(true)
 
         // 加载线，recyclerView加载数据
-        val spacing = activity.resources.getDimensionPixelSize(R.dimen.z_media_grid_spacing)
+        val spacing = context.resources.getDimensionPixelSize(R.dimen.z_media_grid_spacing)
         recyclerView.addItemDecoration(MediaGridInset(spanCount, spacing, false))
         recyclerView.adapter = mAdapter
 
@@ -74,16 +76,16 @@ class MediaViewUtil(
         // 滑动事件
         recyclerView.setOnRecyclerViewScrollStateListener(object : OnRecyclerViewScrollStateListener {
             override fun onScrollFast() {
-                imageEngine.pauseRequests(activity.applicationContext)
+                imageEngine.pauseRequests(context)
             }
 
             override fun onScrollSlow() {
-                imageEngine.resumeRequests(activity.applicationContext)
+                imageEngine.resumeRequests(context)
             }
         })
 
         // 监听到新的相册数据
-        mainModel.reloadPageMediaData.observe(fragment.viewLifecycleOwner) { reloadPageMediaData: ReloadPageMediaData ->
+        mainModel.reloadPageMediaData.observe(owner) { reloadPageMediaData: ReloadPageMediaData ->
             // 如果没有数据，则关闭下拉加载
             recyclerView.setEnabledLoadMore(reloadPageMediaData.data.isNotEmpty())
             mAdapter?.setData(reloadPageMediaData)
@@ -91,14 +93,14 @@ class MediaViewUtil(
         }
 
         // 监听到下拉相册数据
-        mainModel.addAllPageMediaData.observe(fragment.viewLifecycleOwner) { size: Int ->
+        mainModel.addAllPageMediaData.observe(owner) { size: Int ->
             // 如果没有数据，则关闭下拉加载
             recyclerView.setEnabledLoadMore(size != -1)
             mAdapter?.addData(size)
         }
 
         // 输出失败信息
-        mainModel.onFail.observe(fragment.viewLifecycleOwner) { throwable: Throwable ->
+        mainModel.onFail.observe(owner) { throwable: Throwable ->
             onLogListener?.logError(throwable)
         }
     }
@@ -159,8 +161,8 @@ class MediaViewUtil(
             if (lm != null) {
                 spanCount = (lm as GridLayoutManager).spanCount
             }
-            val screenWidth = activity.resources.displayMetrics.widthPixels
-            val availableWidth = screenWidth - activity.resources.getDimensionPixelSize(
+            val screenWidth = context.resources.displayMetrics.widthPixels
+            val availableWidth = screenWidth - context.resources.getDimensionPixelSize(
                 R.dimen.z_media_grid_spacing
             ) * (spanCount - 1)
             // 图片调整后的大小：获取列表的每个格子的宽度

@@ -1,62 +1,60 @@
-package com.zhongjh.multimedia.album.ui;
+package com.zhongjh.multimedia.album.ui
 
-import static android.app.Activity.RESULT_OK;
-import static com.zhongjh.multimedia.model.SelectedData.STATE_SELECTION;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.Group;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.appbar.AppBarLayout;
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.listener.OnMoreClickListener;
-import com.zhongjh.common.utils.ColorFilterUtil;
-import com.zhongjh.common.utils.DisplayMetricsUtils;
-import com.zhongjh.common.utils.DoubleUtils;
-import com.zhongjh.common.utils.StatusBarUtils;
-import com.zhongjh.common.utils.ThreadUtils;
-import com.zhongjh.multimedia.MainActivity;
-import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.album.entity.Album;
-import com.zhongjh.multimedia.album.ui.mediaselection.MediaViewUtil;
-import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter;
-import com.zhongjh.multimedia.album.utils.AlbumCompressFileTask;
-import com.zhongjh.multimedia.album.widget.CheckRadioView;
-import com.zhongjh.multimedia.album.widget.albumspinner.AlbumSpinner;
-import com.zhongjh.multimedia.album.widget.recyclerview.RecyclerLoadMoreView;
-import com.zhongjh.multimedia.model.MainModel;
-import com.zhongjh.multimedia.model.OriginalManage;
-import com.zhongjh.multimedia.model.SelectedModel;
-import com.zhongjh.multimedia.preview.start.PreviewStartManager;
-import com.zhongjh.multimedia.settings.AlbumSpec;
-import com.zhongjh.multimedia.settings.GlobalSpec;
-import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams;
-import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior;
-
-import java.util.ArrayList;
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.Group
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.listener.OnMoreClickListener
+import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
+import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
+import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
+import com.zhongjh.common.utils.DoubleUtils.isFastDoubleClick
+import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
+import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.multimedia.MainActivity
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.album.entity.AlbumSpinnerStyle
+import com.zhongjh.multimedia.album.ui.mediaselection.MediaViewUtil
+import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter
+import com.zhongjh.multimedia.album.utils.AlbumCompressFileTask
+import com.zhongjh.multimedia.album.widget.CheckRadioView
+import com.zhongjh.multimedia.album.widget.albumspinner.AlbumSpinner
+import com.zhongjh.multimedia.album.widget.recyclerview.RecyclerLoadMoreView
+import com.zhongjh.multimedia.model.MainModel
+import com.zhongjh.multimedia.model.OriginalManage
+import com.zhongjh.multimedia.model.SelectedData.STATE_SELECTION
+import com.zhongjh.multimedia.model.SelectedModel
+import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewActivityByAlbum
+import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewFragmentByAlbum
+import com.zhongjh.multimedia.settings.AlbumSpec
+import com.zhongjh.multimedia.settings.GlobalSpec
+import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
+import com.zhongjh.multimedia.utils.AttrsUtils
+import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
 
 /**
  * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
@@ -66,396 +64,389 @@ import java.util.ArrayList;
  * @date 2018/8/22
  * @noinspection ALL
  */
-public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
+class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
+    private val tag: String = this@AlbumFragment.javaClass.simpleName
 
-    private final String TAG = AlbumFragment.this.getClass().getSimpleName();
+    private lateinit var mApplicationContext: Context
+    private lateinit var mMainModel: MainModel
+    private lateinit var mSelectedModel: SelectedModel
 
-    private static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
-    public static final String ARGUMENTS_MARGIN_BOTTOM = "arguments_margin_bottom";
-
-    private Context mContext;
-    private MainModel mMainModel;
-    private SelectedModel mSelectedModel;
     /**
      * 从预览界面回来
      */
-    private ActivityResultLauncher<Intent> mPreviewActivityResult;
+    private lateinit var mPreviewActivityResult: ActivityResultLauncher<Intent>
+
     /**
      * 公共配置
      */
-    private final GlobalSpec mGlobalSpec = GlobalSpec.INSTANCE;
+    private val mGlobalSpec = GlobalSpec
 
     /**
      * 相册配置
      */
-    private final AlbumSpec mAlbumSpec = AlbumSpec.INSTANCE;
+    private val mAlbumSpec = AlbumSpec
 
     /**
      * 统一管理原图有关功能模块
      */
-    private OriginalManage mOriginalManage;
+    private lateinit var mOriginalManage: OriginalManage
 
     /**
      * 专辑下拉框控件
      */
-    private AlbumSpinner mAlbumSpinner;
+    private lateinit var mAlbumSpinner: AlbumSpinner
 
     /**
      * 单独处理相册数据源的类
      */
-    private MediaViewUtil mMediaViewUtil;
+    private lateinit var mMediaViewUtil: MediaViewUtil
 
     /**
      * 是否刷新
      */
-    private boolean mIsRefresh;
+    private val mIsRefresh = false
 
     /**
      * 压缩异步线程
      */
-    private ThreadUtils.SimpleTask<ArrayList<LocalMedia>> mCompressFileTask;
+    private var mCompressFileTask: ThreadUtils.SimpleTask<ArrayList<LocalMedia>>? = null
+
     /**
      * 异步线程的逻辑
      */
-    private AlbumCompressFileTask mAlbumCompressFileTask;
+    private var mAlbumCompressFileTask: AlbumCompressFileTask? = null
 
-    private ViewHolder mViewHolder;
+    private lateinit var mViewHolder: ViewHolder
 
     /**
      * 当前点击item的索引
      */
-    int currentPosition;
+    private var currentPosition: Int = 0
 
     /**
      * 预览界面滑动后的索引
      */
-    int smoothScrollPosition;
+    var smoothScrollPosition: Int = 0
 
     /**
      * 判断scroll是否是用户主动拖拽
      */
-    private boolean isRecyclerViewUserDragging;
+    private var isRecyclerViewUserDragging = false
 
     /**
      * 判断scroll是否处于滑动中
      */
-    private boolean isRecyclerViewScrolling;
-
-
-    /**
-     * @param marginBottom 底部间距
-     */
-    public static AlbumFragment newInstance(int marginBottom) {
-        AlbumFragment albumFragment = new AlbumFragment();
-        Bundle args = new Bundle();
-        albumFragment.setArguments(args);
-        args.putInt(ARGUMENTS_MARGIN_BOTTOM, marginBottom);
-        return albumFragment;
-    }
+    private var isRecyclerViewScrolling = false
 
     /**
      * 先执行onAttach生命周期再执行onCreateView
      *
      * @param context 上下文
      */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        this.mContext = requireActivity().getApplicationContext();
-        this.mMainModel = new ViewModelProvider(requireActivity())
-                .get(MainModel.class);
-        this.mSelectedModel = new ViewModelProvider(requireActivity())
-                .get(SelectedModel.class);
-        if (!mAlbumSpec.getSelectedData().isEmpty()) {
-            this.mSelectedModel.getSelectedData().addAll(mAlbumSpec.getSelectedData());
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        this.mApplicationContext = requireActivity().applicationContext
+        this.mMainModel = ViewModelProvider(requireActivity())[MainModel::class.java]
+        this.mSelectedModel = ViewModelProvider(requireActivity())[SelectedModel::class.java]
+        if (mAlbumSpec.SelectedData.isNotEmpty()) {
+            mSelectedModel.selectedData.addAll(mAlbumSpec.SelectedData)
         }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_album_zjh, container, false);
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_album_zjh, container, false)
 
-        mViewHolder = new ViewHolder(view);
-        initConfig();
-        mAlbumCompressFileTask = new AlbumCompressFileTask(requireActivity(), TAG, AlbumFragment.class, mGlobalSpec);
-        initView(savedInstanceState);
-        initActivityResult();
-        initListener();
-        initMediaViewUtil();
-        initObserveData();
-        return view;
+        mViewHolder = ViewHolder(view)
+        initConfig()
+        mAlbumCompressFileTask = AlbumCompressFileTask(requireActivity(), tag, AlbumFragment::class.java, mGlobalSpec)
+        initView(savedInstanceState)
+        initActivityResult()
+        initListener()
+        initMediaViewUtil()
+        initObserveData()
+        return view
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateBottomToolbar();
+    override fun onResume() {
+        super.onResume()
+        updateBottomToolbar()
     }
 
     /**
      * 初始化配置
      */
-    private void initConfig() {
-        mOriginalManage = new OriginalManage(this, mMainModel, mSelectedModel, mAlbumSpec);
+    private fun initConfig() {
+        mOriginalManage = OriginalManage(this, mMainModel, mSelectedModel, mAlbumSpec)
     }
 
     /**
      * 初始化view
      */
-    private void initView(Bundle savedInstanceState) {
+    private fun initView(savedInstanceState: Bundle?) {
         // 兼容沉倾状态栏
-        int statusBarHeight = StatusBarUtils.getStatusBarHeight(requireActivity());
-        mViewHolder.root.setPadding(mViewHolder.root.getPaddingLeft(), statusBarHeight,
-                mViewHolder.root.getPaddingRight(), mViewHolder.root.getPaddingBottom());
+        val statusBarHeight = getStatusBarHeight(requireActivity())
+        mViewHolder.root.setPadding(
+            mViewHolder.root.paddingLeft, statusBarHeight,
+            mViewHolder.root.paddingRight, mViewHolder.root.paddingBottom
+        )
         // 修改颜色
-        Drawable navigationIcon = mViewHolder.toolbar.getNavigationIcon();
-        TypedArray ta = requireActivity().getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
-        int color = ta.getColor(0, 0);
+        val navigationIcon = mViewHolder.toolbar.navigationIcon
+        val ta = requireActivity().theme.obtainStyledAttributes(intArrayOf(R.attr.album_element_color))
+        val color = ta.getColor(0, 0)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ta.close();
+            ta.close()
         } else {
-            ta.recycle();
+            ta.recycle()
         }
-        if (navigationIcon != null) {
-            ColorFilterUtil.setColorFilterSrcIn(navigationIcon, color);
+        navigationIcon?.let {
+            setColorFilterSrcIn(navigationIcon, color)
         }
-        updateBottomToolbar();
+        updateBottomToolbar()
 
-        mAlbumSpinner = new AlbumSpinner(getActivity());
-        mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow);
-        mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle);
+        initAlbumSpinner()
 
         // 获取专辑数据
-        mMainModel.loadAllAlbum();
+        mMainModel.loadAllAlbum()
 
         // 关闭滑动隐藏布局功能
-        if (!mAlbumSpec.getSlidingHiddenEnable()) {
-            mViewHolder.recyclerview.setNestedScrollingEnabled(false);
-            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mViewHolder.toolbar.getLayoutParams();
-            params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
-            mViewHolder.emptyView.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
-            mViewHolder.recyclerview.setPadding(0, 0, 0, DisplayMetricsUtils.dip2px(50));
+        if (!mAlbumSpec.slidingHiddenEnable) {
+            mViewHolder.recyclerview.isNestedScrollingEnabled = false
+            val params = mViewHolder.toolbar.layoutParams as AppBarLayout.LayoutParams
+            params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+            mViewHolder.emptyView.setPadding(0, 0, 0, dip2px(50f))
+            mViewHolder.recyclerview.setPadding(0, 0, 0, dip2px(50f))
         }
     }
 
     /**
      * 初始化事件
      */
-    private void initListener() {
+    private fun initListener() {
         // 滑动回调事件主要是处理共享动画的参数设置
-        mViewHolder.recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                switch (newState) {
-                    case RecyclerView.SCROLL_STATE_SETTLING:
-                        // 如果不是人为滑动 并且 不是滑动中状态
+        mViewHolder.recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                when (newState) {
+                    RecyclerView.SCROLL_STATE_SETTLING ->                         // 如果不是人为滑动 并且 不是滑动中状态
                         if (!isRecyclerViewUserDragging && !isRecyclerViewScrolling) {
                             // 设置滑动中状态
-                            isRecyclerViewScrolling = true;
+                            isRecyclerViewScrolling = true
                         }
-                        break;
-                    case RecyclerView.SCROLL_STATE_DRAGGING:
-                        // 如果是用户主动滑动recyclerview，则不触发位置计算
-                        isRecyclerViewUserDragging = true;
-                        break;
-                    case RecyclerView.SCROLL_STATE_IDLE:
-                        // 如果不是人为滑动 并且 是滑动中状态变成停止状态
+
+                    RecyclerView.SCROLL_STATE_DRAGGING ->                         // 如果是用户主动滑动recyclerview，则不触发位置计算
+                        isRecyclerViewUserDragging = true
+
+                    RecyclerView.SCROLL_STATE_IDLE ->                         // 如果不是人为滑动 并且 是滑动中状态变成停止状态
                         if (!isRecyclerViewUserDragging && isRecyclerViewScrolling) {
-                            isRecyclerViewScrolling = false;
+                            isRecyclerViewScrolling = false
                             // 将当前列表的组件宽高数据添加到缓存
-                            RecycleItemViewParams.add(mViewHolder.recyclerview, 0);
-                            mMainModel.onScrollToPositionComplete(smoothScrollPosition);
+                            add(mViewHolder.recyclerview, 0)
+                            mMainModel.onScrollToPositionComplete(smoothScrollPosition)
                         }
-                        break;
                 }
             }
 
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
+        })
 
         // 关闭事件
-        mViewHolder.imgClose.setOnClickListener(v -> requireActivity().finish());
+        mViewHolder.imgClose.setOnClickListener { v: View? -> requireActivity().finish() }
 
         // 下拉框选择的时候
-        mAlbumSpinner.setOnAlbumItemClickListener((position, album) -> {
+        mAlbumSpinner.setOnAlbumItemClickListener { position: Int, album: Album ->
             // 设置缓存值
-            mMainModel.setCurrentSelection(position);
-            onAlbumSelected(album);
-            mAlbumSpinner.dismiss();
-        });
+            mMainModel.currentSelection = position
+            onAlbumSelected(album)
+            mAlbumSpinner.dismiss()
+        }
 
         // 预览事件
-        mViewHolder.buttonPreview.setOnClickListener(new OnMoreClickListener() {
-            @Override
-            public void onListener(@NonNull View v) {
-                PreviewStartManager.startPreviewActivityByAlbum(requireActivity(), mGlobalSpec.getCutscenesEnabled(), mPreviewActivityResult, mSelectedModel.getSelectedData().getLocalMedias());
+        mViewHolder.buttonPreview.setOnClickListener(object : OnMoreClickListener() {
+            override fun onListener(v: View) {
+                startPreviewActivityByAlbum(requireActivity(), mGlobalSpec.cutscenesEnabled, mPreviewActivityResult, mSelectedModel.selectedData.localMedias)
             }
-        });
+        })
 
         // 确认当前选择的图片
-        mViewHolder.buttonApply.setOnClickListener(new OnMoreClickListener() {
-            @Override
-            public void onListener(@NonNull View v) {
-                ArrayList<LocalMedia> localMediaArrayList = mSelectedModel.getSelectedData().getLocalMedias();
+        mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
+            override fun onListener(v: View) {
+                val localMediaArrayList = mSelectedModel.selectedData.localMedias
                 // 设置是否原图状态
-                for (LocalMedia localMedia : localMediaArrayList) {
-                    localMedia.setOriginal(mMainModel.getOriginalEnable());
+                for (localMedia in localMediaArrayList) {
+                    localMedia.isOriginal = mMainModel.getOriginalEnable()
                 }
-                compressFile(localMediaArrayList);
+                compressFile(localMediaArrayList)
             }
-        });
+        })
 
         // 点击原图
-        mViewHolder.originalLayout.setOnClickListener(view -> mOriginalManage.originalClick());
+        mViewHolder.originalLayout.setOnClickListener { mOriginalManage.originalClick() }
 
         // 点击Loading停止
-        mViewHolder.pbLoading.setOnClickListener(v -> {
+        mViewHolder.pbLoading.setOnClickListener {
             // 中断线程
-            mCompressFileTask.cancel();
+            mCompressFileTask?.cancel()
             // 恢复界面可用
-            setControlTouchEnable(true);
-        });
+            setControlTouchEnable(true)
+        }
 
         // 触发滑动事件
-        mViewHolder.bottomToolbar.setOnListener(translationY -> ((MainActivity) requireActivity()).onDependentViewChanged(translationY));
+        mViewHolder.bottomToolbar.onListener = ConstraintLayoutBehavior.Listener { translationY: Float -> (requireActivity() as MainActivity).onDependentViewChanged(translationY) }
     }
 
     /**
      * 初始化MediaViewUtil
      */
-    private void initMediaViewUtil() {
-        Log.d("onSaveInstanceState", " initMediaViewUtil");
-        mMediaViewUtil = new MediaViewUtil(getActivity(), this, mMainModel, mSelectedModel, mViewHolder.recyclerview, this, this);
+    private fun initMediaViewUtil() {
+        Log.d("onSaveInstanceState", " initMediaViewUtil")
+        val ta = requireActivity().theme.obtainStyledAttributes(intArrayOf(R.attr.item_placeholder))
+        val placeholder = ta.getDrawable(0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ta.close()
+        } else {
+            ta.recycle()
+        }
+        mMediaViewUtil = MediaViewUtil(this.mApplicationContext, this, mMainModel, mSelectedModel, mViewHolder.recyclerview, placeholder, this, this)
     }
 
     /**
      * 初始化数据的监控
      */
-    private void initObserveData() {
+    private fun initObserveData() {
         // 专辑加载完毕
-        mMainModel.getAlbums().observe(getViewLifecycleOwner(), data -> {
+        mMainModel.albums.observe(viewLifecycleOwner) { data: List<Album> ->
             // 更新专辑列表
-            mAlbumSpinner.bindFolder(data);
+            mAlbumSpinner.bindFolder(data)
             // 可能因为别的原因销毁当前界面，回到当前选择的位置
-            Album album = data.get(mMainModel.getCurrentSelection());
-            ArrayList<Album> albumChecks = new ArrayList<>();
-            albumChecks.add(album);
-            mAlbumSpinner.updateCheckStatus(albumChecks);
-            String displayName = album.getName();
-            if (mViewHolder.tvAlbumTitle.getVisibility() == View.VISIBLE) {
-                mViewHolder.tvAlbumTitle.setText(displayName);
+            val album = data[mMainModel.currentSelection]
+            val albumChecks = ArrayList<Album>()
+            albumChecks.add(album)
+            mAlbumSpinner.updateCheckStatus(albumChecks)
+            val displayName = album.name
+            if (mViewHolder.tvAlbumTitle.visibility == View.VISIBLE) {
+                mViewHolder.tvAlbumTitle.text = displayName
             } else {
-                mViewHolder.tvAlbumTitle.setAlpha(0.0f);
-                mViewHolder.tvAlbumTitle.setVisibility(View.VISIBLE);
-                mViewHolder.tvAlbumTitle.setText(displayName);
-                mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(mContext.getResources().getInteger(
-                        android.R.integer.config_longAnimTime)).start();
+                mViewHolder.tvAlbumTitle.alpha = 0.0f
+                mViewHolder.tvAlbumTitle.visibility = View.VISIBLE
+                mViewHolder.tvAlbumTitle.text = displayName
+                mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(
+                    mApplicationContext.resources.getInteger(
+                        android.R.integer.config_longAnimTime
+                    ).toLong()
+                ).start()
             }
-            onAlbumSelected(album);
-        });
+            onAlbumSelected(album)
+        }
         // 选择数据改变
-        mSelectedModel.getSelectedDataChange().observe(getViewLifecycleOwner(), data -> mMediaViewUtil.notifyItemByLocalMedia());
+        mSelectedModel.selectedDataChange.observe(viewLifecycleOwner) { mMediaViewUtil.notifyItemByLocalMedia() }
         // 原图选项改变
-        mMainModel.getOriginalEnableObserve().observe(getViewLifecycleOwner(), value -> mViewHolder.original.setChecked(value));
+        mMainModel.getOriginalEnableObserve().observe(viewLifecycleOwner) { value: Boolean -> mViewHolder.original.setChecked(value) }
         // 预览界面的viewPage滑动时触发
-        mMainModel.getOnViewPageSelected().observe(getViewLifecycleOwner(), value -> {
-            smoothScrollPosition = value;
+        mMainModel.onViewPageSelected.observe(viewLifecycleOwner) { value: Int ->
+            smoothScrollPosition = value
             // 滑动到viewPage的一样position
-            isRecyclerViewUserDragging = false;
-            mViewHolder.recyclerview.smoothScrollToPosition(smoothScrollPosition);
-        });
+            isRecyclerViewUserDragging = false
+            mViewHolder.recyclerview.smoothScrollToPosition(smoothScrollPosition)
+        }
     }
 
     /**
      * 初始化Activity的返回
      */
-    private void initActivityResult() {
+    private fun initActivityResult() {
         // 将PreviewActivity传递的数据继续传给上一个Activity
-        mPreviewActivityResult = this.registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(), result -> {
-                    if (result.getResultCode() != RESULT_OK) {
-                        return;
-                    }
-                    if (result.getData() != null) {
-                        requireActivity().setResult(RESULT_OK, result.getData());
-                    }
-                    requireActivity().finish();
-                });
+        mPreviewActivityResult = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode != Activity.RESULT_OK) {
+                return@registerForActivityResult
+            }
+            result.data?.let {
+                requireActivity().setResult(Activity.RESULT_OK, result.data)
+            }
+            requireActivity().finish()
+        }
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "AlbumFragment onDestroy");
-        if (mGlobalSpec.isCompressEnable() && mGlobalSpec.getVideoCompressCoordinator() != null) {
-            mGlobalSpec.getVideoCompressCoordinator().onCompressDestroy(AlbumFragment.this.getClass());
-            mGlobalSpec.setVideoCompressCoordinator(null);
-        }
-        if (mCompressFileTask != null) {
-            ThreadUtils.cancel(mCompressFileTask);
-        }
-        if (mMediaViewUtil != null) {
-            mMediaViewUtil.onDestroyView();
-        }
-        super.onDestroy();
+    /**
+     * 初始化下拉框
+     */
+    private fun initAlbumSpinner() {
+        // 获取上下箭头两个图片
+        val typedValue = TypedValue()
+        requireActivity().theme.resolveAttribute(R.attr.album_listPopupWindowStyle, typedValue, true)
+        val albumSpinnerStyle = AlbumSpinnerStyle()
+        albumSpinnerStyle.drawableUp = AttrsUtils.getTypeValueDrawable(mApplicationContext, typedValue.resourceId, R.attr.album_arrow_up_icon, R.drawable.ic_round_keyboard_arrow_up_24)
+        albumSpinnerStyle.drawableDown = AttrsUtils.getTypeValueDrawable(mApplicationContext, typedValue.resourceId, R.attr.album_arrow_down_icon, R.drawable.ic_round_keyboard_arrow_down_24)
+        albumSpinnerStyle.maxHeight = (getScreenHeight(requireActivity()) * 0.6).toInt()
+
+        mAlbumSpinner = AlbumSpinner(mApplicationContext, albumSpinnerStyle)
+        mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow)
+        mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return item.getItemId() == android.R.id.home || super.onOptionsItemSelected(item);
+    override fun onDestroy() {
+        Log.d(tag, "AlbumFragment onDestroy")
+        mGlobalSpec.videoCompressCoordinator?.let { videoCompressCoordinator ->
+            videoCompressCoordinator.onCompressDestroy(this@AlbumFragment.javaClass)
+            mGlobalSpec.videoCompressCoordinator = null
+        }
+        mCompressFileTask?.let {
+            ThreadUtils.cancel(it)
+        }
+        mMediaViewUtil.onDestroyView()
+        super.onDestroy()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.itemId == android.R.id.home || super.onOptionsItemSelected(item)
     }
 
     /**
      * 更新底部数据
      */
-    private void updateBottomToolbar() {
-        int selectedCount = mSelectedModel.getSelectedData().count();
+    private fun updateBottomToolbar() {
+        val selectedCount = mSelectedModel.selectedData.count()
 
         if (selectedCount == 0) {
             // 如果没有数据，则设置不可点击
-            mViewHolder.buttonPreview.setEnabled(false);
-            mViewHolder.buttonApply.setEnabled(false);
-            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure_default));
+            mViewHolder.buttonPreview.isEnabled = false
+            mViewHolder.buttonApply.isEnabled = false
+            mViewHolder.buttonApply.text = getString(R.string.z_multi_library_button_sure_default)
         } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
             // 不显示选择的数字
-            mViewHolder.buttonPreview.setEnabled(true);
-            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default);
-            mViewHolder.buttonApply.setEnabled(true);
+            mViewHolder.buttonPreview.isEnabled = true
+            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default)
+            mViewHolder.buttonApply.isEnabled = true
         } else {
             // 显示选择的数字
-            mViewHolder.buttonPreview.setEnabled(true);
-            mViewHolder.buttonApply.setEnabled(true);
-            mViewHolder.buttonApply.setText(getString(R.string.z_multi_library_button_sure, selectedCount));
+            mViewHolder.buttonPreview.isEnabled = true
+            mViewHolder.buttonApply.isEnabled = true
+            mViewHolder.buttonApply.text = getString(R.string.z_multi_library_button_sure, selectedCount)
         }
 
         // 是否显示原图控件
-        if (mAlbumSpec.getOriginalEnable()) {
-            mViewHolder.groupOriginal.setVisibility(View.VISIBLE);
-            updateOriginalState();
+        if (mAlbumSpec.originalEnable) {
+            mViewHolder.groupOriginal.visibility = View.VISIBLE
+            updateOriginalState()
         } else {
-            mViewHolder.groupOriginal.setVisibility(View.INVISIBLE);
+            mViewHolder.groupOriginal.visibility = View.INVISIBLE
         }
 
-        showBottomView(selectedCount);
+        showBottomView(selectedCount)
     }
 
     /**
      * 更新原图控件状态
      */
-    private void updateOriginalState() {
+    private fun updateOriginalState() {
         // 设置选择状态
-        mViewHolder.original.setChecked(mMainModel.getOriginalEnable());
-        mOriginalManage.updateOriginalState();
+        mViewHolder.original.setChecked(mMainModel.getOriginalEnable())
+        mOriginalManage.updateOriginalState()
     }
 
     /**
@@ -463,32 +454,27 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      *
      * @param album 专辑
      */
-    private void onAlbumSelected(Album album) {
-        if (album.isAll() && album.isEmpty()) {
+    private fun onAlbumSelected(album: Album) {
+        if (album.isAll && album.isEmpty) {
             // 如果是选择全部并且没有数据的话，显示空的view
-            mViewHolder.recyclerview.setVisibility(View.GONE);
-            mViewHolder.emptyView.setVisibility(View.VISIBLE);
+            mViewHolder.recyclerview.visibility = View.GONE
+            mViewHolder.emptyView.visibility = View.VISIBLE
         } else {
             // 如果有数据，显示相应相关照片
-            mViewHolder.recyclerview.setVisibility(View.VISIBLE);
-            mViewHolder.emptyView.setVisibility(View.GONE);
+            mViewHolder.recyclerview.visibility = View.VISIBLE
+            mViewHolder.emptyView.visibility = View.GONE
             if (!mIsRefresh) {
-                if (mMediaViewUtil != null) {
-                    mMediaViewUtil.load(album);
-                    mViewHolder.tvAlbumTitle.setText(album.getName());
-                }
+                mMediaViewUtil.load(album)
+                mViewHolder.tvAlbumTitle.text = album.name
             }
         }
     }
 
-    @Override
-    public void onUpdate() {
+    override fun onUpdate() {
         // notify bottom toolbar that check state changed.
-        updateBottomToolbar();
+        updateBottomToolbar()
         // 触发选择的接口事件
-        if (mAlbumSpec.getOnSelectedListener() != null) {
-            mAlbumSpec.getOnSelectedListener().onSelected(mSelectedModel.getSelectedData().getLocalMedias());
-        }
+        mAlbumSpec.onSelectedListener?.onSelected(mSelectedModel.selectedData.localMedias)
     }
 
     /**
@@ -499,19 +485,18 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      * @param item            选项
      * @param adapterPosition 索引
      */
-    @Override
-    public void onMediaClick(Album album, ImageView imageView, LocalMedia item, int adapterPosition) {
-        if (DoubleUtils.isFastDoubleClick()) {
-            return;
+    override fun onMediaClick(album: Album?, imageView: ImageView?, item: LocalMedia?, adapterPosition: Int) {
+        if (isFastDoubleClick()) {
+            return
         }
         // 将当前列表的组件宽高数据添加到缓存
-        RecycleItemViewParams.add(mViewHolder.recyclerview, 0);
+        add(mViewHolder.recyclerview, 0)
 
-        currentPosition = adapterPosition;
+        currentPosition = adapterPosition
         // 设置position
-        mMainModel.setPreviewPosition(adapterPosition);
+        mMainModel.previewPosition = adapterPosition
 
-        PreviewStartManager.startPreviewFragmentByAlbum((MainActivity) requireActivity());
+        startPreviewFragmentByAlbum((requireActivity() as MainActivity))
     }
 
     /**
@@ -521,19 +506,19 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      *
      * @param count 当前选择的数量
      */
-    private void showBottomView(int count) {
+    private fun showBottomView(count: Int) {
         // 当前选择图片数量 > 0 并且 处于相册界面
-        if (((MainActivity) requireActivity()).getMActivityMainZjhBinding().tableLayout.getCurrentTab() == 0) {
+        if ((requireActivity() as MainActivity).mActivityMainZjhBinding.tableLayout.currentTab == 0) {
             if (count > 0) {
                 // 显示底部
-                mViewHolder.bottomToolbar.setVisibility(View.VISIBLE);
+                mViewHolder.bottomToolbar.visibility = View.VISIBLE
                 // 隐藏母窗体的table
-                ((MainActivity) requireActivity()).showHideTableLayout(false);
+                (requireActivity() as MainActivity).showHideTableLayout(false)
             } else {
                 // 隐藏底部
-                mViewHolder.bottomToolbar.setVisibility(View.GONE);
+                mViewHolder.bottomToolbar.visibility = View.GONE
                 // 显示母窗体的table
-                ((MainActivity) requireActivity()).showHideTableLayout(true);
+                (requireActivity() as MainActivity).showHideTableLayout(true)
             }
         }
     }
@@ -543,12 +528,13 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      *
      * @param localMediaArrayList 本地数据包含别的参数
      */
-    private void compressFile(ArrayList<LocalMedia> localMediaArrayList) {
+    private fun compressFile(localMediaArrayList: ArrayList<LocalMedia>) {
         // 显示loading动画
-        setControlTouchEnable(false);
+        setControlTouchEnable(false)
 
         // 复制相册的文件
-        ThreadUtils.executeByIo(getCompressFileTask(localMediaArrayList));
+        mCompressFileTask = getCompressFileTask(localMediaArrayList)
+        ThreadUtils.executeByIo(mCompressFileTask)
     }
 
     /**
@@ -556,38 +542,33 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      *
      * @param localMediaArrayList 需要压缩的数据源
      */
-    private ThreadUtils.SimpleTask<ArrayList<LocalMedia>> getCompressFileTask(ArrayList<LocalMedia> localMediaArrayList) {
+    private fun getCompressFileTask(localMediaArrayList: ArrayList<LocalMedia>): ThreadUtils.SimpleTask<ArrayList<LocalMedia>> {
         // noinspection unused
-        mCompressFileTask = new ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
-
-            /** @noinspection unused*/
-            @Override
-            public ArrayList<LocalMedia> doInBackground() {
-                return mAlbumCompressFileTask.compressFileTaskDoInBackground(localMediaArrayList, false);
+        return object : ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
+            /** @noinspection unused
+             */
+            override fun doInBackground(): ArrayList<LocalMedia> {
+                return mAlbumCompressFileTask!!.compressFileTaskDoInBackground(localMediaArrayList, false)
             }
 
-            @Override
-            public void onSuccess(ArrayList<LocalMedia> result) {
-                setResultOk(result);
+            override fun onSuccess(result: ArrayList<LocalMedia>) {
+                setResultOk(result)
             }
 
-            @Override
-            public void onFail(Throwable t) {
-                super.onFail(t);
+            override fun onFail(t: Throwable) {
+                super.onFail(t)
                 // 结束loading
-                setControlTouchEnable(true);
-                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e(TAG, t.getMessage(), t);
+                setControlTouchEnable(true)
+                Toast.makeText(mApplicationContext, t.message, Toast.LENGTH_SHORT).show()
+                Log.e(tag, t.message, t)
             }
 
-            @Override
-            public void onCancel() {
-                super.onCancel();
+            override fun onCancel() {
+                super.onCancel()
                 // 结束loading
-                setControlTouchEnable(true);
+                setControlTouchEnable(true)
             }
-        };
-        return mCompressFileTask;
+        }
     }
 
     /**
@@ -595,70 +576,61 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.CheckStateLi
      *
      * @param localMediaArrayList 本地数据包含别的参数
      */
-    private void setResultOk(ArrayList<LocalMedia> localMediaArrayList) {
-        Log.d(TAG, "setResultOk");
+    private fun setResultOk(localMediaArrayList: ArrayList<LocalMedia>) {
+        Log.d(tag, "setResultOk")
         // 获取选择的图片的url集合
-        Intent result = new Intent();
-        result.putParcelableArrayListExtra(STATE_SELECTION, localMediaArrayList);
-        requireActivity().setResult(RESULT_OK, result);
-        requireActivity().finish();
+        val result = Intent()
+        result.putParcelableArrayListExtra(STATE_SELECTION, localMediaArrayList)
+        requireActivity().setResult(Activity.RESULT_OK, result)
+        requireActivity().finish()
     }
 
     /**
      * 设置是否启用界面触摸，不可禁止中断、退出
      */
-    private void setControlTouchEnable(boolean enable) {
-        mViewHolder.recyclerview.setEnabled(enable);
+    private fun setControlTouchEnable(enable: Boolean) {
+        mViewHolder.recyclerview.isEnabled = enable
         // 如果不可用就显示 加载中 view,否则隐藏
         if (!enable) {
-            mViewHolder.pbLoading.setVisibility(View.VISIBLE);
-            mViewHolder.buttonApply.setVisibility(View.GONE);
-            mViewHolder.buttonPreview.setEnabled(false);
+            mViewHolder.pbLoading.visibility = View.VISIBLE
+            mViewHolder.buttonApply.visibility = View.GONE
+            mViewHolder.buttonPreview.isEnabled = false
         } else {
-            mViewHolder.pbLoading.setVisibility(View.GONE);
-            mViewHolder.buttonApply.setVisibility(View.VISIBLE);
-            mViewHolder.buttonPreview.setEnabled(true);
+            mViewHolder.pbLoading.visibility = View.GONE
+            mViewHolder.buttonApply.visibility = View.VISIBLE
+            mViewHolder.buttonPreview.isEnabled = true
         }
     }
 
-    public static class ViewHolder {
-        public final View rootView;
-        public final View selectedAlbum;
-        public final TextView tvAlbumTitle;
-        public final ImageView imgArrow;
-        public final Toolbar toolbar;
-        public final TextView buttonPreview;
-        public final CheckRadioView original;
-        public final View originalLayout;
-        public final Group groupOriginal;
-        public final TextView buttonApply;
-        public final ConstraintLayoutBehavior bottomToolbar;
-        public final TextView emptyViewContent;
-        public final FrameLayout emptyView;
-        public final CoordinatorLayout root;
-        public final ImageView imgClose;
-        public final ProgressBar pbLoading;
-        public final RecyclerLoadMoreView recyclerview;
+    class ViewHolder(rootView: View) {
+        val tvAlbumTitle: TextView = rootView.findViewById(R.id.tvAlbumTitle)
+        val imgArrow: ImageView = rootView.findViewById(R.id.imgArrow)
+        val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
+        val buttonPreview: TextView = rootView.findViewById(R.id.buttonPreview)
+        val original: CheckRadioView = rootView.findViewById(R.id.original)
+        val originalLayout: View = rootView.findViewById(R.id.originalLayout)
+        val groupOriginal: Group = rootView.findViewById(R.id.groupOriginal)
+        val buttonApply: TextView = rootView.findViewById(R.id.buttonApply)
+        val bottomToolbar: ConstraintLayoutBehavior = rootView.findViewById(R.id.bottomToolbar)
+        val emptyView: FrameLayout = rootView.findViewById(R.id.emptyView)
+        val root: CoordinatorLayout = rootView.findViewById(R.id.root)
+        val imgClose: ImageView = rootView.findViewById(R.id.imgClose)
+        val pbLoading: ProgressBar = rootView.findViewById(R.id.pbLoading)
+        val recyclerview: RecyclerLoadMoreView = rootView.findViewById(R.id.recyclerview)
+    }
 
-        public ViewHolder(View rootView) {
-            this.rootView = rootView;
-            this.selectedAlbum = rootView.findViewById(R.id.selectedAlbum);
-            this.tvAlbumTitle = rootView.findViewById(R.id.tvAlbumTitle);
-            this.imgArrow = rootView.findViewById(R.id.imgArrow);
-            this.toolbar = rootView.findViewById(R.id.toolbar);
-            this.buttonPreview = rootView.findViewById(R.id.buttonPreview);
-            this.original = rootView.findViewById(R.id.original);
-            this.originalLayout = rootView.findViewById(R.id.originalLayout);
-            this.groupOriginal = rootView.findViewById(R.id.groupOriginal);
-            this.buttonApply = rootView.findViewById(R.id.buttonApply);
-            this.bottomToolbar = rootView.findViewById(R.id.bottomToolbar);
-            this.emptyViewContent = rootView.findViewById(R.id.emptyViewContent);
-            this.emptyView = rootView.findViewById(R.id.emptyView);
-            this.root = rootView.findViewById(R.id.root);
-            this.imgClose = rootView.findViewById(R.id.imgClose);
-            this.pbLoading = rootView.findViewById(R.id.pbLoading);
-            this.recyclerview = rootView.findViewById(R.id.recyclerview);
+    companion object {
+        private const val ARGUMENTS_MARGIN_BOTTOM: String = "arguments_margin_bottom"
+
+        /**
+         * @param marginBottom 底部间距
+         */
+        fun newInstance(marginBottom: Int): AlbumFragment {
+            val albumFragment = AlbumFragment()
+            val args = Bundle()
+            albumFragment.arguments = args
+            args.putInt(ARGUMENTS_MARGIN_BOTTOM, marginBottom)
+            return albumFragment
         }
-
     }
 }

@@ -12,16 +12,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.listener.VideoEditListener
+import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.databinding.ActivityPreviewVideoZjhBinding
 import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.settings.GlobalSpec.orientation
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCompressFile
 import com.zhongjh.multimedia.utils.MediaStoreUtils
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.listener.VideoEditListener
-import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
@@ -76,8 +76,8 @@ class PreviewVideoActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        if (mGlobalSpec.isCompressEnable) {
-            mGlobalSpec.videoCompressCoordinator?.onCompressDestroy(this@PreviewVideoActivity.javaClass)
+        mGlobalSpec.videoCompressCoordinator?.let {
+            it.onCompressDestroy(this@PreviewVideoActivity.javaClass)
             mGlobalSpec.videoCompressCoordinator = null
         }
         // 清除VideoView,防止内存泄漏
@@ -166,10 +166,10 @@ class PreviewVideoActivity : AppCompatActivity() {
      */
     private fun confirm() {
         // 判断是否开启了视频压缩功能
-        if (mGlobalSpec.isCompressEnable) {
+        mGlobalSpec.videoCompressCoordinator?.let {
             // 如果开启了直接压缩
             compress()
-        } else {
+        } ?: let {
             // 否则直接提交
             confirm(mLocalMedia.absolutePath, null)
             mIsRun = false

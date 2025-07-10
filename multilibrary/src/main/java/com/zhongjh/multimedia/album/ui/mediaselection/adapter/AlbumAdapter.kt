@@ -3,7 +3,6 @@ package com.zhongjh.multimedia.album.ui.mediaselection.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,11 +27,13 @@ import kotlinx.coroutines.launch
  *
  * @author zhongjh
  */
-class AlbumAdapter(context: Context, private val lifecycleOwner: LifecycleOwner, private val mSelectedModel: SelectedModel, imageResize: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+class AlbumAdapter(
+    context: Context, private val lifecycleOwner: LifecycleOwner, private val mSelectedModel: SelectedModel,
+    private val placeholder: Drawable?, imageResize: Int
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     MediaGrid.OnMediaGridClickListener {
     private val tag: String = this@AlbumAdapter.javaClass.simpleName
 
-    private val mPlaceholder: Drawable?
     private val mAlbumSpec = AlbumSpec
     private var data: MutableList<LocalMedia> = ArrayList()
     private var mCheckStateListener: CheckStateListener? = null
@@ -41,13 +42,6 @@ class AlbumAdapter(context: Context, private val lifecycleOwner: LifecycleOwner,
 
     init {
         Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " AlbumMediaAdapter")
-        val ta = context.theme.obtainStyledAttributes(intArrayOf(R.attr.item_placeholder))
-        mPlaceholder = ta.getDrawable(0)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ta.close()
-        } else {
-            ta.recycle()
-        }
         mImageResize = imageResize
     }
 
@@ -90,7 +84,7 @@ class AlbumAdapter(context: Context, private val lifecycleOwner: LifecycleOwner,
             Log.d(tag, "path: " + item.path)
         }
         // 传递相关的值
-        mediaViewHolder.mMediaGrid.preBindMedia(MediaGrid.PreBindInfo(mImageResize, mPlaceholder!!, mAlbumSpec.countable, holder))
+        mediaViewHolder.mMediaGrid.preBindMedia(MediaGrid.PreBindInfo(mImageResize, placeholder!!, mAlbumSpec.countable, holder))
 
         mediaViewHolder.mMediaGrid.bindMedia(item)
         mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this)

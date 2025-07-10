@@ -160,12 +160,6 @@ object GlobalSpec {
         this.mimeTypeSet = mimeTypeSet
     }
 
-    /**
-     * @return 是否开启了视频压缩功能
-     */
-    val isCompressEnable: Boolean
-        get() = videoCompressCoordinator != null
-
     val cleanInstance = GlobalSpec
         get() {
             val globalSpec: GlobalSpec = field

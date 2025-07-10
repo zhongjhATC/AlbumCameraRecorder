@@ -2,7 +2,6 @@ package com.zhongjh.multimedia.album.widget.albumspinner;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -21,6 +20,7 @@ import com.zhongjh.common.utils.AnimUtils;
 import com.zhongjh.common.utils.DisplayMetricsUtils;
 import com.zhongjh.multimedia.R;
 import com.zhongjh.multimedia.album.entity.Album;
+import com.zhongjh.multimedia.album.entity.AlbumSpinnerStyle;
 import com.zhongjh.multimedia.utils.AttrsUtils;
 
 import java.util.List;
@@ -42,14 +42,13 @@ public class AlbumSpinner extends PopupWindow {
     private boolean isDismiss = false;
     private ImageView ivArrowView;
     private TextView tvAlbumTitle;
-    private final Drawable drawableUp;
-    private final Drawable drawableDown;
-    private final int maxHeight;
     private View rootViewBg;
+    private final AlbumSpinnerStyle albumSpinnerStyle;
 
     @SuppressLint("InflateParams")
-    public AlbumSpinner(Context context) {
+    public AlbumSpinner(Context context, AlbumSpinnerStyle albumSpinnerStyle) {
         this.context = context;
+        this.albumSpinnerStyle = albumSpinnerStyle;
         this.window = LayoutInflater.from(context).inflate(R.layout.view_album_spinner_zjh, null);
         this.setContentView(window);
         this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -58,15 +57,6 @@ public class AlbumSpinner extends PopupWindow {
         this.setFocusable(true);
         this.setOutsideTouchable(true);
         this.update();
-
-        // 获取上下箭头两个图片
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.album_listPopupWindowStyle, typedValue, true);
-        this.drawableUp = AttrsUtils.getTypeValueDrawable(context, typedValue.resourceId,
-                R.attr.album_arrow_up_icon, R.drawable.ic_round_keyboard_arrow_up_24);
-        this.drawableDown = AttrsUtils.getTypeValueDrawable(context, typedValue.resourceId,
-                R.attr.album_arrow_down_icon, R.drawable.ic_round_keyboard_arrow_down_24);
-        this.maxHeight = (int) (DisplayMetricsUtils.getScreenHeight(context) * 0.6);
         initView();
     }
 
@@ -82,7 +72,7 @@ public class AlbumSpinner extends PopupWindow {
     public void bindFolder(List<Album> albums) {
         adapter.bindAlbums(albums);
         ViewGroup.LayoutParams lp = mRecyclerView.getLayoutParams();
-        lp.height = albums.size() > FOLDER_MAX_COUNT ? maxHeight : ViewGroup.LayoutParams.WRAP_CONTENT;
+        lp.height = albums.size() > FOLDER_MAX_COUNT ? albumSpinnerStyle.getMaxHeight() : ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 
     public List<Album> getAlbums() {
@@ -99,7 +89,7 @@ public class AlbumSpinner extends PopupWindow {
 
     public void setArrowImageView(ImageView ivArrowView) {
         this.ivArrowView = ivArrowView;
-        this.ivArrowView.setImageDrawable(drawableDown);
+        this.ivArrowView.setImageDrawable(albumSpinnerStyle.getDrawableDown());
         this.ivArrowView.setOnClickListener(v -> albumSpinnerOnClick());
     }
 
@@ -118,7 +108,7 @@ public class AlbumSpinner extends PopupWindow {
             super.showAsDropDown(anchor);
         }
         isDismiss = false;
-        ivArrowView.setImageDrawable(drawableUp);
+        ivArrowView.setImageDrawable(albumSpinnerStyle.getDrawableUp());
         AnimUtils.rotateArrow(ivArrowView, true);
         rootViewBg.animate()
                 .alpha(1)
@@ -139,7 +129,7 @@ public class AlbumSpinner extends PopupWindow {
                 .alpha(0)
                 .setDuration(50)
                 .start();
-        ivArrowView.setImageDrawable(drawableDown);
+        ivArrowView.setImageDrawable(albumSpinnerStyle.getDrawableDown());
         AnimUtils.rotateArrow(ivArrowView, false);
         isDismiss = true;
         AlbumSpinner.super.dismiss();

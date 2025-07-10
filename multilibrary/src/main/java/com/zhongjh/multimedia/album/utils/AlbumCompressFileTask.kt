@@ -2,13 +2,12 @@ package com.zhongjh.multimedia.album.utils
 
 import android.content.Context
 import android.util.Log
-import com.zhongjh.multimedia.settings.GlobalSpec
-import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.VideoEditListener
 import com.zhongjh.common.utils.FileUtils
+import com.zhongjh.multimedia.settings.GlobalSpec
+import com.zhongjh.multimedia.utils.FileMediaUtil
 import java.io.File
-import java.util.*
 
 /**
  * 这是相册界面和预览界面共用的一个异步线程逻辑
@@ -78,9 +77,10 @@ class AlbumCompressFileTask(
                     )
                     Log.d(tag, "不存在新建文件")
                 } else if (item.isVideo()) {
-                    if (globalSpec.isCompressEnable) {
-                        // 压缩视频
-                        globalSpec.videoCompressCoordinator?.setVideoCompressListener(clsKey,
+                    // 压缩视频
+                    globalSpec.videoCompressCoordinator?.let { videoCompressCoordinator ->
+                        videoCompressCoordinator.setVideoCompressListener(
+                            clsKey,
                             object : VideoEditListener {
                                 override fun onFinish() {
                                     val localFile = LocalMedia(
@@ -94,7 +94,7 @@ class AlbumCompressFileTask(
                                 override fun onCancel() {}
                                 override fun onError(message: String) {}
                             })
-                        globalSpec.videoCompressCoordinator?.compressAsync(clsKey, absolutePath, newFile.path)
+                        videoCompressCoordinator.compressAsync(clsKey, absolutePath, newFile.path)
                     }
                 }
             }
