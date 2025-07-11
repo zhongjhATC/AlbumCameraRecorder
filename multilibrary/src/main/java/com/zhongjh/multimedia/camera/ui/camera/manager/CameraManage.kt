@@ -78,7 +78,7 @@ import kotlin.math.min
 /**
  * 处理camerax的类
  */
-class CameraManage(private val appCompatActivity: AppCompatActivity, val previewView: PreviewView, val focusView: FocusView) : OnCameraXOrientationEventListener.OnOrientationChangedListener {
+class CameraManage(appCompatActivity: AppCompatActivity, val previewView: PreviewView, val focusView: FocusView) : OnCameraXOrientationEventListener.OnOrientationChangedListener {
 
     companion object {
         /**
@@ -90,9 +90,14 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     }
 
     /**
-     * 回调监听
+     * 使用弱引用持有Activity
      */
-    var onCameraManageListener: OnCameraManageListener? = null
+    private val activityRef: WeakReference<AppCompatActivity> = WeakReference(appCompatActivity)
+
+    /**
+     * 该接口不用弱引用,时候记得销毁
+     */
+    private var listener: OnCameraManageListener? = null
 
     /**
      * 拍摄配置
@@ -105,10 +110,12 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
     private var overlayEffect: OverlayEffect? = null
     private var recording: Recording? = null
 
-    private val displayManager by lazy { appCompatActivity.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
+    private val displayManager by lazy { activityRef.get()?.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
     private val displayListener by lazy { DisplayListener() }
-    private val orientationEventListener by lazy {
-        OnCameraXOrientationEventListener(appCompatActivity, this)
+    private val orientationEventListener: OnCameraXOrientationEventListener? by lazy {
+        activityRef.get()?.let {
+            OnCameraXOrientationEventListener(it, this)
+        }
     }
     private lateinit var cameraInfo: CameraInfo
 
@@ -160,28 +167,30 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
         startCheckOrientation()
 
         // 选择数据改变
-        previewView.previewStreamState.observe(appCompatActivity) { streamState ->
-            if (lastStreamState == null) {
-                lastStreamState = streamState
-            }
-            when (streamState) {
-                PreviewView.StreamState.IDLE -> {
-                    if (lastStreamState != streamState) {
-                        lastStreamState = streamState
-                        // 停止输出画面后仍会停留在最后一帧,设置黑色前景遮挡住最后一帧画面
-                        previewView.foreground = ContextCompat.getDrawable(appCompatActivity, android.R.color.background_dark)
-                    }
+        activityRef.get()?.let { activity ->
+            previewView.previewStreamState.observe(activity) { streamState ->
+                if (lastStreamState == null) {
+                    lastStreamState = streamState
                 }
-
-                PreviewView.StreamState.STREAMING -> {
-                    if (lastStreamState != streamState) {
-                        lastStreamState = streamState
-                        // 开始输出画面后清空前景
-                        previewView.foreground = null
+                when (streamState) {
+                    PreviewView.StreamState.IDLE -> {
+                        if (lastStreamState != streamState) {
+                            lastStreamState = streamState
+                            // 停止输出画面后仍会停留在最后一帧,设置黑色前景遮挡住最后一帧画面
+                            previewView.foreground = ContextCompat.getDrawable(activity, android.R.color.background_dark)
+                        }
                     }
-                }
 
-                else -> {}
+                    PreviewView.StreamState.STREAMING -> {
+                        if (lastStreamState != streamState) {
+                            lastStreamState = streamState
+                            // 开始输出画面后清空前景
+                            previewView.foreground = null
+                        }
+                    }
+
+                    else -> {}
+                }
             }
         }
     }
@@ -193,6 +202,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
         displayManager.unregisterDisplayListener(displayListener)
         recording?.close()
         stopCheckOrientation()
+        this.listener = null
     }
 
     /**
@@ -214,8 +224,13 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
         // 停止录制
         isActivityPause = true
         // Activity触发了Pause,通知视频录制重置View
-        onCameraManageListener?.onActivityPause()
+        listener?.onActivityPause()
         stopVideo()
+    }
+
+    // 设置回调监听
+    fun setOnCameraManageListener(listener: OnCameraManageListener?) {
+        this.listener = listener
     }
 
     /**
@@ -234,10 +249,12 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
             val metadata = Metadata()
             metadata.isReversedHorizontal = isReversedHorizontal
             // 设置输出路径,因为有可能多图的原因,所以先暂时全部放进cache文件夹里面
-            val cameraFile = FileMediaUtil.createCacheFile(appCompatActivity, MediaType.TYPE_PICTURE)
-            val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
-            // 进行拍照
-            imageCapture.takePicture(fileOptions, mainExecutor, TakePictureCallback(onCameraManageListener))
+            activityRef.get()?.let { activity ->
+                val cameraFile = FileMediaUtil.createCacheFile(activity, MediaType.TYPE_PICTURE)
+                val fileOptions = OutputFileOptions.Builder(cameraFile).setMetadata(metadata).build()
+                // 进行拍照
+                imageCapture.takePicture(fileOptions, mainExecutor, TakePictureCallback(this.listener))
+            }
         }
     }
 
@@ -246,51 +263,53 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      */
     @SuppressLint("MissingPermission")
     fun takeVideo() {
-        recording?.resume() ?: let {
-            val name = "VIDEO_" + SimpleDateFormat(
-                "yyyyMMdd_HHmmssSSS", Locale.US
-            ).format(System.currentTimeMillis()) + ".mp4"
-            val contentValues = ContentValues().apply {
-                put(MediaStore.Video.Media.DISPLAY_NAME, name)
-                put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
-            }
-            val mediaStoreOutput = MediaStoreOutputOptions.Builder(
-                appCompatActivity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-            ).setContentValues(contentValues).build()
-            val pendingRecording = videoCapture?.output?.prepareRecording(appCompatActivity, mediaStoreOutput)
-            if (isAudio) {
-                pendingRecording?.withAudioEnabled()
-            }
-            recording = pendingRecording?.start(ContextCompat.getMainExecutor(appCompatActivity)) { videoRecordEvent ->
-                Log.d(TAG, "videoRecordEvent: $videoRecordEvent ${videoRecordEvent.recordingStats.recordedDurationNanos}")
-                // 视频录制监控回调
-                when (videoRecordEvent) {
-                    is VideoRecordEvent.Start -> {
-                        onCameraManageListener?.onRecordStart()
-                    }
+        recording?.resume() ?: run {
+            activityRef.get()?.let { activity ->
+                val name = "VIDEO_" + SimpleDateFormat(
+                    "yyyyMMdd_HHmmssSSS", Locale.US
+                ).format(System.currentTimeMillis()) + ".mp4"
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Video.Media.DISPLAY_NAME, name)
+                    put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+                }
+                val mediaStoreOutput = MediaStoreOutputOptions.Builder(
+                    activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                ).setContentValues(contentValues).build()
+                val pendingRecording = videoCapture?.output?.prepareRecording(activity, mediaStoreOutput)
+                if (isAudio) {
+                    pendingRecording?.withAudioEnabled()
+                }
+                recording = pendingRecording?.start(ContextCompat.getMainExecutor(activity)) { videoRecordEvent ->
+                    Log.d(TAG, "videoRecordEvent: $videoRecordEvent ${videoRecordEvent.recordingStats.recordedDurationNanos}")
+                    // 视频录制监控回调
+                    when (videoRecordEvent) {
+                        is VideoRecordEvent.Start -> {
+                            this.listener?.onRecordStart()
+                        }
 
-                    is VideoRecordEvent.Status -> {
+                        is VideoRecordEvent.Status -> {
 //                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
 //                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
 //                        }
-                    }
-
-                    is VideoRecordEvent.Finalize -> {
-                        if (!isActivityPause) {
-                            // 完成录制
-                            val uri = videoRecordEvent.outputResults.outputUri
-                            onCameraManageListener?.onRecordSuccess(UriUtils.uriToFile(appCompatActivity, uri).absolutePath)
                         }
-                        isActivityPause = false
-                    }
 
-                    is VideoRecordEvent.Pause -> {
-                        // 暂停录制
-                        onCameraManageListener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
-                    }
+                        is VideoRecordEvent.Finalize -> {
+                            if (!isActivityPause) {
+                                // 完成录制
+                                val uri = videoRecordEvent.outputResults.outputUri
+                                this.listener?.onRecordSuccess(UriUtils.uriToFile(activity, uri).absolutePath)
+                            }
+                            isActivityPause = false
+                        }
 
-                    is VideoRecordEvent.Resume -> {
-                        // 恢复录制
+                        is VideoRecordEvent.Pause -> {
+                            // 暂停录制
+                            this.listener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
+                        }
+
+                        is VideoRecordEvent.Resume -> {
+                            // 恢复录制
+                        }
                     }
                 }
             }
@@ -342,16 +361,18 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * 启动预览
      */
     private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(appCompatActivity)
-        cameraProviderFuture.addListener({
-            try {
-                // 在 Runnable 中,添加 ProcessCameraProvider.它用于将相机的生命周期绑定到应用进程中的 LifecycleOwner
-                cameraProvider = cameraProviderFuture.get()
-                initCameraPreviewMode()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }, mainExecutor)
+        activityRef.get()?.let { activity ->
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(activity)
+            cameraProviderFuture.addListener({
+                try {
+                    // 在 Runnable 中,添加 ProcessCameraProvider.它用于将相机的生命周期绑定到应用进程中的 LifecycleOwner
+                    cameraProvider = cameraProviderFuture.get()
+                    initCameraPreviewMode()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }, mainExecutor)
+        }
     }
 
     /**
@@ -374,46 +395,48 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * 绑定 - 只拍照模式
      */
     private fun bindCameraPreviewModeByImage() {
-        try {
-            // 获取适合的比例
-            val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(appCompatActivity), DisplayMetricsUtils.getScreenHeight(appCompatActivity))
-            // 获取前后置摄像头
-            val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-            // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
-            val preview = initPreview(screenAspectRatio)
-            // 初始化 ImageCapture
-            initImageCapture(screenAspectRatio)
-            // 初始化 ImageAnalysis
-            initImageAnalyzer(screenAspectRatio)
-            // 初始化OverlayEffect
-            initOverlayEffect()
-            // 初始化ViewPort
-            val viewPort = initViewPort()
-            val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
-            // 所有功能添加组合
-            useCase.addUseCase(preview)
-            imageCapture?.let {
-                useCase.addUseCase(it)
+        activityRef.get()?.let { activity ->
+            try {
+                // 获取适合的比例
+                val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(activity), DisplayMetricsUtils.getScreenHeight(activity))
+                // 获取前后置摄像头
+                val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+                // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
+                val preview = initPreview(screenAspectRatio)
+                // 初始化 ImageCapture
+                initImageCapture(screenAspectRatio)
+                // 初始化 ImageAnalysis
+                initImageAnalyzer(screenAspectRatio)
+                // 初始化OverlayEffect
+                initOverlayEffect()
+                // 初始化ViewPort
+                val viewPort = initViewPort()
+                val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
+                // 所有功能添加组合
+                useCase.addUseCase(preview)
+                imageCapture?.let {
+                    useCase.addUseCase(it)
+                }
+                imageAnalyzer?.let {
+                    useCase.addUseCase(it)
+                }
+                overlayEffect?.let {
+                    useCase.addEffect(it)
+                }
+                val useCaseGroup = useCase.build()
+                // 确保没有任何内容绑定到 cameraProvider
+                cameraProvider.unbindAll()
+                // 绑定preview
+                preview.surfaceProvider = previewView.surfaceProvider
+                // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
+                val camera = cameraProvider.bindToLifecycle((activity as LifecycleOwner), cameraSelector, useCaseGroup)
+                this.listener?.bindSucceed()
+                cameraInfo = camera.cameraInfo
+                cameraControl = camera.cameraControl
+                initCameraPreviewListener()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
-            imageAnalyzer?.let {
-                useCase.addUseCase(it)
-            }
-            overlayEffect?.let {
-                useCase.addEffect(it)
-            }
-            val useCaseGroup = useCase.build()
-            // 确保没有任何内容绑定到 cameraProvider
-            cameraProvider.unbindAll()
-            // 绑定preview
-            preview.surfaceProvider = previewView.surfaceProvider
-            // 因为是只拍照模式,所以将 mImageCapture 用例与现有 preview 和 mImageAnalyzer 用例绑定
-            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, useCaseGroup)
-            onCameraManageListener?.bindSucceed()
-            cameraInfo = camera.cameraInfo
-            cameraControl = camera.cameraControl
-            initCameraPreviewListener()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -421,39 +444,41 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * 绑定 - 只录制视频模式
      */
     private fun bindCameraPreviewModeByVideo() {
-        try {
-            // 获取适合的比例
-            val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(appCompatActivity), DisplayMetricsUtils.getScreenHeight(appCompatActivity))
-            // 获取前后置摄像头
-            val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-            // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
-            val preview = initPreview(screenAspectRatio)
-            // 初始化 VideoCapture
-            initVideoCapture(screenAspectRatio)
-            // 初始化OverlayEffect
-            initOverlayEffect()
-            // 初始化ViewPort
-            val viewPort = initViewPort()
-            // 所有功能添加组合
-            val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
-            useCase.addUseCase(preview)
-            videoCapture?.let {
-                useCase.addUseCase(it)
+        activityRef.get()?.let { activity ->
+            try {
+                // 获取适合的比例
+                val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(activity), DisplayMetricsUtils.getScreenHeight(activity))
+                // 获取前后置摄像头
+                val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+                // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
+                val preview = initPreview(screenAspectRatio)
+                // 初始化 VideoCapture
+                initVideoCapture(screenAspectRatio)
+                // 初始化OverlayEffect
+                initOverlayEffect()
+                // 初始化ViewPort
+                val viewPort = initViewPort()
+                // 所有功能添加组合
+                val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
+                useCase.addUseCase(preview)
+                videoCapture?.let {
+                    useCase.addUseCase(it)
+                }
+                overlayEffect?.let {
+                    useCase.addEffect(it)
+                }
+                val useCaseGroup = useCase.build()
+                // 确保没有任何内容绑定到 cameraProvider
+                cameraProvider.unbindAll()
+                // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
+                val camera = cameraProvider.bindToLifecycle((activity as LifecycleOwner), cameraSelector, useCaseGroup)
+                this.listener?.bindSucceed()
+                cameraInfo = camera.cameraInfo
+                cameraControl = camera.cameraControl
+                initCameraPreviewListener()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
-            overlayEffect?.let {
-                useCase.addEffect(it)
-            }
-            val useCaseGroup = useCase.build()
-            // 确保没有任何内容绑定到 cameraProvider
-            cameraProvider.unbindAll()
-            // 因为是只录制模式,所以将 mVideoCapture 用例与现有 preview 绑定
-            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, useCaseGroup)
-            onCameraManageListener?.bindSucceed()
-            cameraInfo = camera.cameraInfo
-            cameraControl = camera.cameraControl
-            initCameraPreviewListener()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -461,44 +486,46 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * 绑定 - 拍照+录制的模式
      */
     private fun bindCameraPreviewModeImageAndVideo() {
-        try {
-            // 获取适合的比例
-            val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(appCompatActivity), DisplayMetricsUtils.getScreenHeight(appCompatActivity))
-            // 获取前后置摄像头
-            val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-            // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
-            val preview = initPreview(screenAspectRatio)
-            // 初始化 ImageCapture
-            initImageCapture(screenAspectRatio)
-            // 初始化 VideoCapture
-            initVideoCapture(screenAspectRatio)
-            // 初始化OverlayEffect
-            initOverlayEffect()
-            // 初始化ViewPort
-            val viewPort = initViewPort()
-            // 所有功能添加组合
-            val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
-            useCase.addUseCase(preview)
-            imageCapture?.let {
-                useCase.addUseCase(it)
+        activityRef.get()?.let { activity ->
+            try {
+                // 获取适合的比例
+                val screenAspectRatio: Int = aspectRatio(DisplayMetricsUtils.getScreenWidth(activity), DisplayMetricsUtils.getScreenHeight(activity))
+                // 获取前后置摄像头
+                val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+                // 初始化 Preview 对象，在其上调用 build，从取景器中获取 Surface 提供程序，然后在预览上进行设置。
+                val preview = initPreview(screenAspectRatio)
+                // 初始化 ImageCapture
+                initImageCapture(screenAspectRatio)
+                // 初始化 VideoCapture
+                initVideoCapture(screenAspectRatio)
+                // 初始化OverlayEffect
+                initOverlayEffect()
+                // 初始化ViewPort
+                val viewPort = initViewPort()
+                // 所有功能添加组合
+                val useCase = UseCaseGroup.Builder().setViewPort(viewPort)
+                useCase.addUseCase(preview)
+                imageCapture?.let {
+                    useCase.addUseCase(it)
+                }
+                videoCapture?.let {
+                    useCase.addUseCase(it)
+                }
+                overlayEffect?.let {
+                    useCase.addEffect(it)
+                }
+                val useCaseGroup = useCase.build()
+                // 确保没有任何内容绑定到 cameraProvider
+                cameraProvider.unbindAll()
+                // 将 imageCapture 用例与现有 preview 和 videoCapture 用例绑定(注意：不要绑定 imageAnalyzer，因为不支持 preview + imageCapture + videoCapture + imageAnalysis 组合)
+                val camera = cameraProvider.bindToLifecycle((activity as LifecycleOwner), cameraSelector, useCaseGroup)
+                this.listener?.bindSucceed()
+                cameraInfo = camera.cameraInfo
+                cameraControl = camera.cameraControl
+                initCameraPreviewListener()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
-            videoCapture?.let {
-                useCase.addUseCase(it)
-            }
-            overlayEffect?.let {
-                useCase.addEffect(it)
-            }
-            val useCaseGroup = useCase.build()
-            // 确保没有任何内容绑定到 cameraProvider
-            cameraProvider.unbindAll()
-            // 将 imageCapture 用例与现有 preview 和 videoCapture 用例绑定(注意：不要绑定 imageAnalyzer，因为不支持 preview + imageCapture + videoCapture + imageAnalysis 组合)
-            val camera = cameraProvider.bindToLifecycle((appCompatActivity as LifecycleOwner), cameraSelector, useCaseGroup)
-            onCameraManageListener?.bindSucceed()
-            cameraInfo = camera.cameraInfo
-            cameraControl = camera.cameraControl
-            initCameraPreviewListener()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -669,73 +696,77 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
      * 检测手机方向
      */
     private fun startCheckOrientation() {
-        orientationEventListener.star()
+        orientationEventListener?.star()
     }
 
     /**
      * 停止检测手机方向
      */
     private fun stopCheckOrientation() {
-        orientationEventListener.stop()
+        orientationEventListener?.stop()
     }
 
     /**
      * 初始化预览的触摸事件
      */
     private fun initCameraPreviewListener() {
-        val zoomState = cameraInfo.zoomState
-        val onCameraXPreviewViewTouchListener = OnCameraXPreviewViewTouchListener(appCompatActivity)
-        onCameraXPreviewViewTouchListener.setCustomTouchListener(object : OnCameraXPreviewViewTouchListener.CustomTouchListener {
+        activityRef.get()?.let { activity ->
+            val zoomState = cameraInfo.zoomState
+            val onCameraXPreviewViewTouchListener = OnCameraXPreviewViewTouchListener(activity)
+            onCameraXPreviewViewTouchListener.setCustomTouchListener(object : OnCameraXPreviewViewTouchListener.CustomTouchListener {
 
-            override fun zoom(delta: Float) {
-                // 进行缩放
-                zoomState.value?.let {
-                    val currentZoomRatio = it.zoomRatio
-                    cameraControl.setZoomRatio(currentZoomRatio * delta)
-                }
-            }
-
-            override fun click(x: Float, y: Float) {
-                // 控制对焦目标给xy坐标
-                val meteringPointFactory: MeteringPointFactory = previewView.meteringPointFactory
-                val point = meteringPointFactory.createPoint(x, y)
-                val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).setAutoCancelDuration(3, TimeUnit.SECONDS).build()
-                if (cameraInfo.isFocusMeteringSupported(action)) {
-                    cameraControl.cancelFocusAndMetering()
-                    focusView.setDisappear(false)
-                    focusView.startFocusIng((Point(x.toInt(), y.toInt())))
-                    val future = cameraControl.startFocusAndMetering(action)
-                    future.addListener({
-                        try {
-                            val result = future.get()
-                            focusView.setDisappear(true)
-                            if (result.isFocusSuccessful) {
-                                focusView.changeFocusSuccess()
-                            } else {
-                                focusView.changeFocusFailed()
-                            }
-                        } catch (ignored: java.lang.Exception) {
-                        }
-                    }, mainExecutor)
-                }
-            }
-
-            override fun doubleClick(x: Float, y: Float) {
-                // 双击控制缩放
-                zoomState.value?.let {
-                    val currentZoomRatio = it.zoomRatio
-                    val minZoomRatio = it.minZoomRatio
-                    // 如果当前比最小的缩放大
-                    if (currentZoomRatio > minZoomRatio) {
-                        // 重置
-                        cameraControl.setLinearZoom(0f)
-                    } else {
-                        cameraControl.setLinearZoom(0.5f)
+                override fun zoom(delta: Float) {
+                    // 进行缩放
+                    zoomState.value?.let {
+                        val currentZoomRatio = it.zoomRatio
+                        cameraControl.setZoomRatio(currentZoomRatio * delta)
                     }
                 }
-            }
-        })
-        previewView.setOnTouchListener(onCameraXPreviewViewTouchListener)
+
+                override fun click(x: Float, y: Float) {
+                    // 控制对焦目标给xy坐标
+                    val meteringPointFactory: MeteringPointFactory = previewView.meteringPointFactory
+                    val point = meteringPointFactory.createPoint(x, y)
+                    val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).setAutoCancelDuration(3, TimeUnit.SECONDS).build()
+                    if (cameraInfo.isFocusMeteringSupported(action)) {
+                        cameraControl.cancelFocusAndMetering()
+                        focusView.setDisappear(false)
+                        focusView.startFocusIng((Point(x.toInt(), y.toInt())))
+                        val future = cameraControl.startFocusAndMetering(action)
+                        future.addListener({
+                            try {
+                                val result = future.get()
+                                focusView.setDisappear(true)
+                                if (result.isFocusSuccessful) {
+                                    focusView.changeFocusSuccess()
+                                } else {
+                                    focusView.changeFocusFailed()
+                                }
+                            } catch (ignored: java.lang.Exception) {
+                            }
+                        }, mainExecutor)
+                    }
+                }
+
+                override fun doubleClick(x: Float, y: Float) {
+                    // 双击控制缩放
+                    zoomState.value?.let {
+                        val currentZoomRatio = it.zoomRatio
+                        val minZoomRatio = it.minZoomRatio
+                        // 如果当前比最小的缩放大
+                        if (currentZoomRatio > minZoomRatio) {
+                            // 重置
+                            cameraControl.setLinearZoom(0f)
+                        } else {
+                            cameraControl.setLinearZoom(0.5f)
+                        }
+                    }
+                }
+            })
+            previewView.setOnTouchListener(onCameraXPreviewViewTouchListener)
+
+        }
+
     }
 
     /**
