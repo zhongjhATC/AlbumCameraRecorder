@@ -251,16 +251,6 @@ public abstract class BaseCameraFragment
         multiplePhotoViews = getMultiplePhotoView();
         cameraManage.init();
 
-//        // 水印资源 TODO
-//        if (cameraSpec.getWatermarkResource() != -1) {
-//            LayoutInflater.from(getContext()).inflate(cameraSpec.getWatermarkResource(), cameraManage, true);
-//        }
-
-//        // 回调cameraView可以自定义相关参数 TODO
-//        if (cameraSpec.getOnCameraViewListener() != null) {
-//            cameraSpec.getOnCameraViewListener().onInitListener(cameraManage);
-//        }
-
         // 兼容沉倾状态栏
         if (getTopView() != null) {
             int statusBarHeight = StatusBarUtils.getStatusBarHeight(requireActivity());
@@ -595,7 +585,7 @@ public abstract class BaseCameraFragment
      * @param newFiles 新的文件
      */
     @Override
-    public void commitPictureSuccess(ArrayList<LocalMedia> newFiles) {
+    public void commitPictureSuccess(@NonNull ArrayList<LocalMedia> newFiles) {
         Log.d(TAG, "mMovePictureFileTask onSuccess");
         isCommit = true;
         Intent result = new Intent();
@@ -761,7 +751,7 @@ public abstract class BaseCameraFragment
     public void movePictureFile() {
         showProgress();
         // 开始迁移文件
-        ThreadUtils.executeByIo(getCameraPictureManager().getMovePictureFileTask());
+        ThreadUtils.executeByIo(getCameraPictureManager().newMovePictureFileTask());
     }
 
     /**

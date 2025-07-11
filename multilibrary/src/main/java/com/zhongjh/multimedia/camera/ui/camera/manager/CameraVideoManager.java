@@ -7,6 +7,7 @@ import android.content.Intent;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraVideo;
@@ -98,7 +99,7 @@ public class CameraVideoManager implements ICameraVideo {
      */
     @SuppressLint("LongLogTag")
     @Override
-    public void onRecordSuccess(String path) {
+    public void onRecordSuccess(@NonNull String path) {
         baseCameraFragment.getPhotoVideoLayout().reset();
         PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path, true);
         baseCameraFragment.getPhotoVideoLayout().setEnabled(true);

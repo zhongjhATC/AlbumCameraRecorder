@@ -595,7 +595,7 @@ class CameraManage(private val appCompatActivity: AppCompatActivity, val preview
                 setOnDrawListener { frame ->
                     // 同步previewView的宽高
                     val sensorToUi = previewView.sensorToViewTransform
-                    if (sensorToUi != null) {
+                    sensorToUi?.let {
                         val sensorToEffect = frame.sensorToBufferTransform
                         val uiToSensor = Matrix()
                         sensorToUi.invert(uiToSensor)

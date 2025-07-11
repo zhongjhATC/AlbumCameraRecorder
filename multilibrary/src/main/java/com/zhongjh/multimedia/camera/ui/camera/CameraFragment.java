@@ -13,11 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.multimedia.camera.widget.FocusView;
+import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.databinding.FragmentCameraZjhBinding;
 import com.zhongjh.multimedia.widget.ImageViewTouch;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
 
 /**
@@ -38,14 +38,15 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
         return new CameraFragment();
     }
 
+    @NonNull
     @Override
-    public View setContentView(LayoutInflater inflater, ViewGroup container) {
+    public View setContentView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
         mBinding = FragmentCameraZjhBinding.inflate(inflater);
         return mBinding.getRoot();
     }
 
     @Override
-    public void initView(View view, Bundle savedInstanceState) {
+    public void initView(@NonNull View view, @NonNull Bundle savedInstanceState) {
         mBinding.previewView.getPreviewStreamState().observe(getMainActivity(), streamState -> {
 
         });
@@ -75,6 +76,7 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
         return mBinding.focusView;
     }
 
+    @NonNull
     @Override
     public RecyclerView getRecyclerViewPhoto() {
         return mBinding.rlPhoto;
@@ -133,6 +135,5 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
     public CameraVideoManager getCameraVideoManager() {
         return cameraVideoPresenter;
     }
-
 
 }

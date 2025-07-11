@@ -1,10 +1,8 @@
-package com.zhongjh.multimedia.camera.ui.camera.impl;
+package com.zhongjh.multimedia.camera.ui.camera.impl
 
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.utils.ThreadUtils;
-import com.zhongjh.multimedia.camera.entity.BitmapData;
-
-import java.util.ArrayList;
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.multimedia.camera.entity.BitmapData
 
 /**
  * 拍摄界面的有关图片View的接口
@@ -13,48 +11,47 @@ import java.util.ArrayList;
  * @author zhongjh
  * @date 2022/8/23
  */
-public interface ICameraPicture {
-
+interface ICameraPicture {
     /**
      * 初始化多图适配器
      */
-    void initMultiplePhotoAdapter();
+    fun initMultiplePhotoAdapter()
 
     /**
      * 初始化Activity的编辑图片回调
      */
-    void initActivityResult();
+    fun initActivityResult()
 
     /**
      * 编辑图片事件
      */
-    void initPhotoEditListener();
+    fun initPhotoEditListener()
 
     /**
      * 生命周期onDestroy
      *
      * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
      */
-    void onDestroy(boolean isCommit);
+    fun onDestroy(isCommit: Boolean)
 
     /**
      * 拍照
      */
-    void takePhoto();
+    fun takePhoto()
 
     /**
-     * 添加入数据源
+     * 添加数据
      *
      * @param path 文件路径
      */
-    void addCaptureData(String path);
+    fun addCaptureData(path: String)
 
     /**
      * 刷新多个图片
      *
      * @param bitmapDataList 最新的多图数据源
      */
-    void refreshMultiPhoto(ArrayList<BitmapData> bitmapDataList);
+    fun refreshMultiPhoto(bitmapDataList: ArrayList<BitmapData>)
 
     /**
      * 刷新编辑后的单图
@@ -62,27 +59,27 @@ public interface ICameraPicture {
      * @param width  最新图片的宽度
      * @param height 最新图片的高度
      */
-    void refreshEditPhoto(int width, int height);
+    fun refreshEditPhoto(width: Int, height: Int)
 
     /**
      * 返回迁移图片的线程
      *
      * @return 迁移图片的线程
      */
-    ThreadUtils.SimpleTask<ArrayList<LocalMedia>> getMovePictureFileTask();
+    fun newMovePictureFileTask(): ThreadUtils.SimpleTask<ArrayList<LocalMedia>>
 
     /**
      * 删除临时图片
      */
-    void deletePhotoFile();
+    fun deletePhotoFile()
 
     /**
      * 清除数据源
      */
-    void clearBitmapDataList();
+    fun clearBitmapDataList()
 
     /**
      * 停止迁移图片的线程运行
      */
-    void cancelMovePictureFileTask();
+    fun cancelMovePictureFileTask()
 }

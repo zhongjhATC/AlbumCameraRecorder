@@ -259,7 +259,7 @@ open class CameraPictureManager(
      *
      * @return 迁移图片的线程
      */
-    override fun getMovePictureFileTask(): ThreadUtils.SimpleTask<ArrayList<LocalMedia>> {
+    override fun newMovePictureFileTask(): ThreadUtils.SimpleTask<ArrayList<LocalMedia>> {
         movePictureFileTask = object : ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
             override fun doInBackground(): ArrayList<LocalMedia> {
                 Log.d(TAG, "doInBackground")
