@@ -10,7 +10,7 @@ import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.circularprogressview.CircularProgressState;
 
 /**
- * 多个视频模式
+ * 视频模式
  *
  * @author zhongjh
  * @date 2021/11/29

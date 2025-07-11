@@ -6,7 +6,7 @@ import android.view.View;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureComplete;
+import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureSingle;
 import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureMultiple;
 import com.zhongjh.multimedia.camera.ui.camera.state.type.Preview;
 import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultiple;
@@ -60,7 +60,7 @@ public class CameraStateManager implements IState {
         mCameraFragment = cameraFragment;
         // 初始化相关状态逻辑
         preview = new Preview(cameraFragment, this);
-        pictureComplete = new PictureComplete(cameraFragment, this);
+        pictureComplete = new PictureSingle(cameraFragment, this);
         pictureMultiple = new PictureMultiple(cameraFragment, this);
         videoMultiple = new VideoMultiple(cameraFragment, this);
         videoMultipleIn = new VideoMultipleIn(cameraFragment, this);

@@ -1,41 +1,25 @@
-package com.zhongjh.multimedia.album.widget.albumspinner;
+package com.zhongjh.multimedia.album.widget.albumspinner
 
-import androidx.recyclerview.widget.DiffUtil;
-
-import com.zhongjh.multimedia.album.entity.Album;
-
-import java.util.List;
+import androidx.recyclerview.widget.DiffUtil
+import com.zhongjh.multimedia.album.entity.Album
 
 /**
  * 比较差异，更快的实例化数据
  *
+ * 新老数据集赋值
+ * @param oldData 旧数据
+ * @param newData 新数据
+ *
  * @author zhongjh
  * @date 2022/9/28
  */
-public class AlbumCallback extends DiffUtil.Callback {
-
-    private final List<Album> oldData;
-    private final List<Album> newData;
-
-    /**
-     * 新老数据集赋值
-     *
-     * @param oldData 旧数据
-     * @param newData 新数据
-     */
-    public AlbumCallback(List<Album> oldData, List<Album> newData) {
-        this.oldData = oldData;
-        this.newData = newData;
+class AlbumCallback(private val oldData: List<Album>, private val newData: List<Album>) : DiffUtil.Callback() {
+    override fun getOldListSize(): Int {
+        return oldData.size
     }
 
-    @Override
-    public int getOldListSize() {
-        return oldData == null ? 0 : oldData.size();
-    }
-
-    @Override
-    public int getNewListSize() {
-        return newData == null ? 0 : newData.size();
+    override fun getNewListSize(): Int {
+        return newData.size
     }
 
     /**
@@ -44,11 +28,10 @@ public class AlbumCallback extends DiffUtil.Callback {
      * @param newItemPosition 新的索引数据
      * @return 如果相同返回true,否则返回false
      */
-    @Override
-    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        Album oldAlbum = oldData.get(oldItemPosition);
-        Album newAlbum = newData.get(newItemPosition);
-        return oldAlbum.getId() == newAlbum.getId();
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldAlbum = oldData[oldItemPosition]
+        val newAlbum = newData[newItemPosition]
+        return oldAlbum.id == newAlbum.id
     }
 
     /**
@@ -57,11 +40,10 @@ public class AlbumCallback extends DiffUtil.Callback {
      * @param newItemPosition 新的索引数据
      * @return 如果相同返回true,否则返回false
      */
-    @Override
-    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         // 默认内容是相同的，只要有一项不同，则返回false
-        Album oldAlbum = oldData.get(oldItemPosition);
-        Album newAlbum = newData.get(newItemPosition);
-        return oldAlbum.equalsAlbum(newAlbum);
+        val oldAlbum = oldData[oldItemPosition]
+        val newAlbum = newData[newItemPosition]
+        return oldAlbum.equalsAlbum(newAlbum)
     }
 }

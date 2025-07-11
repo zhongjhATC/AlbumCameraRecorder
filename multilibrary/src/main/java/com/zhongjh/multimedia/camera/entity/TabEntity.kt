@@ -1,30 +1,17 @@
-package com.zhongjh.multimedia.camera.entity;
+package com.zhongjh.multimedia.camera.entity
 
-import com.flyco.tablayout.listener.CustomTabEntity;
+import com.flyco.tablayout.listener.CustomTabEntity
 
-public class TabEntity implements CustomTabEntity {
-    public final String title;
-    public final int selectedIcon;
-    public final int unSelectedIcon;
-
-    public TabEntity(String title, int selectedIcon, int unSelectedIcon) {
-        this.title = title;
-        this.selectedIcon = selectedIcon;
-        this.unSelectedIcon = unSelectedIcon;
+class TabEntity(private val title: String, private val selectedIcon: Int, private val unSelectedIcon: Int) : CustomTabEntity {
+    override fun getTabTitle(): String {
+        return title
     }
 
-    @Override
-    public String getTabTitle() {
-        return title;
+    override fun getTabSelectedIcon(): Int {
+        return selectedIcon
     }
 
-    @Override
-    public int getTabSelectedIcon() {
-        return selectedIcon;
-    }
-
-    @Override
-    public int getTabUnselectedIcon() {
-        return unSelectedIcon;
+    override fun getTabUnselectedIcon(): Int {
+        return unSelectedIcon
     }
 }

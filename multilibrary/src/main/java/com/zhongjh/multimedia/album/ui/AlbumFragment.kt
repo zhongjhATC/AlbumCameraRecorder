@@ -43,6 +43,7 @@ import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter
 import com.zhongjh.multimedia.album.utils.AlbumCompressFileTask
 import com.zhongjh.multimedia.album.widget.CheckRadioView
 import com.zhongjh.multimedia.album.widget.albumspinner.AlbumSpinner
+import com.zhongjh.multimedia.album.widget.albumspinner.OnAlbumItemClickListener
 import com.zhongjh.multimedia.album.widget.recyclerview.RecyclerLoadMoreView
 import com.zhongjh.multimedia.model.MainModel
 import com.zhongjh.multimedia.model.OriginalManage
@@ -153,10 +154,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -256,15 +253,17 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         })
 
         // 关闭事件
-        mViewHolder.imgClose.setOnClickListener { v: View? -> requireActivity().finish() }
+        mViewHolder.imgClose.setOnClickListener { requireActivity().finish() }
 
         // 下拉框选择的时候
-        mAlbumSpinner.setOnAlbumItemClickListener { position: Int, album: Album ->
-            // 设置缓存值
-            mMainModel.currentSelection = position
-            onAlbumSelected(album)
-            mAlbumSpinner.dismiss()
-        }
+        mAlbumSpinner.setOnAlbumItemClickListener(object : OnAlbumItemClickListener {
+            override fun onItemClick(position: Int, album: Album) {
+                // 设置缓存值
+                mMainModel.currentSelection = position
+                onAlbumSelected(album)
+                mAlbumSpinner.dismiss()
+            }
+        })
 
         // 预览事件
         mViewHolder.buttonPreview.setOnClickListener(object : OnMoreClickListener() {
@@ -384,6 +383,16 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         albumSpinnerStyle.drawableDown = AttrsUtils.getTypeValueDrawable(mApplicationContext, typedValue.resourceId, R.attr.album_arrow_down_icon, R.drawable.ic_round_keyboard_arrow_down_24)
         albumSpinnerStyle.maxHeight = (getScreenHeight(requireActivity()) * 0.6).toInt()
 
+        val ta = requireActivity().theme.obtainStyledAttributes(intArrayOf(R.attr.album_thumbnail_placeholder))
+        ta.getDrawable(0)?.let {
+            albumSpinnerStyle.placeholder = it
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ta.close()
+        } else {
+            ta.recycle()
+        }
+
         mAlbumSpinner = AlbumSpinner(mApplicationContext, albumSpinnerStyle)
         mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow)
         mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle)
@@ -399,6 +408,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             ThreadUtils.cancel(it)
         }
         mMediaViewUtil.onDestroyView()
+        mAlbumSpinner.setOnAlbumItemClickListener(null)
         super.onDestroy()
     }
 

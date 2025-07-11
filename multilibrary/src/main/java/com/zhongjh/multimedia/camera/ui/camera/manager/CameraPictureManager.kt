@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResult
@@ -12,6 +11,14 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MediaType
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.utils.BitmapUtils.rotateImage
+import com.zhongjh.common.utils.FileUtils
+import com.zhongjh.common.utils.MediaUtils
+import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.imageedit.ImageEditActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.entity.BitmapData
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
@@ -25,14 +32,6 @@ import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.multimedia.utils.FileMediaUtil.getOutFile
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MediaType
-import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.utils.BitmapUtils.rotateImage
-import com.zhongjh.common.utils.FileUtils
-import com.zhongjh.common.utils.MediaUtils
-import com.zhongjh.common.utils.ThreadUtils
-import com.zhongjh.imageedit.ImageEditActivity
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
@@ -153,6 +152,7 @@ open class CameraPictureManager(
                 FileUtils.deleteFile(bitmapData.absolutePath)
             }
         }
+        photoAdapter.release()
         cancelMovePictureFileTask()
     }
 
@@ -214,7 +214,7 @@ open class CameraPictureManager(
      */
     override fun refreshMultiPhoto(bitmapDataList: ArrayList<BitmapData>) {
         this.bitmapDataList = bitmapDataList
-        photoAdapter.listData = this.bitmapDataList
+        photoAdapter.dispatchUpdatesTo(this.bitmapDataList)
     }
 
     /**

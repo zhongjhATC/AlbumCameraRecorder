@@ -1,22 +1,20 @@
-package com.zhongjh.multimedia.camera.ui.camera.adapter;
+package com.zhongjh.multimedia.camera.ui.camera.adapter
 
-import android.content.Intent;
-
-import com.zhongjh.multimedia.camera.entity.BitmapData;
+import android.content.Intent
+import com.zhongjh.multimedia.camera.entity.BitmapData
 
 /**
  * 多图的AdapterListener
  *
  * @author zhongjh
  */
-public interface PhotoAdapterListener {
-
+interface PhotoAdapterListener {
     /**
      * 点击图片事件
      *
      * @param intent 点击后，封装相关数据进入该intent
      */
-    void onPhotoAdapterClick(Intent intent);
+    fun onPhotoAdapterClick(intent: Intent)
 
     /**
      * 删除该图片
@@ -24,6 +22,5 @@ public interface PhotoAdapterListener {
      * @param bitmapData 数据
      * @param position   删除的索引
      */
-    void onPhotoAdapterDelete(BitmapData bitmapData, int position);
-
+    fun onPhotoAdapterDelete(bitmapData: BitmapData, position: Int)
 }

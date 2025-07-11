@@ -1,74 +1,76 @@
-package com.zhongjh.multimedia.album.utils;
+package com.zhongjh.multimedia.album.utils
 
-import android.content.ContentResolver;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
-import android.net.Uri;
-import android.util.Log;
-
-import com.zhongjh.common.utils.BasePhotoMetadataUtils;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
+import android.content.ContentResolver
+import android.graphics.BitmapFactory
+import android.graphics.Point
+import android.net.Uri
+import android.util.Log
+import com.zhongjh.common.utils.BasePhotoMetadataUtils
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStream
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.Locale
 
 /**
  * @author zhongjh
  */
-public final class PhotoMetadataUtils extends BasePhotoMetadataUtils {
-    private static final String TAG = PhotoMetadataUtils.class.getSimpleName();
+class PhotoMetadataUtils private constructor() : BasePhotoMetadataUtils() {
 
-
-    private PhotoMetadataUtils() {
-        throw new AssertionError("oops! the utility class is about to be instantiated...");
+    init {
+        throw AssertionError("oops! the utility class is about to be instantiated...")
     }
 
-    /**
-     * 获取长度和宽度
-     *
-     * @param resolver ContentResolver共享数据库
-     * @param uri      图片uri
-     * @return xy
-     */
-    public static Point getBitmapBound(ContentResolver resolver, Uri uri) {
-        InputStream is = null;
-        try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            is = resolver.openInputStream(uri);
-            BitmapFactory.decodeStream(is, null, options);
-            int width = options.outWidth;
-            int height = options.outHeight;
-            return new Point(width, height);
-        } catch (FileNotFoundException e) {
-            return new Point(0, 0);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "getBitmapBound" + e.getMessage());
+    companion object {
+        private val TAG: String = PhotoMetadataUtils::class.java.simpleName
+
+        /**
+         * 获取长度和宽度
+         *
+         * @param resolver ContentResolver共享数据库
+         * @param uri      图片uri
+         * @return xy
+         */
+        @JvmStatic
+        fun getBitmapBound(resolver: ContentResolver, uri: Uri): Point {
+            var `is`: InputStream? = null
+            try {
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                `is` = resolver.openInputStream(uri)
+                BitmapFactory.decodeStream(`is`, null, options)
+                val width = options.outWidth
+                val height = options.outHeight
+                return Point(width, height)
+            } catch (e: FileNotFoundException) {
+                return Point(0, 0)
+            } finally {
+                if (`is` != null) {
+                    try {
+                        `is`.close()
+                    } catch (e: IOException) {
+                        Log.e(TAG, "getBitmapBound" + e.message)
+                    }
                 }
             }
         }
-    }
 
-    /**
-     * bytes转换mb
-     *
-     * @param sizeInBytes 容量大小
-     * @return mb
-     */
-    public static float getSizeInMb(long sizeInBytes) {
-        DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
-        df.applyPattern("0.0");
-        String result = df.format((float) sizeInBytes / 1024 / 1024);
-        Log.d(TAG, "getSizeInMB: " + result);
-        // in some case , 0.0 will be 0,0
-        result = result.replaceAll(",", ".");
-        return Float.parseFloat(result);
+        /**
+         * bytes转换mb
+         *
+         * @param sizeInBytes 容量大小
+         * @return mb
+         */
+        @JvmStatic
+        fun getSizeInMb(sizeInBytes: Long): Float {
+            val df = NumberFormat.getNumberInstance(Locale.US) as DecimalFormat
+            df.applyPattern("0.0")
+            var result = df.format((sizeInBytes.toFloat() / 1024 / 1024).toDouble())
+            Log.d(TAG, "getSizeInMB: $result")
+            // in some case , 0.0 will be 0,0
+            result = result.replace(",".toRegex(), ".")
+            return result.toFloat()
+        }
     }
 }

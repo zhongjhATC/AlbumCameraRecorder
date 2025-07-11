@@ -11,6 +11,7 @@ import com.zhongjh.demo.phone.ErrorActivity;
 import com.zhongjh.demo.phone.MainListActivity;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
+import leakcanary.LeakCanary;
 
 /**
  * @author zhongjh

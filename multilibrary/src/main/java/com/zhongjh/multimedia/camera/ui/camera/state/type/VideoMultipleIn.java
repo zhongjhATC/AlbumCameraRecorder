@@ -7,7 +7,7 @@ import com.zhongjh.multimedia.camera.ui.camera.state.StateMode;
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
 
 /**
- * 多个视频的状态录制中
+ * 视频录制中
  *
  * @author zhongjh
  * @date 2021/11/29

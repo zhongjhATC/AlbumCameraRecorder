@@ -1,30 +1,22 @@
-package com.zhongjh.multimedia.album.widget.albumspinner;
+package com.zhongjh.multimedia.album.widget.albumspinner
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.Build;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.zhongjh.common.utils.AnimUtils;
-import com.zhongjh.common.utils.DisplayMetricsUtils;
-import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.album.entity.Album;
-import com.zhongjh.multimedia.album.entity.AlbumSpinnerStyle;
-import com.zhongjh.multimedia.utils.AttrsUtils;
-
-import java.util.List;
-import java.util.Objects;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupWindow
+import android.widget.RelativeLayout
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.zhongjh.common.utils.AnimUtils
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.album.entity.AlbumSpinnerStyle
 
 /**
  * 专辑选项控件
@@ -32,158 +24,147 @@ import java.util.Objects;
  * @author zhongjh
  * @date 2022/9/21
  */
-public class AlbumSpinner extends PopupWindow {
-    private static final int FOLDER_MAX_COUNT = 8;
-
-    private final Context context;
-    private final View window;
-    private RecyclerView mRecyclerView;
-    private AlbumSpinnerAdapter adapter;
-    private boolean isDismiss = false;
-    private ImageView ivArrowView;
-    private TextView tvAlbumTitle;
-    private View rootViewBg;
-    private final AlbumSpinnerStyle albumSpinnerStyle;
-
-    @SuppressLint("InflateParams")
-    public AlbumSpinner(Context context, AlbumSpinnerStyle albumSpinnerStyle) {
-        this.context = context;
-        this.albumSpinnerStyle = albumSpinnerStyle;
-        this.window = LayoutInflater.from(context).inflate(R.layout.view_album_spinner_zjh, null);
-        this.setContentView(window);
-        this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
-        this.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
-        this.setAnimationStyle(R.style.AlbumSpinnerThemeStyle);
-        this.setFocusable(true);
-        this.setOutsideTouchable(true);
-        this.update();
-        initView();
+class AlbumSpinner @SuppressLint("InflateParams") constructor(private val context: Context, private val albumSpinnerStyle: AlbumSpinnerStyle) : PopupWindow() {
+    private val window: View = LayoutInflater.from(context).inflate(R.layout.view_album_spinner_zjh, null)
+    private val mRecyclerView by lazy {
+        window.findViewById<RecyclerView>(R.id.folder_list)
+    }
+    private val adapter by lazy {
+        AlbumSpinnerAdapter(albumSpinnerStyle)
+    }
+    private var isDismiss = false
+    private var ivArrowView: ImageView? = null
+    private var tvAlbumTitle: TextView? = null
+    private val rootViewBg by lazy {
+        window.findViewById<View>(R.id.rootViewBg)
     }
 
-    public void initView() {
-        rootViewBg = window.findViewById(R.id.rootViewBg);
-        adapter = new AlbumSpinnerAdapter();
-        mRecyclerView = window.findViewById(R.id.folder_list);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        mRecyclerView.setAdapter(adapter);
-        rootViewBg.setOnClickListener(v -> dismiss());
+    init {
+        this.contentView = window
+        this.width = RelativeLayout.LayoutParams.MATCH_PARENT
+        this.height = RelativeLayout.LayoutParams.WRAP_CONTENT
+        this.animationStyle = R.style.AlbumSpinnerThemeStyle
+        this.isFocusable = true
+        this.isOutsideTouchable = true
+        this.update()
+        initView()
     }
 
-    public void bindFolder(List<Album> albums) {
-        adapter.bindAlbums(albums);
-        ViewGroup.LayoutParams lp = mRecyclerView.getLayoutParams();
-        lp.height = albums.size() > FOLDER_MAX_COUNT ? albumSpinnerStyle.getMaxHeight() : ViewGroup.LayoutParams.WRAP_CONTENT;
+    fun initView() {
+        mRecyclerView.setLayoutManager(LinearLayoutManager(context))
+        mRecyclerView.setAdapter(adapter)
+        rootViewBg.setOnClickListener { dismiss() }
     }
 
-    public List<Album> getAlbums() {
-        return adapter.getAlbums();
+    fun bindFolder(albums: List<Album>) {
+        adapter.bindAlbums(albums)
+        val lp = mRecyclerView.layoutParams
+        lp.height = if (albums.size > FOLDER_MAX_COUNT) albumSpinnerStyle.maxHeight else ViewGroup.LayoutParams.WRAP_CONTENT
     }
 
-    public boolean isEmpty() {
-        return adapter.getAlbums().isEmpty();
+    val isEmpty: Boolean
+        get() = adapter.albums.isEmpty()
+
+    fun setArrowImageView(ivArrowView: ImageView) {
+        this.ivArrowView = ivArrowView
+        this.ivArrowView?.setImageDrawable(albumSpinnerStyle.drawableDown)
+        this.ivArrowView?.setOnClickListener { albumSpinnerOnClick() }
     }
 
-    public Album getAlbum(int position) {
-        return !adapter.getAlbums().isEmpty() && position < adapter.getAlbums().size() ? adapter.getAlbums().get(position) : null;
+    fun setTitleTextView(tvAlbumTitle: TextView) {
+        this.tvAlbumTitle = tvAlbumTitle
+        this.tvAlbumTitle?.setOnClickListener { albumSpinnerOnClick() }
     }
 
-    public void setArrowImageView(ImageView ivArrowView) {
-        this.ivArrowView = ivArrowView;
-        this.ivArrowView.setImageDrawable(albumSpinnerStyle.getDrawableDown());
-        this.ivArrowView.setOnClickListener(v -> albumSpinnerOnClick());
-    }
-
-    public void setTitleTextView(TextView tvAlbumTitle) {
-        this.tvAlbumTitle = tvAlbumTitle;
-        this.tvAlbumTitle.setOnClickListener(v -> albumSpinnerOnClick());
-    }
-
-    @Override
-    public void showAsDropDown(View anchor) {
+    override fun showAsDropDown(anchor: View) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
-            int[] location = new int[2];
-            anchor.getLocationInWindow(location);
-            showAtLocation(anchor, Gravity.NO_GRAVITY, 0, location[1] + anchor.getHeight());
+            val location = IntArray(2)
+            anchor.getLocationInWindow(location)
+            showAtLocation(anchor, Gravity.NO_GRAVITY, 0, location[1] + anchor.height)
         } else {
-            super.showAsDropDown(anchor);
+            super.showAsDropDown(anchor)
         }
-        isDismiss = false;
-        ivArrowView.setImageDrawable(albumSpinnerStyle.getDrawableUp());
-        AnimUtils.rotateArrow(ivArrowView, true);
+        isDismiss = false
+        ivArrowView?.setImageDrawable(albumSpinnerStyle.drawableUp)
+        AnimUtils.rotateArrow(ivArrowView, true)
         rootViewBg.animate()
-                .alpha(1)
-                .setDuration(250)
-                .setStartDelay(250).start();
+            .alpha(1f)
+            .setDuration(250)
+            .setStartDelay(250).start()
     }
 
-    public void setOnAlbumItemClickListener(OnAlbumItemClickListener listener) {
-        adapter.setOnAlbumItemClickListener(listener);
+    fun setOnAlbumItemClickListener(listener: OnAlbumItemClickListener?) {
+        adapter.setOnAlbumItemClickListener(listener)
     }
 
-    @Override
-    public void dismiss() {
+    override fun dismiss() {
         if (isDismiss) {
-            return;
+            return
         }
         rootViewBg.animate()
-                .alpha(0)
-                .setDuration(50)
-                .start();
-        ivArrowView.setImageDrawable(albumSpinnerStyle.getDrawableDown());
-        AnimUtils.rotateArrow(ivArrowView, false);
-        isDismiss = true;
-        AlbumSpinner.super.dismiss();
-        isDismiss = false;
+            .alpha(0f)
+            .setDuration(50)
+            .start()
+        ivArrowView?.setImageDrawable(albumSpinnerStyle.drawableDown)
+        AnimUtils.rotateArrow(ivArrowView, false)
+        isDismiss = true
+        super@AlbumSpinner.dismiss()
+        isDismiss = false
     }
 
     /**
      * 设置选中状态 - 红色圆点
      */
-    public void updateFolderCheckStatus(List<Album> result) {
-        List<Album> albums = adapter.getAlbums();
-        int size = albums.size();
-        int resultSize = result.size();
-        for (int i = 0; i < size; i++) {
-            Album album = albums.get(i);
-            album.setCheckedCount(0);
-            if (null != album.getName()) {
-                for (int j = 0; j < resultSize; j++) {
-                    Album media = result.get(j);
-                    if (album.getName().equals(media.getName())
-                            || -1 == album.getId()) {
-                        album.setCheckedCount(1);
-                        break;
+    fun updateFolderCheckStatus(result: List<Album>) {
+        val albums = adapter.albums
+        val size = albums.size
+        val resultSize = result.size
+        for (i in 0 until size) {
+            val album = albums[i]
+            album.checkedCount = 0
+            album.name?.let {
+                for (j in 0 until resultSize) {
+                    val media = result[j]
+                    if (album.name == media.name || -1L == album.id) {
+                        album.checkedCount = 1
+                        break
                     }
                 }
             }
         }
-        adapter.bindAlbums(albums);
+        adapter.bindAlbums(albums)
     }
 
     /**
      * 设置选中状态
      */
-    public void updateCheckStatus(List<Album> selects) {
-        List<Album> albums = adapter.getAlbums();
-        for (Album album : albums) {
-            for (Album select : selects) {
-                if (Objects.equals(select.getName(), album.getName())) {
-                    album.setChecked(true);
-                    break;
+    fun updateCheckStatus(selects: List<Album>) {
+        val albums = adapter.albums
+        for (album in albums) {
+            for (select in selects) {
+                if (select.name == album.name) {
+                    album.isChecked = true
+                    break
                 }
             }
         }
-        adapter.bindAlbums(albums);
+        adapter.bindAlbums(albums)
     }
 
     /**
      * 自动绑定相关View显示本身
      */
-    public void albumSpinnerOnClick() {
-        if (this.isShowing()) {
-            this.dismiss();
+    private fun albumSpinnerOnClick() {
+        if (this.isShowing) {
+            this.dismiss()
         } else {
-            this.showAsDropDown(tvAlbumTitle);
+            tvAlbumTitle?.let {
+                this.showAsDropDown(it)
+            }
         }
+    }
+
+    companion object {
+        private const val FOLDER_MAX_COUNT = 8
     }
 }

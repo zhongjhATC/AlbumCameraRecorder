@@ -7,20 +7,20 @@ import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.multimedia.camera.ui.camera.state.StateMode;
 
 /**
- * 单图完成状态的相关处理
+ * 单图相关处理
  *
  * @author zhongjh
  * @date 2021/11/26
  */
-public class PictureComplete extends StateMode {
+public class PictureSingle extends StateMode {
 
-    private static final String TAG = PictureComplete.class.getSimpleName();
+    private static final String TAG = PictureSingle.class.getSimpleName();
 
     /**
      * @param cameraFragment     主要是多个状态围绕着CameraFragment进行相关处理
      * @param cameraStateManager 可以让状态更改别的状态
      */
-    public PictureComplete(BaseCameraFragment<? extends CameraStateManager,
+    public PictureSingle(BaseCameraFragment<? extends CameraStateManager,
                 ? extends CameraPictureManager,
                 ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
         super(cameraFragment, cameraStateManager);
