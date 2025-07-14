@@ -123,7 +123,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * 摄像头控制器
      */
     private lateinit var cameraControl: CameraControl
-    private val mainExecutor: Executor by lazy { ContextCompat.getMainExecutor(appCompatActivity) }
+    private lateinit var mainExecutor: Executor
 
     /**
      * 相机模式
@@ -168,6 +168,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
 
         // 选择数据改变
         activityRef.get()?.let { activity ->
+            mainExecutor = ContextCompat.getMainExecutor(activity)
             previewView.previewStreamState.observe(activity) { streamState ->
                 if (lastStreamState == null) {
                     lastStreamState = streamState

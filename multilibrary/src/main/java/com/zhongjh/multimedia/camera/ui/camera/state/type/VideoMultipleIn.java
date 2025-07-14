@@ -31,7 +31,7 @@ public class VideoMultipleIn extends StateMode {
 
     @Override
     public void onActivityPause() {
-        getCameraFragment().getCameraVideoManager().setVideoTime(0L);
+        getCameraFragment().getCameraVideoManager().videoTime = 0L;
         // 重置所有
         getCameraFragment().resetStateAll();
         // 恢复预览状态
@@ -43,7 +43,7 @@ public class VideoMultipleIn extends StateMode {
         getCameraFragment().cameraManage.closeVideo();
         getCameraFragment().getPhotoVideoLayout().resetConfirm();
 
-        if (getCameraFragment().getCameraVideoManager().getVideoTime() == 0L) {
+        if (getCameraFragment().getCameraVideoManager().videoTime == 0L) {
             // 如果没有视频节点则重置所有按钮
             getCameraFragment().getPhotoVideoLayout().reset();
             // 恢复预览状态

@@ -7,6 +7,12 @@ package com.zhongjh.multimedia.camera.ui.camera.impl
  * @date 2022/8/23
  */
 interface ICameraVideo {
+
+    /**
+     * 生命周期onDestroy
+     */
+    fun onDestroy()
+
     /**
      * 录制视频
      */

@@ -35,6 +35,7 @@ import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
+import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
 
 
@@ -46,9 +47,13 @@ import kotlin.coroutines.resume
  * @author zhongjh
  * @date 2022/8/22
  */
-open class CameraPictureManager(
-    @JvmField protected var baseCameraFragment: BaseCameraFragment<out CameraStateManager?, out CameraPictureManager?, out CameraVideoManager?>
-) : PhotoAdapterListener, ICameraPicture {
+open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : PhotoAdapterListener, ICameraPicture {
+
+    /**
+     * 使用弱引用持有 Fragment
+     */
+    val fragmentRef = WeakReference(baseCameraFragment)
+
     /**
      * 单图：从编辑图片界面回来
      */
@@ -83,18 +88,19 @@ open class CameraPictureManager(
      * 初始化多图适配器
      */
     override fun initMultiplePhotoAdapter() {
-        // 初始化多图适配器，先判断是不是多图配置
-        photoAdapter =
-            PhotoAdapter(baseCameraFragment.mainActivity, baseCameraFragment.globalSpec, bitmapDataList, this)
-        baseCameraFragment.recyclerViewPhoto?.let {
-            if (imageMaxCount > 1) {
-                it.layoutManager = LinearLayoutManager(
-                    baseCameraFragment.myContext, RecyclerView.HORIZONTAL, false
-                )
-                it.adapter = photoAdapter
-                it.visibility = View.VISIBLE
-            } else {
-                it.visibility = View.GONE
+        fragmentRef.get()?.let { baseCameraFragment ->
+            // 初始化多图适配器，先判断是不是多图配置
+            photoAdapter = PhotoAdapter(baseCameraFragment.mainActivity, baseCameraFragment.globalSpec, bitmapDataList, this)
+            baseCameraFragment.recyclerViewPhoto?.let {
+                if (imageMaxCount > 1) {
+                    it.layoutManager = LinearLayoutManager(
+                        baseCameraFragment.myContext, RecyclerView.HORIZONTAL, false
+                    )
+                    it.adapter = photoAdapter
+                    it.visibility = View.VISIBLE
+                } else {
+                    it.visibility = View.GONE
+                }
             }
         }
     }
@@ -103,17 +109,18 @@ open class CameraPictureManager(
      * 初始化Activity的有关图片回调
      */
     override fun initActivityResult() {
-        // 从编辑图片界面回来
-        imageEditActivityResult = baseCameraFragment.registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.let {
-                    // 编辑图片界面
-                    refreshEditPhoto(
-                        it.getIntExtra(ImageEditActivity.EXTRA_WIDTH, 0),
-                        it.getIntExtra(ImageEditActivity.EXTRA_HEIGHT, 0)
-                    )
-                } ?: let {
-                    return@registerForActivityResult
+        fragmentRef.get()?.let { baseCameraFragment ->
+            // 从编辑图片界面回来
+            imageEditActivityResult = baseCameraFragment.registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    result.data?.let {
+                        // 编辑图片界面
+                        refreshEditPhoto(
+                            it.getIntExtra(ImageEditActivity.EXTRA_WIDTH, 0), it.getIntExtra(ImageEditActivity.EXTRA_HEIGHT, 0)
+                        )
+                    } ?: let {
+                        return@registerForActivityResult
+                    }
                 }
             }
         }
@@ -123,16 +130,19 @@ open class CameraPictureManager(
      * 编辑单个图片事件
      */
     override fun initPhotoEditListener() {
-        baseCameraFragment.photoVideoLayout.viewHolder.rlEdit.setOnClickListener { view: View ->
-            val uri = Uri.parse(view.tag.toString()).toString()
-            photoEditFile = createCacheFile(baseCameraFragment.myContext, MediaType.TYPE_PICTURE)
-            val intent = Intent()
-            intent.setClass(baseCameraFragment.myContext, ImageEditActivity::class.java)
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.mainActivity.requestedOrientation)
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri)
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, photoEditFile?.absolutePath)
-            imageEditActivityResult?.launch(intent)
+        fragmentRef.get()?.let { baseCameraFragment ->
+            baseCameraFragment.photoVideoLayout.viewHolder.rlEdit.setOnClickListener { view: View ->
+                val uri = Uri.parse(view.tag.toString()).toString()
+                photoEditFile = createCacheFile(baseCameraFragment.myContext, MediaType.TYPE_PICTURE)
+                val intent = Intent()
+                intent.setClass(baseCameraFragment.myContext, ImageEditActivity::class.java)
+                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.mainActivity.requestedOrientation)
+                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri)
+                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, photoEditFile?.absolutePath)
+                imageEditActivityResult?.launch(intent)
+            }
         }
+
     }
 
     /**
@@ -154,21 +164,29 @@ open class CameraPictureManager(
         }
         photoAdapter.release()
         cancelMovePictureFileTask()
+
+        // 置空所有可能持有引用的对象
+        imageEditActivityResult = null
+        movePictureFileTask = null
+        photoFile = null
+        photoEditFile = null
     }
 
     /**
      * 拍照
      */
     override fun takePhoto() {
-        // 如果已经有视频，则不允许拍照了
-        if ((baseCameraFragment.cameraVideoManager?.videoTime ?: 0) <= 0) {
-            // 判断数量
-            if (photoAdapter.itemCount < imageMaxCount) {
-                // 设置不能点击，防止多次点击报错
-                baseCameraFragment.childClickableLayout.setChildClickable(false)
-                baseCameraFragment.cameraManage.takePictures()
-            } else {
-                baseCameraFragment.photoVideoLayout.setTipAlphaAnimation(baseCameraFragment.resources.getString(R.string.z_multi_library_the_camera_limit_has_been_reached))
+        fragmentRef.get()?.let { baseCameraFragment ->
+            // 如果已经有视频，则不允许拍照了
+            if (baseCameraFragment.cameraVideoManager.videoTime <= 0) {
+                // 判断数量
+                if (photoAdapter.itemCount < imageMaxCount) {
+                    // 设置不能点击，防止多次点击报错
+                    baseCameraFragment.childClickableLayout.setChildClickable(false)
+                    baseCameraFragment.cameraManage.takePictures()
+                } else {
+                    baseCameraFragment.photoVideoLayout.setTipAlphaAnimation(baseCameraFragment.resources.getString(R.string.z_multi_library_the_camera_limit_has_been_reached))
+                }
             }
         }
     }
@@ -179,34 +197,36 @@ open class CameraPictureManager(
      * @param path 文件路径
      */
     override fun addCaptureData(path: String) {
-        rotateImage(baseCameraFragment.myContext, path)
-        // 初始化数据并且存储进file
-        val file = File(path)
-        val uri = Uri.fromFile(file)
-        val bitmapData = BitmapData(System.currentTimeMillis(), uri.toString(), file.path)
-        // 加速回收机制
-        System.gc()
-        // 判断是否多个图片
-        if (imageMaxCount > 1) {
-            // 添加入数据源
-            bitmapDataList.add(bitmapData)
-            // 更新最后一个添加
-            photoAdapter.notifyItemInserted(photoAdapter.itemCount - 1)
-            photoAdapter.notifyItemRangeChanged(photoAdapter.itemCount - 1, photoAdapter.itemCount)
-            baseCameraFragment.showMultiplePicture()
-        } else {
-            bitmapDataList.add(bitmapData)
-            photoFile = file
-            baseCameraFragment.showSinglePicture(bitmapData, file, uri.toString())
-        }
+        fragmentRef.get()?.let { baseCameraFragment ->
+            rotateImage(baseCameraFragment.myContext, path)
+            // 初始化数据并且存储进file
+            val file = File(path)
+            val uri = Uri.fromFile(file)
+            val bitmapData = BitmapData(System.currentTimeMillis(), uri.toString(), file.path)
+            // 加速回收机制
+            System.gc()
+            // 判断是否多个图片
+            if (imageMaxCount > 1) {
+                // 添加入数据源
+                bitmapDataList.add(bitmapData)
+                // 更新最后一个添加
+                photoAdapter.notifyItemInserted(photoAdapter.itemCount - 1)
+                photoAdapter.notifyItemRangeChanged(photoAdapter.itemCount - 1, photoAdapter.itemCount)
+                baseCameraFragment.showMultiplePicture()
+            } else {
+                bitmapDataList.add(bitmapData)
+                photoFile = file
+                baseCameraFragment.showSinglePicture(bitmapData, file, uri.toString())
+            }
 
-        if (bitmapDataList.isNotEmpty()) {
-            // 母窗体禁止滑动
-            baseCameraFragment.mainActivity.showHideTableLayout(false)
-        }
+            if (bitmapDataList.isNotEmpty()) {
+                // 母窗体禁止滑动
+                baseCameraFragment.mainActivity.showHideTableLayout(false)
+            }
 
-        // 回调接口：添加图片后剩下的相关数据
-        baseCameraFragment.cameraSpec.onCaptureListener?.add(this.bitmapDataList, bitmapDataList.size - 1)
+            // 回调接口：添加图片后剩下的相关数据
+            baseCameraFragment.cameraSpec.onCaptureListener?.add(this.bitmapDataList, bitmapDataList.size - 1)
+        }
     }
 
     /**
@@ -224,33 +244,35 @@ open class CameraPictureManager(
      * @param height 最新图片的高度
      */
     override fun refreshEditPhoto(width: Int, height: Int) {
-        // 删除旧图
-        photoFile?.let {
-            if (it.exists()) {
-                val wasSuccessful = it.delete()
-                if (!wasSuccessful) {
-                    println("was not successful.")
+        fragmentRef.get()?.let { baseCameraFragment ->
+            // 删除旧图
+            photoFile?.let {
+                if (it.exists()) {
+                    val wasSuccessful = it.delete()
+                    if (!wasSuccessful) {
+                        println("was not successful.")
+                    }
                 }
             }
-        }
 
-        // 用编辑后的图作为新的图片
-        photoFile = photoEditFile
-        // 重新赋值编辑后的图、新标签
-        baseCameraFragment.photoVideoLayout.viewHolder.rlEdit.tag = Uri.fromFile(photoFile).toString()
+            // 用编辑后的图作为新的图片
+            photoFile = photoEditFile
+            // 重新赋值编辑后的图、新标签
+            baseCameraFragment.photoVideoLayout.viewHolder.rlEdit.tag = Uri.fromFile(photoFile).toString()
 
-        photoFile?.let { photoFile ->
-            // 重置mCaptureBitmaps
-            val uri = Uri.fromFile(File(photoFile.path)).toString()
-            val bitmapData = BitmapData(bitmapDataList[0].temporaryId, uri, photoFile.path)
-            bitmapDataList.clear()
-            bitmapDataList.add(bitmapData)
+            photoFile?.let { photoFile ->
+                // 重置mCaptureBitmaps
+                val uri = Uri.fromFile(File(photoFile.path)).toString()
+                val bitmapData = BitmapData(bitmapDataList[0].temporaryId, uri, photoFile.path)
+                bitmapDataList.clear()
+                bitmapDataList.add(bitmapData)
 
-            // 这样可以重置大小
-            baseCameraFragment.singlePhotoView.isZoomable = true
-            baseCameraFragment.globalSpec.imageEngine.loadUriImage(
-                baseCameraFragment.myContext, baseCameraFragment.singlePhotoView, photoFile.path
-            )
+                // 这样可以重置大小
+                baseCameraFragment.singlePhotoView.isZoomable = true
+                baseCameraFragment.globalSpec.imageEngine.loadUriImage(
+                    baseCameraFragment.myContext, baseCameraFragment.singlePhotoView, photoFile.path
+                )
+            }
         }
     }
 
@@ -267,20 +289,24 @@ open class CameraPictureManager(
             }
 
             override fun onSuccess(newFiles: ArrayList<LocalMedia>) {
-                Log.d(TAG, "onSuccess")
-                baseCameraFragment.commitPictureSuccess(newFiles)
-                // 恢复预览状态
-                baseCameraFragment.cameraStateManager?.state = baseCameraFragment.cameraStateManager?.preview
+                fragmentRef.get()?.let { baseCameraFragment ->
+                    Log.d(TAG, "onSuccess")
+                    baseCameraFragment.commitPictureSuccess(newFiles)
+                    // 恢复预览状态
+                    baseCameraFragment.cameraStateManager.state = baseCameraFragment.cameraStateManager.preview
+                }
             }
 
             override fun onFail(t: Throwable) {
-                // 打印堆栈日志
-                Log.e(TAG, "getMovePictureFileTask")
-                val stackTraceElements: Array<StackTraceElement> = t.stackTrace
-                for (stackTraceElement in stackTraceElements) {
-                    Log.e(TAG, stackTraceElement.toString())
+                fragmentRef.get()?.let { baseCameraFragment ->
+                    // 打印堆栈日志
+                    Log.e(TAG, "getMovePictureFileTask")
+                    val stackTraceElements: Array<StackTraceElement> = t.stackTrace
+                    for (stackTraceElement in stackTraceElements) {
+                        Log.e(TAG, stackTraceElement.toString())
+                    }
+                    baseCameraFragment.commitFail(t)
                 }
-                baseCameraFragment.commitFail(t)
             }
         }
         return movePictureFileTask as ThreadUtils.SimpleTask<ArrayList<LocalMedia>>
@@ -290,7 +316,7 @@ open class CameraPictureManager(
      * 删除临时图片
      */
     override fun deletePhotoFile() {
-        if (photoFile != null) {
+        photoFile?.let {
             FileUtils.deleteFile(photoFile)
         }
     }
@@ -315,7 +341,7 @@ open class CameraPictureManager(
      * @param intent 点击后，封装相关数据进入该intent
      */
     override fun onPhotoAdapterClick(intent: Intent) {
-        baseCameraFragment.openAlbumPreviewActivity(intent)
+        fragmentRef.get()?.openAlbumPreviewActivity(intent)
     }
 
     /**
@@ -325,19 +351,22 @@ open class CameraPictureManager(
      * @param position   删除的索引
      */
     override fun onPhotoAdapterDelete(bitmapData: BitmapData, position: Int) {
-        // 删除文件
-        FileUtils.deleteFile(bitmapData.absolutePath)
+        fragmentRef.get()?.let { baseCameraFragment ->
+            // 删除文件
+            FileUtils.deleteFile(bitmapData.absolutePath)
 
-        // 判断如果删除光图片的时候，母窗体启动滑动
-        if (bitmapDataList.isEmpty()) {
-            baseCameraFragment.mainActivity.showHideTableLayout(true)
-        }
-        baseCameraFragment.cameraSpec.onCaptureListener?.remove(this.bitmapDataList, position)
+            // 判断如果删除光图片的时候，母窗体启动滑动
+            if (bitmapDataList.isEmpty()) {
+                baseCameraFragment.mainActivity.showHideTableLayout(true)
+            }
+            baseCameraFragment.cameraSpec.onCaptureListener?.remove(this.bitmapDataList, position)
 
-        // 当列表全部删掉隐藏列表框的UI
-        if (bitmapDataList.isEmpty()) {
-            baseCameraFragment.hideViewByMultipleZero()
+            // 当列表全部删掉隐藏列表框的UI
+            if (bitmapDataList.isEmpty()) {
+                baseCameraFragment.hideViewByMultipleZero()
+            }
         }
+
     }
 
     /**
@@ -356,41 +385,43 @@ open class CameraPictureManager(
     private fun movePictureFileTaskInBackground(): ArrayList<LocalMedia> {
         // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
         val newFiles = ArrayList<LocalMedia>()
-        // 将 缓存文件 拷贝到 配置目录
-        for (item in bitmapDataList) {
-            val cacheFile = File(item.absolutePath)
-            Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
-            var localMedia = LocalMedia()
-            // 直接迁移到相册文件夹,刷新
-            val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
-            val isMove = FileUtils.move(cacheFile, cameraFile)
-            // 需要处理的最终文件
-            val newFile = if (isMove) {
-                runBlocking {
-                    localMedia = mediaScanFile(cameraFile.absolutePath)
-                    Log.d(TAG, "2. 获取相册数据：" + localMedia.fileId)
+        fragmentRef.get()?.let { baseCameraFragment ->
+            // 将 缓存文件 拷贝到 配置目录
+            for (item in bitmapDataList) {
+                val cacheFile = File(item.absolutePath)
+                Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
+                var localMedia = LocalMedia()
+                // 直接迁移到相册文件夹,刷新
+                val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
+                val isMove = FileUtils.move(cacheFile, cameraFile)
+                // 需要处理的最终文件
+                val newFile = if (isMove) {
+                    runBlocking {
+                        localMedia = mediaScanFile(cameraFile.absolutePath)
+                        Log.d(TAG, "2. 获取相册数据：" + localMedia.fileId)
+                    }
+                    cameraFile
+                } else {
+                    cacheFile
                 }
-                cameraFile
-            } else {
-                cacheFile
+                // 压缩图片
+                val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
+                    baseCameraFragment.myContext, newFile
+                ) ?: let {
+                    newFile
+                }
+                Log.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
+                localMedia.compressPath = compressionFile.absolutePath
+                localMedia.sandboxPath = FileMediaUtil.getUri(baseCameraFragment.myContext, localMedia.compressPath.toString()).toString()
+                localMedia.size = compressionFile.length()
+                val mediaInfo = MediaUtils.getMediaInfo(
+                    baseCameraFragment.myContext, MediaType.TYPE_PICTURE, compressionFile.absolutePath
+                )
+                localMedia.width = mediaInfo.width
+                localMedia.height = mediaInfo.height
+                Log.d(TAG, "4. 补充属性")
+                newFiles.add(localMedia)
             }
-            // 压缩图片
-            val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
-                baseCameraFragment.myContext, newFile
-            ) ?: let {
-                newFile
-            }
-            Log.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
-            localMedia.compressPath = compressionFile.absolutePath
-            localMedia.sandboxPath = FileMediaUtil.getUri(baseCameraFragment.myContext, localMedia.compressPath.toString()).toString()
-            localMedia.size = compressionFile.length()
-            val mediaInfo = MediaUtils.getMediaInfo(
-                baseCameraFragment.myContext, MediaType.TYPE_PICTURE, compressionFile.absolutePath
-            )
-            localMedia.width = mediaInfo.width
-            localMedia.height = mediaInfo.height
-            Log.d(TAG, "4. 补充属性")
-            newFiles.add(localMedia)
         }
         // 执行完成
         return newFiles
@@ -401,9 +432,11 @@ open class CameraPictureManager(
      * 根据真实路径返回LocalMedia
      */
     private suspend fun mediaScanFile(path: String): LocalMedia = suspendCancellableCoroutine { ctn ->
-        MediaScannerConnection.scanFile(baseCameraFragment.myContext, arrayOf(path), MimeType.ofImageArray()) { path, _ ->
-            // 相册刷新完成后的回调
-            ctn.resume(MediaStoreUtils.getMediaDataByPath(baseCameraFragment.myContext, path))
+        fragmentRef.get()?.let { baseCameraFragment ->
+            MediaScannerConnection.scanFile(baseCameraFragment.myContext, arrayOf(path), MimeType.ofImageArray()) { path, _ ->
+                // 相册刷新完成后的回调
+                ctn.resume(MediaStoreUtils.getMediaDataByPath(baseCameraFragment.myContext, path))
+            }
         }
     }
 

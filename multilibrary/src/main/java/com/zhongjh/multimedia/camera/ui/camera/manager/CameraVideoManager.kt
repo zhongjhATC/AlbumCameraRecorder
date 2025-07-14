@@ -1,18 +1,16 @@
-package com.zhongjh.multimedia.camera.ui.camera.manager;
+package com.zhongjh.multimedia.camera.ui.camera.manager
 
-import static android.app.Activity.RESULT_OK;
-
-import android.annotation.SuppressLint;
-import android.content.Intent;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-
-import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraVideo;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
+import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraVideo
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
+import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity.Companion.startActivity
+import java.lang.ref.WeakReference
 
 /**
  * 这是专门处理视频的有关逻辑
@@ -20,48 +18,53 @@ import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
  * @author zhongjh
  * @date 2022/8/23
  */
-public class CameraVideoManager implements ICameraVideo {
+class CameraVideoManager(baseCameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : ICameraVideo {
 
-    public CameraVideoManager(
-            BaseCameraFragment<? extends CameraStateManager,
-                    ? extends CameraPictureManager,
-                    ? extends CameraVideoManager> baseCameraFragment) {
-        this.baseCameraFragment = baseCameraFragment;
-    }
+    /**
+     * 使用弱引用持有 Fragment
+     */
+    val fragmentRef = WeakReference(baseCameraFragment)
 
-    protected final BaseCameraFragment<? extends CameraStateManager,
-            ? extends CameraPictureManager,
-            ? extends CameraVideoManager> baseCameraFragment;
     /**
      * 从视频预览界面回来
      */
-    ActivityResultLauncher<Intent> previewVideoActivityResult;
+    private var previewVideoActivityResult: ActivityResultLauncher<Intent>? = null
+
     /**
      * 当前录制视频的时间
      */
-    private Long videoTime = 0L;
+    @JvmField
+    var videoTime: Long = 0L
 
     /**
      * 初始化Activity的有关视频回调
      */
-    public void initActivityResult() {
-        // 从视频预览界面回来
-        previewVideoActivityResult = baseCameraFragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() == null) {
-                    return;
+    fun initActivityResult() {
+        fragmentRef.get()?.let { fragment ->
+            // 从视频预览界面回来
+            previewVideoActivityResult = fragment.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    result.data?.let { data ->
+                        fragment.commitVideoSuccess(data)
+                    }
                 }
-                baseCameraFragment.commitVideoSuccess(result.getData());
             }
-        });
+        }
+    }
+
+    /**
+     * 生命周期onDestroy
+     */
+    override fun onDestroy() {
+        // 释放资源
+        previewVideoActivityResult = null
     }
 
     /**
      * 录制视频
      */
-    @Override
-    public void recordVideo() {
-        baseCameraFragment.cameraManage.takeVideo();
+    override fun recordVideo() {
+        fragmentRef.get()?.cameraManage?.takeVideo()
     }
 
     /**
@@ -69,47 +72,42 @@ public class CameraVideoManager implements ICameraVideo {
      *
      * @param recordedDurationNanos 当前视频持续时间：纳米单位
      */
-    @Override
-    public void onRecordPause(long recordedDurationNanos) {
-        baseCameraFragment.setShortTipLongRecording();
-        // 如果已经有录像正在录制中，那么就不执行这个动作了
-        if (videoTime == 0) {
-            baseCameraFragment.getPhotoVideoLayout().startShowLeftRightButtonsAnimator(false);
+    override fun onRecordPause(recordedDurationNanos: Long) {
+        fragmentRef.get()?.let { fragment ->
+            fragment.setShortTipLongRecording()
+            // 如果已经有录像正在录制中，那么就不执行这个动作了
+            if (videoTime == 0L) {
+                fragment.photoVideoLayout.startShowLeftRightButtonsAnimator(false)
+            }
+            videoTime = recordedDurationNanos / 1000000
+            // 显示当前进度
+            fragment.photoVideoLayout.setData(videoTime)
+            // 如果是在已经合成的情况下继续拍摄，那就重置状态
+            if (!fragment.photoVideoLayout.progressMode) {
+                fragment.photoVideoLayout.resetConfirm()
+            }
+            fragment.photoVideoLayout.isEnabled = true
         }
-        videoTime = recordedDurationNanos / 1000000;
-        // 显示当前进度
-        baseCameraFragment.getPhotoVideoLayout().setData(videoTime);
-        // 如果是在已经合成的情况下继续拍摄，那就重置状态
-        if (!baseCameraFragment.getPhotoVideoLayout().getProgressMode()) {
-            baseCameraFragment.getPhotoVideoLayout().resetConfirm();
-        }
-        baseCameraFragment.getPhotoVideoLayout().setEnabled(true);
     }
 
     /**
      * 视频开始录制
      */
-    @Override
-    public void onRecordStart() {
-        baseCameraFragment.getPhotoVideoLayout().getViewHolder().btnClickOrLong.setStartTicking(true);
+    override fun onRecordStart() {
+        fragmentRef.get()?.let { fragment ->
+            fragment.photoVideoLayout.viewHolder.btnClickOrLong.isStartTicking = true
+        }
     }
 
     /**
      * 视频录制成功
      */
     @SuppressLint("LongLogTag")
-    @Override
-    public void onRecordSuccess(@NonNull String path) {
-        baseCameraFragment.getPhotoVideoLayout().reset();
-        PreviewVideoActivity.startActivity(baseCameraFragment, previewVideoActivityResult, path, true);
-        baseCameraFragment.getPhotoVideoLayout().setEnabled(true);
-    }
-
-    public Long getVideoTime() {
-        return videoTime;
-    }
-
-    public void setVideoTime(Long videoTime) {
-        this.videoTime = videoTime;
+    override fun onRecordSuccess(path: String) {
+        val fragment = fragmentRef.get() ?: return
+        val previewVideoActivityResult = previewVideoActivityResult ?: return
+        fragment.photoVideoLayout.reset()
+        startActivity(fragment, previewVideoActivityResult, path, true)
+        fragment.photoVideoLayout.isEnabled = true
     }
 }

@@ -569,6 +569,7 @@ public abstract class BaseCameraFragment
             LogUtil.i("CameraLayout destroy");
             getCameraPictureManager().onDestroy(isCommit);
             getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+            getCameraVideoManager().onDestroy();
             cameraManage.onDestroy();
             // 记忆模式
             flashSaveCache();

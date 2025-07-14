@@ -36,7 +36,7 @@ import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
 public class CameraFragment2 extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
 
     ViewHolder mViewHolder;
-    final CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
+    final CameraPictureManagerCustom cameraPicturePresenter = new CameraPictureManagerCustom(this);
     final CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
     final CameraStateManager cameraStateManager = new CameraStateManager(this);
 

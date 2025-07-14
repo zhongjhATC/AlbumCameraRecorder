@@ -34,7 +34,7 @@ public class VideoMultiple extends StateMode {
 
     @Override
     public void onActivityPause() {
-        getCameraFragment().getCameraVideoManager().setVideoTime(0L);
+        getCameraFragment().getCameraVideoManager().videoTime = 0L;
         // 重置所有
         getCameraFragment().resetStateAll();
         // 恢复预览状态

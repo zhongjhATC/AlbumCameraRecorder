@@ -23,6 +23,8 @@ public class CameraPictureManagerCustom extends CameraPictureManager {
     @Override
     public void takePhoto() {
         super.takePhoto();
-        Toast.makeText(baseCameraFragment.getMyContext(), "拍照时触发自定义事件！", Toast.LENGTH_SHORT).show();
+        if (getFragmentRef().get() != null) {
+            Toast.makeText(getFragmentRef().get().getMyContext(), "拍照时触发自定义事件！", Toast.LENGTH_SHORT).show();
+        }
     }
 }
