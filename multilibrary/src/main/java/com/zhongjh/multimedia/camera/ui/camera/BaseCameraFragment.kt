@@ -1,67 +1,60 @@
-package com.zhongjh.multimedia.camera.ui.camera;
+package com.zhongjh.multimedia.camera.ui.camera
 
-import static android.app.Activity.RESULT_OK;
-import static androidx.camera.core.ImageCapture.FLASH_MODE_AUTO;
-import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
-import static androidx.camera.core.ImageCapture.FLASH_MODE_ON;
-import static com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_BOTH;
-import static com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD;
-import static com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_CLICK;
-import static com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
-
-import android.Manifest;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.listener.OnMoreClickListener;
-import com.zhongjh.common.utils.StatusBarUtils;
-import com.zhongjh.common.utils.ThreadUtils;
-import com.zhongjh.multimedia.BaseFragment;
-import com.zhongjh.multimedia.MainActivity;
-import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.camera.constants.FlashCacheUtils;
-import com.zhongjh.multimedia.camera.entity.BitmapData;
-import com.zhongjh.multimedia.camera.listener.ClickOrLongListener;
-import com.zhongjh.multimedia.camera.listener.OnCameraManageListener;
-import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraView;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.IState;
-import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
-import com.zhongjh.multimedia.camera.util.LogUtil;
-import com.zhongjh.multimedia.model.SelectedData;
-import com.zhongjh.multimedia.settings.CameraSpec;
-import com.zhongjh.multimedia.settings.GlobalSpec;
-import com.zhongjh.multimedia.utils.PackageManagerUtils;
-import com.zhongjh.multimedia.utils.SelectableUtils;
-import com.zhongjh.multimedia.widget.BaseOperationLayout;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Objects;
+import android.Manifest
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.camera.core.ImageCapture
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.listener.OnMoreClickListener
+import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
+import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.multimedia.BaseFragment
+import com.zhongjh.multimedia.MainActivity
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.camera.constants.FlashCacheUtils.getFlashModel
+import com.zhongjh.multimedia.camera.constants.FlashCacheUtils.saveFlashModel
+import com.zhongjh.multimedia.camera.entity.BitmapData
+import com.zhongjh.multimedia.camera.listener.ClickOrLongListener
+import com.zhongjh.multimedia.camera.listener.OnCameraManageListener
+import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraFragment
+import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraView
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
+import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.IState
+import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity
+import com.zhongjh.multimedia.camera.util.LogUtil
+import com.zhongjh.multimedia.model.SelectedData
+import com.zhongjh.multimedia.settings.CameraSpec
+import com.zhongjh.multimedia.settings.GlobalSpec
+import com.zhongjh.multimedia.utils.PackageManagerUtils.isSupportCameraLedFlash
+import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
+import com.zhongjh.multimedia.utils.SelectableUtils.videoMaxCount
+import com.zhongjh.multimedia.utils.SelectableUtils.videoValid
+import com.zhongjh.multimedia.widget.BaseOperationLayout
+import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
+import java.io.File
+import java.util.Objects
 
 /**
  * 一个父类的拍摄Fragment，用于开放出来给开发自定义，但是同时也需要遵守一些规范
@@ -69,7 +62,8 @@ import java.util.Objects;
  * Facade模式在presenter包里面体现出来，这个并不是传统意义上的MVP上的P
  * 只是单纯将CameraFragment里面的涉及Picture和Video的两个操作分开出来
  * 这样做的好处是为了减少一个类的代码臃肿、易于扩展维护等等
- * <p>
+ *
+ *
  * 该类主要根据两个接口实现相关方法
  * [ICameraView]:
  * 主要让开发者提供相关View的实现
@@ -79,54 +73,51 @@ import java.util.Objects;
  * @author zhongjh
  * @date 2022/8/11
  */
-public abstract class BaseCameraFragment
-        <StateManager extends CameraStateManager,
-                PictureManager extends com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager,
-                VideoManager extends CameraVideoManager>
-        extends BaseFragment implements ICameraView, ICameraFragment {
+abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureManager : CameraPictureManager, VideoManager : CameraVideoManager>
+    : BaseFragment(), ICameraView, ICameraFragment {
+    private lateinit var myContext: Context
+    var mainActivity: MainActivity? = null
+        private set
 
-    private static final String TAG = BaseCameraFragment.class.getSimpleName();
-
-    private final static int MILLISECOND = 2000;
-
-    private Context myContext;
-    private MainActivity mainActivity;
     /**
      * 在图廊预览界面点击了确定
      */
-    public ActivityResultLauncher<Intent> mAlbumPreviewActivityResult;
+    var mAlbumPreviewActivityResult: ActivityResultLauncher<Intent>? = null
 
     /**
      * 公共配置
      */
-    private GlobalSpec globalSpec;
+    var globalSpec: GlobalSpec? = null
+        private set
+
     /**
      * 拍摄配置
      */
-    private CameraSpec cameraSpec;
-    public CameraManage cameraManage;
+    var cameraSpec: CameraSpec? = null
+        private set
+    var cameraManage: CameraManage? = null
+
     /**
      * 闪关灯状态 默认关闭
      */
-    private int flashMode = FLASH_MODE_OFF;
+    var flashMode: Int = ImageCapture.FLASH_MODE_OFF
+        private set
+
     /**
      * 请求权限的回调
      */
-    ActivityResultLauncher<String[]> mRequestPermissionActivityResult;
+    var mRequestPermissionActivityResult: ActivityResultLauncher<Array<String>>? = null
+
     /**
      * 声明一个long类型变量：用于存放上一点击“返回键”的时刻
      */
-    private long mExitTime;
+    private var mExitTime: Long = 0
+
     /**
      * 是否提交,如果不是提交则要删除冗余文件
      */
-    private boolean isCommit = false;
-    private boolean isShowContinueTip = false;
-    /**
-     * 修饰多图控件的View数组
-     */
-    @Nullable
-    private View[] multiplePhotoViews;
+    private var isCommit = false
+    private var isShowContinueTip = false
 
     /**
      * 设置状态管理,处理不同状态下进行相关逻辑
@@ -135,8 +126,7 @@ public abstract class BaseCameraFragment
      * [PictureComplete] [PictureMultiple]
      * [VideoComplete] [VideoIn] [VideoMultiple] [VideoMultipleIn]
      */
-    @NonNull
-    public abstract StateManager getCameraStateManager();
+    abstract val cameraStateManager: StateManager
 
     /**
      * 设置[BaseCameraPicturePresenter]，专门处理有关图片逻辑
@@ -144,8 +134,7 @@ public abstract class BaseCameraFragment
      *
      * @return BaseCameraPicturePresenter
      */
-    @NonNull
-    public abstract PictureManager getCameraPictureManager();
+    abstract val cameraPictureManager: PictureManager
 
     /**
      * 设置[BaseCameraVideoPresenter]，专门处理有关视频逻辑
@@ -153,198 +142,190 @@ public abstract class BaseCameraFragment
      *
      * @return BaseCameraVideoPresenter
      */
-    @NonNull
-    public abstract VideoManager getCameraVideoManager();
+    abstract val cameraVideoManager: VideoManager
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initActivityResult();
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        initActivityResult()
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = setContentView(inflater, container);
-        view.setOnKeyListener((v, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK);
-        initView(view, savedInstanceState);
-        cameraManage = new CameraManage(getMainActivity(), getPreviewView(), getFocusView());
-        initData();
-        setView();
-        initListener();
-        return view;
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = setContentView(inflater, container!!)
+        view.setOnKeyListener { v: View?, keyCode: Int, event: KeyEvent? -> keyCode == KeyEvent.KEYCODE_BACK }
+        initView(view, savedInstanceState!!)
+        cameraManage = CameraManage(mainActivity!!, previewView, focusView)
+        initData()
+        setView()
+        initListener()
+        return view
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof MainActivity) {
-            mainActivity = (MainActivity) context;
-            this.myContext = context.getApplicationContext();
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is MainActivity) {
+            mainActivity = context
+            this.myContext = context.getApplicationContext()
         }
     }
 
-    @Override
-    public boolean onBackPressed() {
-        Boolean isTrue = getCameraStateManager().onBackPressed();
+    override fun onBackPressed(): Boolean {
+        val isTrue = cameraStateManager.onBackPressed()
         if (isTrue != null) {
-            return isTrue;
+            return isTrue
         } else {
             // 与上次点击返回键时刻作差，第一次不能立即退出
             if ((System.currentTimeMillis() - mExitTime) > MILLISECOND) {
                 // 大于2000ms则认为是误操作，使用Toast进行提示
-                Toast.makeText(getMyContext(), getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
+                Toast.makeText(myContext, resources.getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show()
                 // 并记录下本次点击“返回键”的时刻，以便下次进行判断
-                mExitTime = System.currentTimeMillis();
-                return true;
+                mExitTime = System.currentTimeMillis()
+                return true
             } else {
-                return false;
+                return false
             }
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, @NotNull KeyEvent event) {
-        if ((keyCode & cameraSpec.getKeyCodeTakePhoto()) > 0) {
-            getCameraPictureManager().takePhoto();
-            return true;
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if ((keyCode and cameraSpec!!.keyCodeTakePhoto) > 0) {
+            cameraPictureManager.takePhoto()
+            return true
         }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyDown(keyCode, event)
     }
 
     /**
      * 生命周期onResume
      */
-    @Override
-    public void onResume() {
-        super.onResume();
-        cameraManage.onResume();
-        LogUtil.i("CameraLayout onResume");
+    override fun onResume() {
+        super.onResume()
+        cameraManage!!.onResume()
+        LogUtil.i("CameraLayout onResume")
         // 清空进度，防止正在进度中突然按home键
-        getPhotoVideoLayout().getViewHolder().btnClickOrLong.reset();
+        photoVideoLayout.viewHolder.btnClickOrLong.reset()
         // 重置当前按钮的功能
-        initPvLayoutButtonFeatures();
+        initPvLayoutButtonFeatures()
     }
 
     /**
      * 生命周期onPause
      */
-    @Override
-    public void onPause() {
-        super.onPause();
-        cameraManage.onPause();
-        LogUtil.i("CameraLayout onPause");
+    override fun onPause() {
+        super.onPause()
+        cameraManage!!.onPause()
+        LogUtil.i("CameraLayout onPause")
     }
 
-    @Override
-    public void onDestroy() {
-        onDestroy(isCommit);
-        getPhotoVideoLayout().onDestroy();
-        cameraManage.onDestroy();
-        super.onDestroy();
+    override fun onDestroy() {
+        onDestroy(isCommit)
+        photoVideoLayout.onDestroy()
+        cameraManage!!.onDestroy()
+        super.onDestroy()
     }
 
     /**
      * 设置相关view，由子类赋值
      */
-    protected void setView() {
-        multiplePhotoViews = getMultiplePhotoView();
-        cameraManage.init();
+    protected fun setView() {
+        cameraManage!!.init()
 
         // 兼容沉倾状态栏
-        if (getTopView() != null) {
-            int statusBarHeight = StatusBarUtils.getStatusBarHeight(requireActivity());
-            getTopView().setPadding(0, statusBarHeight, 0, 0);
-            ViewGroup.LayoutParams layoutParams = getTopView().getLayoutParams();
-            layoutParams.height = layoutParams.height + statusBarHeight;
+        if (topView != null) {
+            val statusBarHeight = getStatusBarHeight(requireActivity())
+            topView!!.setPadding(0, statusBarHeight, 0, 0)
+            val layoutParams = topView!!.layoutParams
+            layoutParams.height = layoutParams.height + statusBarHeight
         }
 
         // 处理图片、视频等需要进度显示
-        getPhotoVideoLayout().getViewHolder().btnConfirm.setProgressMode(true);
+        photoVideoLayout.viewHolder.btnConfirm.setProgressMode(true)
 
         // 初始化cameraView,判断是否开启录制视频，如果开启就开启录制声音x
-        cameraManage.setAudio(SelectableUtils.videoValid());
-        if (getSwitchView() != null) {
-            getSwitchView().setImageResource(cameraSpec.getImageSwitch());
+        cameraManage!!.isAudio = videoValid()
+        if (switchView != null) {
+            switchView!!.setImageResource(cameraSpec!!.imageSwitch)
         }
         // 设置录制时间
-        getPhotoVideoLayout().setDuration(cameraSpec.getMaxDuration());
+        photoVideoLayout.setDuration(cameraSpec!!.maxDuration)
     }
 
     /**
      * 初始化相关数据
      */
-    protected void initData() {
+    protected fun initData() {
         // 初始化设置
-        globalSpec = GlobalSpec.INSTANCE;
-        cameraSpec = CameraSpec.INSTANCE;
+        globalSpec = GlobalSpec
+        cameraSpec = CameraSpec
 
         // 闪光灯修改默认模式
-        flashMode = cameraSpec.getFlashMode();
+        flashMode = cameraSpec!!.flashMode
         // 记忆模式
-        flashGetCache();
+        flashGetCache()
 
         // 初始化适配器
-        getCameraPictureManager().initMultiplePhotoAdapter();
+        cameraPictureManager.initMultiplePhotoAdapter()
     }
 
     /**
      * 初始化相关事件
      */
-    protected void initListener() {
+    protected open fun initListener() {
         // 关闭事件
-        initCameraLayoutCloseListener();
+        initCameraLayoutCloseListener()
         // 切换闪光灯模式
-        initImgFlashListener();
+        initImgFlashListener()
         // 切换摄像头前置/后置
-        initImgSwitchListener();
+        initImgSwitchListener()
         // 主按钮监听
-        initPvLayoutPhotoVideoListener();
+        initPvLayoutPhotoVideoListener()
         // 左右确认和取消
-        initPvLayoutOperateListener();
+        initPvLayoutOperateListener()
         // 拍照监听
-        initCameraViewListener();
+        initCameraViewListener()
         // 编辑图片事件
-        getCameraPictureManager().initPhotoEditListener();
+        cameraPictureManager.initPhotoEditListener()
     }
 
     /**
      * 关闭View初始化事件
      */
-    private void initCameraLayoutCloseListener() {
-        if (getCloseView() != null) {
-            getCloseView().setOnClickListener(new OnMoreClickListener() {
-                /** @noinspection unused*/
-                @Override
-                public void onListener(@NonNull View v) {
-                    mainActivity.finish();
+    private fun initCameraLayoutCloseListener() {
+        if (closeView != null) {
+            closeView!!.setOnClickListener(object : OnMoreClickListener() {
+                /** @noinspection unused
+                 */
+                override fun onListener(v: View) {
+                    mainActivity!!.finish()
                 }
-            });
+            })
         }
     }
 
     /**
      * 切换闪光灯模式
      */
-    private void initImgFlashListener() {
-        if (getFlashView() != null) {
-            getFlashView().setOnClickListener(v -> {
-                flashMode++;
-                if (flashMode > FLASH_MODE_OFF) {
-                    flashMode = FLASH_MODE_AUTO;
+    private fun initImgFlashListener() {
+        if (flashView != null) {
+            flashView!!.setOnClickListener { v: View? ->
+                flashMode++
+                if (flashMode > ImageCapture.FLASH_MODE_OFF) {
+                    flashMode = ImageCapture.FLASH_MODE_AUTO
                 }
                 // 重新设置当前闪光灯模式
-                setFlashLamp();
-            });
+                setFlashLamp()
+            }
         }
     }
 
     /**
      * 切换摄像头前置/后置
      */
-    private void initImgSwitchListener() {
-        if (getSwitchView() != null) {
-            getSwitchView().setOnClickListener(v -> cameraManage.toggleFacing());
+    private fun initImgSwitchListener() {
+        if (switchView != null) {
+            switchView!!.setOnClickListener { v: View? -> cameraManage!!.toggleFacing() }
         }
     }
 
@@ -353,210 +334,185 @@ public abstract class BaseCameraFragment
      * onClick() 即代表触发拍照
      * onLongClick() 即代表触发录制
      */
-    private void initPvLayoutPhotoVideoListener() {
-        getPhotoVideoLayout().setPhotoVideoListener(new ClickOrLongListener() {
-
-            @Override
-            public void actionDown() {
-                Log.d(TAG, "pvLayout actionDown");
+    private fun initPvLayoutPhotoVideoListener() {
+        photoVideoLayout.setPhotoVideoListener(object : ClickOrLongListener {
+            override fun actionDown() {
+                Log.d(TAG, "pvLayout actionDown")
                 // 母窗体隐藏底部滑动
-                mainActivity.showHideTableLayout(false);
+                mainActivity!!.showHideTableLayout(false)
             }
 
-            @Override
-            public void onClick() {
-                Log.d(TAG, "pvLayout onClick");
-                getCameraPictureManager().takePhoto();
+            override fun onClick() {
+                Log.d(TAG, "pvLayout onClick")
+                this@BaseCameraFragment.cameraPictureManager.takePhoto()
             }
 
-            @Override
-            public void onLongClick() {
-                Log.d(TAG, "pvLayout onLongClick ");
-                getCameraVideoManager().recordVideo();
+            override fun onLongClick() {
+                Log.d(TAG, "pvLayout onLongClick ")
+                this@BaseCameraFragment.cameraVideoManager.recordVideo()
                 // 设置录制状态
-                getCameraStateManager().setState(getCameraStateManager().getVideoMultipleIn());
+                this@BaseCameraFragment.cameraStateManager.setState(this@BaseCameraFragment.cameraStateManager.videoMultipleIn)
                 // 开始录像
-                setMenuVisibility(View.INVISIBLE);
+                setMenuVisibility(View.INVISIBLE)
             }
 
-            @Override
-            public void onLongClickEnd(long time) {
-                Log.d(TAG, "pvLayout onLongClickEnd ");
+            override fun onLongClickEnd(time: Long) {
+                Log.d(TAG, "pvLayout onLongClickEnd ")
                 // 录像暂停
-                pauseRecord();
+                pauseRecord()
             }
 
-            @Override
-            public void onLongClickFinish() {
-                Log.d(TAG, "pvLayout onLongClickFinish ");
-                getState().onLongClickFinish();
+            override fun onLongClickFinish() {
+                Log.d(TAG, "pvLayout onLongClickFinish ")
+                this@BaseCameraFragment.state.onLongClickFinish()
             }
 
-            @Override
-            public void onLongClickError() {
-                Log.d(TAG, "pvLayout onLongClickError ");
+            override fun onLongClickError() {
+                Log.d(TAG, "pvLayout onLongClickError ")
             }
 
-            @Override
-            public void onBanClickTips() {
+            override fun onBanClickTips() {
                 // 判断如果是分段录制模式就提示
-                getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_working_video_click_later));
+                photoVideoLayout.setTipAlphaAnimation(resources.getString(R.string.z_multi_library_working_video_click_later))
             }
 
-            @Override
-            public void onClickStopTips() {
-                getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_touch_your_suspension));
+            override fun onClickStopTips() {
+                photoVideoLayout.setTipAlphaAnimation(resources.getString(R.string.z_multi_library_touch_your_suspension))
             }
-        });
+        })
     }
 
     /**
      * 左右两个按钮：确认和取消
      */
-    private void initPvLayoutOperateListener() {
+    private fun initPvLayoutOperateListener() {
         // noinspection unused
-        getPhotoVideoLayout().setOperateListener(new BaseOperationLayout.OperateListener() {
-            /** @noinspection unused*/
-            @Override
-            public boolean beforeConfirm() {
-                getCameraStateManager().pvLayoutCommit();
-                return true;
+        photoVideoLayout.setOperateListener(object : BaseOperationLayout.OperateListener {
+            /** @noinspection unused
+             */
+            override fun beforeConfirm(): Boolean {
+                this@BaseCameraFragment.cameraStateManager.pvLayoutCommit()
+                return true
             }
 
-            /** @noinspection unused*/
-            @Override
-            public void cancel() {
-                Log.d(TAG, "cancel " + getState().toString());
-                getCameraStateManager().pvLayoutCancel();
+            /** @noinspection unused
+             */
+            override fun cancel() {
+                Log.d(TAG, "cancel " + this@BaseCameraFragment.state.toString())
+                this@BaseCameraFragment.cameraStateManager.pvLayoutCancel()
             }
 
-            @Override
-            public void startProgress() {
-                Log.d(TAG, "startProgress " + getState().toString());
+            override fun startProgress() {
+                Log.d(TAG, "startProgress " + this@BaseCameraFragment.state.toString())
                 // 没有所需要请求的权限，就进行后面的逻辑
-                getCameraStateManager().pvLayoutCommit();
+                this@BaseCameraFragment.cameraStateManager.pvLayoutCommit()
             }
 
-            @Override
-            public void stopProgress() {
-                Log.d(TAG, "stopProgress " + getState().toString());
-                getCameraStateManager().stopProgress();
+            override fun stopProgress() {
+                Log.d(TAG, "stopProgress " + this@BaseCameraFragment.state.toString())
+                this@BaseCameraFragment.cameraStateManager.stopProgress()
                 // 重置按钮
-                getPhotoVideoLayout().resetConfirm();
+                photoVideoLayout.resetConfirm()
             }
 
-            @Override
-            public void doneProgress() {
-                Log.d(TAG, "doneProgress " + getState().toString());
-                getPhotoVideoLayout().resetConfirm();
+            override fun doneProgress() {
+                Log.d(TAG, "doneProgress " + this@BaseCameraFragment.state.toString())
+                photoVideoLayout.resetConfirm()
             }
-        });
+        })
     }
 
     /**
      * 拍照、录制监听
      */
-    private void initCameraViewListener() {
+    private fun initCameraViewListener() {
         // noinspection unused
-        cameraManage.setOnCameraManageListener(new OnCameraManageListener() {
-
-            @Override
-            public void onRecordStart() {
-                getCameraVideoManager().onRecordStart();
+        cameraManage!!.setOnCameraManageListener(object : OnCameraManageListener {
+            override fun onRecordStart() {
+                this@BaseCameraFragment.cameraVideoManager.onRecordStart()
             }
 
-            @Override
-            public void onActivityPause() {
+            override fun onActivityPause() {
                 // 重置View
-                getCameraStateManager().onActivityPause();
+                this@BaseCameraFragment.cameraStateManager.onActivityPause()
             }
 
-            @Override
-            public void onPictureSuccess(@NonNull String path) {
-                Log.d(TAG, "onPictureSuccess");
-                if (cameraSpec.getOnInitCameraManager() != null) {
-                    cameraSpec.getOnInitCameraManager().initWatermarkedImage(path);
+            override fun onPictureSuccess(path: String) {
+                Log.d(TAG, "onPictureSuccess")
+                if (cameraSpec!!.onInitCameraManager != null) {
+                    cameraSpec!!.onInitCameraManager!!.initWatermarkedImage(path)
                 }
                 // 显示图片
-                getCameraPictureManager().addCaptureData(path);
+                this@BaseCameraFragment.cameraPictureManager.addCaptureData(path)
                 // 恢复点击
-                getChildClickableLayout().setChildClickable(true);
+                childClickableLayout.setChildClickable(true)
             }
 
-            @Override
-            public void bindSucceed() {
+            override fun bindSucceed() {
                 // 设置闪光灯模式
-                setFlashLamp();
+                setFlashLamp()
             }
 
-            @Override
-            public void onRecordSuccess(@NonNull String path) {
-                Log.d(TAG, "onRecordSuccess");
+            override fun onRecordSuccess(path: String) {
+                Log.d(TAG, "onRecordSuccess")
                 // 处理视频文件,最后会解除《禁止点击》
-                getCameraVideoManager().onRecordSuccess(path);
+                this@BaseCameraFragment.cameraVideoManager.onRecordSuccess(path)
             }
 
-            @Override
-            public void onRecordPause(long recordedDurationNanos) {
+            override fun onRecordPause(recordedDurationNanos: Long) {
                 // 处理暂停,最后会解除《禁止点击》
-                getCameraVideoManager().onRecordPause(recordedDurationNanos);
+                this@BaseCameraFragment.cameraVideoManager.onRecordPause(recordedDurationNanos)
             }
 
-            /** @noinspection unused*/
-            @Override
-            public void onError(int errorCode, @Nullable String message, @Nullable Throwable cause) {
-                Toast.makeText(getMyContext(), message, Toast.LENGTH_LONG).show();
+            /** @noinspection unused
+             */
+            override fun onError(errorCode: Int, message: String?, cause: Throwable?) {
+                Toast.makeText(this@BaseCameraFragment.myContext, message, Toast.LENGTH_LONG).show()
             }
-
-        });
+        })
     }
 
     /**
      * 初始化Activity回调
      */
-    private void initActivityResult() {
+    private fun initActivityResult() {
         // 在图廊预览界面点击了确定
-        mAlbumPreviewActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() == null) {
-                    return;
+        mAlbumPreviewActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                if (result.data == null) {
+                    return@registerForActivityResult
                 }
                 // 获取选择的数据
-                ArrayList<LocalMedia> selected;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    selected = result.getData().getParcelableArrayListExtra(SelectedData.STATE_SELECTION, LocalMedia.class);
-                } else {
-                    selected = result.getData().getParcelableArrayListExtra(SelectedData.STATE_SELECTION);
+                val selected = result.data?.getParcelableArrayListExtra(SelectedData.STATE_SELECTION, LocalMedia::class.java)
+
+                selected?.let {
+                    // 重新赋值
+                    val bitmapDataArrayList = ArrayList<BitmapData>()
+                    for (item in selected) {
+                        // 如果有编辑图片,则将该图片覆盖最新的拍照图片
+                        val path = if (null == item.editorPath) item.absolutePath else item.editorPath!!
+                        val uri = Uri.fromFile(File(path)).toString()
+                        val bitmapData = BitmapData(item.fileId, uri, path)
+                        bitmapDataArrayList.add(bitmapData)
+                    }
+                    // 全部刷新
+                    cameraPictureManager.refreshMultiPhoto(bitmapDataArrayList)
                 }
-                if (selected == null) {
-                    return;
-                }
-                // 重新赋值
-                ArrayList<BitmapData> bitmapDataArrayList = new ArrayList<>();
-                for (LocalMedia item : selected) {
-                    // 如果有编辑图片,则将该图片覆盖最新的拍照图片
-                    String path = null == item.getEditorPath() ? item.getAbsolutePath() : item.getEditorPath();
-                    String uri = Uri.fromFile(new File(path)).toString();
-                    BitmapData bitmapData = new BitmapData(item.getFileId(), uri, path);
-                    bitmapDataArrayList.add(bitmapData);
-                }
-                // 全部刷新
-                getCameraPictureManager().refreshMultiPhoto(bitmapDataArrayList);
             }
-        });
+        }
         // 创建权限申请回调
-        mRequestPermissionActivityResult = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-            if (result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null
-                    && result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null) {
-                if (Objects.requireNonNull(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE)).equals(true)
-                        && Objects.requireNonNull(result.get(Manifest.permission.READ_EXTERNAL_STORAGE)).equals(true)) {
+        mRequestPermissionActivityResult = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result: Map<String, Boolean> ->
+            if (result[Manifest.permission.WRITE_EXTERNAL_STORAGE] != null
+                && result[Manifest.permission.READ_EXTERNAL_STORAGE] != null
+            ) {
+                if (Objects.requireNonNull(result[Manifest.permission.WRITE_EXTERNAL_STORAGE]) == true && Objects.requireNonNull(result[Manifest.permission.READ_EXTERNAL_STORAGE]) == true) {
                     //权限全部获取到之后的动作
-                    getCameraStateManager().pvLayoutCommit();
+                    cameraStateManager.pvLayoutCommit()
                 }
             }
-        });
-        getCameraVideoManager().initActivityResult();
-        getCameraPictureManager().initActivityResult();
+        }
+        cameraVideoManager.initActivityResult()
+        cameraPictureManager.initActivityResult()
     }
 
     /**
@@ -564,19 +520,18 @@ public abstract class BaseCameraFragment
      *
      * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
      */
-    protected void onDestroy(boolean isCommit) {
+    protected fun onDestroy(isCommit: Boolean) {
         try {
-            LogUtil.i("CameraLayout destroy");
-            getCameraPictureManager().onDestroy(isCommit);
-            getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
-            getCameraVideoManager().onDestroy();
-            cameraManage.onDestroy();
+            LogUtil.i("CameraLayout destroy")
+            cameraPictureManager.onDestroy(isCommit)
+            photoVideoLayout.viewHolder.btnConfirm.reset()
+            cameraVideoManager.onDestroy()
+            cameraManage!!.onDestroy()
             // 记忆模式
-            flashSaveCache();
-            cameraSpec.setOnCaptureListener(null);
-            cameraSpec.setOnInitCameraManager(null);
-        } catch (NullPointerException ignored) {
-
+            flashSaveCache()
+            cameraSpec!!.onCaptureListener = null
+            cameraSpec!!.onInitCameraManager = null
+        } catch (ignored: NullPointerException) {
         }
     }
 
@@ -585,14 +540,13 @@ public abstract class BaseCameraFragment
      *
      * @param newFiles 新的文件
      */
-    @Override
-    public void commitPictureSuccess(@NonNull ArrayList<LocalMedia> newFiles) {
-        Log.d(TAG, "mMovePictureFileTask onSuccess");
-        isCommit = true;
-        Intent result = new Intent();
-        result.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, newFiles);
-        mainActivity.setResult(RESULT_OK, result);
-        mainActivity.finish();
+    override fun commitPictureSuccess(newFiles: ArrayList<LocalMedia>) {
+        Log.d(TAG, "mMovePictureFileTask onSuccess")
+        isCommit = true
+        val result = Intent()
+        result.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, newFiles)
+        mainActivity!!.setResult(Activity.RESULT_OK, result)
+        mainActivity!!.finish()
     }
 
     /**
@@ -600,15 +554,13 @@ public abstract class BaseCameraFragment
      *
      * @param throwable 异常
      */
-    @Override
-    public void commitFail(Throwable throwable) {
-        getPhotoVideoLayout().setTipAlphaAnimation(throwable.getMessage());
-        setUiEnableTrue();
+    override fun commitFail(throwable: Throwable) {
+        photoVideoLayout.setTipAlphaAnimation(throwable.message)
+        setUiEnableTrue()
     }
 
-    @Override
-    public void cancel() {
-        setUiEnableTrue();
+    override fun cancel() {
+        setUiEnableTrue()
     }
 
     /**
@@ -616,17 +568,16 @@ public abstract class BaseCameraFragment
      *
      * @param intentPreviewVideo 从预览视频界面返回来的数据intent
      */
-    @Override
-    public void commitVideoSuccess(Intent intentPreviewVideo) {
-        ArrayList<LocalMedia> localMedias = new ArrayList<>();
-        LocalMedia localMedia = intentPreviewVideo.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE);
-        localMedias.add(localMedia);
-        isCommit = true;
+    override fun commitVideoSuccess(intentPreviewVideo: Intent) {
+        val localMedias = ArrayList<LocalMedia?>()
+        val localMedia = intentPreviewVideo.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE, LocalMedia::class.java)
+        localMedias.add(localMedia)
+        isCommit = true
         // 获取视频路径
-        Intent intent = new Intent();
-        intent.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, localMedias);
-        mainActivity.setResult(RESULT_OK, intent);
-        mainActivity.finish();
+        val intent = Intent()
+        intent.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, localMedias)
+        mainActivity!!.setResult(Activity.RESULT_OK, intent)
+        mainActivity!!.finish()
     }
 
     /**
@@ -634,125 +585,126 @@ public abstract class BaseCameraFragment
      *
      * @param intent 包含数据源
      */
-    public void openAlbumPreviewActivity(Intent intent) {
-        mAlbumPreviewActivityResult.launch(intent);
-        if (globalSpec.getCutscenesEnabled()) {
-            if (getActivity() != null) {
-                getActivity().overridePendingTransition(R.anim.activity_open_zjh, 0);
-            }
+    fun openAlbumPreviewActivity(intent: Intent) {
+        if (globalSpec!!.cutscenesEnabled) {
+            val options = ActivityOptionsCompat.makeCustomAnimation(
+                requireContext(),
+                R.anim.activity_open_zjh,  // 进入动画
+                0  // 退出动画（0 表示无动画）
+            )
+            mAlbumPreviewActivityResult!!.launch(intent, options)
+        } else {
+            mAlbumPreviewActivityResult!!.launch(intent)
         }
     }
 
     /**
      * 当多个图片删除到没有图片时候，隐藏相关View
      */
-    @Override
-    public void hideViewByMultipleZero() {
+    override fun hideViewByMultipleZero() {
         // 隐藏横版列表
-        if (getRecyclerViewPhoto() != null) {
-            getRecyclerViewPhoto().setVisibility(View.GONE);
+        if (recyclerViewPhoto != null) {
+            recyclerViewPhoto!!.visibility = View.GONE
         }
 
         // 隐藏修饰多图控件的View
-        if (multiplePhotoViews != null) {
-            for (View view : multiplePhotoViews) {
-                view.setVisibility(View.GONE);
+        multiplePhotoView?.let { multiplePhotoView ->
+            for (view in multiplePhotoView) {
+                view.visibility = View.GONE
             }
         }
 
         // 隐藏左右侧按钮
-        getPhotoVideoLayout().getViewHolder().btnCancel.setVisibility(View.GONE);
-        getPhotoVideoLayout().getViewHolder().btnConfirm.setVisibility(View.GONE);
+        photoVideoLayout.viewHolder.btnCancel.visibility = View.GONE
+        photoVideoLayout.viewHolder.btnConfirm.visibility = View.GONE
 
         // 如果是单图编辑情况下,隐藏编辑按钮
-        getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.GONE);
+        photoVideoLayout.viewHolder.rlEdit.visibility = View.GONE
 
         // 恢复长按事件，即重新启用录制
-        getPhotoVideoLayout().getViewHolder().btnClickOrLong.setVisibility(View.VISIBLE);
-        initPvLayoutButtonFeatures();
+        photoVideoLayout.viewHolder.btnClickOrLong.visibility = View.VISIBLE
+        initPvLayoutButtonFeatures()
 
         // 设置空闲状态
-        getCameraStateManager().setState(getCameraStateManager().getPreview());
+        cameraStateManager.setState(cameraStateManager.preview)
 
-        showBottomMenu();
+        showBottomMenu()
     }
 
     /**
      * 提示过短
      */
-    public void setShortTip() {
+    fun setShortTip() {
         // 提示过短
-        getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
+        photoVideoLayout.setTipAlphaAnimation(resources.getString(R.string.z_multi_library_the_recording_time_is_too_short))
         // 显示右上角菜单
-        setMenuVisibility(View.VISIBLE);
+        setMenuVisibility(View.VISIBLE)
     }
 
     /**
      * 长按继续录制
      */
-    public void setShortTipLongRecording() {
+    fun setShortTipLongRecording() {
         if (!isShowContinueTip) {
             // 长按继续录制
-            getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_long_press_to_continue_recording));
-            isShowContinueTip = true;
+            photoVideoLayout.setTipAlphaAnimation(resources.getString(R.string.z_long_press_to_continue_recording))
+            isShowContinueTip = true
         }
     }
 
     /**
      * 初始化中心按钮状态
      */
-    protected void initPvLayoutButtonFeatures() {
+    protected fun initPvLayoutButtonFeatures() {
         // 判断点击和长按的权限
-        if (cameraSpec.isClickRecord()) {
+        if (cameraSpec!!.isClickRecord) {
             // 禁用长按功能
-            getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_CLICK_AND_HOLD);
-            getPhotoVideoLayout().setTip(getResources().getString(R.string.z_multi_library_light_touch_camera));
+            photoVideoLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_CLICK_AND_HOLD)
+            photoVideoLayout.setTip(resources.getString(R.string.z_multi_library_light_touch_camera))
         } else {
-            if (cameraSpec.onlySupportImages()) {
+            if (cameraSpec!!.onlySupportImages()) {
                 // 禁用长按功能
-                getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
-                getPhotoVideoLayout().setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
-            } else if (cameraSpec.onlySupportVideos()) {
+                photoVideoLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_ONLY_CLICK)
+                photoVideoLayout.setTip(resources.getString(R.string.z_multi_library_light_touch_take))
+            } else if (cameraSpec!!.onlySupportVideos()) {
                 // 禁用点击功能
-                getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
-                getPhotoVideoLayout().setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
+                photoVideoLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK)
+                photoVideoLayout.setTip(resources.getString(R.string.z_multi_library_long_press_camera))
             } else {
                 // 支持所有，不过要判断数量
-                if (SelectableUtils.getImageMaxCount() == 0) {
+                if (imageMaxCount == 0) {
                     // 禁用点击功能
-                    getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
-                    getPhotoVideoLayout().setTip(getResources().getString(R.string.z_multi_library_long_press_camera));
-                } else if (SelectableUtils.getVideoMaxCount() == 0) {
+                    photoVideoLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK)
+                    photoVideoLayout.setTip(resources.getString(R.string.z_multi_library_long_press_camera))
+                } else if (videoMaxCount == 0) {
                     // 禁用长按功能
-                    getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
-                    getPhotoVideoLayout().setTip(getResources().getString(R.string.z_multi_library_light_touch_take));
+                    photoVideoLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_ONLY_CLICK)
+                    photoVideoLayout.setTip(resources.getString(R.string.z_multi_library_light_touch_take))
                 } else {
-                    getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_BOTH);
-                    getPhotoVideoLayout().setTip(getResources().getString(R.string.z_multi_library_light_touch_take_long_press_camera));
+                    photoVideoLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_BOTH)
+                    photoVideoLayout.setTip(resources.getString(R.string.z_multi_library_light_touch_take_long_press_camera))
                 }
             }
         }
     }
 
-    @Override
-    public void showProgress() {
+    override fun showProgress() {
         // 执行等待动画
-        getPhotoVideoLayout().getViewHolder().btnConfirm.setProgress(1);
+        photoVideoLayout.viewHolder.btnConfirm.setProgress(1)
     }
 
-    @Override
-    public void setProgress(int progress) {
-        getPhotoVideoLayout().getViewHolder().btnConfirm.addProgress(progress);
+    override fun setProgress(progress: Int) {
+        photoVideoLayout.viewHolder.btnConfirm.addProgress(progress)
     }
 
     /**
      * 迁移图片文件，缓存文件迁移到配置目录
      * 在 doInBackground 线程里面也执行了 runOnUiThread 跳转UI的最终事件
      */
-    public void movePictureFile() {
-        showProgress();
+    fun movePictureFile() {
+        showProgress()
         // 开始迁移文件
-        ThreadUtils.executeByIo(getCameraPictureManager().newMovePictureFileTask());
+        ThreadUtils.executeByIo(cameraPictureManager.newMovePictureFileTask())
     }
 
     /**
@@ -760,168 +712,162 @@ public abstract class BaseCameraFragment
      *
      * @param bitmapData 显示单图数据源
      * @param file       显示单图的文件
-     * @param uri        显示单图的uri
+     * @param path       显示单图的path
      */
-    @Override
-    public void showSinglePicture(BitmapData bitmapData, File file, String uri) {
+    override fun showSinglePicture(bitmapData: BitmapData, file: File, path: String) {
         // 拍照  隐藏 闪光灯、右上角的切换摄像头
-        setMenuVisibility(View.INVISIBLE);
+        setMenuVisibility(View.INVISIBLE)
         // 这样可以重置
-        getSinglePhotoView().setZoomable(true);
-        getSinglePhotoView().setVisibility(View.VISIBLE);
-        globalSpec.getImageEngine().loadUriImage(myContext, getSinglePhotoView(), bitmapData.getAbsolutePath());
-        getPhotoVideoLayout().startTipAlphaAnimation();
-        getPhotoVideoLayout().startShowLeftRightButtonsAnimator(true);
+        singlePhotoView.isZoomable = true
+        singlePhotoView.visibility = View.VISIBLE
+        globalSpec!!.imageEngine.loadUriImage(myContext, singlePhotoView, bitmapData.absolutePath)
+        photoVideoLayout.startTipAlphaAnimation()
+        photoVideoLayout.startShowLeftRightButtonsAnimator(true)
 
         // 判断是否要编辑
-        if (globalSpec.getImageEditEnabled()) {
-            getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.VISIBLE);
-            getPhotoVideoLayout().getViewHolder().rlEdit.setTag(uri);
+        if (globalSpec!!.imageEditEnabled) {
+            photoVideoLayout.viewHolder.rlEdit.visibility = View.VISIBLE
+            photoVideoLayout.viewHolder.rlEdit.tag = path
         } else {
-            getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.INVISIBLE);
+            photoVideoLayout.viewHolder.rlEdit.visibility = View.INVISIBLE
         }
 
         // 隐藏拍照按钮
-        getPhotoVideoLayout().getViewHolder().btnClickOrLong.setVisibility(View.INVISIBLE);
+        photoVideoLayout.viewHolder.btnClickOrLong.visibility = View.INVISIBLE
 
         // 设置当前模式是图片模式
-        getCameraStateManager().setState(getCameraStateManager().getPictureComplete());
+        cameraStateManager.setState(cameraStateManager.pictureComplete)
     }
 
     /**
      * 针对多图进行相关UI变化
      */
-    @Override
-    public void showMultiplePicture() {
+    override fun showMultiplePicture() {
         // 显示横版列表
-        if (getRecyclerViewPhoto() != null) {
-            getRecyclerViewPhoto().setVisibility(View.VISIBLE);
+        if (recyclerViewPhoto != null) {
+            recyclerViewPhoto!!.visibility = View.VISIBLE
         }
 
         // 显示横版列表的线条空间
-        if (getMultiplePhotoView() != null) {
-            for (View view : getMultiplePhotoView()) {
-                view.setVisibility(View.VISIBLE);
-                view.setVisibility(View.VISIBLE);
+        multiplePhotoView?.let { multiplePhotoView ->
+            for (view in multiplePhotoView) {
+                view.visibility = View.VISIBLE
+                view.visibility = View.VISIBLE
             }
         }
 
-        getPhotoVideoLayout().startTipAlphaAnimation();
-        getPhotoVideoLayout().startOperationBtnAnimatorMulti();
+        photoVideoLayout.startTipAlphaAnimation()
+        photoVideoLayout.startOperationBtnAnimatorMulti()
 
         // 重置按钮，因为每次点击，都会自动关闭
-        getPhotoVideoLayout().getViewHolder().btnClickOrLong.resetState();
+        photoVideoLayout.viewHolder.btnClickOrLong.resetState()
         // 显示右上角
-        setMenuVisibility(View.VISIBLE);
+        setMenuVisibility(View.VISIBLE)
 
         // 禁用长按事件，即禁止录像
-        getPhotoVideoLayout().setButtonFeatures(BUTTON_STATE_ONLY_CLICK);
+        photoVideoLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_ONLY_CLICK)
 
         // 设置当前模式是图片休闲并存模式
-        getCameraStateManager().setState(getCameraStateManager().getPictureMultiple());
+        cameraStateManager.setState(cameraStateManager.pictureMultiple)
     }
 
-    /**
-     * 获取当前view的状态
-     *
-     * @return 状态
-     */
-    public IState getState() {
-        return getCameraStateManager().getState();
-    }
+    val state: IState
+        /**
+         * 获取当前view的状态
+         *
+         * @return 状态
+         */
+        get() = cameraStateManager.getState()
 
     /**
      * 取消单图后的重置
      */
-    public void cancelOnResetBySinglePicture() {
-        getCameraPictureManager().clearBitmapDataList();
+    fun cancelOnResetBySinglePicture() {
+        cameraPictureManager.clearBitmapDataList()
 
         // 根据不同状态处理相应的事件
-        resetStateAll();
+        resetStateAll()
     }
 
     /**
      * 结束所有当前活动，重置状态
      * 一般指完成了当前活动，或者清除所有活动的时候调用
      */
-    public void resetStateAll() {
+    fun resetStateAll() {
         // 重置右上角菜单
-        setMenuVisibility(View.VISIBLE);
+        setMenuVisibility(View.VISIBLE)
 
         // 恢复底部
-        showBottomMenu();
+        showBottomMenu()
 
         // 隐藏大图
-        getSinglePhotoView().setVisibility(View.GONE);
+        singlePhotoView.visibility = View.GONE
 
         // 隐藏编辑按钮
-        getPhotoVideoLayout().getViewHolder().rlEdit.setVisibility(View.GONE);
+        photoVideoLayout.viewHolder.rlEdit.visibility = View.GONE
 
         // 恢复底部按钮
-        getPhotoVideoLayout().reset();
+        photoVideoLayout.reset()
         // 恢复底部按钮操作模式
-        initPvLayoutButtonFeatures();
+        initPvLayoutButtonFeatures()
     }
 
     /**
      * 恢复底部菜单,母窗体启动滑动
      */
-    @Override
-    public void showBottomMenu() {
-        mainActivity.showHideTableLayout(true);
+    override fun showBottomMenu() {
+        mainActivity!!.showHideTableLayout(true)
     }
 
     /**
      * 设置界面的功能按钮可以使用
      * 场景：如果压缩或者移动文件时异常，则恢复
      */
-    @Override
-    public void setUiEnableTrue() {
-        if (getFlashView() != null) {
-            getFlashView().setEnabled(true);
+    override fun setUiEnableTrue() {
+        if (flashView != null) {
+            flashView!!.isEnabled = true
         }
-        if (getSwitchView() != null) {
-            getSwitchView().setEnabled(true);
+        if (switchView != null) {
+            switchView!!.isEnabled = true
         }
-        getPhotoVideoLayout().setClickOrLongEnable(true);
+        photoVideoLayout.setClickOrLongEnable(true)
         // 重置按钮进度
-        getPhotoVideoLayout().getViewHolder().btnConfirm.reset();
+        photoVideoLayout.viewHolder.btnConfirm.reset()
     }
 
     /**
      * 设置界面的功能按钮禁止使用
      * 场景：确认图片时，压缩中途禁止某些功能使用
      */
-    @Override
-    public void setUiEnableFalse() {
-        if (getFlashView() != null) {
-            getFlashView().setEnabled(false);
+    override fun setUiEnableFalse() {
+        if (flashView != null) {
+            flashView!!.isEnabled = false
         }
-        if (getSwitchView() != null) {
-            getSwitchView().setEnabled(false);
+        if (switchView != null) {
+            switchView!!.isEnabled = false
         }
-        getPhotoVideoLayout().setClickOrLongEnable(false);
+        photoVideoLayout.setClickOrLongEnable(false)
     }
 
     /**
      * 设置右上角菜单是否显示
      */
-    public void setMenuVisibility(int viewVisibility) {
-        setSwitchVisibility(viewVisibility);
-        if (getFlashView() != null) {
-            getFlashView().setVisibility(viewVisibility);
+    fun setMenuVisibility(viewVisibility: Int) {
+        setSwitchVisibility(viewVisibility)
+        if (flashView != null) {
+            flashView!!.visibility = viewVisibility
         }
     }
 
     /**
      * 设置闪光灯是否显示，如果不支持，是一直不会显示
      */
-    private void setSwitchVisibility(int viewVisibility) {
-        if (getSwitchView() != null) {
-            if (!PackageManagerUtils.isSupportCameraLedFlash(myContext.getPackageManager())) {
-                getSwitchView().setVisibility(View.GONE);
+    private fun setSwitchVisibility(viewVisibility: Int) {
+        if (switchView != null) {
+            if (!isSupportCameraLedFlash(myContext.packageManager)) {
+                switchView!!.visibility = View.GONE
             } else {
-                getSwitchView().setVisibility(viewVisibility);
+                switchView!!.visibility = viewVisibility
             }
         }
     }
@@ -929,42 +875,35 @@ public abstract class BaseCameraFragment
     /**
      * 设置闪关灯
      */
-    private void setFlashLamp() {
-        if (getFlashView() != null) {
-            switch (flashMode) {
-                case FLASH_MODE_AUTO:
-                    getFlashView().setImageResource(cameraSpec.getImageFlashAuto());
-                    break;
-                case FLASH_MODE_ON:
-                    getFlashView().setImageResource(cameraSpec.getImageFlashOn());
-                    break;
-                case FLASH_MODE_OFF:
-                    getFlashView().setImageResource(cameraSpec.getImageFlashOff());
-                    break;
-                default:
-                    break;
+    private fun setFlashLamp() {
+        if (flashView != null) {
+            when (flashMode) {
+                ImageCapture.FLASH_MODE_AUTO -> flashView!!.setImageResource(cameraSpec!!.imageFlashAuto)
+                ImageCapture.FLASH_MODE_ON -> flashView!!.setImageResource(cameraSpec!!.imageFlashOn)
+                ImageCapture.FLASH_MODE_OFF -> flashView!!.setImageResource(cameraSpec!!.imageFlashOff)
+                else -> {}
             }
-            cameraManage.setFlashMode(flashMode);
+            cameraManage!!.setFlashMode(flashMode)
         }
     }
 
     /**
      * 记忆模式下获取闪光灯缓存的模式
      */
-    private void flashGetCache() {
+    private fun flashGetCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则使用上个闪光灯模式
-        if (cameraSpec.getEnableFlashMemoryModel()) {
-            flashMode = FlashCacheUtils.getFlashModel(getContext());
+        if (cameraSpec!!.enableFlashMemoryModel) {
+            flashMode = getFlashModel(context)
         }
     }
 
     /**
      * 记忆模式下缓存闪光灯模式
      */
-    private void flashSaveCache() {
+    private fun flashSaveCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则存储当前闪光灯模式
-        if (cameraSpec.getEnableFlashMemoryModel()) {
-            FlashCacheUtils.saveFlashModel(getContext(), flashMode);
+        if (cameraSpec!!.enableFlashMemoryModel) {
+            saveFlashModel(context, flashMode)
         }
     }
 
@@ -975,86 +914,74 @@ public abstract class BaseCameraFragment
      *
      * @noinspection unused
      */
-    private boolean requestPermissions() {
+    private fun requestPermissions(): Boolean {
         // 判断权限，权限通过才可以初始化相关
-        ArrayList<String> needPermissions = getNeedPermissions();
-        if (!needPermissions.isEmpty()) {
+        val needPermissions = needPermissions
+        if (needPermissions.isNotEmpty()) {
             // 请求权限
-            requestPermissionsDialog();
-            return false;
+            requestPermissionsDialog()
+            return false
         } else {
-            return true;
+            return true
         }
     }
 
-    /**
-     * 获取目前需要请求的权限
-     */
-    protected ArrayList<String> getNeedPermissions() {
-        // 需要请求的权限列表
-        ArrayList<String> permissions = new ArrayList<>();
-        // Android 10 以下需要请求存储权限才能存进相册
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager
-                    .PERMISSION_GRANTED ||
+    protected val needPermissions: ArrayList<String>
+        /**
+         * 获取目前需要请求的权限
+         */
+        get() {
+            // 需要请求的权限列表
+            val permissions = ArrayList<String>()
+            // Android 10 以下需要请求存储权限才能存进相册
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager
+                        .PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager
-                            .PERMISSION_GRANTED) {
-                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                        .PERMISSION_GRANTED
+                ) {
+                    permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
             }
+            return permissions
         }
-        return permissions;
-    }
 
     /**
      * 请求权限 - 如果曾经拒绝过，则弹出dialog
      */
-    private void requestPermissionsDialog() {
+    private fun requestPermissionsDialog() {
         // 动态消息
-        StringBuilder message = new StringBuilder();
-        message.append(getString(R.string.z_multi_library_to_use_this_feature));
-        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files));
+        val message = StringBuilder()
+        message.append(getString(R.string.z_multi_library_to_use_this_feature))
+        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files))
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(), R.style.MyAlertDialogStyle);
+        val builder = AlertDialog.Builder(requireActivity(), R.style.MyAlertDialogStyle)
         // 弹窗提示为什么要请求这个权限
-        builder.setTitle(getString(R.string.z_multi_library_hint));
-        message.append(getString(R.string.z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you));
-        builder.setMessage(message.toString());
-        builder.setPositiveButton(getString(R.string.z_multi_library_ok), (dialog, which) -> {
-            dialog.dismiss();
+        builder.setTitle(getString(R.string.z_multi_library_hint))
+        message.append(getString(R.string.z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you))
+        builder.setMessage(message.toString())
+        builder.setPositiveButton(getString(R.string.z_multi_library_ok)) { dialog: DialogInterface, _: Int ->
+            dialog.dismiss()
             // 请求权限
-            mRequestPermissionActivityResult.launch(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE});
-        });
-        builder.setNegativeButton(getString(R.string.z_multi_library_cancel), (dialog, which) -> dialog.dismiss());
-        Dialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+            mRequestPermissionActivityResult!!.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+        }
+        builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+        val dialog: Dialog = builder.create()
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
     }
 
     /**
      * 暂停录制
      */
-    protected void pauseRecord() {
-        getCameraStateManager().pauseRecord();
+    protected fun pauseRecord() {
+        cameraStateManager.pauseRecord()
     }
 
-    public int getFlashMode() {
-        return flashMode;
-    }
+    companion object {
+        private val TAG: String = BaseCameraFragment::class.java.simpleName
 
-    public Context getMyContext() {
-        return myContext;
-    }
-
-    public MainActivity getMainActivity() {
-        return mainActivity;
-    }
-
-    public GlobalSpec getGlobalSpec() {
-        return globalSpec;
-    }
-
-    public CameraSpec getCameraSpec() {
-        return cameraSpec;
+        private const val MILLISECOND = 2000
     }
 }

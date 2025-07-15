@@ -1,72 +1,67 @@
-package com.zhongjh.multimedia.camera.ui.camera.state.type;
+package com.zhongjh.multimedia.camera.ui.camera.state.type
 
-import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.StateMode;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
+import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.StateMode
 
 /**
  * 视频录制中
  *
+ * @param cameraFragment     主要是多个状态围绕着cameraLayout进行相关处理
+ * @param cameraStateManager 可以让状态更改别的状态
+ *
  * @author zhongjh
  * @date 2021/11/29
  */
-public class VideoMultipleIn extends StateMode {
-
-    /**
-     * @param cameraFragment     主要是多个状态围绕着cameraLayout进行相关处理
-     * @param cameraStateManager 可以让状态更改别的状态
-     */
-    public VideoMultipleIn(BaseCameraFragment<? extends CameraStateManager,
-            ? extends CameraPictureManager,
-            ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
-        super(cameraFragment, cameraStateManager);
+class VideoMultipleIn(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>, cameraStateManager: CameraStateManager) :
+    StateMode(cameraFragment, cameraStateManager) {
+    override fun getName(): String {
+        return "VideoMultipleIn"
     }
 
-    @Override
-    public String getName() {
-        return "VideoMultipleIn";
-    }
-
-    @Override
-    public void onActivityPause() {
-        getCameraFragment().getCameraVideoManager().videoTime = 0L;
+    override fun onActivityPause() {
+        cameraFragment.cameraVideoManager.videoTime = 0L
         // 重置所有
-        getCameraFragment().resetStateAll();
+        cameraFragment.resetStateAll()
         // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+        stateManagerRef.get()?.let { stateManager ->
+            stateManager.state = stateManager.preview
+        }
     }
 
-    @Override
-    public Boolean onBackPressed() {
-        getCameraFragment().cameraManage.closeVideo();
-        getCameraFragment().getPhotoVideoLayout().resetConfirm();
+    override fun onBackPressed(): Boolean {
+        cameraFragment.cameraManage.closeVideo()
+        cameraFragment.photoVideoLayout.resetConfirm()
 
-        if (getCameraFragment().getCameraVideoManager().videoTime == 0L) {
+        if (cameraFragment.cameraVideoManager.videoTime == 0L) {
             // 如果没有视频节点则重置所有按钮
-            getCameraFragment().getPhotoVideoLayout().reset();
+            cameraFragment.photoVideoLayout.reset()
             // 恢复预览状态
-            getCameraStateManagement().setState(getCameraStateManagement().getPreview());
+            stateManagerRef.get()?.let { stateManager ->
+                stateManager.state = stateManager.preview
+            }
         } else {
             // 如果有视频节点则中断中心按钮
-            getCameraFragment().getPhotoVideoLayout().getViewHolder().btnClickOrLong.breakOff();
-            // 恢复预览状态
-            getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
+            cameraFragment.photoVideoLayout.viewHolder.btnClickOrLong.breakOff()
+            // 恢复录制状态
+            stateManagerRef.get()?.let { stateManager ->
+                stateManager.state = stateManager.videoMultiple
+            }
         }
-        return true;
+        return true
     }
 
-    @Override
-    public void pauseRecord() {
+    override fun pauseRecord() {
         // 切回非录制中的状态
-        getCameraStateManagement().setState(getCameraStateManagement().getVideoMultiple());
-        getCameraFragment().cameraManage.pauseVideo();
+        stateManagerRef.get()?.let { stateManager ->
+            stateManager.state = stateManager.videoMultiple
+        }
+        cameraFragment.cameraManage.pauseVideo()
     }
 
-    @Override
-    public void onLongClickFinish() {
-        getCameraFragment().cameraManage.stopVideo();
+    override fun onLongClickFinish() {
+        cameraFragment.cameraManage.stopVideo()
     }
-
 }

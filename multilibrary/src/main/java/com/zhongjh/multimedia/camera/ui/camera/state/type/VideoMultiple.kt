@@ -1,67 +1,55 @@
-package com.zhongjh.multimedia.camera.ui.camera.state.type;
+package com.zhongjh.multimedia.camera.ui.camera.state.type
 
-import android.util.Log;
-
-import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.StateMode;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
-import com.zhongjh.circularprogressview.CircularProgressState;
+import android.util.Log
+import com.zhongjh.circularprogressview.CircularProgressState
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
+import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.StateMode
 
 /**
  * 视频模式
  *
+ * @param cameraFragment     主要是多个状态围绕着cameraLayout进行相关处理
+ * @param cameraStateManager 可以让状态更改别的状态
+ *
  * @author zhongjh
  * @date 2021/11/29
  */
-public class VideoMultiple extends StateMode {
-
-    /**
-     * @param cameraFragment     主要是多个状态围绕着cameraLayout进行相关处理
-     * @param cameraStateManager 可以让状态更改别的状态
-     */
-    public VideoMultiple(BaseCameraFragment<? extends CameraStateManager,
-            ? extends CameraPictureManager,
-            ? extends CameraVideoManager> cameraFragment, CameraStateManager cameraStateManager) {
-        super(cameraFragment, cameraStateManager);
+class VideoMultiple(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>, cameraStateManager: CameraStateManager) :
+    StateMode(cameraFragment, cameraStateManager) {
+    override fun getName(): String {
+        return "VideoMultiple"
     }
 
-    @Override
-    public String getName() {
-        return "VideoMultiple";
-    }
-
-    @Override
-    public void onActivityPause() {
-        getCameraFragment().getCameraVideoManager().videoTime = 0L;
+    override fun onActivityPause() {
+        cameraFragment.cameraVideoManager.videoTime = 0L
         // 重置所有
-        getCameraFragment().resetStateAll();
+        cameraFragment.resetStateAll()
         // 恢复预览状态
-        getCameraStateManagement().setState(getCameraStateManagement().getPreview());
-    }
-
-    @Override
-    public void pvLayoutCommit() {
-        if (getCameraFragment().getPhotoVideoLayout().getViewHolder().btnConfirm.mState == CircularProgressState.PLAY) {
-            // 完成录制
-            Log.d(TAG, "pvLayoutCommit完成录制");
-            getCameraFragment().cameraManage.stopVideo();
-        } else {
-            // 中断操作
-            Log.d(TAG, "pvLayoutCommit中断操作");
-            stopProgress();
+        stateManagerRef.get()?.let { stateManager ->
+            stateManager.state = stateManager.preview
         }
     }
 
-    @Override
-    public void pauseRecord() {
-        getCameraFragment().cameraManage.pauseVideo();
+    override fun pvLayoutCommit() {
+        if (cameraFragment.photoVideoLayout.viewHolder.btnConfirm.mState == CircularProgressState.PLAY) {
+            // 完成录制
+            Log.d(tag, "pvLayoutCommit完成录制")
+            cameraFragment.cameraManage.stopVideo()
+        } else {
+            // 中断操作
+            Log.d(tag, "pvLayoutCommit中断操作")
+            stopProgress()
+        }
     }
 
-    @Override
-    public void onLongClickFinish() {
-        getCameraFragment().cameraManage.stopVideo();
+    override fun pauseRecord() {
+        cameraFragment.cameraManage.pauseVideo()
     }
 
+    override fun onLongClickFinish() {
+        cameraFragment.cameraManage.stopVideo()
+    }
 }

@@ -1,16 +1,17 @@
-package com.zhongjh.multimedia.camera.ui.camera.state;
+package com.zhongjh.multimedia.camera.ui.camera.state
 
-import android.util.Log;
-import android.view.View;
-
-import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
-import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureSingle;
-import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureMultiple;
-import com.zhongjh.multimedia.camera.ui.camera.state.type.Preview;
-import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultiple;
-import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultipleIn;
+import android.util.Log
+import android.view.View
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureMultiple
+import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureSingle
+import com.zhongjh.multimedia.camera.ui.camera.state.type.Preview
+import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultiple
+import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultipleIn
+import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.IState
+import java.lang.ref.WeakReference
 
 /**
  * CameraLayout涉及到状态改变的事件都在这里
@@ -22,135 +23,92 @@ import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultipleIn;
  * @author zhongjh
  * @date 2021/11/25
  */
-public class CameraStateManager implements IState {
+class CameraStateManager(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : IState {
+    private val tag: String = CameraStateManager::class.java.simpleName
 
-    private final String TAG = CameraStateManager.class.getSimpleName();
+    // 使用弱引用持有 Fragment
+    private val fragmentRef = WeakReference(cameraFragment)
 
-    final BaseCameraFragment<? extends CameraStateManager,
-            ? extends CameraPictureManager,
-            ? extends CameraVideoManager> mCameraFragment;
     /**
      * 当前状态
      */
-    IState state;
+    var state: IState
+
     /**
      * 预览状态
      */
-    final IState preview;
+    val preview: IState = Preview(cameraFragment, this)
+
     /**
      * 图片完成状态
      */
-    final IState pictureComplete;
+    val pictureComplete: IState = PictureSingle(cameraFragment, this)
+
     /**
      * 多个图片状态，至少有一张图片情况
      */
-    final IState pictureMultiple;
+    val pictureMultiple: IState = PictureMultiple(cameraFragment, this)
+
     /**
      * 多个视频状态，至少有一段视频情况
      */
-    final IState videoMultiple;
+    val videoMultiple: IState = VideoMultiple(cameraFragment, this)
+
     /**
      * 正在录制多个视频中的状态
      */
-    final IState videoMultipleIn;
+    val videoMultipleIn: IState = VideoMultipleIn(cameraFragment, this)
 
-    public CameraStateManager(BaseCameraFragment<? extends CameraStateManager,
-            ? extends CameraPictureManager,
-            ? extends CameraVideoManager> cameraFragment) {
-        mCameraFragment = cameraFragment;
-        // 初始化相关状态逻辑
-        preview = new Preview(cameraFragment, this);
-        pictureComplete = new PictureSingle(cameraFragment, this);
-        pictureMultiple = new PictureMultiple(cameraFragment, this);
-        videoMultiple = new VideoMultiple(cameraFragment, this);
-        videoMultipleIn = new VideoMultipleIn(cameraFragment, this);
+    init {
         // 设置当前默认状态
-        state = preview;
+        state = preview
     }
 
-    @Override
-    public String getName() {
-        return "CameraStateManager";
+    override fun getName(): String {
+        return "CameraStateManager"
     }
 
-    @Override
-    public void onActivityPause() {
-        Log.d(TAG, "onActivityPause " + state.getName());
-        state.onActivityPause();
+    override fun onActivityPause() {
+        state.onActivityPause()
     }
 
-    @Override
-    public Boolean onBackPressed() {
-        Log.d(TAG, "onBackPressed " + state.getName());
-        return state.onBackPressed();
+    override fun onBackPressed(): Boolean? {
+        return state.onBackPressed()
     }
 
-    @Override
-    public void pvLayoutCommit() {
-        Log.d(TAG, "pvLayoutCommit " + state.getName());
-        state.pvLayoutCommit();
+    override fun pvLayoutCommit() {
+        state.pvLayoutCommit()
     }
 
-    @Override
-    public void pvLayoutCancel() {
-        Log.d(TAG, "pvLayoutCancel " + state.getName());
-        state.pvLayoutCancel();
+    override fun pvLayoutCancel() {
+        state.pvLayoutCancel()
     }
 
-    @Override
-    public void pauseRecord() {
-        Log.d(TAG, "pauseRecord " + state.getName());
+    override fun pauseRecord() {
         // 显示右上角菜单
-        mCameraFragment.setMenuVisibility(View.VISIBLE);
-        state.pauseRecord();
+        fragmentRef.get()?.setMenuVisibility(View.VISIBLE)
+        state.pauseRecord()
     }
 
-    @Override
-    public void stopProgress() {
-        Log.d(TAG, "stopProgress " + state.getName());
-        state.stopProgress();
+    override fun stopProgress() {
+        state.stopProgress()
     }
 
-    @Override
-    public void onLongClickFinish() {
-        Log.d(TAG, "doneProgress " + state.getName());
-        state.onLongClickFinish();
+    override fun onLongClickFinish() {
+        state.onLongClickFinish()
     }
 
     /**
      * @return 当前状态
      */
-    public IState getState() {
-        Log.d(TAG, "getState " + state.getName());
-        return state;
+    fun getState(): IState {
+        return state
     }
 
     /**
      * 赋值当前状态
      */
-    public void setState(IState state) {
-        Log.d(TAG, "setState " + state.getName());
-        this.state = state;
+    fun setState(state: IState) {
+        this.state = state
     }
-
-    public IState getPreview() {
-        return preview;
-    }
-
-    public IState getPictureComplete() {
-        return pictureComplete;
-    }
-
-    public IState getPictureMultiple() {
-        return pictureMultiple;
-    }
-
-    public IState getVideoMultiple() {
-        return videoMultiple;
-    }
-
-    public IState getVideoMultipleIn() {
-        return videoMultipleIn;
-    }
-
 }
