@@ -1,6 +1,5 @@
 package com.zhongjh.multimedia.camera.ui.camera.state
 
-import android.util.Log
 import android.view.View
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
@@ -23,8 +22,7 @@ import java.lang.ref.WeakReference
  * @author zhongjh
  * @date 2021/11/25
  */
-class CameraStateManager(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : IState {
-    private val tag: String = CameraStateManager::class.java.simpleName
+open class CameraStateManager(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : IState {
 
     // 使用弱引用持有 Fragment
     private val fragmentRef = WeakReference(cameraFragment)
@@ -96,19 +94,5 @@ class CameraStateManager(cameraFragment: BaseCameraFragment<out CameraStateManag
 
     override fun onLongClickFinish() {
         state.onLongClickFinish()
-    }
-
-    /**
-     * @return 当前状态
-     */
-    fun getState(): IState {
-        return state
-    }
-
-    /**
-     * 赋值当前状态
-     */
-    fun setState(state: IState) {
-        this.state = state
     }
 }

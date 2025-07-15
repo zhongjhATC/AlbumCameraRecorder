@@ -28,7 +28,7 @@ interface ICameraView {
      * @param container onCreateView方法下面的container
      * @return 返回布局View
      */
-    fun setContentView(inflater: LayoutInflater, container: ViewGroup): View
+    fun setContentView(inflater: LayoutInflater, container: ViewGroup?): View
 
     /**
      * 初始化相关view
@@ -36,7 +36,7 @@ interface ICameraView {
      * @param view               初始化好的view
      * @param savedInstanceState savedInstanceState
      */
-    fun initView(view: View, savedInstanceState: Bundle)
+    fun initView(view: View, savedInstanceState: Bundle?)
 
     /**
      * 设置ChildClickableLayout，各大布局都支持

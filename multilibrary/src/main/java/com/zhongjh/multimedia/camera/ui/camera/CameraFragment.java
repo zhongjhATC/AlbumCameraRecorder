@@ -29,8 +29,8 @@ import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
  */
 public class CameraFragment extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
 
-    final CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
-    final CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
+    final CameraPictureManager cameraPictureManager = new CameraPictureManager(this);
+    final CameraVideoManager cameraVideoManager = new CameraVideoManager(this);
     final CameraStateManager cameraStateManager = new CameraStateManager(this);
     FragmentCameraZjhBinding mBinding;
 
@@ -40,13 +40,13 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
 
     @NonNull
     @Override
-    public View setContentView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+    public View setContentView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
         mBinding = FragmentCameraZjhBinding.inflate(inflater);
         return mBinding.getRoot();
     }
 
     @Override
-    public void initView(@NonNull View view, @NonNull Bundle savedInstanceState) {
+    public void initView(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mBinding.previewView.getPreviewStreamState().observe(getMainActivity(), streamState -> {
 
         });
@@ -127,13 +127,13 @@ public class CameraFragment extends BaseCameraFragment<CameraStateManager, Camer
     @NonNull
     @Override
     public CameraPictureManager getCameraPictureManager() {
-        return cameraPicturePresenter;
+        return cameraPictureManager;
     }
 
     @NonNull
     @Override
     public CameraVideoManager getCameraVideoManager() {
-        return cameraVideoPresenter;
+        return cameraVideoManager;
     }
 
 }
