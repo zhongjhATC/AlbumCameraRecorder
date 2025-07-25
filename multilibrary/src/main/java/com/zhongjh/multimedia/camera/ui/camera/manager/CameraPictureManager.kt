@@ -133,7 +133,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      */
     override fun initPhotoEditListener() {
         fragmentRef.get()?.let { baseCameraFragment ->
-            baseCameraFragment.photoVideoLayout.viewHolder.rlEdit.setOnClickListener { view: View ->
+            baseCameraFragment.photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.setOnClickListener { view: View ->
                 val uri = Uri.parse(view.tag.toString()).toString()
                 photoEditFile = createCacheFile(baseCameraFragment.myContext, MediaType.TYPE_PICTURE)
                 val intent = Intent()
@@ -260,7 +260,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
             // 用编辑后的图作为新的图片
             photoFile = photoEditFile
             // 重新赋值编辑后的图、新标签
-            baseCameraFragment.photoVideoLayout.viewHolder.rlEdit.tag = Uri.fromFile(photoFile).toString()
+            baseCameraFragment.photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.tag = Uri.fromFile(photoFile).toString()
 
             photoFile?.let { photoFile ->
                 // 重置mCaptureBitmaps

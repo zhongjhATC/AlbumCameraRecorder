@@ -54,17 +54,17 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManager, Came
     @Override
     public void initView(View view, Bundle savedInstanceState) {
         // 修改图片,两个调换过来，样式改变，功能不变
-        mBinding.pvLayout.getViewHolder().btnConfirm.setFunctionImage(com.zhongjh.multimedia.R.drawable.ic_baseline_keyboard_arrow_left_24,
+        mBinding.pvLayout.getPhotoVideoLayoutViewHolder().btnConfirm.setFunctionImage(com.zhongjh.multimedia.R.drawable.ic_baseline_keyboard_arrow_left_24,
                 com.zhongjh.multimedia.R.drawable.avd_done_to_stop, com.zhongjh.multimedia.R.drawable.avd_stop_to_done);
-        mBinding.pvLayout.getViewHolder().btnCancel.setFunctionImage(com.zhongjh.multimedia.R.drawable.ic_baseline_done,
+        mBinding.pvLayout.getPhotoVideoLayoutViewHolder().btnCancel.setFunctionImage(com.zhongjh.multimedia.R.drawable.ic_baseline_done,
                 com.zhongjh.multimedia.R.drawable.avd_done_to_stop, com.zhongjh.multimedia.R.drawable.avd_stop_to_done);
 
         // 修改副色调颜色
-        mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryVariantColor(com.zhongjh.multimedia.R.color.cpb_blue);
+        mBinding.pvLayout.getPhotoVideoLayoutViewHolder().btnConfirm.setPrimaryVariantColor(com.zhongjh.multimedia.R.color.cpb_blue);
 
         // 定制样式 .确认按钮,修改主色调
-        mBinding.pvLayout.getViewHolder().btnConfirm.setPrimaryColor(com.zhongjh.multimedia.R.color.cpb_red);
-        mBinding.pvLayout.getViewHolder().btnCancel.setPrimaryColor(com.zhongjh.multimedia.R.color.cpb_red);
+        mBinding.pvLayout.getPhotoVideoLayoutViewHolder().btnConfirm.setPrimaryColor(com.zhongjh.multimedia.R.color.cpb_red);
+        mBinding.pvLayout.getPhotoVideoLayoutViewHolder().btnCancel.setPrimaryColor(com.zhongjh.multimedia.R.color.cpb_red);
     }
 
     /**

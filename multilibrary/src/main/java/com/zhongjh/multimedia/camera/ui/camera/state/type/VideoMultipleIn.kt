@@ -44,7 +44,7 @@ class VideoMultipleIn(cameraFragment: BaseCameraFragment<out CameraStateManager,
             }
         } else {
             // 如果有视频节点则中断中心按钮
-            cameraFragment.photoVideoLayout.viewHolder.btnClickOrLong.breakOff()
+            cameraFragment.photoVideoLayout.photoVideoLayoutViewHolder.btnClickOrLong.breakOff()
             // 恢复录制状态
             stateManagerRef.get()?.let { stateManager ->
                 stateManager.state = stateManager.videoMultiple

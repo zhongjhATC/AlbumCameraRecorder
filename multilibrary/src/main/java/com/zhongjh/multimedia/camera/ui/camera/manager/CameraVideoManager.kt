@@ -95,7 +95,7 @@ open class CameraVideoManager(baseCameraFragment: BaseCameraFragment<out CameraS
      */
     override fun onRecordStart() {
         fragmentRef.get()?.let { fragment ->
-            fragment.photoVideoLayout.viewHolder.btnClickOrLong.isStartTicking = true
+            fragment.photoVideoLayout.photoVideoLayoutViewHolder.btnClickOrLong.isStartTicking = true
         }
     }
 

@@ -1,16 +1,12 @@
-package com.zhongjh.multimedia.camera.widget;
+package com.zhongjh.multimedia.camera.widget
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.RelativeLayout;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.widget.BaseOperationLayout;
+import android.content.Context
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.RelativeLayout
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.widget.BaseOperationLayout
 
 /**
  * 用于录制，拍摄的一系列控件按钮
@@ -18,45 +14,17 @@ import com.zhongjh.multimedia.widget.BaseOperationLayout;
  * @author zhongjh
  * @date 2018/10/16
  */
-public class PhotoVideoLayout extends BaseOperationLayout {
+open class PhotoVideoLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseOperationLayout(context, attrs, defStyleAttr) {
+    val photoVideoLayoutViewHolder: ViewHolder
+        get() = viewHolder as ViewHolder
 
-    public ViewHolder getViewHolder() {
-        return (ViewHolder) viewHolder;
+    public override fun newViewHolder(): ViewHolder {
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(R.layout.layout_photovideo_operate_zjh, this, true)
+        return ViewHolder(view)
     }
 
-    public PhotoVideoLayout(@NonNull Context context) {
-        this(context, null);
+    class ViewHolder(rootView: View) : BaseOperationLayout.ViewHolder(rootView) {
+        val rlEdit: RelativeLayout = rootView.findViewById(R.id.rlEdit)
     }
-
-    public PhotoVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public PhotoVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    @Override
-    public ViewHolder newViewHolder() {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View view = inflater.inflate(R.layout.layout_photovideo_operate_zjh, this, true);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    protected void initListener() {
-        super.initListener();
-    }
-
-    public static class ViewHolder extends BaseOperationLayout.ViewHolder {
-
-        public final RelativeLayout rlEdit;
-
-        public ViewHolder(View rootView) {
-            super(rootView);
-            this.rlEdit = rootView.findViewById(R.id.rlEdit);
-        }
-
-    }
-
 }

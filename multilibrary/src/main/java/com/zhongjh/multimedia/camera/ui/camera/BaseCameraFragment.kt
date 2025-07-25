@@ -217,7 +217,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         cameraManage.onResume()
         LogUtil.i("CameraLayout onResume")
         // 清空进度，防止正在进度中突然按home键
-        photoVideoLayout.viewHolder.btnClickOrLong.reset()
+        photoVideoLayout.photoVideoLayoutViewHolder.btnClickOrLong.reset()
         // 重置当前按钮的功能
         initPvLayoutButtonFeatures()
     }
@@ -263,7 +263,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         }
 
         // 处理图片、视频等需要进度显示
-        photoVideoLayout.viewHolder.btnConfirm.setProgressMode(true)
+        photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.setProgressMode(true)
 
         // 初始化cameraView,判断是否开启录制视频，如果开启就开启录制声音x
         cameraManage.isAudio = videoValid()
@@ -542,7 +542,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         try {
             LogUtil.i("CameraLayout destroy")
             cameraPictureManager.onDestroy(isCommit)
-            photoVideoLayout.viewHolder.btnConfirm.reset()
+            photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.reset()
             cameraVideoManager.onDestroy()
             cameraManage.onDestroy()
             // 记忆模式
@@ -636,14 +636,14 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         }
 
         // 隐藏左右侧按钮
-        photoVideoLayout.viewHolder.btnCancel.visibility = View.GONE
-        photoVideoLayout.viewHolder.btnConfirm.visibility = View.GONE
+        photoVideoLayout.photoVideoLayoutViewHolder.btnCancel.visibility = View.GONE
+        photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.visibility = View.GONE
 
         // 如果是单图编辑情况下,隐藏编辑按钮
-        photoVideoLayout.viewHolder.rlEdit.visibility = View.GONE
+        photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.visibility = View.GONE
 
         // 恢复长按事件，即重新启用录制
-        photoVideoLayout.viewHolder.btnClickOrLong.visibility = View.VISIBLE
+        photoVideoLayout.photoVideoLayoutViewHolder.btnClickOrLong.visibility = View.VISIBLE
         initPvLayoutButtonFeatures()
 
         // 设置空闲状态
@@ -701,11 +701,11 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
 
     override fun showProgress() {
         // 执行等待动画
-        photoVideoLayout.viewHolder.btnConfirm.setProgress(1)
+        photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.setProgress(1)
     }
 
     override fun setProgress(progress: Int) {
-        photoVideoLayout.viewHolder.btnConfirm.addProgress(progress)
+        photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.addProgress(progress)
     }
 
     /**
@@ -737,14 +737,14 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
 
         // 判断是否要编辑
         if (globalSpec.imageEditEnabled) {
-            photoVideoLayout.viewHolder.rlEdit.visibility = View.VISIBLE
-            photoVideoLayout.viewHolder.rlEdit.tag = path
+            photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.visibility = View.VISIBLE
+            photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.tag = path
         } else {
-            photoVideoLayout.viewHolder.rlEdit.visibility = View.INVISIBLE
+            photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.visibility = View.INVISIBLE
         }
 
         // 隐藏拍照按钮
-        photoVideoLayout.viewHolder.btnClickOrLong.visibility = View.INVISIBLE
+        photoVideoLayout.photoVideoLayoutViewHolder.btnClickOrLong.visibility = View.INVISIBLE
 
         // 设置当前模式是图片模式
         cameraStateManager.state = cameraStateManager.pictureComplete
@@ -769,7 +769,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         photoVideoLayout.startOperationBtnAnimatorMulti()
 
         // 重置按钮，因为每次点击，都会自动关闭
-        photoVideoLayout.viewHolder.btnClickOrLong.resetState()
+        photoVideoLayout.photoVideoLayoutViewHolder.btnClickOrLong.resetState()
         // 显示右上角
         setMenuVisibility(View.VISIBLE)
 
@@ -813,7 +813,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         singlePhotoView.visibility = View.GONE
 
         // 隐藏编辑按钮
-        photoVideoLayout.viewHolder.rlEdit.visibility = View.GONE
+        photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.visibility = View.GONE
 
         // 恢复底部按钮
         photoVideoLayout.reset()
@@ -837,7 +837,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         switchView?.isEnabled = true
         photoVideoLayout.setClickOrLongEnable(true)
         // 重置按钮进度
-        photoVideoLayout.viewHolder.btnConfirm.reset()
+        photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.reset()
     }
 
     /**

@@ -54,7 +54,7 @@ public class CameraSmallFragment extends BaseCameraFragment<CameraStateManager, 
 
     @Override
     public void initView(View view, Bundle savedInstanceState) {
-        mBinding.pvLayout.getViewHolder().tvTip.setTextSize(10);
+        mBinding.pvLayout.getPhotoVideoLayoutViewHolder().tvTip.setTextSize(10);
     }
 
     /**

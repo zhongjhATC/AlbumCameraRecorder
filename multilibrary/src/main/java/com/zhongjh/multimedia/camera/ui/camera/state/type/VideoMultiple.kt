@@ -34,7 +34,7 @@ class VideoMultiple(cameraFragment: BaseCameraFragment<out CameraStateManager, o
     }
 
     override fun pvLayoutCommit() {
-        if (cameraFragment.photoVideoLayout.viewHolder.btnConfirm.mState == CircularProgressState.PLAY) {
+        if (cameraFragment.photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.mState == CircularProgressState.PLAY) {
             // 完成录制
             Log.d(tag, "pvLayoutCommit完成录制")
             cameraFragment.cameraManage.stopVideo()
