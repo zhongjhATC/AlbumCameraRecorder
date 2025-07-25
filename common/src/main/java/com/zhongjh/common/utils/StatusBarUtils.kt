@@ -21,12 +21,9 @@ object StatusBarUtils {
     fun initStatusBar(activity: Activity) {
         val window = activity.window
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        //设置专栏栏和导航栏的底色，透明
+        // 设置状态栏透明
         window.statusBarColor = Color.TRANSPARENT
-        window.navigationBarColor = Color.TRANSPARENT
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            window.navigationBarDividerColor = Color.TRANSPARENT
-        }
+        // 必须设置高度
         activity.findViewById<FrameLayout>(android.R.id.content).apply {
             post {
                 setPadding(0, 0, 0, getNavigationBarsHeight(activity))

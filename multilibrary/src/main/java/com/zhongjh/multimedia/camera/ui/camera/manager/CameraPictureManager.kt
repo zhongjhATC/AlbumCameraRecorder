@@ -89,17 +89,19 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      */
     override fun initMultiplePhotoAdapter() {
         fragmentRef.get()?.let { baseCameraFragment ->
-            // 初始化多图适配器，先判断是不是多图配置
-            photoAdapter = PhotoAdapter(baseCameraFragment.mainActivity, baseCameraFragment.globalSpec, bitmapDataList, this)
-            baseCameraFragment.recyclerViewPhoto?.let {
-                if (imageMaxCount > 1) {
-                    it.layoutManager = LinearLayoutManager(
-                        baseCameraFragment.myContext, RecyclerView.HORIZONTAL, false
-                    )
-                    it.adapter = photoAdapter
-                    it.visibility = View.VISIBLE
-                } else {
-                    it.visibility = View.GONE
+            baseCameraFragment.mainActivity?.let { mainActivity ->
+                // 初始化多图适配器，先判断是不是多图配置
+                photoAdapter = PhotoAdapter(mainActivity, baseCameraFragment.globalSpec, bitmapDataList, this)
+                baseCameraFragment.recyclerViewPhoto?.let {
+                    if (imageMaxCount > 1) {
+                        it.layoutManager = LinearLayoutManager(
+                            baseCameraFragment.myContext, RecyclerView.HORIZONTAL, false
+                        )
+                        it.adapter = photoAdapter
+                        it.visibility = View.VISIBLE
+                    } else {
+                        it.visibility = View.GONE
+                    }
                 }
             }
         }
@@ -136,7 +138,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
                 photoEditFile = createCacheFile(baseCameraFragment.myContext, MediaType.TYPE_PICTURE)
                 val intent = Intent()
                 intent.setClass(baseCameraFragment.myContext, ImageEditActivity::class.java)
-                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.mainActivity.requestedOrientation)
+                intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.mainActivity?.requestedOrientation)
                 intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, uri)
                 intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, photoEditFile?.absolutePath)
                 imageEditActivityResult?.launch(intent)
@@ -221,7 +223,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
 
             if (bitmapDataList.isNotEmpty()) {
                 // 母窗体禁止滑动
-                baseCameraFragment.mainActivity.showHideTableLayout(false)
+                baseCameraFragment.mainActivity?.showHideTableLayout(false)
             }
 
             // 回调接口：添加图片后剩下的相关数据
@@ -357,7 +359,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
 
             // 判断如果删除光图片的时候，母窗体启动滑动
             if (bitmapDataList.isEmpty()) {
-                baseCameraFragment.mainActivity.showHideTableLayout(true)
+                baseCameraFragment.mainActivity?.showHideTableLayout(true)
             }
             baseCameraFragment.cameraSpec.onCaptureListener?.remove(this.bitmapDataList, position)
 

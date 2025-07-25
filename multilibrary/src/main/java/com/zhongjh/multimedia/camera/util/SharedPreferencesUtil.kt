@@ -1,104 +1,93 @@
-package com.zhongjh.multimedia.camera.util;
+package com.zhongjh.multimedia.camera.util
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import java.util.Map;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 
 /**
  * 保存信息配置类
  * Created by zhongjh on 2018/8/7.
  */
-public class SharedPreferencesUtil {
+class SharedPreferencesUtil @SuppressLint("CommitPrefEdits") constructor(context: Context, fileName: String) {
 
-    private final SharedPreferences sharedPreferences;
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE)
+
     /*
      * 保存手机里面的名字
      */
-    private final SharedPreferences.Editor editor;
+    private val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
-    @SuppressLint("CommitPrefEdits")
-    public SharedPreferencesUtil(Context context, String fileName) {
-        sharedPreferences = context.getSharedPreferences(fileName,
-                Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+    fun putString(key: String, value: String) {
+        editor.putString(key, value)
+        editor.commit()
     }
 
-    public void putString(String key, String object) {
-        editor.putString(key, object);
-        editor.commit();
+    fun putInt(key: String, value: Int) {
+        editor.putInt(key, value)
+        editor.commit()
     }
 
-    public void putInt(String key, Integer object) {
-        editor.putInt(key, object);
-        editor.commit();
+    fun putBoolean(key: String, value: Boolean) {
+        editor.putBoolean(key, value)
+        editor.commit()
     }
 
-    public void putBoolean(String key, Boolean object) {
-        editor.putBoolean(key, object);
-        editor.commit();
+    fun putFloat(key: String, value: Float) {
+        editor.putFloat(key, value)
+        editor.commit()
     }
 
-    public void putFloat(String key, Float object) {
-        editor.putFloat(key, object);
-        editor.commit();
+    fun putLong(key: String, value: Long) {
+        editor.putLong(key, value)
+        editor.commit()
     }
 
-    public void putLong(String key, Long object) {
-        editor.putLong(key, object);
-        editor.commit();
+    fun getString(key: String, defaultObject: String): String {
+        return sharedPreferences.getString(key, defaultObject) as String
     }
 
-    public String getString(String key, String defaultObject) {
-        return sharedPreferences.getString(key, defaultObject);
+    fun getInt(key: String, defaultObject: Int): Int {
+        return sharedPreferences.getInt(key, defaultObject)
     }
 
-    public Integer getInt(String key, Integer defaultObject) {
-        return sharedPreferences.getInt(key, defaultObject);
+    fun getBoolean(key: String, defaultObject: Boolean): Boolean {
+        return sharedPreferences.getBoolean(key, defaultObject)
     }
 
-    public Boolean getBoolean(String key, Boolean defaultObject) {
-        return sharedPreferences.getBoolean(key, defaultObject);
+    fun getFloat(key: String, defaultObject: Float): Float {
+        return sharedPreferences.getFloat(key, defaultObject)
     }
 
-    public Float getFloat(String key, Float defaultObject) {
-        return sharedPreferences.getFloat(key, defaultObject);
-    }
-
-    public Long getLong(String key, Long defaultObject) {
-        return sharedPreferences.getLong(key, defaultObject);
+    fun getLong(key: String, defaultObject: Long): Long {
+        return sharedPreferences.getLong(key, defaultObject)
     }
 
     /**
      * 移除某个key值已经对应的值
      */
-    public void remove(String key) {
-        editor.remove(key);
-        editor.commit();
+    fun remove(key: String) {
+        editor.remove(key)
+        editor.commit()
     }
 
     /**
      * 清除所有数据
      */
-    public void clear() {
-        editor.clear();
-        editor.commit();
+    fun clear() {
+        editor.clear()
+        editor.commit()
     }
 
     /**
      * 查询某个key是否存在
      */
-    public Boolean contain(String key) {
-        return sharedPreferences.contains(key);
+    fun contain(key: String): Boolean {
+        return sharedPreferences.contains(key)
     }
 
-    /**
-     * 返回所有的键值对
-     */
-    public Map<String, ?> getAll() {
-        return sharedPreferences.getAll();
-    }
-
-
+    val all: Map<String, *>
+        /**
+         * 返回所有的键值对
+         */
+        get() = sharedPreferences.all
 }

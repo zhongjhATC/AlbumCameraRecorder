@@ -25,7 +25,7 @@ object FlashCacheUtils {
      * @return 闪光灯模式
      */
     @JvmStatic
-    fun getFlashModel(context: Context?): Int {
+    fun getFlashModel(context: Context): Int {
         val sharedPreferencesUtil = SharedPreferencesUtil(context, CAMERAVIEWSOUNDRECORDERSHAREDPREFERENCESFLASHCACHE)
         return sharedPreferencesUtil.getInt(FLASH_MODE, ImageCapture.FLASH_MODE_OFF)
     }
@@ -37,7 +37,7 @@ object FlashCacheUtils {
      * @param flashModel 闪光灯模式
      */
     @JvmStatic
-    fun saveFlashModel(context: Context?, flashModel: Int) {
+    fun saveFlashModel(context: Context, flashModel: Int) {
         val sharedPreferencesUtil = SharedPreferencesUtil(context, CAMERAVIEWSOUNDRECORDERSHAREDPREFERENCESFLASHCACHE)
         sharedPreferencesUtil.putInt(FLASH_MODE, flashModel)
     }

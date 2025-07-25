@@ -180,11 +180,11 @@ class PreviewVideoActivity : AppCompatActivity() {
      * 压缩视频
      */
     private fun compress() {
-        if (mGlobalSpec.videoCompressCoordinator != null) {
+        mGlobalSpec.videoCompressCoordinator?.let { videoCompressCoordinator ->
             // 获取文件名称
             val newFile = createCompressFile(applicationContext, mLocalMedia.absolutePath)
             // 压缩回调
-            mGlobalSpec.videoCompressCoordinator?.setVideoCompressListener(
+            videoCompressCoordinator.setVideoCompressListener(
                 this@PreviewVideoActivity.javaClass,
                 object : VideoEditListener {
                     override fun onFinish() {
@@ -204,11 +204,9 @@ class PreviewVideoActivity : AppCompatActivity() {
                     }
                 })
             // 执行压缩
-            if (mGlobalSpec.videoCompressCoordinator != null) {
-                mGlobalSpec.videoCompressCoordinator?.compressRxJava(
-                    this@PreviewVideoActivity.javaClass, mLocalMedia.absolutePath, newFile.path
-                )
-            }
+            mGlobalSpec.videoCompressCoordinator?.compressRxJava(
+                this@PreviewVideoActivity.javaClass, mLocalMedia.absolutePath, newFile.path
+            )
         }
     }
 

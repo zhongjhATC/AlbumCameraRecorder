@@ -2,11 +2,8 @@ package com.zhongjh.multimedia.camera.ui.camera
 
 import android.Manifest
 import android.app.Activity
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,10 +16,8 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.ImageCapture
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
@@ -59,6 +54,7 @@ import com.zhongjh.multimedia.utils.SelectableUtils.videoValid
 import com.zhongjh.multimedia.widget.BaseOperationLayout
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
 import java.io.File
+import java.lang.ref.WeakReference
 import java.util.Objects
 
 /**
@@ -80,14 +76,23 @@ import java.util.Objects
  */
 abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureManager : CameraPictureManager, VideoManager : CameraVideoManager>
     : BaseFragment(), ICameraView, ICameraFragment {
+    /**
+     * 使用弱引用持有 Activity
+     */
+    private var mainActivityRef: WeakReference<MainActivity>? = null
+
+    /**
+     * 安全获取 Activity
+     */
+    val mainActivity: MainActivity?
+        get() = mainActivityRef?.get()
+
     lateinit var myContext: Context
-        private set
-    lateinit var mainActivity: MainActivity
         private set
     /**
      * 在图廊预览界面点击了确定
      */
-    private var albumPreviewActivityResult: ActivityResultLauncher<Intent>? = null
+    private lateinit var albumPreviewActivityResult: ActivityResultLauncher<Intent>
 
     /**
      * 公共配置
@@ -100,7 +105,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      */
     var cameraSpec: CameraSpec = CameraSpec
         private set
-    val cameraManage: CameraManage by lazy { CameraManage(mainActivity, previewView, focusView) }
+    lateinit var cameraManage: CameraManage
+        private set
 
     /**
      * 闪关灯状态 默认关闭
@@ -154,9 +160,9 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = setContentView(inflater, container)
-        view.setOnKeyListener { _: View?, keyCode: Int, _: KeyEvent? -> keyCode == KeyEvent.KEYCODE_BACK }
+        view.setOnKeyListener { _: View, keyCode: Int, _: KeyEvent -> keyCode == KeyEvent.KEYCODE_BACK }
         initView(view, savedInstanceState)
         initData()
         setView()
@@ -167,9 +173,14 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is MainActivity) {
-            mainActivity = context
-            this.myContext = context.getApplicationContext()
+            this.mainActivityRef = WeakReference(context)
+            this.myContext = context.applicationContext
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mainActivityRef = null
     }
 
     override fun onBackPressed(): Boolean {
@@ -220,6 +231,16 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         LogUtil.i("CameraLayout onPause")
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // 清除视图引用
+        closeView?.setOnClickListener(null)
+        flashView?.setOnClickListener(null)
+        switchView?.setOnClickListener(null)
+        photoVideoLayout.setPhotoVideoListener(null)
+        cameraManage.setOnCameraManageListener(null)
+    }
+
     override fun onDestroy() {
         onDestroy(isCommit)
         photoVideoLayout.onDestroy()
@@ -230,15 +251,15 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     /**
      * 设置相关view，由子类赋值
      */
-    protected fun setView() {
+    private fun setView() {
         cameraManage.init()
 
         // 兼容沉倾状态栏
-        if (topView != null) {
+        topView?.let { topView ->
             val statusBarHeight = getStatusBarHeight(requireActivity())
-            topView!!.setPadding(0, statusBarHeight, 0, 0)
-            val layoutParams = topView!!.layoutParams
-            layoutParams.height = layoutParams.height + statusBarHeight
+            topView.setPadding(0, statusBarHeight, 0, 0)
+            val layoutParams = topView.layoutParams
+            layoutParams.height += statusBarHeight
         }
 
         // 处理图片、视频等需要进度显示
@@ -246,9 +267,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
 
         // 初始化cameraView,判断是否开启录制视频，如果开启就开启录制声音x
         cameraManage.isAudio = videoValid()
-        if (switchView != null) {
-            switchView!!.setImageResource(cameraSpec.imageSwitch)
-        }
+        switchView?.setImageResource(cameraSpec.imageSwitch)
         // 设置录制时间
         photoVideoLayout.setDuration(cameraSpec.maxDuration)
     }
@@ -256,7 +275,10 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     /**
      * 初始化相关数据
      */
-    protected fun initData() {
+    private fun initData() {
+        mainActivity?.let { mainActivity ->
+            cameraManage = CameraManage(mainActivity, previewView, focusView)
+        }
         // 闪光灯修改默认模式
         flashMode = cameraSpec.flashMode
         // 记忆模式
@@ -290,23 +312,20 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      * 关闭View初始化事件
      */
     private fun initCameraLayoutCloseListener() {
-        if (closeView != null) {
-            closeView!!.setOnClickListener(object : OnMoreClickListener() {
+        closeView?.setOnClickListener(object : OnMoreClickListener() {
                 /** @noinspection unused
                  */
                 override fun onListener(v: View) {
-                    mainActivity.finish()
+                    mainActivity?.finish()
                 }
             })
-        }
     }
 
     /**
      * 切换闪光灯模式
      */
     private fun initImgFlashListener() {
-        if (flashView != null) {
-            flashView!!.setOnClickListener { v: View? ->
+        flashView?.setOnClickListener {
                 flashMode++
                 if (flashMode > ImageCapture.FLASH_MODE_OFF) {
                     flashMode = ImageCapture.FLASH_MODE_AUTO
@@ -314,16 +333,13 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                 // 重新设置当前闪光灯模式
                 setFlashLamp()
             }
-        }
     }
 
     /**
      * 切换摄像头前置/后置
      */
     private fun initImgSwitchListener() {
-        if (switchView != null) {
-            switchView!!.setOnClickListener { cameraManage.toggleFacing() }
-        }
+        switchView?.setOnClickListener { cameraManage.toggleFacing() }
     }
 
     /**
@@ -336,7 +352,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
             override fun actionDown() {
                 Log.d(TAG, "pvLayout actionDown")
                 // 母窗体隐藏底部滑动
-                mainActivity.showHideTableLayout(false)
+                mainActivity?.showHideTableLayout(false)
             }
 
             override fun onClick() {
@@ -481,6 +497,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                 val selected = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     result.data?.getParcelableArrayListExtra(SelectedData.STATE_SELECTION, LocalMedia::class.java)
                 } else {
+                    @Suppress("DEPRECATION")
                     result.data?.getParcelableArrayListExtra(SelectedData.STATE_SELECTION)
                 }
 
@@ -489,10 +506,12 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                     val bitmapDataArrayList = ArrayList<BitmapData>()
                     for (item in selected) {
                         // 如果有编辑图片,则将该图片覆盖最新的拍照图片
-                        val path = if (null == item.editorPath) item.absolutePath else item.editorPath!!
-                        val uri = Uri.fromFile(File(path)).toString()
-                        val bitmapData = BitmapData(item.fileId, uri, path)
-                        bitmapDataArrayList.add(bitmapData)
+                        val path = if (null == item.editorPath) item.absolutePath else item.editorPath
+                        path?.let {
+                            val uri = Uri.fromFile(File(path)).toString()
+                            val bitmapData = BitmapData(item.fileId, uri, path)
+                            bitmapDataArrayList.add(bitmapData)
+                        }
                     }
                     // 全部刷新
                     cameraPictureManager.refreshMultiPhoto(bitmapDataArrayList)
@@ -544,8 +563,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         isCommit = true
         val result = Intent()
         result.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, newFiles)
-        mainActivity.setResult(Activity.RESULT_OK, result)
-        mainActivity.finish()
+        mainActivity?.setResult(Activity.RESULT_OK, result)
+        mainActivity?.finish()
     }
 
     /**
@@ -569,14 +588,19 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      */
     override fun commitVideoSuccess(intentPreviewVideo: Intent) {
         val localMedias = ArrayList<LocalMedia?>()
-        val localMedia = intentPreviewVideo.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE, LocalMedia::class.java)
+        val localMedia = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intentPreviewVideo.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE, LocalMedia::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intentPreviewVideo.getParcelableExtra(PreviewVideoActivity.LOCAL_FILE)
+        }
         localMedias.add(localMedia)
         isCommit = true
         // 获取视频路径
         val intent = Intent()
         intent.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, localMedias)
-        mainActivity.setResult(Activity.RESULT_OK, intent)
-        mainActivity.finish()
+        mainActivity?.setResult(Activity.RESULT_OK, intent)
+        mainActivity?.finish()
     }
 
     /**
@@ -591,9 +615,9 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                 R.anim.activity_open_zjh,  // 进入动画
                 0  // 退出动画（0 表示无动画）
             )
-            albumPreviewActivityResult!!.launch(intent, options)
+            albumPreviewActivityResult.launch(intent, options)
         } else {
-            albumPreviewActivityResult!!.launch(intent)
+            albumPreviewActivityResult.launch(intent)
         }
     }
 
@@ -602,9 +626,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      */
     override fun hideViewByMultipleZero() {
         // 隐藏横版列表
-        if (recyclerViewPhoto != null) {
-            recyclerViewPhoto!!.visibility = View.GONE
-        }
+        recyclerViewPhoto?.visibility = View.GONE
 
         // 隐藏修饰多图控件的View
         multiplePhotoView?.let { multiplePhotoView ->
@@ -631,16 +653,6 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     }
 
     /**
-     * 提示过短
-     */
-    fun setShortTip() {
-        // 提示过短
-        photoVideoLayout.setTipAlphaAnimation(resources.getString(R.string.z_multi_library_the_recording_time_is_too_short))
-        // 显示右上角菜单
-        setMenuVisibility(View.VISIBLE)
-    }
-
-    /**
      * 长按继续录制
      */
     fun setShortTipLongRecording() {
@@ -654,7 +666,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     /**
      * 初始化中心按钮状态
      */
-    protected fun initPvLayoutButtonFeatures() {
+    private fun initPvLayoutButtonFeatures() {
         // 判断点击和长按的权限
         if (cameraSpec.isClickRecord) {
             // 禁用长按功能
@@ -743,9 +755,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      */
     override fun showMultiplePicture() {
         // 显示横版列表
-        if (recyclerViewPhoto != null) {
-            recyclerViewPhoto!!.visibility = View.VISIBLE
-        }
+        recyclerViewPhoto?.visibility = View.VISIBLE
 
         // 显示横版列表的线条空间
         multiplePhotoView?.let { multiplePhotoView ->
@@ -815,7 +825,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      * 恢复底部菜单,母窗体启动滑动
      */
     override fun showBottomMenu() {
-        mainActivity.showHideTableLayout(true)
+        mainActivity?.showHideTableLayout(true)
     }
 
     /**
@@ -823,12 +833,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      * 场景：如果压缩或者移动文件时异常，则恢复
      */
     override fun setUiEnableTrue() {
-        if (flashView != null) {
-            flashView!!.isEnabled = true
-        }
-        if (switchView != null) {
-            switchView!!.isEnabled = true
-        }
+        flashView?.isEnabled = true
+        switchView?.isEnabled = true
         photoVideoLayout.setClickOrLongEnable(true)
         // 重置按钮进度
         photoVideoLayout.viewHolder.btnConfirm.reset()
@@ -839,12 +845,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      * 场景：确认图片时，压缩中途禁止某些功能使用
      */
     override fun setUiEnableFalse() {
-        if (flashView != null) {
-            flashView!!.isEnabled = false
-        }
-        if (switchView != null) {
-            switchView!!.isEnabled = false
-        }
+        flashView?.isEnabled = false
+        switchView?.isEnabled = false
         photoVideoLayout.setClickOrLongEnable(false)
     }
 
@@ -853,20 +855,18 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      */
     fun setMenuVisibility(viewVisibility: Int) {
         setSwitchVisibility(viewVisibility)
-        if (flashView != null) {
-            flashView!!.visibility = viewVisibility
-        }
+        flashView?.visibility = viewVisibility
     }
 
     /**
      * 设置闪光灯是否显示，如果不支持，是一直不会显示
      */
     private fun setSwitchVisibility(viewVisibility: Int) {
-        if (switchView != null) {
+        switchView?.let { switchView ->
             if (!isSupportCameraLedFlash(myContext.packageManager)) {
-                switchView!!.visibility = View.GONE
+                switchView.visibility = View.GONE
             } else {
-                switchView!!.visibility = viewVisibility
+                switchView.visibility = viewVisibility
             }
         }
     }
@@ -875,11 +875,11 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      * 设置闪关灯
      */
     private fun setFlashLamp() {
-        if (flashView != null) {
+        flashView?.let { flashView ->
             when (flashMode) {
-                ImageCapture.FLASH_MODE_AUTO -> flashView!!.setImageResource(cameraSpec.imageFlashAuto)
-                ImageCapture.FLASH_MODE_ON -> flashView!!.setImageResource(cameraSpec.imageFlashOn)
-                ImageCapture.FLASH_MODE_OFF -> flashView!!.setImageResource(cameraSpec.imageFlashOff)
+                ImageCapture.FLASH_MODE_AUTO -> flashView.setImageResource(cameraSpec.imageFlashAuto)
+                ImageCapture.FLASH_MODE_ON -> flashView.setImageResource(cameraSpec.imageFlashOn)
+                ImageCapture.FLASH_MODE_OFF -> flashView.setImageResource(cameraSpec.imageFlashOff)
                 else -> {}
             }
             cameraManage.setFlashMode(flashMode)
@@ -891,8 +891,10 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      */
     private fun flashGetCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则使用上个闪光灯模式
-        if (cameraSpec.enableFlashMemoryModel) {
-            flashMode = getFlashModel(context)
+        context?.let { context ->
+            if (cameraSpec.enableFlashMemoryModel) {
+                flashMode = getFlashModel(context)
+            }
         }
     }
 
@@ -901,74 +903,11 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      */
     private fun flashSaveCache() {
         // 判断闪光灯是否记忆模式，如果是记忆模式则存储当前闪光灯模式
-        if (cameraSpec.enableFlashMemoryModel) {
-            saveFlashModel(context, flashMode)
-        }
-    }
-
-    /**
-     * 请求权限
-     * return false则是请求权限
-     * return true则是无权限请求继续下一步
-     *
-     * @noinspection unused
-     */
-    private fun requestPermissions(): Boolean {
-        // 判断权限，权限通过才可以初始化相关
-        val needPermissions = needPermissions
-        if (needPermissions.isNotEmpty()) {
-            // 请求权限
-            requestPermissionsDialog()
-            return false
-        } else {
-            return true
-        }
-    }
-
-    protected val needPermissions: ArrayList<String>
-        /**
-         * 获取目前需要请求的权限
-         */
-        get() {
-            // 需要请求的权限列表
-            val permissions = ArrayList<String>()
-            // Android 10 以下需要请求存储权限才能存进相册
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager
-                        .PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager
-                        .PERMISSION_GRANTED
-                ) {
-                    permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
+        context?.let { context ->
+            if (cameraSpec.enableFlashMemoryModel) {
+                saveFlashModel(context, flashMode)
             }
-            return permissions
         }
-
-    /**
-     * 请求权限 - 如果曾经拒绝过，则弹出dialog
-     */
-    private fun requestPermissionsDialog() {
-        // 动态消息
-        val message = StringBuilder()
-        message.append(getString(R.string.z_multi_library_to_use_this_feature))
-        message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files))
-
-        val builder = AlertDialog.Builder(requireActivity(), R.style.MyAlertDialogStyle)
-        // 弹窗提示为什么要请求这个权限
-        builder.setTitle(getString(R.string.z_multi_library_hint))
-        message.append(getString(R.string.z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you))
-        builder.setMessage(message.toString())
-        builder.setPositiveButton(getString(R.string.z_multi_library_ok)) { dialog: DialogInterface, _: Int ->
-            dialog.dismiss()
-            // 请求权限
-            requestPermissionActivityResult!!.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-        }
-        builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
-        val dialog: Dialog = builder.create()
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
     }
 
     /**

@@ -35,7 +35,7 @@ class FocusView : AppCompatImageView {
         init()
     }
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init()
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FocusView)
         mFocusIngImg = typedArray.getResourceId(R.styleable.FocusView_focusIng, R.drawable.focus_ing)

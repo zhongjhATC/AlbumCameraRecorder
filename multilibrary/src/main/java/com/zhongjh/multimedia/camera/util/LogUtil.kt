@@ -1,56 +1,53 @@
-package com.zhongjh.multimedia.camera.util;
+package com.zhongjh.multimedia.camera.util
 
-import static com.github.chrisbanes.photoview.BuildConfig.DEBUG;
-
-import android.util.Log;
-
+import android.util.Log
+import com.github.chrisbanes.photoview.BuildConfig
 
 /**
  * 日志工具
  *
  * @author zhongjh
  */
-public class LogUtil {
+object LogUtil {
+    private const val DEFAULT_TAG = "zhongjh"
 
-    private static final String DEFAULT_TAG = "zhongjh";
-
-    public static void i(String tag, String msg) {
-        if (DEBUG) {
-            Log.i(tag, msg);
+    fun i(tag: String, msg: String) {
+        if (BuildConfig.DEBUG) {
+            Log.i(tag, msg)
         }
     }
 
-    public static void v(String tag, String msg) {
-        if (DEBUG) {
-            Log.v(tag, msg);
+    fun v(tag: String, msg: String) {
+        if (BuildConfig.DEBUG) {
+            Log.v(tag, msg)
         }
     }
 
-    public static void d(String tag, String msg) {
-        if (DEBUG) {
-            Log.d(tag, msg);
+    fun d(tag: String, msg: String) {
+        if (BuildConfig.DEBUG) {
+            Log.d(tag, msg)
         }
     }
 
-    public static void e(String tag, String msg) {
-        if (DEBUG) {
-            Log.e(tag, msg);
+    fun e(tag: String, msg: String) {
+        if (BuildConfig.DEBUG) {
+            Log.e(tag, msg)
         }
     }
 
-    public static void i(String msg) {
-        i(DEFAULT_TAG, msg);
+    fun i(msg: String) {
+        i(DEFAULT_TAG, msg)
     }
 
-    public static void v(String msg) {
-        v(DEFAULT_TAG, msg);
+    fun v(msg: String) {
+        v(DEFAULT_TAG, msg)
     }
 
-    public static void d(String msg) {
-        d(DEFAULT_TAG, msg);
+    fun d(msg: String) {
+        d(DEFAULT_TAG, msg)
     }
 
-    public static void e(String msg) {
-        e(DEFAULT_TAG, msg);
+    fun e(msg: String) {
+        e(DEFAULT_TAG, msg)
     }
 }
