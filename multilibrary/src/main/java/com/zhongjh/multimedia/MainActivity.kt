@@ -31,10 +31,15 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.flyco.tablayout.listener.CustomTabEntity
 import com.flyco.tablayout.listener.OnTabSelectListener
+import com.zhongjh.common.enums.MimeType.Companion.ofImage
+import com.zhongjh.common.enums.MimeType.Companion.ofVideo
+import com.zhongjh.common.utils.AppUtils.getAppName
+import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.multimedia.album.ui.AlbumFragment
 import com.zhongjh.multimedia.camera.entity.TabEntity
 import com.zhongjh.multimedia.camera.ui.camera.CameraFragment
 import com.zhongjh.multimedia.constants.ModuleTypes
+import com.zhongjh.multimedia.databinding.ActivityMainZjhBinding
 import com.zhongjh.multimedia.recorder.SoundRecordingFragment
 import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.settings.GlobalSpec.getMimeTypeSet
@@ -44,11 +49,6 @@ import com.zhongjh.multimedia.utils.SelectableUtils.albumValid
 import com.zhongjh.multimedia.utils.SelectableUtils.cameraValid
 import com.zhongjh.multimedia.utils.SelectableUtils.recorderValid
 import com.zhongjh.multimedia.utils.SelectableUtils.videoValid
-import com.zhongjh.common.enums.MimeType.Companion.ofImage
-import com.zhongjh.common.enums.MimeType.Companion.ofVideo
-import com.zhongjh.common.utils.AppUtils.getAppName
-import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
-import com.zhongjh.multimedia.databinding.ActivityMainZjhBinding
 import kotlin.math.abs
 
 /**
@@ -133,7 +133,11 @@ open class MainActivity : AppCompatActivity() {
         super.finish()
         if (mSpec.cutscenesEnabled) {
             //关闭窗体动画显示
-            this.overridePendingTransition(0, R.anim.activity_close_zjh)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                this.overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, R.anim.activity_close_zjh)
+            } else {
+                this.overridePendingTransition(0, R.anim.activity_close_zjh)
+            }
         }
     }
 

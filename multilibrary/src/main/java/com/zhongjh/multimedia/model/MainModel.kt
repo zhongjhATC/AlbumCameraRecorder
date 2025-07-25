@@ -90,7 +90,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 分页相册的当前页码
      */
-    var page = 1
+    private var page = 1
 
     /**
      * 当前所选择的文件夹

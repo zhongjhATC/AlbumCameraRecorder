@@ -2,17 +2,19 @@ package com.zhongjh.multimedia.preview.start
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity.OVERRIDE_TRANSITION_OPEN
 import androidx.fragment.app.Fragment
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.entity.BitmapData
 import com.zhongjh.multimedia.preview.PreviewActivity
 import com.zhongjh.multimedia.preview.PreviewFragment
 import com.zhongjh.multimedia.preview.enum.PreviewType
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType
 
 
 /**
@@ -32,7 +34,11 @@ object PreviewStartManager {
             .setIntent(intent)
         previewActivityResult.launch(intent)
         if (cutscenesEnabled) {
-            activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, R.anim.activity_open_zjh)
+            } else {
+                activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
+            }
         }
     }
 

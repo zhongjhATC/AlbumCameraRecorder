@@ -3,12 +3,18 @@ package com.zhongjh.multimedia.settings
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.IntDef
 import androidx.annotation.StyleRes
+import androidx.appcompat.app.AppCompatActivity.OVERRIDE_TRANSITION_OPEN
+import com.zhongjh.common.coordinator.VideoCompressCoordinator
+import com.zhongjh.common.engine.ImageEngine
+import com.zhongjh.common.entity.GridMedia
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
-import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.multimedia.listener.OnImageCompressionListener
 import com.zhongjh.multimedia.listener.OnLogListener
 import com.zhongjh.multimedia.preview.PreviewActivity
@@ -16,12 +22,7 @@ import com.zhongjh.multimedia.preview.enum.PreviewType
 import com.zhongjh.multimedia.preview.start.PreviewSetting
 import com.zhongjh.multimedia.settings.GlobalSpec.cleanInstance
 import com.zhongjh.multimedia.settings.api.GlobalSettingApi
-import com.zhongjh.common.coordinator.VideoCompressCoordinator
-import com.zhongjh.common.entity.GridMedia
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
-import java.util.*
 
 /**
  * 用于构建媒体具体公共设置 API。
@@ -226,7 +227,11 @@ class GlobalSetting internal constructor(
             .setIntent(intent)
         activityResultLauncher.launch(intent)
         if (GlobalSpec.cutscenesEnabled) {
-            activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, R.anim.activity_open_zjh)
+            } else {
+                activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
+            }
         }
     }
 
@@ -253,7 +258,11 @@ class GlobalSetting internal constructor(
         } else {
             activityResultLauncher.launch(intent)
             if (mGlobalSpec.cutscenesEnabled) {
-                activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, R.anim.activity_open_zjh)
+                } else {
+                    activity.overridePendingTransition(R.anim.activity_open_zjh, 0)
+                }
             }
         }
     }

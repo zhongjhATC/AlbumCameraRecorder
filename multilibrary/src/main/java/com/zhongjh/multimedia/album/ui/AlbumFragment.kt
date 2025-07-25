@@ -47,7 +47,7 @@ import com.zhongjh.multimedia.album.widget.albumspinner.OnAlbumItemClickListener
 import com.zhongjh.multimedia.album.widget.recyclerview.RecyclerLoadMoreView
 import com.zhongjh.multimedia.model.MainModel
 import com.zhongjh.multimedia.model.OriginalManage
-import com.zhongjh.multimedia.model.SelectedData.STATE_SELECTION
+import com.zhongjh.multimedia.model.SelectedData.Companion.STATE_SELECTION
 import com.zhongjh.multimedia.model.SelectedModel
 import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewActivityByAlbum
 import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewFragmentByAlbum

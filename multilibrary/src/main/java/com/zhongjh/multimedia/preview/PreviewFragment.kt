@@ -49,7 +49,7 @@ import com.zhongjh.multimedia.album.widget.CheckRadioView
 import com.zhongjh.multimedia.album.widget.CheckView
 import com.zhongjh.multimedia.model.MainModel
 import com.zhongjh.multimedia.model.OriginalManage
-import com.zhongjh.multimedia.model.SelectedData.STATE_SELECTION
+import com.zhongjh.multimedia.model.SelectedData.Companion.STATE_SELECTION
 import com.zhongjh.multimedia.model.SelectedModel
 import com.zhongjh.multimedia.preview.adapter.PreviewPagerAdapter
 import com.zhongjh.multimedia.preview.enum.PreviewType
@@ -909,29 +909,27 @@ class PreviewFragment : BaseFragment() {
      * @param item 当前图片
      */
     @SuppressLint("SetTextI18n")
-    private fun updateUi(item: LocalMedia?) {
-        item?.let {
-            if (item.isGif()) {
-                mViewHolder.tvSize.visibility = View.VISIBLE
-                mViewHolder.tvSize.text = "(${PhotoMetadataUtils.getSizeInMb(item.size)}M)"
-            } else {
-                mViewHolder.tvSize.visibility = View.GONE
-            }
+    private fun updateUi(item: LocalMedia) {
+        if (item.isGif()) {
+            mViewHolder.tvSize.visibility = View.VISIBLE
+            mViewHolder.tvSize.text = "(${PhotoMetadataUtils.getSizeInMb(item.size)}M)"
+        } else {
+            mViewHolder.tvSize.visibility = View.GONE
+        }
 
-            // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
-            if (mAlbumSpec.originalEnable && !item.isVideo() && mOriginalEnable) {
-                // 显示
-                mViewHolder.groupOriginal.visibility = View.VISIBLE
-                updateOriginalState()
-            } else {
-                // 隐藏
-                mViewHolder.groupOriginal.visibility = View.GONE
-            }
-            if (item.isImage() && mGlobalSpec.imageEditEnabled && mEditEnable) {
-                mViewHolder.tvEdit.visibility = View.VISIBLE
-            } else {
-                mViewHolder.tvEdit.visibility = View.GONE
-            }
+        // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
+        if (mAlbumSpec.originalEnable && !item.isVideo() && mOriginalEnable) {
+            // 显示
+            mViewHolder.groupOriginal.visibility = View.VISIBLE
+            updateOriginalState()
+        } else {
+            // 隐藏
+            mViewHolder.groupOriginal.visibility = View.GONE
+        }
+        if (item.isImage() && mGlobalSpec.imageEditEnabled && mEditEnable) {
+            mViewHolder.tvEdit.visibility = View.VISIBLE
+        } else {
+            mViewHolder.tvEdit.visibility = View.GONE
         }
     }
 
@@ -951,24 +949,26 @@ class PreviewFragment : BaseFragment() {
         override fun onPageSelected(position: Int) {
             val adapter = mViewPager2.adapter as PreviewPagerAdapter
             val item = adapter.getLocalMedia(position)
-            if (mAlbumSpec.countable) {
-                val checkedNum = mSelectedModel.selectedData.checkedNumOf(item)
-                mViewHolder.checkView.setCheckedNum(checkedNum)
-                if (checkedNum > 0) {
-                    setCheckViewEnable(true)
+            item?.let {
+                if (mAlbumSpec.countable) {
+                    val checkedNum = mSelectedModel.selectedData.checkedNumOf(item)
+                    mViewHolder.checkView.setCheckedNum(checkedNum)
+                    if (checkedNum > 0) {
+                        setCheckViewEnable(true)
+                    } else {
+                        setCheckViewEnable(!mSelectedModel.selectedData.maxSelectableReached())
+                    }
                 } else {
-                    setCheckViewEnable(!mSelectedModel.selectedData.maxSelectableReached())
+                    val checked = mSelectedModel.selectedData.isSelected(item)
+                    mViewHolder.checkView.setChecked(checked)
+                    if (checked) {
+                        setCheckViewEnable(true)
+                    } else {
+                        setCheckViewEnable(!mSelectedModel.selectedData.maxSelectableReached())
+                    }
                 }
-            } else {
-                val checked = mSelectedModel.selectedData.isSelected(item)
-                mViewHolder.checkView.setChecked(checked)
-                if (checked) {
-                    setCheckViewEnable(true)
-                } else {
-                    setCheckViewEnable(!mSelectedModel.selectedData.maxSelectableReached())
-                }
+                updateUi(item)
             }
-            updateUi(item)
             onViewPageSelected(position)
         }
     }

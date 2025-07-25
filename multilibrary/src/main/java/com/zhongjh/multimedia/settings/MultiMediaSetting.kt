@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import androidx.fragment.app.Fragment
-import com.zhongjh.multimedia.model.SelectedData.STATE_SELECTION
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
+import com.zhongjh.multimedia.model.SelectedData.Companion.STATE_SELECTION
 import java.lang.ref.WeakReference
 
 /**

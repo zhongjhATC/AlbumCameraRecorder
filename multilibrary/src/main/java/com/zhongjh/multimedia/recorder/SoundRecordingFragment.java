@@ -114,7 +114,7 @@ public class SoundRecordingFragment extends BaseFragment {
         mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
 
         // 处理图片、视频等需要进度显示
-        mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgressMode(true);
+        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().btnConfirm.setProgressMode(true);
 
         // 初始化设置
         RecordeSpec mRecordSpec = RecordeSpec.INSTANCE;
@@ -227,7 +227,7 @@ public class SoundRecordingFragment extends BaseFragment {
      * 播放事件
      */
     private void initRlSoundRecordingClickListener() {
-        mViewHolder.pvLayout.getViewHolder().rlSoundRecording.setOnClickListener(view -> {
+        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().rlSoundRecording.setOnClickListener(view -> {
             initAudio();
             // 播放
             onPlay(isPlaying);
@@ -375,7 +375,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void startPlaying() {
         // 变成等待的图标
-        mViewHolder.pvLayout.getViewHolder().ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
+        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
         mMediaPlayer = new MediaPlayer();
 
         try {
@@ -399,7 +399,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void resumePlaying() {
         // 暂停图
-        mViewHolder.pvLayout.getViewHolder().ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
+        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
         mMediaPlayer.start();
     }
 
@@ -408,7 +408,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void pausePlaying() {
         // 设置成播放的图片
-        mViewHolder.pvLayout.getViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         mMediaPlayer.pause();
     }
 
@@ -417,7 +417,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void stopPlaying() {
         // 设置成播放的图片
-        mViewHolder.pvLayout.getViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         // 停止mediaPlayer
         mMediaPlayer.stop();
         mMediaPlayer.reset();
@@ -435,7 +435,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void showRecordEndView() {
         // 录音按钮转变成播放按钮，播放录音
-        mViewHolder.pvLayout.getViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
     }
 
     /**
@@ -443,7 +443,7 @@ public class SoundRecordingFragment extends BaseFragment {
      */
     private void moveRecordFile() {
         // 执行等待动画
-        mViewHolder.pvLayout.getViewHolder().btnConfirm.setProgress(1);
+        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().btnConfirm.setProgress(1);
         // 开始迁移文件
         ThreadUtils.executeByIo(mMoveRecordFileTask);
     }
@@ -468,7 +468,7 @@ public class SoundRecordingFragment extends BaseFragment {
             FileUtils.copy(new File(localMedia.getPath()), newFile, null, (ioProgress, file) -> {
                 int progress = (int) (ioProgress * FULL);
                 ThreadUtils.runOnUiThread(() -> {
-                    mViewHolder.pvLayout.getViewHolder().btnConfirm.addProgress(progress);
+                    mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().btnConfirm.addProgress(progress);
                     localMedia.setPath(newFile.getPath());
                     if (progress >= FULL) {
                         Intent result = new Intent();

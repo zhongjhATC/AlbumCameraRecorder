@@ -3,6 +3,7 @@ package com.zhongjh.multimedia.camera.ui.preview.video
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -259,7 +260,11 @@ class PreviewVideoActivity : AppCompatActivity() {
                 intent.putExtra(IS_COMPRESS, isCompress)
                 intent.setClass(it, PreviewVideoActivity::class.java)
                 previewVideoActivityResult.launch(intent)
-                fragment.activity?.overridePendingTransition(R.anim.activity_open_zjh, 0)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    fragment.activity?.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, R.anim.activity_open_zjh)
+                } else {
+                    fragment.activity?.overridePendingTransition(R.anim.activity_open_zjh, 0)
+                }
             }
         }
     }

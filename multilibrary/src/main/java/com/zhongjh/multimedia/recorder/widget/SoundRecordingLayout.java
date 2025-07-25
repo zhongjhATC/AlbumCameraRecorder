@@ -34,7 +34,7 @@ public class SoundRecordingLayout extends BaseOperationLayout {
      */
     public int mState = STATE_PREVIEW;
 
-    public ViewHolder getViewHolder() {
+    public ViewHolder getSoundRecordingLayoutViewHolder() {
         return (ViewHolder) viewHolder;
     }
 

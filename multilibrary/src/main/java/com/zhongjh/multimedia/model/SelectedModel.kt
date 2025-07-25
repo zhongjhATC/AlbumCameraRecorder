@@ -17,9 +17,7 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
     /**
      * 当前选择的数据操作文件类
      */
-    var selectedData: SelectedData = SelectedData(
-        application
-    )
+    var selectedData: SelectedData = SelectedData(application)
 
     /**
      * 当前选择的数据更改
