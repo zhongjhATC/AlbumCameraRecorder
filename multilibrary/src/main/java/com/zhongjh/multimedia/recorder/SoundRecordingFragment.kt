@@ -1,47 +1,39 @@
-package com.zhongjh.multimedia.recorder;
+package com.zhongjh.multimedia.recorder
 
-import static android.app.Activity.RESULT_OK;
-import static android.content.Context.MODE_PRIVATE;
-import static com.zhongjh.multimedia.model.SelectedData.STATE_SELECTION;
-import static com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.os.Bundle;
-import android.os.SystemClock;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Chronometer;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-
-import com.zhongjh.multimedia.BaseFragment;
-import com.zhongjh.multimedia.MainActivity;
-import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.camera.listener.ClickOrLongListener;
-import com.zhongjh.common.enums.MediaType;
-import com.zhongjh.multimedia.settings.RecordeSpec;
-import com.zhongjh.multimedia.utils.FileMediaUtil;
-import com.zhongjh.multimedia.widget.BaseOperationLayout;
-import com.zhongjh.common.entity.LocalMedia;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.common.utils.StatusBarUtils;
-import com.zhongjh.common.utils.ThreadUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import com.zhongjh.common.utils.FileUtils;
-import com.zhongjh.multimedia.recorder.widget.SoundRecordingLayout;
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.media.MediaPlayer
+import android.media.MediaRecorder
+import android.os.Bundle
+import android.os.SystemClock
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.Chronometer
+import android.widget.RelativeLayout
+import android.widget.Toast
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MediaType
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.listener.OnProgressUpdateListener
+import com.zhongjh.common.utils.FileUtils.copy
+import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
+import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.multimedia.BaseFragment
+import com.zhongjh.multimedia.MainActivity
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.camera.listener.ClickOrLongListener
+import com.zhongjh.multimedia.model.SelectedData
+import com.zhongjh.multimedia.recorder.widget.SoundRecordingLayout
+import com.zhongjh.multimedia.settings.RecordeSpec
+import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
+import com.zhongjh.multimedia.widget.BaseOperationLayout
+import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
+import java.io.File
+import java.io.IOException
 
 /**
  * 录音
@@ -49,107 +41,92 @@ import com.zhongjh.multimedia.recorder.widget.SoundRecordingLayout;
  * @author zhongjh
  * @date 2018/8/22
  */
-public class SoundRecordingFragment extends BaseFragment {
-
-    private static final String TAG = SoundRecordingFragment.class.getSimpleName();
-    /**
-     * 再次确定的2秒时间
-     */
-    private final static int AGAIN_TIME = 2000;
-    /**
-     * 满进度
-     */
-    private final static int FULL = 100;
-    private Context mContext;
+class SoundRecordingFragment : BaseFragment() {
+    private lateinit var mContext: Context
 
     /**
      * 是否正在播放中
      */
-    private boolean isPlaying = false;
-    private ViewHolder mViewHolder;
+    private var isPlaying = false
+    private var mViewHolder: ViewHolder? = null
 
     /**
      * 存储用户单击暂停按钮的时间
      */
-    long timeWhenPaused = 0;
+    var timeWhenPaused: Long = 0
 
-    private MediaPlayer mMediaPlayer = null;
+    private var mMediaPlayer: MediaPlayer? = null
+
     /**
      * 存储的数据
      */
-    LocalMedia localMedia;
+    var localMedia: LocalMedia? = null
 
     /**
      * 声明一个long类型变量：用于存放上一点击“返回键”的时刻
      */
-    private long mExitTime;
+    private var mExitTime: Long = 0
 
     // region 有关录音配置
+    private var mFile: File? = null
 
-    private File mFile = null;
+    private var mRecorder: MediaRecorder? = null
 
-    private MediaRecorder mRecorder = null;
+    private var mStartingTimeMillis: Long = 0
 
-    private long mStartingTimeMillis = 0;
     // endregion
-
     /**
      * 停止录音时的异步线程
      */
-    ThreadUtils.SimpleTask<Boolean> mStopRecordingTask;
+    var mStopRecordingTask: ThreadUtils.SimpleTask<Boolean>? = null
 
-    public static SoundRecordingFragment newInstance() {
-        return new SoundRecordingFragment();
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        this.mContext = context.applicationContext
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        this.mContext = context.getApplicationContext();
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        mViewHolder = new ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false));
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        mViewHolder = ViewHolder(inflater.inflate(R.layout.fragment_soundrecording_zjh, container, false))
 
         // 处理图片、视频等需要进度显示
-        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().btnConfirm.setProgressMode(true);
+        mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.btnConfirm.setProgressMode(true)
 
         // 初始化设置
-        RecordeSpec mRecordSpec = RecordeSpec.INSTANCE;
+        val mRecordSpec = RecordeSpec
         // 提示文本
-        mViewHolder.pvLayout.setTip(getResources().getString(R.string.z_multi_library_long_press_sound_recording));
+        mViewHolder!!.pvLayout.setTip(resources.getString(R.string.z_multi_library_long_press_sound_recording))
         // 设置录制时间
-        mViewHolder.pvLayout.setDuration(mRecordSpec.getDuration() * 1000);
-        mViewHolder.pvLayout.setReadinessDuration(mRecordSpec.getReadinessDuration());
+        mViewHolder!!.pvLayout.setDuration(mRecordSpec.duration * 1000)
+        mViewHolder!!.pvLayout.setReadinessDuration(mRecordSpec.readinessDuration)
         // 设置只能长按
-        mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
+        mViewHolder!!.pvLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK)
 
         // 兼容沉倾状态栏
-        int statusBarHeight = StatusBarUtils.getStatusBarHeight(requireActivity());
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mViewHolder.chronometer.getLayoutParams();
-        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin + statusBarHeight, layoutParams.rightMargin, layoutParams.bottomMargin);
+        val statusBarHeight = getStatusBarHeight(requireActivity())
+        val layoutParams = mViewHolder!!.chronometer.layoutParams as RelativeLayout.LayoutParams
+        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin + statusBarHeight, layoutParams.rightMargin, layoutParams.bottomMargin)
 
-        initListener();
-        return mViewHolder.rootView;
+        initListener()
+        return mViewHolder!!.rootView
     }
 
-    @Override
-    public boolean onBackPressed() {
+    override fun onBackPressed(): Boolean {
         // 判断当前状态是否休闲
-        if (mViewHolder.pvLayout.mState == SoundRecordingLayout.STATE_PREVIEW) {
-            return false;
+        if (mViewHolder!!.pvLayout.state == SoundRecordingLayout.STATE_PREVIEW) {
+            return false
         } else {
             // 与上次点击返回键时刻作差
             if ((System.currentTimeMillis() - mExitTime) > AGAIN_TIME) {
                 // 大于2000ms则认为是误操作，使用Toast进行提示
-                Toast.makeText(mContext, getResources().getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, resources.getString(R.string.z_multi_library_press_confirm_again_to_close), Toast.LENGTH_SHORT).show()
                 // 并记录下本次点击“返回键”的时刻，以便下次进行判断
-                mExitTime = System.currentTimeMillis();
-                return true;
+                mExitTime = System.currentTimeMillis()
+                return true
             } else {
-                return false;
+                return false
             }
         }
     }
@@ -157,160 +134,142 @@ public class SoundRecordingFragment extends BaseFragment {
     /**
      * 事件
      */
-    private void initListener() {
+    private fun initListener() {
         // 录音等事件
-        initPvLayoutPhotoVideoListener();
+        initPvLayoutPhotoVideoListener()
         // 播放事件
-        initRlSoundRecordingClickListener();
+        initRlSoundRecordingClickListener()
 
         // 确认和取消
-        initPvLayoutOperateListener();
+        initPvLayoutOperateListener()
     }
 
     /**
      * 录音等事件
      */
-    private void initPvLayoutPhotoVideoListener() {
-        mViewHolder.pvLayout.setPhotoVideoListener(new ClickOrLongListener() {
-
-            @Override
-            public void actionDown() {
+    private fun initPvLayoutPhotoVideoListener() {
+        mViewHolder!!.pvLayout.setPhotoVideoListener(object : ClickOrLongListener {
+            override fun actionDown() {
                 // 母窗体禁止滑动
-                ((MainActivity) requireActivity()).showHideTableLayout(false);
+                (requireActivity() as MainActivity).showHideTableLayout(false)
             }
 
-            @Override
-            public void onClick() {
-
+            override fun onClick() {
             }
 
-            @Override
-            public void onLongClick() {
-                Log.d(TAG, "onLongClick");
+            override fun onLongClick() {
+                Log.d(TAG, "onLongClick")
                 // 录音开启
-                onRecord(true, false);
+                onRecord(true, false)
             }
 
-            @Override
-            public void onLongClickEnd(long time) {
-                mViewHolder.pvLayout.hideBtnClickOrLong();
-                mViewHolder.pvLayout.startShowLeftRightButtonsAnimator(true);
-                Log.d(TAG, "onLongClickEnd");
+            override fun onLongClickEnd(time: Long) {
+                mViewHolder!!.pvLayout.hideBtnClickOrLong()
+                mViewHolder!!.pvLayout.startShowLeftRightButtonsAnimator(true)
+                Log.d(TAG, "onLongClickEnd")
                 // 录音结束
-                onRecord(false, false);
-                showRecordEndView();
+                onRecord(false, false)
+                showRecordEndView()
             }
 
-            @Override
-            public void onLongClickFinish() {
-
+            override fun onLongClickFinish() {
             }
 
-            @Override
-            public void onLongClickError() {
-
+            override fun onLongClickError() {
             }
 
-            @Override
-            public void onBanClickTips() {
-
+            override fun onBanClickTips() {
             }
 
-            @Override
-            public void onClickStopTips() {
-
+            override fun onClickStopTips() {
             }
-        });
+        })
     }
 
     /**
      * 播放事件
      */
-    private void initRlSoundRecordingClickListener() {
-        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().rlSoundRecording.setOnClickListener(view -> {
-            initAudio();
+    private fun initRlSoundRecordingClickListener() {
+        mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.rlSoundRecording.setOnClickListener { view: View? ->
+            initAudio()
             // 播放
-            onPlay(isPlaying);
-            isPlaying = !isPlaying;
-        });
+            onPlay(isPlaying)
+            isPlaying = !isPlaying
+        }
     }
 
     /**
      * 确认和取消
      */
-    private void initPvLayoutOperateListener() {
-        mViewHolder.pvLayout.setOperateListener(new BaseOperationLayout.OperateListener() {
-            /** @noinspection unused*/
-            @Override
-            public boolean beforeConfirm() {
-                return true;
+    private fun initPvLayoutOperateListener() {
+        mViewHolder!!.pvLayout.setOperateListener(object : BaseOperationLayout.OperateListener {
+            /** @noinspection unused
+             */
+            override fun beforeConfirm(): Boolean {
+                return true
             }
 
-            /** @noinspection unused*/
-            @Override
-            public void cancel() {
+            /** @noinspection unused
+             */
+            override fun cancel() {
                 // 母窗体启动滑动
-                ((MainActivity) requireActivity()).showHideTableLayout(true);
+                (requireActivity() as MainActivity).showHideTableLayout(true)
                 // 重置取消确认按钮
-                mViewHolder.pvLayout.reset();
+                mViewHolder!!.pvLayout.reset()
                 // 重置时间
-                mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
+                mViewHolder!!.chronometer.base = SystemClock.elapsedRealtime()
             }
 
-            /** @noinspection unused*/
-            @Override
-            public void startProgress() {
-                moveRecordFile();
+            /** @noinspection unused
+             */
+            override fun startProgress() {
+                moveRecordFile()
             }
 
-            /** @noinspection unused*/
-            @Override
-            public void stopProgress() {
-
+            /** @noinspection unused
+             */
+            override fun stopProgress() {
             }
 
-            /** @noinspection unused*/
-            @Override
-            public void doneProgress() {
-
+            /** @noinspection unused
+             */
+            override fun doneProgress() {
             }
-        });
+        })
     }
 
     /**
      * 初始化音频的数据
      */
-    private void initAudio() {
+    private fun initAudio() {
         // 获取service存储的数据
-        localMedia = new LocalMedia();
-        SharedPreferences sharePreferences = requireActivity().getSharedPreferences("sp_name_audio", MODE_PRIVATE);
-        final String filePath = sharePreferences.getString("audio_path", "");
-        long elapsed = sharePreferences.getLong("elapsed", 0);
-        localMedia.setPath(filePath);
-        localMedia.setDuration(elapsed);
-        localMedia.setSize(new File(filePath).length());
-        localMedia.setMimeType(MimeType.AAC.getMimeTypeName());
+        localMedia = LocalMedia()
+        val sharePreferences = requireActivity().getSharedPreferences("sp_name_audio", Context.MODE_PRIVATE)
+        val filePath = sharePreferences.getString("audio_path", "")
+        val elapsed = sharePreferences.getLong("elapsed", 0)
+        localMedia!!.path = filePath!!
+        localMedia!!.duration = elapsed
+        localMedia!!.size = File(filePath).length()
+        localMedia!!.mimeType = MimeType.AAC.mimeTypeName
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
+    override fun onPause() {
+        super.onPause()
         if (mMediaPlayer != null) {
-            stopPlaying();
+            stopPlaying()
         }
     }
 
-    @Override
-    public void onDestroy() {
-        mViewHolder.pvLayout.onDestroy();
+    override fun onDestroy() {
+        mViewHolder!!.pvLayout.onDestroy()
         if (mMediaPlayer != null) {
-            stopPlaying();
+            stopPlaying()
         }
-        mMoveRecordFileTask.cancel();
+        mMoveRecordFileTask.cancel()
         if (mStopRecordingTask != null) {
-            mStopRecordingTask.cancel();
+            mStopRecordingTask!!.cancel()
         }
-        super.onDestroy();
+        super.onDestroy()
     }
 
 
@@ -322,30 +281,30 @@ public class SoundRecordingFragment extends BaseFragment {
      * @param isShort 短时结束不算
      * @noinspection SameParameterValue
      */
-    private void onRecord(boolean start, boolean isShort) {
+    private fun onRecord(start: Boolean, isShort: Boolean) {
         if (start) {
             // 创建文件
-            File folder = new File(requireActivity().getExternalFilesDir(null) + "/SoundRecorder");
+            val folder = File(requireActivity().getExternalFilesDir(null).toString() + "/SoundRecorder")
             if (!folder.exists()) {
                 // folder /SoundRecorder doesn't exist, create the folder
-                boolean wasSuccessful = folder.mkdir();
+                val wasSuccessful = folder.mkdir()
                 if (!wasSuccessful) {
-                    System.out.println("was not successful.");
+                    println("was not successful.")
                 }
             }
-            Log.d(TAG, "onRecord");
+            Log.d(TAG, "onRecord")
 
             // start RecordingService
-            startRecording();
+            startRecording()
             // keep screen on while recording
-            requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
-            mViewHolder.chronometer.stop();
-            timeWhenPaused = 0;
+            mViewHolder!!.chronometer.stop()
+            timeWhenPaused = 0
 
-            stopRecording(isShort);
+            stopRecording(isShort)
             // allow the screen to turn off again once recording is finished
-            requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
@@ -355,166 +314,161 @@ public class SoundRecordingFragment extends BaseFragment {
      *
      * @param isPlaying 播放或者停止
      */
-    private void onPlay(boolean isPlaying) {
+    private fun onPlay(isPlaying: Boolean) {
         if (!isPlaying) {
             // currently MediaPlayer is not playing audio
             if (mMediaPlayer == null) {
-                startPlaying(); // 第一次播放
+                startPlaying() // 第一次播放
             } else {
-                resumePlaying(); // 恢复当前暂停的媒体播放器
+                resumePlaying() // 恢复当前暂停的媒体播放器
             }
-
         } else {
             // 暂停播放
-            pausePlaying();
+            pausePlaying()
         }
     }
 
     /**
      * 播放MediaPlayer
      */
-    private void startPlaying() {
+    private fun startPlaying() {
         // 变成等待的图标
-        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
-        mMediaPlayer = new MediaPlayer();
+        mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.ivRecord.setImageResource(R.drawable.ic_pause_white_24dp)
+        mMediaPlayer = MediaPlayer()
 
         try {
             // 文件地址
-            mMediaPlayer.setDataSource(localMedia.getPath());
-            mMediaPlayer.prepare();
+            mMediaPlayer!!.setDataSource(localMedia!!.path)
+            mMediaPlayer!!.prepare()
 
-            mMediaPlayer.setOnPreparedListener(mp -> mMediaPlayer.start());
-        } catch (IOException e) {
-            Log.e(TAG, "prepare() failed");
+            mMediaPlayer!!.setOnPreparedListener { mp: MediaPlayer? -> mMediaPlayer!!.start() }
+        } catch (e: IOException) {
+            Log.e(TAG, "prepare() failed")
         }
 
-        mMediaPlayer.setOnCompletionListener(mp -> stopPlaying());
+        mMediaPlayer!!.setOnCompletionListener { mp: MediaPlayer? -> stopPlaying() }
 
         //keep screen on while playing audio
-        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     /**
      * 恢复播放
      */
-    private void resumePlaying() {
+    private fun resumePlaying() {
         // 暂停图
-        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_pause_white_24dp);
-        mMediaPlayer.start();
+        mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.ivRecord.setImageResource(R.drawable.ic_pause_white_24dp)
+        mMediaPlayer!!.start()
     }
 
     /**
      * 暂停播放
      */
-    private void pausePlaying() {
+    private fun pausePlaying() {
         // 设置成播放的图片
-        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
-        mMediaPlayer.pause();
+        mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp)
+        mMediaPlayer!!.pause()
     }
 
     /**
      * 停止播放
      */
-    private void stopPlaying() {
+    private fun stopPlaying() {
         // 设置成播放的图片
-        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp)
         // 停止mediaPlayer
-        mMediaPlayer.stop();
-        mMediaPlayer.reset();
-        mMediaPlayer.release();
-        mMediaPlayer = null;
+        mMediaPlayer!!.stop()
+        mMediaPlayer!!.reset()
+        mMediaPlayer!!.release()
+        mMediaPlayer = null
 
-        isPlaying = !isPlaying;
+        isPlaying = !isPlaying
 
         // 一旦音频播放完毕，保持屏幕常亮 这个设置关闭
-        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     /**
      * 显示录音后的界面
      */
-    private void showRecordEndView() {
+    private fun showRecordEndView() {
         // 录音按钮转变成播放按钮，播放录音
-        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.ivRecord.setImageResource(R.drawable.ic_play_arrow_white_24dp)
     }
 
     /**
      * 迁移语音文件
      */
-    private void moveRecordFile() {
+    private fun moveRecordFile() {
         // 执行等待动画
-        mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().btnConfirm.setProgress(1);
+        mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.btnConfirm.setProgress(1)
         // 开始迁移文件
-        ThreadUtils.executeByIo(mMoveRecordFileTask);
+        ThreadUtils.executeByIo(mMoveRecordFileTask)
     }
 
     /**
      * 迁移语音的异步线程
      */
-    private final ThreadUtils.SimpleTask<Void> mMoveRecordFileTask = new ThreadUtils.SimpleTask<Void>() {
-        @Override
-        public Void doInBackground() {
+    private val mMoveRecordFileTask: ThreadUtils.SimpleTask<Void?> = object : ThreadUtils.SimpleTask<Void?>() {
+        override fun doInBackground(): Void {
             if (localMedia == null) {
-                initAudio();
+                initAudio()
             }
-            localMedia.getPath();
+            localMedia!!.path
             // 初始化保存好的音频文件
-            initAudio();
+            initAudio()
             // 获取文件名称
-            //noinspection unused
-            String newFileName = localMedia.getPath().substring(localMedia.getPath().lastIndexOf(File.separator));
-            File newFile = FileMediaUtil.INSTANCE.createCacheFile(mContext, MediaType.TYPE_AUDIO);
-            Log.d(TAG, "newFile" + newFile.getAbsolutePath());
-            FileUtils.copy(new File(localMedia.getPath()), newFile, null, (ioProgress, file) -> {
-                int progress = (int) (ioProgress * FULL);
-                ThreadUtils.runOnUiThread(() -> {
-                    mViewHolder.pvLayout.getSoundRecordingLayoutViewHolder().btnConfirm.addProgress(progress);
-                    localMedia.setPath(newFile.getPath());
+            val newFileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf(File.separator))
+            val newFile = createCacheFile(mContext, MediaType.TYPE_AUDIO)
+            Log.d(TAG, "newFile" + newFile.absolutePath)
+            copy(File(localMedia!!.path), newFile, null) { ioProgress: Double, file: File? ->
+                val progress = (ioProgress * FULL).toInt()
+                ThreadUtils.runOnUiThread {
+                    mViewHolder!!.pvLayout.soundRecordingLayoutViewHolder.btnConfirm.addProgress(progress)
+                    localMedia!!.path = newFile.path
                     if (progress >= FULL) {
-                        Intent result = new Intent();
-                        ArrayList<LocalMedia> localFiles = new ArrayList<>();
-                        localFiles.add(localMedia);
-                        result.putParcelableArrayListExtra(STATE_SELECTION, localFiles);
-                        requireActivity().setResult(RESULT_OK, result);
-                        requireActivity().finish();
+                        val result = Intent()
+                        val localFiles = ArrayList<LocalMedia?>()
+                        localFiles.add(localMedia)
+                        result.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, localFiles)
+                        requireActivity().setResult(Activity.RESULT_OK, result)
+                        requireActivity().finish()
                     }
-                });
-            });
-            return null;
+                }
+            }
+            return null
         }
 
-        /** @noinspection unused*/
-        @Override
-        public void onSuccess(Void result) {
-
+        /** @noinspection unused
+         */
+        override fun onSuccess(result: Void?) {
         }
-    };
+    }
 
     // region 有关录音相关方法
-
     /**
      * 开始录音
      */
-    private void startRecording() {
+    private fun startRecording() {
         // 设置音频路径
-        mFile = FileMediaUtil.INSTANCE.createCacheFile(mContext, MediaType.TYPE_AUDIO);
+        mFile = createCacheFile(mContext, MediaType.TYPE_AUDIO)
 
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-        mRecorder.setOutputFile(mFile.getPath());
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mRecorder.setAudioChannels(1);
+        mRecorder = MediaRecorder()
+        mRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
+        mRecorder!!.setOutputFile(mFile!!.path)
+        mRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+        mRecorder!!.setAudioChannels(1)
 
         try {
-            mRecorder.prepare();
-            mRecorder.start();
+            mRecorder!!.prepare()
+            mRecorder!!.start()
             // 开始计时,从0秒开始算起
-            mViewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
-            mViewHolder.chronometer.start();
-            mStartingTimeMillis = System.currentTimeMillis();
-        } catch (IOException e) {
-            Log.e(TAG, "prepare() failed");
+            mViewHolder!!.chronometer.base = SystemClock.elapsedRealtime()
+            mViewHolder!!.chronometer.start()
+            mStartingTimeMillis = System.currentTimeMillis()
+        } catch (e: IOException) {
+            Log.e(TAG, "prepare() failed")
         }
     }
 
@@ -523,9 +477,9 @@ public class SoundRecordingFragment extends BaseFragment {
      *
      * @param isShort 短时结束不算
      */
-    private void stopRecording(boolean isShort) {
-        mViewHolder.pvLayout.setEnabled(false);
-        ThreadUtils.executeByIo(getStopRecordingTask(isShort));
+    private fun stopRecording(isShort: Boolean) {
+        mViewHolder!!.pvLayout.isEnabled = false
+        ThreadUtils.executeByIo(getStopRecordingTask(isShort))
     }
 
     /**
@@ -534,72 +488,76 @@ public class SoundRecordingFragment extends BaseFragment {
      * @param isShort 短时结束不算
      * @noinspection unused
      */
-    private ThreadUtils.SimpleTask<Boolean> getStopRecordingTask(boolean isShort) {
-        mStopRecordingTask = new ThreadUtils.SimpleTask<Boolean>() {
-            @Override
-            public Boolean doInBackground() {
+    private fun getStopRecordingTask(isShort: Boolean): ThreadUtils.SimpleTask<Boolean> {
+        mStopRecordingTask = object : ThreadUtils.SimpleTask<Boolean?>() {
+            override fun doInBackground(): Boolean {
                 if (isShort) {
                     // 如果是短时间的，删除该文件
-                    if (mFile.exists()) {
-                        boolean delete = mFile.delete();
+                    if (mFile!!.exists()) {
+                        val delete = mFile!!.delete()
                         if (!delete) {
-                            System.out.println("file not delete.");
+                            println("file not delete.")
                         }
                     }
                 } else {
-                    long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+                    val mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis)
                     // 存储到缓存的文件地址
-                    requireActivity().getSharedPreferences("sp_name_audio", MODE_PRIVATE)
-                            .edit()
-                            .putString("audio_path", mFile.getPath())
-                            .putLong("elapsed", mElapsedMillis)
-                            .apply();
+                    requireActivity().getSharedPreferences("sp_name_audio", Context.MODE_PRIVATE)
+                        .edit()
+                        .putString("audio_path", mFile!!.path)
+                        .putLong("elapsed", mElapsedMillis)
+                        .apply()
                 }
                 if (mRecorder != null) {
                     try {
-                        mRecorder.stop();
-                    } catch (RuntimeException ignored) {
+                        mRecorder!!.stop()
+                    } catch (ignored: RuntimeException) {
                         // 防止立即录音完成
                     }
-                    mRecorder.release();
-                    mRecorder = null;
+                    mRecorder!!.release()
+                    mRecorder = null
                 }
-                return true;
+                return true
             }
 
-            @Override
-            public void onSuccess(Boolean result) {
-                mViewHolder.pvLayout.setEnabled(true);
+            override fun onSuccess(result: Boolean) {
+                mViewHolder!!.pvLayout.isEnabled = true
             }
 
-            @Override
-            public void onCancel() {
-                super.onCancel();
-                mViewHolder.pvLayout.setEnabled(true);
+            override fun onCancel() {
+                super.onCancel()
+                mViewHolder!!.pvLayout.isEnabled = true
             }
 
-            @Override
-            public void onFail(Throwable t) {
-                super.onFail(t);
-                mViewHolder.pvLayout.setEnabled(true);
+            override fun onFail(t: Throwable) {
+                super.onFail(t)
+                mViewHolder!!.pvLayout.isEnabled = true
             }
-        };
-        return mStopRecordingTask;
+        }
+        return mStopRecordingTask!!
     }
 
 
     // endregion
+    class ViewHolder(val rootView: View) {
+        val chronometer: Chronometer = rootView.findViewById(R.id.chronometer)
+        val pvLayout: SoundRecordingLayout = rootView.findViewById(R.id.pvLayout)
+    }
 
-    public static class ViewHolder {
-        final View rootView;
-        public final Chronometer chronometer;
-        public final SoundRecordingLayout pvLayout;
+    companion object {
+        private val TAG: String = SoundRecordingFragment::class.java.simpleName
 
-        public ViewHolder(View rootView) {
-            this.rootView = rootView;
-            this.chronometer = rootView.findViewById(R.id.chronometer);
-            this.pvLayout = rootView.findViewById(R.id.pvLayout);
+        /**
+         * 再次确定的2秒时间
+         */
+        private const val AGAIN_TIME = 2000
+
+        /**
+         * 满进度
+         */
+        private const val FULL = 100
+        fun newInstance(): SoundRecordingFragment {
+            return SoundRecordingFragment()
         }
-
     }
 }

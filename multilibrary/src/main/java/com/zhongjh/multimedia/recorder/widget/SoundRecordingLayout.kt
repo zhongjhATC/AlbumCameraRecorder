@@ -1,16 +1,12 @@
-package com.zhongjh.multimedia.recorder.widget;
+package com.zhongjh.multimedia.recorder.widget
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.widget.BaseOperationLayout;
+import android.content.Context
+import android.util.AttributeSet
+import android.view.View
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.widget.BaseOperationLayout
 
 /**
  * 录音控件，多了一个控件集成
@@ -18,77 +14,60 @@ import com.zhongjh.multimedia.widget.BaseOperationLayout;
  * @author zhongjh
  * @date 2018/10/16
  */
-public class SoundRecordingLayout extends BaseOperationLayout {
-
-    /**
-     * 纯预览状态 - 没有多图，没有多视频
-     */
-    public static final int STATE_PREVIEW = 0x01;
-    /**
-     * 录音状态 - 录音后，就修改成这个状态
-     */
-    public static final int STATE_RECORDER = 0x02;
-
+class SoundRecordingLayout : BaseOperationLayout {
     /**
      * 当前活动状态，默认休闲
      */
-    public int mState = STATE_PREVIEW;
+    var state: Int = STATE_PREVIEW
 
-    public ViewHolder getSoundRecordingLayoutViewHolder() {
-        return (ViewHolder) viewHolder;
+    val soundRecordingLayoutViewHolder: SoundRecordingLayoutViewHolder
+        get() = viewHolder as SoundRecordingLayoutViewHolder
+
+    constructor(context: Context) : super(context)
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    public override fun newViewHolder(): SoundRecordingLayoutViewHolder {
+        return SoundRecordingLayoutViewHolder(inflate(context, R.layout.layout_soundrecording_operate_zjh, this))
     }
 
-    public SoundRecordingLayout(@NonNull Context context) {
-        super(context);
-    }
-
-    public SoundRecordingLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public SoundRecordingLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    @Override
-    public ViewHolder newViewHolder() {
-        return new ViewHolder(View.inflate(getContext(), R.layout.layout_soundrecording_operate_zjh, this));
-    }
-
-    @Override
-    public void startShowLeftRightButtonsAnimator(boolean showCancel) {
-        super.startShowLeftRightButtonsAnimator(showCancel);
+    override fun startShowLeftRightButtonsAnimator(showCancel: Boolean) {
+        super.startShowLeftRightButtonsAnimator(showCancel)
         // 显示播放的按钮
-        ((ViewHolder) viewHolder).rlSoundRecording.setVisibility(VISIBLE);
-        mState = STATE_RECORDER;
+        soundRecordingLayoutViewHolder.rlSoundRecording.visibility = VISIBLE
+        state = STATE_RECORDER
     }
 
     /**
      * 重置本身
      */
-    @Override
-    public void reset() {
-        super.reset();
+    override fun reset() {
+        super.reset()
         // 隐藏播放的按钮
-        ((ViewHolder) viewHolder).rlSoundRecording.setVisibility(INVISIBLE);
+        soundRecordingLayoutViewHolder.rlSoundRecording.visibility = INVISIBLE
     }
 
-    public static class ViewHolder extends BaseOperationLayout.ViewHolder {
+    class SoundRecordingLayoutViewHolder(rootView: View) : ViewHolder(rootView) {
+        val ivRecord: ImageView = rootView.findViewById(R.id.ivRecord)
+        val rlSoundRecording: RelativeLayout = rootView.findViewById(R.id.rlSoundRecording)
 
-        public final ImageView ivRing;
-        public final ImageView ivRecord;
-        public final RelativeLayout rlSoundRecording;
-
-        public ViewHolder(View rootView) {
-            super(rootView);
-            this.ivRing = rootView.findViewById(R.id.ivRing);
-            this.ivRecord = rootView.findViewById(R.id.ivRecord);
-            this.rlSoundRecording = rootView.findViewById(R.id.rlSoundRecording);
-
+        init {
             // 设置成普通点击事件
-            this.btnConfirm.setProgressMode(false);
+            btnConfirm.setProgressMode(false)
         }
-
     }
 
+    companion object {
+        /**
+         * 纯预览状态 - 没有多图，没有多视频
+         */
+        const val STATE_PREVIEW: Int = 0x01
+
+        /**
+         * 录音状态 - 录音后，就修改成这个状态
+         */
+        const val STATE_RECORDER: Int = 0x02
+    }
 }
