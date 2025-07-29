@@ -1,197 +1,177 @@
-package com.zhongjh.multimedia.widget.progressbutton;
+package com.zhongjh.multimedia.widget.progressbutton
+
+import android.content.Context
+import android.content.res.ColorStateList
+import android.content.res.TypedArray
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
+import android.os.Build
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import android.util.AttributeSet
+import android.util.StateSet
+import androidx.appcompat.widget.AppCompatButton
+import androidx.core.content.res.ResourcesCompat
+import com.zhongjh.multimedia.R
 
 
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.StateListDrawable;
-import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.AttributeSet;
-import android.util.StateSet;
+open class CircularProgressButton : AppCompatButton {
+    private lateinit var mContext: Context
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.content.res.ResourcesCompat;
+    private var background: StrokeGradientDrawable? = null
+    private var mAnimatedDrawable: CircularAnimatedDrawable? = null
+    private var mProgressDrawable: CircularProgressDrawable? = null
 
-import com.zhongjh.multimedia.R;
+    private var mIdleColorState: ColorStateList? = null
+    private var mCompleteColorState: ColorStateList? = null
+    private var mErrorColorState: ColorStateList? = null
 
-public class CircularProgressButton extends AppCompatButton {
+    private var mIdleStateDrawable = StateListDrawable()
+    private var mCompleteStateDrawable = StateListDrawable()
+    private var mErrorStateDrawable = StateListDrawable()
 
-    public static final int IDLE_STATE_PROGRESS = 0;
-    public static final int ERROR_STATE_PROGRESS = -1;
+    private lateinit var mStateManager: StateManager
+    private var mState = State.IDLE
+    var idleText: String? = null
+    var completeText: String? = null
+    var errorText: String? = null
+    private var mProgressText: String? = null
 
-    private Context mContext;
+    private var mColorProgress = 0
+    private var mColorIndicator = 0
+    private var mColorIndicatorBackground = 0
+    private var mIconComplete = 0
+    private var mIconError = 0
+    private var mStrokeWidth = 0
+    private var mPaddingProgress = 0
+    private var mCornerRadius = 0f
+    var isIndeterminateProgressMode: Boolean = false
+    private var mConfigurationChanged = false
 
-    private StrokeGradientDrawable background;
-    private CircularAnimatedDrawable mAnimatedDrawable;
-    private CircularProgressDrawable mProgressDrawable;
-
-    private ColorStateList mIdleColorState;
-    private ColorStateList mCompleteColorState;
-    private ColorStateList mErrorColorState;
-
-    private StateListDrawable mIdleStateDrawable;
-    private StateListDrawable mCompleteStateDrawable;
-    private StateListDrawable mErrorStateDrawable;
-
-    private StateManager mStateManager;
-    private State mState;
-    private String mIdleText;
-    private String mCompleteText;
-    private String mErrorText;
-    private String mProgressText;
-
-    private int mColorProgress;
-    private int mColorIndicator;
-    private int mColorIndicatorBackground;
-    private int mIconComplete;
-    private int mIconError;
-    private int mStrokeWidth;
-    private int mPaddingProgress;
-    private float mCornerRadius;
-    private boolean mIndeterminateProgressMode;
-    private boolean mConfigurationChanged;
-
-    private enum State {
+    private enum class State {
         PROGRESS, IDLE, COMPLETE, ERROR
     }
 
-    private int mMaxProgress;
-    private int mProgress;
+    private var mMaxProgress = 0
+    private var mProgress = 0
 
-    private boolean mMorphingInProgress;
+    private var mMorphingInProgress = false
 
-    public CircularProgressButton(Context context) {
-        super(context);
-        init(context, null);
+    constructor(context: Context) : super(context) {
+        init(context, null)
     }
 
-    public CircularProgressButton(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
     }
 
-    public CircularProgressButton(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {
+        init(context, attrs)
     }
 
-    private void init(Context context, AttributeSet attributeSet) {
-        mContext = context;
-        mStrokeWidth = (int) getContext().getResources().getDimension(R.dimen.z_cpb_stroke_width);
+    private fun init(context: Context, attributeSet: AttributeSet?) {
+        mContext = context
+        mStrokeWidth = getContext().resources.getDimension(R.dimen.z_cpb_stroke_width).toInt()
 
-        initAttributes(context, attributeSet);
+        initAttributes(context, attributeSet)
 
-        mMaxProgress = 100;
-        mState = State.IDLE;
-        mStateManager = new StateManager(this);
+        mMaxProgress = 100
+        mStateManager = StateManager(this)
 
-        setText(mIdleText);
+        text = idleText
 
-        initIdleStateDrawable();
-        setBackgroundCompat(mIdleStateDrawable);
+        initIdleStateDrawable()
+        setBackgroundCompat(mIdleStateDrawable)
     }
 
-    private void initErrorStateDrawable() {
-        int colorPressed = getPressedColor(mErrorColorState);
+    private fun initErrorStateDrawable() {
+        val colorPressed = getPressedColor(mErrorColorState)
 
-        StrokeGradientDrawable drawablePressed = createDrawable(colorPressed);
-        mErrorStateDrawable = new StateListDrawable();
+        val drawablePressed = createDrawable(colorPressed)
 
-        if (drawablePressed != null) {
-            mErrorStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
+        drawablePressed?.let {
+            mErrorStateDrawable.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed.gradientDrawable)
         }
-        mErrorStateDrawable.addState(StateSet.WILD_CARD, background.getGradientDrawable());
+        mErrorStateDrawable.addState(StateSet.WILD_CARD, background?.gradientDrawable)
     }
 
-    private void initCompleteStateDrawable() {
-        int colorPressed = getPressedColor(mCompleteColorState);
+    private fun initCompleteStateDrawable() {
+        val colorPressed = getPressedColor(mCompleteColorState)
 
-        StrokeGradientDrawable drawablePressed = createDrawable(colorPressed);
-        mCompleteStateDrawable = new StateListDrawable();
+        val drawablePressed = createDrawable(colorPressed)
 
-        if (drawablePressed != null) {
-            mCompleteStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
+        drawablePressed?.let {
+            mCompleteStateDrawable.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed.gradientDrawable)
         }
-        mCompleteStateDrawable.addState(StateSet.WILD_CARD, background.getGradientDrawable());
+        mCompleteStateDrawable.addState(StateSet.WILD_CARD, background?.gradientDrawable)
     }
 
-    private void initIdleStateDrawable() {
-        int colorNormal = getNormalColor(mIdleColorState);
-        int colorPressed = getPressedColor(mIdleColorState);
-        int colorFocused = getFocusedColor(mIdleColorState);
-        int colorDisabled = getDisabledColor(mIdleColorState);
+    private fun initIdleStateDrawable() {
+        val colorNormal = getNormalColor(mIdleColorState)
+        val colorPressed = getPressedColor(mIdleColorState)
+        val colorFocused = getFocusedColor(mIdleColorState)
+        val colorDisabled = getDisabledColor(mIdleColorState)
         if (background == null) {
-            background = createDrawable(colorNormal);
+            background = createDrawable(colorNormal)
         }
 
-        StrokeGradientDrawable drawableDisabled = createDrawable(colorDisabled);
-        StrokeGradientDrawable drawableFocused = createDrawable(colorFocused);
-        StrokeGradientDrawable drawablePressed = createDrawable(colorPressed);
-        mIdleStateDrawable = new StateListDrawable();
+        val drawableDisabled = createDrawable(colorDisabled)
+        val drawableFocused = createDrawable(colorFocused)
+        val drawablePressed = createDrawable(colorPressed)
 
-        if (drawablePressed != null) {
-            mIdleStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
-        }
-        if (drawableFocused != null) {
-            mIdleStateDrawable.addState(new int[]{android.R.attr.state_focused}, drawableFocused.getGradientDrawable());
-        }
-        if (drawableDisabled != null) {
-            mIdleStateDrawable.addState(new int[]{-android.R.attr.state_enabled}, drawableDisabled.getGradientDrawable());
-        }
-        mIdleStateDrawable.addState(StateSet.WILD_CARD, background.getGradientDrawable());
+        mIdleStateDrawable.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed?.gradientDrawable)
+        mIdleStateDrawable.addState(intArrayOf(android.R.attr.state_focused), drawableFocused?.gradientDrawable)
+        mIdleStateDrawable.addState(intArrayOf(-android.R.attr.state_enabled), drawableDisabled?.gradientDrawable)
+        mIdleStateDrawable.addState(StateSet.WILD_CARD, background?.gradientDrawable)
     }
 
-    private int getNormalColor(ColorStateList colorStateList) {
-        return colorStateList.getColorForState(new int[]{android.R.attr.state_enabled}, 0);
+    private fun getNormalColor(colorStateList: ColorStateList?): Int {
+        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_enabled), 0)
     }
 
-    private int getPressedColor(ColorStateList colorStateList) {
-        return colorStateList.getColorForState(new int[]{android.R.attr.state_pressed}, 0);
+    private fun getPressedColor(colorStateList: ColorStateList?): Int {
+        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_pressed), 0)
     }
 
-    private int getFocusedColor(ColorStateList colorStateList) {
-        return colorStateList.getColorForState(new int[]{android.R.attr.state_focused}, 0);
+    private fun getFocusedColor(colorStateList: ColorStateList?): Int {
+        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_focused), 0)
     }
 
-    private int getDisabledColor(ColorStateList colorStateList) {
-        return colorStateList.getColorForState(new int[]{-android.R.attr.state_enabled}, 0);
+    private fun getDisabledColor(colorStateList: ColorStateList?): Int {
+        return colorStateList!!.getColorForState(intArrayOf(-android.R.attr.state_enabled), 0)
     }
 
-    private StrokeGradientDrawable createDrawable(int color) {
-        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.cpb_background, mContext.getTheme());
+    private fun createDrawable(color: Int): StrokeGradientDrawable? {
+        val drawable = ResourcesCompat.getDrawable(resources, R.drawable.cpb_background, mContext.theme)
         if (drawable != null) {
-            GradientDrawable gradientDrawable = (GradientDrawable) drawable.mutate();
-            gradientDrawable.setColor(color);
-            gradientDrawable.setCornerRadius(mCornerRadius);
-            StrokeGradientDrawable strokeGradientDrawable = new StrokeGradientDrawable(gradientDrawable);
-            strokeGradientDrawable.setStrokeColor(color);
-            strokeGradientDrawable.setStrokeWidth(mStrokeWidth);
-            return strokeGradientDrawable;
+            val gradientDrawable = drawable.mutate() as GradientDrawable
+            gradientDrawable.setColor(color)
+            gradientDrawable.cornerRadius = mCornerRadius
+            val strokeGradientDrawable = StrokeGradientDrawable(gradientDrawable)
+            strokeGradientDrawable.strokeColor = color
+            strokeGradientDrawable.strokeWidth = mStrokeWidth
+            return strokeGradientDrawable
         }
-        return null;
+        return null
     }
 
-    @Override
-    protected void drawableStateChanged() {
+    override fun drawableStateChanged() {
         if (mState == State.COMPLETE) {
-            initCompleteStateDrawable();
-            setBackgroundCompat(mCompleteStateDrawable);
+            initCompleteStateDrawable()
+            setBackgroundCompat(mCompleteStateDrawable)
         } else if (mState == State.IDLE) {
-            initIdleStateDrawable();
-            setBackgroundCompat(mIdleStateDrawable);
+            initIdleStateDrawable()
+            setBackgroundCompat(mIdleStateDrawable)
         } else if (mState == State.ERROR) {
-            initErrorStateDrawable();
-            setBackgroundCompat(mErrorStateDrawable);
+            initErrorStateDrawable()
+            setBackgroundCompat(mErrorStateDrawable)
         }
 
         if (mState != State.PROGRESS) {
-            super.drawableStateChanged();
+            super.drawableStateChanged()
         }
     }
 
@@ -199,565 +179,510 @@ public class CircularProgressButton extends AppCompatButton {
      * 本来用这些代码取view的attr，但是因为代码动态设置背景颜色不生效，故只能该view直接取Activity的attr
      * int idleStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorIdle,
      * R.color.cpb_idle_state_selector_zjh);
-     * <p>
+     *
+     *
      * int completeStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorComplete,
      * R.color.cpb_complete_state_selector_zjh);
      * mCompleteColorState = ResourcesCompat.getColorStateList(getResources(), completeStateSelector, mContext.getTheme());
-     * <p>
+     *
+     *
      * int errorStateSelector = attr.getResourceId(R.styleable.CircularProgressButton_cpb_selectorError,
      * R.color.cpb_error_state_selector_zjh);
      * mErrorColorState = ResourcesCompat.getColorStateList(getResources(), errorStateSelector, mContext.getTheme());
-     * <p>
+     *
+     *
      * mIconComplete = attr.getResourceId(R.styleable.CircularProgressButton_cpb_iconComplete, 0);
      * mIconError = attr.getResourceId(R.styleable.CircularProgressButton_cpb_iconError, 0);
-     * <p>
+     *
+     *
      * mColorIndicatorBackground = attr.getColor(R.styleable.CircularProgressButton_cpb_colorIndicatorBackground, grey);
-     * <p>
+     *
+     *
      * int white = getColor(R.color.cpb_white);
      * int grey = getColor(R.color.cpb_grey);
      *
      * @param context      上下文
      * @param attributeSet 属性
      */
-    private void initAttributes(Context context, AttributeSet attributeSet) {
-        TypedArray attr = getTypedArray(context, attributeSet, R.styleable.CircularProgressButton);
-        if (attr == null) {
-            return;
-        }
+    private fun initAttributes(context: Context, attributeSet: AttributeSet?) {
+        val attr = getTypedArray(context, attributeSet, R.styleable.CircularProgressButton)
 
         try {
             // 由Activity主题提供的样式：提交按钮的文字的文本
-            TypedArray confirmTextValue = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_text_value});
-            if (confirmTextValue.length() <= 0) {
-                mIdleText = attr.getString(R.styleable.CircularProgressButton_cpb_textIdle);
+            val confirmTextValue = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_text_value))
+            idleText = if (confirmTextValue.length() <= 0) {
+                attr.getString(R.styleable.CircularProgressButton_cpb_textIdle)
             } else {
-                mIdleText = confirmTextValue.getText(0).toString();
+                confirmTextValue.getText(0).toString()
             }
 
             // 由Activity主题提供的样式：提交按钮的文字的颜色
-            TypedArray confirmTextColor = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_text_color});
-            int confirmTextColorDefault = ResourcesCompat.getColor(getResources(), R.color.white, mContext.getTheme());
-            setTextColor(confirmTextColor.getColor(0, confirmTextColorDefault));
+            val confirmTextColor = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_text_color))
+            val confirmTextColorDefault = ResourcesCompat.getColor(resources, R.color.white, mContext.theme)
+            setTextColor(confirmTextColor.getColor(0, confirmTextColorDefault))
 
             // 由Activity主题提供的样式：提交按钮的背景 - 深颜色
-            TypedArray confirmBackgroundColor = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_background_color});
-            ColorStateList confirmBackground = confirmBackgroundColor.getColorStateList(0);
+            val confirmBackgroundColor = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_background_color))
+            val confirmBackground = confirmBackgroundColor.getColorStateList(0)
 
-            ColorStateList confirmBackgroundDefault = ResourcesCompat.getColorStateList(getResources(), R.color.operation_background, mContext.getTheme());
+            val confirmBackgroundDefault = ResourcesCompat.getColorStateList(resources, R.color.operation_background, mContext.theme)
 
             // 由Activity主题提供的样式：提交按钮的背景 - 浅颜色
-            TypedArray confirmBackgroundProgress = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_background_progress_color});
-            int confirmBackgroundProgressDefault = ResourcesCompat.getColor(getResources(), R.color.white, mContext.getTheme());
+            val confirmBackgroundProgress = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_background_progress_color))
+            val confirmBackgroundProgressDefault = ResourcesCompat.getColor(resources, R.color.white, mContext.theme)
 
-            mIdleColorState = confirmBackground != null ? confirmBackground : confirmBackgroundDefault;
-            mCompleteColorState = confirmBackground != null ? confirmBackground : confirmBackgroundDefault;
-            mErrorColorState = confirmBackground != null ? confirmBackground : confirmBackgroundDefault;
+            mIdleColorState = confirmBackground ?: confirmBackgroundDefault
+            mCompleteColorState = confirmBackground ?: confirmBackgroundDefault
+            mErrorColorState = confirmBackground ?: confirmBackgroundDefault
 
             // 由Activity主题提供的样式：提交按钮的完成时图标
-            TypedArray confirmComplete = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_icon_complete});
-            mIconComplete = confirmComplete.getResourceId(0, R.drawable.ic_baseline_done);
+            val confirmComplete = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_icon_complete))
+            mIconComplete = confirmComplete.getResourceId(0, R.drawable.ic_baseline_done)
 
             // 由Activity主题提供的样式：提交按钮的失败时图标
-            TypedArray confirmError = mContext.getTheme().obtainStyledAttributes(new int[]{R.attr.preview_video_button_confirm_icon_error});
-            mIconError = confirmError.getResourceId(0, R.drawable.ic_baseline_close_24);
+            val confirmError = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_icon_error))
+            mIconError = confirmError.getResourceId(0, R.drawable.ic_baseline_close_24)
 
-            mCompleteText = attr.getString(R.styleable.CircularProgressButton_cpb_textComplete);
-            mErrorText = attr.getString(R.styleable.CircularProgressButton_cpb_textError);
-            mProgressText = attr.getString(R.styleable.CircularProgressButton_cpb_textProgress);
+            completeText = attr.getString(R.styleable.CircularProgressButton_cpb_textComplete)
+            errorText = attr.getString(R.styleable.CircularProgressButton_cpb_textError)
+            mProgressText = attr.getString(R.styleable.CircularProgressButton_cpb_textProgress)
 
-            mCornerRadius = attr.getDimension(R.styleable.CircularProgressButton_cpb_cornerRadius, 0);
-            mPaddingProgress = attr.getDimensionPixelSize(R.styleable.CircularProgressButton_cpb_paddingProgress, 0);
+            mCornerRadius = attr.getDimension(R.styleable.CircularProgressButton_cpb_cornerRadius, 0f)
+            mPaddingProgress = attr.getDimensionPixelSize(R.styleable.CircularProgressButton_cpb_paddingProgress, 0)
 
-            int blue = getColor(R.color.cpb_blue);
+            val blue = getColor(R.color.cpb_blue)
 
-            mColorIndicator = attr.getColor(R.styleable.CircularProgressButton_cpb_colorIndicator, blue);
+            mColorIndicator = attr.getColor(R.styleable.CircularProgressButton_cpb_colorIndicator, blue)
             // 进度时的内圆样式
-            mColorProgress = confirmBackgroundProgress.getColor(0, confirmBackgroundProgressDefault);
+            mColorProgress = confirmBackgroundProgress.getColor(0, confirmBackgroundProgressDefault)
             // 进度时的周边线样式
-            mColorIndicatorBackground = getNormalColor(mIdleColorState);
+            mColorIndicatorBackground = getNormalColor(mIdleColorState)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                confirmTextValue.close();
+                confirmTextValue.close()
             } else {
-                confirmTextValue.recycle();
+                confirmTextValue.recycle()
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                confirmBackgroundColor.close();
+                confirmBackgroundColor.close()
             } else {
-                confirmBackgroundColor.recycle();
+                confirmBackgroundColor.recycle()
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                confirmBackgroundProgress.close();
+                confirmBackgroundProgress.close()
             } else {
-                confirmBackgroundProgress.recycle();
+                confirmBackgroundProgress.recycle()
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                confirmComplete.close();
+                confirmComplete.close()
             } else {
-                confirmComplete.recycle();
+                confirmComplete.recycle()
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                confirmError.close();
+                confirmError.close()
             } else {
-                confirmError.recycle();
+                confirmError.recycle()
             }
         } finally {
-            attr.recycle();
+            attr.recycle()
         }
     }
 
-    protected int getColor(int id) {
-        return ResourcesCompat.getColor(getResources(), id, mContext.getTheme());
+    private fun getColor(id: Int): Int {
+        return ResourcesCompat.getColor(resources, id, mContext.theme)
     }
 
-    protected TypedArray getTypedArray(Context context, AttributeSet attributeSet, int[] attr) {
-        return context.obtainStyledAttributes(attributeSet, attr, 0, 0);
+    private fun getTypedArray(context: Context, attributeSet: AttributeSet?, attr: IntArray): TypedArray {
+        return context.obtainStyledAttributes(attributeSet, attr, 0, 0)
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
 
         if (mProgress > 0 && mState == State.PROGRESS && !mMorphingInProgress) {
-            if (mIndeterminateProgressMode) {
-                drawIndeterminateProgress(canvas);
+            if (isIndeterminateProgressMode) {
+                drawIndeterminateProgress(canvas)
             } else {
-                drawProgress(canvas);
+                drawProgress(canvas)
             }
         }
     }
 
-    private void drawIndeterminateProgress(Canvas canvas) {
-        if (mAnimatedDrawable == null) {
-            int offset = (getWidth() - getHeight()) / 2;
-            mAnimatedDrawable = new CircularAnimatedDrawable(mColorIndicator, mStrokeWidth);
-            int left = offset + mPaddingProgress;
-            int right = getWidth() - offset - mPaddingProgress;
-            int bottom = getHeight() - mPaddingProgress;
-            int top = mPaddingProgress;
-            mAnimatedDrawable.setBounds(left, top, right, bottom);
-            mAnimatedDrawable.setCallback(this);
-            mAnimatedDrawable.start();
-        } else {
-            mAnimatedDrawable.draw(canvas);
+    private fun drawIndeterminateProgress(canvas: Canvas) {
+        mAnimatedDrawable?.draw(canvas).let {
+            val offset = (width - height) / 2
+            mAnimatedDrawable = CircularAnimatedDrawable(mColorIndicator, mStrokeWidth.toFloat())
+            val left = offset + mPaddingProgress
+            val right = width - offset - mPaddingProgress
+            val bottom = height - mPaddingProgress
+            val top = mPaddingProgress
+            mAnimatedDrawable.setBounds(left, top, right, bottom)
+            mAnimatedDrawable.callback = this
+            mAnimatedDrawable.start()
         }
     }
 
-    private void drawProgress(Canvas canvas) {
+    private fun drawProgress(canvas: Canvas) {
         if (mProgressDrawable == null) {
-            int offset = (getWidth() - getHeight()) / 2;
-            int size = getHeight() - mPaddingProgress * 2;
-            mProgressDrawable = new CircularProgressDrawable(size, mStrokeWidth, mColorIndicator);
-            int left = offset + mPaddingProgress;
-            mProgressDrawable.setBounds(left, mPaddingProgress, left, mPaddingProgress);
+            val offset = (width - height) / 2
+            val size = height - mPaddingProgress * 2
+            mProgressDrawable = CircularProgressDrawable(size, mStrokeWidth, mColorIndicator)
+            val left = offset + mPaddingProgress
+            mProgressDrawable!!.setBounds(left, mPaddingProgress, left, mPaddingProgress)
         }
-        float sweepAngle = (360f / mMaxProgress) * mProgress;
-        mProgressDrawable.setSweepAngle(sweepAngle);
-        mProgressDrawable.draw(canvas);
+        val sweepAngle = (360f / mMaxProgress) * mProgress
+        mProgressDrawable!!.setSweepAngle(sweepAngle)
+        mProgressDrawable!!.draw(canvas)
     }
 
-    public boolean isIndeterminateProgressMode() {
-        return mIndeterminateProgressMode;
+    override fun verifyDrawable(who: Drawable): Boolean {
+        return who === mAnimatedDrawable || super.verifyDrawable(who)
     }
 
-    public void setIndeterminateProgressMode(boolean indeterminateProgressMode) {
-        this.mIndeterminateProgressMode = indeterminateProgressMode;
-    }
+    private fun createMorphing(): MorphingAnimation {
+        mMorphingInProgress = true
 
-    @Override
-    protected boolean verifyDrawable(@NonNull Drawable who) {
-        return who == mAnimatedDrawable || super.verifyDrawable(who);
-    }
+        val animation = MorphingAnimation(this, background)
+        animation.setFromCornerRadius(mCornerRadius)
+        animation.setToCornerRadius(mCornerRadius)
 
-    private MorphingAnimation createMorphing() {
-        mMorphingInProgress = true;
-
-        MorphingAnimation animation = new MorphingAnimation(this, background);
-        animation.setFromCornerRadius(mCornerRadius);
-        animation.setToCornerRadius(mCornerRadius);
-
-        animation.setFromWidth(getWidth());
-        animation.setToWidth(getWidth());
+        animation.setFromWidth(width)
+        animation.setToWidth(width)
 
         if (mConfigurationChanged) {
-            animation.setDuration(MorphingAnimation.DURATION_INSTANT);
+            animation.setDuration(MorphingAnimation.DURATION_INSTANT)
         } else {
-            animation.setDuration(MorphingAnimation.DURATION_NORMAL);
+            animation.setDuration(MorphingAnimation.DURATION_NORMAL)
         }
 
-        mConfigurationChanged = false;
+        mConfigurationChanged = false
 
-        return animation;
+        return animation
     }
 
-    private MorphingAnimation createProgressMorphing(float fromCorner, float toCorner, int fromWidth, int toWidth) {
-        mMorphingInProgress = true;
+    private fun createProgressMorphing(fromCorner: Float, toCorner: Float, fromWidth: Int, toWidth: Int): MorphingAnimation {
+        mMorphingInProgress = true
 
-        MorphingAnimation animation = new MorphingAnimation(this, background);
-        animation.setFromCornerRadius(fromCorner);
-        animation.setToCornerRadius(toCorner);
+        val animation = MorphingAnimation(this, background)
+        animation.setFromCornerRadius(fromCorner)
+        animation.setToCornerRadius(toCorner)
 
-        animation.setPadding(mPaddingProgress);
+        animation.setPadding(mPaddingProgress.toFloat())
 
-        animation.setFromWidth(fromWidth);
-        animation.setToWidth(toWidth);
+        animation.setFromWidth(fromWidth)
+        animation.setToWidth(toWidth)
 
         if (mConfigurationChanged) {
-            animation.setDuration(MorphingAnimation.DURATION_INSTANT);
+            animation.setDuration(MorphingAnimation.DURATION_INSTANT)
         } else {
-            animation.setDuration(MorphingAnimation.DURATION_NORMAL);
+            animation.setDuration(MorphingAnimation.DURATION_NORMAL)
         }
 
-        mConfigurationChanged = false;
+        mConfigurationChanged = false
 
-        return animation;
+        return animation
     }
 
-    private void morphToProgress() {
-        setWidth(getWidth());
-        setText(mProgressText);
+    private fun morphToProgress() {
+        width = width
+        text = mProgressText
 
-        MorphingAnimation animation = createProgressMorphing(mCornerRadius, getHeight(), getWidth(), getHeight());
+        val animation = createProgressMorphing(mCornerRadius, height.toFloat(), width, height)
 
-        animation.setFromColor(getNormalColor(mIdleColorState));
-        animation.setToColor(mColorProgress);
+        animation.setFromColor(getNormalColor(mIdleColorState))
+        animation.setToColor(mColorProgress)
 
-        animation.setFromStrokeColor(getNormalColor(mIdleColorState));
-        animation.setToStrokeColor(mColorIndicatorBackground);
+        animation.setFromStrokeColor(getNormalColor(mIdleColorState))
+        animation.setToStrokeColor(mColorIndicatorBackground)
 
-        animation.setListener(mProgressStateListener);
+        animation.setListener(mProgressStateListener)
 
-        animation.start();
+        animation.start()
     }
 
-    private final OnAnimationEndListener mProgressStateListener = new OnAnimationEndListener() {
-        @Override
-        public void onAnimationEnd() {
-            mMorphingInProgress = false;
-            mState = State.PROGRESS;
-
-            mStateManager.checkState(CircularProgressButton.this);
-        }
-    };
-
-    private void morphProgressToComplete() {
-        MorphingAnimation animation = createProgressMorphing(getHeight(), mCornerRadius, getHeight(), getWidth());
-
-        animation.setFromColor(mColorProgress);
-        animation.setToColor(getNormalColor(mCompleteColorState));
-
-        animation.setFromStrokeColor(mColorIndicator);
-        animation.setToStrokeColor(getNormalColor(mCompleteColorState));
-
-        animation.setListener(mCompleteStateListener);
-
-        animation.start();
-
+    private val mProgressStateListener = OnAnimationEndListener {
+        mMorphingInProgress = false
+        mState = State.PROGRESS
+        mStateManager.checkState(this@CircularProgressButton)
     }
 
-    private void morphIdleToComplete() {
-        MorphingAnimation animation = createMorphing();
+    private fun morphProgressToComplete() {
+        val animation = createProgressMorphing(height.toFloat(), mCornerRadius, height, width)
 
-        animation.setFromColor(getNormalColor(mIdleColorState));
-        animation.setToColor(getNormalColor(mCompleteColorState));
+        animation.setFromColor(mColorProgress)
+        animation.setToColor(getNormalColor(mCompleteColorState))
 
-        animation.setFromStrokeColor(getNormalColor(mIdleColorState));
-        animation.setToStrokeColor(getNormalColor(mCompleteColorState));
+        animation.setFromStrokeColor(mColorIndicator)
+        animation.setToStrokeColor(getNormalColor(mCompleteColorState))
 
-        animation.setListener(mCompleteStateListener);
+        animation.setListener(mCompleteStateListener)
 
-        animation.start();
-
+        animation.start()
     }
 
-    private final OnAnimationEndListener mCompleteStateListener = new OnAnimationEndListener() {
-        @Override
-        public void onAnimationEnd() {
+    private fun morphIdleToComplete() {
+        val animation = createMorphing()
+
+        animation.setFromColor(getNormalColor(mIdleColorState))
+        animation.setToColor(getNormalColor(mCompleteColorState))
+
+        animation.setFromStrokeColor(getNormalColor(mIdleColorState))
+        animation.setToStrokeColor(getNormalColor(mCompleteColorState))
+
+        animation.setListener(mCompleteStateListener)
+
+        animation.start()
+    }
+
+    private val mCompleteStateListener: OnAnimationEndListener = object : OnAnimationEndListener {
+        override fun onAnimationEnd() {
             if (mIconComplete != 0) {
-                setText(null);
-                setIcon(mIconComplete);
+                text = null
+                setIcon(mIconComplete)
             } else {
-                setText(mCompleteText);
+                setText(this@CircularProgressButton.completeText)
             }
-            mMorphingInProgress = false;
-            mState = State.COMPLETE;
+            mMorphingInProgress = false
+            mState = State.COMPLETE
 
-            mStateManager.checkState(CircularProgressButton.this);
+            mStateManager.checkState(this@CircularProgressButton)
         }
-    };
-
-    private void morphCompleteToIdle() {
-        MorphingAnimation animation = createMorphing();
-
-        animation.setFromColor(getNormalColor(mCompleteColorState));
-        animation.setToColor(getNormalColor(mIdleColorState));
-
-        animation.setFromStrokeColor(getNormalColor(mCompleteColorState));
-        animation.setToStrokeColor(getNormalColor(mIdleColorState));
-
-        animation.setListener(mIdleStateListener);
-
-        animation.start();
-
     }
 
-    private void morphErrorToIdle() {
-        MorphingAnimation animation = createMorphing();
+    private fun morphCompleteToIdle() {
+        val animation = createMorphing()
 
-        animation.setFromColor(getNormalColor(mErrorColorState));
-        animation.setToColor(getNormalColor(mIdleColorState));
+        animation.setFromColor(getNormalColor(mCompleteColorState))
+        animation.setToColor(getNormalColor(mIdleColorState))
 
-        animation.setFromStrokeColor(getNormalColor(mErrorColorState));
-        animation.setToStrokeColor(getNormalColor(mIdleColorState));
+        animation.setFromStrokeColor(getNormalColor(mCompleteColorState))
+        animation.setToStrokeColor(getNormalColor(mIdleColorState))
 
-        animation.setListener(mIdleStateListener);
+        animation.setListener(mIdleStateListener)
 
-        animation.start();
-
+        animation.start()
     }
 
-    private final OnAnimationEndListener mIdleStateListener = new OnAnimationEndListener() {
-        @Override
-        public void onAnimationEnd() {
-            removeIcon();
-            setText(mIdleText);
-            mMorphingInProgress = false;
-            mState = State.IDLE;
+    private fun morphErrorToIdle() {
+        val animation = createMorphing()
 
-            mStateManager.checkState(CircularProgressButton.this);
+        animation.setFromColor(getNormalColor(mErrorColorState))
+        animation.setToColor(getNormalColor(mIdleColorState))
+
+        animation.setFromStrokeColor(getNormalColor(mErrorColorState))
+        animation.setToStrokeColor(getNormalColor(mIdleColorState))
+
+        animation.setListener(mIdleStateListener)
+
+        animation.start()
+    }
+
+    private val mIdleStateListener: OnAnimationEndListener = object : OnAnimationEndListener {
+        override fun onAnimationEnd() {
+            removeIcon()
+            setText(this@CircularProgressButton.idleText)
+            mMorphingInProgress = false
+            mState = State.IDLE
+
+            mStateManager.checkState(this@CircularProgressButton)
         }
-    };
-
-    private void morphIdleToError() {
-        MorphingAnimation animation = createMorphing();
-
-        animation.setFromColor(getNormalColor(mIdleColorState));
-        animation.setToColor(getNormalColor(mErrorColorState));
-
-        animation.setFromStrokeColor(getNormalColor(mIdleColorState));
-        animation.setToStrokeColor(getNormalColor(mErrorColorState));
-
-        animation.setListener(mErrorStateListener);
-
-        animation.start();
-
     }
 
-    private void morphProgressToError() {
-        MorphingAnimation animation = createProgressMorphing(getHeight(), mCornerRadius, getHeight(), getWidth());
+    private fun morphIdleToError() {
+        val animation = createMorphing()
 
-        animation.setFromColor(mColorProgress);
-        animation.setToColor(getNormalColor(mErrorColorState));
+        animation.setFromColor(getNormalColor(mIdleColorState))
+        animation.setToColor(getNormalColor(mErrorColorState))
 
-        animation.setFromStrokeColor(mColorIndicator);
-        animation.setToStrokeColor(getNormalColor(mErrorColorState));
-        animation.setListener(mErrorStateListener);
+        animation.setFromStrokeColor(getNormalColor(mIdleColorState))
+        animation.setToStrokeColor(getNormalColor(mErrorColorState))
 
-        animation.start();
+        animation.setListener(mErrorStateListener)
+
+        animation.start()
     }
 
-    private final OnAnimationEndListener mErrorStateListener = new OnAnimationEndListener() {
-        @Override
-        public void onAnimationEnd() {
+    private fun morphProgressToError() {
+        val animation = createProgressMorphing(height.toFloat(), mCornerRadius, height, width)
+
+        animation.setFromColor(mColorProgress)
+        animation.setToColor(getNormalColor(mErrorColorState))
+
+        animation.setFromStrokeColor(mColorIndicator)
+        animation.setToStrokeColor(getNormalColor(mErrorColorState))
+        animation.setListener(mErrorStateListener)
+
+        animation.start()
+    }
+
+    private val mErrorStateListener: OnAnimationEndListener = object : OnAnimationEndListener {
+        override fun onAnimationEnd() {
             if (mIconError != 0) {
-                setText(null);
-                setIcon(mIconError);
+                text = null
+                setIcon(mIconError)
             } else {
-                setText(mErrorText);
+                setText(this@CircularProgressButton.errorText)
             }
-            mMorphingInProgress = false;
-            mState = State.ERROR;
+            mMorphingInProgress = false
+            mState = State.ERROR
 
-            mStateManager.checkState(CircularProgressButton.this);
+            mStateManager.checkState(this@CircularProgressButton)
         }
-    };
-
-    private void morphProgressToIdle() {
-        MorphingAnimation animation = createProgressMorphing(getHeight(), mCornerRadius, getHeight(), getWidth());
-
-        animation.setFromColor(mColorProgress);
-        animation.setToColor(getNormalColor(mIdleColorState));
-
-        animation.setFromStrokeColor(mColorIndicator);
-        animation.setToStrokeColor(getNormalColor(mIdleColorState));
-        animation.setListener(() -> {
-            removeIcon();
-            setText(mIdleText);
-            mMorphingInProgress = false;
-            mState = State.IDLE;
-
-            mStateManager.checkState(CircularProgressButton.this);
-        });
-
-        animation.start();
     }
 
-    private void setIcon(int icon) {
-        Drawable drawable = ResourcesCompat.getDrawable(getResources(), icon, mContext.getTheme());
+    private fun morphProgressToIdle() {
+        val animation = createProgressMorphing(height.toFloat(), mCornerRadius, height, width)
+
+        animation.setFromColor(mColorProgress)
+        animation.setToColor(getNormalColor(mIdleColorState))
+
+        animation.setFromStrokeColor(mColorIndicator)
+        animation.setToStrokeColor(getNormalColor(mIdleColorState))
+        animation.setListener {
+            removeIcon()
+            text = idleText
+            mMorphingInProgress = false
+            mState = State.IDLE
+            mStateManager.checkState(this@CircularProgressButton)
+        }
+
+        animation.start()
+    }
+
+    private fun setIcon(icon: Int) {
+        val drawable = ResourcesCompat.getDrawable(resources, icon, mContext.theme)
         if (drawable != null) {
-            int padding = (getWidth() / 2) - (drawable.getIntrinsicWidth() / 2);
-            setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
-            setPadding(padding, 0, 0, 0);
+            val padding = (width / 2) - (drawable.intrinsicWidth / 2)
+            setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
+            setPadding(padding, 0, 0, 0)
         }
     }
 
-    protected void removeIcon() {
-        setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-        setPadding(0, 0, 0, 0);
+    protected fun removeIcon() {
+        setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        setPadding(0, 0, 0, 0)
     }
 
     /**
      * Set the View's background. Masks the API changes made in Jelly Bean.
      */
-    public void setBackgroundCompat(Drawable drawable) {
-        setBackground(drawable);
+    fun setBackgroundCompat(drawable: Drawable?) {
+        setBackground(drawable)
     }
 
-    public void setProgress(int progress) {
-        mProgress = progress;
+    var progress: Int
+        get() = mProgress
+        set(progress) {
+            mProgress = progress
 
-        if (mMorphingInProgress || getWidth() == 0) {
-            return;
+            if (mMorphingInProgress || width == 0) {
+                return
+            }
+
+            mStateManager.saveProgress(this)
+
+            if (mProgress >= mMaxProgress) {
+                if (mState == State.PROGRESS) {
+                    morphProgressToComplete()
+                } else if (mState == State.IDLE) {
+                    morphIdleToComplete()
+                }
+            } else if (mProgress > IDLE_STATE_PROGRESS) {
+                if (mState == State.IDLE) {
+                    morphToProgress()
+                } else if (mState == State.PROGRESS) {
+                    invalidate()
+                }
+            } else if (mProgress == ERROR_STATE_PROGRESS) {
+                if (mState == State.PROGRESS) {
+                    morphProgressToError()
+                } else if (mState == State.IDLE) {
+                    morphIdleToError()
+                }
+            } else if (mProgress == IDLE_STATE_PROGRESS) {
+                if (mState == State.COMPLETE) {
+                    morphCompleteToIdle()
+                } else if (mState == State.PROGRESS) {
+                    morphProgressToIdle()
+                } else if (mState == State.ERROR) {
+                    morphErrorToIdle()
+                }
+            }
         }
 
-        mStateManager.saveProgress(this);
-
-        if (mProgress >= mMaxProgress) {
-            if (mState == State.PROGRESS) {
-                morphProgressToComplete();
-            } else if (mState == State.IDLE) {
-                morphIdleToComplete();
-            }
-        } else if (mProgress > IDLE_STATE_PROGRESS) {
-            if (mState == State.IDLE) {
-                morphToProgress();
-            } else if (mState == State.PROGRESS) {
-                invalidate();
-            }
-        } else if (mProgress == ERROR_STATE_PROGRESS) {
-            if (mState == State.PROGRESS) {
-                morphProgressToError();
-            } else if (mState == State.IDLE) {
-                morphIdleToError();
-            }
-        } else if (mProgress == IDLE_STATE_PROGRESS) {
-            if (mState == State.COMPLETE) {
-                morphCompleteToIdle();
-            } else if (mState == State.PROGRESS) {
-                morphProgressToIdle();
-            } else if (mState == State.ERROR) {
-                morphErrorToIdle();
-            }
-        }
+    override fun setBackgroundColor(color: Int) {
+        background!!.gradientDrawable.setColor(color)
     }
 
-    public int getProgress() {
-        return mProgress;
+    fun setStrokeColor(color: Int) {
+        background!!.strokeColor = color
     }
 
-    @Override
-    public void setBackgroundColor(int color) {
-        background.getGradientDrawable().setColor(color);
-    }
-
-    public void setStrokeColor(int color) {
-        background.setStrokeColor(color);
-    }
-
-    public String getIdleText() {
-        return mIdleText;
-    }
-
-    public String getCompleteText() {
-        return mCompleteText;
-    }
-
-    public String getErrorText() {
-        return mErrorText;
-    }
-
-    public void setIdleText(String text) {
-        mIdleText = text;
-    }
-
-    public void setCompleteText(String text) {
-        mCompleteText = text;
-    }
-
-    public void setErrorText(String text) {
-        mErrorText = text;
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
         if (changed) {
-            setProgress(mProgress);
+            progress = mProgress
         }
     }
 
-    @Override
-    public Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState savedState = new SavedState(superState);
-        savedState.mProgress = mProgress;
-        savedState.mIndeterminateProgressMode = mIndeterminateProgressMode;
-        savedState.mConfigurationChanged = true;
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()
+        val savedState = SavedState(superState)
+        savedState.mProgress = mProgress
+        savedState.mIndeterminateProgressMode = isIndeterminateProgressMode
+        savedState.mConfigurationChanged = true
 
-        return savedState;
+        return savedState
     }
 
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof SavedState) {
-            SavedState savedState = (SavedState) state;
-            mProgress = savedState.mProgress;
-            mIndeterminateProgressMode = savedState.mIndeterminateProgressMode;
-            mConfigurationChanged = savedState.mConfigurationChanged;
-            super.onRestoreInstanceState(savedState.getSuperState());
-            setProgress(mProgress);
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state is SavedState) {
+            val savedState = state
+            mProgress = savedState.mProgress
+            isIndeterminateProgressMode = savedState.mIndeterminateProgressMode
+            mConfigurationChanged = savedState.mConfigurationChanged
+            super.onRestoreInstanceState(savedState.superState)
+            progress = mProgress
         } else {
-            super.onRestoreInstanceState(state);
+            super.onRestoreInstanceState(state)
         }
     }
 
 
-    static class SavedState extends BaseSavedState {
+    internal class SavedState : BaseSavedState {
+        var mIndeterminateProgressMode: Boolean = false
+        var mConfigurationChanged: Boolean = false
+        var mProgress: Int = 0
 
-        private boolean mIndeterminateProgressMode;
-        private boolean mConfigurationChanged;
-        private int mProgress;
+        constructor(parcel: Parcelable?) : super(parcel)
 
-        public SavedState(Parcelable parcel) {
-            super(parcel);
+        private constructor(parcel: Parcel) : super(parcel) {
+            mProgress = parcel.readInt()
+            mIndeterminateProgressMode = parcel.readInt() == 1
+            mConfigurationChanged = parcel.readInt() == 1
         }
 
-        private SavedState(Parcel in) {
-            super(in);
-            mProgress = in.readInt();
-            mIndeterminateProgressMode = in.readInt() == 1;
-            mConfigurationChanged = in.readInt() == 1;
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeInt(mProgress)
+            out.writeInt(if (mIndeterminateProgressMode) 1 else 0)
+            out.writeInt(if (mConfigurationChanged) 1 else 0)
         }
 
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeInt(mProgress);
-            out.writeInt(mIndeterminateProgressMode ? 1 : 0);
-            out.writeInt(mConfigurationChanged ? 1 : 0);
-        }
+        companion object CREATOR : Creator<SavedState> {
 
-        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
-
-            @Override
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
             }
 
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
             }
-        };
+        }
+    }
+
+    companion object {
+        const val IDLE_STATE_PROGRESS: Int = 0
+        const val ERROR_STATE_PROGRESS: Int = -1
     }
 }

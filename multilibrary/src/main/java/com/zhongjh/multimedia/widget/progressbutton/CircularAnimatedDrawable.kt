@@ -1,203 +1,174 @@
-package com.zhongjh.multimedia.widget.progressbutton;
+package com.zhongjh.multimedia.widget.progressbutton
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
-import android.util.Property;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
+import android.animation.Animator
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.drawable.Animatable
+import android.graphics.drawable.Drawable
+import android.util.Property
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
+import android.view.animation.LinearInterpolator
 
-import androidx.annotation.NonNull;
+internal class CircularAnimatedDrawable(color: Int, private val mBorderWidth: Float) : Drawable(), Animatable {
+    private val fBounds = RectF()
 
-class CircularAnimatedDrawable extends Drawable implements Animatable {
+    private val mAngleProperty: Property<CircularAnimatedDrawable, Float> = object : Property<CircularAnimatedDrawable, Float>(
+        Float::class.java, "angle"
+    ) {
+        override fun get(circularAnimatedDrawable: CircularAnimatedDrawable): Float {
+            return circularAnimatedDrawable.currentGlobalAngle
+        }
 
-    private static final Interpolator ANGLE_INTERPOLATOR = new LinearInterpolator();
-    private static final Interpolator SWEEP_INTERPOLATOR = new DecelerateInterpolator();
-    private static final int ANGLE_ANIMATOR_DURATION = 2000;
-    private static final int SWEEP_ANIMATOR_DURATION = 600;
-    public static final int MIN_SWEEP_ANGLE = 30;
-    private final RectF fBounds = new RectF();
-
-    private ObjectAnimator mObjectAnimatorSweep;
-    private ObjectAnimator mObjectAnimatorAngle;
-    private boolean mModeAppearing;
-    private final Paint mPaint;
-    private float mCurrentGlobalAngleOffset;
-    private float mCurrentGlobalAngle;
-    private float mCurrentSweepAngle;
-    private final float mBorderWidth;
-    private boolean mRunning;
-
-    /** @noinspection unused*/
-    public CircularAnimatedDrawable(int color, float borderWidth) {
-        mBorderWidth = borderWidth;
-
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(borderWidth);
-        mPaint.setColor(color);
-
-        setupAnimations();
+        override fun set(circularAnimatedDrawable: CircularAnimatedDrawable, value: Float) {
+            circularAnimatedDrawable.currentGlobalAngle = value
+        }
     }
 
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        float startAngle = mCurrentGlobalAngle - mCurrentGlobalAngleOffset;
-        float sweepAngle = mCurrentSweepAngle;
+    private val mSweepProperty: Property<CircularAnimatedDrawable, Float> = object : Property<CircularAnimatedDrawable, Float>(Float::class.java, "arc") {
+        override fun get(circularAnimatedDrawable: CircularAnimatedDrawable): Float {
+            return circularAnimatedDrawable.currentSweepAngle
+        }
+
+        override fun set(circularAnimatedDrawable: CircularAnimatedDrawable, value: Float) {
+            circularAnimatedDrawable.currentSweepAngle = value
+        }
+    }
+    private var mObjectAnimatorSweep = ObjectAnimator.ofFloat(this, mSweepProperty, 360f - MIN_SWEEP_ANGLE * 2)
+    private var mObjectAnimatorAngle = ObjectAnimator.ofFloat(this, mAngleProperty, 360f)
+    private var mModeAppearing = false
+    private val mPaint = Paint()
+    private var mCurrentGlobalAngleOffset = 0f
+    private var mCurrentGlobalAngle = 0f
+    private var mCurrentSweepAngle = 0f
+    private var mRunning = false
+
+    override fun draw(canvas: Canvas) {
+        var startAngle = mCurrentGlobalAngle - mCurrentGlobalAngleOffset
+        var sweepAngle = mCurrentSweepAngle
         if (!mModeAppearing) {
-            startAngle = startAngle + sweepAngle;
-            sweepAngle = 360 - sweepAngle - MIN_SWEEP_ANGLE;
+            startAngle += sweepAngle
+            sweepAngle = 360 - sweepAngle - MIN_SWEEP_ANGLE
         } else {
-            sweepAngle += MIN_SWEEP_ANGLE;
+            sweepAngle += MIN_SWEEP_ANGLE.toFloat()
         }
-        canvas.drawArc(fBounds, startAngle, sweepAngle, false, mPaint);
+        canvas.drawArc(fBounds, startAngle, sweepAngle, false, mPaint)
     }
 
-    @Override
-    public void setAlpha(int alpha) {
-        mPaint.setAlpha(alpha);
+    override fun setAlpha(alpha: Int) {
+        mPaint.alpha = alpha
     }
 
-    @Override
-    public void setColorFilter(ColorFilter cf) {
-        mPaint.setColorFilter(cf);
+    override fun setColorFilter(cf: ColorFilter?) {
+        mPaint.setColorFilter(cf)
     }
 
-    @Override
-    public int getOpacity() {
-        return PixelFormat.TRANSPARENT;
+    @Deprecated("Deprecated in Java", ReplaceWith("PixelFormat.TRANSPARENT", "android.graphics.PixelFormat"))
+    override fun getOpacity(): Int {
+        return PixelFormat.TRANSPARENT
     }
 
-    private void toggleAppearingMode() {
-        mModeAppearing = !mModeAppearing;
+    private fun toggleAppearingMode() {
+        mModeAppearing = !mModeAppearing
         if (mModeAppearing) {
-            mCurrentGlobalAngleOffset = (mCurrentGlobalAngleOffset + MIN_SWEEP_ANGLE * 2) % 360;
+            mCurrentGlobalAngleOffset = (mCurrentGlobalAngleOffset + MIN_SWEEP_ANGLE * 2) % 360
         }
     }
 
-    @Override
-    protected void onBoundsChange(@NonNull Rect bounds) {
-        super.onBoundsChange(bounds);
-        fBounds.left = bounds.left + mBorderWidth / 2f + .5f;
-        fBounds.right = bounds.right - mBorderWidth / 2f - .5f;
-        fBounds.top = bounds.top + mBorderWidth / 2f + .5f;
-        fBounds.bottom = bounds.bottom - mBorderWidth / 2f - .5f;
+    override fun onBoundsChange(bounds: Rect) {
+        super.onBoundsChange(bounds)
+        fBounds.left = bounds.left + mBorderWidth / 2f + .5f
+        fBounds.right = bounds.right - mBorderWidth / 2f - .5f
+        fBounds.top = bounds.top + mBorderWidth / 2f + .5f
+        fBounds.bottom = bounds.bottom - mBorderWidth / 2f - .5f
     }
 
-    private final Property<CircularAnimatedDrawable, Float> mAngleProperty  =
-            new Property<CircularAnimatedDrawable, Float>(Float.class, "angle") {
-        @Override
-        public Float get(CircularAnimatedDrawable object) {
-            return object.getCurrentGlobalAngle();
-        }
+    /** @noinspection unused
+     */
+    init {
+        mPaint.isAntiAlias = true
+        mPaint.style = Paint.Style.STROKE
+        mPaint.strokeWidth = mBorderWidth
+        mPaint.color = color
 
-        @Override
-        public void set(CircularAnimatedDrawable object, Float value) {
-            object.setCurrentGlobalAngle(value);
-        }
-    };
+        setupAnimations()
+    }
 
-    private final Property<CircularAnimatedDrawable, Float> mSweepProperty
-            = new Property<CircularAnimatedDrawable, Float>(Float.class, "arc") {
-        @Override
-        public Float get(CircularAnimatedDrawable object) {
-            return object.getCurrentSweepAngle();
-        }
+    private fun setupAnimations() {
+        mObjectAnimatorAngle.interpolator = ANGLE_INTERPOLATOR
+        mObjectAnimatorAngle.setDuration(ANGLE_ANIMATOR_DURATION.toLong())
+        mObjectAnimatorAngle.repeatMode = ValueAnimator.RESTART
+        mObjectAnimatorAngle.repeatCount = ValueAnimator.INFINITE
 
-        @Override
-        public void set(CircularAnimatedDrawable object, Float value) {
-            object.setCurrentSweepAngle(value);
-        }
-    };
-
-    private void setupAnimations() {
-        mObjectAnimatorAngle = ObjectAnimator.ofFloat(this, mAngleProperty, 360f);
-        mObjectAnimatorAngle.setInterpolator(ANGLE_INTERPOLATOR);
-        mObjectAnimatorAngle.setDuration(ANGLE_ANIMATOR_DURATION);
-        mObjectAnimatorAngle.setRepeatMode(ValueAnimator.RESTART);
-        mObjectAnimatorAngle.setRepeatCount(ValueAnimator.INFINITE);
-
-        mObjectAnimatorSweep = ObjectAnimator.ofFloat(this, mSweepProperty, 360f - MIN_SWEEP_ANGLE * 2);
-        mObjectAnimatorSweep.setInterpolator(SWEEP_INTERPOLATOR);
-        mObjectAnimatorSweep.setDuration(SWEEP_ANIMATOR_DURATION);
-        mObjectAnimatorSweep.setRepeatMode(ValueAnimator.RESTART);
-        mObjectAnimatorSweep.setRepeatCount(ValueAnimator.INFINITE);
-        mObjectAnimatorSweep.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(@NonNull Animator animation) {
-
+        mObjectAnimatorSweep.interpolator = SWEEP_INTERPOLATOR
+        mObjectAnimatorSweep.setDuration(SWEEP_ANIMATOR_DURATION.toLong())
+        mObjectAnimatorSweep.repeatMode = ValueAnimator.RESTART
+        mObjectAnimatorSweep.repeatCount = ValueAnimator.INFINITE
+        mObjectAnimatorSweep.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
             }
 
-            @Override
-            public void onAnimationEnd(@NonNull Animator animation) {
-
+            override fun onAnimationEnd(animation: Animator) {
             }
 
-            @Override
-            public void onAnimationCancel(@NonNull Animator animation) {
-
+            override fun onAnimationCancel(animation: Animator) {
             }
 
-            @Override
-            public void onAnimationRepeat(@NonNull Animator animation) {
-                toggleAppearingMode();
+            override fun onAnimationRepeat(animation: Animator) {
+                toggleAppearingMode()
             }
-        });
+        })
     }
 
-    @Override
-    public void start() {
-        if (isRunning()) {
-            return;
+    override fun start() {
+        if (isRunning) {
+            return
         }
-        mRunning = true;
-        mObjectAnimatorAngle.start();
-        mObjectAnimatorSweep.start();
-        invalidateSelf();
+        mRunning = true
+        mObjectAnimatorAngle.start()
+        mObjectAnimatorSweep.start()
+        invalidateSelf()
     }
 
-    @Override
-    public void stop() {
-        if (!isRunning()) {
-            return;
+    override fun stop() {
+        if (!isRunning) {
+            return
         }
-        mRunning = false;
-        mObjectAnimatorAngle.cancel();
-        mObjectAnimatorSweep.cancel();
-        invalidateSelf();
+        mRunning = false
+        mObjectAnimatorAngle.cancel()
+        mObjectAnimatorSweep.cancel()
+        invalidateSelf()
     }
 
-    @Override
-    public boolean isRunning() {
-        return mRunning;
+    override fun isRunning(): Boolean {
+        return mRunning
     }
 
-    public void setCurrentGlobalAngle(float currentGlobalAngle) {
-        mCurrentGlobalAngle = currentGlobalAngle;
-        invalidateSelf();
-    }
+    var currentGlobalAngle: Float
+        get() = mCurrentGlobalAngle
+        set(currentGlobalAngle) {
+            mCurrentGlobalAngle = currentGlobalAngle
+            invalidateSelf()
+        }
 
-    public float getCurrentGlobalAngle() {
-        return mCurrentGlobalAngle;
-    }
+    var currentSweepAngle: Float
+        get() = mCurrentSweepAngle
+        set(currentSweepAngle) {
+            mCurrentSweepAngle = currentSweepAngle
+            invalidateSelf()
+        }
 
-    public void setCurrentSweepAngle(float currentSweepAngle) {
-        mCurrentSweepAngle = currentSweepAngle;
-        invalidateSelf();
+    companion object {
+        private val ANGLE_INTERPOLATOR: Interpolator = LinearInterpolator()
+        private val SWEEP_INTERPOLATOR: Interpolator = DecelerateInterpolator()
+        private const val ANGLE_ANIMATOR_DURATION = 2000
+        private const val SWEEP_ANIMATOR_DURATION = 600
+        const val MIN_SWEEP_ANGLE: Int = 30
     }
-
-    public float getCurrentSweepAngle() {
-        return mCurrentSweepAngle;
-    }
-
 }
