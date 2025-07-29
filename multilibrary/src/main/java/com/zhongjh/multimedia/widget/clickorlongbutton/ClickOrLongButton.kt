@@ -16,6 +16,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.listener.ClickOrLongListener
+import java.lang.ref.WeakReference
 
 /**
  * 点击或者长按的按钮
@@ -130,33 +131,7 @@ class ClickOrLongButton : View {
      */
     var isStartTicking: Boolean = true
 
-    private val updateUITask = TouchTimeHandler.Task { // 判断如果是 点击即长按 模式的情况下，判断进度是否>=100
-        if (mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
-            if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
-                step++
-                refreshView()
-                return@Task
-            }
-        }
-        if (mCurrentLocation.isNotEmpty()) {
-            // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
-            mMinDurationAnimationCurrent = 0
-        }
-        val timeLapse = System.currentTimeMillis() - btnPressTime
-        mRecordedTime = (timeLapse - mMinDurationAnimationCurrent)
-        mRecordedTime += mCurrentSumTime
-        val percent = mRecordedTime / timeLimitInMils
-        if (!mActionDown && timeLapse >= 1) {
-            mClickOrLongListener?.let {
-                val actionDown = mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH
-                if (actionDown) {
-                    it.actionDown()
-                    mActionDown = true
-                }
-            }
-        }
-        startAnimation(timeLapse, percent)
-    }
+    private val updateUITask = UpdateUITask(WeakReference(this))
     private var touchTimeHandler = TouchTimeHandler(Looper.getMainLooper(), updateUITask)
 
     /**
@@ -711,5 +686,39 @@ class ClickOrLongButton : View {
         private const val STEP_ACTION_UP = 2
 
         private const val PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1f
+    }
+
+    private class UpdateUITask(private val weakButton: WeakReference<ClickOrLongButton>) : TouchTimeHandler.Task {
+        override fun run() {
+            val button = weakButton.get()
+            button?.let {
+                // 判断如果是 点击即长按 模式的情况下，判断进度是否>=100
+                if (it.mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
+                    if (it.mRecordedTime / it.timeLimitInMils >= FULL_PROGRESS) {
+                        it.step++
+                        it.refreshView()
+                        return
+                    }
+                }
+                if (it.mCurrentLocation.isNotEmpty()) {
+                    // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
+                    it.mMinDurationAnimationCurrent = 0
+                }
+                val timeLapse = System.currentTimeMillis() - it.btnPressTime
+                it.mRecordedTime = (timeLapse - it.mMinDurationAnimationCurrent)
+                it.mRecordedTime += it.mCurrentSumTime
+                val percent = it.mRecordedTime / it.timeLimitInMils
+                if (!it.mActionDown && timeLapse >= 1) {
+                    it.mClickOrLongListener?.let { listener ->
+                        val actionDown = it.mButtonState == BUTTON_STATE_ONLY_CLICK || it.mButtonState == BUTTON_STATE_BOTH
+                        if (actionDown) {
+                            listener.actionDown()
+                            it.mActionDown = true
+                        }
+                    }
+                }
+                it.startAnimation(timeLapse, percent)
+            }
+        }
     }
 }
