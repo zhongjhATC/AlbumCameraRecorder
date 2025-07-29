@@ -8,10 +8,9 @@ import android.os.Message
  * 用于处理长按按钮的事件
  * @author zhongjh
  */
-class TouchTimeHandler(looper: Looper?, private val task: Task?) : Handler(looper!!) {
+class TouchTimeHandler(looper: Looper, private val task: Task) : Handler(looper) {
     private var delayTimeInMils: Long = 0
-    var isFreeNow: Boolean = true
-        private set
+    private var isFreeNow: Boolean = true
     private var shouldContinue = false
 
     fun clearMsg() {
@@ -38,13 +37,13 @@ class TouchTimeHandler(looper: Looper?, private val task: Task?) : Handler(loope
     }
 
     override fun handleMessage(paramMessage: Message) {
-        task?.run()
+        task.run()
         if (shouldContinue) {
             sendEmptyMessageDelayed(0, delayTimeInMils)
         }
     }
 
-    interface Task {
+    fun interface Task {
         /**
          * 长按的按钮事件
          */
