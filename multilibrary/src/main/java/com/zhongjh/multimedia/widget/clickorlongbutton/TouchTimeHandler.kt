@@ -1,72 +1,57 @@
-package com.zhongjh.multimedia.widget.clickorlongbutton;
+package com.zhongjh.multimedia.widget.clickorlongbutton
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
-
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 
 /**
  * 用于处理长按按钮的事件
  * @author zhongjh
  */
-public class TouchTimeHandler  extends Handler {
-    public static final int WHAT_233 = 0;
-    private long delayTimeInMils;
-    private boolean freeNow;
-    private final Task task;
-    private boolean shouldContinue;
+class TouchTimeHandler(looper: Looper?, private val task: Task?) : Handler(looper!!) {
+    private var delayTimeInMils: Long = 0
+    var isFreeNow: Boolean = true
+        private set
+    private var shouldContinue = false
 
-    public TouchTimeHandler(Looper looper, Task task) {
-        super(looper);
-        this.task = task;
-        freeNow = true;
-        shouldContinue = false;
-    }
-
-    public void clearMsg() {
+    fun clearMsg() {
         while (hasMessages(WHAT_233)) {
-            removeMessages(WHAT_233);
+            removeMessages(WHAT_233)
         }
-        shouldContinue = false;
-        freeNow = true;
+        shouldContinue = false
+        isFreeNow = true
     }
 
-    public void sendSingleMsg(long timeDelayed) {
-        clearMsg();
-        freeNow = false;
-        shouldContinue = false;
-        sendEmptyMessageDelayed(0, timeDelayed);
+    fun sendSingleMsg(timeDelayed: Long) {
+        clearMsg()
+        isFreeNow = false
+        shouldContinue = false
+        sendEmptyMessageDelayed(0, timeDelayed)
     }
 
-    public void sendLoopMsg(long timeDelayed, long timeDelayedInLoop) {
-        clearMsg();
-        freeNow = false;
-        delayTimeInMils = timeDelayedInLoop;
-        shouldContinue = true;
-        sendEmptyMessageDelayed(0, timeDelayed);
+    fun sendLoopMsg(timeDelayed: Long, timeDelayedInLoop: Long) {
+        clearMsg()
+        isFreeNow = false
+        delayTimeInMils = timeDelayedInLoop
+        shouldContinue = true
+        sendEmptyMessageDelayed(0, timeDelayed)
     }
 
-    @Override
-    public void handleMessage(@NonNull Message paramMessage) {
-        if (task != null) {
-            task.run();
-        }
+    override fun handleMessage(paramMessage: Message) {
+        task?.run()
         if (shouldContinue) {
-            sendEmptyMessageDelayed(0, delayTimeInMils);
+            sendEmptyMessageDelayed(0, delayTimeInMils)
         }
     }
 
-    public boolean isFreeNow() {
-        return freeNow;
-    }
-
-    public interface Task {
+    interface Task {
         /**
          * 长按的按钮事件
          */
-        void run();
+        fun run()
+    }
 
+    companion object {
+        const val WHAT_233: Int = 0
     }
 }

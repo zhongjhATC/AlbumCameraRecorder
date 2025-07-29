@@ -1,10 +1,9 @@
-package com.zhongjh.multimedia.widget.childclickable;
+package com.zhongjh.multimedia.widget.childclickable
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
+import android.content.Context
+import android.util.AttributeSet
+import android.view.MotionEvent
+import androidx.constraintlayout.widget.ConstraintLayout
 
 /**
  * 是否允许子控件可以点击
@@ -12,35 +11,25 @@ import androidx.constraintlayout.widget.ConstraintLayout;
  * @author zhongjh
  * @date 2018/12/27
  */
-public class ChildClickableConstraintLayout extends ConstraintLayout implements IChildClickableLayout {
-
+class ChildClickableConstraintLayout : ConstraintLayout, IChildClickableLayout {
     /**
      * 子控件是否可以接受点击事件
      */
-    private boolean childClickable = true;
+    private var childClickable = true
 
-    public ChildClickableConstraintLayout(Context context) {
-        super(context);
-    }
+    constructor(context: Context) : super(context)
 
-    public ChildClickableConstraintLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    public ChildClickableConstraintLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         // 返回true则拦截子控件所有点击事件，如果childClickable为true，则需返回false
-        return !childClickable;
-    }
-    
-    @Override
-    public void setChildClickable(boolean clickable) {
-        childClickable = clickable;
+        return !childClickable
     }
 
+    override fun setChildClickable(clickable: Boolean) {
+        childClickable = clickable
+    }
 }

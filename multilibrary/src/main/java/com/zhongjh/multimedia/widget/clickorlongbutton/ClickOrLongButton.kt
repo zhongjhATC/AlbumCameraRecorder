@@ -1,222 +1,163 @@
-package com.zhongjh.multimedia.widget.clickorlongbutton;
+package com.zhongjh.multimedia.widget.clickorlongbutton
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Paint.Cap;
-import android.graphics.Paint.Style;
-import android.graphics.RectF;
-import android.os.Build;
-import android.os.Looper;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-
-import com.zhongjh.multimedia.R;
-import com.zhongjh.multimedia.camera.listener.ClickOrLongListener;
-import com.zhongjh.common.utils.DisplayMetricsUtils;
-
-import java.util.ArrayList;
-
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Paint.Cap
+import android.graphics.RectF
+import android.os.Build
+import android.os.Looper
+import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
+import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.camera.listener.ClickOrLongListener
 
 /**
  * 点击或者长按的按钮
  *
  * @author zhongjh
  */
-public class ClickOrLongButton extends View {
-    /**
-     * 按钮只能点击
-     */
-    public static final int BUTTON_STATE_ONLY_CLICK = 0x201;
-    /**
-     * 按钮只能长按
-     */
-    public static final int BUTTON_STATE_ONLY_LONG_CLICK = 0x202;
-    /**
-     * 按钮点击或者长按两者都可以
-     */
-    public static final int BUTTON_STATE_BOTH = 0x203;
-    /**
-     * 按钮点击即是长按模式
-     */
-    public static final int BUTTON_STATE_CLICK_AND_HOLD = 0x204;
-
-    /**
-     * 满进度
-     */
-    private static final float FULL_PROGRESS = 1F;
-    /**
-     * 90度
-     */
-    private static final int NINETY_DEGREES = 90;
-    /**
-     * 未启动状态
-     */
-    private static final int RECORD_NOT_STARTED = 0;
-    /**
-     * 启动状态
-     */
-    private static final int RECORD_STARTED = 1;
-    /**
-     * 结束状态
-     */
-    private static final int RECORD_ENDED = 2;
-    /**
-     * 当前为未触摸状态
-     * <p>
-     * 为了确保整个按钮的逻辑是：按下 - 放开手，按下时+1，松手+1，最后等于2就是整个流程结束
-     * 如果中间中断或者重置，那就直接减1，就说明中断流程
-     */
-    private static final int STEP_NOT_TOUCH = 0;
-    /**
-     * 当前为按下状态
-     * <p>
-     * 为了确保整个按钮的逻辑是：按下 - 放开手，按下时+1，松手+1，最后等于2就是整个流程结束
-     * 如果中间中断或者重置，那就直接减1，就说明中断流程
-     */
-    private static final int STEP_ACTION_DOWN = 1;
-    /**
-     * 当前为松手状态
-     * <p>
-     * 为了确保整个按钮的逻辑是：按下 - 放开手，按下时+1，松手+1，最后等于2就是整个流程结束
-     * 如果中间中断或者重置，那就直接减1，就说明中断流程
-     */
-    private static final int STEP_ACTION_UP = 2;
-
+class ClickOrLongButton : View {
     /**
      * 倍数,控制该控件的大小
      */
-    private float multiple = 1F;
+    private var multiple = 1f
+
     /**
      * 录制时间
      */
-    private float timeLimitInMils = 10000.0F;
+    private var timeLimitInMils = 10000.0f
+
     /**
      * 当前录制位置集，计算时间后的百分比
      */
-    private final ArrayList<Float> mCurrentLocation = new ArrayList<>();
+    private val mCurrentLocation = ArrayList<Float>()
+
     /**
      * 当前录制的节点，以360度为单位
      */
-    private Float mCurrentSumNumberDegrees = 0F;
+    private var mCurrentSumNumberDegrees = 0f
+
     /**
      * 当前录制的总共时间点
      */
-    private Long mCurrentSumTime = 0L;
+    private var mCurrentSumTime = 0L
+
     /**
      * 动画的预备时间
      */
-    private int mMinDurationAnimation = 1500;
+    private var mMinDurationAnimation = 1500
+
     /**
      * 当前状态的动画预备时间
      */
-    private int mMinDurationAnimationCurrent = mMinDurationAnimation;
+    private var mMinDurationAnimationCurrent = mMinDurationAnimation
+
     /**
      * 记录当前录制的总共多长的时间秒
      */
-    private long mRecordedTime;
-    private static final float PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1F;
-    private int mBoundingBoxSize;
-    private int mOutCircleWidth;
-    private int mOuterCircleWidthInc;
-    private float mInnerCircleRadius;
+    private var mRecordedTime: Long = 0
+    private var mBoundingBoxSize = 0
+    private var mOutCircleWidth = 0
+    private var mOuterCircleWidthInc = 0
+    private var mInnerCircleRadius = 0f
+    var isTouchable: Boolean = false
+    private var isRecordable: Boolean = false
 
-    private TouchTimeHandler touchTimeHandler;
-    private boolean touchable;
-    private boolean recordable;
+    private var centerCirclePaint = Paint()
+    private var outBlackCirclePaint = Paint()
+    private var outMostBlackCirclePaint = Paint()
+    private var innerCircleRadiusToDraw = 0f
 
-    private Paint centerCirclePaint;
-    private Paint outBlackCirclePaint;
-    private Paint outMostBlackCirclePaint;
-    private float innerCircleRadiusToDraw;
     /**
      * 外圈的画布
      */
-    private RectF outMostCircleRect;
-    private float outBlackCircleRadius;
-    private float outMostBlackCircleRadius;
-    private int colorRoundBorder;
-    private int colorRecord;
-    private int colorWhiteP60;
-    private float startAngle270;
-    private float percentInDegree;
-    private float centerX;
-    private float centerY;
+    private lateinit var outMostCircleRect: RectF
+    private var outBlackCircleRadius = 0f
+    private var outMostBlackCircleRadius = 0f
+    private var colorRoundBorder = 0
+    private var colorRecord = 0
+    private var colorWhiteP60 = 0
+    private var startAngle270 = 0f
+    private var percentInDegree = 0f
+    private var centerX = 0f
+    private var centerY = 0f
+
     /**
      * 按下去显示的进度外圈
      */
-    private Paint processBarPaint;
+    private var processBarPaint = Paint()
+
     /**
      * 静止状态时的外圈
      */
-    private Paint outMostWhiteCirclePaint;
+    private var outMostWhiteCirclePaint = Paint()
+
     /**
      * 静止状态时的进度外圈
      */
-    private Paint outProcessCirclePaint;
-    private Paint translucentPaint;
-    private int translucentCircleRadius = 0;
-    private float outMostCircleRadius;
-    private float innerCircleRadiusWhenRecord;
-    private long btnPressTime;
-    private int outBlackCircleRadiusInc;
+    private var outProcessCirclePaint = Paint()
+    private var translucentPaint = Paint()
+    private var translucentCircleRadius = 0
+    private var outMostCircleRadius = 0f
+    private var innerCircleRadiusWhenRecord = 0f
+    private var btnPressTime: Long = 0
+    private var outBlackCircleRadiusInc = 0
+
     /**
      * 为了确保整个按钮的逻辑从按下-放开手都是流畅的，会用 按下+1，放开手+1，最后等于2的方式执行
      * 如果中间中断或者重置，那就直接减1，就说明中断流程
      */
-    private int step;
+    private var step = 0
 
     /**
      * 当前状态
      */
-    private int recordState;
+    private var recordState = 0
 
     /**
      * 按钮可执行的功能状态（点击,长按,两者,按钮点击即是长按模式）
      */
-    private int mButtonState;
+    private var mButtonState = 0
+
     /**
      * 是否允许动画,目前只针对视频录制,等视频通知我们开始，我们再开始动画
      */
-    private boolean mIsStartTicking = true;
+    var isStartTicking: Boolean = true
 
-    private final TouchTimeHandler.Task updateUITask = new TouchTimeHandler.Task() {
-        @Override
-        public void run() {
-            // 判断如果是 点击即长按 模式的情况下，判断进度是否>=100
-            if (mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
-                if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
-                    step++;
-                    refreshView();
-                    return;
-                }
+    private val updateUITask = TouchTimeHandler.Task { // 判断如果是 点击即长按 模式的情况下，判断进度是否>=100
+        if (mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
+            if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
+                step++
+                refreshView()
+                return@Task
             }
-            if (!mCurrentLocation.isEmpty()) {
-                // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
-                mMinDurationAnimationCurrent = 0;
-            }
-            long timeLapse = System.currentTimeMillis() - btnPressTime;
-            mRecordedTime = (timeLapse - mMinDurationAnimationCurrent);
-            mRecordedTime = mRecordedTime + mCurrentSumTime;
-            float percent = mRecordedTime / timeLimitInMils;
-            if (!mActionDown && timeLapse >= 1) {
-                boolean actionDown = mClickOrLongListener != null && (mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH);
-                if (actionDown) {
-                    mClickOrLongListener.actionDown();
-                    mActionDown = true;
-                }
-            }
-
-            startAnimation(timeLapse, percent);
         }
-    };
+        if (mCurrentLocation.isNotEmpty()) {
+            // 当处于分段录制模式并且有分段数据的时候，关闭启动前奏
+            mMinDurationAnimationCurrent = 0
+        }
+        val timeLapse = System.currentTimeMillis() - btnPressTime
+        mRecordedTime = (timeLapse - mMinDurationAnimationCurrent)
+        mRecordedTime += mCurrentSumTime
+        val percent = mRecordedTime / timeLimitInMils
+        if (!mActionDown && timeLapse >= 1) {
+            mClickOrLongListener?.let {
+                val actionDown = mButtonState == BUTTON_STATE_ONLY_CLICK || mButtonState == BUTTON_STATE_BOTH
+                if (actionDown) {
+                    it.actionDown()
+                    mActionDown = true
+                }
+            }
+        }
+        startAnimation(timeLapse, percent)
+    }
+    private var touchTimeHandler = TouchTimeHandler(Looper.getMainLooper(), updateUITask)
 
     /**
      * 判断是否超过预备时间就开始具体动画
@@ -224,445 +165,413 @@ public class ClickOrLongButton extends View {
      * @param timeLapse 当前时间 - 点击的那一刻时间 = 点击后度过了多久
      * @param percent   当前百分比
      */
-    private void startAnimation(long timeLapse, float percent) {
+    private fun startAnimation(timeLapse: Long, percent: Float) {
         // isStartTicking是由CameraManage的视频录制监控来决定是否继续动画
-        if (timeLapse >= mMinDurationAnimationCurrent && isStartTicking()) {
-            synchronized (ClickOrLongButton.this) {
+        if (timeLapse >= mMinDurationAnimationCurrent && isStartTicking) {
+            synchronized(this@ClickOrLongButton) {
                 if (recordState == RECORD_NOT_STARTED) {
-                    setRecordState(RECORD_STARTED);
-                    if (mClickOrLongListener != null) {
-                        mClickOrLongListener.onLongClick();
+                    setRecordState(RECORD_STARTED)
+                    mClickOrLongListener?.let { clickOrLongListener ->
+                        clickOrLongListener.onLongClick()
                         // 如果禁止点击，那么就轮到长按触发actionDown
-                        if (!mActionDown && mClickOrLongListener != null && mButtonState == BUTTON_STATE_ONLY_LONG_CLICK) {
+                        if (!mActionDown && mButtonState == BUTTON_STATE_ONLY_LONG_CLICK) {
                             // 如果禁止点击也不能触发该事件
-                            mClickOrLongListener.actionDown();
-                            mActionDown = true;
+                            clickOrLongListener.actionDown()
+                            mActionDown = true
                         }
                     }
+
                 }
             }
-            if (!recordable) {
-                return;
+            if (!isRecordable) {
+                return
             }
-            centerCirclePaint.setColor(colorRecord);
-            outMostWhiteCirclePaint.setColor(colorRoundBorder);
-            percentInDegree = (360.0F * percent);
+            centerCirclePaint.color = colorRecord
+            outMostWhiteCirclePaint.color = colorRoundBorder
+            percentInDegree = (360.0f * percent)
             if ((timeLapse - mMinDurationAnimationCurrent) >= mMinDurationAnimationCurrent) {
-                setCurrentSumNumberDegrees(percentInDegree);
+                setCurrentSumNumberDegrees(percentInDegree)
             }
             if (percent <= FULL_PROGRESS) {
                 if (percent <= PROGRESS_LIM_TO_FINISH_STARTING_ANIM) {
-                    float calPercent = percent / PROGRESS_LIM_TO_FINISH_STARTING_ANIM;
-                    float outIncDis = outBlackCircleRadiusInc * calPercent;
-                    float curOutCircleWidth = mOutCircleWidth + mOuterCircleWidthInc * calPercent;
-                    processBarPaint.setStrokeWidth(curOutCircleWidth);
-                    outProcessCirclePaint.setStrokeWidth(curOutCircleWidth);
-                    outMostWhiteCirclePaint.setStrokeWidth(curOutCircleWidth);
-                    outBlackCircleRadius = (outMostCircleRadius + outIncDis - curOutCircleWidth / 2.0F);
-                    outMostBlackCircleRadius = (curOutCircleWidth / 2.0F + (outMostCircleRadius + outIncDis));
-                    outMostCircleRect = new RectF(centerX - outMostCircleRadius - outIncDis, centerY - outMostCircleRadius - outIncDis, centerX + outMostCircleRadius + outIncDis, centerY + outMostCircleRadius + outIncDis);
-                    translucentCircleRadius = (int) (outIncDis + outMostCircleRadius);
-                    innerCircleRadiusToDraw = calPercent * innerCircleRadiusWhenRecord;
+                    val calPercent = percent / PROGRESS_LIM_TO_FINISH_STARTING_ANIM
+                    val outIncDis = outBlackCircleRadiusInc * calPercent
+                    val curOutCircleWidth = mOutCircleWidth + mOuterCircleWidthInc * calPercent
+                    processBarPaint.strokeWidth = curOutCircleWidth
+                    outProcessCirclePaint.strokeWidth = curOutCircleWidth
+                    outMostWhiteCirclePaint.strokeWidth = curOutCircleWidth
+                    outBlackCircleRadius = (outMostCircleRadius + outIncDis - curOutCircleWidth / 2.0f)
+                    outMostBlackCircleRadius = (curOutCircleWidth / 2.0f + (outMostCircleRadius + outIncDis))
+                    outMostCircleRect = RectF(
+                        centerX - outMostCircleRadius - outIncDis,
+                        centerY - outMostCircleRadius - outIncDis,
+                        centerX + outMostCircleRadius + outIncDis,
+                        centerY + outMostCircleRadius + outIncDis
+                    )
+                    translucentCircleRadius = (outIncDis + outMostCircleRadius).toInt()
+                    innerCircleRadiusToDraw = calPercent * innerCircleRadiusWhenRecord
                 }
-                invalidateCustom();
+                invalidateCustom()
             } else {
-                step++;
-                refreshView();
+                step++
+                refreshView()
             }
         }
     }
 
-    public ClickOrLongButton(Context paramContext) {
-        super(paramContext);
-        init(null);
+    constructor(paramContext: Context?) : super(paramContext) {
+        init(null)
     }
 
-    public ClickOrLongButton(Context paramContext, AttributeSet paramAttributeSet) {
-        super(paramContext, paramAttributeSet);
-        init(paramAttributeSet);
+    constructor(paramContext: Context?, paramAttributeSet: AttributeSet?) : super(paramContext, paramAttributeSet) {
+        init(paramAttributeSet)
     }
 
-    public ClickOrLongButton(Context paramContext, AttributeSet paramAttributeSet, int paramInt) {
-        super(paramContext, paramAttributeSet, paramInt);
-        init(paramAttributeSet);
+    constructor(paramContext: Context?, paramAttributeSet: AttributeSet?, paramInt: Int) : super(paramContext, paramAttributeSet, paramInt) {
+        init(paramAttributeSet)
     }
 
-    private void init(AttributeSet paramAttributeSet) {
-        if (getContext() == null || getContext().getTheme() == null) {
-            return;
+    private fun init(paramAttributeSet: AttributeSet?) {
+        if (context == null || context.theme == null) {
+            return
         }
         // 调取样式中的颜色
-        TypedArray arrayRoundBorder = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_round_border});
-        TypedArray arrayInnerCircleInOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_in_operation});
-        TypedArray arrayInnerCircleNoOperation = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_long_button_inner_circle_no_operation});
-        TypedArray arrayClickOrLongButtonStyle = getContext().obtainStyledAttributes(paramAttributeSet, R.styleable.ClickOrLongButton);
+        val arrayRoundBorder = context.theme.obtainStyledAttributes(intArrayOf(R.attr.click_long_button_round_border))
+        val arrayInnerCircleInOperation = context.theme.obtainStyledAttributes(intArrayOf(R.attr.click_long_button_inner_circle_in_operation))
+        val arrayInnerCircleNoOperation = context.theme.obtainStyledAttributes(intArrayOf(R.attr.click_long_button_inner_circle_no_operation))
+        val arrayClickOrLongButtonStyle = context.obtainStyledAttributes(paramAttributeSet, R.styleable.ClickOrLongButton)
         // 计算出倍数
-        int size = arrayClickOrLongButtonStyle.getInt(R.styleable.ClickOrLongButton_size, 100);
-        multiple = (float) size / 100;
+        val size = arrayClickOrLongButtonStyle.getInt(R.styleable.ClickOrLongButton_size, 100)
+        multiple = size.toFloat() / 100
 
-        int defaultRoundBorderColor = ResourcesCompat.getColor(
-                getResources(), R.color.click_long_button_round_border,
-                getContext().getTheme());
-        int defaultInnerCircleInOperationColor = ResourcesCompat.getColor(
-                getResources(), R.color.click_long_button_inner_circle_in_operation,
-                getContext().getTheme());
-        int defaultInnerCircleNoOperationColor = ResourcesCompat.getColor(
-                getResources(), R.color.click_long_button_inner_circle_no_operation,
-                getContext().getTheme());
+        val defaultRoundBorderColor = ResourcesCompat.getColor(
+            resources, R.color.click_long_button_round_border,
+            context.theme
+        )
+        val defaultInnerCircleInOperationColor = ResourcesCompat.getColor(
+            resources, R.color.click_long_button_inner_circle_in_operation,
+            context.theme
+        )
+        val defaultInnerCircleNoOperationColor = ResourcesCompat.getColor(
+            resources, R.color.click_long_button_inner_circle_no_operation,
+            context.theme
+        )
 
-        touchable = recordable = true;
+        isRecordable = true
+        isTouchable = true
         // 整块
-        mBoundingBoxSize = DisplayMetricsUtils.dip2px(100.0F * multiple);
+        mBoundingBoxSize = dip2px(100.0f * multiple)
         // 外线宽度
-        mOutCircleWidth = DisplayMetricsUtils.dip2px(2.3F * multiple);
-        mOuterCircleWidthInc = DisplayMetricsUtils.dip2px(4.3F * multiple);
-        mInnerCircleRadius = DisplayMetricsUtils.dip2px(32.0F * multiple);
+        mOutCircleWidth = dip2px(2.3f * multiple)
+        mOuterCircleWidthInc = dip2px(4.3f * multiple)
+        mInnerCircleRadius = dip2px(32.0f * multiple).toFloat()
 
-        TypedArray arrayInnerCircleNoOperationInterval = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.click_button_inner_circle_in_operation_interval});
-        int defaultInnerCircleNoOperationColorInterval = ResourcesCompat.getColor(
-                getResources(), R.color.click_button_inner_circle_no_operation_interval,
-                getContext().getTheme());
+        colorRecord = arrayInnerCircleInOperation.getColor(0, defaultInnerCircleInOperationColor)
+        colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor)
+        colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor)
 
-        colorRecord = arrayInnerCircleInOperation.getColor(0, defaultInnerCircleInOperationColor);
-        colorRoundBorder = arrayRoundBorder.getColor(0, defaultRoundBorderColor);
-        colorWhiteP60 = arrayInnerCircleNoOperation.getColor(0, defaultInnerCircleNoOperationColor);
-
-        initProcessBarPaint();
-        initOutCircle(arrayInnerCircleNoOperationInterval, defaultInnerCircleNoOperationColorInterval);
-        initCenterCircle();
+        initProcessBarPaint()
+        initOutCircle()
+        initCenterCircle()
         // 状态为两者都可以
-        mButtonState = BUTTON_STATE_BOTH;
+        mButtonState = BUTTON_STATE_BOTH
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            arrayRoundBorder.close();
-            arrayInnerCircleInOperation.close();
-            arrayInnerCircleNoOperation.close();
-            arrayClickOrLongButtonStyle.close();
+            arrayRoundBorder.close()
+            arrayInnerCircleInOperation.close()
+            arrayInnerCircleNoOperation.close()
+            arrayClickOrLongButtonStyle.close()
         } else {
-            arrayRoundBorder.recycle();
-            arrayInnerCircleInOperation.recycle();
-            arrayInnerCircleNoOperation.recycle();
-            arrayClickOrLongButtonStyle.recycle();
+            arrayRoundBorder.recycle()
+            arrayInnerCircleInOperation.recycle()
+            arrayInnerCircleNoOperation.recycle()
+            arrayClickOrLongButtonStyle.recycle()
         }
     }
 
     /**
      * 初始化内圈操作中样式
      */
-    private void initProcessBarPaint() {
-        processBarPaint = new Paint();
-        processBarPaint.setColor(colorRecord);
-        processBarPaint.setAntiAlias(true);
-        processBarPaint.setStrokeWidth(mOutCircleWidth);
-        processBarPaint.setStyle(Style.STROKE);
-        processBarPaint.setStrokeCap(Cap.ROUND);
+    private fun initProcessBarPaint() {
+        processBarPaint = Paint()
+        processBarPaint.color = colorRecord
+        processBarPaint.isAntiAlias = true
+        processBarPaint.strokeWidth = mOutCircleWidth.toFloat()
+        processBarPaint.style = Paint.Style.STROKE
+        processBarPaint.strokeCap = Cap.ROUND
     }
 
     /**
      * 初始化外圈样式
      */
-    private void initOutCircle(TypedArray arrayInnerCircleNoOperationInterval, int defaultInnerCircleNoOperationColorInterval) {
-        outMostWhiteCirclePaint = new Paint();
-        outMostWhiteCirclePaint.setColor(colorRoundBorder);
-        outMostWhiteCirclePaint.setAntiAlias(true);
-        outMostWhiteCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outMostWhiteCirclePaint.setStyle(Style.STROKE);
+    private fun initOutCircle() {
+        outMostWhiteCirclePaint.color = colorRoundBorder
+        outMostWhiteCirclePaint.isAntiAlias = true
+        outMostWhiteCirclePaint.strokeWidth = mOutCircleWidth.toFloat()
+        outMostWhiteCirclePaint.style = Paint.Style.STROKE
 
-        outProcessCirclePaint = new Paint();
-        outProcessCirclePaint.setColor(colorRecord);
-        outProcessCirclePaint.setAntiAlias(true);
-        outProcessCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outProcessCirclePaint.setStyle(Style.STROKE);
+        outProcessCirclePaint = Paint()
+        outProcessCirclePaint.color = colorRecord
+        outProcessCirclePaint.isAntiAlias = true
+        outProcessCirclePaint.strokeWidth = mOutCircleWidth.toFloat()
+        outProcessCirclePaint.style = Paint.Style.STROKE
     }
 
     /**
      * 初始化内圈未操作中样式
      */
-    private void initCenterCircle() {
-        int colorBlackP40 = ContextCompat.getColor(getContext(), R.color.black_forty_percent);
-        int colorBlackP80 = ContextCompat.getColor(getContext(), R.color.black_eighty_percent);
-        int colorTranslucent = ContextCompat.getColor(getContext(), R.color.circle_shallow_translucent_bg);
+    private fun initCenterCircle() {
+        val colorBlackP40 = ContextCompat.getColor(context, R.color.black_forty_percent)
+        val colorBlackP80 = ContextCompat.getColor(context, R.color.black_eighty_percent)
+        val colorTranslucent = ContextCompat.getColor(context, R.color.circle_shallow_translucent_bg)
 
-        centerCirclePaint = new Paint();
-        centerCirclePaint.setColor(colorWhiteP60);
-        centerCirclePaint.setAntiAlias(true);
-        centerCirclePaint.setStyle(Style.FILL_AND_STROKE);
-        outBlackCirclePaint = new Paint();
-        outBlackCirclePaint.setColor(colorBlackP40);
-        outBlackCirclePaint.setAntiAlias(true);
-        outBlackCirclePaint.setStyle(Style.STROKE);
-        outBlackCirclePaint.setStrokeWidth(1.0F);
-        outMostBlackCirclePaint = new Paint();
-        outMostBlackCirclePaint.setColor(colorBlackP80);
-        outMostBlackCirclePaint.setAntiAlias(true);
-        outMostBlackCirclePaint.setStyle(Style.STROKE);
-        outMostBlackCirclePaint.setStrokeWidth(1.0F);
-        translucentPaint = new Paint();
-        translucentPaint.setColor(colorTranslucent);
-        translucentPaint.setAntiAlias(true);
-        translucentPaint.setStyle(Style.FILL_AND_STROKE);
-        centerX = (mBoundingBoxSize / 2f);
-        centerY = (mBoundingBoxSize / 2f);
-        outMostCircleRadius = DisplayMetricsUtils.dip2px(37.0F * multiple);
-        outBlackCircleRadiusInc = DisplayMetricsUtils.dip2px(7.0F * multiple);
-        innerCircleRadiusWhenRecord = DisplayMetricsUtils.dip2px(35.0F * multiple);
-        innerCircleRadiusToDraw = mInnerCircleRadius;
-        outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
-        outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);
-        startAngle270 = 270.0F;
-        percentInDegree = 0.0F;
-        outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
-        touchTimeHandler = new TouchTimeHandler(Looper.getMainLooper(), updateUITask);
+        centerCirclePaint.color = colorWhiteP60
+        centerCirclePaint.isAntiAlias = true
+        centerCirclePaint.style = Paint.Style.FILL_AND_STROKE
+        outBlackCirclePaint.color = colorBlackP40
+        outBlackCirclePaint.isAntiAlias = true
+        outBlackCirclePaint.style = Paint.Style.STROKE
+        outBlackCirclePaint.strokeWidth = 1.0f
+        outMostBlackCirclePaint.color = colorBlackP80
+        outMostBlackCirclePaint.isAntiAlias = true
+        outMostBlackCirclePaint.style = Paint.Style.STROKE
+        outMostBlackCirclePaint.strokeWidth = 1.0f
+        translucentPaint.color = colorTranslucent
+        translucentPaint.isAntiAlias = true
+        translucentPaint.style = Paint.Style.FILL_AND_STROKE
+        centerX = (mBoundingBoxSize / 2f)
+        centerY = (mBoundingBoxSize / 2f)
+        outMostCircleRadius = dip2px(37.0f * multiple).toFloat()
+        outBlackCircleRadiusInc = dip2px(7.0f * multiple)
+        innerCircleRadiusWhenRecord = dip2px(35.0f * multiple).toFloat()
+        innerCircleRadiusToDraw = mInnerCircleRadius
+        outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0f)
+        outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0f)
+        startAngle270 = 270.0f
+        percentInDegree = 0.0f
+        outMostCircleRect = RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius)
+
     }
 
     /**
      * 销毁事件
      */
-    public void onDestroy() {
-        touchTimeHandler.clearMsg();
+    fun onDestroy() {
+        touchTimeHandler.clearMsg()
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(mBoundingBoxSize, mBoundingBoxSize);
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        setMeasuredDimension(mBoundingBoxSize, mBoundingBoxSize)
     }
 
-    @Override
-    protected void onDraw(@NonNull Canvas canvas) {
-        super.onDraw(canvas);
-        canvas.drawCircle(centerX, centerY, translucentCircleRadius, translucentPaint);
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawCircle(centerX, centerY, translucentCircleRadius.toFloat(), translucentPaint)
 
         //center white-p40 circle  中心点+半径32，所以直接64就是内圈的宽高度了
-        canvas.drawCircle(centerX, centerY, innerCircleRadiusToDraw, centerCirclePaint);
+        canvas.drawCircle(centerX, centerY, innerCircleRadiusToDraw, centerCirclePaint)
 
         // 静止状态时的外圈
-        canvas.drawArc(outMostCircleRect, startAngle270, 360F, false, outMostWhiteCirclePaint);
+        canvas.drawArc(outMostCircleRect, startAngle270, 360f, false, outMostWhiteCirclePaint)
 
         // 点击时的外圈进度
-        canvas.drawArc(outMostCircleRect, startAngle270, percentInDegree, false, processBarPaint);
+        canvas.drawArc(outMostCircleRect, startAngle270, percentInDegree, false, processBarPaint)
 
         // 静止状态时的外圈进度
-        canvas.drawArc(outMostCircleRect, startAngle270, mCurrentSumNumberDegrees, false, outProcessCirclePaint);
+        canvas.drawArc(outMostCircleRect, startAngle270, mCurrentSumNumberDegrees, false, outProcessCirclePaint)
 
 
-        canvas.drawCircle(centerX, centerY, outBlackCircleRadius, outBlackCirclePaint);
-        canvas.drawCircle(centerX, centerY, outMostBlackCircleRadius, outMostBlackCirclePaint);
+        canvas.drawCircle(centerX, centerY, outBlackCircleRadius, outBlackCirclePaint)
+        canvas.drawCircle(centerX, centerY, outMostBlackCircleRadius, outMostBlackCirclePaint)
     }
 
-    @Override
     @SuppressLint("ClickableViewAccessibility")
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (mButtonState != BUTTON_STATE_CLICK_AND_HOLD) {
-                    if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
-                        // 进度已满,不执行任何动作
-                        return true;
-                    }
-                    if (mCurrentSumTime / timeLimitInMils >= FULL_PROGRESS) {
-                        // 进度已满,不执行任何动作
-                        return true;
-                    }
-                    // 判断是否禁用模式
-                    if (!touchable) {
-                        mClickOrLongListener.onBanClickTips();
-                        return true;
-                    }
-                    step = STEP_ACTION_DOWN;
-                    // 是否支持长按
-                    boolean longClick = mClickOrLongListener != null
-                            && (mButtonState == BUTTON_STATE_ONLY_LONG_CLICK ||
-                            mButtonState == BUTTON_STATE_BOTH);
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> if (mButtonState != BUTTON_STATE_CLICK_AND_HOLD) {
+                if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
+                    // 进度已满,不执行任何动作
+                    return true
+                }
+                if (mCurrentSumTime / timeLimitInMils >= FULL_PROGRESS) {
+                    // 进度已满,不执行任何动作
+                    return true
+                }
+                // 判断是否禁用模式
+                if (!isTouchable) {
+                    mClickOrLongListener?.onBanClickTips()
+                    return true
+                }
+                step = STEP_ACTION_DOWN
+                // 是否支持长按
+                mClickOrLongListener?.let {
+                    val longClick = mButtonState == BUTTON_STATE_ONLY_LONG_CLICK || mButtonState == BUTTON_STATE_BOTH
                     if (longClick) {
-                        startTicking();
+                        startTicking()
                     }
                 }
-                break;
-            case MotionEvent.ACTION_UP:
-                if (mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
-                    // 点击即长按模式
-                    if (recordState != RECORD_STARTED) {
+            }
+
+            MotionEvent.ACTION_UP -> if (mButtonState == BUTTON_STATE_CLICK_AND_HOLD) {
+                // 点击即长按模式
+                if (recordState != RECORD_STARTED) {
+                    mClickOrLongListener?.let { clickOrLongListener ->
                         // 判断是否禁用模式
-                        if (!touchable) {
-                            mClickOrLongListener.onBanClickTips();
-                            return true;
+                        if (!isTouchable) {
+                            clickOrLongListener.onBanClickTips()
+                            return true
                         }
                         // 未启动状态，即立刻启动长按动画
-                        step = STEP_ACTION_DOWN;
-                        startTicking();
-                        mClickOrLongListener.onClickStopTips();
-                    } else {
-                        // 已经启动状态，刷新view执行事件
-                        step++;
-                        refreshView();
+                        step = STEP_ACTION_DOWN
+                        startTicking()
+                        clickOrLongListener.onClickStopTips()
                     }
                 } else {
-                    // 其他模式
-                    step++;
-                    refreshView();
+                    // 已经启动状态，刷新view执行事件
+                    step++
+                    refreshView()
                 }
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (mButtonState != BUTTON_STATE_CLICK_AND_HOLD) {
-                    if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
-                        step++;
-                        refreshView();
-                        return true;
-                    }
+            } else {
+                // 其他模式
+                step++
+                refreshView()
+            }
+
+            MotionEvent.ACTION_MOVE -> if (mButtonState != BUTTON_STATE_CLICK_AND_HOLD) {
+                if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
+                    step++
+                    refreshView()
+                    return true
                 }
-                break;
-            default:
-                break;
+            }
+
+            else -> {}
         }
-        return true;
+        return true
     }
 
     /**
      * 刷新view
      */
-    public void refreshView() {
-        synchronized (ClickOrLongButton.this) {
-            if (recordState == RECORD_STARTED) {
-                if (mClickOrLongListener != null && step == STEP_ACTION_UP) {
-                    // 回调录制结束
-                    if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
-                        mClickOrLongListener.onLongClickFinish();
-                    } else {
-                        mClickOrLongListener.onLongClickEnd(mRecordedTime);
+    private fun refreshView() {
+        synchronized(this@ClickOrLongButton) {
+            mClickOrLongListener?.let { clickOrLongListener ->
+                if (recordState == RECORD_STARTED) {
+                    if (step == STEP_ACTION_UP) {
+                        // 回调录制结束
+                        if (mRecordedTime / timeLimitInMils >= FULL_PROGRESS) {
+                            clickOrLongListener.onLongClickFinish()
+                        } else {
+                            clickOrLongListener.onLongClickEnd(mRecordedTime)
+                        }
                     }
-                }
-                setRecordState(RECORD_ENDED);
-            } else if (recordState == RECORD_ENDED) {
-                // 回到初始状态
-                setRecordState(RECORD_NOT_STARTED);
-            } else {
-                // 如果只支持长按事件则不触发
-                if (mClickOrLongListener != null &&
-                        mButtonState != BUTTON_STATE_ONLY_LONG_CLICK &&
-                        step == STEP_ACTION_UP) {
-                    // 拍照
-                    mClickOrLongListener.onClick();
+                    setRecordState(RECORD_ENDED)
+                } else if (recordState == RECORD_ENDED) {
+                    // 回到初始状态
+                    setRecordState(RECORD_NOT_STARTED)
+                } else {
+                    // 如果只支持长按事件则不触发
+                    if (mButtonState != BUTTON_STATE_ONLY_LONG_CLICK && step == STEP_ACTION_UP) {
+                        // 拍照
+                        clickOrLongListener.onClick()
+                    }
                 }
             }
         }
-        reset();
+        reset()
     }
 
     /**
      * 重置
      */
-    public void reset() {
-        resetCommon();
-        mCurrentSumNumberDegrees = 0F;
-        mCurrentSumTime = 0L;
-        mCurrentLocation.clear();
-        invalidateCustom();
+    fun reset() {
+        resetCommon()
+        mCurrentSumNumberDegrees = 0f
+        mCurrentSumTime = 0L
+        mCurrentLocation.clear()
+        invalidateCustom()
     }
 
     /**
      * 中断当前操作
      */
-    public void breakOff() {
-        resetCommon();
-        invalidateCustom();
+    fun breakOff() {
+        resetCommon()
+        invalidateCustom()
     }
 
-    private void resetCommon() {
-        step = STEP_NOT_TOUCH;
-        mActionDown = false;
-        touchTimeHandler.clearMsg();
-        percentInDegree = 0.0F;
-        mRecordedTime = 0;
-        centerCirclePaint.setColor(colorWhiteP60);
-        outMostWhiteCirclePaint.setColor(colorRoundBorder);
-        innerCircleRadiusToDraw = mInnerCircleRadius;
-        outMostCircleRect = new RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius);
-        translucentCircleRadius = 0;
-        processBarPaint.setStrokeWidth(mOutCircleWidth);
-        outProcessCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outMostWhiteCirclePaint.setStrokeWidth(mOutCircleWidth);
-        outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0F);
-        outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0F);
+    private fun resetCommon() {
+        step = STEP_NOT_TOUCH
+        mActionDown = false
+        touchTimeHandler.clearMsg()
+        percentInDegree = 0.0f
+        mRecordedTime = 0
+        centerCirclePaint.color = colorWhiteP60
+        outMostWhiteCirclePaint.color = colorRoundBorder
+        innerCircleRadiusToDraw = mInnerCircleRadius
+        outMostCircleRect = RectF(centerX - outMostCircleRadius, centerY - outMostCircleRadius, centerX + outMostCircleRadius, centerY + outMostCircleRadius)
+        translucentCircleRadius = 0
+        processBarPaint.strokeWidth = mOutCircleWidth.toFloat()
+        outProcessCirclePaint.strokeWidth = mOutCircleWidth.toFloat()
+        outMostWhiteCirclePaint.strokeWidth = mOutCircleWidth.toFloat()
+        outBlackCircleRadius = (outMostCircleRadius - mOutCircleWidth / 2.0f)
+        outMostBlackCircleRadius = (outMostCircleRadius + mOutCircleWidth / 2.0f)
     }
 
-    public boolean isTouchable() {
-        return touchable;
-    }
-
-    public boolean isRecordable() {
-        return recordable;
-    }
-
-    public void setRecordable(boolean recordable) {
-        this.recordable = recordable;
-    }
-
-    public void setTouchable(boolean touchable) {
-        this.touchable = touchable;
-    }
-
-    public boolean isStartTicking() {
-        return mIsStartTicking;
-    }
-
-    public void setStartTicking(boolean isStartTicking) {
-        this.mIsStartTicking = isStartTicking;
-    }
-
-    private void startTicking() {
-        synchronized (ClickOrLongButton.this) {
+    private fun startTicking() {
+        synchronized(this@ClickOrLongButton) {
             if (recordState != RECORD_NOT_STARTED) {
-                setRecordState(RECORD_NOT_STARTED);
+                setRecordState(RECORD_NOT_STARTED)
             }
         }
-        btnPressTime = System.currentTimeMillis();
-        touchTimeHandler.sendLoopMsg(0L, 16L);
+        btnPressTime = System.currentTimeMillis()
+        touchTimeHandler.sendLoopMsg(0L, 16L)
     }
 
     /**
      * 数据设置成适合当前圆形
-     * <p>
+     *
+     *
      * // 计算方式1：270至360是一个初始点，类似0-90
      * // 计算方式2: 所以如果是小于90点，就直接+270
      * // 计算方式3：如果大于等于90点，就直接-90
      *
      * @return numberDegrees
      */
-    private float getNumberDegrees(float numberDegrees) {
-        if (numberDegrees >= NINETY_DEGREES) {
-            numberDegrees = numberDegrees - 90;
+    private fun getNumberDegrees(numberDegrees: Float): Float {
+        return if (numberDegrees >= NINETY_DEGREES) {
+            numberDegrees - 90
         } else {
-            numberDegrees = numberDegrees + 270;
+            numberDegrees + 270
         }
-        return numberDegrees;
     }
 
 
-    private void invalidateCustom() {
-        invalidate();
+    private fun invalidateCustom() {
+        invalidate()
     }
 
     /**
      * 按钮回调接口
      */
-    private ClickOrLongListener mClickOrLongListener;
+    private var mClickOrLongListener: ClickOrLongListener? = null
+
     /**
      * 判断是否已经调用过isActionDown,结束后重置此值
      */
-    private boolean mActionDown;
+    private var mActionDown = false
 
-    private void setCurrentSumNumberDegrees(Float value) {
-        mCurrentSumNumberDegrees = value;
+    private fun setCurrentSumNumberDegrees(value: Float) {
+        mCurrentSumNumberDegrees = value
     }
 
     // region 对外方法
-
     /**
      * 设置最长录制时间
      *
      * @param duration 时间
      */
-    public void setDuration(int duration) {
-        timeLimitInMils = duration;
+    fun setDuration(duration: Int) {
+        timeLimitInMils = duration.toFloat()
     }
 
     /**
@@ -671,26 +580,26 @@ public class ClickOrLongButton extends View {
      *
      * @param duration 时间
      */
-    public void setReadinessDuration(int duration) {
-        mMinDurationAnimation = duration;
-        mMinDurationAnimationCurrent = mMinDurationAnimation;
+    fun setReadinessDuration(duration: Int) {
+        mMinDurationAnimation = duration
+        mMinDurationAnimationCurrent = mMinDurationAnimation
     }
 
     /**
      * 设置当前已录制的时间，用于分段录制
      */
-    public void setCurrentTime(Long currentTime) {
-        mCurrentLocation.clear();
+    fun setCurrentTime(currentTime: Long) {
+        mCurrentLocation.clear()
         // 获取当前时间占比
-        float percent = currentTime / timeLimitInMils;
+        val percent = currentTime / timeLimitInMils
         // 根据360度，以这个占比计算是具体多少度
-        float numberDegrees = percent * 360;
+        val numberDegrees = percent * 360
         // 数据设置规范,适合当前圆形
-        mCurrentLocation.add(getNumberDegrees(numberDegrees));
-        setCurrentSumNumberDegrees(numberDegrees);
-        mCurrentSumTime = currentTime;
-        mRecordedTime = currentTime;
-        invalidate();
+        mCurrentLocation.add(getNumberDegrees(numberDegrees))
+        setCurrentSumNumberDegrees(numberDegrees)
+        mCurrentSumTime = currentTime
+        mRecordedTime = currentTime
+        invalidate()
     }
 
     /**
@@ -698,39 +607,109 @@ public class ClickOrLongButton extends View {
      *
      * @param clickOrLongListener 回调接口
      */
-    public void setRecordingListener(ClickOrLongListener clickOrLongListener) {
-        this.mClickOrLongListener = clickOrLongListener;
+    fun setRecordingListener(clickOrLongListener: ClickOrLongListener?) {
+        this.mClickOrLongListener = clickOrLongListener
     }
 
     /**
      * 设置按钮功能（点击和长按）
      *
-     * @param buttonStateBoth {@link ClickOrLongButton#BUTTON_STATE_ONLY_CLICK 只能点击
-     * @link ClickOrLongButton#BUTTON_STATE_ONLY_LONG_CLICK 只能长按
-     * @link ClickOrLongButton#BUTTON_STATE_BOTH 两者皆可
-     * }
+     * @param buttonStateBoth 只能点击 [ClickOrLongButton.BUTTON_STATE_ONLY_CLICK]
      */
-    public void setButtonFeatures(int buttonStateBoth) {
-        this.mButtonState = buttonStateBoth;
+    fun setButtonFeatures(buttonStateBoth: Int) {
+        this.mButtonState = buttonStateBoth
         if (buttonStateBoth == BUTTON_STATE_CLICK_AND_HOLD) {
-            mMinDurationAnimationCurrent = 0;
+            mMinDurationAnimationCurrent = 0
         }
     }
 
     /**
      * 重置状态
      */
-    public void resetState() {
+    fun resetState() {
         // 回到初始状态
-        setRecordState(RECORD_NOT_STARTED);
+        setRecordState(RECORD_NOT_STARTED)
         // 预备时间也恢复到初始设置时的时间
-        mMinDurationAnimationCurrent = mMinDurationAnimation;
+        mMinDurationAnimationCurrent = mMinDurationAnimation
     }
 
-    private void setRecordState(int recordState) {
-        this.recordState = recordState;
+    private fun setRecordState(recordState: Int) {
+        this.recordState = recordState
+    } // endregion
+
+    companion object {
+        /**
+         * 按钮只能点击
+         */
+        const val BUTTON_STATE_ONLY_CLICK: Int = 0x201
+
+        /**
+         * 按钮只能长按
+         */
+        const val BUTTON_STATE_ONLY_LONG_CLICK: Int = 0x202
+
+        /**
+         * 按钮点击或者长按两者都可以
+         */
+        const val BUTTON_STATE_BOTH: Int = 0x203
+
+        /**
+         * 按钮点击即是长按模式
+         */
+        const val BUTTON_STATE_CLICK_AND_HOLD: Int = 0x204
+
+        /**
+         * 满进度
+         */
+        private const val FULL_PROGRESS = 1f
+
+        /**
+         * 90度
+         */
+        private const val NINETY_DEGREES = 90
+
+        /**
+         * 未启动状态
+         */
+        private const val RECORD_NOT_STARTED = 0
+
+        /**
+         * 启动状态
+         */
+        private const val RECORD_STARTED = 1
+
+        /**
+         * 结束状态
+         */
+        private const val RECORD_ENDED = 2
+
+        /**
+         * 当前为未触摸状态
+         *
+         *
+         * 为了确保整个按钮的逻辑是：按下 - 放开手，按下时+1，松手+1，最后等于2就是整个流程结束
+         * 如果中间中断或者重置，那就直接减1，就说明中断流程
+         */
+        private const val STEP_NOT_TOUCH = 0
+
+        /**
+         * 当前为按下状态
+         *
+         *
+         * 为了确保整个按钮的逻辑是：按下 - 放开手，按下时+1，松手+1，最后等于2就是整个流程结束
+         * 如果中间中断或者重置，那就直接减1，就说明中断流程
+         */
+        private const val STEP_ACTION_DOWN = 1
+
+        /**
+         * 当前为松手状态
+         *
+         *
+         * 为了确保整个按钮的逻辑是：按下 - 放开手，按下时+1，松手+1，最后等于2就是整个流程结束
+         * 如果中间中断或者重置，那就直接减1，就说明中断流程
+         */
+        private const val STEP_ACTION_UP = 2
+
+        private const val PROGRESS_LIM_TO_FINISH_STARTING_ANIM = 0.1f
     }
-
-    // endregion
-
 }

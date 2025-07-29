@@ -1,4 +1,4 @@
-package com.zhongjh.multimedia.widget.childclickable;
+package com.zhongjh.multimedia.widget.childclickable
 
 /**
  * 一个接口，规范拍摄界面的根布局
@@ -6,12 +6,10 @@ package com.zhongjh.multimedia.widget.childclickable;
  * @author zhongjh
  * @date 2022/8/11
  */
-public interface IChildClickableLayout {
-
+interface IChildClickableLayout {
     /**
      * 是否允许子控件可以点击
      * @param clickable 是否可以点击
      */
-    void setChildClickable(boolean clickable);
-
+    fun setChildClickable(clickable: Boolean)
 }
