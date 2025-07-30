@@ -89,8 +89,6 @@ internal class CircularAnimatedDrawable(color: Int, private val mBorderWidth: Fl
         fBounds.bottom = bounds.bottom - mBorderWidth / 2f - .5f
     }
 
-    /** @noinspection unused
-     */
     init {
         mPaint.isAntiAlias = true
         mPaint.style = Paint.Style.STROKE
@@ -110,20 +108,7 @@ internal class CircularAnimatedDrawable(color: Int, private val mBorderWidth: Fl
         mObjectAnimatorSweep.setDuration(SWEEP_ANIMATOR_DURATION.toLong())
         mObjectAnimatorSweep.repeatMode = ValueAnimator.RESTART
         mObjectAnimatorSweep.repeatCount = ValueAnimator.INFINITE
-        mObjectAnimatorSweep.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-            }
-
-            override fun onAnimationRepeat(animation: Animator) {
-                toggleAppearingMode()
-            }
-        })
+        mObjectAnimatorSweep.addListener(MyAnimatorListener(this))
     }
 
     override fun start() {
@@ -143,6 +128,7 @@ internal class CircularAnimatedDrawable(color: Int, private val mBorderWidth: Fl
         mRunning = false
         mObjectAnimatorAngle.cancel()
         mObjectAnimatorSweep.cancel()
+        mObjectAnimatorSweep.removeAllListeners()
         invalidateSelf()
     }
 
@@ -163,6 +149,18 @@ internal class CircularAnimatedDrawable(color: Int, private val mBorderWidth: Fl
             mCurrentSweepAngle = currentSweepAngle
             invalidateSelf()
         }
+
+    private class MyAnimatorListener(private val drawable: CircularAnimatedDrawable) : Animator.AnimatorListener {
+        override fun onAnimationStart(animation: Animator) {}
+
+        override fun onAnimationEnd(animation: Animator) {}
+
+        override fun onAnimationCancel(animation: Animator) {}
+
+        override fun onAnimationRepeat(animation: Animator) {
+            drawable.toggleAppearingMode()
+        }
+    }
 
     companion object {
         private val ANGLE_INTERPOLATOR: Interpolator = LinearInterpolator()
