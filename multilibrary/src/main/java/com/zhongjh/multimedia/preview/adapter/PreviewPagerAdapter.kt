@@ -18,6 +18,7 @@ import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.preview.adapter.PreviewPagerAdapter.PreviewViewHolder
 import com.zhongjh.multimedia.settings.GlobalSpec.imageEngine
 import java.io.File
+import java.lang.ref.WeakReference
 
 /**
  * @author zhongjh
@@ -36,10 +37,10 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     private val mViewHolderCache = LinkedHashMap<Int, PreviewViewHolder>()
     private var isFirstAttachedToWindow = false
 
-    private var onListener: OnListener? = null
+    private var onListener: WeakReference<OnListener>? = null
 
     fun setOnListener(listener: OnListener) {
-        this.onListener = listener
+        this.onListener = WeakReference(listener)
     }
 
     interface OnListener {
@@ -58,7 +59,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
         super.onViewAttachedToWindow(holder)
         if (!isFirstAttachedToWindow) {
             // 只有第一次初始化该Adapter才触发
-            onListener?.onViewFirstAttachedToWindow(holder)
+            onListener?.get()?.onViewFirstAttachedToWindow(holder)
             isFirstAttachedToWindow = true
         }
     }
@@ -113,6 +114,10 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
 
     fun addAll(items: List<LocalMedia>) {
         this.items.addAll(items)
+    }
+
+    fun onDestroy() {
+        mViewHolderCache.clear()
     }
 
     /**

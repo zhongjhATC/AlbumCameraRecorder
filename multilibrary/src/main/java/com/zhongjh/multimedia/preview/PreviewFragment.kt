@@ -65,6 +65,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.lang.ref.WeakReference
 
 
 /**
@@ -134,29 +135,43 @@ class PreviewFragment : BaseFragment() {
      */
     private val mCompressFileTask: SimpleTask<ArrayList<LocalMedia>> by lazy {
         object : SimpleTask<ArrayList<LocalMedia>>() {
+            private val weakFragment = WeakReference(this@PreviewFragment)
+
             override fun doInBackground(): ArrayList<LocalMedia> {
-                val isOnlyCompressEditPicture = mPreviewType == PreviewType.GRID || mPreviewType == PreviewType.THIRD_PARTY
-                return mAlbumCompressFileTask.compressFileTaskDoInBackground(mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
+                val fragment = weakFragment.get()
+                fragment?.let {
+                    val isOnlyCompressEditPicture = fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
+                    return fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(fragment.mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
+                }.let {
+                    return ArrayList()
+                }
             }
 
             override fun onSuccess(result: ArrayList<LocalMedia>) {
-                setResultOk(result)
+                val fragment = weakFragment.get()
+                fragment?.setResultOk(result)
             }
 
             override fun onFail(t: Throwable) {
-                super.onFail(t)
-                // 结束loading
-                setControlTouchEnable(true)
-                Toast.makeText(mContext, t.message, Toast.LENGTH_SHORT).show()
-                t.message?.let {
-                    Log.e(TAG, it)
+                val fragment = weakFragment.get()
+                fragment?.let {
+                    super.onFail(t)
+                    // 结束loading
+                    fragment.setControlTouchEnable(true)
+                    Toast.makeText(fragment.mContext, t.message, Toast.LENGTH_SHORT).show()
+                    t.message?.let {
+                        Log.e(TAG, it)
+                    }
                 }
             }
 
             override fun onCancel() {
-                super.onCancel()
-                // 结束loading
-                setControlTouchEnable(true)
+                val fragment = weakFragment.get()
+                fragment?.let {
+                    super.onCancel()
+                    // 结束loading
+                    fragment.setControlTouchEnable(true)
+                }
             }
         }
     }
@@ -264,6 +279,7 @@ class PreviewFragment : BaseFragment() {
 
     override fun onDestroy() {
         mViewPager2.unregisterOnPageChangeCallback(mOnPageChangeCallback)
+        mAdapter.onDestroy()
         // 如果依附的Activity是MainActivity,就显示底部控件动画
         if (requireActivity() is MainActivity) {
             (requireActivity() as MainActivity).showHideTableLayoutAnimator(true)

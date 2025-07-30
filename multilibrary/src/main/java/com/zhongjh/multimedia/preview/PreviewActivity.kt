@@ -16,16 +16,18 @@ import com.zhongjh.multimedia.settings.GlobalSpec
  */
 class PreviewActivity : AppCompatActivity() {
     private var mGlobalSpec = GlobalSpec
+    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_containerview_zjh)
         initFragment()
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+        backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 this@PreviewActivity.finish()
             }
-        })
+        }
+        onBackPressedDispatcher.addCallback(this, backPressedCallback)
     }
 
     override fun finish() {
@@ -59,5 +61,10 @@ class PreviewActivity : AppCompatActivity() {
     private fun handleExtra(fragment: Fragment) {
         val bundle = intent.extras
         fragment.arguments = bundle
+    }
+
+    override fun onDestroy() {
+        backPressedCallback.remove()
+        super.onDestroy()
     }
 }
