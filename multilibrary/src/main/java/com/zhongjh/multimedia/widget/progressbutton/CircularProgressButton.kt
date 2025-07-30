@@ -129,19 +129,35 @@ open class CircularProgressButton : AppCompatButton {
     }
 
     private fun getNormalColor(colorStateList: ColorStateList?): Int {
-        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_enabled), 0)
+        return colorStateList?.let {
+            colorStateList.getColorForState(intArrayOf(android.R.attr.state_enabled), 0)
+        }.let {
+            0
+        }
     }
 
     private fun getPressedColor(colorStateList: ColorStateList?): Int {
-        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_pressed), 0)
+        return colorStateList?.let {
+            colorStateList.getColorForState(intArrayOf(android.R.attr.state_pressed), 0)
+        }.let {
+            0
+        }
     }
 
     private fun getFocusedColor(colorStateList: ColorStateList?): Int {
-        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_focused), 0)
+        return colorStateList?.let {
+            colorStateList.getColorForState(intArrayOf(android.R.attr.state_focused), 0)
+        }.let {
+            0
+        }
     }
 
     private fun getDisabledColor(colorStateList: ColorStateList?): Int {
-        return colorStateList!!.getColorForState(intArrayOf(-android.R.attr.state_enabled), 0)
+        return colorStateList?.let {
+            colorStateList.getColorForState(intArrayOf(android.R.attr.state_enabled), 0)
+        }.let {
+            0
+        }
     }
 
     private fun createDrawable(color: Int): StrokeGradientDrawable? {
@@ -309,16 +325,18 @@ open class CircularProgressButton : AppCompatButton {
     }
 
     private fun drawIndeterminateProgress(canvas: Canvas) {
-        mAnimatedDrawable?.draw(canvas).let {
+        if (mAnimatedDrawable == null) {
             val offset = (width - height) / 2
             mAnimatedDrawable = CircularAnimatedDrawable(mColorIndicator, mStrokeWidth.toFloat())
             val left = offset + mPaddingProgress
             val right = width - offset - mPaddingProgress
             val bottom = height - mPaddingProgress
             val top = mPaddingProgress
-            mAnimatedDrawable.setBounds(left, top, right, bottom)
-            mAnimatedDrawable.callback = this
-            mAnimatedDrawable.start()
+            mAnimatedDrawable?.setBounds(left, top, right, bottom)
+            mAnimatedDrawable?.callback = this
+            mAnimatedDrawable?.start()
+        } else {
+            mAnimatedDrawable?.draw(canvas)
         }
     }
 
@@ -328,11 +346,11 @@ open class CircularProgressButton : AppCompatButton {
             val size = height - mPaddingProgress * 2
             mProgressDrawable = CircularProgressDrawable(size, mStrokeWidth, mColorIndicator)
             val left = offset + mPaddingProgress
-            mProgressDrawable!!.setBounds(left, mPaddingProgress, left, mPaddingProgress)
+            mProgressDrawable?.setBounds(left, mPaddingProgress, left, mPaddingProgress)
         }
         val sweepAngle = (360f / mMaxProgress) * mProgress
-        mProgressDrawable!!.setSweepAngle(sweepAngle)
-        mProgressDrawable!!.draw(canvas)
+        mProgressDrawable?.setSweepAngle(sweepAngle)
+        mProgressDrawable?.draw(canvas)
     }
 
     override fun verifyDrawable(who: Drawable): Boolean {
@@ -611,11 +629,11 @@ open class CircularProgressButton : AppCompatButton {
         }
 
     override fun setBackgroundColor(color: Int) {
-        background!!.gradientDrawable.setColor(color)
+        background?.gradientDrawable?.setColor(color)
     }
 
     fun setStrokeColor(color: Int) {
-        background!!.strokeColor = color
+        background?.strokeColor = color
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
