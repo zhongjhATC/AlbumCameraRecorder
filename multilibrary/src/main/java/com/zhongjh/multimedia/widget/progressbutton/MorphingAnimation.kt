@@ -7,7 +7,7 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.widget.TextView
 
-internal class MorphingAnimation(private val mView: TextView, private val mDrawable: StrokeGradientDrawable) {
+internal class MorphingAnimation(private val mView: TextView, private val mDrawable: StrokeGradientDrawable?) {
     private var mListener: OnAnimationEndListener? = null
 
     private var mDuration = 0
@@ -72,7 +72,7 @@ internal class MorphingAnimation(private val mView: TextView, private val mDrawa
 
     fun start() {
         val widthAnimation = ValueAnimator.ofInt(mFromWidth, mToWidth)
-        val gradientDrawable = mDrawable.gradientDrawable
+        val gradientDrawable = mDrawable?.gradientDrawable
         widthAnimation.addUpdateListener { animation: ValueAnimator ->
             val value = animation.animatedValue as Int
             val leftOffset: Int
@@ -88,8 +88,7 @@ internal class MorphingAnimation(private val mView: TextView, private val mDrawa
                 rightOffset = mToWidth - leftOffset
                 padding = (mPadding - mPadding * animation.animatedFraction).toInt()
             }
-            gradientDrawable
-                .setBounds(leftOffset + padding, padding, rightOffset - padding, mView.height - padding)
+            gradientDrawable?.setBounds(leftOffset + padding, padding, rightOffset - padding, mView.height - padding)
         }
 
         val bgColorAnimation = ObjectAnimator.ofInt(gradientDrawable, "color", mFromColor, mToColor)
@@ -105,21 +104,21 @@ internal class MorphingAnimation(private val mView: TextView, private val mDrawa
         val animatorSet = AnimatorSet()
         animatorSet.setDuration(mDuration.toLong())
         animatorSet.playTogether(widthAnimation, bgColorAnimation, strokeColorAnimation, cornerAnimation)
-        animatorSet.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-                mListener?.onAnimationEnd()
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-            }
-
-            override fun onAnimationRepeat(animation: Animator) {
-            }
-        })
+        animatorSet.addListener(MyAnimatorListener(this))
         animatorSet.start()
+    }
+
+    private class MyAnimatorListener(private val morphingAnimation: MorphingAnimation) : Animator.AnimatorListener {
+        override fun onAnimationStart(animation: Animator) {}
+
+        override fun onAnimationEnd(animation: Animator) {
+            morphingAnimation.mListener?.onAnimationEnd()
+            morphingAnimation.mListener = null
+        }
+
+        override fun onAnimationCancel(animation: Animator) {}
+
+        override fun onAnimationRepeat(animation: Animator) {}
     }
 
     companion object {
