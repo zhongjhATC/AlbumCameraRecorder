@@ -1,90 +1,51 @@
-package com.zhongjh.multimedia.widget.progressbutton;
+package com.zhongjh.multimedia.widget.progressbutton
 
-import android.annotation.SuppressLint;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
+import android.annotation.SuppressLint
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.RectF
+import android.graphics.drawable.Drawable
 
-import androidx.annotation.NonNull;
+internal class CircularProgressDrawable(val size: Int, private val mStrokeWidth: Int, private val mStrokeColor: Int) : Drawable() {
+    private var mSweepAngle = 0f
+    private val mStartAngle = -90f
+    private val mRectF by lazy {
+        val index = mStrokeWidth / 2
+        val rect = RectF(index.toFloat(), index.toFloat(), (size - index).toFloat(), (size - index).toFloat())
+        rect
+    }
+    private val mPaint by lazy {
+        val paint = Paint()
+        paint.isAntiAlias = true
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = mStrokeWidth.toFloat()
+        paint.color = mStrokeColor
+        paint
+    }
+    private var mPath = Path()
 
-class CircularProgressDrawable extends Drawable {
-
-    private float mSweepAngle;
-    private final float mStartAngle;
-    private final int mSize;
-    private final int mStrokeWidth;
-    private final int mStrokeColor;
-
-    /** @noinspection unused*/
-    public CircularProgressDrawable(int size, int strokeWidth, int strokeColor) {
-        mSize = size;
-        mStrokeWidth = strokeWidth;
-        mStrokeColor = strokeColor;
-        mStartAngle = -90;
-        mSweepAngle = 0;
+    fun setSweepAngle(sweepAngle: Float) {
+        mSweepAngle = sweepAngle
     }
 
-    public void setSweepAngle(float sweepAngle) {
-        mSweepAngle = sweepAngle;
+    override fun draw(canvas: Canvas) {
+        val bounds = bounds
+        mPath.reset()
+        mPath.addArc(mRectF, mStartAngle, mSweepAngle)
+        mPath.offset(bounds.left.toFloat(), bounds.top.toFloat())
+        canvas.drawPath(mPath, mPaint)
     }
 
-    public int getSize() {
-        return mSize;
+    override fun setAlpha(alpha: Int) {
     }
 
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        final Rect bounds = getBounds();
-
-        if (mPath == null) {
-            mPath = new Path();
-        }
-        mPath.reset();
-        mPath.addArc(getRect(), mStartAngle, mSweepAngle);
-        mPath.offset(bounds.left, bounds.top);
-        canvas.drawPath(mPath, createPaint());
-    }
-
-    @Override
-    public void setAlpha(int alpha) {
-
-    }
-
-    @Override
-    public void setColorFilter(ColorFilter cf) {
+    override fun setColorFilter(cf: ColorFilter?) {
     }
 
     @SuppressLint("WrongConstant")
-    @Override
-    public int getOpacity() {
-        return 1;
-    }
-
-    private RectF mRectF;
-    private Paint mPaint;
-    private Path mPath;
-
-    private RectF getRect() {
-        if (mRectF == null) {
-            int index = mStrokeWidth / 2;
-            mRectF = new RectF(index, index, getSize() - index, getSize() - index);
-        }
-        return mRectF;
-    }
-
-    private Paint createPaint() {
-        if (mPaint == null) {
-            mPaint = new Paint();
-            mPaint.setAntiAlias(true);
-            mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setStrokeWidth(mStrokeWidth);
-            mPaint.setColor(mStrokeColor);
-        }
-
-        return mPaint;
+    override fun getOpacity(): Int {
+        return 1
     }
 }

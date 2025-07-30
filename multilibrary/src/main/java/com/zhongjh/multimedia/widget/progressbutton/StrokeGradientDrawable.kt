@@ -1,37 +1,22 @@
-package com.zhongjh.multimedia.widget.progressbutton;
+package com.zhongjh.multimedia.widget.progressbutton
 
-import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.GradientDrawable
 
-public class StrokeGradientDrawable {
+class StrokeGradientDrawable(val gradientDrawable: GradientDrawable) {
+    private var mStrokeWidth = 0
+    private var mStrokeColor = 0
 
-    private int mStrokeWidth;
-    private int mStrokeColor;
+    var strokeWidth: Int
+        get() = mStrokeWidth
+        set(strokeWidth) {
+            mStrokeWidth = strokeWidth
+            gradientDrawable.setStroke(strokeWidth, strokeColor)
+        }
 
-    private final GradientDrawable mGradientDrawable;
-
-    public StrokeGradientDrawable(GradientDrawable drawable) {
-        mGradientDrawable = drawable;
-    }
-
-    public int getStrokeWidth() {
-        return mStrokeWidth;
-    }
-
-    public void setStrokeWidth(int strokeWidth) {
-        mStrokeWidth = strokeWidth;
-        mGradientDrawable.setStroke(strokeWidth, getStrokeColor());
-    }
-
-    public int getStrokeColor() {
-        return mStrokeColor;
-    }
-
-    public void setStrokeColor(int strokeColor) {
-        mStrokeColor = strokeColor;
-        mGradientDrawable.setStroke(getStrokeWidth(), strokeColor);
-    }
-
-    public GradientDrawable getGradientDrawable() {
-        return mGradientDrawable;
-    }
+    var strokeColor: Int
+        get() = mStrokeColor
+        set(strokeColor) {
+            mStrokeColor = strokeColor
+            gradientDrawable.setStroke(strokeWidth, strokeColor)
+        }
 }

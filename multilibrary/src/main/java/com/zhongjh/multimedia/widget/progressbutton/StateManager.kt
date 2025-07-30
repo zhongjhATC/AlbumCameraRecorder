@@ -1,32 +1,23 @@
-package com.zhongjh.multimedia.widget.progressbutton;
+package com.zhongjh.multimedia.widget.progressbutton
 
-class StateManager {
+internal class StateManager(progressButton: CircularProgressButton) {
+    private val isEnabled: Boolean
+    private var progress: Int
 
-    private final boolean mIsEnabled;
-    private int mProgress;
-
-    public StateManager(CircularProgressButton progressButton) {
-        mIsEnabled = progressButton.isEnabled();
-        mProgress = progressButton.getProgress();
+    init {
+        isEnabled = progressButton.isEnabled
+        progress = progressButton.progress
     }
 
-    public void saveProgress(CircularProgressButton progressButton) {
-        mProgress = progressButton.getProgress();
+    fun saveProgress(progressButton: CircularProgressButton) {
+        progress = progressButton.progress
     }
 
-    public boolean isEnabled() {
-        return mIsEnabled;
-    }
-
-    public int getProgress() {
-        return mProgress;
-    }
-
-    public void checkState(CircularProgressButton progressButton) {
-        if (progressButton.getProgress() != getProgress()) {
-            progressButton.setProgress(progressButton.getProgress());
-        } else if(progressButton.isEnabled() != isEnabled()) {
-            progressButton.setEnabled(progressButton.isEnabled());
+    fun checkState(progressButton: CircularProgressButton) {
+        if (progressButton.progress != progress) {
+            progressButton.progress = progressButton.progress
+        } else if (progressButton.isEnabled != isEnabled) {
+            progressButton.isEnabled = progressButton.isEnabled
         }
     }
 }

@@ -1,6 +1,5 @@
-package com.zhongjh.multimedia.widget.progressbutton;
+package com.zhongjh.multimedia.widget.progressbutton
 
-interface OnAnimationEndListener {
-
-    void onAnimationEnd();
+internal interface OnAnimationEndListener {
+    fun onAnimationEnd()
 }
