@@ -142,7 +142,7 @@ class PreviewFragment : BaseFragment() {
                 fragment?.let {
                     val isOnlyCompressEditPicture = fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
                     return fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(fragment.mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
-                }.let {
+                } ?: let {
                     return ArrayList()
                 }
             }

@@ -328,10 +328,7 @@ class SoundRecordingFragment : BaseFragment() {
             mediaPlayer?.let {
                 // 恢复当前暂停的媒体播放器
                 resumePlaying()
-            }.let {
-                // 第一次播放
-                startPlaying()
-            }
+            } ?: startPlaying()
         } else {
             // 暂停播放
             pausePlaying()

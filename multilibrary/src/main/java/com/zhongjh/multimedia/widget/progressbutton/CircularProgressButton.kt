@@ -7,8 +7,10 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
+import android.os.Parcelable.Creator
 import android.util.AttributeSet
 import android.util.StateSet
 import androidx.appcompat.widget.AppCompatButton
@@ -16,8 +18,8 @@ import androidx.core.content.res.ResourcesCompat
 import com.zhongjh.multimedia.R
 
 
-class CircularProgressButton : AppCompatButton {
-    private var mContext: Context? = null
+open class CircularProgressButton : AppCompatButton {
+    private lateinit var mContext: Context
 
     private var background: StrokeGradientDrawable? = null
     private var mAnimatedDrawable: CircularAnimatedDrawable? = null
@@ -27,12 +29,12 @@ class CircularProgressButton : AppCompatButton {
     private var mCompleteColorState: ColorStateList? = null
     private var mErrorColorState: ColorStateList? = null
 
-    private var mIdleStateDrawable: StateListDrawable? = null
-    private var mCompleteStateDrawable: StateListDrawable? = null
-    private var mErrorStateDrawable: StateListDrawable? = null
+    private var mIdleStateDrawable = StateListDrawable()
+    private var mCompleteStateDrawable = StateListDrawable()
+    private var mErrorStateDrawable = StateListDrawable()
 
-    private var mStateManager: StateManager? = null
-    private var mState: State? = null
+    private lateinit var mStateManager: StateManager
+    private var mState = State.IDLE
     var idleText: String? = null
     var completeText: String? = null
     var errorText: String? = null
@@ -77,7 +79,6 @@ class CircularProgressButton : AppCompatButton {
         initAttributes(context, attributeSet)
 
         mMaxProgress = 100
-        mState = State.IDLE
         mStateManager = StateManager(this)
 
         text = idleText
@@ -90,24 +91,22 @@ class CircularProgressButton : AppCompatButton {
         val colorPressed = getPressedColor(mErrorColorState)
 
         val drawablePressed = createDrawable(colorPressed)
-        mErrorStateDrawable = StateListDrawable()
 
-        if (drawablePressed != null) {
-            mErrorStateDrawable!!.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed.gradientDrawable)
+        drawablePressed?.let {
+            mErrorStateDrawable.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed.gradientDrawable)
         }
-        mErrorStateDrawable!!.addState(StateSet.WILD_CARD, background!!.gradientDrawable)
+        mErrorStateDrawable.addState(StateSet.WILD_CARD, background?.gradientDrawable)
     }
 
     private fun initCompleteStateDrawable() {
         val colorPressed = getPressedColor(mCompleteColorState)
 
         val drawablePressed = createDrawable(colorPressed)
-        mCompleteStateDrawable = StateListDrawable()
 
-        if (drawablePressed != null) {
-            mCompleteStateDrawable!!.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed.gradientDrawable)
+        drawablePressed?.let {
+            mCompleteStateDrawable.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed.gradientDrawable)
         }
-        mCompleteStateDrawable!!.addState(StateSet.WILD_CARD, background!!.gradientDrawable)
+        mCompleteStateDrawable.addState(StateSet.WILD_CARD, background?.gradientDrawable)
     }
 
     private fun initIdleStateDrawable() {
@@ -122,38 +121,47 @@ class CircularProgressButton : AppCompatButton {
         val drawableDisabled = createDrawable(colorDisabled)
         val drawableFocused = createDrawable(colorFocused)
         val drawablePressed = createDrawable(colorPressed)
-        mIdleStateDrawable = StateListDrawable()
 
-        if (drawablePressed != null) {
-            mIdleStateDrawable!!.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed.gradientDrawable)
-        }
-        if (drawableFocused != null) {
-            mIdleStateDrawable!!.addState(intArrayOf(android.R.attr.state_focused), drawableFocused.gradientDrawable)
-        }
-        if (drawableDisabled != null) {
-            mIdleStateDrawable!!.addState(intArrayOf(-android.R.attr.state_enabled), drawableDisabled.gradientDrawable)
-        }
-        mIdleStateDrawable!!.addState(StateSet.WILD_CARD, background!!.gradientDrawable)
+        mIdleStateDrawable.addState(intArrayOf(android.R.attr.state_pressed), drawablePressed?.gradientDrawable)
+        mIdleStateDrawable.addState(intArrayOf(android.R.attr.state_focused), drawableFocused?.gradientDrawable)
+        mIdleStateDrawable.addState(intArrayOf(-android.R.attr.state_enabled), drawableDisabled?.gradientDrawable)
+        mIdleStateDrawable.addState(StateSet.WILD_CARD, background?.gradientDrawable)
     }
 
     private fun getNormalColor(colorStateList: ColorStateList?): Int {
-        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_enabled), 0)
+        return colorStateList?.let {
+            colorStateList.getColorForState(intArrayOf(android.R.attr.state_enabled), 0)
+        } ?: let {
+            0
+        }
     }
 
     private fun getPressedColor(colorStateList: ColorStateList?): Int {
-        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_pressed), 0)
+        return colorStateList?.let {
+            colorStateList.getColorForState(intArrayOf(android.R.attr.state_pressed), 0)
+        } ?: let {
+            0
+        }
     }
 
     private fun getFocusedColor(colorStateList: ColorStateList?): Int {
-        return colorStateList!!.getColorForState(intArrayOf(android.R.attr.state_focused), 0)
+        return colorStateList?.let {
+            colorStateList.getColorForState(intArrayOf(android.R.attr.state_focused), 0)
+        } ?: let {
+            0
+        }
     }
 
     private fun getDisabledColor(colorStateList: ColorStateList?): Int {
-        return colorStateList!!.getColorForState(intArrayOf(-android.R.attr.state_enabled), 0)
+        return colorStateList?.let {
+            colorStateList.getColorForState(intArrayOf(android.R.attr.state_enabled), 0)
+        } ?: let {
+            0
+        }
     }
 
     private fun createDrawable(color: Int): StrokeGradientDrawable? {
-        val drawable = ResourcesCompat.getDrawable(resources, R.drawable.cpb_background, mContext!!.theme)
+        val drawable = ResourcesCompat.getDrawable(resources, R.drawable.cpb_background, mContext.theme)
         if (drawable != null) {
             val gradientDrawable = drawable.mutate() as GradientDrawable
             gradientDrawable.setColor(color)
@@ -213,40 +221,42 @@ class CircularProgressButton : AppCompatButton {
      * @param attributeSet 属性
      */
     private fun initAttributes(context: Context, attributeSet: AttributeSet?) {
-        val attr = getTypedArray(context, attributeSet, R.styleable.CircularProgressButton) ?: return
+        val attr = getTypedArray(context, attributeSet, R.styleable.CircularProgressButton)
 
         try {
             // 由Activity主题提供的样式：提交按钮的文字的文本
-            val confirmTextValue = mContext!!.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_text_value))
-            if (confirmTextValue.length() <= 0) {
-                idleText = attr.getString(R.styleable.CircularProgressButton_cpb_textIdle)
+            val confirmTextValue = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_text_value))
+            idleText = if (confirmTextValue.length() <= 0) {
+                attr.getString(R.styleable.CircularProgressButton_cpb_textIdle)
             } else {
-                idleText = confirmTextValue.getText(0).toString()
+                confirmTextValue.getText(0).toString()
             }
 
             // 由Activity主题提供的样式：提交按钮的文字的颜色
-            val confirmTextColor = mContext!!.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_text_color))
-            val confirmTextColorDefault = ResourcesCompat.getColor(resources, R.color.white, mContext!!.theme)
+            val confirmTextColor = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_text_color))
+            val confirmTextColorDefault = ResourcesCompat.getColor(resources, R.color.white, mContext.theme)
             setTextColor(confirmTextColor.getColor(0, confirmTextColorDefault))
 
             // 由Activity主题提供的样式：提交按钮的背景 - 深颜色
-            val confirmBackground = mContext!!.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_background_color)).getColorStateList(0)
-            val confirmBackgroundDefault = ResourcesCompat.getColorStateList(resources, R.color.operation_background, mContext!!.theme)
+            val confirmBackgroundColor = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_background_color))
+            val confirmBackground = confirmBackgroundColor.getColorStateList(0)
+
+            val confirmBackgroundDefault = ResourcesCompat.getColorStateList(resources, R.color.operation_background, mContext.theme)
 
             // 由Activity主题提供的样式：提交按钮的背景 - 浅颜色
-            val confirmBackgroundProgress = mContext!!.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_background_progress_color))
-            val confirmBackgroundProgressDefault = ResourcesCompat.getColor(resources, R.color.white, mContext!!.theme)
+            val confirmBackgroundProgress = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_background_progress_color))
+            val confirmBackgroundProgressDefault = ResourcesCompat.getColor(resources, R.color.white, mContext.theme)
 
             mIdleColorState = confirmBackground ?: confirmBackgroundDefault
             mCompleteColorState = confirmBackground ?: confirmBackgroundDefault
             mErrorColorState = confirmBackground ?: confirmBackgroundDefault
 
             // 由Activity主题提供的样式：提交按钮的完成时图标
-            val confirmComplete = mContext!!.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_icon_complete))
+            val confirmComplete = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_icon_complete))
             mIconComplete = confirmComplete.getResourceId(0, R.drawable.ic_baseline_done)
 
             // 由Activity主题提供的样式：提交按钮的失败时图标
-            val confirmError = mContext!!.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_icon_error))
+            val confirmError = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_icon_error))
             mIconError = confirmError.getResourceId(0, R.drawable.ic_baseline_close_24)
 
             completeText = attr.getString(R.styleable.CircularProgressButton_cpb_textComplete)
@@ -263,17 +273,43 @@ class CircularProgressButton : AppCompatButton {
             mColorProgress = confirmBackgroundProgress.getColor(0, confirmBackgroundProgressDefault)
             // 进度时的周边线样式
             mColorIndicatorBackground = getNormalColor(mIdleColorState)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmTextValue.close()
+            } else {
+                confirmTextValue.recycle()
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmBackgroundColor.close()
+            } else {
+                confirmBackgroundColor.recycle()
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmBackgroundProgress.close()
+            } else {
+                confirmBackgroundProgress.recycle()
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmComplete.close()
+            } else {
+                confirmComplete.recycle()
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                confirmError.close()
+            } else {
+                confirmError.recycle()
+            }
         } finally {
             attr.recycle()
         }
     }
 
-    protected fun getColor(id: Int): Int {
-        return ResourcesCompat.getColor(resources, id, mContext!!.theme)
+    private fun getColor(id: Int): Int {
+        return ResourcesCompat.getColor(resources, id, mContext.theme)
     }
 
-    protected fun getTypedArray(context: Context, attributeSet: AttributeSet?, attr: IntArray?): TypedArray {
-        return context.obtainStyledAttributes(attributeSet, attr!!, 0, 0)
+    private fun getTypedArray(context: Context, attributeSet: AttributeSet?, attr: IntArray): TypedArray {
+        return context.obtainStyledAttributes(attributeSet, attr, 0, 0)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -296,11 +332,11 @@ class CircularProgressButton : AppCompatButton {
             val right = width - offset - mPaddingProgress
             val bottom = height - mPaddingProgress
             val top = mPaddingProgress
-            mAnimatedDrawable!!.setBounds(left, top, right, bottom)
-            mAnimatedDrawable!!.callback = this
-            mAnimatedDrawable!!.start()
+            mAnimatedDrawable?.setBounds(left, top, right, bottom)
+            mAnimatedDrawable?.callback = this
+            mAnimatedDrawable?.start()
         } else {
-            mAnimatedDrawable!!.draw(canvas)
+            mAnimatedDrawable?.draw(canvas)
         }
     }
 
@@ -310,11 +346,11 @@ class CircularProgressButton : AppCompatButton {
             val size = height - mPaddingProgress * 2
             mProgressDrawable = CircularProgressDrawable(size, mStrokeWidth, mColorIndicator)
             val left = offset + mPaddingProgress
-            mProgressDrawable!!.setBounds(left, mPaddingProgress, left, mPaddingProgress)
+            mProgressDrawable?.setBounds(left, mPaddingProgress, left, mPaddingProgress)
         }
         val sweepAngle = (360f / mMaxProgress) * mProgress
-        mProgressDrawable!!.setSweepAngle(sweepAngle)
-        mProgressDrawable!!.draw(canvas)
+        mProgressDrawable?.setSweepAngle(sweepAngle)
+        mProgressDrawable?.draw(canvas)
     }
 
     override fun verifyDrawable(who: Drawable): Boolean {
@@ -385,7 +421,7 @@ class CircularProgressButton : AppCompatButton {
     private val mProgressStateListener = OnAnimationEndListener {
         mMorphingInProgress = false
         mState = State.PROGRESS
-        mStateManager!!.checkState(this@CircularProgressButton)
+        mStateManager.checkState(this@CircularProgressButton)
     }
 
     private fun morphProgressToComplete() {
@@ -427,7 +463,7 @@ class CircularProgressButton : AppCompatButton {
             mMorphingInProgress = false
             mState = State.COMPLETE
 
-            mStateManager!!.checkState(this@CircularProgressButton)
+            mStateManager.checkState(this@CircularProgressButton)
         }
     }
 
@@ -462,11 +498,11 @@ class CircularProgressButton : AppCompatButton {
     private val mIdleStateListener: OnAnimationEndListener = object : OnAnimationEndListener {
         override fun onAnimationEnd() {
             removeIcon()
-            text = this@CircularProgressButton.idleText
+            setText(this@CircularProgressButton.idleText)
             mMorphingInProgress = false
             mState = State.IDLE
 
-            mStateManager!!.checkState(this@CircularProgressButton)
+            mStateManager.checkState(this@CircularProgressButton)
         }
     }
 
@@ -497,17 +533,19 @@ class CircularProgressButton : AppCompatButton {
         animation.start()
     }
 
-    private val mErrorStateListener: OnAnimationEndListener = OnAnimationEndListener {
-        if (mIconError != 0) {
-            text = null
-            setIcon(mIconError)
-        } else {
-            text = this@CircularProgressButton.errorText
-        }
-        mMorphingInProgress = false
-        mState = State.ERROR
+    private val mErrorStateListener: OnAnimationEndListener = object : OnAnimationEndListener {
+        override fun onAnimationEnd() {
+            if (mIconError != 0) {
+                text = null
+                setIcon(mIconError)
+            } else {
+                setText(this@CircularProgressButton.errorText)
+            }
+            mMorphingInProgress = false
+            mState = State.ERROR
 
-        mStateManager!!.checkState(this@CircularProgressButton)
+            mStateManager.checkState(this@CircularProgressButton)
+        }
     }
 
     private fun morphProgressToIdle() {
@@ -523,14 +561,14 @@ class CircularProgressButton : AppCompatButton {
             text = idleText
             mMorphingInProgress = false
             mState = State.IDLE
-            mStateManager!!.checkState(this@CircularProgressButton)
+            mStateManager.checkState(this@CircularProgressButton)
         }
 
         animation.start()
     }
 
     private fun setIcon(icon: Int) {
-        val drawable = ResourcesCompat.getDrawable(resources, icon, mContext!!.theme)
+        val drawable = ResourcesCompat.getDrawable(resources, icon, mContext.theme)
         if (drawable != null) {
             val padding = (width / 2) - (drawable.intrinsicWidth / 2)
             setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
@@ -559,7 +597,7 @@ class CircularProgressButton : AppCompatButton {
                 return
             }
 
-            mStateManager!!.saveProgress(this)
+            mStateManager.saveProgress(this)
 
             if (mProgress >= mMaxProgress) {
                 if (mState == State.PROGRESS) {
@@ -591,11 +629,11 @@ class CircularProgressButton : AppCompatButton {
         }
 
     override fun setBackgroundColor(color: Int) {
-        background!!.gradientDrawable.setColor(color)
+        background?.gradientDrawable?.setColor(color)
     }
 
     fun setStrokeColor(color: Int) {
-        background!!.strokeColor = color
+        background?.strokeColor = color
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -605,7 +643,7 @@ class CircularProgressButton : AppCompatButton {
         }
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
+    override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
         val savedState = SavedState(superState)
         savedState.mProgress = mProgress
@@ -636,10 +674,10 @@ class CircularProgressButton : AppCompatButton {
 
         constructor(parcel: Parcelable?) : super(parcel)
 
-        private constructor(`in`: Parcel) : super(`in`) {
-            mProgress = `in`.readInt()
-            mIndeterminateProgressMode = `in`.readInt() == 1
-            mConfigurationChanged = `in`.readInt() == 1
+        private constructor(parcel: Parcel) : super(parcel) {
+            mProgress = parcel.readInt()
+            mIndeterminateProgressMode = parcel.readInt() == 1
+            mConfigurationChanged = parcel.readInt() == 1
         }
 
         override fun writeToParcel(out: Parcel, flags: Int) {
@@ -649,7 +687,8 @@ class CircularProgressButton : AppCompatButton {
             out.writeInt(if (mConfigurationChanged) 1 else 0)
         }
 
-        companion object CREATOR : Parcelable.Creator<SavedState> {
+        companion object CREATOR : Creator<SavedState> {
+
             override fun createFromParcel(parcel: Parcel): SavedState {
                 return SavedState(parcel)
             }
