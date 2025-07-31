@@ -280,8 +280,6 @@ class SoundRecordingFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         // 移除pvLayout的所有监听器（需SoundRecordingLayout提供移除方法）
-        viewHolder.pvLayout.setPhotoVideoListener(null)
-        viewHolder.pvLayout.setOperateListener(null)
         viewHolder.pvLayout.soundRecordingLayoutViewHolder.rlSoundRecording.setOnClickListener(null)
     }
 

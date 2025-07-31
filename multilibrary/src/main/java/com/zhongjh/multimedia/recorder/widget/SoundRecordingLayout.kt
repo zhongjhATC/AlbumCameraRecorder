@@ -20,8 +20,8 @@ class SoundRecordingLayout : BaseOperationLayout {
      */
     var state: Int = STATE_PREVIEW
 
-    val soundRecordingLayoutViewHolder: SoundRecordingLayoutViewHolder
-        get() = viewHolder as SoundRecordingLayoutViewHolder
+    val soundRecordingLayoutViewHolder: SoundRecordingLayoutBaseViewHolder
+        get() = viewHolder as SoundRecordingLayoutBaseViewHolder
 
     constructor(context: Context) : super(context)
 
@@ -29,8 +29,8 @@ class SoundRecordingLayout : BaseOperationLayout {
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    public override fun newViewHolder(): SoundRecordingLayoutViewHolder {
-        return SoundRecordingLayoutViewHolder(inflate(context, R.layout.layout_soundrecording_operate_zjh, this))
+    public override fun newViewHolder(): SoundRecordingLayoutBaseViewHolder {
+        return SoundRecordingLayoutBaseViewHolder(inflate(context, R.layout.layout_soundrecording_operate_zjh, this))
     }
 
     override fun startShowLeftRightButtonsAnimator(showCancel: Boolean) {
@@ -49,7 +49,7 @@ class SoundRecordingLayout : BaseOperationLayout {
         soundRecordingLayoutViewHolder.rlSoundRecording.visibility = INVISIBLE
     }
 
-    class SoundRecordingLayoutViewHolder(rootView: View) : ViewHolder(rootView) {
+    class SoundRecordingLayoutBaseViewHolder(rootView: View) : BaseViewHolder(rootView) {
         val ivRecord: ImageView = rootView.findViewById(R.id.ivRecord)
         val rlSoundRecording: RelativeLayout = rootView.findViewById(R.id.rlSoundRecording)
 

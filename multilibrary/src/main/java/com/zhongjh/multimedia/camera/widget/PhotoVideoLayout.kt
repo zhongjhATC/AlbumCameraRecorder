@@ -15,16 +15,16 @@ import com.zhongjh.multimedia.widget.BaseOperationLayout
  * @date 2018/10/16
  */
 open class PhotoVideoLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseOperationLayout(context, attrs, defStyleAttr) {
-    val photoVideoLayoutViewHolder: ViewHolder
-        get() = viewHolder as ViewHolder
+    val photoVideoLayoutViewHolder: BaseViewHolder
+        get() = viewHolder as BaseViewHolder
 
-    public override fun newViewHolder(): ViewHolder {
+    public override fun newViewHolder(): BaseViewHolder {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.layout_photovideo_operate_zjh, this, true)
-        return ViewHolder(view)
+        return BaseViewHolder(view)
     }
 
-    class ViewHolder(rootView: View) : BaseOperationLayout.ViewHolder(rootView) {
+    class BaseViewHolder(rootView: View) : BaseOperationLayout.BaseViewHolder(rootView) {
         val rlEdit: RelativeLayout = rootView.findViewById(R.id.rlEdit)
     }
 }

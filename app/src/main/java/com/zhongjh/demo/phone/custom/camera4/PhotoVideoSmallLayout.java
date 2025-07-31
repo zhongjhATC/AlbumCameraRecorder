@@ -32,11 +32,12 @@ public class PhotoVideoSmallLayout extends PhotoVideoLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    @NonNull
     @Override
-    public ViewHolder newViewHolder() {
+    public BaseViewHolder newViewHolder() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View view = inflater.inflate(R.layout.layout_photovideo_operate_zjh_small, this, true);
-        return new ViewHolder(view);
+        return new BaseViewHolder(view);
     }
 
 }

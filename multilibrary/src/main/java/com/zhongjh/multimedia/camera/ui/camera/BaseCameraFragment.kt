@@ -237,7 +237,6 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         closeView?.setOnClickListener(null)
         flashView?.setOnClickListener(null)
         switchView?.setOnClickListener(null)
-        photoVideoLayout.setPhotoVideoListener(null)
         cameraManage.setOnCameraManageListener(null)
     }
 
