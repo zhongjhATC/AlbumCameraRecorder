@@ -1,12 +1,10 @@
-package com.zhongjh.multimedia.widget;
+package com.zhongjh.multimedia.widget
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-
-import androidx.viewpager.widget.ViewPager;
-
-import android.util.AttributeSet;
-import android.view.MotionEvent;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.util.AttributeSet
+import android.view.MotionEvent
+import androidx.viewpager.widget.ViewPager
 
 /**
  * 可以控制是否能滑动的 ViewPager
@@ -14,24 +12,18 @@ import android.view.MotionEvent;
  * @author zhongjh
  * @date 2018/10/10
  */
-public class NoScrollViewPager extends ViewPager {
+class NoScrollViewPager : ViewPager {
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    public NoScrollViewPager(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public NoScrollViewPager(Context context) {
-        super(context);
-    }
+    constructor(context: Context) : super(context)
 
     /**
      * 是否拦截
      * 拦截:会走到自己的onTouchEvent方法里面来
      * 不拦截:事件传递给子孩子
      */
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return false;
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        return false
     }
 
     /**
@@ -40,9 +32,7 @@ public class NoScrollViewPager extends ViewPager {
      * 不消费:往父控件传
      */
     @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        return true;
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        return true
     }
-
 }

@@ -518,7 +518,7 @@ open class MainActivity : AppCompatActivity() {
         }
     }
 
-    inner class MyPagerAdapter(fa: FragmentActivity?, mSpec: GlobalSpec) : FragmentStateAdapter(fa!!) {
+    inner class MyPagerAdapter(fa: FragmentActivity, mSpec: GlobalSpec) : FragmentStateAdapter(fa) {
         /**
          * 数量
          */
@@ -598,9 +598,7 @@ open class MainActivity : AppCompatActivity() {
             } else if (mTitles[position] == getString(R.string.z_multi_library_sound_recording)) {
                 SoundRecordingFragment.newInstance()
             } else {
-                if (mSpec.cameraSetting != null && mSpec.cameraSetting!!.baseCameraFragment != null) {
-                    mSpec.cameraSetting!!.baseCameraFragment!!
-                } else {
+                mSpec.cameraSetting?.baseCameraFragment ?: let {
                     CameraFragment.newInstance()
                 }
             }

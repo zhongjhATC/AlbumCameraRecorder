@@ -1,11 +1,9 @@
-package com.zhongjh.multimedia.widget;
+package com.zhongjh.multimedia.widget
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.widget.FrameLayout;
-
-import androidx.annotation.Nullable;
+import android.content.Context
+import android.util.AttributeSet
+import android.view.MotionEvent
+import android.widget.FrameLayout
 
 /**
  * 控制不能触发子View的FrameLayout
@@ -13,42 +11,23 @@ import androidx.annotation.Nullable;
  * @author zhongjh
  * @date 2022/1/21
  */
-public class ControlTouchFrameLayout extends FrameLayout {
+class ControlTouchFrameLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0, defStyleRes: Int = 0) :
+    FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
+    private var enabled = true
 
-    public ControlTouchFrameLayout(Context context) {
-        this(context, null);
+    override fun isEnabled(): Boolean {
+        return enabled
     }
 
-    public ControlTouchFrameLayout(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
+    override fun setEnabled(enabled: Boolean) {
+        this.enabled = enabled
     }
 
-    public ControlTouchFrameLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-    }
-
-    public ControlTouchFrameLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-    private boolean enabled = true;
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (enabled) {
-            return super.dispatchTouchEvent(ev);
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        return if (enabled) {
+            super.dispatchTouchEvent(ev)
         } else {
-            return true;
+            true
         }
     }
 }

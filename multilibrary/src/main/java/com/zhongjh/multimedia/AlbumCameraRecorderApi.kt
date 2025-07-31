@@ -1,10 +1,9 @@
-package com.zhongjh.multimedia;
+package com.zhongjh.multimedia
 
-import android.content.Context;
-
-import java.io.File;
-
-import com.zhongjh.common.utils.FileUtils;
+import android.content.Context
+import com.zhongjh.common.utils.FileUtils.deleteDir
+import com.zhongjh.common.utils.FileUtils.getSize
+import java.io.File
 
 /**
  * 开放的一些公共方法，主要是不依赖于GlobalSetting等设置
@@ -12,20 +11,21 @@ import com.zhongjh.common.utils.FileUtils;
  * @author zhongjh
  * @date 2021/9/26
  */
-public class AlbumCameraRecorderApi {
-
+object AlbumCameraRecorderApi {
     /**
      * 获取缓存的文件大小
      *
      * @param context 上下文
      * @return 以 （xx + 单位） 的字符串形式返回，例如13B,13KB,13MB,13GB
      */
-    public static String getFileSize(Context context) {
-        if (context.getExternalCacheDir() != null) {
-            File file = new File(context.getExternalCacheDir().getPath());
-            return FileUtils.getSize(file);
+    @JvmStatic
+    fun getFileSize(context: Context): String {
+        context.externalCacheDir?.let { externalCacheDir ->
+            val file = File(externalCacheDir.path)
+            return getSize(file)
+        } ?: let {
+            return ""
         }
-        return "";
     }
 
     /**
@@ -33,8 +33,8 @@ public class AlbumCameraRecorderApi {
      *
      * @param context 上下文
      */
-    public static void deleteCacheDirFile(Context context) {
-        FileUtils.deleteDir(context.getExternalCacheDir());
+    @JvmStatic
+    fun deleteCacheDirFile(context: Context) {
+        deleteDir(context.externalCacheDir)
     }
-
 }

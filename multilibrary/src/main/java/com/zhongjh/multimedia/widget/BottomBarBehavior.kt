@@ -1,15 +1,13 @@
-package com.zhongjh.multimedia.widget;
+package com.zhongjh.multimedia.widget
 
-import android.app.Activity;
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.google.android.material.appbar.AppBarLayout;
-import com.zhongjh.common.utils.StatusBarUtils;
+import android.app.Activity
+import android.content.Context
+import android.util.AttributeSet
+import android.view.View
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.google.android.material.appbar.AppBarLayout
+import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
+import kotlin.math.abs
 
 /**
  * 自定义的一个Behavior，滑动控件时自动隐藏底部控件
@@ -18,35 +16,28 @@ import com.zhongjh.common.utils.StatusBarUtils;
  * @author zhongjh
  * @date 2022/8/10
  */
-public class BottomBarBehavior extends CoordinatorLayout.Behavior<ConstraintLayoutBehavior> {
-
+class BottomBarBehavior(context: Context, attrs: AttributeSet) : CoordinatorLayout.Behavior<ConstraintLayoutBehavior>(context, attrs) {
     /**
      * 状态栏高度
      */
-    int statusBarHeight;
+    private var statusBarHeight: Int = 0
 
-    public BottomBarBehavior(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        if (context instanceof Activity) {
-            statusBarHeight = StatusBarUtils.getStatusBarHeight((Activity)context);
+    init {
+        if (context is Activity) {
+            statusBarHeight = getStatusBarHeight(context)
         }
     }
 
-    @Override
-    public boolean layoutDependsOn(@NonNull CoordinatorLayout parent, @NonNull ConstraintLayoutBehavior child, @NonNull View dependency) {
+    override fun layoutDependsOn(parent: CoordinatorLayout, child: ConstraintLayoutBehavior, dependency: View): Boolean {
         // 说明子控件依赖AppBarLayout
-        return dependency instanceof AppBarLayout;
+        return dependency is AppBarLayout
     }
 
 
-    @Override
-    public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, @NonNull ConstraintLayoutBehavior child, @NonNull View dependency) {
+    override fun onDependentViewChanged(parent: CoordinatorLayout, child: ConstraintLayoutBehavior, dependency: View): Boolean {
         // 顶部的AppBarLayout是paddingTop状态栏高度的
-        child.setTranslationY(Math.abs(dependency.getTop() - statusBarHeight));
-        if (child.getOnListener() != null) {
-            child.getOnListener().onDependentViewChanged(Math.abs(dependency.getTop() - statusBarHeight));
-        }
-        return true;
+        child.translationY = abs((dependency.top - statusBarHeight).toDouble()).toFloat()
+        child.onListener?.onDependentViewChanged(abs((dependency.top - statusBarHeight).toDouble()).toFloat())
+        return true
     }
-
 }
