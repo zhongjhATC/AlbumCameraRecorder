@@ -20,11 +20,17 @@ import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.settings.AlbumSpec
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 import java.util.Locale
 import kotlin.math.max
 
 
 class MediaLoader(private val context: Context) {
+
+    /**
+     * 弱引用持有Context，避免长期持有
+     */
+    private val contextRef = WeakReference(context.applicationContext)
 
     companion object {
 
@@ -70,14 +76,13 @@ class MediaLoader(private val context: Context) {
      * 获取专辑数据
      */
     suspend fun loadMediaAlbum(): MutableList<Album> {
+        val context = contextRef.get() ?: return mutableListOf()
         val albumList = mutableListOf<Album>()
         withContext(Dispatchers.IO) {
             val albumSelectionStr = getAlbumSelection()
             val sortOrderStr = getSortOrder()
             Log.d(TAG, "查询语句: $albumSelectionStr 排序语句: $sortOrderStr")
-            context.contentResolver.query(
-                QUERY_URI, PROJECTION, albumSelectionStr, getSelectionArgs(), sortOrderStr
-            )?.use { data ->
+            context.contentResolver.query(QUERY_URI, PROJECTION, albumSelectionStr, getSelectionArgs(), sortOrderStr)?.use { data ->
                 if (data.count > 0) {
                     var totalCount = 0L
                     val bucketSet = hashSetOf<Long>()
@@ -142,6 +147,7 @@ class MediaLoader(private val context: Context) {
      * @param pageSize 页数
      */
     fun loadMediaMore(bucketId: Long, page: Int, pageSize: Int): MutableList<LocalMedia> {
+        val context = contextRef.get() ?: return mutableListOf()
         val mediaList = mutableListOf<LocalMedia>()
             val selectionArgs = if (bucketId == ALL_BUCKET_ID) {
                 getSelectionArgs()

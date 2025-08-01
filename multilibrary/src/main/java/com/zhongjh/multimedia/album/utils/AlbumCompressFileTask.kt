@@ -8,6 +8,7 @@ import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import java.io.File
+import java.lang.ref.WeakReference
 
 /**
  * 这是相册界面和预览界面共用的一个异步线程逻辑
@@ -19,12 +20,10 @@ import java.io.File
  * @author zhongjh
  * @date 2022/2/9
  */
-class AlbumCompressFileTask(
-    private val context: Context,
-    private val tag: String,
-    private val clsKey: Class<*>,
-    private val globalSpec: GlobalSpec
-) {
+class AlbumCompressFileTask(private val context: Context, private val tag: String, private val clsKey: Class<*>, private val globalSpec: GlobalSpec) {
+
+    // 用弱引用持有Context，避免内存泄漏
+    private val contextRef = WeakReference(context.applicationContext)
 
     /**
      * @param localFiles 数据源
@@ -36,6 +35,10 @@ class AlbumCompressFileTask(
     ): ArrayList<LocalMedia> {
         // 将 缓存文件 拷贝到 配置目录
         val newLocalFiles = ArrayList<LocalMedia>()
+        // 检查Context是否已释放
+        val context = contextRef.get() ?: run {
+            return newLocalFiles
+        }
         for (item in localFiles) {
             // 设置沙盒路径
             item.sandboxPath = FileMediaUtil.getUri(context, item.absolutePath).toString()
@@ -111,11 +114,12 @@ class AlbumCompressFileTask(
      */
     private fun handleImage(path: String): File {
         val oldFile = File(path)
+        // 检查Context是否已释放
+        val context = contextRef.get() ?: run {
+            return oldFile
+        }
         // 根据类型压缩
-        val compressionFile: File = if (globalSpec.onImageCompressionListener != null) {
-            // 压缩图片
-            globalSpec.onImageCompressionListener!!.compressionFile(context, oldFile)
-        } else {
+        val compressionFile: File = globalSpec.onImageCompressionListener?.compressionFile(context, oldFile) ?: let {
             oldFile
         }
         return compressionFile

@@ -258,7 +258,6 @@ class SoundRecordingFragment : BaseFragment() {
     }
 
     override fun onDestroy() {
-        viewHolder.pvLayout.onDestroy()
         mediaPlayer?.let {
             stopPlaying()
         }
@@ -274,6 +273,8 @@ class SoundRecordingFragment : BaseFragment() {
         }
         mMoveRecordFileTask.cancel()
         stopRecordingTask?.cancel()
+        // 清理视图引用
+        viewHolder.pvLayout.onDestroy()
         super.onDestroy()
     }
 

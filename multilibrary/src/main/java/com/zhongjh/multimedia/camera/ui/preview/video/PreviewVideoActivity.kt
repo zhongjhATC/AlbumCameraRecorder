@@ -26,6 +26,7 @@ import com.zhongjh.multimedia.utils.MediaStoreUtils
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
+import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
 
 
@@ -48,7 +49,7 @@ class PreviewVideoActivity : AppCompatActivity() {
     /**
      * 按钮事件运行中，因为该自定义控件如果通过setEnabled控制会导致动画不起效果，所以需要该变量控制按钮事件是否生效
      */
-    private var mIsRun: Boolean = false
+    private var isCompressing: Boolean = false
 
     /**
      * 拍摄配置
@@ -115,10 +116,10 @@ class PreviewVideoActivity : AppCompatActivity() {
 
     private fun initListener() {
         mActivityPreviewVideoZjhBinding.btnConfirm.setOnClickListener {
-            if (mIsRun) {
+            if (isCompressing) {
                 return@setOnClickListener
             }
-            mIsRun = true
+            isCompressing = true
             confirm()
         }
         mActivityPreviewVideoZjhBinding.imgClose.setOnClickListener { this@PreviewVideoActivity.finish() }
@@ -173,7 +174,7 @@ class PreviewVideoActivity : AppCompatActivity() {
         } ?: let {
             // 否则直接提交
             confirm(mLocalMedia.absolutePath, null)
-            mIsRun = false
+            isCompressing = false
         }
     }
 
@@ -184,28 +185,36 @@ class PreviewVideoActivity : AppCompatActivity() {
         mGlobalSpec.videoCompressCoordinator?.let { videoCompressCoordinator ->
             // 获取文件名称
             val newFile = createCompressFile(applicationContext, mLocalMedia.absolutePath)
+            // 弱引用持有Activity
+            val weakActivity = WeakReference(this)
             // 压缩回调
             videoCompressCoordinator.setVideoCompressListener(
                 this@PreviewVideoActivity.javaClass,
                 object : VideoEditListener {
                     override fun onFinish() {
-                        confirm(mLocalMedia.absolutePath, newFile.absolutePath)
+                        weakActivity.get()?.let { activity ->
+                            if (!activity.isFinishing && !activity.isDestroyed) {
+                                activity.confirm(mLocalMedia.absolutePath, newFile.absolutePath)
+                            }
+                        }
                     }
 
                     override fun onProgress(progress: Int, progressTime: Long) {
-                        mActivityPreviewVideoZjhBinding.btnConfirm.progress = progress
+                        weakActivity.get()?.runOnUiThread {
+                            mActivityPreviewVideoZjhBinding.btnConfirm.progress = progress
+                        }
                     }
 
                     override fun onCancel() {
-                        mIsRun = false
+                        isCompressing = false
                     }
 
                     override fun onError(message: String) {
-                        mIsRun = false
+                        isCompressing = false
                     }
                 })
             // 执行压缩
-            mGlobalSpec.videoCompressCoordinator?.compressRxJava(
+            videoCompressCoordinator.compressRxJava(
                 this@PreviewVideoActivity.javaClass, mLocalMedia.absolutePath, newFile.path
             )
         }

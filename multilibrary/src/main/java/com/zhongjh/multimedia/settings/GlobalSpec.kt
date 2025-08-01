@@ -4,14 +4,15 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.StyleRes
-import com.zhongjh.multimedia.R
+import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.common.engine.impl.GlideEngine
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.constants.ModuleTypes
 import com.zhongjh.multimedia.listener.OnImageCompressionListener
 import com.zhongjh.multimedia.listener.OnLogListener
-import com.zhongjh.common.coordinator.VideoCompressCoordinator
-import com.zhongjh.common.enums.MimeType
+import java.lang.ref.WeakReference
 
 /**
  * 设置的一些属性,别的界面也根据这个来进行动态改变
@@ -112,23 +113,57 @@ object GlobalSpec {
     /**
      * 压缩图片接口
      */
-    var onImageCompressionListener: OnImageCompressionListener? = null
+    var onImageCompressionListener: OnImageCompressionListener?
+        get() = imageCompressionListenerRef?.get()
+        set(value) {
+            imageCompressionListenerRef = value?.let { WeakReference(it) }
+        }
+
+    /**
+     * 用弱引用存储监听器，避免持有外部对象
+     */
+    private var imageCompressionListenerRef: WeakReference<OnImageCompressionListener>? = null
 
     /**
      * 日志接口
      * 虽然功能都捕获了相关异常，但是一般开发都是需要记录为何报错，可以让下次修复
      */
-    var onLogListener: OnLogListener? = null
+    var onLogListener: OnLogListener?
+        get() = logListenerRef?.get()
+        set(value) {
+            logListenerRef = value?.let { WeakReference(it) }
+        }
+
+    /**
+     * 用弱引用存储监听器，避免持有外部对象
+     */
+    private var logListenerRef: WeakReference<OnLogListener>? = null
 
     /**
      * 视频压缩功能
      */
-    var videoCompressCoordinator: VideoCompressCoordinator? = null
+    var videoCompressCoordinator: VideoCompressCoordinator?
+        get() = videoCompressCoordinatorRef?.get()
+        set(value) {
+            videoCompressCoordinatorRef = value?.let { WeakReference(it) }
+        }
+    /**
+     * 用弱引用存储监听器，避免持有外部对象
+     */
+    private var videoCompressCoordinatorRef: WeakReference<VideoCompressCoordinator>? = null
 
     /**
      * 用于启动执行ActivityResultContract过程的先前准备好的调用的启动器
      */
-    var activityResultLauncher: ActivityResultLauncher<Intent>? = null
+    var activityResultLauncher: ActivityResultLauncher<Intent>?
+        get() = activityResultLauncherRef?.get()
+        set(value) {
+            activityResultLauncherRef = value?.let { WeakReference(it) }
+        }
+    /**
+     * 用弱引用存储监听器，避免持有外部对象
+     */
+    private var activityResultLauncherRef: WeakReference<ActivityResultLauncher<Intent>>? = null
 
     fun needOrientationRestriction(): Boolean {
         return orientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
@@ -188,8 +223,10 @@ object GlobalSpec {
         cutscenesEnabled = true
         orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         imageEditEnabled = true
-        onImageCompressionListener = null
-        onLogListener = null
-        activityResultLauncher = null
+        // 清理弱引用
+        imageCompressionListenerRef?.clear()
+        logListenerRef?.clear()
+        videoCompressCoordinatorRef?.clear()
+        activityResultLauncherRef?.clear()
     }
 }
