@@ -33,7 +33,8 @@ object FileMediaUtil {
      * @return
      */
     fun createCacheFile(context: Context, @MediaType type: Int): File {
-        return createFile(context, type, DirType.CACHE)
+        val appContext = context.applicationContext
+        return createFile(appContext, type, DirType.CACHE)
     }
 
 
@@ -46,7 +47,8 @@ object FileMediaUtil {
      * @return file
      */
     fun createTempFile(context: Context, fileName: String): File {
-        val externalFilesDir: File? = context.getExternalFilesDir("")
+        val appContext = context.applicationContext
+        val externalFilesDir: File? = appContext.getExternalFilesDir("")
         val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.COMPRESS)
         if (!tempCameraFile.exists()) {
             tempCameraFile.mkdirs()
@@ -64,7 +66,8 @@ object FileMediaUtil {
      * @return file
      */
     fun createCompressFile(context: Context, path: String): File {
-        val externalFilesDir: File? = context.getExternalFilesDir("")
+        val appContext = context.applicationContext
+        val externalFilesDir: File? = appContext.getExternalFilesDir("")
         val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.COMPRESS)
         if (!tempCameraFile.exists()) {
             tempCameraFile.mkdirs()
@@ -89,13 +92,14 @@ object FileMediaUtil {
      * 获取输出路径
      */
     fun getOutFile(context: Context, fileName: String, @MediaType type: Int): File {
+        val appContext = context.applicationContext
         val rootDir: File?
         val folderDir: File
         if (TextUtils.equals(Environment.MEDIA_MOUNTED, Environment.getExternalStorageState())) {
             rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
             folderDir = File(rootDir.absolutePath + File.separator + CAMERA + File.separator)
         } else {
-            rootDir = getRootDirFile(context, type)
+            rootDir = getRootDirFile(appContext, type)
             folderDir = File(rootDir.absolutePath + File.separator)
         }
         if (rootDir?.exists() != true) {
@@ -111,8 +115,9 @@ object FileMediaUtil {
      * 获取uri
      */
     fun getUri(context: Context, path: String): Uri {
-        val authority = context.packageName + ".zhongjhProvider"
-        return FileProvider.getUriForFile(context, authority, File(path))
+        val appContext = context.applicationContext
+        val authority = appContext.packageName + ".zhongjhProvider"
+        return FileProvider.getUriForFile(appContext, authority, File(path))
     }
 
     /**
@@ -124,7 +129,8 @@ object FileMediaUtil {
      * @return
      */
     private fun createFile(context: Context,@MediaType mediaType: Int,@DirType dirType: String): File {
-        val externalFilesDir: File? = context.getExternalFilesDir("")
+        val appContext = context.applicationContext
+        val externalFilesDir: File? = appContext.getExternalFilesDir("")
         val dirFile = File(externalFilesDir!!.absolutePath, dirType)
         if (!dirFile.exists()) {
             dirFile.mkdirs()
@@ -147,9 +153,10 @@ object FileMediaUtil {
      * @return 文件根目录
      */
     private fun getRootDirFile(context: Context, type: Int): File {
+        val appContext = context.applicationContext
         return when (type) {
-            TYPE_PICTURE -> context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
-            else -> context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)!!
+            TYPE_PICTURE -> appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+            else -> appContext.getExternalFilesDir(Environment.DIRECTORY_MOVIES)!!
         }
     }
 

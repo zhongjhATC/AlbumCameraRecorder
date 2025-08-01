@@ -126,10 +126,11 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     private fun startSystemPlayerVideo(context: Context, path: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         val isParseUri = MimeType.isContent(path) || MimeType.isHasHttp(path)
+
         val data = if (SdkVersionUtils.isQ) {
             if (isParseUri) Uri.parse(path) else Uri.fromFile(File(path))
         } else if (SdkVersionUtils.isN) {
-            if (isParseUri) Uri.parse(path) else AlbumCameraRecorderFileProvider.getUriForFile(context, context.packageName + ".zhongjhProvider", File(path))
+            if (isParseUri) Uri.parse(path) else AlbumCameraRecorderFileProvider.getUriForFile(context, File(path))
         } else {
             if (isParseUri) Uri.parse(path) else Uri.fromFile(File(path))
         }
