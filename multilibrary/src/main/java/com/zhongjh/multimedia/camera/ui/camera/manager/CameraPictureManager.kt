@@ -414,7 +414,6 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
                 }
                 Log.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
                 localMedia.compressPath = compressionFile.absolutePath
-                localMedia.sandboxPath = FileMediaUtil.getUri(baseCameraFragment.myContext, localMedia.compressPath.toString()).toString()
                 localMedia.size = compressionFile.length()
                 val mediaInfo = MediaUtils.getMediaInfo(
                     baseCameraFragment.myContext, MediaType.TYPE_PICTURE, compressionFile.absolutePath

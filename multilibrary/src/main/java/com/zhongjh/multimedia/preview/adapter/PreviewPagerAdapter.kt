@@ -99,6 +99,13 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     val size: Int
         get() = items.size
 
+    /**
+     * 返回当前数据源
+     */
+    fun getLocalMedias(): ArrayList<LocalMedia> {
+        return items
+    }
+
     fun getLocalMedia(position: Int): LocalMedia? {
         return if (size > 0 && position < size) items[position] else null
     }

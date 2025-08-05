@@ -50,10 +50,7 @@ object MediaStoreUtils {
      * @param height           高
      */
     @JvmStatic
-    fun displayToGallery(
-        context: Context, file: File, @MediaType type: Int,
-        duration: Long, width: Int, height: Int
-    ): Uri? {
+    fun displayToGallery(context: Context, file: File, @MediaType type: Int, duration: Long, width: Int, height: Int): Uri? {
         Log.d("displayToGallery", file.path)
         if (!file.exists()) {
             return null
@@ -106,9 +103,7 @@ object MediaStoreUtils {
                     } else {
                         values.put("duration", duration)
                     }
-                    uri = context.contentResolver.insert(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values
-                    )
+                    uri = context.contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
                 }
 
                 else -> {

@@ -22,7 +22,7 @@ import java.io.File
  * editorPath: 如果该图片裁剪或者编辑过，那么该属性会有值。
  * sandboxPath：沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
  * path：初始的uri路径，未压缩、未编辑前的，即是原图
- * absolutePath： 初始的真实路径，未压缩、未编辑前的，即是原图
+ * absolutePath： 初始的真实路径，未压缩、未编辑前的，即是原图。如果是相册编辑后的图,那么该值跟editorPath相同
  *
  * @author zhongjh
  * @date 2023/7/26
@@ -43,29 +43,24 @@ open class LocalMedia() : Parcelable {
     var fileId: Long = 0
 
     /**
-     * 压缩后的路径，如果开启压缩配置后，最终原图或者将编辑后的图片进行压缩，然后赋值该属性
-     */
-    var compressPath: String? = null
-
-    /**
-     * 如果该图片(只针对相册的图片)裁剪或者编辑过，那么该属性会有值。
-     */
-    var editorPath: String? = null
-
-    /**
-     * 沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
-     */
-    var sandboxPath: String? = null
-
-    /**
      * 初始的uri路径，未压缩、未编辑前的，即是原图
      */
     var path: String = ""
 
     /**
-     * 初始的真实路径，未压缩、未编辑前的，即是原图
+     * 初始的真实路径，未压缩、未编辑前的，即是原图。如果是相册编辑后的图,那么该值跟editorPath相同
      */
     var absolutePath: String = ""
+
+    /**
+     * 压缩后的路径，如果开启压缩配置后，最终原图或者将编辑后的图片进行压缩，然后赋值该属性
+     */
+    var compressPath: String? = null
+
+    /**
+     * 如果该图片(只针对相册的图片)编辑过，那么该属性会有值。
+     */
+    var editorPath: String? = null
 
     /**
      * 视频的持续时间
@@ -112,31 +107,6 @@ open class LocalMedia() : Parcelable {
     var height: Int = 0
 
     /**
-     * 裁剪图片的宽度
-     */
-    var cropImageWidth: Int = 0
-
-    /**
-     * 裁剪图片的高度
-     */
-    var cropImageHeight: Int = 0
-
-    /**
-     * 裁剪比例X
-     */
-    var cropOffsetX: Int = 0
-
-    /**
-     * 裁剪比例Y
-     */
-    var cropOffsetY: Int = 0
-
-    /**
-     * 裁剪纵横比
-     */
-    var cropResultAspectRatio: Float = 0F
-
-    /**
      * 文件大小
      */
     var size: Long = 0
@@ -177,7 +147,6 @@ open class LocalMedia() : Parcelable {
             parcel.writeLong(fileId)
             parcel.writeString(compressPath)
             parcel.writeString(editorPath)
-            parcel.writeString(sandboxPath)
             parcel.writeString(path)
             parcel.writeString(absolutePath)
             parcel.writeLong(duration)
@@ -188,10 +157,6 @@ open class LocalMedia() : Parcelable {
             parcel.writeString(mimeType)
             parcel.writeInt(width)
             parcel.writeInt(height)
-            parcel.writeInt(cropImageWidth)
-            parcel.writeInt(cropImageHeight)
-            parcel.writeInt(cropOffsetX)
-            parcel.writeFloat(cropResultAspectRatio)
             parcel.writeLong(size)
             parcel.writeByte(if (isOriginal) 1 else 0)
             parcel.writeString(fileName)
@@ -214,7 +179,6 @@ open class LocalMedia() : Parcelable {
         fileId = parcel.readLong()
         compressPath = parcel.readString()
         editorPath = parcel.readString()
-        sandboxPath = parcel.readString()
         val parcelPath = parcel.readString()
         path = parcelPath.let { parcelPath } ?: let { "" }
         val parcelAbsolutePath = parcel.readString()
@@ -228,10 +192,6 @@ open class LocalMedia() : Parcelable {
         mimeType = parcelMimeType.let { parcelMimeType } ?: let { "" }
         width = parcel.readInt()
         height = parcel.readInt()
-        cropImageWidth = parcel.readInt()
-        cropImageHeight = parcel.readInt()
-        cropOffsetX = parcel.readInt()
-        cropResultAspectRatio = parcel.readFloat()
         size = parcel.readLong()
         isOriginal = parcel.readByte() != 0.toByte()
         val parcelFileName = parcel.readString()
@@ -273,9 +233,6 @@ open class LocalMedia() : Parcelable {
         if (editorPath != localMedia.editorPath) {
             return false
         }
-        if (sandboxPath != localMedia.sandboxPath) {
-            return false
-        }
         if (path != localMedia.path) {
             return false
         }
@@ -298,21 +255,6 @@ open class LocalMedia() : Parcelable {
             return false
         }
         if (height != localMedia.height) {
-            return false
-        }
-        if (cropImageWidth != localMedia.cropImageWidth) {
-            return false
-        }
-        if (cropImageHeight != localMedia.cropImageHeight) {
-            return false
-        }
-        if (cropOffsetX != localMedia.cropOffsetX) {
-            return false
-        }
-        if (cropOffsetY != localMedia.cropOffsetY) {
-            return false
-        }
-        if (cropResultAspectRatio != localMedia.cropResultAspectRatio) {
             return false
         }
         if (size != localMedia.size) {
@@ -405,19 +347,15 @@ open class LocalMedia() : Parcelable {
     /**
      * getAvailablePath：是必定可用的地址，如果对地址没有太苛刻的时候可以使用它，具体逻辑可以看该方法(比如支持压缩的话，该方法返回压缩路径)。
      * compressPath: 压缩后的路径，如果开启压缩配置后，最终原图或者将编辑后的图片进行压缩，然后赋值该属性
-     * editorPath: 如果该图片裁剪或者编辑过，那么该属性会有值。
-     * sandboxPath：沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
-     * path：初始的真实路径，未压缩、未编辑前的，即是原图
+     * absolutePath：初始的真实路径，即是原图
      *
      * @return 是必定可用的地址
      */
     fun getAvailablePath(): String {
         if (compressPath != null) {
             return compressPath as String
-        } else if (editorPath != null) {
-            return editorPath as String
         }
-        return path
+        return absolutePath
     }
 
     /**
@@ -429,9 +367,7 @@ open class LocalMedia() : Parcelable {
      * @param compressionFile 压缩文件
      * @param isCompress 是否压缩
      */
-    private fun updateFile(
-        context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean
-    ) {
+    private fun updateFile(context: Context, localMedia: LocalMedia, compressionFile: File, isCompress: Boolean) {
         copyLocalMedia(localMedia)
         compressPath = compressionFile.absolutePath
         size = compressionFile.length()
@@ -461,7 +397,6 @@ open class LocalMedia() : Parcelable {
         fileId = localMedia.fileId
         compressPath = localMedia.compressPath
         editorPath = localMedia.editorPath
-        sandboxPath = localMedia.sandboxPath
         path = localMedia.path
         absolutePath = localMedia.absolutePath
         duration = localMedia.duration
@@ -472,11 +407,6 @@ open class LocalMedia() : Parcelable {
         mimeType = localMedia.mimeType
         width = localMedia.width
         height = localMedia.height
-        cropImageWidth = localMedia.cropImageWidth
-        cropImageHeight = localMedia.cropImageHeight
-        cropOffsetX = localMedia.cropOffsetX
-        cropOffsetY = localMedia.cropOffsetY
-        cropResultAspectRatio = localMedia.cropResultAspectRatio
         size = localMedia.size
         isOriginal = localMedia.isOriginal
         fileName = localMedia.fileName

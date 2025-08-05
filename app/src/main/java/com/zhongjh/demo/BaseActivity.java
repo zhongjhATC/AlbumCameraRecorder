@@ -4,19 +4,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zhongjh.multimedia.settings.MultiMediaSetting;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
 import com.zhongjh.common.utils.MediaUtils;
-import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.widget.GridView;
+import com.zhongjh.multimedia.settings.MultiMediaSetting;
+import com.zhongjh.multimedia.utils.FileMediaUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * 父类，包含下面几部分操作：
@@ -150,7 +147,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             // 如果该图片裁剪或者编辑过，那么该属性会有值。
             Log.d(TAG, "onResult getEditorPath:" + localMedia.getEditorPath());
             // 沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
-            Log.d(TAG, "onResult getSandboxPath:" + localMedia.getSandboxPath());
+            Log.d(TAG, "onResult FileProvider:" + FileMediaUtil.INSTANCE.getUri(this, localMedia.getAbsolutePath()));
             // 初始的uri路径，未压缩、未编辑前的，即是原图
             Log.d(TAG, "onResult getPath:" + localMedia.getPath());
             // 初始的真实路径，未压缩、未编辑前的，即是原图
@@ -161,9 +158,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
             if (null == localMedia.getEditorPath() || !new File(localMedia.getEditorPath()).exists()) {
                 Log.e(TAG, localMedia.getEditorPath() + " EditorPath不存在");
-            }
-            if (null == localMedia.getSandboxPath() || isNoUri(localMedia.getSandboxPath())) {
-                Log.e(TAG, localMedia.getSandboxPath() + " SandboxPath不存在");
             }
             if (isNoUri(localMedia.getPath())) {
                 Log.e(TAG, localMedia.getPath() + " Path不存在");
@@ -181,11 +175,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             Log.i(TAG, "onResult 媒体资源类型: " + localMedia.getMimeType());
             Log.i(TAG, "onResult 宽度: " + localMedia.getWidth());
             Log.i(TAG, "onResult 高度: " + localMedia.getHeight());
-            Log.i(TAG, "onResult 裁剪图片的宽度: " + localMedia.getCropImageWidth());
-            Log.i(TAG, "onResult 裁剪图片的高度: " + localMedia.getCropImageHeight());
-            Log.i(TAG, "onResult 裁剪比例X: " + localMedia.getCropOffsetX());
-            Log.i(TAG, "onResult 裁剪比例Y: " + localMedia.getCropOffsetY());
-            Log.i(TAG, "onResult 裁剪纵横比: " + localMedia.getCropResultAspectRatio());
             Log.i(TAG, "onResult 文件大小: " + localMedia.getSize());
             Log.i(TAG, "onResult 文件名称: " + localMedia.getFileName());
             Log.i(TAG, "onResult 父文件夹名称: " + localMedia.getParentFolderName());

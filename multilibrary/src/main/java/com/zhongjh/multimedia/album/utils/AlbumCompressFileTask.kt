@@ -29,10 +29,7 @@ class AlbumCompressFileTask(private val context: Context, private val tag: Strin
      * @param localFiles 数据源
      * @param isOnlyCompressEditPicture 是否只压缩编辑的图片
      */
-    fun compressFileTaskDoInBackground(
-        localFiles: ArrayList<LocalMedia>,
-        isOnlyCompressEditPicture: Boolean
-    ): ArrayList<LocalMedia> {
+    fun compressFileTaskDoInBackground(localFiles: ArrayList<LocalMedia>, isOnlyCompressEditPicture: Boolean): ArrayList<LocalMedia> {
         // 将 缓存文件 拷贝到 配置目录
         val newLocalFiles = ArrayList<LocalMedia>()
         // 检查Context是否已释放
@@ -40,9 +37,6 @@ class AlbumCompressFileTask(private val context: Context, private val tag: Strin
             return newLocalFiles
         }
         for (item in localFiles) {
-            // 设置沙盒路径
-            item.sandboxPath = FileMediaUtil.getUri(context, item.absolutePath).toString()
-
             // 如果有编辑的图片,则压缩编辑的图片,否则压缩原图
             val absolutePath = item.editorPath ?: item.absolutePath
 
@@ -53,7 +47,7 @@ class AlbumCompressFileTask(private val context: Context, private val tag: Strin
             }
 
             // 开始压缩逻辑，获取真实路径
-            val newFileNames = item.absolutePath.split(".").toTypedArray()
+            val newFileNames = absolutePath.split(".").toTypedArray()
             // 设置压缩后的照片名称，id_CMP
             var newFileName = item.fileId.toString() + "_CMP"
             if (newFileNames.size > 1) {
@@ -62,11 +56,7 @@ class AlbumCompressFileTask(private val context: Context, private val tag: Strin
             }
             val newFile = FileMediaUtil.createTempFile(context, newFileName)
             if (newFile.exists()) {
-                val localFile: LocalMedia = if (item.isImage()) {
-                    LocalMedia(context, item, newFile, true)
-                } else {
-                    LocalMedia(context, item, newFile, true)
-                }
+                val localFile = LocalMedia(context, item, newFile, true)
                 newLocalFiles.add(localFile)
                 Log.d(tag, "存在直接使用")
             } else {
@@ -75,9 +65,7 @@ class AlbumCompressFileTask(private val context: Context, private val tag: Strin
                     val compressionFile = handleImage(absolutePath)
                     // 移动到新的文件夹
                     FileUtils.copy(compressionFile, newFile)
-                    newLocalFiles.add(
-                        LocalMedia(context, item, newFile, true)
-                    )
+                    newLocalFiles.add(LocalMedia(context, item, newFile, true))
                     Log.d(tag, "不存在新建文件")
                 } else if (item.isVideo()) {
                     // 压缩视频

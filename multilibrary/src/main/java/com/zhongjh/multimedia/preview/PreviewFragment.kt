@@ -138,8 +138,10 @@ class PreviewFragment : BaseFragment() {
             private val weakFragment = WeakReference(this@PreviewFragment)
 
             override fun doInBackground(): ArrayList<LocalMedia> {
+                handleEditImages()
                 val fragment = weakFragment.get()
                 fragment?.let {
+                    // 是否只压缩编辑的图片
                     val isOnlyCompressEditPicture = fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
                     return fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(fragment.mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
                 } ?: let {
@@ -306,7 +308,6 @@ class PreviewFragment : BaseFragment() {
             if (result.resultCode == RESULT_OK) {
                 mIsEdit = true
                 refreshMultiMediaItem()
-                handleEditImages()
             }
         }
     }
@@ -540,9 +541,7 @@ class PreviewFragment : BaseFragment() {
             mEditImagePath = file.absoluteFile.toString()
             val intent = Intent()
             intent.setClass(requireActivity(), ImageEditActivity::class.java)
-            intent.putExtra(
-                ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, requireActivity().requestedOrientation
-            )
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, requireActivity().requestedOrientation)
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.path)
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file.absolutePath)
             mImageEditActivityResult.launch(intent)
@@ -550,15 +549,35 @@ class PreviewFragment : BaseFragment() {
     }
 
     /**
-     * 判断编辑的图片是否加入相册
+     * 判断所有编辑的图片是否加入相册
+     * 如果加入相册后，更新所有数据
      */
     private fun handleEditImages() {
-        // 获取当前查看的multimedia
-        val localMedia = mAdapter.getLocalMedia(mViewPager2.currentItem)
-        val editFile = mEditImagePath?.let { File(it) }
-        // 如果是从相册界面直接打开的预览 并且 是编辑过的加入相册
-        if ((mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) && null != editFile && null != localMedia && mGlobalSpec.isAddAlbumByEdit) {
-            MediaStoreUtils.displayToGallery(mContext, editFile, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
+        // 循环所有数据
+        for (localMedia in mAdapter.getLocalMedias()) {
+            val editFile = localMedia.editorPath?.let { File(it) }
+            editFile?.let {
+                // 加入相册条件：1.相册界面直接打开的预览 2. 编辑过的
+                if ((mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) && mGlobalSpec.isAddAlbumByEdit) {
+                    val uri = MediaStoreUtils.displayToGallery(mContext, editFile, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
+                    uri?.let {
+                        localMedia.absolutePath = localMedia.editorPath as String
+                        localMedia.path = uri.toString()
+                        // 从Uri中提取ID（最后一段数字）
+                        localMedia.fileId = uri.lastPathSegment?.toLongOrNull() ?: -1
+                        // 宽高刷新
+                        val imageWidthAndHeight: IntArray = MediaUtils.getImageWidthAndHeight(localMedia.absolutePath)
+                        localMedia.width = imageWidthAndHeight[0]
+                        localMedia.height = imageWidthAndHeight[1]
+                        // 大小
+                        localMedia.size = editFile.length()
+                        // 文件名称
+                        localMedia.fileName = editFile.name
+                        // 时间
+                        localMedia.dateAddedTime = System.currentTimeMillis()
+                    }
+                }
+            }
         }
     }
 
@@ -574,27 +593,6 @@ class PreviewFragment : BaseFragment() {
         requireActivity().setResult(RESULT_OK, intent)
         requireActivity().finish()
     }
-
-//    /**
-//     * 设置返回值
-//     * 该方法只针对除了相册的类型
-//     */
-//    @Synchronized
-//    private fun setResultOkExceptAlbum(localMedias: ArrayList<LocalMedia>) {
-//        Log.d(TAG, "setResultOkExceptAlbum")
-//        refreshMultiMediaItem()
-//        mGlobalSpec.onResultCallbackListener?.let {
-//            it.onResultFromPreview(localMedias, true)
-//        } ?: let {
-//            val intent = Intent()
-//            intent.putExtra(STATE_SELECTION, localMedias)
-//            intent.putExtra(EXTRA_RESULT_APPLY, true)
-//            intent.putExtra(EXTRA_RESULT_IS_EDIT, mIsEdit)
-//            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mMainModel.getOriginalEnable())
-//            requireActivity().setResult(RESULT_OK, intent)
-//        }
-//        requireActivity().finish()
-//    }
 
     /**
      * 设置是否启用界面触摸，不可禁止中断、退出
