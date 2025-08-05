@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.chrisbanes.photoview.PhotoView
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.utils.SdkVersionUtils
 import com.zhongjh.multimedia.AlbumCameraRecorderFileProvider
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.preview.adapter.PreviewPagerAdapter.PreviewViewHolder
@@ -126,13 +125,10 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     private fun startSystemPlayerVideo(context: Context, path: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         val isParseUri = MimeType.isContent(path) || MimeType.isHasHttp(path)
-
-        val data = if (SdkVersionUtils.isQ) {
-            if (isParseUri) Uri.parse(path) else Uri.fromFile(File(path))
-        } else if (SdkVersionUtils.isN) {
-            if (isParseUri) Uri.parse(path) else AlbumCameraRecorderFileProvider.getUriForFile(context, File(path))
+        val data = if (isParseUri) {
+            Uri.parse(path)
         } else {
-            if (isParseUri) Uri.parse(path) else Uri.fromFile(File(path))
+            AlbumCameraRecorderFileProvider.getUriForFile(context, File(path))
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
