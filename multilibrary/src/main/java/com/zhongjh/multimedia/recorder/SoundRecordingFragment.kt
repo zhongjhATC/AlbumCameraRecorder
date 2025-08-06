@@ -29,6 +29,7 @@ import com.zhongjh.multimedia.camera.listener.ClickOrLongListener
 import com.zhongjh.multimedia.model.SelectedData
 import com.zhongjh.multimedia.recorder.widget.SoundRecordingLayout
 import com.zhongjh.multimedia.settings.RecordeSpec
+import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.multimedia.widget.BaseOperationLayout
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
@@ -137,7 +138,6 @@ class SoundRecordingFragment : BaseFragment() {
         initPvLayoutPhotoVideoListener()
         // 播放事件
         initRlSoundRecordingClickListener()
-
         // 确认和取消
         initPvLayoutOperateListener()
     }
@@ -244,10 +244,14 @@ class SoundRecordingFragment : BaseFragment() {
         val sharePreferences = requireActivity().getSharedPreferences("sp_name_audio", Context.MODE_PRIVATE)
         val filePath = sharePreferences.getString("audio_path", "") as String
         val elapsed = sharePreferences.getLong("elapsed", 0)
-        localMedia.uri = filePath
+        val file = File(filePath)
+        localMedia.absolutePath = filePath
+        localMedia.uri = FileMediaUtil.getUri(context, filePath).toString()
         localMedia.duration = elapsed
         localMedia.size = File(filePath).length()
         localMedia.mimeType = MimeType.AAC.mimeTypeName
+        localMedia.fileName = file.name
+        localMedia.parentFolderName = file.parentFile?.name
     }
 
     override fun onPause() {
@@ -436,15 +440,15 @@ class SoundRecordingFragment : BaseFragment() {
             fragment.initAudio()
             val context = fragment.context
             val newFile = createCacheFile(context, MediaType.TYPE_AUDIO)
-            copy(File(fragment.localMedia.uri), newFile, null) { ioProgress: Double, _: File? ->
+            copy(File(fragment.localMedia.absolutePath), newFile, null) { ioProgress: Double, _: File? ->
                 val progress = (ioProgress * FULL).toInt()
                 ThreadUtils.runOnUiThread {
                     if (isAdded) {
                         fragment.viewHolder.pvLayout.soundRecordingLayoutViewHolder.btnConfirm.addProgress(progress)
-                        fragment.localMedia.uri = newFile.path
+                        fragment.localMedia.absolutePath = newFile.path
                         if (progress >= FULL) {
                             val result = Intent()
-                            val localFiles = ArrayList<LocalMedia?>()
+                            val localFiles = ArrayList<LocalMedia>()
                             localFiles.add(localMedia)
                             result.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, localFiles)
                             fragment.requireActivity().setResult(Activity.RESULT_OK, result)
