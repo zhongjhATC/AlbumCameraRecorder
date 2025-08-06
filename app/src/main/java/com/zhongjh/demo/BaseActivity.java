@@ -13,10 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
+import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.gridview.widget.GridView;
 import com.zhongjh.multimedia.settings.MultiMediaSetting;
-import com.zhongjh.multimedia.utils.FileMediaUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -147,7 +147,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             // 如果该图片裁剪或者编辑过，那么该属性会有值。
             Log.d(TAG, "onResult getEditorPath:" + localMedia.getEditorPath());
             // 沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
-            Log.d(TAG, "onResult FileProvider:" + FileMediaUtil.INSTANCE.getUri(this, localMedia.getAbsolutePath()));
+            Log.d(TAG, "onResult FileProvider:" + MediaStoreCompat.INSTANCE.getUri(this.getApplicationContext(), localMedia.getAbsolutePath()));
             // 初始的uri路径，未压缩、未编辑前的，即是原图
             Log.d(TAG, "onResult getUri:" + localMedia.getUri());
             // 初始的真实路径，未压缩、未编辑前的，即是原图

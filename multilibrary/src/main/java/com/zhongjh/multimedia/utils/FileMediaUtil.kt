@@ -112,15 +112,6 @@ object FileMediaUtil {
     }
 
     /**
-     * 获取uri
-     */
-    fun getUri(context: Context, path: String): Uri {
-        val appContext = context.applicationContext
-        val authority = appContext.packageName + ".zhongjhProvider"
-        return FileProvider.getUriForFile(appContext, authority, File(path))
-    }
-
-    /**
      * 创建一个路径
      *
      * @param context 上下文

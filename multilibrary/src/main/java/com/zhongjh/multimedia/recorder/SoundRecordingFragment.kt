@@ -20,6 +20,7 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.FileUtils.copy
+import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.multimedia.BaseFragment
@@ -29,7 +30,6 @@ import com.zhongjh.multimedia.camera.listener.ClickOrLongListener
 import com.zhongjh.multimedia.model.SelectedData
 import com.zhongjh.multimedia.recorder.widget.SoundRecordingLayout
 import com.zhongjh.multimedia.settings.RecordeSpec
-import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.multimedia.widget.BaseOperationLayout
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
@@ -246,7 +246,7 @@ class SoundRecordingFragment : BaseFragment() {
         val elapsed = sharePreferences.getLong("elapsed", 0)
         val file = File(filePath)
         localMedia.absolutePath = filePath
-        localMedia.uri = FileMediaUtil.getUri(context, filePath).toString()
+        localMedia.uri = MediaStoreCompat.getUri(context, filePath).toString()
         localMedia.duration = elapsed
         localMedia.size = File(filePath).length()
         localMedia.mimeType = MimeType.AAC.mimeTypeName

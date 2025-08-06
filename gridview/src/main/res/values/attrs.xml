@@ -4,7 +4,7 @@
     <declare-styleable name="GridView">
 
         <attr name="isOperation" format="boolean"/><!-- 是否允许操作 -->
-        <attr name="authority" format="string" /><!-- provider的authorities,用于提供给外部的file -->
+        <attr name="authority" format="string" /><!-- provider的authorities,用于提供给外部的file 弃用,由子库自己写-->
         <attr name="columnNumber" format="integer" /><!-- 一行多少列 -->
         <attr name="columnSpace" format="integer" /><!-- 列与列之间多少间隔px单位,作废 -->
 

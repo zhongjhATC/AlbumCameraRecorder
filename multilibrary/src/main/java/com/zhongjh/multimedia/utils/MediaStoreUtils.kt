@@ -17,6 +17,7 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.AppUtils.getAppName
+import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.multimedia.album.loader.MediaLoader
 import com.zhongjh.multimedia.album.loader.MediaLoader.Companion.QUERY_URI
 import java.io.File
@@ -60,7 +61,7 @@ object MediaStoreUtils {
             uri = displayToGalleryAndroidQ(context, file, type, duration, width, height)
         } else {
             val photoPath = file.path
-            uri = FileMediaUtil.getUri(context, photoPath)
+            uri = MediaStoreCompat.getUri(context, photoPath)
             // 添加到图库数据库
             val values = ContentValues()
             values.put(MediaStore.Images.Media.DATA, photoPath)
@@ -145,7 +146,7 @@ object MediaStoreUtils {
                 // 计算时间
                 if (duration == 0L) {
                     val photoPath = file.path
-                    val uri = FileMediaUtil.getUri(context, photoPath)
+                    val uri = MediaStoreCompat.getUri(context, photoPath)
                     val mp = MediaPlayer.create(context, uri)
                     values.put("duration", mp.duration.toLong())
                     mp.release()

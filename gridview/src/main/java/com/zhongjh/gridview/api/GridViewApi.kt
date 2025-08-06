@@ -20,13 +20,6 @@ interface GridViewApi {
     fun setPercentage(multiMedia: GridMedia, percentage: Int)
 
     /**
-     * 设置authority
-     *
-     * @param authority provider的authorities属性
-     */
-    fun setAuthority(authority: String)
-
-    /**
      * 添加[LocalMedia],根据自身类型进行相应的显示
      * @param localMediaList 文件实体数据集
      */

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
@@ -51,11 +50,6 @@ class GridView : FrameLayout, GridViewApi {
      * 控件集合
      */
     private lateinit var mViewHolder: ViewHolder
-
-    /**
-     * 文件配置路径
-     */
-    private lateinit var mMediaStoreCompat: MediaStoreCompat
 
     /**
      * 点击事件
@@ -109,10 +103,6 @@ class GridView : FrameLayout, GridViewApi {
         // 获取显示图片的类
         val imageEngineStr =
             gridViewStyle.getString(R.styleable.GridView_imageEngine)
-        // provider的authorities,用于提供给外部的file
-        val authority = gridViewStyle.getString(R.styleable.GridView_authority)
-        val saveStrategy = SaveStrategy(true, authority, "")
-        mMediaStoreCompat = MediaStoreCompat(context, saveStrategy)
         // 获取最多显示多少个方框
         photoAdapterEntity.maxMediaCount =
             gridViewStyle.getInteger(
@@ -204,13 +194,7 @@ class GridView : FrameLayout, GridViewApi {
         }
     }
 
-    override fun setAuthority(authority: String) {
-        val saveStrategy = SaveStrategy(true, authority, "")
-        mMediaStoreCompat.saveStrategy = saveStrategy
-    }
-
     override fun addLocalFileStartUpload(localMediaList: List<LocalMedia>) {
-        isAuthority()
         // 新添加图片的
         val mediaImages = ArrayList<GridMedia>()
         // 新添加视频的
@@ -296,7 +280,7 @@ class GridView : FrameLayout, GridViewApi {
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
             ?: -1
         gridMedia.absolutePath = path
-        gridMedia.uri = mMediaStoreCompat.getUri(path).toString()
+        gridMedia.uri = MediaStoreCompat.getUri(context, path).toString()
         gridMedia.duration = duration
         gridMedia.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()
         mmr.release()
@@ -368,21 +352,6 @@ class GridView : FrameLayout, GridViewApi {
         } else {
             mGridAdapter.photoAdapterEntity.maxMediaCount =
                 maxImageSelectable!! + maxVideoSelectable!! + maxAudioSelectable!!
-        }
-    }
-
-    /**
-     * 检测属性
-     */
-    private fun isAuthority() {
-        if (mMediaStoreCompat.saveStrategy.authority == null) {
-            // 必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错。也可以代码设置setAuthority
-            val stringBuilder = StringBuffer()
-            stringBuilder.append("You must define the authority attribute,")
-            stringBuilder.append("which specifies the provider's authorities,")
-            stringBuilder.append("to serve to external files. Otherwise, ")
-            stringBuilder.append("Android7.0 will report an error.You can also set setAuthority in code")
-            throw java.lang.RuntimeException(stringBuilder.toString())
         }
     }
 
