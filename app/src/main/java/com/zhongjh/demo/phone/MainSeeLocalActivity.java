@@ -141,7 +141,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 Log.i(TAG, "onResult id:" + gridMedia.getId());
                 Log.i(TAG, "onResult url:" + gridMedia.getUrl());
                 Log.d(TAG, "onResult 绝对路径:" + gridMedia.getAbsolutePath());
-                Log.d(TAG, "onResult Uri:" + gridMedia.getPath());
+                Log.d(TAG, "onResult Uri:" + gridMedia.getUri());
                 Log.d(TAG, "onResult 文件大小: " + gridMedia.getSize());
                 Log.d(TAG, "onResult 视频音频长度: " + gridMedia.getDuration());
 
@@ -261,7 +261,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 gridMedia.setWidth(mediaExtraInfo.getWidth());
                 gridMedia.setHeight(mediaExtraInfo.getHeight());
                 gridMedia.setSize(file.length());
-                gridMedia.setPath(Uri.fromFile(file).toString());
+                gridMedia.setUri(Uri.fromFile(file).toString());
                 gridMedia.setAbsolutePath(path);
                 gridMedia.setUploading(false);
                 data.add(gridMedia);
@@ -283,7 +283,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 gridMedia.setHeight(mediaExtraInfo.getHeight());
                 gridMedia.setDuration(mediaExtraInfo.getDuration());
                 gridMedia.setSize(file.length());
-                gridMedia.setPath(Uri.fromFile(file).toString());
+                gridMedia.setUri(Uri.fromFile(file).toString());
                 gridMedia.setAbsolutePath(path);
                 gridMedia.setUploading(false);
                 data.add(gridMedia);
@@ -305,7 +305,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 gridMedia.setHeight(mediaExtraInfo.getHeight());
                 gridMedia.setDuration(mediaExtraInfo.getDuration());
                 gridMedia.setSize(file.length());
-                gridMedia.setPath(Uri.fromFile(file).toString());
+                gridMedia.setUri(Uri.fromFile(file).toString());
                 gridMedia.setAbsolutePath(path);
                 gridMedia.setUploading(false);
                 data.add(gridMedia);
@@ -328,7 +328,7 @@ public class MainSeeLocalActivity extends BaseActivity {
                 Log.i(TAG, "onResult id:" + item.getId());
                 Log.i(TAG, "onResult url:" + item.getUrl());
                 Log.d(TAG, "onResult 绝对路径:" + item.getAbsolutePath());
-                Log.d(TAG, "onResult Uri:" + item.getPath());
+                Log.d(TAG, "onResult Uri:" + item.getUri());
                 Log.d(TAG, "onResult 文件大小: " + item.getSize());
                 Log.d(TAG, "onResult 视频音频长度: " + item.getDuration());
             }

@@ -296,7 +296,7 @@ class GridView : FrameLayout, GridViewApi {
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
             ?: -1
         gridMedia.absolutePath = path
-        gridMedia.path = mMediaStoreCompat.getUri(path).toString()
+        gridMedia.uri = mMediaStoreCompat.getUri(path).toString()
         gridMedia.duration = duration
         gridMedia.mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE).toString()
         mmr.release()

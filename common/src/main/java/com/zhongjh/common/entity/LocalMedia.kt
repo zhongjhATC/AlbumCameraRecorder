@@ -45,7 +45,7 @@ open class LocalMedia() : Parcelable {
     /**
      * 初始的uri路径，未压缩、未编辑前的，即是原图
      */
-    var path: String = ""
+    var uri: String = ""
 
     /**
      * 初始的真实路径，未压缩、未编辑前的，即是原图。如果是相册编辑后的图,那么该值跟editorPath相同
@@ -147,7 +147,7 @@ open class LocalMedia() : Parcelable {
             parcel.writeLong(fileId)
             parcel.writeString(compressPath)
             parcel.writeString(editorPath)
-            parcel.writeString(path)
+            parcel.writeString(uri)
             parcel.writeString(absolutePath)
             parcel.writeLong(duration)
             parcel.writeInt(orientation)
@@ -180,7 +180,7 @@ open class LocalMedia() : Parcelable {
         compressPath = parcel.readString()
         editorPath = parcel.readString()
         val parcelPath = parcel.readString()
-        path = parcelPath.let { parcelPath } ?: let { "" }
+        uri = parcelPath.let { parcelPath } ?: let { "" }
         val parcelAbsolutePath = parcel.readString()
         absolutePath = parcelAbsolutePath.let { parcelAbsolutePath } ?: let { "" }
         duration = parcel.readLong()
@@ -233,7 +233,7 @@ open class LocalMedia() : Parcelable {
         if (editorPath != localMedia.editorPath) {
             return false
         }
-        if (path != localMedia.path) {
+        if (uri != localMedia.uri) {
             return false
         }
         if (duration != localMedia.duration) {
@@ -334,7 +334,7 @@ open class LocalMedia() : Parcelable {
         val mediaComputeSize = BitmapUtils.getComputeImageSize(size[0], size[1])
         val width = mediaComputeSize[0]
         val height = mediaComputeSize[1]
-        imageEngine.loadUrlImage(context, width, height, imageView, editorPath ?: path)
+        imageEngine.loadUrlImage(context, width, height, imageView, editorPath ?: uri)
     }
 
     /**
@@ -397,7 +397,7 @@ open class LocalMedia() : Parcelable {
         fileId = localMedia.fileId
         compressPath = localMedia.compressPath
         editorPath = localMedia.editorPath
-        path = localMedia.path
+        uri = localMedia.uri
         absolutePath = localMedia.absolutePath
         duration = localMedia.duration
         orientation = localMedia.orientation

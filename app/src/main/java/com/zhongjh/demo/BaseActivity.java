@@ -149,7 +149,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             // 沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
             Log.d(TAG, "onResult FileProvider:" + FileMediaUtil.INSTANCE.getUri(this, localMedia.getAbsolutePath()));
             // 初始的uri路径，未压缩、未编辑前的，即是原图
-            Log.d(TAG, "onResult getPath:" + localMedia.getPath());
+            Log.d(TAG, "onResult getUri:" + localMedia.getUri());
             // 初始的真实路径，未压缩、未编辑前的，即是原图
             Log.d(TAG, "onResult getAbsolutePath:" + localMedia.getAbsolutePath());
             // 如果有不存在的文件,抛出错误
@@ -159,8 +159,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             if (null == localMedia.getEditorPath() || !new File(localMedia.getEditorPath()).exists()) {
                 Log.e(TAG, localMedia.getEditorPath() + " EditorPath不存在");
             }
-            if (isNoUri(localMedia.getPath())) {
-                Log.e(TAG, localMedia.getPath() + " Path不存在");
+            if (isNoUri(localMedia.getUri())) {
+                Log.e(TAG, localMedia.getUri() + " Uri不存在");
             }
             if (!new File(localMedia.getAbsolutePath()).exists()) {
                 Log.e(TAG, localMedia.getAbsolutePath() + " AbsolutePath不存在");
@@ -196,7 +196,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             Log.i(TAG, "onResult 具体类型:" + localMedia.getMimeType());
             // 某些手机拍摄没有自带宽高，那么我们可以自己获取
             if (localMedia.getWidth() == 0 && localMedia.isVideo()) {
-                MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localMedia.getPath());
+                MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localMedia.getUri());
                 localMedia.setWidth(mediaExtraInfo.getWidth());
                 localMedia.setHeight(mediaExtraInfo.getHeight());
                 localMedia.setDuration(mediaExtraInfo.getDuration());

@@ -542,7 +542,7 @@ class PreviewFragment : BaseFragment() {
             val intent = Intent()
             intent.setClass(requireActivity(), ImageEditActivity::class.java)
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, requireActivity().requestedOrientation)
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.path)
+            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.uri)
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file.absolutePath)
             mImageEditActivityResult.launch(intent)
         }
@@ -562,7 +562,7 @@ class PreviewFragment : BaseFragment() {
                     val uri = MediaStoreUtils.displayToGallery(mContext, editFile, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
                     uri?.let {
                         localMedia.absolutePath = localMedia.editorPath as String
-                        localMedia.path = uri.toString()
+                        localMedia.uri = uri.toString()
                         // 从Uri中提取ID（最后一段数字）
                         localMedia.fileId = uri.lastPathSegment?.toLongOrNull() ?: -1
                         // 宽高刷新

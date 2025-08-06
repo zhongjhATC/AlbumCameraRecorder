@@ -104,7 +104,7 @@ class MediaLoader(private val context: Context) {
                         val album = Album()
                         album.id = media.bucketId
                         album.name = media.parentFolderName
-                        album.firstImagePath = media.path
+                        album.firstImagePath = media.uri
                         album.firstMimeType = media.mimeType
                         albumList += album
                         bucketSet.add(media.bucketId)
@@ -220,7 +220,7 @@ class MediaLoader(private val context: Context) {
             }
         }
 
-        media.path = if (SdkVersionUtils.isQ) {
+        media.uri = if (SdkVersionUtils.isQ) {
             getRealPathUri(media.fileId, media.mimeType ?: "")
         } else {
             media.absolutePath

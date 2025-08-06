@@ -78,7 +78,7 @@ public class MainListActivity extends AppCompatActivity {
                 copyFilesFromRaw(getApplicationContext(), id, id.toString(), getApplicationContext().getFilesDir().getAbsolutePath() + "/resource");
                 GridMedia gridMedia = new GridMedia();
                 gridMedia.setAbsolutePath(getApplicationContext().getFilesDir().getAbsolutePath() + "/resource/" + id);
-                gridMedia.setPath(Uri.fromFile(new File(gridMedia.getAbsolutePath())).toString());
+                gridMedia.setUri(Uri.fromFile(new File(gridMedia.getAbsolutePath())).toString());
                 listNew.add(gridMedia);
             }
             globalSetting.openPreviewData(MainListActivity.this, requestLauncherPreview, listNew, 0, false);

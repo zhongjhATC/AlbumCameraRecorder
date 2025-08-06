@@ -124,7 +124,7 @@ public class MainSeeActivity extends BaseActivity {
                 Log.i(TAG, "onResult id:" + gridMedia.getFileId());
                 Log.i(TAG, "onResult url:" + gridMedia.getUrl());
                 Log.d(TAG, "onResult 绝对路径:" + gridMedia.getAbsolutePath());
-                Log.d(TAG, "onResult Uri:" + gridMedia.getPath());
+                Log.d(TAG, "onResult Uri:" + gridMedia.getUri());
                 Log.d(TAG, "onResult 文件大小: " + gridMedia.getSize());
                 Log.d(TAG, "onResult 视频音频长度: " + gridMedia.getDuration());
                 if (gridMedia.isImageOrGif()) {

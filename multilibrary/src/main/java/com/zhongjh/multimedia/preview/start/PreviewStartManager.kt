@@ -71,7 +71,7 @@ object PreviewStartManager {
             val localMedia = LocalMedia()
             localMedia.fileId = item.temporaryId
             localMedia.absolutePath = item.absolutePath
-            localMedia.path = item.uri
+            localMedia.uri = item.uri
             localMedia.mimeType = MimeType.JPEG.toString()
             items.add(localMedia)
         }

@@ -22,7 +22,7 @@ object LocalMediaUtils {
         list.let {
             // 一般用于相册数据的获取索引
             for (i in it.indices) {
-                if (it[i].path == item.path && it[i].id == item.id) {
+                if (it[i].uri == item.uri && it[i].id == item.id) {
                     index = i
                     break
                 }
@@ -47,7 +47,7 @@ object LocalMediaUtils {
     fun checkedLocalMediaOf(items: ArrayList<LocalMedia>, item: LocalMedia): LocalMedia? {
         var localMedia: LocalMedia? = null
         for (i in items.indices) {
-            if (items[i].path == item.path) {
+            if (items[i].uri == item.uri) {
                 localMedia = items[i]
                 break
             }

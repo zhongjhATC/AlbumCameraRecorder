@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sdsmdg.harjot.vectormaster.VectorMasterView
 import com.zhongjh.common.entity.GridMedia
-import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.gridview.R
@@ -179,7 +178,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
                             it.onItemClick(v, gridMedia)
                         } else {
                             // 如果是视频，判断是否已经下载好（有path就是已经下载好了）
-                            if (TextUtils.isEmpty(gridMedia.path)) {
+                            if (TextUtils.isEmpty(gridMedia.uri)) {
                                 // 执行下载事件
                                 val isContinue = it.onItemStartDownload(v, gridMedia, holder.adapterPosition)
                                 if (isContinue) {
@@ -469,7 +468,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @param gridMedia 集合里面的某个对象
      */
     private fun removePosition(gridMedia: GridMedia) {
-        Log.d(TAG, "multiMediaView.path：" + gridMedia.path)
+        Log.d(TAG, "multiMediaView.path：" + gridMedia.uri)
         val position = list.indexOf(gridMedia)
         removePosition(position)
     }

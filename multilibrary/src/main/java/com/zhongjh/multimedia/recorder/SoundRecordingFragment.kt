@@ -244,7 +244,7 @@ class SoundRecordingFragment : BaseFragment() {
         val sharePreferences = requireActivity().getSharedPreferences("sp_name_audio", Context.MODE_PRIVATE)
         val filePath = sharePreferences.getString("audio_path", "") as String
         val elapsed = sharePreferences.getLong("elapsed", 0)
-        localMedia.path = filePath
+        localMedia.uri = filePath
         localMedia.duration = elapsed
         localMedia.size = File(filePath).length()
         localMedia.mimeType = MimeType.AAC.mimeTypeName
@@ -346,7 +346,7 @@ class SoundRecordingFragment : BaseFragment() {
         mediaPlayer?.let { mediaPlayer ->
             try {
                 // 文件地址
-                mediaPlayer.setDataSource(localMedia.path)
+                mediaPlayer.setDataSource(localMedia.uri)
                 mediaPlayer.prepare()
 
                 mediaPlayer.setOnPreparedListener { mediaPlayer.start() }
@@ -436,12 +436,12 @@ class SoundRecordingFragment : BaseFragment() {
             fragment.initAudio()
             val context = fragment.context
             val newFile = createCacheFile(context, MediaType.TYPE_AUDIO)
-            copy(File(fragment.localMedia.path), newFile, null) { ioProgress: Double, _: File? ->
+            copy(File(fragment.localMedia.uri), newFile, null) { ioProgress: Double, _: File? ->
                 val progress = (ioProgress * FULL).toInt()
                 ThreadUtils.runOnUiThread {
                     if (isAdded) {
                         fragment.viewHolder.pvLayout.soundRecordingLayoutViewHolder.btnConfirm.addProgress(progress)
-                        fragment.localMedia.path = newFile.path
+                        fragment.localMedia.uri = newFile.path
                         if (progress >= FULL) {
                             val result = Intent()
                             val localFiles = ArrayList<LocalMedia?>()

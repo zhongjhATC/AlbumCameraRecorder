@@ -81,7 +81,7 @@ class AlbumAdapter(
         val item = data[position]
         Log.d(tag, "position: $position")
         if (position == 0) {
-            Log.d(tag, "path: " + item.path)
+            Log.d(tag, "path: " + item.uri)
         }
         // 传递相关的值
         mediaViewHolder.mMediaGrid.preBindMedia(MediaGrid.PreBindInfo(mImageResize, placeholder!!, mAlbumSpec.countable, holder))
