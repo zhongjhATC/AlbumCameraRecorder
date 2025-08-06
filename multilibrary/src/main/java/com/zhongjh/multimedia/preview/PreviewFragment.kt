@@ -587,7 +587,6 @@ class PreviewFragment : BaseFragment() {
     @Synchronized
     private fun setResultOk(localMedias: ArrayList<LocalMedia>) {
         Log.d(TAG, "setResultOk")
-        refreshMultiMediaItem()
         val intent = Intent()
         intent.putExtra(STATE_SELECTION, localMedias)
         requireActivity().setResult(RESULT_OK, intent)
