@@ -526,6 +526,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
 
     /**
      * 获取列表中第一个图片的索引
+     * 如果没有图片,则是最后一个
      *
      * @return 索引
      */
@@ -537,7 +538,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
                 }
             }
         }
-        return 0
+        return list.size - 1
     }
 
     /**
