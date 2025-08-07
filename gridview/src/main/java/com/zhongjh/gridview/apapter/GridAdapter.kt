@@ -538,7 +538,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
                 }
             }
         }
-        return list.size - 1
+        return list.size
     }
 
     /**
