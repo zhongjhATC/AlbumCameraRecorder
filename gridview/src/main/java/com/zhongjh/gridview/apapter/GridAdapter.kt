@@ -25,6 +25,7 @@ import com.zhongjh.gridview.listener.GridViewListener
 import com.zhongjh.gridview.provider.RoundViewOutlineProvider
 import com.zhongjh.gridview.widget.MaskProgressView
 
+
 /**
  * 九宫展示数据
  *
@@ -57,8 +58,9 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
 
     /**
      * 数据源（包括视频和图片）
+     * 这是一个不可变的数据源
      */
-    private val list = ArrayList<GridMedia>()
+    private var list: List<GridMedia> = emptyList()
 
     /**
      * 每次添加数据增长的id，用于在相同地址的情况下区分两张图等
@@ -80,10 +82,6 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      */
     private var mAudioCount = 0
     private var mItemHeight: Int = 0
-
-    override fun getItemViewType(position: Int): Int {
-        return 0
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val view: View = mInflater.inflate(R.layout.item_image_zjh, parent, false)
@@ -238,12 +236,8 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
                 mAudioCount++
             }
         }
-        // 数量如果小于最大值并且允许操作，才+1，这个+1是最后加个可操作的Add方框
-        return if (list.size < photoAdapterEntity.maxMediaCount && photoAdapterEntity.isOperation) {
-            list.size + 1
-        } else {
-            list.size
-        }
+        // getItemCount() 动态返回 list.size 或 list.size + 1 是导致 ViewHolder 位置不一致 的核心原因
+        return list.size
     }
 
     /**
@@ -251,19 +245,31 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      */
     @SuppressLint("NotifyDataSetChanged")
     fun clearAll() {
-        list.clear()
-        notifyDataSetChanged()
+        val newData = ArrayList<GridMedia>()
+        addAddItem(newData)
+        val diffResult = DiffUtil.calculateDiff(GridCallback(list, newData))
+        list = newData
+        diffResult.dispatchUpdatesTo(this)
     }
 
     /**
-     * @return 获取所有数据源
+     * 获取所有数据源，如果最后一个是add，则去掉它
+     * @return 数据源
      */
     fun getData(): ArrayList<GridMedia> {
-        return list
+        // 判断最后一个有没有add
+        if (list[list.size - 1].isAdd) {
+            // 创建原列表的副本，然后删除副本的最后一个元素
+            val newList = ArrayList(list)
+            newList.removeLast()
+            return newList
+        }
+        return ArrayList(list)
     }
 
     /**
-     * @return 获取所有数据源
+     * 根据类型获取相关数据源
+     * @return 数据源
      */
     fun getData(@MediaType mediaType: Int): ArrayList<GridMedia> {
         val dates = ArrayList<GridMedia>()
@@ -304,13 +310,22 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
         Log.d("$TAG Test", "addData")
         val position: Int = getNeedAddPosition(mediaType)
         for (item in gridMedia) {
-            item.id = mId++
+            if (!item.isAdd) {
+                item.id = mId++
+            }
         }
-        list.addAll(position, gridMedia)
-        // 刷新ui
-        notifyItemRangeInserted(position, gridMedia.size)
-        notifyItemRangeChanged(position, gridMedia.size)
-        isRemoveAdd()
+
+        // 转换为可变列表并插入新数据
+        val mutableList = list.toMutableList()
+        mutableList.addAll(position, gridMedia)
+        // 判断是否保留add数据
+        if (!isShowAdd(mutableList)) {
+            mutableList.removeAt(mutableList.size - 1)
+        }
+        // 用DiffUtil计算差异并更新
+        val diffResult = DiffUtil.calculateDiff(GridCallback(list, mutableList))
+        list = mutableList
+        diffResult.dispatchUpdatesTo(this)
     }
 
     /**
@@ -320,33 +335,28 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @param gridMediaAudio 音频数据源
      */
     fun setData(gridMediaImage: List<GridMedia>?, gridMediaVideo: List<GridMedia>?, gridMediaAudio: List<GridMedia>?) {
-        // clone 旧数据
-        val oldData = ArrayList<GridMedia>()
-        for (i in list.indices.reversed()) {
-            val gridMedia = GridMedia()
-            gridMedia.copyGridMedia(list[i])
-            oldData.add(gridMedia)
-        }
-        // 根据不同数据源赋值
-        gridMediaImage?.let {
-            setImageData(gridMediaImage)
-        }
+        val newData = ArrayList<GridMedia>()
         gridMediaVideo?.let {
-            setVideoData(gridMediaVideo)
+            newData.addAll(gridMediaVideo)
         }
         gridMediaAudio?.let {
-            setAudioData(gridMediaAudio)
+            newData.addAll(gridMediaAudio)
         }
-        dispatchUpdatesTo(oldData)
-    }
-
-    /**
-     * 代替notifyDataSetChanged
-     * @param oldData 旧数据
-     */
-    private fun dispatchUpdatesTo(oldData: List<GridMedia>) {
-        // 计算新老数据集差异，将差异更新到Adapter
-        val diffResult = DiffUtil.calculateDiff(GridCallback(oldData, list))
+        gridMediaImage?.let {
+            newData.addAll(gridMediaImage)
+        }
+        // 增加新的音频数据
+        for (item in newData) {
+            if (!item.isAdd) {
+                item.id = mId++
+            }
+        }
+        addAddItem(newData)
+        // 1. 计算新旧数据差异（可在子线程执行）
+        val diffResult = DiffUtil.calculateDiff(GridCallback(list, newData))
+        // 2. 在主线程中，先用新数据替换旧数据
+        list = newData
+        // 3. 最后分发差异更新
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -354,7 +364,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * 更新图片/视频数据
      */
     fun updateItem(gridMedia: GridMedia) {
-        for (i in 0 until list.size) {
+        for (i in list.indices) {
             if (list[i].id == gridMedia.id) {
                 notifyItemChanged(i)
             }
@@ -370,72 +380,11 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
         val multiMediaView = list[position]
         // 根据索引获取相关view
         listener?.onItemClose(multiMediaView)
-        list.remove(multiMediaView)
+        val mutableList = list.toMutableList()
+        mutableList.remove(multiMediaView)
+        list = mutableList
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, list.size - position)
-    }
-
-    /**
-     * 赋值图片数据
-     *
-     * @param gridMedia 数据源
-     */
-    private fun setImageData(gridMedia: List<GridMedia>) {
-        Log.d("$TAG Test", "setImageData")
-        // 删除当前所有图片
-        for (i in list.indices.reversed()) {
-            if (list[i].isImageOrGif()) {
-                list.removeAt(i)
-            }
-        }
-        // 增加新的图片数据
-        for (item in gridMedia) {
-            item.id = mId++
-        }
-        list.addAll(gridMedia)
-    }
-
-    /**
-     * 赋值视频数据
-     *
-     * @param gridMedia 数据源
-     */
-    private fun setVideoData(gridMedia: List<GridMedia>) {
-        Log.d("$TAG Test", "setVideoData")
-        // 删除当前所有视频
-        for (i in list.indices.reversed()) {
-            if (list[i].isVideo()) {
-                list.removeAt(i)
-            }
-        }
-
-        // 增加新的视频数据
-        for (item in gridMedia) {
-            item.id = mId++
-        }
-        list.addAll(0, gridMedia)
-    }
-
-    /**
-     * 赋值音频数据
-     *
-     * @param gridMedia 数据源
-     */
-    private fun setAudioData(gridMedia: List<GridMedia>) {
-        Log.d("$TAG Test", "setAudioData")
-        // 删除当前所有音频
-        for (i in list.indices.reversed()) {
-            if (list[i].isAudio()) {
-                list.removeAt(i)
-            }
-        }
-
-        // 增加新的音频数据
-        for (item in gridMedia) {
-            item.id = mId++
-        }
-        // 在视频的最后一个位置添加音频
-        list.addAll(getVideoLeastPosition(), gridMedia)
     }
 
     /**
@@ -460,6 +409,36 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
                 listener?.onItemAdd(v, mProgressMediaAdd, mImageCount, mVideoCount, mAudioCount)
             }
         })
+        holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        holder.itemView.visibility = View.VISIBLE
+    }
+
+    /**
+     * 判断是否支持显示Add,满足下面两个条件
+     * 1. 数量小于配置项maxMediaCount
+     * 2. 九宫控件开启了允许操作
+     */
+    private fun isShowAdd(list: List<GridMedia>): Boolean {
+        val size = if (list[list.size - 1].isAdd) {
+            list.size - 1
+        } else {
+            list.size
+        }
+        return size < photoAdapterEntity.maxMediaCount && photoAdapterEntity.isOperation
+    }
+
+    /**
+     * 添加addItem
+     *
+     * @param gridMedias 需要添加item的数据源
+     */
+    private fun addAddItem(gridMedias: ArrayList<GridMedia>) {
+        // 判断如果有操作，则加上+
+        if (photoAdapterEntity.isOperation) {
+            val gridMedia = GridMedia()
+            gridMedia.isAdd = true
+            gridMedias.add(gridMedia)
+        }
     }
 
     /**
@@ -474,17 +453,6 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
     }
 
     /**
-     * 判断是否删除Add Item
-     */
-    private fun isRemoveAdd() {
-        // 判断是否等于最大数量,并且是可操作的才进行去掉add
-        if (list.size >= photoAdapterEntity.maxMediaCount && photoAdapterEntity.isOperation) {
-            notifyItemRemoved(list.size)
-            notifyItemRangeChanged(list.size, list.size)
-        }
-    }
-
-    /**
      * 根据类型获取当前要添加的位置，新增的图片在最后一个，新增的视频在图片的前面
      *
      * @param mediaType 数据类型
@@ -495,15 +463,12 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
             MediaType.TYPE_PICTURE ->
                 // 数据源的最后一个
                 list.size.coerceAtLeast(0)
-
             MediaType.TYPE_VIDEO ->
                 // 视频的最后一个,如果没有视频,则是0
                 getVideoLeastPosition()
-
             MediaType.TYPE_AUDIO ->
                 // 获取图片第一个索引
                 getImageFirstPosition()
-
             else -> 0
         }
     }
@@ -538,7 +503,11 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
                 }
             }
         }
-        return list.size
+        return if (isShowAdd(list)) {
+            list.size - 1
+        } else {
+            list.size
+        }
     }
 
     /**
@@ -548,8 +517,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @return 是否Add
      */
     private fun isShowAddItem(position: Int): Boolean {
-        val size = list.size
-        return position == size
+        return list[position].isAdd
     }
 
     /**

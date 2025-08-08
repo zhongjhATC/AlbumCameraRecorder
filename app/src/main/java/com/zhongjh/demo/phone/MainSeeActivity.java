@@ -168,8 +168,6 @@ public class MainSeeActivity extends BaseActivity {
         initConfig();
         initData();
         initListener();
-        findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.gridView.reset());
     }
 
     @Override

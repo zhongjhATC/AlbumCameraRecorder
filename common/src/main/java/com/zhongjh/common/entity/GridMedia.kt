@@ -26,6 +26,11 @@ class GridMedia : LocalMedia, Parcelable {
      */
     var progress: Int = 0
 
+    /**
+     * 该数据是否添加
+     */
+    var isAdd: Boolean = false
+
     constructor() : super()
 
     constructor(parcel: Parcel) : super(parcel) {
@@ -45,6 +50,7 @@ class GridMedia : LocalMedia, Parcelable {
         parcel.writeString(url)
         parcel.writeByte(if (isUploading) 1 else 0)
         parcel.writeInt(progress)
+        parcel.writeByte(if (isAdd) 1 else 0)
     }
 
     override fun describeContents(): Int {
@@ -70,6 +76,7 @@ class GridMedia : LocalMedia, Parcelable {
         url = gridMedia.url
         isUploading = gridMedia.isUploading
         progress = gridMedia.progress
+        isAdd = gridMedia.isAdd
     }
 
 }
