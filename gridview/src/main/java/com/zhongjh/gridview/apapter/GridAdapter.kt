@@ -419,11 +419,16 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * 2. 九宫控件开启了允许操作
      */
     private fun isShowAdd(list: List<GridMedia>): Boolean {
-        val size = if (list[list.size - 1].isAdd) {
-            list.size - 1
+        val size = if (list.isNotEmpty()) {
+            if (list[list.size - 1].isAdd) {
+                list.size - 1
+            } else {
+                list.size
+            }
         } else {
-            list.size
+            0
         }
+
         return size < photoAdapterEntity.maxMediaCount && photoAdapterEntity.isOperation
     }
 
@@ -434,7 +439,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      */
     private fun addAddItem(gridMedias: ArrayList<GridMedia>) {
         // 判断如果有操作，则加上+
-        if (photoAdapterEntity.isOperation) {
+        if (isShowAdd(gridMedias)) {
             val gridMedia = GridMedia()
             gridMedia.isAdd = true
             gridMedias.add(gridMedia)
@@ -479,7 +484,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @return 索引
      */
     private fun getVideoLeastPosition(): Int {
-        if (list.size > 0) {
+        if (list.isNotEmpty()) {
             for (i in list.size - 1 downTo 0) {
                 if (list[i].isVideo()) {
                     return i + 1
@@ -496,8 +501,8 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @return 索引
      */
     private fun getImageFirstPosition(): Int {
-        if (list.size > 0) {
-            for (i in 0 until list.size) {
+        if (list.isNotEmpty()) {
+            for (i in list.indices) {
                 if (list[i].isImageOrGif()) {
                     return i
                 }
