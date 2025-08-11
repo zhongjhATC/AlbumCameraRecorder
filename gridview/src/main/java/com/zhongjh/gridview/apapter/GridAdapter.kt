@@ -262,7 +262,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      */
     fun getData(): ArrayList<GridMedia> {
         // 判断最后一个有没有add
-        if (list[list.size - 1].isAdd) {
+        if (lastIsAddItem(list)) {
             // 创建原列表的副本，然后删除副本的最后一个元素
             val newList = ArrayList(list)
             newList.removeLast()
@@ -323,7 +323,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
         val mutableList = list.toMutableList()
         mutableList.addAll(position, gridMedia)
         // 判断是否保留add数据
-        if (!isShowAdd(mutableList)) {
+        if (!isShowAdd(mutableList) && lastIsAddItem(mutableList)) {
             mutableList.removeAt(mutableList.size - 1)
         }
         // 用DiffUtil计算差异并更新
@@ -428,7 +428,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      */
     private fun isShowAdd(list: List<GridMedia>): Boolean {
         val size = if (list.isNotEmpty()) {
-            if (list[list.size - 1].isAdd) {
+            if (lastIsAddItem(list)) {
                 list.size - 1
             } else {
                 list.size
@@ -446,13 +446,19 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @param gridMedias 需要添加item的数据源
      */
     private fun addAddItem(gridMedias: MutableList<GridMedia>) {
-        val isLastNotAdd = gridMedias.lastOrNull()?.isAdd ?: false
         // 判断支持操作并且没有＋数据，则加上＋
-        if (isShowAdd(gridMedias) && !isLastNotAdd) {
+        if (isShowAdd(gridMedias) && !lastIsAddItem(gridMedias)) {
             val gridMedia = GridMedia()
             gridMedia.isAdd = true
             gridMedias.add(gridMedia)
         }
+    }
+
+    /**
+     * 最后一个是否addItem
+     */
+    private fun lastIsAddItem(gridMedias: List<GridMedia>): Boolean {
+        return gridMedias.lastOrNull()?.isAdd ?: false
     }
 
     /**
@@ -475,8 +481,12 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
     private fun getNeedAddPosition(@MediaType mediaType: Int): Int {
         return when (mediaType) {
             MediaType.TYPE_PICTURE ->
-                // 数据源的最后一个
-                list.size.coerceAtLeast(0)
+                if (isShowAdd(list)) {
+                    list.size - 1
+                } else {
+                    // 数据源的最后一个
+                    list.size.coerceAtLeast(0)
+                }
             MediaType.TYPE_VIDEO ->
                 // 视频的最后一个,如果没有视频,则是0
                 getVideoLeastPosition()
