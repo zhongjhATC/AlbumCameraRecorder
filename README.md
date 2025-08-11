@@ -1,47 +1,46 @@
 # AlbumCameraRecorderX
 
 [![MinSdk](https://img.shields.io/badge/MinSdk-21-blue.svg)](https://developer.android.com/about/versions/android-5.0)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/LICENSE)
 
-## This release is an offshoot of the AndroidX release.Any version number followed by an X is based on the AndroidX version.
-## At present, it has been put into use in the formal project.
-## If you have any suggestions or want to add functions, you can put forward on Issues
+## This version has just been released. If you want a more stable version, you can choose the androidx branch with version number 1.-.--X. Please note that the code in the androidx branch will no longer be maintained unless there are serious bugs.
+## This version uses CameraX for shooting, making it easier to customize shooting parameters and simplify dynamic watermarks. The global animations are more delicate. At the same time, redundant configurations and attributes have been sorted out.
+## Any suggestions or features you want to add can be submitted in Issues.
 
-## [中文](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/README_CN.md)
-An efficient multimedia support operation library, can be a variety of simple configuration operation photo, album, recording, recording and other functions.
+## [中文](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/README_CN.md)
+An efficient multimedia support operation library that allows simple configuration of various functions such as taking photos, accessing albums, recording videos, and recording audio.
 
-Also support supporting the use of the display of pictures, video, audio 9 grid function.
+It also supports a matching nine-grid function for displaying pictures, videos, and audios.
 
-- Part of the code for this open source library comes from [Matisse](https://github.com/zhihu/Matisse).
-- This open source library camera code from [CameraView](https://github.com/natario1/CameraView).
+## androidx version branch
+No longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/androidx)
 
-## Non-X version branching
-A non-X library version, no longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
+## 特性
+- Recording and photography fully support customization! For details on how to use it, please refer to the Demo. For in-depth expansion, you need to learn more about the code[CameraFragment架构简介](https://juejin.cn/post/7136108758010167304/)
+- Supports three-in-one functions such as album, recording, and audio recording (similar to Douyin, etc.), and can also be configured to independently use one of the functions.
+- Supports custom permission requests or allows the library to handle permission requests directly.
+- Although there are many functions, you can import certain libraries according to the required functions.
+- Rich callback interfaces and debugging information, allowing you to achieve rich effects using existing APIs.
+- Strong compatibility, with relevant compatibility handling for both low-version 4.1 and the latest Android 16.
+- Supports customization of all image reading and processing, such as customizing Glide, Fresco, etc.
+- Supports selecting pictures from the album.
+- Supports album selection by distinguishing different folders according to mobile phone files.
+- High customizability, supporting various custom settings such as the maximum number of selectable pictures and videos, and also supporting displaying only custom file sizes.
+- Supports customizing the style, color, size, etc. of the album.
+- Compatible with horizontal and vertical screen adjustments.
+- Supports flash and front/back camera switching during recording and photography.
+- Supports two-finger touch to zoom in/out and single-finger sliding to adjust brightness during recording and photography.
+- All UIs such as long-press buttons for recording and photography can be customized, all using SVG images to handle animation details well.
+- Recording supports segmented recording, and video editing will be added in the future.
+- Image editing supports color graffiti, text input, mosaic processing, rotation, cropping, etc.
+- Supports watermark function during shooting and recording, even dynamic watermarks.
+- Built-in permission function, no need to modify any code. The permission function includes permission detection, informing why the permission is requested when sending the permission request, and prompting to jump to the settings interface to set permissions after repeated denials. Custom permissions are also supported.
+- All recording and photography can choose deep compression processing. Image compression can be customized or use LuBan compression in the Demo. Video compression uses ffmpeg.
+- Complete cache management system.
+- Complete animation effects, shared element animations, and button detail animations.
+- Performance optimization, with careful handling of memory leaks.
 
-## peculiarity
-- Record photo fully support your own custom! See how to use Demo for more details, if you need to go deeper, you need to know more code [Introduction to the CameraFragment architecture](https://juejin.cn/post/7136108758010167304/)
-- Support album, recording, recording and other functions in one (similar to Douyin, etc.), and you can configure only one of the functions independently.
-- Customizable permission requests are supported and can be directed to the library to complete permission requests
-- While there are many features, some libraries can be introduced as required
-- Rich callback interface and debugging information, using the existing API to achieve a rich effect.
-- Strong compatibility, whether the lower version of 4.1 or the current latest version of Android 13, has been carried out related compatibility processing
-- Support all image reading and processing customization, such as custom Glide, Fresco, etc
-- Support to select pictures from albums
-- Supports photo albums to select different folders according to mobile phone files
-- Strong customization, support a variety of maximum selection of how many pictures, videos, and so on, also support only display custom file size
-- Support custom album style, color, size and so on
-- Support flash and front and rear camera switching when taking photos
-- Support double finger touch to zoom in and out when recording and photographing, and single finger sliding up and down to control brightness
-- recording, taking photos, pressing buttons, all of the UI is customizable, all SVG images are good for handling animation details
-- Recording support for segment recording, video editing will be added in the future
-- Image editing supports color graffiti, input text, Mosaic processing, rotation, cropping and other processing
-- Support recording processing
-- Deep compression is available for all recorded photos, custom compression is available for pictures, LuBan compression is available for Demo, and FFMPEG compression is available for videos
-- Perfect cache management system
-- Improved animation effects, which will be added later
-- Performance optimizations, memory leaks -- all carefully addressed
-
-## import
+## Import
 
 #### Step 1. Add the JitPack repository to your build file
 
@@ -54,20 +53,21 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 #### Step 2. Add the dependency
 
 	dependencies {
-	     // if you want to simplify the code and at the same time use multilibrary and grid, albumCameraRecorderCommon, can directly use the combined library
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.94X'
+	     // If you want to simplify the code and use multilibrary, grid, and albumCameraRecorderCommon at the same
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:2.0.00'
 
-	     // Public library, if not using the combined library above
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.94X'
-	     // core lib, call display album, screen recording, recording, etc
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.94X'
-         // It is mainly used to display the relevant upload progress after obtaining data. If you only need to obtain photos, videos and recordings, you don't need to use this
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:1.1.94X'
+	     // Common library, if you don't use the combined library above 
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:2.0.00'
+	     // Core library for calling and displaying album, screen recording, audio recording, etc.
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2.0.00'
+         // Used as a supplement, mainly for displaying relevant content after obtaining data and showing corresponding upload progress. If you only need to obtain data such as photos, videos, and audios, you don't need to use this.
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:2.0.00'
 
-         // use it with editing pictures
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.94X'
-	     // Supporting editing video use, currently only compression function, continue to add related functions, because the library uses ffmpeg, occupies a file size of 25M, according to the actual situation to choose whether to use
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.94X'
+         // Used for image editing
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2.0.00'
+	     // Used for video editing, currently only has compression function. More functions will be added later. Since this library uses ffmpeg, it takes up 25M of file size. Choose whether to use it according to the actual situation.
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:2.0.00'
+        
 	}
 
 #### Step 3. gradle file to add configuration
@@ -75,127 +75,109 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
     android.enableJetifier=true
     android.useAndroidX=true
 
-## snapshoot
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration1.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration2.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/DemonstrationShowImg.png)
+## Screenshots
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/Demonstration.gif)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/Demonstration1.gif)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/Demonstration2.gif)
+![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/DemonstrationShowImg.png)
 
+## Compatibility test on commonly used mobile phones in the market
+100% passed the[compatibility test report.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/WeTest.md).
+![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/kotlin/wetest/5.jpg)
 
+## Usage (it is recommended to download the Demo for more functions)
+#### Launch multimedia-related functions
 
-## Compatibility testing of mobile phones is commonly used in the market
-100% through[Compatibility Test Report](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/WeTest.md).
-![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/androidx/wetest/5.jpg)
-
-## use(You are advised to download Demo for more functions)
-#### Enable multimedia related functions
-
-        // Shooting Related Settings
+        // 拍摄有关设置
         CameraSetting cameraSetting = new CameraSetting();
-        // Types supported: picture, video
+        // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
-        // album
-        mAlbumSetting = new AlbumSetting(false)
-                // Types supported: picture, video
+        // 相册
+        AlbumSetting albumSetting = new AlbumSetting(false)
+                // 支持的类型：图片，视频
                 .mimeTypeSet(MimeType.ofAll())
-                // Whether to display the number of multiple selected images
+                // 是否显示多选图片的数字
                 .countable(true)
-                // Custom filter
+                // 自定义过滤器
                 .addFilter(new GifSizeFilter(320, 320, 5 * BaseFilter.K * BaseFilter.K))
-                // Open the original
+                // 开启原图
                 .originalEnable(true)
-                // Maximum original size, valid only if originalEnable is true
+                // 最大原图size,仅当originalEnable为true的时候才有效
                 .maxOriginalSize(10);
 
-        // recorder
+        // 录音机
         RecorderSetting recorderSetting = new RecorderSetting();
 
-        // globalSetting
-        GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(MimeType.ofAll());
-        globalSetting.cameraSetting(cameraSetting);
-        globalSetting.albumSetting(albumSetting);
-        globalSetting.recorderSetting(recorderSetting);
+        // 全局
+        mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
+        // 开启相册功能
+        mGlobalSetting.albumSetting(albumSetting);
+        // 开启拍摄功能
+        mGlobalSetting.cameraSetting(cameraSetting);
+        // 开启录音功能
+        mGlobalSetting.recorderSetting(recorderSetting);
 
         mGlobalSetting
-                .setOnMainListener(errorMessage -> {
-                    Log.d(TAG, errorMessage);
-                    Toast.makeText(MainSimpleActivity.this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-                })
-                // Set paths and 7.0 protection paths, and so on
-                .allStrategy(new SaveStrategy(true, "com.zhongjh.demo.fileProvider", "aabb"))
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // Maximum 5 images or maximum 3 video
-                .maxSelectablePerMediaType(null,
-                                        5,
-                                        3,
-                                        3,
-                                        alreadyImageCount,
-                                        alreadyVideoCount,
-                                        alreadyAudioCount)
-                                .forResult(REQUEST_CODE_CHOOSE);
+                // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格GridView的maxCount也改动 mBinding.dmlImageList.setMaxMediaCount();
+                .maxSelectablePerMediaType(null, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE,
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
+                .forResult(requestLauncherACR);
 
-#### Gets the relevant returned data
+#### Get the returned data
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
+    protected final ActivityResultLauncher<Intent> requestLauncherACR = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK) {
             return;
-        List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
-    }
+        }
+        if (null == result.getData()) {
+            return;
+        }
 
-#### Do not forget this configuration. Otherwise, an error will be reported when recording and saving files、Uri is cleared when album selection image preview is confirmed
+        List<LocalMedia> data = MultiMediaSetting.obtainLocalMediaResult(result.getData());
+        printProperty(data);
+    });
 
-    <provider
-        android:name="androidx.core.content.FileProvider"
-        android:authorities="${applicationId}.fileProvider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-        <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths_public" />
-    </provider>
+#### For other common issues, you can search for error keywords in[Possible Issues](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)
 
-#### If there are other common problems, you can see the [website](https://github.com/zhongjhATC/AlbumCameraRecorder/issues) search error keywords
+#### If you need to modify the interface and logic of shooting and recording
+For simple expansion, please refer to the Demo. For in-depth expansion, learn more about[Brief Introduction to CameraFragment Architecture](https://juejin.cn/post/7136108758010167304/)
+However, please note that if configuration is supported, configuration takes priority. Only when there is no configuration, custom expansion can be done here.
 
-#### If you need to modify the shooting and recording interface and logic
-Please refer to Demo for simple extensions. If you need to go deeper to learn more about extensions [simple architecture of CameraFragment](https://juejin.cn/post/7136108758010167304/)
-Note, however, that if configuration is supported, the configuration takes precedence. Custom extensions are only done here if there is no configuration
+#### If you need to use the nine-grid to display data, you can refer to the[relevant code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/app/src/main/java/com/zhongjh/demo/phone/MainSeeActivity.java).
 
-#### If you need to modify the camera shooting, recording parameters
-Because the inside of the camera from the [CameraView] (https://github.com/natario1/CameraView), so change resolution, closed when the tape recording and other functions can access to view more interfaces,So how do we get the CameraView from our library that we can use in our Demo instance
+#### Relevant APIs, more APIs and support are continuously added
+- [Public configuration API for calling multimedia.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/multilibrary/src/main/java/com/zhongjh/multimedia/settings/api/GlobalSettingApi.kt).
+- [Album configuration API for calling multimedia.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/multilibrary/src/main/java/com/zhongjh/multimedia/settings/api/AlbumSettingApi.kt).
+- [Recording configuration API for calling multimedia.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/multilibrary/src/main/java/com/zhongjh/multimedia/settings/api/CameraSettingApi.kt).
+- [Audio recording configuration API for calling multimedia.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/multilibrary/src/main/java/com/zhongjh/multimedia/settings/api/RecorderSettingApi.kt).
+- [Multimedia-related static methods](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/multilibrary/src/main/java/com/zhongjh/multimedia/AlbumCameraRecorderApi.kt)
+- [Multimedia UI-related attribute configurations](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/multilibrary/src/main/res/values/styles.xml)
 
-#### If you need to use the data of the nine-grid exhibition, you can see A [code](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/demo/MainSeeActivity.java) for details.
-
-#### Related APIs, more APIs and support for continuous enrichment added
-- [Call the multimedia public configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/GlobalSettingApi.java).
-- [Call the multimedia album configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/AlbumSettingApi.java).
-- [Call the recording configuration API for multimedia](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/CameraSettingApi.java).
-- [Call the multimedia recording configuration API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/settings/api/RecorderSettingApi.java).
-- [Multimedia UI related properties configuration](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/res/values/styles.xml)
-- [Multimedia related static methods](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/multilibrary/src/main/java/com/zhongjh/albumcamerarecorder/AlbumCameraRecorderApi.java)
-
-
-If you use the shown library, the following APIs are also useful for you
-- [Nine-grid related API](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/java/com/zhongjh/grid/api/MaskProgressApi.java).
-- [Nine-grid dependent Events](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/java/com/zhongjh/grid/listener/MaskProgressLayoutListener.java).
-- [Nine-grid related properties, configuring the UI, etc](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/grid/src/main/res/values/attrs.xml)
+If you use the displayed nine-grid library, the following APIs will be useful for you:
+- [Nine-grid related APIs.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/gridview/src/main/java/com/zhongjh/gridview/api/GridViewApi.kt).
+- [Nine-grid related events.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/gridview/src/main/java/com/zhongjh/gridview/listener/GridViewListener.kt).
+- [Nine-grid related attributes, UI configurations, etc.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/gridview/src/main/res/values/attrs.xml)
 
 
 
-## History update
-[History update](https://github.com/zhongjhATC/AlbumCameraRecorder/releases).
+Historical updates
+[Historical updates](https://github.com/zhongjhATC/AlbumCameraRecorder/releases)summarized from version 1.0.1.
 
-## Apk direct experience download
-- The 1.1.29x version may be slightly different from the current latest code version
-  [Gitcode download address](https://gitcode.net/aaatttcccc/AlbumCameraRecorder2/-/blob/bcb7a49460aded3396a00c3e84d328428b868634/apk/app-release.apk)
+## APK direct experience download
+- Version 2.0.00, which may differ slightly from the current latest code version(uploaded via https://apponthego.com/上传)
+  [Download link](https://i.apponthego.com/9c655)
 
-# Write in the last
+# Finally
 
-1. If you think it works, give me a Star（[GitHub](https://github.com/zhongjhATC/AlbumCameraRecorder)）
+1. If you find it useful, please give a Star（[GitHub](https://github.com/zhongjhATC/AlbumCameraRecorder)）
 
-2. If you find any BUG, please leave a comment or leave a Issues（[Issues](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)）
+2. If you find any bugs, please leave a message or an Issue（[Issues](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)）
 
-3. Any reprint please indicate the source
+3. Any reproduction must indicate the source.
+
+# QQ Group 915053430 This group was established on April 28, 2021. It is used to solve problems in a timely manner. It is recommended to submit the problem in issues before asking, so that it can be referenced by later users.
