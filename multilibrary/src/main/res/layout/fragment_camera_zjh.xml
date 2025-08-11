@@ -125,7 +125,6 @@
         android:background="#20000000"
         android:contentDescription="底部功能按钮"
         android:paddingTop="16dp"
-        tools:ignore="HardcodedText"
-        tools:layout_height="100dp" />
+        tools:ignore="HardcodedText" />
 
 </com.zhongjh.albumcamerarecorder.widget.childclickable.ChildClickableRelativeLayout>

@@ -37,7 +37,7 @@ class MultiMediaView : MultiMedia {
     lateinit var maskProgressView: MaskProgressView
 
     /**
-     * 是否进行上传动作
+     * 是否要进行上传动作
      */
     var isUploading = false
 

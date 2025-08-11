@@ -19,7 +19,13 @@ interface MaskProgressLayoutListener {
      * @param alreadyVideoCount 目前已经显示的几个视频数量
      * @param alreadyAudioCount 目前已经显示的几个音频数量
      */
-    fun onItemAdd(view: View, multiMediaView: MultiMediaView, alreadyImageCount: Int, alreadyVideoCount: Int, alreadyAudioCount: Int)
+    fun onItemAdd(
+        view: View,
+        multiMediaView: MultiMediaView,
+        alreadyImageCount: Int,
+        alreadyVideoCount: Int,
+        alreadyAudioCount: Int
+    )
 
     /**
      * 点击item的事件
@@ -57,10 +63,11 @@ interface MaskProgressLayoutListener {
      *
      * @param view           点击的view
      * @param multiMediaView 传递的多媒体
+     * @param position 视频/图片的索引
      *
      * @return 是否触发后面的事件
      */
-    fun onItemVideoStartDownload(view: View, multiMediaView: MultiMediaView): Boolean
+    fun onItemVideoStartDownload(view: View, multiMediaView: MultiMediaView, position: Int): Boolean
 
     /**
      * 加载数据完毕

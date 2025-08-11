@@ -40,6 +40,12 @@
                     android:layout_height="wrap_content"
                     android:text="动态水印" />
 
+                <RadioButton
+                    android:id="@+id/radioButton4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="如何自定义小型布局" />
+
             </RadioGroup>
 
             <com.zhongjh.progresslibrary.widget.MaskProgressLayout

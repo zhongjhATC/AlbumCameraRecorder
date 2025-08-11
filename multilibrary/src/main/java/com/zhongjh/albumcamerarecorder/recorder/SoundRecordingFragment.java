@@ -142,11 +142,12 @@ public class SoundRecordingFragment extends BaseFragment {
         mViewHolder.pvLayout.setDuration(mRecordSpec.getDuration() * 1000);
         // 最短录制时间
         mViewHolder.pvLayout.setMinDuration(mRecordSpec.getMinDuration());
+        mViewHolder.pvLayout.setReadinessDuration(mRecordSpec.getReadinessDuration());
         // 设置只能长按
         mViewHolder.pvLayout.setButtonFeatures(BUTTON_STATE_ONLY_LONG_CLICK);
 
         // 兼容沉倾状态栏
-        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mContext);
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mActivity);
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mViewHolder.chronometer.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin + statusBarHeight, layoutParams.rightMargin, layoutParams.bottomMargin);
 

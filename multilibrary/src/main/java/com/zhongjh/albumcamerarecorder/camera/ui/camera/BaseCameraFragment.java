@@ -284,7 +284,7 @@ public abstract class BaseCameraFragment
 
         // 兼容沉倾状态栏
         if (getTopView() != null) {
-            int statusBarHeight = StatusBarUtils.getStatusBarHeight(getMyContext());
+            int statusBarHeight = StatusBarUtils.getStatusBarHeight(getMainActivity());
             getTopView().setPadding(0, statusBarHeight, 0, 0);
             ViewGroup.LayoutParams layoutParams = getTopView().getLayoutParams();
             layoutParams.height = layoutParams.height + statusBarHeight;
@@ -314,6 +314,7 @@ public abstract class BaseCameraFragment
         getPhotoVideoLayout().setDuration(cameraSpec.getDuration() * 1000);
         // 最短录制时间
         getPhotoVideoLayout().setMinDuration(cameraSpec.getMinDuration());
+        getPhotoVideoLayout().setReadinessDuration(cameraSpec.getReadinessDuration());
     }
 
     /**
@@ -357,8 +358,6 @@ public abstract class BaseCameraFragment
         initPvLayoutOperateListener();
         // 录制界面按钮事件监听，目前只有一个，点击分段录制
         initPvLayoutRecordListener();
-        // 视频编辑后的事件，目前只有分段录制后合并
-        getCameraVideoPresenter().initVideoEditListener();
         // 拍照监听
         initCameraViewListener();
         // 编辑图片事件
@@ -531,6 +530,7 @@ public abstract class BaseCameraFragment
         getPhotoVideoLayout().setRecordListener(tag -> {
             getCameraVideoPresenter().setSectionRecord("1".equals(tag));
             getPhotoVideoLayout().setProgressMode(true);
+            getCameraView().setUseDeviceOrientation("1".equals(tag));
         });
     }
 
@@ -559,6 +559,7 @@ public abstract class BaseCameraFragment
             public void onVideoTaken(@NonNull VideoResult result) {
                 Log.d(TAG, "onVideoTaken");
                 super.onVideoTaken(result);
+                // 处理视频文件,最后会解除《禁止点击》
                 getCameraVideoPresenter().onVideoTaken(result);
             }
 
@@ -778,6 +779,14 @@ public abstract class BaseCameraFragment
         setMenuVisibility(View.VISIBLE);
         // 停止录像
         stopRecord(true);
+    }
+
+    /**
+     * 提示过短
+     */
+    public void setShortTip() {
+        // 提示过短
+        getPhotoVideoLayout().setTipAlphaAnimation(getResources().getString(R.string.z_multi_library_the_recording_time_is_too_short));
     }
 
     /**
@@ -1131,9 +1140,7 @@ public abstract class BaseCameraFragment
      * 多视频分段录制中止提交
      */
     public void stopVideoMultiple() {
-        if (cameraSpec.isMergeEnable() && cameraSpec.getVideoMergeCoordinator() != null) {
-            cameraSpec.getVideoMergeCoordinator().onMergeDispose(this.getClass());
-        }
+        getCameraVideoPresenter().stopVideoMultiple();
     }
 
     /**

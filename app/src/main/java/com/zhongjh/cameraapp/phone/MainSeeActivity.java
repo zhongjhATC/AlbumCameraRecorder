@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
@@ -56,6 +57,10 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * 用于下载后记录的视频view
      */
     MultiMediaView mVideoMultiMediaView;
+    /**
+     * 用于下载后记录的视频position
+     */
+    int mVidePosition;
 
     /**
      * 初始化下载
@@ -103,6 +108,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 Log.d(TAG, "onResult Uri:" + multiMediaView.getUri());
                 Log.d(TAG, "onResult 文件大小: " + multiMediaView.getSize());
                 Log.d(TAG, "onResult 视频音频长度: " + multiMediaView.getDuration());
+
                 if (multiMediaView.isImageOrGif()) {
                     if (multiMediaView.isImage()) {
                         Log.d(TAG, "onResult 图片类型");
@@ -160,7 +166,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
             }
 
             @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
+            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView, int position) {
                 boolean isOk = getPermissions(true);
                 if (isOk) {
                     String[] fileFullPath = getFileFullPath(multiMediaView.getUrl(), 1);
@@ -168,6 +174,7 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                     if (!isExists) {
                         // 调用方法
                         mVideoMultiMediaView = multiMediaView;
+                        mVidePosition = position;
                         mDownloadHelper.downloadFile(multiMediaView.getUrl(), fileFullPath[0], fileFullPath[1]);
                         // 返回false是中断后面的操作，先让目前视频文件下载完
                         return false;
@@ -185,8 +192,6 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
         initConfig();
         initData();
         initListener();
-        findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
-        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
     }
 
     @Override
@@ -289,7 +294,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
      * 通过url加入的
      */
     private void initListener() {
-
+        findViewById(R.id.btnSetValue).setOnClickListener(view -> initData());
+        findViewById(R.id.btnReset).setOnClickListener(view -> mBinding.mplImageList.reset());
     }
 
     @Override
@@ -307,12 +313,12 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
     protected void openMain(int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
         // 最大10张图片或者最大1个视频
         mGlobalSetting.maxSelectablePerMediaType(12,
-                null,
-                null,
-                null,
-                alreadyImageCount,
-                alreadyVideoCount,
-                alreadyAudioCount)
+                        null,
+                        null,
+                        null,
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 
@@ -337,6 +343,8 @@ public class MainSeeActivity extends BaseActivity implements DownloadListener {
                 break;
             case "mp4":
                 mBinding.mplImageList.setVideoCover(mVideoMultiMediaView, file.getPath());
+                // 刷新
+                mBinding.mplImageList.refreshPosition(mVidePosition);
                 break;
             default:
                 break;

@@ -92,13 +92,31 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/toggle_english" />
+
+                    <CheckBox
+                        android:id="@+id/cbEnglish"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"
+                        android:text="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="@string/str_on_activity_result_tips" />
 
                     <CheckBox
                         android:id="@+id/cbIsActivityResult"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
 
@@ -118,7 +136,6 @@
                         android:id="@+id/cbIsCutscenes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
 
@@ -138,7 +155,6 @@
                         android:id="@+id/cbIsAddAlbumByCamera"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
 
@@ -158,7 +174,6 @@
                         android:id="@+id/cbIsAddAlbumByVideo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
 
@@ -178,7 +193,6 @@
                         android:id="@+id/cbIsAddAlbumByEdit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
 
@@ -198,7 +212,6 @@
                         android:id="@+id/cbIsEdit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
 
@@ -218,7 +231,6 @@
                         android:id="@+id/cb_is_compress_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
 
@@ -238,7 +250,6 @@
                         android:id="@+id/cb_is_compress_video"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="true" />
 
@@ -443,7 +454,6 @@
                         android:id="@+id/cbAlbumImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/support_image" />
 
@@ -451,7 +461,6 @@
                         android:id="@+id/cbAlbumGif"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/support_gif"
                         android:visibility="gone" />
@@ -460,7 +469,6 @@
                         android:id="@+id/cbAlbumVideo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/support_video" />
 
@@ -475,7 +483,6 @@
                         android:id="@+id/cbMediaTypeExclusive"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/if_the_selected_media_has_images_or_video_whether_both_can_be_selected" />
 
@@ -490,7 +497,6 @@
                         android:id="@+id/cbShowSingleMediaTypeTrue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/whether_to_display_only_one_media_type_if_the_media_selected_is_only_images_or_video" />
 
@@ -505,7 +511,6 @@
                         android:id="@+id/cbCountableTrue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/whether_to_display_the_number_of_multiple_selected_images" />
 
@@ -629,7 +634,6 @@
                         android:id="@+id/cbOriginalEnableTrue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/whether_to_enable_the_original_image_option" />
 
@@ -644,7 +648,6 @@
                         android:id="@+id/cbSlideHideEnable"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:text="@string/whether_to_start_the_album_list_slide_hide" />
 
                 </LinearLayout>
@@ -702,7 +705,6 @@
                         android:id="@+id/cbCameraImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/support_image" />
 
@@ -710,7 +712,6 @@
                         android:id="@+id/cbCameraVideo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/support_video" />
 
@@ -755,7 +756,6 @@
                         android:id="@+id/cbWatermark"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:checked="true"
                         android:text="@string/start_the_watermark" />
 
@@ -790,7 +790,6 @@
                         android:id="@+id/cbFlashMemoryModel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:text="@string/start_flash_memory_model" />
 
                 </LinearLayout>
@@ -833,6 +832,25 @@
 
                     <EditText
                         android:id="@+id/etMinCameraDuration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="2000" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/press_and_hold_for_the_specified_time_to_start_recording" />
+
+                    <EditText
+                        android:id="@+id/etCameraReadinessDuration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"

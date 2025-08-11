@@ -561,7 +561,9 @@ public class MatissFragment extends Fragment implements AlbumCollection.AlbumCal
             if (!mIsRefresh) {
                 if (mMediaViewUtil != null) {
                     mMediaViewUtil.load(album);
-                    mViewHolder.tvAlbumTitle.setText(album.getDisplayName(mContext));
+                    if (getActivity() != null) {
+                        mViewHolder.tvAlbumTitle.setText(album.getDisplayName(getActivity()));
+                    }
                 }
             }
         }

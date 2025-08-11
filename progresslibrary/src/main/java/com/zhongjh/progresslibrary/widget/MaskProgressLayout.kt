@@ -3,6 +3,7 @@ package com.zhongjh.progresslibrary.widget
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -15,6 +16,8 @@ import com.zhongjh.common.entity.RecordingItem
 import com.zhongjh.common.entity.SaveStrategy
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
+import com.zhongjh.common.utils.MediaUtils
+import com.zhongjh.common.utils.MediaUtils.getVideoSize
 import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.progresslibrary.R
@@ -23,7 +26,7 @@ import com.zhongjh.progresslibrary.api.MaskProgressApi
 import com.zhongjh.progresslibrary.engine.ImageEngine
 import com.zhongjh.progresslibrary.entity.MultiMediaView
 import com.zhongjh.progresslibrary.listener.MaskProgressLayoutListener
-import java.util.*
+import java.io.File
 
 /**
  * 这是返回（图片、视频、录音）等文件后，显示的Layout
@@ -92,7 +95,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         initView(attrs!!)
     }
 
@@ -105,49 +112,88 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
         // 获取系统颜色
         val defaultColor = -0x1000000
-        val attrsArray = intArrayOf(R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent)
+        val attrsArray =
+            intArrayOf(R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent)
         val typedArray = context.obtainStyledAttributes(attrsArray)
         val colorPrimary = typedArray.getColor(0, defaultColor)
 
         // 获取自定义属性。
-        val maskProgressLayoutStyle = context.obtainStyledAttributes(attrs, R.styleable.MaskProgressLayoutZhongjh)
+        val maskProgressLayoutStyle =
+            context.obtainStyledAttributes(attrs, R.styleable.MaskProgressLayoutZhongjh)
         // 是否允许操作
-        isOperation = maskProgressLayoutStyle.getBoolean(R.styleable.MaskProgressLayoutZhongjh_isOperation, true)
+        isOperation = maskProgressLayoutStyle.getBoolean(
+            R.styleable.MaskProgressLayoutZhongjh_isOperation,
+            true
+        )
         // 一行多少列
-        val columnNumber = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_columnNumber, 4)
+        val columnNumber = maskProgressLayoutStyle.getInteger(
+            R.styleable.MaskProgressLayoutZhongjh_columnNumber,
+            4
+        )
         // 列与列之间多少间隔px单位
-        val columnSpace = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_columnSpace, 10)
+        val columnSpace = maskProgressLayoutStyle.getInteger(
+            R.styleable.MaskProgressLayoutZhongjh_columnSpace,
+            10
+        )
         // 获取默认图片
-        var drawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_album_thumbnail_placeholder)
+        var drawable =
+            maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_album_thumbnail_placeholder)
         // 获取添加图片
-        val imageAddDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_imageAddDrawable)
+        val imageAddDrawable =
+            maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_imageAddDrawable)
         // 获取显示图片的类
-        val imageEngineStr = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_imageEngine)
+        val imageEngineStr =
+            maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_imageEngine)
         // provider的authorities,用于提供给外部的file
-        val authority = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_authority)
+        val authority =
+            maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_authority)
         val saveStrategy = SaveStrategy(true, authority, "")
         mMediaStoreCompat = MediaStoreCompat(context, saveStrategy)
         // 获取最多显示多少个方框
-        val maxCount = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_maxCount, 5)
-        val imageDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_imageDeleteColor, colorPrimary)
-        val imageDeleteDrawable = maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_imageDeleteDrawable)
+        val maxCount =
+            maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_maxCount, 5)
+        val imageDeleteColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayoutZhongjh_imageDeleteColor,
+            colorPrimary
+        )
+        val imageDeleteDrawable =
+            maskProgressLayoutStyle.getDrawable(R.styleable.MaskProgressLayoutZhongjh_imageDeleteDrawable)
 
         // region 音频
         // 音频，删除按钮的颜色
-        audioDeleteColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioDeleteColor, colorPrimary)
+        audioDeleteColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayoutZhongjh_audioDeleteColor,
+            colorPrimary
+        )
         // 音频 文件的进度条颜色
-        audioProgressColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioProgressColor, colorPrimary)
+        audioProgressColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayoutZhongjh_audioProgressColor,
+            colorPrimary
+        )
         // 音频 播放按钮的颜色
-        audioPlayColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_audioPlayColor, colorPrimary)
+        audioPlayColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayoutZhongjh_audioPlayColor,
+            colorPrimary
+        )
         // endregion 音频
 
         // region 遮罩层相关属性
 
-        val maskingColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_maskingColor, colorPrimary)
-        val maskingTextSize = maskProgressLayoutStyle.getInteger(R.styleable.MaskProgressLayoutZhongjh_maskingTextSize, 12)
+        val maskingColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayoutZhongjh_maskingColor,
+            colorPrimary
+        )
+        val maskingTextSize = maskProgressLayoutStyle.getInteger(
+            R.styleable.MaskProgressLayoutZhongjh_maskingTextSize,
+            12
+        )
 
-        val maskingTextColor = maskProgressLayoutStyle.getColor(R.styleable.MaskProgressLayoutZhongjh_maskingTextColor, ContextCompat.getColor(context, R.color.z_thumbnail_placeholder))
-        var maskingTextContent = maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_maskingTextContent)
+        val maskingTextColor = maskProgressLayoutStyle.getColor(
+            R.styleable.MaskProgressLayoutZhongjh_maskingTextColor,
+            ContextCompat.getColor(context, R.color.z_thumbnail_placeholder)
+        )
+        var maskingTextContent =
+            maskProgressLayoutStyle.getString(R.styleable.MaskProgressLayoutZhongjh_maskingTextContent)
 
         // endregion 遮罩层相关属性
 
@@ -180,10 +226,12 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
         // 初始化九宫格的控件
         mViewHolder.rlGrid.layoutManager = GridLayoutManager(context, columnNumber)
-        mPhotoAdapter = PhotoAdapter(context, (mViewHolder.rlGrid.layoutManager as GridLayoutManager?)!!, this,
-                mImageEngine!!, drawable!!, isOperation, maxCount,
-                maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
-                imageDeleteColor, imageDeleteDrawable, imageAddDrawable)
+        mPhotoAdapter = PhotoAdapter(
+            context, (mViewHolder.rlGrid.layoutManager as GridLayoutManager?)!!, this,
+            mImageEngine!!, drawable!!, isOperation, maxCount,
+            maskingColor, maskingTextSize, maskingTextColor, maskingTextContent,
+            imageDeleteColor, imageDeleteDrawable, imageAddDrawable
+        )
         mViewHolder.rlGrid.adapter = mPhotoAdapter
 
         maskProgressLayoutStyle.recycle()
@@ -260,21 +308,72 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
     }
 
+    override fun setImagePaths(imagePaths: List<String>) {
+        val multiMediaViews = ArrayList<MultiMediaView>()
+        for (path in imagePaths) {
+            val isExists: Boolean = fileIsExists(path)
+            val multiMediaView = MultiMediaView(MimeType.JPEG.mimeTypeName)
+            if (isExists) {
+                // 如果存在,则提前获取文件相关数据
+                setVideoCover(multiMediaView, path)
+                multiMediaView.isUploading = false
+                multiMediaViews.add(multiMediaView)
+            }
+        }
+        mPhotoAdapter.setImageData(multiMediaViews)
+        maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
+    }
+
     override fun addVideoStartUpload(videoUris: List<Uri>) {
         addVideo(videoUris, icClean = false, isUploading = true)
     }
 
+    /**
+     * 赋值视频本地文件数据
+     */
     override fun setVideoCover(multiMediaView: MultiMediaView, videoPath: String) {
-        multiMediaView.path = videoPath
+        if (TextUtils.isEmpty(multiMediaView.path)) {
+            val mediaExtraInfo = getVideoSize(context, videoPath)
+            multiMediaView.width = mediaExtraInfo.width
+            multiMediaView.height = mediaExtraInfo.height
+            multiMediaView.duration = mediaExtraInfo.duration
+            multiMediaView.mimeType = mediaExtraInfo.mimeType
+            multiMediaView.size = File(videoPath).length()
+            multiMediaView.uri = mMediaStoreCompat.getUri(videoPath)
+            multiMediaView.path = videoPath
+        }
     }
 
     override fun setVideoUrls(videoUrls: List<String>) {
         val multiMediaViews = ArrayList<MultiMediaView>()
         for (i in videoUrls.indices) {
+            val fileFullPath: Array<String> = getFileFullPath(videoUrls[i], 1)
+            val path = fileFullPath[0] + File.separator + fileFullPath[1]
+            val isExists: Boolean = fileIsExists(path)
             val multiMediaView = MultiMediaView(MimeType.MP4.mimeTypeName)
+            if (isExists) {
+                // 如果存在,则提前获取文件相关数据
+                setVideoCover(multiMediaView, path)
+            }
             multiMediaView.isUploading = false
             multiMediaView.url = videoUrls[i]
             multiMediaViews.add(multiMediaView)
+        }
+        mPhotoAdapter.setVideoData(multiMediaViews)
+        maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
+    }
+
+    override fun setVideoPaths(videoPaths: List<String>) {
+        val multiMediaViews = ArrayList<MultiMediaView>()
+        for (path in videoPaths) {
+            val isExists: Boolean = fileIsExists(path)
+            val multiMediaView = MultiMediaView(MimeType.MP4.mimeTypeName)
+            if (isExists) {
+                // 如果存在,则提前获取文件相关数据
+                setVideoCover(multiMediaView, path)
+                multiMediaView.isUploading = false
+                multiMediaViews.add(multiMediaView)
+            }
         }
         mPhotoAdapter.setVideoData(multiMediaViews)
         maskProgressLayoutListener?.onAddDataSuccess(multiMediaViews)
@@ -293,22 +392,44 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
 
     override fun setAudioUrls(audioUrls: List<String>) {
         val multiMediaViews: ArrayList<MultiMediaView> = ArrayList()
-        for (item in audioUrls) {
+        for (i in audioUrls.indices) {
+            val fileFullPath: Array<String> = getFileFullPath(audioUrls[i], 0)
+            val path = fileFullPath[0] + File.separator + fileFullPath[1]
+            val isExists: Boolean = fileIsExists(path)
             val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
-            multiMediaView.url = item
+            if (isExists) {
+                // 如果存在,则提前获取文件相关数据
+                setAudioCover(multiMediaView, path)
+            }
+            multiMediaView.isUploading = false
+            multiMediaView.url = audioUrls[i]
             audioList.add(multiMediaView)
             multiMediaViews.add(multiMediaView)
         }
         createPlayProgressView(multiMediaViews, 0)
     }
 
+    override fun setAudioCover(multiMediaView: MultiMediaView, videoPath: String) {
+        if (TextUtils.isEmpty(multiMediaView.path)) {
+            val mediaExtraInfo = MediaUtils.getAudioSize(context, videoPath)
+            multiMediaView.duration = mediaExtraInfo.duration
+            multiMediaView.mimeType = mediaExtraInfo.mimeType
+            multiMediaView.size = File(videoPath).length()
+            multiMediaView.uri = mMediaStoreCompat.getUri(videoPath)
+            multiMediaView.path = videoPath
+        }
+    }
+
+    /**
+     * 赋值音频本地文件数据
+     */
     override fun setAudioCover(view: View, file: String) {
         val mmr = MediaMetadataRetriever()
         mmr.setDataSource(file)
 
         // ms,时长
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
-                ?: -1
+            ?: -1
         val multiMediaView = MultiMediaView(MimeType.AAC.mimeTypeName)
         multiMediaView.path = file
         multiMediaView.uri = mMediaStoreCompat.getUri(file)
@@ -357,6 +478,10 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         mPhotoAdapter.removePosition(position)
     }
 
+    override fun refreshPosition(position: Int) {
+        mPhotoAdapter.notifyItemRangeChanged(position, 1)
+    }
+
     override fun setOperation(isOperation: Boolean) {
         this.isOperation = isOperation
         mPhotoAdapter.isOperation = isOperation
@@ -391,7 +516,12 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 设置最多显示多少个图片/视频/语音
      */
-    fun setMaxMediaCount(maxMediaCount: Int?, maxImageSelectable: Int?, maxVideoSelectable: Int?, maxAudioSelectable: Int?) {
+    fun setMaxMediaCount(
+        maxMediaCount: Int?,
+        maxImageSelectable: Int?,
+        maxVideoSelectable: Int?,
+        maxAudioSelectable: Int?
+    ) {
         check(!(maxMediaCount == null && maxImageSelectable == null)) { "setMaxMediaCount 方法中如果 maxMediaCount 为null，那么 maxImageSelectable 必须是0或者0以上数值" }
         check(!(maxMediaCount == null && maxVideoSelectable == null)) { "setMaxMediaCount 方法中如果 maxMediaCount 为null，那么 maxVideoSelectable 必须是0或者0以上数值" }
         check(!(maxMediaCount == null && maxAudioSelectable == null)) { "setMaxMediaCount 方法中如果 maxMediaCount 为null，那么 maxAudioSelectable 必须是0或者0以上数值" }
@@ -404,7 +534,8 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
         if (isMaxMediaCount) {
             mPhotoAdapter.maxMediaCount = maxMediaCount!!
         } else {
-            mPhotoAdapter.maxMediaCount = maxImageSelectable!! + maxVideoSelectable!! + maxAudioSelectable!!
+            mPhotoAdapter.maxMediaCount =
+                maxImageSelectable!! + maxVideoSelectable!! + maxAudioSelectable!!
         }
     }
 
@@ -423,10 +554,14 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
     /**
      * 创建音频控件的线程
      */
-    private fun getCreatePlayProgressViewTask(audioMultiMediaViews: List<MultiMediaView>, position: Int): SimpleTask<PlayProgressView> {
+    private fun getCreatePlayProgressViewTask(
+        audioMultiMediaViews: List<MultiMediaView>,
+        position: Int
+    ): SimpleTask<PlayProgressView> {
         mCreatePlayProgressViewTask = object : SimpleTask<PlayProgressView>() {
             override fun doInBackground(): PlayProgressView {
-                val playProgressView: PlayProgressView = newPlayProgressView(audioMultiMediaViews[position])
+                val playProgressView: PlayProgressView =
+                    newPlayProgressView(audioMultiMediaViews[position])
                 // 显示音频播放控件，当点击播放的时候，才正式下载并且进行播放
                 playProgressView.mViewHolder.playView.visibility = View.VISIBLE
                 // 隐藏上传进度
@@ -436,6 +571,11 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
                 // 设置数据源
                 val recordingItem = RecordingItem()
                 recordingItem.url = audioMultiMediaViews[position].url
+                recordingItem.duration = audioMultiMediaViews[position].duration
+                recordingItem.mimeType = audioMultiMediaViews[position].mimeType
+                recordingItem.path = audioMultiMediaViews[position].path
+                recordingItem.size = audioMultiMediaViews[position].size
+                recordingItem.uri = audioMultiMediaViews[position].uri
                 playProgressView.setData(recordingItem, audioProgressColor)
                 return playProgressView
             }
@@ -541,6 +681,46 @@ class MaskProgressLayout : FrameLayout, MaskProgressApi {
             // 必须定义authority属性，指定provider的authorities,用于提供给外部的file,否则Android7.0以上报错。也可以代码设置setAuthority
             throw java.lang.RuntimeException("You must define the authority attribute, which specifies the provider's authorities, to serve to external files. Otherwise, Android7.0 will report an error.You can also set setAuthority in code")
         }
+    }
+
+    /**
+     * 返回文件路径
+     *
+     * @param url  网址
+     * @param type 0是mp3,1是mp4
+     */
+    private fun getFileFullPath(url: String, type: Int): Array<String> {
+        // 获取后缀名
+        var suffixName: String? = null
+        when (type) {
+            0 -> suffixName = ".mp3"
+            1 ->                 // 获取后缀名
+                suffixName = ".mp4"
+
+            else -> {}
+        }
+        // 获取文件名
+        val fileName = url.substring(url.lastIndexOf("/") + 1) + suffixName
+
+        return arrayOf(context.cacheDir.path, fileName)
+    }
+
+    /**
+     * 判断是否存在文件
+     *
+     * @param strFile 文件路径
+     */
+    private fun fileIsExists(strFile: String): Boolean {
+        try {
+            val f = File(strFile)
+            if (!f.exists()) {
+                return false
+            }
+        } catch (e: java.lang.Exception) {
+            return false
+        }
+
+        return true
     }
 
     class ViewHolder(rootView: View) {

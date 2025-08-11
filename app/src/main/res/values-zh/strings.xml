@@ -19,6 +19,7 @@
     <string name="flash_auto">闪光灯自动</string>
     <string name="start_the_animation">启动动画</string>
     <string name="str_on_activity_result_tips">使用onActivityResult接受回调数据</string>
+    <string name="toggle_english">切换英文</string>
     <string name="take_pictures_and_add_them_to_the_album">拍照后加入相册</string>
     <string name="record_and_add_to_album">录像后加入相册</string>
     <string name="edit_the_picture_and_add_it_to_the_album">图片编辑后加入相册</string>
@@ -54,7 +55,8 @@
     <string name="take_pictures_in_hd">高清拍照(失去录像功能)</string>
     <string name="take_video_in_hd">高清录像(失去拍照功能)</string>
     <string name="maximum_recording_time">最长录制时间</string>
-    <string name="minimum_recording_time_milliseconds">最短录制时间(毫秒)</string>
+    <string name="minimum_recording_time_milliseconds">最短录制时间(毫秒),不能低于2000</string>
+    <string name="press_and_hold_for_the_specified_time_to_start_recording">长按达到设置时间后，才开启录制</string>
     <string name="enable_recording">开启录音功能</string>
     <string name="simple_version">简单版</string>
     <string name="super_simple_version">超级简单版</string>
@@ -62,6 +64,7 @@
     <string name="style_version">样式版</string>
     <string name="configure_upperlimit_version">这是灵活配置能选择xx张图片,xx个视频，xx个音频的用法示例</string>
     <string name="open_the_default_data_set">打开默认有数据的</string>
+    <string name="open_the_default_data_set_local">打开默认有数据的 - 本地</string>
     <string name="instant_preview">直接预览</string>
     <string name="blue_style">蓝色样式</string>
     <string name="black_style">黑色样式</string>
@@ -80,6 +83,9 @@
     <string name="obtain_the_cache_file_size">获取缓存文件大小</string>
     <string name="clear_the_cache_file_size">清空缓存文件大小</string>
     <string name="viewing_the_file_path">查看文件路径</string>
+    <string name="str_see_set_value">赋值</string>
+    <string name="str_see_get_value">获取值</string>
+    <string name="str_see_reset_value">重置</string>
 
 
 </resources>

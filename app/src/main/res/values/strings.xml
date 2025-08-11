@@ -19,6 +19,7 @@
     <string name="flash_auto">FLASH AUTO</string>
     <string name="start_the_animation">Start the animation</string>
     <string name="str_on_activity_result_tips">Use onActivityResult to accept callback data</string>
+    <string name="toggle_english">toggle english</string>
     <string name="take_pictures_and_add_them_to_the_album">Take pictures and add them to the album</string>
     <string name="record_and_add_to_album">Record and add to album</string>
     <string name="edit_the_picture_and_add_it_to_the_album">Edit the picture and add it to the album</string>
@@ -54,7 +55,8 @@
     <string name="take_pictures_in_hd">Take pictures in HD(Lost video recording function)</string>
     <string name="take_video_in_hd">Take video in HD(Losing the ability to take pictures)</string>
     <string name="maximum_recording_time">Maximum recording time</string>
-    <string name="minimum_recording_time_milliseconds">Minimum recording time (milliseconds)</string>
+    <string name="minimum_recording_time_milliseconds">Minimum recording time (milliseconds),Cannot be lower than 2000</string>
+    <string name="press_and_hold_for_the_specified_time_to_start_recording">press and hold for the specified time to start recording</string>
     <string name="enable_recording">Enable recording</string>
     <string name="simple_version">Simple version of</string>
     <string name="super_simple_version">Super simple</string>
@@ -62,6 +64,7 @@
     <string name="style_version">Style version</string>
     <string name="configure_upperlimit_version">This is flexible configuration can choose xx pictures,xx videos,xx audio usage</string>
     <string name="open_the_default_data_set">Open the default data set</string>
+    <string name="open_the_default_data_set_local">Open the default data set - local</string>
     <string name="instant_preview">Instant preview</string>
     <string name="blue_style">Blue Style</string>
     <string name="black_style">Black Style</string>
@@ -80,4 +83,7 @@
     <string name="obtain_the_cache_file_size">Obtain the cache file size </string>
     <string name="clear_the_cache_file_size">Clear the cache file size</string>
     <string name="viewing_the_file_path">Viewing the File Path</string>
+    <string name="str_see_set_value">set value</string>
+    <string name="str_see_get_value">get value</string>
+    <string name="str_see_reset_value">reset value</string>
 </resources>

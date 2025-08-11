@@ -46,6 +46,9 @@ public class MainListActivity extends AppCompatActivity {
         // 默认有数据的
         mBinding.btnOpenSee.setOnClickListener(v -> MainSeeActivity.newInstance(MainListActivity.this));
 
+        // 默认有数据的 - 本地
+        mBinding.btnOpenSeeLocal.setOnClickListener(v -> MainSeeLocalActivity.newInstance(MainListActivity.this));
+
         // 独立预览相片功能
         mBinding.btnPreview.setOnClickListener(v -> {
             GlobalSetting globalSetting = MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll());

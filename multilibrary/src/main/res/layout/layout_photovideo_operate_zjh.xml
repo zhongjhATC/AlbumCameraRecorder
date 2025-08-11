@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_centerInParent="true"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
@@ -15,6 +15,7 @@
         android:id="@+id/tvTip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,13 +63,28 @@
         app:operationButtonZhongjhType="confirm"
         tools:visibility="visible" />
 
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/pbConfirm"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:indeterminateTint="?attr/colorPrimary"
+        android:visibility="gone"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
+        app:layout_constraintEnd_toStartOf="@+id/guideline88"
+        app:layout_constraintStart_toStartOf="@+id/guideline72"
+        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong" />
+
     <!-- 中间的操作按钮 -->
     <com.zhongjh.albumcamerarecorder.widget.clickorlongbutton.ClickOrLongButton
         android:id="@+id/btnClickOrLong"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:focusable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="20dp"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +106,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:layout_margin="13dp"
+            android:layout_marginStart="13dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="13dp"
             android:contentDescription="外圈"
             android:src="@drawable/shape_ring_white"
             tools:ignore="HardcodedText" />

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 
 import com.zhongjh.albumcamerarecorder.album.filter.BaseFilter;
@@ -21,6 +22,7 @@ import com.zhongjh.cameraapp.databinding.ActivityMainCustomCameralayoutBinding;
 import com.zhongjh.cameraapp.phone.customlayout.camera1.CameraFragment1;
 import com.zhongjh.cameraapp.phone.customlayout.camera2.CameraFragment2;
 import com.zhongjh.cameraapp.phone.customlayout.camera3.CameraFragment3;
+import com.zhongjh.cameraapp.phone.customlayout.camera4.CameraSmallFragment;
 import com.zhongjh.common.entity.SaveStrategy;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.progresslibrary.entity.MultiMediaView;
@@ -62,6 +64,11 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
 
         // 以下为点击事件
         mBinding.mplImageList.setMaskProgressLayoutListener(new MaskProgressLayoutListener() {
+
+            @Override
+            public boolean onItemVideoStartDownload(@NonNull View view, @NonNull MultiMediaView multiMediaView, int position) {
+                return false;
+            }
 
             @Override
             public void onAddDataSuccess(@NotNull List<MultiMediaView> multiMediaViews) {
@@ -106,11 +113,6 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
 
             }
 
-            @Override
-            public boolean onItemVideoStartDownload(@NotNull View view, @NotNull MultiMediaView multiMediaView) {
-                return false;
-            }
-
         });
 
 
@@ -145,6 +147,8 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             cameraSetting.setBaseCameraFragment(CameraFragment3.newInstance());
             // 添加水印,演示动态文字
             cameraSetting.watermarkResource(R.layout.watermark_text);
+        } else if (mBinding.radioButton4.isChecked()) {
+            cameraSetting.setBaseCameraFragment(CameraSmallFragment.newInstance());
         }
 
 

@@ -65,7 +65,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
         if (mAlbumSpec.getCountable()) {
             mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
         } else {
-            mViewHolder.checkView.setChecked(mSelectedCollection.isSelected(item));
+            mViewHolder.checkView.setChecked(mSelectedCollection.checkedNumOf(item) > 0);
         }
         updateUi(item);
     }

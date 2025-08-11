@@ -48,6 +48,13 @@ interface MaskProgressApi {
     fun setImageUrls(imagesUrls: List<String>)
 
     /**
+     * 设置图片本地数据
+     *
+     * @param imagesUrls 图片网址
+     */
+    fun setImagePaths(imagePaths: List<String>)
+
+    /**
      * 设置视频地址并且启动上传(一般用于刚确认了哪些数据后)
      *
      * @param videoUris 视频地址列表
@@ -55,7 +62,7 @@ interface MaskProgressApi {
     fun addVideoStartUpload(videoUris: List<Uri>)
 
     /**
-     * 设置视频地址直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
+     * 设置视频地址直接覆盖
      *
      * @param multiMediaView 控件
      * @param videoPath 视频地址列表
@@ -68,6 +75,13 @@ interface MaskProgressApi {
      * @param videoUrls 视频网址列表
      */
     fun setVideoUrls(videoUrls: List<String>)
+
+    /**
+     * 设置视频本地数据
+     *
+     * @param videoPaths 本地文件列表
+     */
+    fun setVideoPaths(videoPaths: List<String>)
 
     /**
      * 设置音频数据并且启动上传(一般用于刚确认了哪些数据后)
@@ -83,6 +97,14 @@ interface MaskProgressApi {
      * @param audioUrls 音频网址列表
      */
     fun setAudioUrls(audioUrls: List<String>)
+
+    /**
+     * 设置音频文件直接覆盖
+     *
+     * @param multiMediaView 实体
+     * @param videoPath 文件路径
+     */
+    fun setAudioCover(multiMediaView: MultiMediaView, videoPath: String)
 
     /**
      * 设置音频文件直接覆盖(一般用于下载视频成功后，直接覆盖当前只有URL的视频)
@@ -140,6 +162,11 @@ interface MaskProgressApi {
     fun removePosition(position: Int)
 
     /**
+     * 刷新 视频/图片 某条数据
+     */
+    fun refreshPosition(position: Int)
+
+    /**
      * 设置是否可操作(一般只用于展览作用)
      *
      * @param isOperation 是否操作
@@ -150,4 +177,5 @@ interface MaskProgressApi {
      * 销毁所有相关正在执行的东西
      */
     fun onDestroy()
+
 }

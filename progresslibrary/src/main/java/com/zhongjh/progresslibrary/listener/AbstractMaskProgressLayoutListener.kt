@@ -10,8 +10,11 @@ import com.zhongjh.progresslibrary.entity.MultiMediaView
  */
 open class AbstractMaskProgressLayoutListener : MaskProgressLayoutListener {
 
-    override fun onItemAdd(view: View, multiMediaView: MultiMediaView,
-                           alreadyImageCount: Int, alreadyVideoCount: Int, alreadyAudioCount: Int) {}
+    override fun onItemAdd(
+        view: View, multiMediaView: MultiMediaView,
+        alreadyImageCount: Int, alreadyVideoCount: Int, alreadyAudioCount: Int
+    ) {
+    }
 
     override fun onItemClick(view: View, multiMediaView: MultiMediaView) {}
 
@@ -20,8 +23,12 @@ open class AbstractMaskProgressLayoutListener : MaskProgressLayoutListener {
     override fun onItemClose(view: View, multiMediaView: MultiMediaView) {}
 
     override fun onItemAudioStartDownload(view: View, url: String) {}
-
-    override fun onItemVideoStartDownload(view: View, multiMediaView: MultiMediaView): Boolean {
+    
+    override fun onItemVideoStartDownload(
+        view: View,
+        multiMediaView: MultiMediaView,
+        position: Int
+    ): Boolean {
         return false
     }
 
