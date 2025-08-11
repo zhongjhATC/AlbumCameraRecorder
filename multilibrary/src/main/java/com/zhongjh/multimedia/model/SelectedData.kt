@@ -160,6 +160,7 @@ open class SelectedData(private val mContext: Context) {
         val selectedCountMessage: SelectedCountMessage
         // 判断是否混合视频图片模式
         if (!mediaTypeExclusive) {
+            setSelectCount()
             // 混合检查
             item.mimeType?.let { mimeType ->
                 if (mimeType.startsWith(IMAGE)) {
@@ -265,25 +266,24 @@ open class SelectedData(private val mContext: Context) {
         return localMedias.size == currentMaxSelectable()
     }
 
-    private val selectCount: Unit
-        /**
-         * 获取当前选择了图片、视频数量
-         */
-        get() {
-            mSelectedImageCount = 0
-            mSelectedVideoCount = 0
-            for (localMedia in localMedias) {
-                localMedia.mimeType?.let { mimeType ->
-                    if (mimeType.startsWith("image")) {
-                        mSelectedImageCount++
-                    } else if (mimeType.startsWith("video")) {
-                        mSelectedVideoCount++
-                    } else {
-                    }
+    /**
+     * 赋值选择的值
+     */
+    private fun setSelectCount() {
+        mSelectedImageCount = 0
+        mSelectedVideoCount = 0
+        for (localMedia in localMedias) {
+            localMedia.mimeType?.let { mimeType ->
+                if (mimeType.startsWith("image")) {
+                    mSelectedImageCount++
+                } else if (mimeType.startsWith("video")) {
+                    mSelectedVideoCount++
+                } else {
                 }
             }
-            Log.d("onSaveInstanceState", localMedias.size.toString() + " getSelectCount")
         }
+        Log.d("onSaveInstanceState", localMedias.size.toString() + " getSelectCount")
+    }
 
     /**
      * 返回最多选择的数量
@@ -296,13 +296,17 @@ open class SelectedData(private val mContext: Context) {
             // 返回视频+图片
             imageVideoMaxCount
         } else {
-            if (mCollectionType == COLLECTION_IMAGE) {
-                imageMaxCount
-            } else if (mCollectionType == COLLECTION_VIDEO) {
-                videoMaxCount
-            } else {
-                // 返回视频+图片
-                imageVideoMaxCount
+            when (mCollectionType) {
+                COLLECTION_IMAGE -> {
+                    imageMaxCount
+                }
+                COLLECTION_VIDEO -> {
+                    videoMaxCount
+                }
+                else -> {
+                    // 返回视频+图片
+                    imageVideoMaxCount
+                }
             }
         }
 

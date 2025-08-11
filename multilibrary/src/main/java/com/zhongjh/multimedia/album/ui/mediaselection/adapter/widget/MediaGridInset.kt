@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
  */
 class MediaGridInset(private val mSpanCount: Int, private val mSpacing: Int, private val mIncludeEdge: Boolean) : RecyclerView.ItemDecoration() {
 
-    override fun getItemOffsets(
-        outRect: Rect, view: View, parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         // item position
         val position = parent.getChildAdapterPosition(view)
         // item column
