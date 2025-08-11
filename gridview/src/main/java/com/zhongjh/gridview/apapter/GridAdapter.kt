@@ -83,6 +83,10 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
     private var mAudioCount = 0
     private var mItemHeight: Int = 0
 
+    init {
+        clearAll()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val view: View = mInflater.inflate(R.layout.item_image_zjh, parent, false)
         val photoViewHolder = PhotoViewHolder(view)
@@ -382,9 +386,13 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
         listener?.onItemClose(multiMediaView)
         val mutableList = list.toMutableList()
         mutableList.remove(multiMediaView)
+        addAddItem(mutableList)
+        // 1. 计算新旧数据差异（可在子线程执行）
+        val diffResult = DiffUtil.calculateDiff(GridCallback(list, mutableList))
+        // 2. 在主线程中，先用新数据替换旧数据
         list = mutableList
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, list.size - position)
+        // 3. 最后分发差异更新
+        diffResult.dispatchUpdatesTo(this)
     }
 
     /**
@@ -437,9 +445,10 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      *
      * @param gridMedias 需要添加item的数据源
      */
-    private fun addAddItem(gridMedias: ArrayList<GridMedia>) {
-        // 判断如果有操作，则加上+
-        if (isShowAdd(gridMedias)) {
+    private fun addAddItem(gridMedias: MutableList<GridMedia>) {
+        val isLastNotAdd = gridMedias.lastOrNull()?.isAdd ?: false
+        // 判断支持操作并且没有＋数据，则加上＋
+        if (isShowAdd(gridMedias) && !isLastNotAdd) {
             val gridMedia = GridMedia()
             gridMedia.isAdd = true
             gridMedias.add(gridMedia)
