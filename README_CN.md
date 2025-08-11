@@ -3,8 +3,8 @@
 [![MinSdk](https://img.shields.io/badge/MinSdk-21-blue.svg)](https://developer.android.com/about/versions/android-5.0)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/LICENSE)
 
-## 该版本是基于AndroidX版本开发的分支。版本号后面带着X的都是属于基于AndroidX版本开发。
-## 目前已经投入到正式项目中使用。
+## 该版本刚发版不久，如果你想更加稳定的版本请选择androidx分支,版本号1.-.--X,请注意,androidx分支代码除非严重bug,否则不会再进行维护。
+## 该版本使用camerax完成的拍摄,在自定义拍摄参数等会更加容易、动态水印更加简单。全局动画会更加细腻。同时整理了冗余的配置、属性等
 ## 有任何建议或者想添加的功能，都可提在Issues
 
 ## [English](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/README_EN.md)
@@ -12,12 +12,8 @@
 
 也支持配套使用的展示图片、视频、音频的九宫格功能。
 
-
- - 本开源库的部分相册代码来自[Matisse](https://github.com/zhihu/Matisse).
- - 本开源库的相机代码来自[CameraView](https://github.com/natario1/CameraView).
-
-## 非X版本分支
-非X库版本,已经停止维护(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/master)
+## androidx文本版本分支
+已经停止维护(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/androidx)
 
 ## 特性
  - 录制拍照完全支持自己自定义！详情请看Demo如何使用，如果需要深入扩展需要了解更多代码[CameraFragment架构简介](https://juejin.cn/post/7136108758010167304/)
@@ -25,7 +21,7 @@
  - 支持可自定义权限请求也可以直接交由该库完成权限请求
  - 虽然功能很多，但是可以按照所需功能来引入某些库
  - 丰富的回调接口和调试信息,可利用现有API实现丰富的效果.
- - 兼容性强，不管是低版本的4.1还是目前最新版本的Android 13,都进行了相关兼容处理
+ - 兼容性强，不管是低版本的4.1还是目前最新版本的Android 16,都进行了相关兼容处理
  - 支持所有图片读取处理自定义，例如可自定义glide、Fresco等等都可以
  - 支持从相册选择图片
  - 支持相册按照手机文件区分不同的文件夹选择
@@ -37,11 +33,11 @@
  - 录制拍照长按按钮等所有UI可自定义，全是svg图片可以很好的处理动画细节
  - 录制支持分段录制，以后还会加入视频编辑
  - 图片编辑支持颜色涂鸦、输入文字、马赛克处理、旋转、裁剪等处理
- - 支持拍摄、录制时的水印功能
+ - 支持拍摄、录制时的水印功能,甚至支持动态水印
  - 自带权限功能，无需修改任意代码，权限功能包括权限检测、发送权限时告知为何请求、多次拒绝后会提示是否跳转到设置界面设置权限。也可以自定义权限
  - 所有录制拍照都可以选择深度压缩处理，图片可选择自定义压缩处理，也可以使用Demo中的LuBan压缩，视频压缩则是使用ffmpeg处理
  - 完善的缓存管理系统
- - 完善的动画效果，后续还会继续增加
+ - 完善的动画效果、共享元素动画、按钮细节动画
  - 性能优化，内存泄漏这些都一一仔细处理过
 
 ## 引入
@@ -58,19 +54,19 @@
 
 	dependencies {
 	     // 如果想简化代码并且同时用到multilibrary和grid、albumCameraRecorderCommon,可以直接使用combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:2.0.00K'
 
 	     // 公共库，如果不使用上面的combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:2.0.00K'
 	     // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:1.1.94X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2.0.00K'
          // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:1.1.94X'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:2.0.00K'
 
          // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2.0.00K'
 	     // 配套编辑视频使用,目前只有压缩功能,后续持续添加相关功能,因为该库使用了ffmpeg,占用了文件大小25M,根据实际情况选择是否使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:1.1.94X'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:2.0.00K'
         
 	}
 
@@ -114,56 +110,43 @@
         RecorderSetting recorderSetting = new RecorderSetting();
 
         // 全局
-        GlobalSetting globalSetting = MultiMediaSetting.from(MainActivity.this).choose(MimeType.ofAll());
-        globalSetting.cameraSetting(cameraSetting);
-        globalSetting.albumSetting(albumSetting);
-        globalSetting.recorderSetting(recorderSetting);
+        mGlobalSetting = MultiMediaSetting.from(MainSimpleActivity.this).choose(MimeType.ofAll());
+        // 开启相册功能
+        mGlobalSetting.albumSetting(albumSetting);
+        // 开启拍摄功能
+        mGlobalSetting.cameraSetting(cameraSetting);
+        // 开启录音功能
+        mGlobalSetting.recorderSetting(recorderSetting);
 
-        globalSetting
-                // 设置路径和7.0保护路径等等
-                .allStrategy(new SaveStrategy(true, getPackageName() + ".fileProvider", "aabb"))
+        mGlobalSetting
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大5张图片、最大3个视频、最大1个音频
-                .maxSelectablePerMediaType(null,
-                        5,
-                        3,
-                        3,
-                        0,
-                        0,
-                        0)
-                .forResult(100);
+                // 最大5张图片、最大3个视频、最大1个音频。如果需要使用九宫格，请把九宫格GridView的maxCount也改动 mBinding.dmlImageList.setMaxMediaCount();
+                .maxSelectablePerMediaType(null, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE,
+                        alreadyImageCount,
+                        alreadyVideoCount,
+                        alreadyAudioCount)
+                .forResult(requestLauncherACR);
 
 #### 获取相关返回的数据
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
+    protected final ActivityResultLauncher<Intent> requestLauncherACR = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK) {
             return;
-        List<LocalFile> result = MultiMediaSetting.obtainLocalFileResult(data);
-    }
+        }
+        if (null == result.getData()) {
+            return;
+        }
 
-#### 别忘记这个配置，否则拍摄录制录音保存文件时闪退报错、相册选择图片预览确认时uri会被清空种种问题
-
-    <provider
-        android:name="androidx.core.content.FileProvider"
-        android:authorities="${applicationId}.fileProvider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-        <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths_public" />
-    </provider>
+        List<LocalMedia> data = MultiMediaSetting.obtainLocalMediaResult(result.getData());
+        printProperty(data);
+    });
     
 #### 如果还有别的常见问题，具体可以看[可能会发生的问题](https://github.com/zhongjhATC/AlbumCameraRecorder/issues)搜索报错关键字    
 
 #### 如果你需要修改拍摄录制的界面和逻辑 
 简单扩展请参考Demo，如果需要深入扩展了解更多[CameraFragment架构简洁](https://juejin.cn/post/7136108758010167304/)
 但是请注意,如果有支持配置的情况下,是配置优先.只有在没有配置的情况下,才在这里进行自定义扩展
-
-#### 如果你需要修改相机的拍摄、录制的参数
-因为里面的相机来自于[CameraView](https://github.com/natario1/CameraView)，所以修改分辨率、录制时关闭录音等各种功能可以进入查看更多接口，那么如何通过我们这个库获取CameraView,可以在Demo实例中学习使用
 
 #### 如果你需要用到九宫格展览数据，具体可以看[相关代码](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/app/src/main/java/com/zhongjh/demo/MainSeeActivity.java).
 

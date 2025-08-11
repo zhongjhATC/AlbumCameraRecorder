@@ -97,8 +97,8 @@ dependencies {
     implementation 'com.tencent.bugly:nativecrashreport:latest.release'
     //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
 
-    // 检测内存泄漏 http://www.liaohuqiu.net/cn/posts/leak-canary-read-me/ https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:3.0-alpha-8'
+    // 检测内存泄漏 http://www.liaohuqiu.net/cn/posts/leak-canary-read-me/ https://github.com/square/leakcanary Toast是系统错误
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:3.0-alpha-8'
 
     implementation 'androidx.multidex:multidex:2.0.1'
 
