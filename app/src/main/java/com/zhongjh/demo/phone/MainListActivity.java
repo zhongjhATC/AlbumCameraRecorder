@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,14 +11,16 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zhongjh.multimedia.settings.GlobalSetting;
-import com.zhongjh.multimedia.settings.MultiMediaSetting;
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.FileUtils;
+import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.demo.R;
 import com.zhongjh.demo.configuration.Glide4Engine;
 import com.zhongjh.demo.databinding.ActivityMainListBinding;
 import com.zhongjh.demo.phone.custom.MainCustomCameraLayoutActivity;
+import com.zhongjh.multimedia.settings.GlobalSetting;
+import com.zhongjh.multimedia.settings.MultiMediaSetting;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,14 +72,14 @@ public class MainListActivity extends AppCompatActivity {
             GlobalSetting globalSetting = MultiMediaSetting.from(MainListActivity.this).choose(MimeType.ofAll());
             globalSetting.imageEngine(new Glide4Engine());
             ArrayList<Integer> list = new ArrayList<>();
-            list.add(R.drawable.ic_failed);
             list.add(R.drawable.ic_loading);
+            list.add(R.drawable.ic_deleted_yellow);
             ArrayList<GridMedia> listNew = new ArrayList<>();
             for (Integer id : list) {
                 copyFilesFromRaw(getApplicationContext(), id, id.toString(), getApplicationContext().getFilesDir().getAbsolutePath() + "/resource");
                 GridMedia gridMedia = new GridMedia();
                 gridMedia.setAbsolutePath(getApplicationContext().getFilesDir().getAbsolutePath() + "/resource/" + id);
-                gridMedia.setUri(Uri.fromFile(new File(gridMedia.getAbsolutePath())).toString());
+                gridMedia.setUri(MediaStoreCompat.INSTANCE.getUri(this, gridMedia.getAbsolutePath()).toString());
                 listNew.add(gridMedia);
             }
             globalSetting.openPreviewData(MainListActivity.this, requestLauncherPreview, listNew, 0, false);
@@ -112,6 +113,8 @@ public class MainListActivity extends AppCompatActivity {
     public static void copyFilesFromRaw(Context context, int id, String fileName, String storagePath) {
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), id);
         File file = new File(storagePath, fileName);
+        // 创建文件
+        FileUtils.createOrExistsFile(file);
         try (FileOutputStream out = new FileOutputStream(file)) {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (IOException e) {
