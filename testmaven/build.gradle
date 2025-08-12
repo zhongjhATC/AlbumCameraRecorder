@@ -48,7 +48,7 @@ dependencies {
     // 核心lib，调用显示相册、录屏、录音等
     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2.0.02'
     // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:progresslibrary:2.0.02'
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:gridview:2.0.02'
 
     // 配套编辑图片使用
     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2.0.02'
