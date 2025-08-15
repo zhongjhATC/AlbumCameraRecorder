@@ -85,8 +85,10 @@ class AlbumSpinner @SuppressLint("InflateParams") constructor(private val contex
             super.showAsDropDown(anchor)
         }
         isDismiss = false
-        ivArrowView?.setImageDrawable(albumSpinnerStyle.drawableUp)
-        AnimUtils.rotateArrow(ivArrowView, true)
+        ivArrowView?.let { ivArrowView ->
+            ivArrowView.setImageDrawable(albumSpinnerStyle.drawableUp)
+            AnimUtils.rotateArrow(ivArrowView, true)
+        }
         rootViewBg.animate()
             .alpha(1f)
             .setDuration(250)
@@ -105,8 +107,10 @@ class AlbumSpinner @SuppressLint("InflateParams") constructor(private val contex
             .alpha(0f)
             .setDuration(50)
             .start()
-        ivArrowView?.setImageDrawable(albumSpinnerStyle.drawableDown)
-        AnimUtils.rotateArrow(ivArrowView, false)
+        ivArrowView?.let { ivArrowView ->
+            ivArrowView.setImageDrawable(albumSpinnerStyle.drawableDown)
+            AnimUtils.rotateArrow(ivArrowView, false)
+        }
         isDismiss = true
         super@AlbumSpinner.dismiss()
         isDismiss = false

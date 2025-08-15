@@ -31,7 +31,7 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.zhongjh.common.entity.IncapableCause
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MediaType.TYPE_PICTURE
+import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth

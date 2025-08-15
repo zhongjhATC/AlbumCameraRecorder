@@ -1,7 +1,5 @@
 package com.zhongjh.common.constants
 
-import androidx.annotation.IntDef
-
 /**
  * 文件大小值
  *
