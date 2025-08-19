@@ -2,6 +2,7 @@ package com.zhongjh.multimedia.recorder.widget
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -14,7 +15,7 @@ import com.zhongjh.multimedia.widget.BaseOperationLayout
  * @author zhongjh
  * @date 2018/10/16
  */
-class SoundRecordingLayout : BaseOperationLayout {
+open class SoundRecordingLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseOperationLayout(context, attrs, defStyleAttr) {
     /**
      * 当前活动状态，默认休闲
      */
@@ -23,20 +24,16 @@ class SoundRecordingLayout : BaseOperationLayout {
     val soundRecordingLayoutViewHolder: SoundRecordingLayoutBaseViewHolder
         get() = viewHolder as SoundRecordingLayoutBaseViewHolder
 
-    constructor(context: Context) : super(context)
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-
     public override fun newViewHolder(): SoundRecordingLayoutBaseViewHolder {
-        return SoundRecordingLayoutBaseViewHolder(inflate(context, R.layout.layout_soundrecording_operate_zjh, this))
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(R.layout.layout_soundrecording_operate_zjh, this, true)
+        return SoundRecordingLayoutBaseViewHolder(view)
     }
 
     override fun startShowLeftRightButtonsAnimator(showCancel: Boolean) {
         super.startShowLeftRightButtonsAnimator(showCancel)
         // 显示播放的按钮
-        soundRecordingLayoutViewHolder.rlSoundRecording.visibility = VISIBLE
+        soundRecordingLayoutViewHolder.rlEdit.visibility = VISIBLE
         state = STATE_RECORDER
     }
 
@@ -46,12 +43,12 @@ class SoundRecordingLayout : BaseOperationLayout {
     override fun reset() {
         super.reset()
         // 隐藏播放的按钮
-        soundRecordingLayoutViewHolder.rlSoundRecording.visibility = INVISIBLE
+        soundRecordingLayoutViewHolder.rlEdit.visibility = INVISIBLE
     }
 
     class SoundRecordingLayoutBaseViewHolder(rootView: View) : BaseViewHolder(rootView) {
         val ivRecord: ImageView = rootView.findViewById(R.id.ivRecord)
-        val rlSoundRecording: RelativeLayout = rootView.findViewById(R.id.rlSoundRecording)
+        val rlEdit: RelativeLayout = rootView.findViewById(R.id.rlEdit)
 
         init {
             // 设置成普通点击事件

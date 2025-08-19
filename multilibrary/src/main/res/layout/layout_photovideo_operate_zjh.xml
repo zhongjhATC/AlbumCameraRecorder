@@ -48,20 +48,6 @@
         app:operationButtonZhongjhType="confirm"
         tools:visibility="visible" />
 
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/pbConfirm"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="6dp"
-        android:indeterminateTint="?attr/colorPrimary"
-        android:visibility="gone"
-        app:cpv_animAutostart="true"
-        app:cpv_indeterminate="true"
-        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
-        app:layout_constraintEnd_toStartOf="@+id/guideline88"
-        app:layout_constraintStart_toStartOf="@+id/guideline72"
-        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong" />
-
     <!-- 中间的操作按钮 -->
     <com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
         android:id="@+id/btnClickOrLong"
@@ -100,6 +86,7 @@
             tools:ignore="HardcodedText" />
 
         <ImageView
+            android:id="@+id/ivRecord"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerInParent="true"

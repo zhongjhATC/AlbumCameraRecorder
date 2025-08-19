@@ -157,10 +157,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         initActivityResult()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = setContentView(inflater, container)
         view.setOnKeyListener { _: View, keyCode: Int, _: KeyEvent -> keyCode == KeyEvent.KEYCODE_BACK }
         initView(view, savedInstanceState)

@@ -13,9 +13,7 @@ import com.zhongjh.multimedia.widget.ImageViewTouch
 import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout
 
 /**
- * 录制界面规定view的设置
- * 对所有View都标记了NonNull和Nullable
- * 标记了NonNull的View返回是不能为空的，在布局上必须使用这些View，当然，也可以继承View加上你想要的方法
+ * 录制界面规定view的接口
  *
  * @author zhongjh
  * @date 2022/8/19

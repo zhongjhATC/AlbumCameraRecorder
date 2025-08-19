@@ -22,20 +22,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="提示文本" />
 
-    <!-- 右侧的分段录制 -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/z_multi_library_default_to_record"
-        android:textColor="@color/white"
-        android:textSize="8sp"
-        app:drawableTopCompat="@drawable/ic_record_section_24"
-        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
-        app:layout_constraintEnd_toStartOf="@+id/guideline88"
-        app:layout_constraintStart_toStartOf="@+id/guideline72"
-        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
-        tools:ignore="SmallSp" />
-
     <!-- 左侧的取消按钮  -->
     <com.zhongjh.circularprogressview.CircularProgress
         android:id="@+id/btnCancel"
@@ -61,20 +47,6 @@
         app:layout_constraintTop_toTopOf="@+id/btnClickOrLong"
         app:operationButtonZhongjhType="confirm"
         tools:visibility="visible" />
-
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/pbConfirm"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="6dp"
-        android:indeterminateTint="?attr/colorPrimary"
-        android:visibility="gone"
-        app:cpv_animAutostart="true"
-        app:cpv_indeterminate="true"
-        app:layout_constraintBottom_toBottomOf="@+id/btnClickOrLong"
-        app:layout_constraintEnd_toStartOf="@+id/guideline88"
-        app:layout_constraintStart_toStartOf="@+id/guideline72"
-        app:layout_constraintTop_toTopOf="@+id/btnClickOrLong" />
 
     <!-- 中间的操作按钮 -->
     <com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
@@ -115,8 +87,13 @@
             tools:ignore="HardcodedText" />
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/ivRecord"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="13dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="13dp"
             android:contentDescription="内圈"
             app:srcCompat="@drawable/ic_baseline_edit_24"
             tools:ignore="HardcodedText" />

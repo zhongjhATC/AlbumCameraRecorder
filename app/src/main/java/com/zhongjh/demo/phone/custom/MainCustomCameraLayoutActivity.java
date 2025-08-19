@@ -7,12 +7,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.zhongjh.multimedia.album.filter.BaseFilter;
-import com.zhongjh.multimedia.settings.AlbumSetting;
-import com.zhongjh.multimedia.settings.CameraSetting;
-import com.zhongjh.multimedia.settings.GlobalSetting;
-import com.zhongjh.multimedia.settings.MultiMediaSetting;
-import com.zhongjh.multimedia.settings.RecorderSetting;
+import com.zhongjh.common.entity.GridMedia;
+import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.demo.BaseActivity;
 import com.zhongjh.demo.configuration.GifSizeFilter;
 import com.zhongjh.demo.configuration.Glide4Engine;
@@ -21,11 +17,16 @@ import com.zhongjh.demo.phone.custom.camera1.CameraFragment1;
 import com.zhongjh.demo.phone.custom.camera2.CameraFragment2;
 import com.zhongjh.demo.phone.custom.camera3.CameraFragment3;
 import com.zhongjh.demo.phone.custom.camera4.CameraSmallFragment;
-import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.demo.phone.custom.soundrecording.CustomSoundRecordingFragment;
 import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
+import com.zhongjh.multimedia.album.filter.BaseFilter;
+import com.zhongjh.multimedia.settings.AlbumSetting;
+import com.zhongjh.multimedia.settings.CameraSetting;
+import com.zhongjh.multimedia.settings.GlobalSetting;
+import com.zhongjh.multimedia.settings.MultiMediaSetting;
+import com.zhongjh.multimedia.settings.RecorderSetting;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -126,6 +127,9 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         // 支持的类型：图片，视频
         cameraSetting.mimeTypeSet(MimeType.ofAll());
 
+        // 录音机
+        RecorderSetting recorderSetting = new RecorderSetting();
+
         // 每次使用要重新赋值，因为会在每次关闭界面后清空该Fragment以免内存泄漏
         if (mBinding.radioButton1.isChecked()) {
             cameraSetting.setBaseCameraFragment(CameraFragment1.newInstance());
@@ -135,6 +139,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
             cameraSetting.setBaseCameraFragment(CameraFragment3.newInstance());
         } else if (mBinding.radioButton4.isChecked()) {
             cameraSetting.setBaseCameraFragment(CameraSmallFragment.newInstance());
+            recorderSetting.setBaseSoundRecordingFragment(CustomSoundRecordingFragment.newInstance());
         }
 
 
@@ -150,9 +155,6 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
                 .originalEnable(true)
                 // 最大原图size,仅当originalEnable为true的时候才有效
                 .maxOriginalSize(10);
-
-        // 录音机
-        RecorderSetting recorderSetting = new RecorderSetting();
 
         // 全局
         mGlobalSetting = MultiMediaSetting.from(MainCustomCameraLayoutActivity.this).choose(MimeType.ofAll());

@@ -1,5 +1,6 @@
 package com.zhongjh.multimedia.settings.api
 
+import com.zhongjh.multimedia.recorder.BaseSoundRecordingFragment
 import com.zhongjh.multimedia.settings.RecorderSetting
 
 /**
@@ -9,6 +10,15 @@ import com.zhongjh.multimedia.settings.RecorderSetting
  * @date 2019/3/21
  */
 interface RecorderSettingApi {
+    /**
+     * 赋予自定义的SoundRecordingFragment
+     * 如果设置则使用自定义的SoundRecordingFragment,否则使用默认的CameraFragment
+     *
+     * @param baseSoundRecordingFragment SoundRecordingFragment的基类，必须继承它实现才可设置
+     * @return [RecorderSetting] for fluent API.
+     */
+    fun soundRecordingFragment(baseSoundRecordingFragment: BaseSoundRecordingFragment): RecorderSetting
+
     /**
      * 最长录制时间,默认10秒
      *

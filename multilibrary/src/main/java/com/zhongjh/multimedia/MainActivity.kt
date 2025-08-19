@@ -596,7 +596,9 @@ open class MainActivity : AppCompatActivity() {
                     AlbumFragment.newInstance(0)
                 } else AlbumFragment.newInstance(50)
             } else if (mTitles[position] == getString(R.string.z_multi_library_sound_recording)) {
-                SoundRecordingFragment.newInstance()
+                mSpec.recorderSetting?.baseSoundRecordingFragment ?: let {
+                    SoundRecordingFragment.newInstance()
+                }
             } else {
                 mSpec.cameraSetting?.baseCameraFragment ?: let {
                     CameraFragment.newInstance()

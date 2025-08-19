@@ -1,4 +1,4 @@
-package com.zhongjh.demo.phone.custom.camera4;
+package com.zhongjh.demo.phone.custom.soundrecording;
 
 
 import android.content.Context;
@@ -9,8 +9,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
 import com.zhongjh.demo.R;
+import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
+import com.zhongjh.multimedia.recorder.widget.SoundRecordingLayout;
 
 /**
  * 用于录制，拍摄的一系列控件按钮
@@ -18,26 +19,26 @@ import com.zhongjh.demo.R;
  * @author zhongjh
  * @date 2018/10/16
  */
-public class PhotoVideoSmallLayout extends PhotoVideoLayout {
+public class SoundRecordingSmallLayout extends SoundRecordingLayout {
 
-    public PhotoVideoSmallLayout(@NonNull Context context) {
+    public SoundRecordingSmallLayout(@NonNull Context context) {
         this(context, null);
     }
 
-    public PhotoVideoSmallLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public SoundRecordingSmallLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PhotoVideoSmallLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public SoundRecordingSmallLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @NonNull
     @Override
-    public PhotoVideoLayoutViewHolder newViewHolder() {
+    public SoundRecordingLayoutBaseViewHolder newViewHolder() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View view = inflater.inflate(R.layout.layout_photovideo_operate_zjh_small, this, true);
-        return new PhotoVideoLayoutViewHolder(view);
+        return new SoundRecordingLayoutBaseViewHolder(view);
     }
 
 }
