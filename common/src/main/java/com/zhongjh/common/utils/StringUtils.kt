@@ -1,12 +1,7 @@
 package com.zhongjh.common.utils
 
-import java.io.File
-
 /**
- * @author Blankj
- * blog  : http://blankj.com
- * time  : 2016/08/16
- * desc  : utils about string
+ * 字符串操作类
  */
 object StringUtils {
     /**

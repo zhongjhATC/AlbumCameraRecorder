@@ -11,10 +11,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 
 /**
- * @author Blankj
- * blog  : http://blankj.com
- * time  : 2016/08/16
- * desc  : utils about string
+ * 文件操作类
  */
 object FileUtils {
 
