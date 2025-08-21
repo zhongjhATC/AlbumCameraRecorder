@@ -298,7 +298,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                             if (!isActivityPause) {
                                 // 完成录制
                                 val uri = videoRecordEvent.outputResults.outputUri
-                                this.listener?.onRecordSuccess(UriUtils.uriToFile(activity, uri).absolutePath)
+                                UriUtils.uriToFile(activity, uri)?.absolutePath?.let { this.listener?.onRecordSuccess(it) }
                             }
                             isActivityPause = false
                         }
